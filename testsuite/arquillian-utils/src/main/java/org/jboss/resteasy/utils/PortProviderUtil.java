@@ -28,6 +28,8 @@ public class PortProviderUtil {
 
    private static boolean ipv6 = Boolean.parseBoolean(System.getProperty("ipv6"));
 
+   private static final String QUARKUS_PROPERTY_FLAG = "quarkus.tester";
+   private static boolean isQuarkus = false;
    /**
     * Initialize port.
     */
@@ -55,6 +57,8 @@ public class PortProviderUtil {
             }
          }
       }
+
+      isQuarkus = Boolean.parseBoolean(System.getProperty(QUARKUS_PROPERTY_FLAG));
    }
 
 //    /**
@@ -139,12 +143,22 @@ public class PortProviderUtil {
     * @return a full URL
     */
    public static String generateURL(String path, String testName, String hostName, int port) {
+      // quarkus does not generate URLs with contextRoot (i.e. archive name)
+      String localTestName = (isQuarkus) ? "": testName;
+
+      String localPath = path;
+      if (isQuarkus) {
+         if(path.startsWith("/")) {
+            localPath = path.substring(1);
+         }
+      }
+
       // ipv4
       if (!ipv6) {
-         return String.format("http://%s:%d/%s%s", hostName, port, testName, path);
+         return String.format("http://%s:%d/%s%s", hostName, port, localTestName, localPath);
       }
       // ipv6
-      return String.format("http://[%s]:%d/%s%s", hostName, port, testName, path);
+      return String.format("http://[%s]:%d/%s%s", hostName, port, localTestName, localPath);
    }
 
    /**

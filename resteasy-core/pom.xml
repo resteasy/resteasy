@@ -51,9 +51,14 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ibm.async</groupId>
+            <artifactId>asyncutil</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

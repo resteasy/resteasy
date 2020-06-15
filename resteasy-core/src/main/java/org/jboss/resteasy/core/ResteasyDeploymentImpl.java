@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.Config;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
+import org.jboss.resteasy.plugins.providers.JaxrsServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
@@ -149,6 +150,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             // com/sun/ts/tests/jaxrs/spec/provider/standardhaspriority/JAXRSClient.java#readWriteMapProviderTest_from_standalone                                               Failed. Test case throws exception: [JAXRSCommonClient] null failed!  Check output for cause of failure.
             // com/sun/ts/tests/jaxrs/spec/provider/standardwithjaxrsclient/JAXRSClient.java#mapElementProviderTest_from_standalone                                             Failed. Test case throws exception: returned MultivaluedMap is null
             providerFactory.registerProviderInstance(new ServerFormUrlEncodedProvider(useContainerFormParams), null, null, true);
+            providerFactory.registerProviderInstance(new JaxrsServerFormUrlEncodedProvider(useContainerFormParams), null, null, true);
          }
          else
          {

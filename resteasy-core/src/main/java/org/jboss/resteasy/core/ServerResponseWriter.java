@@ -121,6 +121,7 @@ public class ServerResponseWriter
 
          if (writer == null)
          {
+             response.setStatus(jaxrsResponse.getStatus()); //set the status to the response status anyway
              onWriteComplete.accept(new NoMessageBodyWriterFoundFailure(type, mt));
              return;
          }

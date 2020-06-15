@@ -1,6 +1,5 @@
 package org.jboss.resteasy.microprofile.client.async;
 
-import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptor;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -12,7 +11,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
@@ -45,8 +43,6 @@ public class AsyncInterceptorRxInvoker extends CompletionStageRxInvokerImpl
    }
 
    private static <T> CompletionStage<T> whenComplete(CompletionStage<T> stage, Method method) {
-      final Collection<AsyncInvocationInterceptor> asyncInvocationInterceptors = AsyncInvocationInterceptorHandler.threadBoundInterceptors.get();
-      AsyncInvocationInterceptorHandler.threadBoundInterceptors.remove();
 
       return stage.handle((ret, t) -> {
          if(t != null) {
@@ -67,10 +63,6 @@ public class AsyncInterceptorRxInvoker extends CompletionStageRxInvokerImpl
            SynchronousDispatcher.rethrow(t);
          }
          return ret;
-      }).whenComplete((o, throwable) -> {
-         if (asyncInvocationInterceptors != null ) {
-            asyncInvocationInterceptors.forEach(AsyncInvocationInterceptor::removeContext);
-         }
       });
    }
 

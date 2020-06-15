@@ -76,7 +76,7 @@ public class ServerCacheFeature implements Feature
          .globalJmxStatistics()
          .allowDuplicateDomains(true)
          .enable()
-         .jmxDomain("custom-cache")
+         .jmxDomain("resteasy-default-cache")
          .build();
       Configuration configuration = new ConfigurationBuilder()
          .memory()
@@ -86,7 +86,7 @@ public class ServerCacheFeature implements Feature
          .jmxStatistics().enable()
          .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
-      Cache<Object, Object> c = manager.getCache("custom-cache");
+      Cache<Object, Object> c = manager.getCache("resteasy-default-cache");
       return new InfinispanCache(c);
    }
 

@@ -17,8 +17,8 @@ import java.util.concurrent.Executors;
 
 public abstract class AsyncRequestFilter implements ContainerRequestFilter {
 
-   private String name;
-   private String callbackException;
+   private final String name;
+   private volatile String callbackException;
    private static final Logger LOG = Logger.getLogger(AsyncRequestFilter.class);
 
    public AsyncRequestFilter(final String name)

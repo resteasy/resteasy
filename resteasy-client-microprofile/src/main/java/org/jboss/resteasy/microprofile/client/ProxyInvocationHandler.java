@@ -1,11 +1,8 @@
 package org.jboss.resteasy.microprofile.client;
 
 
-import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptor;
-import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactory;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderFillingException;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -51,17 +48,13 @@ public class ProxyInvocationHandler implements InvocationHandler {
 
     private final AtomicBoolean closed;
 
-    private final List<AsyncInvocationInterceptorFactory> asyncInterceptorFactories;
-
     public ProxyInvocationHandler(final Class<?> restClientInterface,
                            final Object target,
                            final Set<Object> providerInstances,
-                           final ResteasyClient client,
-                           final List<AsyncInvocationInterceptorFactory> asyncInterceptorFactories) {
+                           final ResteasyClient client) {
         this.target = target;
         this.providerInstances = providerInstances;
         this.client = client;
-        this.asyncInterceptorFactories = asyncInterceptorFactories;
         this.closed = new AtomicBoolean();
         BeanManager beanManager = getBeanManager(restClientInterface);
         if (beanManager != null) {
@@ -86,8 +79,6 @@ public class ProxyInvocationHandler implements InvocationHandler {
         if (closed.get()) {
             throw new IllegalStateException("RestClientProxy is closed");
         }
-
-        prepareAsyncInterceptors();
 
         boolean replacementNeeded = false;
         Object[] argsReplacement = args != null ? new Object[args.length] : null;
@@ -177,14 +168,6 @@ public class ProxyInvocationHandler implements InvocationHandler {
                 throw e;
             }
         }
-    }
-
-    private void prepareAsyncInterceptors() {
-        List<AsyncInvocationInterceptor> interceptors = asyncInterceptorFactories.stream()
-                .map(AsyncInvocationInterceptorFactory::newInterceptor)
-                .collect(Collectors.toList());
-        interceptors.forEach(AsyncInvocationInterceptor::prepareContext);
-        AsyncInvocationInterceptorHandler.register(interceptors);
     }
 
     private Object invokeRestClientProxyMethod(Object proxy, Method method, Object[] args) throws Throwable {

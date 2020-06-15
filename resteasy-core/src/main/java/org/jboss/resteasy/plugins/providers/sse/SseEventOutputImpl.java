@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.sse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,7 +13,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -20,6 +20,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.SseElementType;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
@@ -28,6 +29,7 @@ import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.plugins.server.Cleanable;
 import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -37,9 +39,11 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
 {
+   private static final Logger LOG = Logger.getLogger(SseEventOutputImpl.class);
    private final MessageBodyWriter<OutboundSseEvent> writer;
 
    private final ResteasyAsynchronousContext asyncContext;
@@ -52,7 +56,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private final Map<Class<?>, Object> contextDataMap;
 
-   private boolean responseFlushed = false;
+   private volatile boolean responseFlushed = false;
 
    private final Object lock = new Object();
 
@@ -87,19 +91,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    protected void close(boolean flushBeforeClose)
    {
+      // avoid even attempting to get a lock if someone else has closed it or is closing it
+      if(closed)
+         return;
       synchronized (lock)
       {
          closed = true;
          if(flushBeforeClose && responseFlushed) {
-            ResteasyContext.pushContextDataMap(contextDataMap);
-            try {
+            try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
                // make sure we flush to await for any queued data being sent
                AsyncOutputStream aos = response.getAsyncOutputStream();
                aos.asyncFlush().toCompletableFuture().get();
             }catch(IOException | InterruptedException | ExecutionException x) {
                // ignore it and let's just close
-            }finally {
-               ResteasyContext.removeContextDataLevel();
             }
          }
          if (asyncContext.isSuspended())
@@ -107,7 +111,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
             if (asyncResponse != null)
             {
-               asyncResponse.complete();
+               try {
+                  asyncResponse.complete();
+               } catch(RuntimeException x) {
+                  Throwable cause = x;
+                  while(cause.getCause() != null && cause.getCause() != cause)
+                     cause = cause.getCause();
+                  if(cause instanceof IOException) {
+                     // ignore it, we're closed now
+                  }else {
+                     LOG.debug(cause.getMessage());
+                     return;
+                  }
+               }
             }
          }
          clearContextData();
@@ -142,6 +158,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private CompletionStage<Void> internalFlushResponseToClient(boolean throwIOException)
    {
+      // avoid even attempting to get a lock if someone else has flushed the response
+      if(responseFlushed)
+         return CompletableFuture.completedFuture(null);
       synchronized (lock)
       {
          if (!responseFlushed)
@@ -154,11 +173,11 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             else //set back to client 200 OK to implies the SseEventOutput is ready
             {
                ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
-               Produces produces = method.getMethod().getAnnotation(Produces.class);
-               if (produces != null && contains(produces.value(), MediaType.SERVER_SENT_EVENTS))
+               MediaType[] mediaTypes = method.getProduces();
+               if (mediaTypes != null &&  Arrays.asList(mediaTypes).contains(MediaType.SERVER_SENT_EVENTS_TYPE))
                {
                   // @Produces("text/event-stream")
-                  SseElementType sseElementType = method.getMethod().getAnnotation(SseElementType.class);
+                  SseElementType sseElementType = FindAnnotation.findAnnotation(method.getMethodAnnotations(),SseElementType.class);
                   if (sseElementType != null)
                   {
                      // Get element media type from @SseElementType.
@@ -176,7 +195,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                }
                else
                {
-                  Stream stream = method.getMethod().getAnnotation(Stream.class);
+                  Stream stream = FindAnnotation.findAnnotation(method.getMethodAnnotations(),Stream.class);
                   if (stream != null)
                   {
                      // Get element media type from @Produces.
@@ -281,8 +300,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    {
       synchronized (lock)
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         try
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap))
          {
             if (event != null)
             {
@@ -363,17 +381,13 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ret.completeExceptionally(new ProcessingException(e));
             return ret;
          }
-         finally
-         {
-            ResteasyContext.removeContextDataLevel();
-         }
       }
       return CompletableFuture.completedFuture(null);
    }
 
    private String[] getStreamType(ResourceMethodInvoker method)
    {
-      Stream stream = method.getMethod().getAnnotation(Stream.class);
+      Stream stream = FindAnnotation.findAnnotation(method.getMethodAnnotations(),Stream.class);
       Stream.MODE mode = stream != null ? stream.value() : null;
       if (mode == null)
       {

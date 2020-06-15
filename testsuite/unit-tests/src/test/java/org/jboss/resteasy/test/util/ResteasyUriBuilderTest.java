@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import javax.ws.rs.core.UriBuilder;
 
+import java.net.URI;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
@@ -49,5 +51,24 @@ public class ResteasyUriBuilderTest {
 
       builder = ResteasyUriBuilderImpl.fromTemplate("http://domain.com/path#fragment%with[forbidden}special<chars");
       assertEquals(URI_FRAGMENT_ERROR, "http://domain.com/path#fragment%25with%5Bforbidden%7Dspecial%3Cchars", builder.build().toString());
+   }
+
+   @Test
+   public void testReplaceQueryParam() {
+      String errorMsg = "Quary param incorrectly replaced";
+      String baseAddr = "http://example.com/api";
+      UriBuilder uBuilder = new ResteasyUriBuilderImpl();
+      URI oneUri = uBuilder
+              .fromUri(baseAddr + "?foo=bar")
+              .replaceQueryParam("foo")
+              .build();
+      assertEquals(errorMsg, baseAddr, oneUri.toString());
+
+      uBuilder = new ResteasyUriBuilderImpl();
+      URI twoUri = uBuilder
+              .fromUri(baseAddr + "?foo=bar&foobar=qux")
+              .replaceQueryParam("foo")
+              .build();
+      assertEquals(errorMsg, baseAddr + "?foobar=qux", twoUri.toString());
    }
 }

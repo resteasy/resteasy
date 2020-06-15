@@ -12,7 +12,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
-import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
@@ -39,11 +38,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.KeyStore;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,12 +67,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     public static final MethodInjectionFilter METHOD_INJECTION_FILTER = new MethodInjectionFilter();
     public static final ClientHeadersRequestFilter HEADERS_REQUEST_FILTER = new ClientHeadersRequestFilter();
 
-    static boolean SSL_ENABLED = true;
     static ResteasyProviderFactory PROVIDER_FACTORY;
-
-    public static void setSslEnabled(boolean enabled) {
-        SSL_ENABLED = enabled;
-    }
 
     public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
         PROVIDER_FACTORY = providerFactory;
@@ -198,7 +193,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         ClassLoader classLoader = aClass.getClassLoader();
 
         List<String> noProxyHosts = Arrays.asList(
-                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("|"));
+                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
         String envProxyHost = System.getProperty("http.proxyHost");
 
         T actualClient;
@@ -230,17 +225,18 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (userProxyHost != null && userProxyPort != null) {
                 resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
             } else {
-                //no proxy
+                //ProxySelector if applicable
+                selectHttpProxy()
+                    .ifPresent(proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
+
                 resteasyClientBuilder = builderDelegate;
             }
         }
 
         if (this.executorService != null) {
-           ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(this.executorService);
-           resteasyClientBuilder.executorService(executor);
+           resteasyClientBuilder.executorService(this.executorService);
         } else {
-           ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(Executors.newCachedThreadPool());
-           resteasyClientBuilder.executorService(executor, true);
+           resteasyClientBuilder.executorService(Executors.newCachedThreadPool(), true);
         }
         resteasyClientBuilder.register(DEFAULT_MEDIA_TYPE_FILTER);
         resteasyClientBuilder.register(METHOD_INJECTION_FILTER);
@@ -259,13 +255,12 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             resteasyClientBuilder.connectTimeout(connectTimeout, connectTimeoutUnit);
         }
 
-        if (!SSL_ENABLED) {
+        if (useURLConnection()) {
             resteasyClientBuilder.httpEngine(new URLConnectionClientEngineBuilder().resteasyClientBuilder(resteasyClientBuilder).build());
             resteasyClientBuilder.sslContext(null);
             resteasyClientBuilder.trustStore(null);
             resteasyClientBuilder.keyStore(null, "");
         }
-
         client = resteasyClientBuilder
                 .build();
         client.register(AsyncInterceptorRxInvokerProvider.class);
@@ -281,9 +276,30 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         interfaces[1] = RestClientProxy.class;
         interfaces[2] = Closeable.class;
 
-        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, asyncInterceptorFactories));
+        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
+    }
+
+    /**
+     * Determines whether or not to default to using the URLConnection instead of the Apache HTTP Client.
+     * If the {@code org.jboss.resteasy.microprofile.defaultToURLConnectionHttpClient} system property is {@code true},
+     * then this method returns {@code true}. In all other cases it returns {@code false}
+     */
+    private boolean useURLConnection() {
+        if (useURLConnection == null) {
+            String defaultToURLConnection = System.getProperty("org.jboss.resteasy.microprofile.defaultToURLConnectionHttpClient", "false");
+            useURLConnection = defaultToURLConnection.toLowerCase().equals("true");
+        }
+        return useURLConnection;
+    }
+
+    private Optional<InetSocketAddress> selectHttpProxy() {
+        return ProxySelector.getDefault().select(baseURI).stream()
+                .filter(proxy -> proxy.type() == java.net.Proxy.Type.HTTP)
+                .map(java.net.Proxy::address)
+                .map(InetSocketAddress.class::cast)
+                .findFirst();
     }
 
     private boolean isMapperDisabled() {
@@ -497,7 +513,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         } else if (o instanceof ParamConverterProvider) {
             register(o, Priorities.USER);
         } else if (o instanceof AsyncInvocationInterceptorFactory) {
-            asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
+            builderDelegate.asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
         } else {
             builderDelegate.register(o);
         }
@@ -529,7 +545,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             builderDelegate.register(converter, i);
 
         } else if (o instanceof AsyncInvocationInterceptorFactory) {
-            asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
+            builderDelegate.asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
         } else {
             builderDelegate.register(o, i);
         }
@@ -592,7 +608,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         return builderDelegate;
     }
 
-    private final ResteasyClientBuilder builderDelegate;
+    private final MpClientBuilderImpl builderDelegate;
 
     private final ConfigurationWrapper configurationWrapper;
 
@@ -613,9 +629,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     private KeyStore keyStore;
     private String keystorePassword;
     private HostnameVerifier hostnameVerifier;
+    private Boolean useURLConnection;
 
 
     private Set<Object> localProviderInstances = new HashSet<>();
-
-    private final List<AsyncInvocationInterceptorFactory> asyncInterceptorFactories = new ArrayList<>();
 }

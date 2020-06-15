@@ -109,6 +109,6 @@ public class FakeHttpServer extends ExternalResource {
 
     @Override
     protected void after() {
-        server.stop(0);
+        server.stop(1);
     }
 }

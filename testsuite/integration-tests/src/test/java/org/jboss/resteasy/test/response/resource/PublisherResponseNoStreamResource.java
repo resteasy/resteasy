@@ -9,9 +9,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.reactivestreams.Publisher;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 @Path("")
@@ -24,8 +27,13 @@ public class PublisherResponseNoStreamResource {
    @Path("text")
    @Produces("application/json")
    public Publisher<String> text(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
-      return Flowable.fromArray("one", "two");
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text"));
+      return Flowable.create(source ->{
+         for(int i=0;i<30;i++) {
+            source.onNext(i+"-"+ResteasyContext.getContextDataLevelCount());
+         }
+         source.onComplete();
+      }, BackpressureStrategy.BUFFER);
    }
 
    @GET
@@ -42,9 +50,9 @@ public class PublisherResponseNoStreamResource {
    }
 
    @GET
-   @Path("callback-called-no-error")
-   public String callbackCalledNoError() {
-      AsyncResponseCallback.assertCalled(false);
+   @Path("callback-called-no-error/{p}")
+   public String callbackCalledNoError(@PathParam String p) {
+      AsyncResponseCallback.assertCalled(p, false);
       return "OK";
    }
 
@@ -52,7 +60,7 @@ public class PublisherResponseNoStreamResource {
    @Path("text-error-immediate")
    @Produces("application/json")
    public Publisher<String> textErrorImmediate(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text-error-immediate"));
       throw new AsyncResponseException();
    }
 
@@ -60,14 +68,14 @@ public class PublisherResponseNoStreamResource {
    @Path("text-error-deferred")
    @Produces("application/json")
    public Publisher<String> textErrorDeferred(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text-error-deferred"));
       return Flowable.error(new AsyncResponseException());
    }
 
    @GET
-   @Path("callback-called-with-error")
-   public String callbackCalledWithError() {
-      AsyncResponseCallback.assertCalled(true);
+   @Path("callback-called-with-error/{p}")
+   public String callbackCalledWithError(@PathParam String p) {
+      AsyncResponseCallback.assertCalled(p, true);
       return "OK";
    }
 

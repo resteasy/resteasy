@@ -6,6 +6,8 @@ import javax.ws.rs.core.Variant.VariantListBuilder;
 
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
+import com.ibm.asyncutil.iteration.AsyncTrampoline;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -158,24 +161,30 @@ public final class ProviderHelper
    public static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out)
    {
       final byte[] buf = new byte[2048];
-      return writeTo(in, out, buf);
+      return AsyncTrampoline.asyncWhile(
+            read -> read != -1,
+            read -> out.asyncWrite(buf, 0, read).thenApply(v -> asyncRead(in, buf)),
+            asyncRead(in, buf)).thenApply(v -> null);
    }
 
-   private static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out, byte[] buf)
+   public static int asyncRead(InputStream in, byte[] buf)
    {
-      int read;
-      try
-      {
-         if ((read = in.read(buf)) != -1)
-         {
-            return out.asyncWrite(buf, 0, read)
-                  .thenCompose(v -> writeTo(in, out, buf));
-         }
+      try {
+         return in.read(buf);
       } catch (IOException e)
       {
-         return completedException(e);
+         throw new CompletionException(e);
       }
-      return CompletableFuture.completedFuture(null);
+   }
+
+   public static int asyncRead(InputStream in, byte[] buf, int offset, int length)
+   {
+      try {
+         return in.read(buf, offset, length);
+      } catch (IOException e)
+      {
+         throw new CompletionException(e);
+      }
    }
 
    public static CompletionStage<Void> completedException(Throwable t)
