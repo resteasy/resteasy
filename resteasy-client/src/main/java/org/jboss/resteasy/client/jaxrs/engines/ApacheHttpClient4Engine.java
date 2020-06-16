@@ -37,6 +37,7 @@ import org.jboss.resteasy.util.Constants;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -637,15 +638,19 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       AbstractHttpEntity entityToBuild = null;
       DeferredFileOutputStream memoryManagedOutStream = writeRequestBodyToOutputStream(request);
 
+      final MediaType mediaType = request.getHeaders().getMediaType();
+
       if (memoryManagedOutStream.isInMemory())
       {
          ByteArrayEntity entityToBuildByteArray = new ByteArrayEntity(memoryManagedOutStream.getData());
-         entityToBuildByteArray.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, request.getHeaders().getMediaType().toString()));
+         if (mediaType != null) {
+            entityToBuildByteArray.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
+         }
          entityToBuild = entityToBuildByteArray;
       }
       else
       {
-         entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(), request.getHeaders().getMediaType().toString());
+         entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(), mediaType == null ? null : mediaType.toString());
       }
       if (request.isChunked())
       {
