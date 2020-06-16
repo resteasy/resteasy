@@ -188,19 +188,32 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          headers.putSingle("Content-Type", mediaType.toString());
       }
 
+
       @SuppressWarnings("unchecked")
       public <T> T getBody(Class<T> type, Type genericType)
               throws IOException
       {
          boolean pushProviders = savedProviders != null && ResteasyContext.getContextData(Providers.class) == null;
-         if (MultipartInput.class.equals(type))
-         {
-            if (bodyPart.getBody() instanceof Multipart)
-            {
-               return (T) new MultipartInputImpl(
-                       Multipart.class.cast(bodyPart.getBody()), workers);
+
+         if (MultipartInput.class.isAssignableFrom(type)) {
+
+            if (bodyPart.getBody() instanceof Multipart) {
+
+               if (MultipartInput.class.equals(type)) {
+                  return (T) new MultipartInputImpl(
+                          Multipart.class.cast(bodyPart.getBody()), workers);
+
+               } else if (MultipartRelatedInput.class.equals(type)) {
+                  return (T) new MultipartRelatedInputImpl(
+                          Multipart.class.cast(bodyPart.getBody()), workers);
+
+               } else if (MultipartFormDataInput.class.equals(bodyPart.getBody())) {
+                  return (T) new MultipartFormDataInputImpl(
+                          Multipart.class.cast(bodyPart.getBody()), workers);
+               }
             }
          }
+
          try
          {
             if (pushProviders)

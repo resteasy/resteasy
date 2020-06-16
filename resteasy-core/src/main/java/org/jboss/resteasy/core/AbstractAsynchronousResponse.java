@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.AsyncWriterInterceptor;
@@ -177,51 +178,52 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyContext.pushContextDataMap(contextDataMap);
-      Response response = null;
-      if (entity == null)
-      {
-         response = Response.noContent().build();
-      }
-      else if (entity instanceof Response)
-      {
-         response = (Response) entity;
-      }
-      else
-      {
-         if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
-         MediaType type = method.resolveContentType(request, entity);
-         BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
-         if (!(entity instanceof GenericEntity))
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+         Response response = null;
+         if (entity == null)
          {
-            jaxrsResponse.setGenericType(method.getGenericReturnType());
+            response = Response.noContent().build();
          }
-         jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
-         response = jaxrsResponse;
-      }
-      try
-      {
-         dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
-            if(t != null)
+         else if (entity instanceof Response)
+         {
+            response = (Response) entity;
+         }
+         else
+         {
+            if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
+            MediaType type = method.resolveContentType(request, entity);
+            BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
+            if (!(entity instanceof GenericEntity))
             {
-               internalResume(t, t2 -> {
-                  onComplete.accept(t);
-                  // callbacks done by internalResume
-               });
+               jaxrsResponse.setGenericType(method.getGenericReturnType());
             }
-            else
-            {
-               onComplete.accept(null);
-               completionCallbacks(null);
-            }
-         });
-      }
-      catch (Throwable e)
-      {
-         return internalResume(e, t -> {
-            onComplete.accept(e);
-            // callbacks done by internalResume
-         });
+            jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
+            response = jaxrsResponse;
+         }
+         try
+         {
+            dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
+               if(t != null)
+               {
+                  internalResume(t, t2 -> {
+                     onComplete.accept(t);
+                     // callbacks done by internalResume
+                  });
+               }
+               else
+               {
+                  onComplete.accept(null);
+                  completionCallbacks(null);
+               }
+            });
+         }
+         catch (Throwable e)
+         {
+            return internalResume(e, t -> {
+               onComplete.accept(e);
+               // callbacks done by internalResume
+            });
+         }
       }
       return true;
    }
@@ -234,11 +236,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Throwable exc, Consumer<Throwable> onComplete)
    {
-      ResteasyContext.pushContextDataMap(contextDataMap);
-      dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
-         onComplete.accept(t);
-         completionCallbacks(exc);
-      });
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+         dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
+            onComplete.accept(t);
+            completionCallbacks(exc);
+         });
+      }
       return true;
    }
 

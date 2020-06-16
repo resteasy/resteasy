@@ -16,6 +16,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -36,11 +37,8 @@ public class HttpServletResponseWrapper implements HttpResponse
          this.stream = stream;
       }
       public void work(ServletOutputStream sos) {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         try {
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
             doWork(sos);
-         }finally {
-            ResteasyContext.removeContextDataLevel();
          }
       }
       protected abstract void doWork(ServletOutputStream sos);
@@ -134,6 +132,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       private boolean asyncRegistered;
       private Queue<AsyncOperation> asyncQueue;
       private AsyncOperation lastAsyncOperation;
+      private boolean asyncListenerCalled;
 
       @Override
       public void write(int i) throws IOException
@@ -203,7 +202,8 @@ public class HttpServletResponseWrapper implements HttpResponse
                   // make sure we have something ready to be executed
                   addToQueue(op);
                   os.setWriteListener(this);
-               } else if(os.isReady()) {
+                  // never call isReady before Undertow is ready and has already called our listener at least once
+               } else if(asyncListenerCalled && os.isReady()) {
                   // it's possible that we startAsync and queue, then queue another event and the stream becomes ready before
                   // onWritePossible is called, which means we need to flush the queue here to guarantee ordering if that happens
                   addToQueue(op);
@@ -242,12 +242,14 @@ public class HttpServletResponseWrapper implements HttpResponse
       @Override
       public synchronized void onWritePossible() throws IOException
       {
+         asyncListenerCalled = true;
          flushQueue(response.getOutputStream());
       }
 
       @Override
       public synchronized void onError(Throwable t)
       {
+         asyncListenerCalled = true;
          if(lastAsyncOperation != null) {
             lastAsyncOperation.future.completeExceptionally(t);
             lastAsyncOperation = null;

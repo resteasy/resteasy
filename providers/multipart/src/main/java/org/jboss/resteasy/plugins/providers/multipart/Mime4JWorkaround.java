@@ -51,7 +51,7 @@ public class Mime4JWorkaround {
     public static Message parseMessage(InputStream is) throws IOException, MimeIOException {
         try {
             MessageImpl message = new MessageImpl();
-            MimeConfig cfg = new MimeConfig();
+            MimeConfig cfg = MimeConfig.DEFAULT;
             boolean strict = cfg.isStrictParsing();
             DecodeMonitor mon = strict ? DecodeMonitor.STRICT : DecodeMonitor.SILENT;
             BodyDescriptorBuilder bdb = new DefaultBodyDescriptorBuilder(null, strict ? DefaultFieldParser.getParser() : LenientFieldParser.getParser(), mon);

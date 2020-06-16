@@ -75,4 +75,26 @@ public class AsyncIOTest
       val = target.request().get(String.class);
       Assert.assertEquals("OK", val);
    }
+
+   @Test
+   public void testAsyncIoWrites() throws Exception
+   {
+       // 10M
+       WebTarget target = client.target(generateURL("/async-io/io/10000000"));
+       byte[] val = target.request().get(byte[].class);
+       Assert.assertEquals(10_000_000, val.length);
+       // 100M
+       target = client.target(generateURL("/async-io/io/100000000"));
+       val = target.request().get(byte[].class);
+       Assert.assertEquals(100_000_000, val.length);
+
+       // 10M
+       target = client.target(generateURL("/async-io/io/file-range/10000000"));
+       val = target.request().get(byte[].class);
+       Assert.assertEquals(10_000_000, val.length);
+       // 100M
+       target = client.target(generateURL("/async-io/io/file-range/100000000"));
+       val = target.request().get(byte[].class);
+       Assert.assertEquals(100_000_000, val.length);
+   }
 }

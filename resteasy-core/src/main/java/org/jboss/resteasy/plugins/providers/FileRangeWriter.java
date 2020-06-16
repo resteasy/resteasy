@@ -9,6 +9,8 @@ import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
+import com.ibm.asyncutil.iteration.AsyncTrampoline;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -107,21 +109,20 @@ public class FileRangeWriter implements AsyncMessageBodyWriter<FileRange>
 
    private CompletionStage<Void> writeTo(FileInputStream fis, long length, AsyncOutputStream entityStream, byte[] buf)
    {
-      if (length > 0)
-      {
-         int len = buf.length > length ? (int)length : buf.length;
-         try
-         {
-            int read = fis.read(buf, 0, len);
-            if (read != -1)
-            {
-               return entityStream.asyncWrite(buf, 0, read)
-                     .thenCompose(v -> writeTo(fis, length - len, entityStream, buf));
-            }
-         } catch (IOException e)
-         {
-            return ProviderHelper.completedException(e);
-         }
+      if(length > 0) {
+         long[] mutableLength = new long[] {length};
+         return AsyncTrampoline.asyncWhile(
+               read -> read != -1,
+               read -> entityStream.asyncWrite(buf, 0, read)
+               .thenApply(v -> {
+                  mutableLength[0] -= read;
+                  if(mutableLength[0] > 0)
+                     return ProviderHelper.asyncRead(fis, buf, 0, (int)Math.min(buf.length, mutableLength[0]));
+                  // simulate EOF to exit the loop
+                  return -1;
+               }),
+               ProviderHelper.asyncRead(fis, buf, 0, (int)Math.min(buf.length, mutableLength[0]))
+               ).thenApply(v -> null);
       }
       return CompletableFuture.completedFuture(null);
    }

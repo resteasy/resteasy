@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.core.registry.SegmentNode;
+import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -107,7 +108,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          @Override
          public Method getResourceMethod()
          {
-            return ResourceMethodInvoker.this.method.getAnnotatedMethod();
+            return ResourceMethodInvoker.this.method.getMethod();
          }
 
          @Override
@@ -151,13 +152,29 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       if (validator != null)
       {
-         if (validator instanceof GeneralValidatorCDI)
+         Class<?> clazz = null;
+         if (resource != null && resource.getScannableClass() != null)
          {
-            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(getMethod().getDeclaringClass(), injector);
+            clazz = resource.getScannableClass();
          }
          else
          {
-            isValidatable = validator.isValidatable(getMethod().getDeclaringClass());
+            clazz = getMethod().getDeclaringClass();
+         }
+         if (resource instanceof JndiComponentResourceFactory)
+         {
+            isValidatable = true;
+         }
+         else
+         {
+            if (validator instanceof GeneralValidatorCDI)
+            {
+               isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(clazz, injector);
+            }
+            else
+            {
+               isValidatable = validator.isValidatable(clazz);
+            }
          }
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }

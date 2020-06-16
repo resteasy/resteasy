@@ -89,7 +89,6 @@ public class SseTest
                throw new RuntimeException(ex);
             }) ;
          eventSource.open();
-
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
          for (int counter = 0; counter < 5; counter++)
@@ -260,6 +259,12 @@ public class SseTest
       int proxyPort = 9090;
       SimpleProxyServer proxy = new SimpleProxyServer(PortProviderUtil.getHost(), PortProviderUtil.getPort(), proxyPort);
       proxy.start();
+      int maxWaits = 30;
+      while(!proxy.isStarted()) {
+         Assert.assertTrue(maxWaits-- > 0);
+         logger.info("Proxy not started yet, sleeping 100ms");
+         Thread.sleep(100);
+      }
       final CountDownLatch latch = new CountDownLatch(10);
       final List<String> results = new ArrayList<String>();
       final AtomicInteger errors = new AtomicInteger(0);
@@ -375,7 +380,6 @@ public class SseTest
                throw new RuntimeException(ex);
             });
          eventSource.open();
-
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
          messageTarget.request().post(Entity.text("data0a"));

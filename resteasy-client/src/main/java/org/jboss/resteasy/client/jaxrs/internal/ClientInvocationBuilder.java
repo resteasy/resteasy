@@ -355,7 +355,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public CompletionStageRxInvoker rx()
    {
-      return new CompletionStageRxInvokerImpl(this, invocation.getClient().asyncInvocationExecutor());
+      return new CompletionStageRxInvokerImpl(this, invocation.asyncInvocationExecutor());
    }
 
    @Override
@@ -365,7 +365,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
       if (provider == null) {
          throw new IllegalStateException(Messages.MESSAGES.unableToInstantiate(clazz));
       }
-      return provider.getRxInvoker(this, invocation.getClient().asyncInvocationExecutor());
+      return provider.getRxInvoker(this, invocation.asyncInvocationExecutor());
    }
 
    public Response patch(Entity<?> entity)

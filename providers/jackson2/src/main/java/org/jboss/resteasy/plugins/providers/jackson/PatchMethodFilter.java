@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
+import static org.jboss.resteasy.resteasy_jaxrs.i18n.Messages.MESSAGES;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -139,6 +141,9 @@ public class PatchMethodFilter implements ContainerRequestFilter
             MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
                   targetObject.getClass(), targetObject.getClass(), methodInvoker.getMethodAnnotations(),
                   MediaType.APPLICATION_JSON_TYPE);
+            if (msgBodyWriter == null) {
+               throw new ProcessingException(MESSAGES.couldNotFindWriterForContentType(MediaType.APPLICATION_JSON_TYPE, targetObject.getClass().getName()));
+            }
             msgBodyWriter.writeTo(targetObject, targetObject.getClass(), targetObject.getClass(),
                   methodInvoker.getMethodAnnotations(), MediaType.APPLICATION_JSON_TYPE,
                   new MultivaluedTreeMap<String, Object>(), tmpOutputStream);

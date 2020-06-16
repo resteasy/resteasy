@@ -154,7 +154,31 @@
               </property>
             </activation>
             <properties>
-                <server.version>19.0.0.Beta2</server.version>
+                <server.version>20.0.0.Beta1</server.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>server-version-20x-exclusions</id>
+            <activation>
+                <property>
+                    <name>server.version</name>
+                    <value>20.0.0.Beta1</value>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly20</additional.surefire.excluded.groups>
+            </properties>
+        </profile>
+        <profile>
+            <id>server-version-19x-exclusions</id>
+            <activation>
+                <property>
+                    <name>server.version</name>
+                    <value>19.1.0.Final</value>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly19</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <profile>

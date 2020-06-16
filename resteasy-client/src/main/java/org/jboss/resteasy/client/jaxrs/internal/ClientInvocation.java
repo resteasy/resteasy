@@ -560,14 +560,18 @@ public class ClientInvocation implements Invocation
       }
       else
       {
-         return executorSubmit(client.asyncInvocationExecutor(), callback, extractor);
+         return executorSubmit(asyncInvocationExecutor(), callback, extractor);
       }
+   }
+
+   public ExecutorService asyncInvocationExecutor() {
+       return client.asyncInvocationExecutor();
    }
 
    private <T> Function<ResultExtractor<T>, CompletableFuture<T>> getCompletableFutureExtractorFunction(boolean buffered) {
       final ClientHttpEngine httpEngine = client.httpEngine();
       return (httpEngine instanceof AsyncClientHttpEngine)
-            ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, ext, client.asyncInvocationExecutor()) : null;
+            ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, ext, asyncInvocationExecutor()) : null;
    }
 
    private <T> Function<ResultExtractor<T>, Future<T>> getFutureExtractorFunction(boolean buffered, InvocationCallback<T> callback) {
@@ -639,7 +643,7 @@ public class ClientInvocation implements Invocation
       }
       else
       {
-         return executorSubmit(client.asyncInvocationExecutor(), null, extractor);
+         return executorSubmit(asyncInvocationExecutor(), null, extractor);
       }
    }
 
@@ -758,6 +762,7 @@ public class ClientInvocation implements Invocation
          final ResultExtractor<T> extractor)
    {
       return CompletableFuture.supplyAsync(() -> {
+          // FIXME: why does this have no context?
          // ensure the future and the callback see the same result
          ClientResponse response = null;
          try

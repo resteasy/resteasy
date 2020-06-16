@@ -103,7 +103,7 @@ public class PublisherResponseTest {
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
 
       // make sure the completion callback was called with no error
-      Builder request = client.target(generateURL("/callback-called-no-error")).request();
+      Builder request = client.target(generateURL("/callback-called-no-error/text")).request();
       Response response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -129,7 +129,7 @@ public class PublisherResponseTest {
       Assert.assertEquals("Got it", cee.getResponse().readEntity(String.class));
 
       // make sure the completion callback was called with with an error
-      Builder request = client.target(generateURL("/callback-called-with-error")).request();
+      Builder request = client.target(generateURL("/callback-called-with-error/text-error-immediate")).request();
       Response response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -150,7 +150,7 @@ public class PublisherResponseTest {
       Assert.assertEquals("Got it", entity);
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error/text-error-deferred")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -190,7 +190,7 @@ public class PublisherResponseTest {
       source.register(evt -> {
          String data = evt.readData(String.class);
          collector.add(data);
-         if(collector.size() >= 2) {
+         if(collector.size() >= 30) {
             future.complete(null);
          }
       }, t -> {
@@ -203,10 +203,10 @@ public class PublisherResponseTest {
       source.open();
       future.get();
       source.close();
-      Assert.assertEquals(2, collector.size());
+      Assert.assertEquals(30, collector.size());
       Assert.assertEquals(0, errors.size());
-      Assert.assertEquals("one", collector.get(0));
-      Assert.assertEquals("two", collector.get(1));
+      Assert.assertEquals("0-1", collector.get(0));
+      Assert.assertEquals("1-1", collector.get(1));
    }
 
    /**

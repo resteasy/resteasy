@@ -684,7 +684,9 @@ public class StringParameterInjector
       if (paramConverter != null)
       {
          try {
-            return paramConverter.fromString(strVal);
+             return paramConverter.fromString(strVal);
+         } catch (WebApplicationException wae) {
+             throw wae;
          } catch (Exception pce) {
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
                     getParamSignature(), strVal, target), pce);
@@ -694,6 +696,8 @@ public class StringParameterInjector
       {
          try {
          return unmarshaller.fromString(strVal);
+         } catch (WebApplicationException wae) {
+             throw wae;
          } catch (Exception ue) {
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
                     getParamSignature(), strVal, target), ue);
@@ -703,6 +707,8 @@ public class StringParameterInjector
       {
          try {
             return delegate.fromString(strVal);
+         } catch (WebApplicationException wae) {
+             throw wae;
          } catch (Exception pce) {
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
                     getParamSignature(), strVal, target), pce);
