@@ -46,9 +46,9 @@ public class BaseServletConfigSource {
 
     public int getOrdinal() {
        if (!available) {
-          return this.defaultOrdinal;
+          return defaultOrdinal;
        }
-       return getOrdinal(source, defaultOrdinal);
+       return source.getOrdinal();
    }
 
     public String getValue(String propertyName) {
@@ -61,18 +61,5 @@ public class BaseServletConfigSource {
     public String getName() {
        return name;
     }
-
-    public static int getOrdinal(ConfigSource configSource, int defaultValue) {
-       String configOrdinal = configSource.getValue(ConfigSource.CONFIG_ORDINAL);
-       if(configOrdinal != null) {
-           try {
-               return Integer.parseInt(configOrdinal);
-           }
-           catch (NumberFormatException ignored) {
-
-           }
-       }
-       return defaultValue;
-   }
 
 }

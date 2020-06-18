@@ -1,6 +1,5 @@
 package org.jboss.resteasy.microprofile.config;
 
-import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.jboss.resteasy.core.ResteasyContext;
 
 import javax.servlet.FilterConfig;
@@ -12,7 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class FilterConfigSourceImpl implements ConfigSource {
+public class FilterConfigSourceImpl implements ResteasyConfigSource {
 
    private volatile String name;
 
@@ -71,7 +70,8 @@ public class FilterConfigSourceImpl implements ConfigSource {
    }
 
    @Override
-   public int getOrdinal() {
-      return BaseServletConfigSource.getOrdinal(this, FilterConfigSource.BUILT_IN_DEFAULT_ORDINAL);
+   public int getDefaultOrdinal() {
+      return FilterConfigSource.BUILT_IN_DEFAULT_ORDINAL;
    }
+
 }

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.microprofile.config;
 
-import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.jboss.resteasy.core.ResteasyContext;
 
 import javax.servlet.ServletContext;
@@ -11,7 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ServletContextConfigSourceImpl implements ConfigSource {
+public class ServletContextConfigSourceImpl implements ResteasyConfigSource {
 
    private volatile String name;
 
@@ -68,7 +67,8 @@ public class ServletContextConfigSourceImpl implements ConfigSource {
    }
 
    @Override
-   public int getOrdinal() {
-      return BaseServletConfigSource.getOrdinal(this, ServletContextConfigSource.BUILT_IN_DEFAULT_ORDINAL);
+   public int getDefaultOrdinal() {
+      return ServletContextConfigSource.BUILT_IN_DEFAULT_ORDINAL;
    }
+
 }
