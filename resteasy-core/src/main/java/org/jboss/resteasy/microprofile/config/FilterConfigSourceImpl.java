@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class FilterConfigSourceImpl implements ConfigSource {
+
    private volatile String name;
 
    @Override
@@ -71,6 +72,6 @@ public class FilterConfigSourceImpl implements ConfigSource {
 
    @Override
    public int getOrdinal() {
-      return 50;
+      return BaseServletConfigSource.getOrdinal(this, FilterConfigSource.BUILT_IN_DEFAULT_ORDINAL);
    }
 }

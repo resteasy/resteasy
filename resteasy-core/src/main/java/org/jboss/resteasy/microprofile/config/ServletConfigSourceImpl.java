@@ -71,6 +71,6 @@ public class ServletConfigSourceImpl implements ConfigSource {
 
    @Override
    public int getOrdinal() {
-      return 60;
+      return BaseServletConfigSource.getOrdinal(this, ServletConfigSource.BUILT_IN_DEFAULT_ORDINAL);
    }
 }

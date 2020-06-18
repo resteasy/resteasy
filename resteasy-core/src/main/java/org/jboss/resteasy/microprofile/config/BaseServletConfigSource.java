@@ -15,10 +15,12 @@ import java.util.Set;
 public class BaseServletConfigSource {
     protected ConfigSource source;
     protected final boolean available;
+    protected final int defaultOrdinal;
     private final String name;
 
-    public BaseServletConfigSource(final boolean available, final Class<?> sourceClass) {
+    public BaseServletConfigSource(final boolean available, final Class<?> sourceClass, final int defaultOrdinal) {
         this.available = available;
+        this.defaultOrdinal = defaultOrdinal;
         if (available) {
             try {
                 source = (ConfigSource)sourceClass.newInstance();
@@ -42,6 +44,13 @@ public class BaseServletConfigSource {
         return getProperties().keySet();
     }
 
+    public int getOrdinal() {
+       if (!available) {
+          return this.defaultOrdinal;
+       }
+       return getOrdinal(source, defaultOrdinal);
+   }
+
     public String getValue(String propertyName) {
        if (!available) {
           return null;
@@ -52,4 +61,18 @@ public class BaseServletConfigSource {
     public String getName() {
        return name;
     }
+
+    public static int getOrdinal(ConfigSource configSource, int defaultValue) {
+       String configOrdinal = configSource.getValue(ConfigSource.CONFIG_ORDINAL);
+       if(configOrdinal != null) {
+           try {
+               return Integer.parseInt(configOrdinal);
+           }
+           catch (NumberFormatException ignored) {
+
+           }
+       }
+       return defaultValue;
+   }
+
 }

@@ -3,6 +3,9 @@ package org.jboss.resteasy.microprofile.config;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 
 public class FilterConfigSource extends BaseServletConfigSource implements ConfigSource {
+
+   public static final int BUILT_IN_DEFAULT_ORDINAL = 50;
+
    private static final boolean SERVLET_AVAILABLE;
    private static Class<?> clazz = null;
    static {
@@ -18,11 +21,7 @@ public class FilterConfigSource extends BaseServletConfigSource implements Confi
    }
 
    public FilterConfigSource() {
-      super(SERVLET_AVAILABLE, clazz);
+      super(SERVLET_AVAILABLE, clazz, BUILT_IN_DEFAULT_ORDINAL);
    }
 
-   @Override
-   public int getOrdinal() {
-      return 50;
-   }
 }
