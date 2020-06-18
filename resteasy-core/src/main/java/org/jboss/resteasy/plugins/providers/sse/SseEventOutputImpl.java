@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.providers.sse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -174,7 +173,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
                MediaType[] mediaTypes = method.getProduces();
-               if (mediaTypes != null &&  Arrays.asList(mediaTypes).contains(MediaType.SERVER_SENT_EVENTS_TYPE))
+               if (mediaTypes != null &&  getSseEventType(mediaTypes) != null)
                {
                   // @Produces("text/event-stream")
                   SseElementType sseElementType = FindAnnotation.findAnnotation(method.getMethodAnnotations(),SseElementType.class);
@@ -189,7 +188,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   else
                   {
                      // No element media type declared.
-                     jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
+                     jaxrsResponse = (BuiltResponse) Response.ok().type(getSseEventType(mediaTypes)).build();
 //                   // use "element-type=text/plain"?
                   }
                }
@@ -404,18 +403,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       throw new RuntimeException(Messages.MESSAGES.expectedStreamModeGeneralOrRaw(mode));
    }
 
-   private boolean contains(String[] ss, String t)
-   {
-      for (String s : ss)
-      {
-         if (s.startsWith(t))
-         {
-            return true;
-         }
-      }
-      return false;
-   }
-
    @Override
    public boolean equals(Object o) {
       return this == o;
@@ -427,4 +414,14 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       // required by checkcode
       return super.hashCode();
    }
+   private MediaType getSseEventType(MediaType[] mediaTypes) {
+      for (MediaType type : mediaTypes) {
+        if (type.getType().equalsIgnoreCase(MediaType.SERVER_SENT_EVENTS_TYPE.getType())
+              && type.getSubtype().equalsIgnoreCase(MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype()))
+        {
+           return type;
+        }
+      }
+      return null;
+  }
 }
