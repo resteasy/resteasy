@@ -6,6 +6,7 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactory;
+import org.eclipse.microprofile.rest.client.ext.QueryParamStyle;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -96,6 +97,27 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
     public Configuration getConfigurationWrapper() {
         return configurationWrapper;
+    }
+
+    @Override
+    public RestClientBuilder followRedirects(boolean followRedirect) {
+        this.followRedirect = followRedirect;
+        return this;
+    }
+    public boolean isFollowRedirects() {
+        return this.followRedirect;
+    }
+
+    @Override
+    public RestClientBuilder queryParamStyle(QueryParamStyle var1) {
+        // TODO implement under a different jira and branch
+        return this;
+    }
+
+    @Override
+    public RestClientBuilder proxyAddress(String var1, int var2){
+        // TODO implement under a different jira and branch
+        return this;
     }
 
     @Override
@@ -247,6 +269,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
         resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        checkFollowRedirectProperty (aClass);
+        resteasyClientBuilder.setFollowRedirects(followRedirect);
 
         if (readTimeout != null) {
             resteasyClientBuilder.readTimeout(readTimeout, readTimeoutUnit);
@@ -276,7 +300,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         interfaces[1] = RestClientProxy.class;
         interfaces[2] = Closeable.class;
 
-        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
+        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
+                new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
     }
@@ -300,6 +325,32 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 .map(java.net.Proxy::address)
                 .map(InetSocketAddress.class::cast)
                 .findFirst();
+    }
+
+    private void checkFollowRedirectProperty (Class aClass) {
+        // User's programmatic setting takes precedence over
+        // microprofile-config.properties.
+        if (!followRedirect) {
+            if (config != null) {
+                // property using fully-qualified class name takes precedence
+                Optional<Boolean> prop = config.getOptionalValue(
+                        aClass.getCanonicalName()+"/mp-rest/followRedirects", Boolean.class);
+                if (prop.isPresent()) {
+                    if (prop.get() != followRedirect) {
+                        followRedirects(prop.get());
+                    }
+                } else {
+                    //property using simple class name takes 2nd priority
+                    prop = config.getOptionalValue(
+                            aClass.getSimpleName()+"/mp-rest/followRedirects", Boolean.class);
+                    if (prop.isPresent()) {
+                        if (prop.get() != followRedirect) {
+                            followRedirects(prop.get());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private boolean isMapperDisabled() {
@@ -630,7 +681,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     private String keystorePassword;
     private HostnameVerifier hostnameVerifier;
     private Boolean useURLConnection;
-
+    private boolean followRedirect;
 
     private Set<Object> localProviderInstances = new HashSet<>();
 }

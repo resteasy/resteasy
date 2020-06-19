@@ -491,11 +491,13 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       this.chunked = chunked;
    }
 
+   @Override
    public boolean isFollowRedirects()
    {
       return followRedirects;
    }
 
+   @Override
    public void setFollowRedirects(boolean followRedirects)
    {
       this.followRedirects = followRedirects;
