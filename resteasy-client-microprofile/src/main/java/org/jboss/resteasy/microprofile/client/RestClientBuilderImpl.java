@@ -6,7 +6,9 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactory;
+import org.eclipse.microprofile.rest.client.ext.QueryParamStyle;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
@@ -29,7 +31,6 @@ import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
-
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -55,7 +56,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.*;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_HOST;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_PORT;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_SCHEME;
 
 public class RestClientBuilderImpl implements RestClientBuilder {
 
@@ -96,6 +99,27 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
     public Configuration getConfigurationWrapper() {
         return configurationWrapper;
+    }
+
+    @Override
+    public RestClientBuilder followRedirects(boolean followRedirect) {
+        this.followRedirect = followRedirect;
+        return this;
+    }
+    public boolean isFollowRedirects() {
+        return this.followRedirect;
+    }
+
+    @Override
+    public RestClientBuilder queryParamStyle(QueryParamStyle var1) {
+        // TODO implement under a different jira and branch
+        return this;
+    }
+
+    @Override
+    public RestClientBuilder proxyAddress(String var1, int var2){
+        // TODO implement under a different jira and branch
+        return this;
     }
 
     @Override
@@ -247,6 +271,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
         resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        checkFollowRedirectProperty (aClass);
+        resteasyClientBuilder.setFollowRedirects(followRedirect);
 
         if (readTimeout != null) {
             resteasyClientBuilder.readTimeout(readTimeout, readTimeoutUnit);
@@ -276,7 +302,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         interfaces[1] = RestClientProxy.class;
         interfaces[2] = Closeable.class;
 
-        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
+        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
+                new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
     }
@@ -300,6 +327,39 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 .map(java.net.Proxy::address)
                 .map(InetSocketAddress.class::cast)
                 .findFirst();
+    }
+
+    private void checkFollowRedirectProperty (Class aClass) {
+        // User's programmatic setting takes precedence over
+        // microprofile-config.properties.
+        if (!followRedirect) {
+            if (config != null) {
+                // property using fully-qualified class name takes precedence
+                Optional<Boolean> prop = config.getOptionalValue(
+                        aClass.getCanonicalName()+"/mp-rest/followRedirects", Boolean.class);
+                if (prop.isPresent()) {
+                    if (prop.get() != followRedirect) {
+                        followRedirects(prop.get());
+                    }
+                } else {
+                    RegisterRestClient registerRestClient =
+                            (RegisterRestClient)aClass.getAnnotation(RegisterRestClient.class);
+                    if (registerRestClient !=null &&
+                        registerRestClient.configKey() != null &&
+                        !registerRestClient.configKey().isEmpty()) {
+
+                        //property using configKey
+                        prop = config.getOptionalValue(
+                                registerRestClient.configKey() + "/mp-rest/followRedirects", Boolean.class);
+                        if (prop.isPresent()) {
+                            if (prop.get() != followRedirect) {
+                                followRedirects(prop.get());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private boolean isMapperDisabled() {
@@ -630,7 +690,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     private String keystorePassword;
     private HostnameVerifier hostnameVerifier;
     private Boolean useURLConnection;
-
+    private boolean followRedirect;
 
     private Set<Object> localProviderInstances = new HashSet<>();
 }

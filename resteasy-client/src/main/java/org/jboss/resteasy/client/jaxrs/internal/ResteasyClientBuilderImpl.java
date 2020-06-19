@@ -69,6 +69,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected List<String> sniHostNames = new ArrayList<>();
    protected boolean trustSelfSignedCertificates = true;
    protected boolean cookieManagementEnabled;
+   protected boolean followRedirects;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -681,4 +682,14 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       return cookieManagementEnabled;
    }
 
+   @Override
+   public ResteasyClientBuilder setFollowRedirects(boolean followRedirects) {
+      this.followRedirects = followRedirects;
+      return this;
+   }
+
+   @Override
+   public boolean isFollowRedirects() {
+      return followRedirects;
+   }
 }
