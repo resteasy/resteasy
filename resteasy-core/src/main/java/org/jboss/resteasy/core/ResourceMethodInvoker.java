@@ -43,6 +43,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -420,6 +421,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected CompletionStage<Object> invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+      ResteasyContext.pushContext(Configuration.class, resourceMethodProviderFactory);
 
       try
       {
@@ -449,6 +451,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       final long msTimeStamp = methodStatisticsLogger.timestamp();
       try {
          ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+         ResteasyContext.pushContext(Configuration.class, resourceMethodProviderFactory);
          if (requestFilters != null && requestFilters.length > 0) {
             PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
                     () -> invokeOnTargetAfterFilter(request, response, target));
