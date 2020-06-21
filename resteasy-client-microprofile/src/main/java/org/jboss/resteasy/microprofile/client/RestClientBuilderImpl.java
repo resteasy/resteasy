@@ -8,6 +8,7 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactory;
 import org.eclipse.microprofile.rest.client.ext.QueryParamStyle;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
@@ -15,6 +16,7 @@ import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
+import org.jboss.resteasy.microprofile.client.impl.MpClient;
 import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
@@ -30,7 +32,6 @@ import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
-
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -56,7 +57,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.*;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_HOST;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_PORT;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_SCHEME;
 
 public class RestClientBuilderImpl implements RestClientBuilder {
 
@@ -109,8 +112,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     }
 
     @Override
-    public RestClientBuilder queryParamStyle(QueryParamStyle var1) {
-        // TODO implement under a different jira and branch
+    public RestClientBuilder queryParamStyle(QueryParamStyle queryParamStyle) {
+        this.queryParamStyle = queryParamStyle;
         return this;
     }
 
@@ -269,6 +272,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
         resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        checkQueryParamStyleProperty(aClass);
         checkFollowRedirectProperty (aClass);
         resteasyClientBuilder.setFollowRedirects(followRedirect);
 
@@ -287,6 +291,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         }
         client = resteasyClientBuilder
                 .build();
+        ((MpClient)client).setQueryParamStyle(queryParamStyle);
         client.register(AsyncInterceptorRxInvokerProvider.class);
 
         actualClient = client.target(baseURI)
@@ -327,6 +332,40 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 .findFirst();
     }
 
+    private void checkQueryParamStyleProperty(Class aClass) {
+        // User's programmatic setting takes precedence over
+        // microprofile-config.properties.
+        if (queryParamStyle == null) {
+            if (config != null) {
+                // property using fully-qualified class name takes precedence
+                Optional<String> prop = config.getOptionalValue(
+                        aClass.getCanonicalName()+"/mp-rest/queryParamStyle", String.class);
+                if (prop.isPresent()) {
+                    queryParamStyle(QueryParamStyle.valueOf(
+                            prop.get().trim().toUpperCase()));
+
+                } else {
+                    RegisterRestClient registerRestClient =
+                            (RegisterRestClient)aClass.getAnnotation(RegisterRestClient.class);
+                    if (registerRestClient !=null &&
+                            registerRestClient.configKey() != null &&
+                            !registerRestClient.configKey().isEmpty()) {
+
+                        //property using configKey
+                        prop = config.getOptionalValue(registerRestClient.configKey()
+                                + "/mp-rest/queryParamStyle", String.class);
+                        if (prop.isPresent()) {
+                            queryParamStyle(QueryParamStyle.valueOf(
+                                    prop.get().trim().toUpperCase()));
+                        }
+                    }
+                }
+            }
+        }
+        if (queryParamStyle == null) {
+            queryParamStyle = QueryParamStyle.MULTI_PAIRS;
+        }
+    }
     private void checkFollowRedirectProperty (Class aClass) {
         // User's programmatic setting takes precedence over
         // microprofile-config.properties.
@@ -340,12 +379,19 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                         followRedirects(prop.get());
                     }
                 } else {
-                    //property using simple class name takes 2nd priority
-                    prop = config.getOptionalValue(
-                            aClass.getSimpleName()+"/mp-rest/followRedirects", Boolean.class);
-                    if (prop.isPresent()) {
-                        if (prop.get() != followRedirect) {
-                            followRedirects(prop.get());
+                    RegisterRestClient registerRestClient =
+                            (RegisterRestClient)aClass.getAnnotation(RegisterRestClient.class);
+                    if (registerRestClient !=null &&
+                        registerRestClient.configKey() != null &&
+                        !registerRestClient.configKey().isEmpty()) {
+
+                        //property using configKey
+                        prop = config.getOptionalValue(
+                                registerRestClient.configKey() + "/mp-rest/followRedirects", Boolean.class);
+                        if (prop.isPresent()) {
+                            if (prop.get() != followRedirect) {
+                                followRedirects(prop.get());
+                            }
                         }
                     }
                 }
@@ -682,6 +728,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     private HostnameVerifier hostnameVerifier;
     private Boolean useURLConnection;
     private boolean followRedirect;
+    private QueryParamStyle queryParamStyle = null;
 
     private Set<Object> localProviderInstances = new HashSet<>();
 }

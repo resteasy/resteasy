@@ -58,7 +58,7 @@ public class FollowRedirectMPConfigPropertyTest {
 
     @Test
     public void simpleName() {
-        String key = FollowRedirectsServiceIntf.class.getSimpleName()+MP_REST_FOLLOWREDIRECT;
+        String key = "ckName"+MP_REST_FOLLOWREDIRECT;
         System.setProperty(key, "true");
 
         RestClientBuilderImpl builder = new RestClientBuilderImpl();
@@ -72,7 +72,7 @@ public class FollowRedirectMPConfigPropertyTest {
 
     @Test
     public void badValue() {
-        String key = FollowRedirectsServiceIntf.class.getSimpleName()+MP_REST_FOLLOWREDIRECT;
+        String key = "ckName"+MP_REST_FOLLOWREDIRECT;
         System.setProperty(key, "maybe");
 
         RestClientBuilderImpl builder = new RestClientBuilderImpl();

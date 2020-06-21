@@ -10,7 +10,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@RegisterRestClient(baseUri ="http://localhost:8080/followRedirects_service")
+@RegisterRestClient(baseUri ="http://localhost:8080/followRedirects_service",
+configKey = "ckName")
 @Path("/theService")
 @Singleton
 public interface FollowRedirectsServiceIntf {

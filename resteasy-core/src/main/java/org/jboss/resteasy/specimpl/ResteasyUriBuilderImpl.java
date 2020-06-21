@@ -70,6 +70,24 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
    private String ssp;
    private String authority;
 
+   public ResteasyUriBuilderImpl(){}
+   /*
+    * Constructor allows subclass to clone retaining values.
+    */
+   public ResteasyUriBuilderImpl(final String host, final String scheme, final int port,
+                                 final String userInfo, final String path, final String query,
+                                 final String fragment, final String ssp, final String authority) {
+      this.host = host;
+      this.scheme = scheme;
+      this.port = port;
+      this.userInfo = userInfo;
+      this.path = path;
+      this.query = query;
+      this.fragment = fragment;
+      this.ssp = ssp;
+      this.authority = authority;
+   }
+
    @Override
    public UriBuilder clone()
    {
@@ -1029,6 +1047,13 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
    public String getFragment()
    {
       return fragment;
+   }
+
+   public String getAuthority() {
+      return authority;
+   }
+   public String getSsp() {
+      return ssp;
    }
 
    @Override
