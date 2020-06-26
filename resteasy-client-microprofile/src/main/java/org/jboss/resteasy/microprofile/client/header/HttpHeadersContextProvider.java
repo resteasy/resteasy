@@ -129,7 +129,7 @@ public class HttpHeadersContextProvider implements HttpHeaders {
     public List<Locale> getAcceptableLanguages() {
         String accepts = getHeaderString(ACCEPT_LANGUAGE);
         if (accepts == null) {
-            return Collections.emptyList();
+            return Collections.singletonList(Locale.forLanguageTag("*"));
         }
 
         return parseToStream(accepts)
