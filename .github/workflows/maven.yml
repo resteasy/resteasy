@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['1.8', '11']
-        wildfly-version: ['19.1.0.Final', '20.0.0.Beta1']
+        wildfly-version: ['19.1.0.Final', '20.0.0.Final']
 
     steps:
       - uses: actions/checkout@v2
