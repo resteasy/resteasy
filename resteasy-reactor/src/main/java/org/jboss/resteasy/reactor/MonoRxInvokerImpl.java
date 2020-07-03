@@ -1,171 +1,144 @@
 package org.jboss.resteasy.reactor;
 
-import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvoker;
 import reactor.core.publisher.Mono;
 
 @SuppressWarnings("unchecked")
 public class MonoRxInvokerImpl implements MonoRxInvoker
 {
-   private final CompletionStageRxInvoker completionStageRxInvoker;
-   private final MonoProvider monoProvider;
+   private final PublisherRxInvoker publisherRxInvoker;
 
-   public MonoRxInvokerImpl(final CompletionStageRxInvoker completionStageRxInvoker)
+   public MonoRxInvokerImpl(final PublisherRxInvoker publisherRxInvoker)
    {
-      this.completionStageRxInvoker = completionStageRxInvoker;
-      this.monoProvider = new MonoProvider();
+      this.publisherRxInvoker = publisherRxInvoker;
    }
 
    @Override
-   public Mono<Response> get()
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.get());
+   public Mono<Response> get() {
+      return Mono.from(publisherRxInvoker.get());
    }
 
    @Override
-   public <T> Mono<T> get(Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.get(responseType));
+   public <T> Mono<T> get(final Class<T> responseType) {
+      return Mono.from(publisherRxInvoker.get(responseType));
    }
 
    @Override
-   public <T> Mono<T> get(GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.get(responseType));
+   public <T> Mono<T> get(final GenericType<T> responseType) {
+      return Mono.from(publisherRxInvoker.get(responseType));
    }
 
    @Override
-   public Mono<Response> put(Entity<?> entity)
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.put(entity));
+   public Mono<Response> put(final Entity<?> entity) {
+      return Mono.from(publisherRxInvoker.put(entity));
    }
 
    @Override
-   public <T> Mono<T> put(Entity<?> entity, Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.put(entity, responseType));
+   public <T> Mono<T> put(final Entity<?> entity, final Class<T> clazz) {
+      return Mono.from(publisherRxInvoker.put(entity, clazz));
    }
 
    @Override
-   public <T> Mono<T> put(Entity<?> entity, GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.put(entity, responseType));
+   public <T> Mono<T> put(final Entity<?> entity, final GenericType<T> type) {
+      return Mono.from(publisherRxInvoker.put(entity, type));
    }
 
    @Override
-   public Mono<Response> post(Entity<?> entity)
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.post(entity));
+   public Mono<Response> post(final Entity<?> entity) {
+      return Mono.from(publisherRxInvoker.post(entity));
    }
 
    @Override
-   public <T> Mono<T> post(Entity<?> entity, Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.post(entity, responseType));
+   public <T> Mono<T> post(final Entity<?> entity, final Class<T> clazz) {
+      return Mono.from(publisherRxInvoker.post(entity, clazz));
    }
 
    @Override
-   public <T> Mono<T> post(Entity<?> entity, GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.post(entity, responseType));
+   public <T> Mono<T> post(final Entity<?> entity, final GenericType<T> type) {
+      return Mono.from(publisherRxInvoker.post(entity, type));
    }
 
    @Override
-   public Mono<Response> delete()
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.delete());
+   public Mono<Response> delete() {
+      return Mono.from(publisherRxInvoker.delete());
    }
 
    @Override
-   public <T> Mono<T> delete(Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.delete(responseType));
+   public <T> Mono<T> delete(final Class<T> responseType) {
+      return Mono.from(publisherRxInvoker.delete(responseType));
    }
 
    @Override
-   public <T> Mono<T> delete(GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.delete(responseType));
+   public <T> Mono<T> delete(final GenericType<T> responseType) {
+      return Mono.from(publisherRxInvoker.delete(responseType));
    }
 
    @Override
-   public Mono<Response> head()
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.head());
+   public Mono<Response> head() {
+      return Mono.from(publisherRxInvoker.head());
    }
 
    @Override
-   public Mono<Response> options()
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.options());
+   public Mono<Response> options() {
+      return Mono.from(publisherRxInvoker.options());
    }
 
    @Override
-   public <T> Mono<T> options(Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.options(responseType));
+   public <T> Mono<T> options(final Class<T> responseType) {
+      return Mono.from(publisherRxInvoker.options(responseType));
    }
 
    @Override
-   public <T> Mono<T> options(GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.options(responseType));
+   public <T> Mono<T> options(final GenericType<T> responseType) {
+      return Mono.from(publisherRxInvoker.options(responseType));
    }
 
    @Override
-   public Mono<Response> trace()
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.trace());
+   public Mono<Response> trace() {
+      return Mono.from(publisherRxInvoker.trace());
    }
 
    @Override
-   public <T> Mono<T> trace(Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.trace(responseType));
+   public <T> Mono<T> trace(final Class<T> responseType) {
+      return Mono.from(publisherRxInvoker.trace(responseType));
    }
 
    @Override
-   public <T> Mono<T> trace(GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.trace(responseType));
+   public <T> Mono<T> trace(final GenericType<T> responseType) {
+      return Mono.from(publisherRxInvoker.trace(responseType));
    }
 
    @Override
-   public Mono<Response> method(String name)
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.method(name));
+   public Mono<Response> method(final String name) {
+      return Mono.from(publisherRxInvoker.method(name));
    }
 
    @Override
-   public <T> Mono<T> method(String name, Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.method(name, responseType));
+   public <T> Mono<T> method(final String name, final Class<T> responseType) {
+      return Mono.from(publisherRxInvoker.method(name, responseType));
    }
 
    @Override
-   public <T> Mono<T> method(String name, GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.method(name, responseType));
+   public <T> Mono<T> method(final String name, final GenericType<T> responseType) {
+      return Mono.from(publisherRxInvoker.method(name, responseType));
    }
 
    @Override
-   public Mono<Response> method(String name, Entity<?> entity)
-   {
-      return (Mono<Response>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.method(name, entity));
+   public Mono<Response> method(final String name, final Entity<?> entity) {
+      return Mono.from(publisherRxInvoker.method(name, entity));
    }
 
    @Override
-   public <T> Mono<T> method(String name, Entity<?> entity, Class<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.method(name, entity, responseType));
+   public <T> Mono<T> method(final String name, final Entity<?> entity, final Class<T> responseType) {
+      return Mono.from(publisherRxInvoker.method(name, entity, responseType));
    }
 
    @Override
-   public <T> Mono<T> method(String name, Entity<?> entity, GenericType<T> responseType)
-   {
-      return (Mono<T>) monoProvider.fromCompletionStage(() -> completionStageRxInvoker.method(name, entity, responseType));
+   public <T> Mono<T> method(final String name, final Entity<?> entity, final GenericType<T> responseType) {
+      return Mono.from(publisherRxInvoker.method(name, entity, responseType));
    }
 }

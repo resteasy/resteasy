@@ -48,19 +48,23 @@
         <scope>provided</scope>
         <optional>true</optional>
     </dependency>
-
-      <!-- Test dependencies -->
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <scope>test</scope>
-      </dependency>
       <dependency>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>resteasy-netty4</artifactId>
           <version>${project.version}</version>
           <scope>test</scope>
       </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client-reactor-netty</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 
    <profiles>
