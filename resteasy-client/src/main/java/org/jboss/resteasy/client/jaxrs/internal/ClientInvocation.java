@@ -48,6 +48,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor;
+import org.jboss.resteasy.client.jaxrs.engines.ReactiveClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
@@ -584,6 +585,12 @@ public class ClientInvocation implements Invocation
             ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, callback, ext) : null;
    }
 
+   private <T> Function<ResultExtractor<T>, Publisher<T>> getPublisherExtractorFunction(boolean buffered) {
+      final ClientHttpEngine httpEngine = client.httpEngine();
+      return (httpEngine instanceof ReactiveClientHttpEngine)
+          ? ext -> ((ReactiveClientHttpEngine) httpEngine).submitRx(this, buffered, ext) : null;
+   }
+
    private static <T> Function<T, Future<T>> getAsyncAbortedFunction(InvocationCallback<T> callback) {
       return result -> {
          callCompletedNoThrow(callback, result);
@@ -638,7 +645,7 @@ public class ClientInvocation implements Invocation
       {
          return asyncSubmit(getCompletableFutureExtractorFunction(buffered),
                extractor,
-               result -> CompletableFuture.completedFuture(result),
+               CompletableFuture::completedFuture,
                ex -> {
                   CompletableFuture<T> completableFuture = new CompletableFuture<>();
                   completableFuture.completeExceptionally(new ExecutionException(ex));
@@ -649,6 +656,33 @@ public class ClientInvocation implements Invocation
       {
          return executorSubmit(asyncInvocationExecutor(), null, extractor);
       }
+   }
+
+   public Publisher<Response> submitRx()
+   {
+      return doSubmitRx(response -> response, false);
+   }
+
+   public <T> Publisher<T> submitRx(final Class<T> responseType)
+   {
+      return doSubmitRx(getResponseTypeExtractor(responseType), true);
+   }
+
+   public <T> Publisher<T> submitRx(final GenericType<T> responseType)
+   {
+      return doSubmitRx(getGenericTypeExtractor(responseType), true);
+   }
+
+   private <T> Publisher<T> doSubmitRx(ResultExtractor<T> extractor, boolean buffered) {
+      if (client.httpEngine() instanceof ReactiveClientHttpEngine)
+      {
+         return rxSubmit(
+             (ReactiveClientHttpEngine)client.httpEngine(),
+             getPublisherExtractorFunction(buffered),
+             extractor);
+      }
+      throw new UnsupportedOperationException("Reactive invocation is only supported by " +
+          ReactiveClientHttpEngine.class + " implementations.");
    }
 
    @Override
@@ -751,7 +785,37 @@ public class ClientInvocation implements Invocation
       }
       catch (Exception ex)
       {
-         exceptionFn.apply(ex);
+         return exceptionFn.apply(ex);
+      }
+
+      return asyncHttpEngineSubmitFn.apply(response -> {
+         try(CloseableContext ctx = pushProvidersContext())
+         {
+            return extractor.extractResult(filterResponse(requestContext, response));
+         }
+      });
+   }
+
+   private <T> Publisher<T> rxSubmit(
+       final ReactiveClientHttpEngine reactiveEngine,
+       final Function<ResultExtractor<T>, Publisher<T>> asyncHttpEngineSubmitFn,
+       final ResultExtractor<T> extractor
+   ) {
+      final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
+      try(CloseableContext ctx = pushProvidersContext())
+      {
+         ClientResponse aborted = filterRequest(requestContext);
+         if (aborted != null)
+         {
+            // spec requires that aborted response go through filter/interceptor chains.
+            aborted = filterResponse(requestContext, aborted);
+            T result = extractor.extractResult(aborted);
+            return reactiveEngine.just(result);
+         }
+      }
+      catch (Exception ex)
+      {
+         return reactiveEngine.error(ex);
       }
 
       return asyncHttpEngineSubmitFn.apply(response -> {

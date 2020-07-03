@@ -2,15 +2,24 @@ package org.jboss.resteasy.reactor;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.concurrent.DefaultEventExecutor;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.ReactorNettyClientHttpEngine;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -23,6 +32,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
+import reactor.util.context.Context;
 
 public class ReactorTest
 {
@@ -57,7 +69,14 @@ public class ReactorTest
    @Before
    public void before()
    {
+      final ReactorNettyClientHttpEngine reactorEngine =
+          new ReactorNettyClientHttpEngine(
+              HttpClient.create(),
+              new DefaultChannelGroup(new DefaultEventExecutor()),
+              ConnectionProvider.newConnection()
+          );
       client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+          .httpEngine(reactorEngine)
             .readTimeout(5, TimeUnit.SECONDS)
             .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
             .connectTimeout(5, TimeUnit.SECONDS)
@@ -98,6 +117,50 @@ public class ReactorTest
       latch.await();
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
    }
+
+   @Test
+   public void testSubscriberContext()
+   {
+      final String ctxKey = "secret";
+      final List<Integer> secrets = new ArrayList<>();
+
+      // With the `Publisher` bridge, the end user's subscriber context is available when the
+      // reactor-netty client is instantiated.  This can be useful for things like trace logging.
+      final HttpClient reactorClient =
+          HttpClient.create().doOnRequest((req, conn) ->
+              req.currentContext().<Integer>getOrEmpty(ctxKey).ifPresent(secrets::add)
+          );
+
+      final ReactorNettyClientHttpEngine reactorEngine =
+          new ReactorNettyClientHttpEngine(
+              reactorClient,
+              new DefaultChannelGroup(new DefaultEventExecutor()),
+              ConnectionProvider.newConnection()
+          );
+
+      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+          .httpEngine(reactorEngine)
+          .readTimeout(5, TimeUnit.SECONDS)
+          .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
+          .connectTimeout(5, TimeUnit.SECONDS)
+          .build();
+
+      final Supplier<Mono<String>> getFn = () ->
+          client.target(generateURL("/mono")).request().rx(MonoRxInvoker.class).get(String.class);
+
+      Mono<String> mono =
+          getFn.get()
+              .flatMap(resp1 ->
+                  getFn.get().flatMap(resp2 ->
+                      getFn.get().map(resp3 -> String.join("-", Arrays.asList(resp1, resp2, resp3)))
+                          .subscriberContext(Context.of(ctxKey, 24))
+                  )
+              ).subscriberContext(ctx -> ctx.put(ctxKey, 42));
+
+      assertThat(mono.block(), equalTo("got it-got it-got it"));
+      assertThat(secrets, equalTo(Arrays.asList(42, 42, 24)));
+   }
+
 
    @Test
    public void testInjection()
