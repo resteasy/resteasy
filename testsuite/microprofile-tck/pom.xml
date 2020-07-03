@@ -125,7 +125,7 @@
             <configuration>
               <skip>${skip.mp.tck}</skip>
               <dir>target/classes</dir>
-              <params>--port=8765</params>
+              <params>--port=8765 --disable-banner=true</params>
             </configuration>
           </execution>
         </executions><dependencies>
