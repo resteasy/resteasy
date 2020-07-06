@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactory;
+import org.eclipse.microprofile.rest.client.ext.QueryParamStyle;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
@@ -17,6 +18,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientImpl;
 public class MpClient extends ResteasyClientImpl {
 
    private List<AsyncInvocationInterceptorFactory> asyncInterceptorFactories;
+   private QueryParamStyle queryParamStyle = null;
 
    public MpClient(final ClientHttpEngine engine, final ExecutorService executor, final boolean cleanupExecutor,
                     final ScheduledExecutorService scheduledExecutorService, final ClientConfiguration config,
@@ -26,15 +28,21 @@ public class MpClient extends ResteasyClientImpl {
     }
 
     protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, String uri, ClientConfiguration configuration) {
-        return new MpClientWebTarget(client, uri, configuration, asyncInterceptorFactories);
+        return new MpClientWebTarget(client, uri, configuration, asyncInterceptorFactories,
+                queryParamStyle);
     }
 
     protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, URI uri, ClientConfiguration configuration) {
-        return new MpClientWebTarget(client, uri, configuration, asyncInterceptorFactories);
+        return new MpClientWebTarget(client, uri, configuration, asyncInterceptorFactories,
+                queryParamStyle);
     }
 
     protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, UriBuilder uriBuilder, ClientConfiguration configuration) {
-        return new MpClientWebTarget(client, uriBuilder, configuration, asyncInterceptorFactories);
+        return new MpClientWebTarget(client, uriBuilder, configuration, asyncInterceptorFactories,
+                queryParamStyle);
     }
 
+    public void setQueryParamStyle(QueryParamStyle queryParamStyle) {
+        this.queryParamStyle = queryParamStyle;
+    }
 }
