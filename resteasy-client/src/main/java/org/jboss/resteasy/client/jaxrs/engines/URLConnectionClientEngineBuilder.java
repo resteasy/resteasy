@@ -19,7 +19,6 @@ public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder
     @Override
     public ClientHttpEngine build() {
         URLConnectionEngine clientEngine = new URLConnectionEngine();
-
         if (resteasyClientBuilder.getReadTimeout(TimeUnit.MILLISECONDS) > -1)
         {
             clientEngine.setReadTimeout((int) resteasyClientBuilder.getReadTimeout(TimeUnit.MILLISECONDS));
@@ -35,6 +34,7 @@ public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder
             clientEngine.setProxyScheme(resteasyClientBuilder.getDefaultProxyScheme());
         }
 
+        clientEngine.setFollowRedirects(resteasyClientBuilder.isFollowRedirects());
         return clientEngine;
     }
 }
