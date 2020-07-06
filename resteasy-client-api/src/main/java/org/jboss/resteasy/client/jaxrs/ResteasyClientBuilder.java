@@ -263,4 +263,14 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
 
    @Override
    public abstract ResteasyClientBuilder readTimeout(long timeout, TimeUnit unit);
+
+   /**
+    * Follow redirects added for MicroProfile-rest-client but can be used by
+    * tradition clients as well.
+    * @param followRedirects
+    * @return
+    */
+   public abstract ResteasyClientBuilder setFollowRedirects(boolean followRedirects);
+
+   public abstract boolean isFollowRedirects();
 }
