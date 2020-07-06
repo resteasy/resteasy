@@ -70,6 +70,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected boolean trustSelfSignedCertificates = true;
    protected boolean cookieManagementEnabled;
    protected boolean disableAutomaticRetries = false;
+   protected boolean followRedirects;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -690,5 +691,15 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public boolean isDisableAutomaticRetries() {
       return disableAutomaticRetries;
+   }
+   @Override
+   public ResteasyClientBuilder setFollowRedirects(boolean followRedirects) {
+      this.followRedirects = followRedirects;
+      return this;
+   }
+
+   @Override
+   public boolean isFollowRedirects() {
+      return followRedirects;
    }
 }

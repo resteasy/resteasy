@@ -39,6 +39,7 @@ public class URLConnectionEngine implements ClientHttpEngine
    protected String proxyHost;
    protected Integer proxyPort;
    protected String proxyScheme;
+   protected boolean followRedirects;
 
    /**
     * {@inheritDoc}
@@ -292,5 +293,13 @@ public class URLConnectionEngine implements ClientHttpEngine
 
    public void setProxyScheme(String proxyScheme) {
       this.proxyScheme = proxyScheme;
+   }
+
+   public void setFollowRedirects(boolean followRedirects) {
+      this.followRedirects = followRedirects;
+   }
+
+   public boolean isFollowRedirects() {
+      return this.followRedirects;
    }
 }

@@ -237,6 +237,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       engine.setHostnameVerifier(verifier);
       // this may be null.  We can't really support this with Apache Client.
       engine.setSslContext(theContext);
+      engine.setFollowRedirects(that.isFollowRedirects());
       return engine;
    }
 }
