@@ -274,7 +274,6 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
         resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
-
         checkQueryParamStyleProperty(aClass);
         checkFollowRedirectProperty (aClass);
         resteasyClientBuilder.setFollowRedirects(followRedirect);

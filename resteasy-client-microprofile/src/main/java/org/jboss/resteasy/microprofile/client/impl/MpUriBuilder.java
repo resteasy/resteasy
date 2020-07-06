@@ -96,7 +96,7 @@ public class MpUriBuilder extends ResteasyUriBuilderImpl {
             }
         }
 
-        replaceQuery(sb.toString());
+        replaceQueryNoEncoding(sb.toString());
         return this;
     }
 
@@ -135,7 +135,7 @@ public class MpUriBuilder extends ResteasyUriBuilderImpl {
                     .append(Encode.encodeQueryParamAsIs(value.toString()));
         }
 
-        replaceQuery(sb.toString());
+        replaceQueryNoEncoding(sb.toString());
         return this;
     }
 
