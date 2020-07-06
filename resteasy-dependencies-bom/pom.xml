@@ -84,7 +84,14 @@
         <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
-        <version.microprofile.restclient>1.4.1</version.microprofile.restclient>
+        <!-- todo replace this version with Final is released
+        -->
+        <version.microprofile.restclient>2.0-RC2</version.microprofile.restclient>
+
+        <!-- todo rls move this property when updating all versions for MP-rest-client 2.0
+        -->
+        <version.microprofile.restclient.tck>1.4.0</version.microprofile.restclient.tck>
+
         <version.microprofile.config>1.4</version.microprofile.config>
         <version.microprofile.context-propagation>1.0.1</version.microprofile.context-propagation>
 
@@ -625,6 +632,13 @@
                 <groupId>org.eclipse.microprofile.config</groupId>
                 <artifactId>microprofile-config-api</artifactId>
                 <version>${version.microprofile.config}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.microprofile.rest.client</groupId>
+                <artifactId>microprofile-rest-client-tck</artifactId>
+                <version>${version.microprofile.restclient.tck}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
