@@ -89,6 +89,7 @@
         <version.microprofile.restclient>2.0-RC2</version.microprofile.restclient>
 
         <!-- todo rls move this property when updating all versions for MP-rest-client 2.0
+        and return version to ${version.microprofile.restclient}
         -->
         <version.microprofile.restclient.tck>1.4.0</version.microprofile.restclient.tck>
 
@@ -641,12 +642,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.eclipse.microprofile.rest.client</groupId>
-                <artifactId>microprofile-rest-client-tck</artifactId>
-                <version>${version.microprofile.restclient}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>io.smallrye.config</groupId>
                 <artifactId>smallrye-config</artifactId>
