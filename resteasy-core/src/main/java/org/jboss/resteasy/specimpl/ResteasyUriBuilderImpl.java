@@ -476,6 +476,11 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
       return this;
    }
 
+   public UriBuilder replaceQueryNoEncoding(String query) {
+      this.query = query;
+      return this;
+   }
+
    @Override
    public UriBuilder fragment(String fragment) throws IllegalArgumentException
    {

@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.microprofile.restclient;
 
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.microprofile.client.RestClientBuilderImpl;
 import org.jboss.resteasy.test.microprofile.restclient.resource.QueryParamStyleService;
 import org.jboss.resteasy.test.microprofile.restclient.resource.QueryParamStyleServiceIntf;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -39,12 +39,12 @@ public class QueryParamStyleMPConfigPropertyTest {
         return TestUtil.finishContainerPrepare(war, null, null);
     }
 
-    static RestClientBuilderImpl builder;
+    static RestClientBuilder builder;
     static List<String> argList = new ArrayList<>();
 
     @Before
     public void before() throws Exception {
-        builder = new RestClientBuilderImpl();
+        builder = RestClientBuilder.newBuilder();
         builder.baseUri(URI.create(generateURL("", WAR_SERVICE)));
 
         argList.clear();
