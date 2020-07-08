@@ -611,6 +611,9 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     }
 
     private String getSystemProperty(String key, String def) {
+        if (System.getSecurityManager() == null) {
+            return System.getProperty(key, def);
+        }
         return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(key, def));
     }
 
