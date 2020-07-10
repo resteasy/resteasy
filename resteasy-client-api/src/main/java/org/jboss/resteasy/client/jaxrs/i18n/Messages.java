@@ -145,4 +145,7 @@ public interface Messages
 
    @Message(id = BASE + 190, value = "Parameter annotated with %s cannot be null")
    String nullParameter(String annotation);
+
+   @Message(id = BASE + 191, value = "Unable to load ClientConfigProvider configuration because uri is null")
+   String unableToLoadClientConfigProviderConfiguration();
 }
