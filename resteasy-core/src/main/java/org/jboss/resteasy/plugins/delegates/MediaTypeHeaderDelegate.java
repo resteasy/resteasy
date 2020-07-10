@@ -6,6 +6,8 @@ import org.jboss.resteasy.util.HeaderParameterParser;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +22,10 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    private static Map<String, MediaType> map = new ConcurrentHashMap<String, MediaType>();
    private static Map<MediaType, String> reverseMap = new ConcurrentHashMap<MediaType, String>();
-   private static final int MAX_MT_CACHE_SIZE =
-       Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200);
+   private static final int MAX_MT_CACHE_SIZE = System.getSecurityManager() == null
+      ? Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200)
+      : AccessController.doPrivileged((PrivilegedAction<Integer>) () ->
+         Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200));
 
    public Object fromString(String type) throws IllegalArgumentException
    {

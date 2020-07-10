@@ -43,7 +43,9 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessController;
 import java.security.KeyStore;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -193,8 +195,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         ClassLoader classLoader = aClass.getClassLoader();
 
         List<String> noProxyHosts = Arrays.asList(
-                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
-        String envProxyHost = System.getProperty("http.proxyHost");
+                getSystemProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
+        String envProxyHost = getSystemProperty("http.proxyHost", null);
 
         T actualClient;
         ResteasyClient client;
@@ -204,7 +206,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             // Use proxy, if defined in the env variables
             resteasyClientBuilder = builderDelegate.defaultProxy(
                     envProxyHost,
-                    Integer.parseInt(System.getProperty("http.proxyPort", "80")));
+                    Integer.parseInt(getSystemProperty("http.proxyPort", "80")));
         } else {
             // Search for proxy settings passed in the client builder, if passed and use them if found
             String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
@@ -288,7 +290,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
      */
     private boolean useURLConnection() {
         if (useURLConnection == null) {
-            String defaultToURLConnection = System.getProperty("org.jboss.resteasy.microprofile.defaultToURLConnectionHttpClient", "false");
+            String defaultToURLConnection = getSystemProperty("org.jboss.resteasy.microprofile.defaultToURLConnectionHttpClient", "false");
             useURLConnection = defaultToURLConnection.toLowerCase().equals("true");
         }
         return useURLConnection;
@@ -606,6 +608,13 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
     ResteasyClientBuilder getBuilderDelegate() {
         return builderDelegate;
+    }
+
+    private String getSystemProperty(String key, String def) {
+        if (System.getSecurityManager() == null) {
+            return System.getProperty(key, def);
+        }
+        return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(key, def));
     }
 
     private final MpClientBuilderImpl builderDelegate;
