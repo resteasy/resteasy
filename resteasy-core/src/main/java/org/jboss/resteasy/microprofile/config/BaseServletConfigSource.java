@@ -18,18 +18,19 @@ public class BaseServletConfigSource {
     protected final int defaultOrdinal;
     private final String name;
 
-    public BaseServletConfigSource(final boolean available, final Class<?> sourceClass, final int defaultOrdinal) {
-        this.available = available;
+    public BaseServletConfigSource(final Class<?> sourceClass, final int defaultOrdinal) {
         this.defaultOrdinal = defaultOrdinal;
-        if (available) {
+        if (sourceClass != null) {
             try {
                 source = (ConfigSource)sourceClass.newInstance();
                 name = source.getName();
+                available = true;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         } else {
             name = toString();
+            available = false;
         }
     }
 

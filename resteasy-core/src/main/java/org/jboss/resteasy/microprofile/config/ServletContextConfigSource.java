@@ -6,7 +6,6 @@ public class ServletContextConfigSource extends BaseServletConfigSource implemen
 
    public static final int BUILT_IN_DEFAULT_ORDINAL = 40;
 
-   private static final boolean SERVLET_AVAILABLE;
    private static Class<?> clazz = null;
    static {
       try {
@@ -17,11 +16,10 @@ public class ServletContextConfigSource extends BaseServletConfigSource implemen
       {
          //RESTEASY-2228: allow loading and running this ConfigSource even when Servlet API is not available
       }
-      SERVLET_AVAILABLE = clazz != null;
    }
 
    public ServletContextConfigSource() {
-      super(SERVLET_AVAILABLE, clazz, BUILT_IN_DEFAULT_ORDINAL);
+      super(clazz, BUILT_IN_DEFAULT_ORDINAL);
    }
 
 }
