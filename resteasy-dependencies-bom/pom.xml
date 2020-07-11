@@ -79,7 +79,6 @@
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
-        <version.org.wildfly.security.wildfly-elytron>1.7.0.Final</version.org.wildfly.security.wildfly-elytron>
         <version.weld.api>3.0.SP4</version.weld.api>
         <version.weld>3.0.5.Final</version.weld>
         <version.json.patch>1.9</version.json.patch>
@@ -876,11 +875,6 @@
                 <groupId>org.wildfly.core</groupId>
                 <artifactId>wildfly-cli</artifactId>
                 <version>${version.org.wildfly.core.wildfly-cli}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.security</groupId>
-                <artifactId>wildfly-elytron</artifactId>
-                <version>${version.org.wildfly.security.wildfly-elytron}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>

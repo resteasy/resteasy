@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -241,9 +242,34 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
       Assert.assertEquals(200, response.getStatus());
    }
 
+   @Test
+   public void testTrustedServerWithClientConfigProvider() throws IOException, InterruptedException {
+      String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithSSL();
+      File clientTruststore = new File(CLIENT_TRUSTSTORE_PATH);
+      Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
+              ClientConfigProviderTestJarHelper.TestType.TEST_SSLCONTEXT_USED,
+              jarPath,
+              new String[]{URL, clientTruststore.getAbsolutePath()});
+      String line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
+      // first request will succeed because SSLContext from ClientConfigProvider will be used. Second request will fail because user will set sslContext on RestEasyBuilder to SSLContext.getDefault()
+      Assert.assertEquals("200", line);
+      process.destroy();
+
+      process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
+              ClientConfigProviderTestJarHelper.TestType.TEST_CLIENTCONFIG_SSLCONTEXT_IGNORED_WHEN_DIFFERENT_SET,
+              jarPath,
+              new String[]{URL, clientTruststore.getAbsolutePath()});
+      line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
+      Assert.assertEquals("SSLHandshakeException", line);
+      process.destroy();
+      Assert.assertTrue(new File(jarPath).delete());
+   }
+
    @After
    public void after() {
-      client.close();
+      if (client != null) {
+         client.close();
+      }
    }
 
 }
