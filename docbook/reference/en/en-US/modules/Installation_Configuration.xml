@@ -511,7 +511,12 @@ ConfigProviderResolver.instance().registerConfig(config, getClass().getClassLoad
             <listitem><classname>org.jboss.resteasy.microprofile.config.ServletContextConfigSource</classname> represents
             &lt;context-param&gt;s from web.xml (ordinal = 40).</listitem>
         </itemizedlist>
-        
+        <para>
+            <emphasis role="bold">Note. </emphasis>As stated by the MicroProfile Config specification, a special property
+            <classname>config_ordinal</classname> can be set within any RESTEasy built-in <classname>ConfigSource</classname>s.
+            The default implementation of getOrdinal() will attempt to read this value. If found and a valid integer, the value
+            will be used. Otherwise the respective default value will be used.
+        </para>
         <section>
             <title>Using MicroProfileConfig</title>
             
