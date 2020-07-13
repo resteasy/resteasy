@@ -81,10 +81,9 @@ public class RootNode
          request.setAttribute(RESTEASY_CHOSEN_ACCEPT, match.chosen);
       } else {
          match = root.match(request, start);
-         if (match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
+         if (cache.size() < CACHE_SIZE && match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
             //System.out.println("*** caching: " + key.method + " " + key.path);
             match.match = null;
-            if (cache.size() < CACHE_SIZE)
             {
                cache.putIfAbsent(key, match);
             }
