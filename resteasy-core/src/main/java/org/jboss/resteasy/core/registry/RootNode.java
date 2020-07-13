@@ -1,11 +1,15 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResourceInvoker;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +27,34 @@ public class RootNode
    protected int size = 0;
    protected MultivaluedMap<String, MethodExpression> bounded = new MultivaluedHashMap<String, MethodExpression>();
    protected ConcurrentHashMap<MatchCache.Key, MatchCache> cache = new ConcurrentHashMap<>();
-
+   private static int CACHE_SIZE = 2048;
+   private static boolean CACHE = true;
+   static
+   {
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
+      if (context == null && System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED) != null)
+      {
+         CACHE = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED);
+      }
+      if (context == null && System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE) != null)
+      {
+         CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 1024);
+      }
+      if (context != null && context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED) != null)
+      {
+         CACHE = Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED));
+      }
+      if (context != null && context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE) != null)
+      {
+         CACHE_SIZE = Integer.getInteger(
+               context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE), 1024);
+      }
+   }
    public int getSize()
    {
       return size;
    }
+
 
    public MultivaluedMap<String, ResourceInvoker> getBounded()
    {
@@ -41,8 +68,6 @@ public class RootNode
       }
       return rtn;
    }
-
-   private static boolean CACHE = true;
 
    public ResourceInvoker match(HttpRequest request, int start)
    {
@@ -59,7 +84,10 @@ public class RootNode
          if (match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
             //System.out.println("*** caching: " + key.method + " " + key.path);
             match.match = null;
-            cache.putIfAbsent(key, match);
+            if (cache.size() < CACHE_SIZE)
+            {
+               cache.putIfAbsent(key, match);
+            }
          }
       }
       return match.invoker;

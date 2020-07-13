@@ -26,7 +26,11 @@ public class MatchCache {
             this.path = start == 0 ? matchingPath : matchingPath.substring(start);
             this.start = start;
             this.method = request.getHttpMethod();
-            this.contentType = request.getHttpHeaders().getMediaType();
+            if (request.getHttpHeaders().getMediaType().getParameters().containsKey("boundary")) {
+               this.contentType = new MediaType(request.getHttpHeaders().getMediaType().getType(), request.getHttpHeaders().getMediaType().getSubtype());
+            } else {
+               this.contentType = request.getHttpHeaders().getMediaType();
+            }
             this.accepts = request.getHttpHeaders().getAcceptableMediaTypes();
         }
 
