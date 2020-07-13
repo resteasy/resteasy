@@ -1,11 +1,9 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResourceInvoker;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -31,23 +29,13 @@ public class RootNode
    private static boolean CACHE = true;
    static
    {
-      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
-      if (context == null && System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED) != null)
+      if (System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED) != null)
       {
          CACHE = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED);
       }
-      if (context == null && System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE) != null)
+      if (System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE) != null)
       {
-         CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 1024);
-      }
-      if (context != null && context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED) != null)
-      {
-         CACHE = Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED));
-      }
-      if (context != null && context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE) != null)
-      {
-         CACHE_SIZE = Integer.getInteger(
-               context.getParameter(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE), 1024);
+         CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048);
       }
    }
    public int getSize()
