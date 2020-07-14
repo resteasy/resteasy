@@ -82,7 +82,7 @@
         <version.org.wildfly.security.wildfly-elytron>1.7.0.Final</version.org.wildfly.security.wildfly-elytron>
         <version.weld.api>3.0.SP4</version.weld.api>
         <version.weld>3.0.5.Final</version.weld>
-        <version.json.patch>1.9</version.json.patch>
+        <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
         <version.microprofile.restclient>1.4.1</version.microprofile.restclient>
@@ -905,7 +905,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.github.fge</groupId>
+                <groupId>com.github.java-json-tools</groupId>
                 <artifactId>json-patch</artifactId>
                 <version>${version.json.patch}</version>
             </dependency>
