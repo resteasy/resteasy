@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResourceInvoker;
 
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -26,11 +27,7 @@ public class MatchCache {
             this.path = start == 0 ? matchingPath : matchingPath.substring(start);
             this.start = start;
             this.method = request.getHttpMethod();
-            if (request.getHttpHeaders().getMediaType().getParameters().containsKey("boundary")) {
-               this.contentType = new MediaType(request.getHttpHeaders().getMediaType().getType(), request.getHttpHeaders().getMediaType().getSubtype());
-            } else {
-               this.contentType = request.getHttpHeaders().getMediaType();
-            }
+            this.contentType = request.getHttpHeaders().getMediaType();
             this.accepts = request.getHttpHeaders().getAcceptableMediaTypes();
         }
 

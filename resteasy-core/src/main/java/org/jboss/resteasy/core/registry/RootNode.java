@@ -9,6 +9,8 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,13 +31,14 @@ public class RootNode
    private static boolean CACHE = true;
    static
    {
-      if (System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED) != null)
-      {
-         CACHE = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED);
-      }
-      if (System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE) != null)
-      {
+      if (System.getSecurityManager() == null) {
+         CACHE = Boolean.parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true"));
          CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048);
+      } else {
+         CACHE = AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+          Boolean.parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true")));
+         CACHE_SIZE = AccessController.doPrivileged((PrivilegedAction<Integer>) () ->
+         Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048));
       }
    }
    public int getSize()
@@ -59,7 +62,7 @@ public class RootNode
 
    public ResourceInvoker match(HttpRequest request, int start)
    {
-      if (!CACHE) {
+      if (!CACHE || (request.getHttpHeaders().getMediaType() !=null && !request.getHttpHeaders().getMediaType().getParameters().isEmpty())) {
          return root.match(request, start).invoker;
       }
       MatchCache.Key key = new MatchCache.Key(request, start);
@@ -69,10 +72,14 @@ public class RootNode
          request.setAttribute(RESTEASY_CHOSEN_ACCEPT, match.chosen);
       } else {
          match = root.match(request, start);
-         if (cache.size() < CACHE_SIZE && match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
+         if (match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
             //System.out.println("*** caching: " + key.method + " " + key.path);
             match.match = null;
-            cache.putIfAbsent(key, match);
+            if (cache.size() < CACHE_SIZE) {
+               cache.putIfAbsent(key, match);
+            } else{
+               cache.clear();
+            }
          }
       }
       return match.invoker;
