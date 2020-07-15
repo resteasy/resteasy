@@ -75,11 +75,10 @@ public class RootNode
          if (match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
             //System.out.println("*** caching: " + key.method + " " + key.path);
             match.match = null;
-            if (cache.size() < CACHE_SIZE) {
-               cache.putIfAbsent(key, match);
-            } else{
+            if (cache.size() >= CACHE_SIZE) {
                cache.clear();
             }
+            cache.putIfAbsent(key, match);
          }
       }
       return match.invoker;

@@ -32,7 +32,12 @@ public class RootNodeCacheSizeTest {
         }
 
         // Default in RootNode is CACHE_SIZE = 2048;
-        assertEquals("Cache size exceeded the expected limit of 2048 items", 2048, rootNode.cacheSize());
+        assertEquals("Cache is expected to be cleared when size exceeded 2048 items", 2, rootNode.cacheSize());
+        for (int i = 0; i < 10; i++) {
+           rootNode.match(MockHttpRequest.get("" + i).contentType(MediaType.valueOf("text/html;boundary=from" + i)), 0);
+        }
+        //MediaType with parameters won't be cached
+        assertEquals("Unexpected cache item", 2, rootNode.cacheSize());
     }
 
     public class MyRootNode extends RootNode {
