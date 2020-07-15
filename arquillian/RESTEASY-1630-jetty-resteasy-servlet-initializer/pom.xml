@@ -15,7 +15,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.shrinkwrap.resolvers>2.2.4</version.shrinkwrap.resolvers>
     <version.maven.model>3.2.5</version.maven.model>
   </properties>
 
@@ -23,7 +22,6 @@
     <dependency>
       <groupId>org.jboss.shrinkwrap.resolver</groupId>
       <artifactId>shrinkwrap-resolver-depchain</artifactId>
-      <version>${version.shrinkwrap.resolvers}</version>
       <scope>test</scope>
       <type>pom</type>
       <exclusions>
