@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.ResourceInvoker;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -45,6 +46,7 @@ public class RootNode
    {
       return size;
    }
+
 
    public MultivaluedMap<String, ResourceInvoker> getBounded()
    {
