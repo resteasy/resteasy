@@ -97,4 +97,6 @@ public interface ResteasyContextParameters {
 
     // Added for quarkus.  Initial use switch from warning msg to exception message.
     String RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING = "resteasy.fail.fast.on.multiple.resources.matching";
+    String RESTEASY_MATCH_CACHE_ENABLED = "resteasy.match.cache.enabled";
+    String RESTEASY_MATCH_CACHE_SIZE = "resteasy.match.cache.size";
 }

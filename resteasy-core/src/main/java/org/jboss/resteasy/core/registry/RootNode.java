@@ -1,12 +1,15 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResourceInvoker;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +26,20 @@ public class RootNode
    protected int size = 0;
    protected MultivaluedMap<String, MethodExpression> bounded = new MultivaluedHashMap<String, MethodExpression>();
    protected ConcurrentHashMap<MatchCache.Key, MatchCache> cache = new ConcurrentHashMap<>();
+   private static int CACHE_SIZE = 2048;
+   private static boolean CACHE = true;
+   static
+   {
+      if (System.getSecurityManager() == null) {
+         CACHE = Boolean.parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true"));
+         CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048);
+      } else {
+         CACHE = AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+          Boolean.parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true")));
+         CACHE_SIZE = AccessController.doPrivileged((PrivilegedAction<Integer>) () ->
+         Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048));
+      }
+   }
 
    public int getSize()
    {
@@ -42,11 +59,9 @@ public class RootNode
       return rtn;
    }
 
-   private static boolean CACHE = true;
-
    public ResourceInvoker match(HttpRequest request, int start)
    {
-      if (!CACHE) {
+      if (!CACHE || (request.getHttpHeaders().getMediaType() !=null && !request.getHttpHeaders().getMediaType().getParameters().isEmpty())) {
          return root.match(request, start).invoker;
       }
       MatchCache.Key key = new MatchCache.Key(request, start);
@@ -59,6 +74,9 @@ public class RootNode
          if (match.match != null && match.match.expression.getNumGroups() == 0 && match.invoker instanceof ResourceMethodInvoker) {
             //System.out.println("*** caching: " + key.method + " " + key.path);
             match.match = null;
+            if (cache.size() >= CACHE_SIZE) {
+               cache.clear();
+            }
             cache.putIfAbsent(key, match);
          }
       }
