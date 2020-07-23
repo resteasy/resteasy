@@ -15,6 +15,8 @@ import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerPro
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
+import org.jboss.resteasy.microprofile.client.publisher.InboundSseEventProvider;
+import org.jboss.resteasy.microprofile.client.publisher.PublisherRxInvokerProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
@@ -29,7 +31,6 @@ import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
-
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -55,7 +56,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.*;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_HOST;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_PORT;
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_SCHEME;
 
 public class RestClientBuilderImpl implements RestClientBuilder {
 
@@ -264,6 +267,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         client = resteasyClientBuilder
                 .build();
         client.register(AsyncInterceptorRxInvokerProvider.class);
+        client.register(PublisherRxInvokerProvider.class);
+        client.register(InboundSseEventProvider.class);
 
         actualClient = client.target(baseURI)
                 .proxyBuilder(aClass)

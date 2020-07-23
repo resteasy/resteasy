@@ -37,6 +37,8 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final SseEventSourceScheduler sseEventSourceScheduler;
 
+   private ClientInvocation clientInvocation = null;
+
    private enum State {
       PENDING, OPEN, CLOSED
    }
@@ -272,6 +274,9 @@ public class SseEventSourceImpl implements SseEventSource
       this.alwaysReconnect = always;
    }
 
+   public void setClientInvocation(final ClientInvocation clientInvocation) {
+      this.clientInvocation = clientInvocation;
+   }
    private class EventHandler implements Runnable
    {
 
@@ -316,17 +321,19 @@ public class SseEventSourceImpl implements SseEventSource
          SseEventInputImpl eventInput = null;
          try
          {
-            final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
-            Invocation request = null;
-            if (entity == null)
-            {
-               request = requestBuilder.build(verb);
+            if (clientInvocation == null) {
+               final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
+               Invocation request = null;
+               if (entity == null) {
+                  request = requestBuilder.build(verb);
+               } else {
+                  request = requestBuilder.build(verb, entity);
+               }
+               response = (ClientResponse) request.invoke();
+            } else {
+               // uses mp-rest-clients proxy class
+               response = (ClientResponse) clientInvocation.invoke();
             }
-            else
-            {
-               request = requestBuilder.build(verb, entity);
-            }
-            response = (ClientResponse) request.invoke();
             if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
             {
                onConnection();
