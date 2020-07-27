@@ -214,6 +214,9 @@ public class Encode
 
    public static String decodePath(String path)
    {
+      if (path.indexOf('%') == -1) {
+          return path;
+      }
       Matcher matcher = encodedCharsMulti.matcher(path);
       int start=0;
       StringBuilder builder = new StringBuilder();

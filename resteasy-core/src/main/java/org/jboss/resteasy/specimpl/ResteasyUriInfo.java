@@ -81,17 +81,6 @@ public class ResteasyUriInfo implements UriInfo
       this.matchingPath = initData.getMatchingPath();
    }
 
-   private void processUris() {
-      requestURI = URI.create(absoluteString);
-      absolutePath = queryIdx < 0 ? requestURI : URI.create(absoluteString.substring(0, queryIdx));
-      baseURI = absolutePath;
-      String tmpContextPath = contextPath;
-      if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-      if (!tmpContextPath.startsWith("/")) tmpContextPath = "/" + tmpContextPath;
-      String baseString = absoluteString.substring(0, pathStart);
-      baseString += tmpContextPath;
-      baseURI = URI.create(baseString);
-   }
 
    protected void initialize(CharSequence absoluteUri, String queryString, String contextPath)
    {
@@ -273,8 +262,7 @@ public class ResteasyUriInfo implements UriInfo
     */
    public void setRequestUri(URI relative)
    {
-      if (baseURI == null) processUris();
-      setUri(baseURI, relative);
+      setUri(getBaseUri(), relative);
    }
 
    public String getPath()
@@ -301,7 +289,9 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getRequestUri()
    {
-      if (requestURI == null) processUris();
+      if (requestURI == null) {
+          requestURI = URI.create(absoluteString);
+      }
       return requestURI;
    }
 
@@ -312,7 +302,9 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getAbsolutePath()
    {
-      if (absolutePath == null) processUris();
+      if (absolutePath == null) {
+          absolutePath = queryIdx < 0 ? getRequestUri() : URI.create(absoluteString.substring(0, queryIdx));
+      }
       return absolutePath;
    }
 
@@ -323,7 +315,14 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getBaseUri()
    {
-      if (baseURI == null) processUris();
+       if (baseURI == null) {
+         String tmpContextPath = contextPath;
+         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
+         if (!tmpContextPath.startsWith("/")) tmpContextPath = "/" + tmpContextPath;
+         String baseString = absoluteString.substring(0, pathStart);
+         baseString += tmpContextPath;
+         baseURI = URI.create(baseString);
+      }
       return baseURI;
    }
 
