@@ -274,6 +274,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
         resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+
         checkQueryParamStyleProperty(aClass);
         checkFollowRedirectProperty (aClass);
         resteasyClientBuilder.setFollowRedirects(followRedirect);
@@ -368,6 +369,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             queryParamStyle = QueryParamStyle.MULTI_PAIRS;
         }
     }
+
     private void checkFollowRedirectProperty (Class aClass) {
         // User's programmatic setting takes precedence over
         // microprofile-config.properties.
