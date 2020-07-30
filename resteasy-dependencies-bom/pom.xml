@@ -84,7 +84,7 @@
         <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
-        <!-- todo replace this version with Final is released
+        <!-- todo replace this version when Final is released
         -->
         <version.microprofile.restclient>2.0-RC2</version.microprofile.restclient>
 
