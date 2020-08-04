@@ -146,10 +146,20 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
                      }
                      else
                      {
-                        if (escape && (b == '\n' || b == '\r' || b == '\\'))
+                        if (escape && b == '\n')
                         {
                            entityStream.write('\\');
-                           entityStream.write(b);
+                           entityStream.write('n');
+                        }
+                        else if (escape && b == '\r')
+                        {
+                           entityStream.write('\\');
+                           entityStream.write('r');
+                        }
+                        else if (escape && b == '\\')
+                        {
+                           entityStream.write('\\');
+                           entityStream.write('\\');
                         }
                         else
                         {
