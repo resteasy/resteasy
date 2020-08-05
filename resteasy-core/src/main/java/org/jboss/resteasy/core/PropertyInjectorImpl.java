@@ -135,6 +135,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       return injector;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
@@ -197,6 +198,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       return ret;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
