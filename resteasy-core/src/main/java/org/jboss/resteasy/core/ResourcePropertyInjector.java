@@ -73,6 +73,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       }
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
@@ -143,6 +144,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       return ret;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {

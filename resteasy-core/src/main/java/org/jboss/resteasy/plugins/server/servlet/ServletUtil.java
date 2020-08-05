@@ -33,7 +33,6 @@ public class ServletUtil
          contextPath += servletPrefix;
       }
       String queryString = request.getQueryString();
-      StringBuffer builder = request.getRequestURL();
       String absolute;
       if (queryString != null && queryString.length() > 0) {
          absolute = request.getRequestURL().append('?').append(queryString).toString();

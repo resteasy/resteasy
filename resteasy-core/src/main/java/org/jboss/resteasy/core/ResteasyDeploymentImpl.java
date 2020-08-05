@@ -64,17 +64,20 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    protected Map<String, List<String>> scannedResourceClassesWithBuilder;
    protected List<String> jndiComponentResources;
    protected List<String> providerClasses;
+   @SuppressWarnings("rawtypes")
    protected List<Class> actualProviderClasses ;
    protected List<Object> providers;
    protected boolean securityEnabled = false;
    protected List<String> jndiResources;
    protected List<String> resourceClasses;
    protected List<String> unwrappedExceptions;
+   @SuppressWarnings("rawtypes")
    protected List<Class> actualResourceClasses;
    protected List<ResourceFactory> resourceFactories;
    protected List<Object> resources;
    protected Map<String, String> mediaTypeMappings;
    protected Map<String, String> languageExtensions;
+   @SuppressWarnings("rawtypes")
    protected Map<Class, Object> defaultContextObjects;
    protected Map<String, String> constructedDefaultContextObjects;
    protected Registry registry;
@@ -85,6 +88,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    protected Map<String, Object> properties;
    protected boolean statisticsEnabled;
 
+   @SuppressWarnings("rawtypes")
    public ResteasyDeploymentImpl() {
       scannedResourceClasses = new ArrayList<String>();
       scannedProviderClasses = new ArrayList<String>();
@@ -123,7 +127,6 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
    }
 
-   @SuppressWarnings(value = {"unchecked", "deprecation"})
    private void startInternal()
    {
       initializeFactory();
@@ -206,6 +209,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    protected void pushContext() {
       // push context data so we can inject it
       Map contextDataMap = ResteasyContext.getContextDataMap();
@@ -465,7 +469,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
 
       if (actualProviderClasses != null) {
-         for (Class actualProviderClass : actualProviderClasses) {
+         for (Class<?> actualProviderClass : actualProviderClasses) {
             providerFactory.registerProvider(actualProviderClass);
          }
       }
@@ -503,7 +507,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       {
          for (String resource : scannedResourceClasses)
          {
-            Class clazz = null;
+            Class<?> clazz = null;
             try
             {
                clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
@@ -520,7 +524,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       {
          for (Map.Entry<String, List<String>> entry : scannedResourceClassesWithBuilder.entrySet())
          {
-            Class resourceBuilderClass;
+            Class<?> resourceBuilderClass;
             try
             {
                resourceBuilderClass = Thread.currentThread().getContextClassLoader().loadClass(entry.getKey().trim());
@@ -541,7 +545,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             }
 
             for (String resource : entry.getValue()) {
-               Class resourceClass;
+               Class<?> resourceClass;
                try
                {
                   resourceClass = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
@@ -560,7 +564,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       {
          for (String resource : resourceClasses)
          {
-            Class clazz = null;
+            Class<?> clazz = null;
             try
             {
                clazz = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
@@ -582,7 +586,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
 
       if (actualResourceClasses != null) {
-         for (Class actualResourceClass : actualResourceClasses) {
+         for (Class<?> actualResourceClass : actualResourceClasses) {
             registry.addPerRequestResource(actualResourceClass);
          }
       }
@@ -618,7 +622,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          throw new RuntimeException(Messages.MESSAGES.jndiComponentResourceNotSetCorrectly());
       }
       String jndiName = config[0];
-      Class clazz = null;
+      Class<?> clazz = null;
       try
       {
          clazz = Thread.currentThread().getContextClassLoader().loadClass(config[1]);
@@ -655,7 +659,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       Set<Class<?>> classes = config.getClasses();
       if (classes != null)
       {
-         for (Class clazz : classes)
+         for (Class<?> clazz : classes)
          {
             if (GetRestful.isRootResource(clazz))
             {
@@ -726,7 +730,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
 
    private void registerProvider(String clazz)
    {
-      Class provider = null;
+      Class<?> provider = null;
       try
       {
          provider = Thread.currentThread().getContextClassLoader().loadClass(clazz.trim());
@@ -878,21 +882,25 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       this.providers = providers;
    }
 
+   @SuppressWarnings("rawtypes")
    public List<Class> getActualProviderClasses()
    {
       return actualProviderClasses;
    }
 
+   @SuppressWarnings("rawtypes")
    public void setActualProviderClasses(List<Class> actualProviderClasses)
    {
       this.actualProviderClasses = actualProviderClasses;
    }
 
+   @SuppressWarnings("rawtypes")
    public List<Class> getActualResourceClasses()
    {
       return actualResourceClasses;
    }
 
+   @SuppressWarnings("rawtypes")
    public void setActualResourceClasses(List<Class> actualResourceClasses)
    {
       this.actualResourceClasses = actualResourceClasses;
@@ -1023,11 +1031,13 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       this.constructedDefaultContextObjects = constructedDefaultContextObjects;
    }
 
+   @SuppressWarnings("rawtypes")
    public Map<Class, Object> getDefaultContextObjects()
    {
       return defaultContextObjects;
    }
 
+   @SuppressWarnings("rawtypes")
    public void setDefaultContextObjects(Map<Class, Object> defaultContextObjects)
    {
       this.defaultContextObjects = defaultContextObjects;

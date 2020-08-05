@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
+public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<MediaType>
 {
    public static final MediaTypeHeaderDelegate INSTANCE = new MediaTypeHeaderDelegate();
 
@@ -27,7 +27,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       : AccessController.doPrivileged((PrivilegedAction<Integer>) () ->
          Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200));
 
-   public Object fromString(String type) throws IllegalArgumentException
+   public MediaType fromString(String type) throws IllegalArgumentException
    {
       if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());
       return parse(type);
@@ -151,10 +151,9 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       return false;
    }
 
-   public String toString(Object o)
+   public String toString(MediaType type)
    {
-      if (o == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
-      MediaType type = (MediaType) o;
+      if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       String result = reverseMap.get(type);
       if (result == null) {
           result = internalToString(type);
