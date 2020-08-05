@@ -70,7 +70,18 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       final EmptyCheckInputStream is = new EmptyCheckInputStream(entityStream);
 
       try {
-         return jsonb.fromJson(is, genericType);
+         Class realClass = null;
+
+         if (genericType.getClass().isAnnotationPresent(DeserializeAs.class)) {
+            DeserializeAs info = genericType.getClass().getAnnotation(DeserializeAs.class);
+            realClass = info.value();
+         }
+
+         if (realClass == null) {
+            realClass = genericType.getClass();
+         }
+
+         return jsonb.fromJson(is, realClass);
          // If null is returned, considered to be empty stream
       } catch (Throwable e)
       {
