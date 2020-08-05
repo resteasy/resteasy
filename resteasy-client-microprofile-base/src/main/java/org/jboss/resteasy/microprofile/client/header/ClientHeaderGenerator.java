@@ -15,15 +15,16 @@ import java.util.stream.Stream;
  * Can either provide a static list of values or a computed value, depending on the {@link ClientHeaderParam} annotation
  * it's generated from.
  *
- * @see ComputedHeaderValueFiller
+ * @see DefaultHeaderFiller
  */
-class ClientHeaderValueGenerator {
+class ClientHeaderGenerator {
     private final boolean required;
     private final String headerName;
-    private final ComputedHeaderValueFiller filler;
+    private final HeaderFiller filler;
     private final List<String> staticValues;
 
-    ClientHeaderValueGenerator(final ClientHeaderParam anno, final Class<?> interfaceClass, final Object clientProxy) {
+    ClientHeaderGenerator(final ClientHeaderParam anno, final Class<?> interfaceClass, final Object clientProxy,
+                          final HeaderFillerFactory fillerFactory) {
         headerName = anno.name();
         required = anno.required();
         String[] values = anno.value();
@@ -31,7 +32,7 @@ class ClientHeaderValueGenerator {
             throw new RestClientDefinitionException("No value provided for " + ClientHeaderParam.class.getSimpleName()
                     + " on " + interfaceClass + " for '" + headerName + "'");
         } else if (values.length == 1 && isMethodCall(values[0])) {
-            filler = new ComputedHeaderValueFiller(values[0], headerName, required, interfaceClass, clientProxy);
+            filler = fillerFactory.createFiller(values[0], headerName, required, interfaceClass, clientProxy);
             staticValues = null;
         } else {
             checkForMethodCallsInHeaderValues(values, interfaceClass, headerName);

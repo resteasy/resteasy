@@ -9,6 +9,7 @@ import org.jboss.resteasy.microprofile.client.RestClientExtension;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -16,14 +17,16 @@ import java.util.stream.Stream;
  * A storage of {@link ClientHeaderProvider}s
  */
 public class ClientHeaderProviders {
-
     private static final ClientHeadersFactory defaultHeadersFactory = new DefaultClientHeadersFactoryImpl();
 
     private static Map<Method, ClientHeaderProvider> providersForMethod = new ConcurrentHashMap<>();
     private static Map<Class<?>, ClientHeadersFactory> headerFactoriesForClass = new ConcurrentHashMap<>();
 
+    private static final HeaderFillerFactory fillerFactory;
+
     /**
      * Get {@link ClientHeaderProvider} for a given method, if exists
+     *
      * @param method a method to get the provider for
      * @return the provider responsible for setting the headers
      */
@@ -33,6 +36,7 @@ public class ClientHeaderProviders {
 
     /**
      * Get {@link ClientHeadersFactory} for a given class, if exists
+     *
      * @param aClass a class to get the ClientHeadersFactory for
      * @return the factory used to adjust the headers
      */
@@ -84,9 +88,26 @@ public class ClientHeaderProviders {
     }
 
     private static void registerForMethod(Method method, Object clientProxy) {
-        ClientHeaderProvider.forMethod(method, clientProxy).ifPresent(
+        ClientHeaderProvider.forMethod(method, clientProxy, fillerFactory).ifPresent(
                 provider -> providersForMethod.put(method, provider)
         );
+    }
+
+    static {
+        ServiceLoader<HeaderFillerFactory> fillerFactories = ServiceLoader.load(HeaderFillerFactory.class);
+        int highestPrio = Integer.MIN_VALUE;
+        HeaderFillerFactory result = null;
+        for (HeaderFillerFactory factory : fillerFactories) {
+            if (factory.getPriority() > highestPrio) {
+                highestPrio = factory.getPriority();
+                result = factory;
+            }
+        }
+        if (result == null) {
+            throw new java.lang.IllegalStateException("Unable to find a HeaderFillerFactory implementation");
+        } else {
+            fillerFactory = result;
+        }
     }
 
     private ClientHeaderProviders() {

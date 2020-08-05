@@ -16,27 +16,27 @@ import java.util.stream.Stream;
 
 public class ClientHeaderProvider {
 
-    static Optional<ClientHeaderProvider> forMethod(final Method method, final Object clientProxy) {
+    static Optional<ClientHeaderProvider> forMethod(final Method method, final Object clientProxy, HeaderFillerFactory fillerFactory) {
         Class<?> declaringClass = method.getDeclaringClass();
 
         ClientHeaderParam[] methodAnnotations = method.getAnnotationsByType(ClientHeaderParam.class);
         ClientHeaderParam[] classAnnotations = declaringClass.getAnnotationsByType(ClientHeaderParam.class);
 
-        Map<String, ClientHeaderValueGenerator> generators = new HashMap<>();
+        Map<String, ClientHeaderGenerator> generators = new HashMap<>();
 
         for (ClientHeaderParam annotation : methodAnnotations) {
             if (generators.containsKey(annotation.name())) {
                 throw new RestClientDefinitionException("Duplicate " + ClientHeaderParam.class.getSimpleName() +
                         " annotation definitions found on " + method.toString());
             }
-            generators.put(annotation.name(), new ClientHeaderValueGenerator(annotation, declaringClass, clientProxy));
+            generators.put(annotation.name(), new ClientHeaderGenerator(annotation, declaringClass, clientProxy, fillerFactory));
         }
 
         checkForDuplicateClassLevelAnnotations(classAnnotations, declaringClass);
 
         Stream.of(classAnnotations)
                 .filter(a -> !generators.containsKey(a.name()))
-                .forEach(a -> generators.put(a.name(), new ClientHeaderValueGenerator(a, declaringClass, clientProxy)));
+                .forEach(a -> generators.put(a.name(), new ClientHeaderGenerator(a, declaringClass, clientProxy, fillerFactory)));
 
         return generators.isEmpty()
                 ? Optional.empty()
@@ -58,12 +58,16 @@ public class ClientHeaderProvider {
                 );
     }
 
-    private final Collection<ClientHeaderValueGenerator> generators;
+    private final Collection<ClientHeaderGenerator> generators;
 
-    ClientHeaderProvider(final Collection<ClientHeaderValueGenerator> generators) {
+    ClientHeaderProvider(final Collection<ClientHeaderGenerator> generators) {
         this.generators = generators;
     }
 
+    /**
+     * add headers to headers map
+     * @param headers map to add headers to
+     */
     public void addHeaders(MultivaluedMap<String, String> headers) {
         generators.forEach(g -> g.fillHeaders(headers));
     }

@@ -1,48 +1,30 @@
 package org.jboss.resteasy.microprofile.client.header;
 
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
-import org.jboss.logging.Logger;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Generates a value for dynamically computed headers (using {someMethod} as value in {@link org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam})
+ * @author Michal Szynkiewicz, michal.l.szynkiewicz@gmail.com
+ * 2020-07-10
  */
-class ComputedHeaderValueFiller {
-
-    private static final Logger LOGGER = Logger.getLogger(ComputedHeaderValueFiller.class);
-
-    private final Method method;
-    private final MethodHandle methodHandle;
-    private final String headerName;
-    private final boolean required;
-    private final boolean withParam;
-
-    ComputedHeaderValueFiller(final String methodSpecifierString,
-                              final String headerName,
-                              final boolean required,
-                              final Class<?> interfaceClass,
-                              final Object clientProxy) {
-        this.required = required;
-        this.headerName = headerName;
-
-        String methodSpecifier =
-                methodSpecifierString.substring(1, methodSpecifierString.length() - 1);
-        method = resolveMethod(methodSpecifier, interfaceClass);
-
-        methodHandle = method.isDefault() ? createMethodHandle(method, clientProxy) : null;
-        withParam = method.getParameterCount() == 1;
+public class HeaderUtils {
+    private HeaderUtils() {
     }
 
-    private MethodHandle createMethodHandle(final Method method, final Object clientProxy) {
+    /**
+     * Create method handle to call a default method
+     * @param method method to create the handle for
+     * @param clientProxy proxy of the rest client
+     * @return method handle
+     */
+    public static MethodHandle createMethodHandle(final Method method, final Object clientProxy) {
         try {
             Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class
                     .getDeclaredConstructor(Class.class);
@@ -57,8 +39,16 @@ class ComputedHeaderValueFiller {
         }
     }
 
-    private Method resolveMethod(String methodSpecifier,
-                                 Class<?> interfaceClass) {
+    /**
+     * resolve method of a given name in a given interface class
+     * @param methodSpecifier [fully.quallified.ClassName.]methodName
+     * @param interfaceClass class of the interface, on which the method was defined
+     * @param headerName name of the header for which the method should be called
+     * @return method to be called
+     */
+    public static Method resolveMethod(String methodSpecifier,
+                                Class<?> interfaceClass,
+                                String headerName) {
         int lastDot = methodSpecifier.lastIndexOf('.');
         if (lastDot == methodSpecifier.length()) {
             throw new RestClientDefinitionException("Invalid string to specify method: " + methodSpecifier +
@@ -105,40 +95,12 @@ class ComputedHeaderValueFiller {
         }
     }
 
-
-    List<String> generateValues() {
-        try {
-            Object result;
-            if (methodHandle != null) {
-                if (withParam) {
-                    result = methodHandle.invokeWithArguments(headerName);
-                } else {
-                    result = methodHandle.invokeWithArguments();
-                }
-            } else if (withParam) {
-                result = method.invoke(null, headerName);
-            } else {
-                result = method.invoke(null);
-            }
-
-            if (result instanceof String[]) {
-                return Arrays.asList((String[]) result);
-            } else if (result instanceof List) {
-                return castListToListOfStrings((List<?>) result);
-            } else {
-                return Collections.singletonList(String.valueOf(result));
-            }
-        } catch (Throwable e) {
-            if (required) {
-                throw new ClientHeaderFillingException("Failed to invoke header generation method: " + method, e);
-            } else {
-                LOGGER.warnv(e, "Invoking header generation method {0} failed", method.toString());
-            }
-        }
-        return Collections.emptyList();
-    }
-
-    private List<String> castListToListOfStrings(List<?> result) {
+    /**
+     * casts List&lt;?&gt; to List of Strings
+     * @param result list of unknown type
+     * @return list of strings
+     */
+    public static List<String> castListToListOfStrings(List<?> result) {
         return result.stream()
                 .map(val -> val instanceof String
                         ? (String) val
