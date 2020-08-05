@@ -88,7 +88,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
          return this;
       }
 
-      public Builder data(Class type, Object data)
+      public Builder data(@SuppressWarnings("rawtypes") Class type, Object data)
       {
          if (type == null)
          {
@@ -105,7 +105,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
          return this;
       }
 
-      public Builder data(GenericType type, Object data)
+      public Builder data(@SuppressWarnings("rawtypes") GenericType type, Object data)
       {
          if (type == null)
          {
