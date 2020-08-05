@@ -44,12 +44,12 @@ import java.util.function.Consumer;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class SynchronousDispatcher implements Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
    protected Registry registry;
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
+   @SuppressWarnings("rawtypes")
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean bufferExceptionEntityRead = false;
@@ -59,6 +59,7 @@ public class SynchronousDispatcher implements Dispatcher
       // This is to make sure LogMessages are preloaded as profiler shows a runtime hit
       // This will also insure that this initialization is done at static init time when loaded with Graal
       // Not a big deal if you remove this.
+      @SuppressWarnings("unused")
       LogMessages preload = LogMessages.LOGGER;
    }
 
@@ -181,6 +182,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
+   @SuppressWarnings("unchecked")
    public static <T extends Throwable> void rethrow(Throwable t) throws T
    {
       throw (T)t;
@@ -338,8 +340,10 @@ public class SynchronousDispatcher implements Dispatcher
       return invoker;
    }
 
+   @SuppressWarnings("unchecked")
    public void pushContextObjects(final HttpRequest request, final HttpResponse response)
    {
+      @SuppressWarnings("rawtypes")
       Map contextDataMap = ResteasyContext.getContextDataMap();
       contextDataMap.put(HttpRequest.class, request);
       contextDataMap.put(HttpResponse.class, response);

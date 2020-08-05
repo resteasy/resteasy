@@ -11,6 +11,7 @@ import javax.ws.rs.core.Application;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 public interface ResteasyDeployment
 {
    void start();

@@ -463,14 +463,14 @@ public class ResteasyUriInfo implements UriInfo
                   matchedUris.add(decoded);
                }
             } else {
-               return Collections.EMPTY_LIST;
+               return Collections.emptyList();
             }
          }
          return Collections.unmodifiableList(matchedUris);
       }
       else
       {
-         if (encodedMatchedUris == null) return Collections.EMPTY_LIST;
+         if (encodedMatchedUris == null) return Collections.emptyList();
          return Collections.unmodifiableList(encodedMatchedUris);
       }
    }
