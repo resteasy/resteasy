@@ -89,17 +89,17 @@ public class RegisterBuiltin
          final String line = entry.getKey();
          try
          {
-            Class clazz;
+            Class<?> clazz;
             if (System.getSecurityManager() == null)
             {
                clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
             }
             else
             {
-               clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>()
+               clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
                {
                   @Override
-                  public Class run() throws ClassNotFoundException
+                  public Class<?> run() throws ClassNotFoundException
                   {
                      return Thread.currentThread().getContextClassLoader().loadClass(line);
                   }
