@@ -108,6 +108,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             }
 
             entityStream.write(SseConstants.DATA_LEAD);
+            @SuppressWarnings("rawtypes")
             MessageBodyWriter writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
@@ -209,6 +210,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
    }
 
    @Override
+   @SuppressWarnings({"unchecked"})
    public CompletionStage<Void> asyncWriteTo(OutboundSseEvent event, Class<?> type, Type genericType,
                                              Annotation[] annotations, MediaType mediaType,
                                              MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream)
@@ -266,6 +268,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             Type finalPayloadType = payloadType;
 
             ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.DATA_LEAD));
+            @SuppressWarnings("rawtypes")
             AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
