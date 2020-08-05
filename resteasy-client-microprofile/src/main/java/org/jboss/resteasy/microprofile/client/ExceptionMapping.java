@@ -19,6 +19,7 @@ import java.util.Set;
  * This implementation is a bit of a hack and dependent on Resteasy internals.
  * We throw a ResponseProcessingExceptoin that hides the Response object
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ExceptionMapping implements ClientResponseFilter {
     public static class HandlerException extends ResponseProcessingException {
         protected ClientResponse handled;
