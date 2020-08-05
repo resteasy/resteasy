@@ -28,7 +28,10 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
       ContextResolver<Jsonb> contextResolver = providers.getContextResolver(Jsonb.class, MediaType.APPLICATION_JSON_TYPE);
       if (contextResolver != null)
       {
-         return contextResolver.getContext(type);
+         jsonbObj = contextResolver.getContext(type);
+         if (jsonbObj != null) {
+            return jsonbObj;
+         }
       } else
       {
          if (jsonbObj == null)
