@@ -5,7 +5,7 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import javax.ws.rs.core.MediaType;
 
 public class ClientErrorBadMediaTypeHeaderDelegate extends MediaTypeHeaderDelegate {
-   public Object fromString(String type) throws IllegalArgumentException {
+   public MediaType fromString(String type) throws IllegalArgumentException {
       if (type == null) {
          throw new IllegalArgumentException("MediaType value is null");
       }

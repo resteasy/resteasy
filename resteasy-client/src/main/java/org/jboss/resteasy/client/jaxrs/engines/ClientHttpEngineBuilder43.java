@@ -107,7 +107,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          else if (that.getKeyStore() != null || that.getTrustStore() != null)
          {
             SSLContext ctx = SSLContexts.custom()
-               .useProtocol(SSLConnectionSocketFactory.TLS)
+               .setProtocol(SSLConnectionSocketFactory.TLS)
                .setSecureRandom(null)
                .loadKeyMaterial(that.getKeyStore(),
                         that.getKeyStorePassword() != null ? that.getKeyStorePassword().toCharArray() : null)

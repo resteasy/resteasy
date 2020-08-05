@@ -21,7 +21,7 @@ import java.util.Set;
 public class HttpServletResponseHeaders implements MultivaluedMap<String, Object>
 {
 
-   private CaseInsensitiveMap cachedHeaders = new CaseInsensitiveMap();
+   private CaseInsensitiveMap<Object> cachedHeaders = new CaseInsensitiveMap<>();
    private HttpServletResponse response;
    private ResteasyProviderFactory factory;
 
@@ -71,6 +71,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
          return;
       }
       cachedHeaders.putSingle(key, value);
+      @SuppressWarnings("rawtypes")
       RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
@@ -96,6 +97,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
       {
          return;
       }
+      @SuppressWarnings("rawtypes")
       RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
@@ -176,6 +178,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
       {
          return;
       }
+      @SuppressWarnings("rawtypes")
       RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
