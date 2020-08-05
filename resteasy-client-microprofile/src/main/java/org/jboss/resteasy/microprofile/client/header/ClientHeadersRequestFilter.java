@@ -45,6 +45,7 @@ public class ClientHeadersRequestFilter implements ClientRequestFilter {
                 (key, values) -> headers.put(key, castToListOfStrings(values))
         );
 
+        @SuppressWarnings("unchecked")
         MultivaluedMap<String,String> containerHeaders = (MultivaluedMap<String, String>) requestContext.getProperty(MpClientInvocation.CONTAINER_HEADERS);
         if(containerHeaders == null)
             containerHeaders = EMPTY_MAP;
