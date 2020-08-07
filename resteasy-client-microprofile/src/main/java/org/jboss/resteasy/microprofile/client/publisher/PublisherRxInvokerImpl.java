@@ -4,6 +4,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
+
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;
@@ -18,7 +19,9 @@ import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.InboundSseEvent;
+import javax.ws.rs.sse.SseEvent;
 import javax.ws.rs.sse.SseEventSource;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -86,8 +89,12 @@ public class PublisherRxInvokerImpl implements PublisherRxInvoker {
                     public void subscribe(FlowableEmitter<T> emitter) throws Exception {
                         sseEventSource.register(
                                 (InboundSseEvent e) -> {
-                                    T t = e.readData(clazz, ((InboundSseEventImpl) e).getMediaType());
-                                    emitter.onNext(t);
+                                    if (SseEvent.class.isAssignableFrom(clazz)) {
+                                        emitter.onNext((T)e);
+                                    } else {
+                                        T t = e.readData(clazz, ((InboundSseEventImpl) e).getMediaType());
+                                        emitter.onNext(t);
+                                    }
                                 },
                                 (Throwable t) -> emitter.onError(t),
                                 () -> emitter.onComplete());
@@ -110,8 +117,12 @@ public class PublisherRxInvokerImpl implements PublisherRxInvoker {
                     public void subscribe(FlowableEmitter<T> emitter) throws Exception {
                         sseEventSource.register(
                                 (InboundSseEvent e) -> {
-                                    T t = e.readData(type, ((InboundSseEventImpl) e).getMediaType());
-                                    emitter.onNext(t);
+                                    if (SseEvent.class.isAssignableFrom(type.getRawType())) {
+                                        emitter.onNext((T)e);
+                                    } else {
+                                        T t = e.readData(type, ((InboundSseEventImpl) e).getMediaType());
+                                        emitter.onNext(t);
+                                    }
                                 },
                                 (Throwable t) -> emitter.onError(t),
                                 () -> emitter.onComplete());
