@@ -2,6 +2,16 @@ package org.jboss.resteasy.test.microprofile.restclient;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.subscribers.DefaultSubscriber;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.ws.rs.sse.InboundSseEvent;
+
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -12,7 +22,6 @@ import org.jboss.resteasy.test.microprofile.restclient.resource.WeatherEvent;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -21,14 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.reactivestreams.Publisher;
-
-import javax.ws.rs.sse.InboundSseEvent;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @tpSubChapter Microprofile-rest-client 2.0
@@ -51,8 +52,6 @@ public class InboundSseEventTest {
         WebArchive war = TestUtil.prepareArchive(WAR_SERVICE);
         war.addClasses(WeatherEvent.class,
                 InboundSseEventService.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-                + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
         return TestUtil.finishContainerPrepare(war, null, null);
     }
 
@@ -76,9 +75,6 @@ public class InboundSseEventTest {
         latch = new CountDownLatch(1);
         errors = new AtomicInteger(0);
         ArrayList<InboundSseEvent> weatherEventList = new ArrayList<InboundSseEvent>();
-        List<InboundSseEvent> xWeatherEventList =
-                InboundSseEventService.generatedInBoundWeatherEvents();
-
         Publisher<InboundSseEvent> publisher = inboundSseEvenServiceIntf.getEvents();
         publisher.subscribe(new DefaultSubscriber<InboundSseEvent>() {
             public void onNext(InboundSseEvent var1) {
@@ -105,17 +101,11 @@ public class InboundSseEventTest {
         Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
         Assert.assertEquals(0, errors.get());
 
+        List<WeatherEvent> eventList = InboundSseEventService.generatedWeatherEvents();
         for (int i = 0; i < weatherEventList.size(); i++) {
             InboundSseEvent result = weatherEventList.get(i);
-            InboundSseEvent control = xWeatherEventList.get(i);
-            Assert.assertTrue("Name compare failed for weatherEventList item " + i,
-                    control.getName().equals(result.getName()));
-            Assert.assertTrue("Comment compare failed for weatherEventList item " + i,
-                    control.getComment().equals(result.getComment()));
-            Assert.assertTrue("Id compare failed for weatherEventList item " + i,
-                    control.getId().equals(result.getId()));
             Assert.assertTrue("Data compare failed for weatherEventList item " + i,
-                    control.readData().contains(result.readData()));
+                    eventList.get(i).toString().contains(result.readData()));
         }
     }
 }
