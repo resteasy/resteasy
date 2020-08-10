@@ -38,10 +38,8 @@ public class ReactorTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
-      List<Class> classes = server.getDeployment().getActualResourceClasses();
-      classes.add(ReactorResource.class);
-      List<Class> providers = server.getDeployment().getActualProviderClasses();
-      providers.add(ReactorInjector.class);
+      server.getDeployment().getActualResourceClasses().add(ReactorResource.class);
+      server.getDeployment().getActualProviderClasses().add(ReactorInjector.class);
       server.getDeployment().start();
       server.getDeployment().registration();
       server.start();

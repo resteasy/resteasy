@@ -24,7 +24,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -72,8 +71,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
       {
          private Object responseLock = new Object();
-         protected WeakReference<Thread> creatingThread = new WeakReference<Thread>(Thread.currentThread());
-         protected ScheduledFuture timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+         protected ScheduledFuture<?> timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
          private Servle3AsychronousResponse()
          {

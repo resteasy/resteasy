@@ -43,11 +43,11 @@ public class JaxrsServerFormUrlEncodedProvider  implements MessageBodyReader<For
     @Context
     HttpRequest request;
 
+    @SuppressWarnings("unchecked")
     @Override
     public Form readFrom(Class<Form> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
     {
         LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
-        @SuppressWarnings(value = "unchecked")
         MultivaluedMap<String, String> map = null;
         if (useContainerParams) {
             boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;

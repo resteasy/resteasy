@@ -21,6 +21,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -769,7 +770,10 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       {
          byte[] requestContent = requestContent(request);
          ByteArrayEntity entity = new ByteArrayEntity(requestContent);
-         entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, request.getHeaders().getMediaType().toString()));
+         final MediaType mediaType = request.getHeaders().getMediaType();
+         if (mediaType != null) {
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
+         }
          commitHeaders(request, httpRequest);
          ((HttpEntityEnclosingRequest) httpRequest).setEntity(entity);
       }

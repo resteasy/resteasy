@@ -557,13 +557,13 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
          if (mediaType != null) {
             entityToBuildByteArray
                     .setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
-            entityToBuild = entityToBuildByteArray;
          }
+         entityToBuild = entityToBuildByteArray;
       }
-      else if (mediaType != null)
+      else
       {
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(),
-               request.getHeaders().getMediaType().toString());
+               mediaType == null ? null : mediaType.toString());
       }
       if (request.isChunked())
       {

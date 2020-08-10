@@ -109,13 +109,13 @@
         </module-def>
 
         <module-def name="com.github.fge.jackson-coreutils">
-            <maven-resource group="com.github.fge" artifact="jackson-coreutils"/>
-            <maven-resource group="com.github.fge" artifact="msg-simple"/>
-            <maven-resource group="com.github.fge" artifact="btf"/>
+            <maven-resource group="com.github.java-json-tools" artifact="jackson-coreutils"/>
+            <maven-resource group="com.github.java-json-tools" artifact="msg-simple"/>
+            <maven-resource group="com.github.java-json-tools" artifact="btf"/>
         </module-def>
 
         <module-def name="com.github.fge.json-patch">
-            <maven-resource group="com.github.fge" artifact="json-patch"/>
+            <maven-resource group="com.github.java-json-tools" artifact="json-patch"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxb-provider">
@@ -131,6 +131,7 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-core"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile-base"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-tracing-api"/>
         </module-def>
 

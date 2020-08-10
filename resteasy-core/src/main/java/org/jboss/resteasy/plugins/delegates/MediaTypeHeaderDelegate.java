@@ -6,6 +6,8 @@ import org.jboss.resteasy.util.HeaderParameterParser;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,16 +16,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
+public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<MediaType>
 {
    public static final MediaTypeHeaderDelegate INSTANCE = new MediaTypeHeaderDelegate();
 
    private static Map<String, MediaType> map = new ConcurrentHashMap<String, MediaType>();
    private static Map<MediaType, String> reverseMap = new ConcurrentHashMap<MediaType, String>();
-   private static final int MAX_MT_CACHE_SIZE =
-       Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200);
+   private static final int MAX_MT_CACHE_SIZE = System.getSecurityManager() == null
+      ? Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200)
+      : AccessController.doPrivileged((PrivilegedAction<Integer>) () ->
+         Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200));
 
-   public Object fromString(String type) throws IllegalArgumentException
+   public MediaType fromString(String type) throws IllegalArgumentException
    {
       if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());
       return parse(type);
@@ -147,10 +151,9 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       return false;
    }
 
-   public String toString(Object o)
+   public String toString(MediaType type)
    {
-      if (o == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
-      MediaType type = (MediaType) o;
+      if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       String result = reverseMap.get(type);
       if (result == null) {
           result = internalToString(type);

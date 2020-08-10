@@ -32,6 +32,7 @@ import java.util.concurrent.CompletionStage;
  */
 public class ConstructorInjectorImpl implements ConstructorInjector
 {
+   @SuppressWarnings("rawtypes")
    protected Constructor constructor;
    protected ValueInjector[] params;
 
@@ -48,14 +49,14 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    }
 
 
-   public ConstructorInjectorImpl(final Constructor constructor, final ResteasyProviderFactory factory)
+   public ConstructorInjectorImpl(@SuppressWarnings("rawtypes") final Constructor constructor, final ResteasyProviderFactory factory)
    {
       this.constructor = constructor;
       params = new ValueInjector[constructor.getParameterTypes().length];
       Parameter[] reflectionParameters = constructor.getParameters();
       for (int i = 0; i < constructor.getParameterTypes().length; i++)
       {
-         Class type = constructor.getParameterTypes()[i];
+         Class<?> type = constructor.getParameterTypes()[i];
          Type genericType = constructor.getGenericParameterTypes()[i];
          Annotation[] annotations = constructor.getParameterAnnotations()[i];
          String name = reflectionParameters[i].getName();
@@ -63,6 +64,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public Object injectableArguments(HttpRequest input,
                                                         HttpResponse response,
@@ -94,6 +96,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          return null;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public Object injectableArguments(boolean unwrapAsync)
    {
@@ -129,6 +132,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          return constructInRequest((Object[])obj);
       }
 
+      @SuppressWarnings("unchecked")
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
       return stagedArgs.exceptionally(e -> {
          //CompletionStage does not support rethrow of exception.
@@ -205,6 +209,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          return constructOutsideRequest((Object[])obj);
       }
 
+      @SuppressWarnings("unchecked")
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
       return stagedArgs
             .thenApply(args -> {
