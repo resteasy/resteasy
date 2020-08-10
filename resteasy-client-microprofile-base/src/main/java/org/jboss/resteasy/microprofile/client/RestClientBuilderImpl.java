@@ -58,6 +58,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_HOST;
 import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_PORT;
@@ -227,7 +229,20 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         ResteasyClient client;
 
         ResteasyClientBuilder resteasyClientBuilder;
-        if (envProxyHost != null && !noProxyHosts.contains(baseURI.getHost())) {
+
+        boolean isUriMatched = false;
+        if (envProxyHost != null && !noProxyHosts.isEmpty()) {
+            for (String s : noProxyHosts) {
+                Pattern p = Pattern.compile(s);
+                Matcher m = p.matcher(baseURI.getHost());
+                isUriMatched = m.matches();
+                if (isUriMatched) {
+                    break;
+                }
+            }
+        }
+
+        if (envProxyHost != null && !isUriMatched) {
             // Use proxy, if defined in the env variables
             resteasyClientBuilder = builderDelegate.defaultProxy(
                     envProxyHost,
