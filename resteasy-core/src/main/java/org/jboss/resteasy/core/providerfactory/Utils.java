@@ -50,7 +50,7 @@ public final class Utils
 
    static int getPriority(Integer override, Map<Class<?>, Integer> contracts, Class type, Class<?> component)
    {
-      if (override != null)
+      if (override != null && override != -1)
          return override;
       if (contracts != null)
       {
