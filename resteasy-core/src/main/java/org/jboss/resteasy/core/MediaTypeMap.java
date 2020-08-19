@@ -340,7 +340,7 @@ public class MediaTypeMap<T>
    }
 
    private volatile Map<String, SubtypeMap<T>> index;
-   private Map<CachedMediaTypeAndClass, List<T>> classCache;
+   private volatile Map<CachedMediaTypeAndClass, List<T>> classCache;
    private volatile List<Entry<T>> wildcards;
    private volatile List<Entry<T>> everything;
    private boolean lockSnapshots;
@@ -578,8 +578,14 @@ public class MediaTypeMap<T>
          // don't care about variable volatility.  Really rare to add entries post boot
          Map<CachedMediaTypeAndClass, List<T>> cache = classCache;
          if (classCache == null) {
-            cache = new HashMap<>();
-            classCache = cache;
+            synchronized (this)
+            {
+               if (classCache == null)
+               {
+                  cache = new HashMap<>();
+                  classCache = cache;
+               }
+            }
          }
          cache.put(cacheEntry, cached);
       }
