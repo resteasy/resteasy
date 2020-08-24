@@ -8,7 +8,6 @@
    
    <orderedlist>
       <listitem>reader/writer interceptors</listitem>
-      <listitem>server side <classname>PreProcessInterceptor</classname></listitem>
       <listitem>server side <classname>PostProcessInterceptor</classname></listitem>
       <listitem><classname>ClientExecutionInterceptor</classname></listitem>
    </orderedlist>
@@ -32,25 +31,7 @@
       <listitem><classname>ClientRequestFilter</classname></listitem>
       <listitem><classname>ClientResponseFilter</classname></listitem>
    </orderedlist>
-   
-   <para>
-   Like the old <classname>PreProcessInterceptor</classname>s, <classname>ContainerRequestFilter</classname>s
-   can access requests. A 
-   </para>
-   
-   <programlisting>
-public interface PreProcessInterceptor
-{
-   ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException;
-}
-   </programlisting>
-   
-   <para>
-   can modify the <classname>HttpRequest</classname> and then return a response or null.
-   If it returns a response, then the execution process is interrupted and
-   that response is returned. Similarly, a new
-   </para>
-   
+
    <programlisting>
 public interface ContainerRequestFilter
 {
@@ -93,8 +74,7 @@ public interface ContainerResponseFilter
    
    <para>
    The situation is somewhat different with the old <classname>ClientExecutionInterceptor</classname>.
-   Unlike <classname>PreProcessInterceptor</classname> and <classname>PreProcessInterceptor</classname>,
-   this one really wraps the invocation process on the client side. That is, it can examine and/or modify
+   This one wraps the invocation process on the client side. That is, it can examine and/or modify
    the request and return by calling <methodname>ClientRequestContext.abortWith(Response)</methodname>, or
    proceed with the invocation and examine and/or modify the response.
    Two client side filters, <classname>ClientRequestFilter</classname> and <classname>ClientResponseFilter</classname>,

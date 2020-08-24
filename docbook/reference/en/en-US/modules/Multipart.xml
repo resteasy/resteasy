@@ -1198,36 +1198,6 @@ String name = proxy.putMultipartForm(new JsonFormResource
             make sure that nothing parses the stream before RESTEasy gets it.
         </para>
     </section>
-    <section id="multipart_overwrite_default_content_type">
-        <title>Overwriting the default fallback content type for multipart messages</title>
-        <para>By default if no Content-Type header is present in a part,
-           <code>"text/plain; charset=us-ascii"</code> is used as the fallback.
-           This is the value defined by the MIME RFC. However some web clients,
-           like most, if not all, web browsers,
-            do not send Content-Type headers for all fields in a multipart/form-data
-           request.  They send them only for the file parts.  This can cause
-           character encoding and unmarshalling errors on the server side. To correct
-           this there is an option to define an other, non-rfc compliant fallback value.
-           This can be done dynamically per request with the PreProcessInterceptor
-            infrastructure of RESTEasy. In the following example we will set
-           <code>"*/*; charset=UTF-8"</code> as the new default fallback:
-            <programlisting>
-<![CDATA[
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-
-@Provider
-@ServerInterceptor
-public class ContentTypeSetterPreProcessorInterceptor
-    implements PreProcessInterceptor {
-
-    public ServerResponse preProcess(HttpRequest request, ResourceMethod method)
-            throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, "*/*; charset=UTF-8");
-        return null;
-    }
-}]]></programlisting>
-        </para>
-    </section>
 
     <section id="multipart_overwrite_content_type">
         <title>Overwriting the content type for multipart messages</title>
@@ -1255,45 +1225,4 @@ public Response setMediaType(MultipartInput input) throws IOException
 
     </section>
 
-    <section id="multipart_overwrite_default_charset">
-        <title>Overwriting the default fallback charset for multipart messages</title>
-
-        <para>Sometimes, a part may have a Content-Type header with no charset parameter. If the
-            <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code>
-            property is set and the value has a charset parameter,
-            that value will be appended to an existing Content-Type header that has no charset parameter.
-            It is also possible to specify a default charset using the constant
-            <code>InputPart.DEFAULT_CHARSET_PROPERTY</code>
-            (actual value "resteasy.provider.multipart.inputpart.defaultCharset"):
-        </para>
-
-        <programlisting>
-<![CDATA[import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-
-@Provider
-@ServerInterceptor
-public class ContentTypeSetterPreProcessorInterceptor
-    implements PreProcessInterceptor {
-
-    public ServerResponse preProcess(HttpRequest request, ResourceMethod method)
-            throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
-        return null;
-    }
-}]]></programlisting>
-
-        <para>If both <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code> and
-        </para>
-        <para>
-            <code>InputPart.DEFAULT_CHARSET_PROPERTY</code>
-            are set, then the value of
-        </para>
-        <para>
-            <code>InputPart.DEFAULT_CHARSET_PROPERTY</code>
-            will override any charset in the value of
-        </para>
-        <para>
-            <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code>.
-        </para>
-    </section>
 </chapter>
