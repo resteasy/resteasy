@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava2.SingleRxInvoker;
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import io.reactivex.Single;
@@ -53,6 +55,7 @@ import io.reactivex.Single;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(NotForBootableJar.class) // no RX layer so far
 public class Rx2SingleClientAsyncTest {
 
    private static ResteasyClient client;

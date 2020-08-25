@@ -76,6 +76,21 @@
 
     <profiles>
         <profile>
+            <id>bootablejar.profile</id>
+            <activation>
+                <property>
+                    <name>ts.bootable</name>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForBootableJar</additional.surefire.excluded.groups>
+            </properties>
+            <modules>
+                <module>arquillian-utils</module>
+                <module>integration-tests</module>
+            </modules>
+        </profile>
+        <profile>
             <id>default</id>
             <activation>
                 <property>

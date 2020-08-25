@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapFooException;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapFooExceptionMapper;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapFooResource;
@@ -112,7 +113,8 @@ public class EjbExceptionUnwrapTest {
     */
    @Test
    @Category({
-      ExpectedFailingWithStandaloneMicroprofileConfiguration.class  //  fails because /basic is not found (MP is missing EJB3)
+      ExpectedFailingWithStandaloneMicroprofileConfiguration.class,  //  fails because /basic is not found (MP is missing EJB3)
+      NotForBootableJar.class // no EJB layer so far
    })
    public void testLocatingResource() throws Exception {
       {

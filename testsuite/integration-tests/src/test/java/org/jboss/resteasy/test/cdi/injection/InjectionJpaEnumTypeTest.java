@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.cdi.injection.resource.ApplicationUser;
@@ -35,7 +36,8 @@ import javax.ws.rs.core.MediaType;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // Weld would complain as no impementations are available for injected beans
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class, // Weld would complain as no impementations are available for injected beans
+    NotForBootableJar.class // no EJB layer so far
 })
 public class InjectionJpaEnumTypeTest {
 

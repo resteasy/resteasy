@@ -12,6 +12,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
@@ -49,7 +50,8 @@ import java.util.Hashtable;
 @RunAsClient
 @Category({
     ExpectedFailingOnWildFly18.class,               //WFLY-12655
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,
+    NotForBootableJar.class // requires different security configuration
 })
 public class TwoSecurityDomainsTest {
 

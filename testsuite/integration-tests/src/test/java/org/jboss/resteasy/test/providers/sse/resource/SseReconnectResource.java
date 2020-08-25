@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.sse.resource;
 
 import org.junit.Assert;
 
-import javax.ejb.Singleton;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -18,15 +17,14 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 import java.util.concurrent.TimeUnit;
 
-@Singleton
 @Path("/reconnect")
 public class SseReconnectResource {
 
-   private volatile boolean isServiceAvailable = false;
+   private static volatile boolean isServiceAvailable = false;
 
-   private volatile long startTime = 0L;
-   private volatile long endTime = 0L;
-   private volatile long lastEventDeliveryTime;
+   private static volatile long startTime = 0L;
+   private static volatile long endTime = 0L;
+   private static volatile long lastEventDeliveryTime;
 
    @GET
    @Path("/defaultReconnectDelay")

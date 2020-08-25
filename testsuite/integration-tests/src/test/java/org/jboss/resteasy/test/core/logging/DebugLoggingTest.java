@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -45,7 +46,10 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class})
+@Category({
+        NotForForwardCompatibility.class,
+        NotForBootableJar.class  // no log check support for bootable-jar in RESTEasy TS so far
+})
 public class DebugLoggingTest {
 
    static ResteasyClient client;

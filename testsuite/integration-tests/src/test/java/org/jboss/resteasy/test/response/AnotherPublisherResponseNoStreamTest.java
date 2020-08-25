@@ -17,6 +17,7 @@ import javax.ws.rs.sse.SseEventSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
@@ -29,6 +30,7 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -37,12 +39,14 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.6
  */
 @RunWith(Arquillian.class)
+@Category(NotForBootableJar.class) // no RX layer so far
 public class AnotherPublisherResponseNoStreamTest {
    private static final Logger logger = Logger.getLogger(AnotherPublisherResponseNoStreamTest.class);
 
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(AnotherPublisherResponseNoStreamTest.class.getSimpleName());
+      war.addClass(NotForBootableJar.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(

@@ -11,6 +11,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.basic.resource.OutOfBandResource;
 import org.jboss.resteasy.test.cdi.basic.resource.OutOfBandResourceIntf;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -32,14 +33,15 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,
+    NotForBootableJar.class // no EJB layer so far
 })
 public class OutOfBandTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive("RESTEASY-1008")
-            .addClasses(OutOfBandResourceIntf.class, OutOfBandResource.class)
+            .addClasses(OutOfBandResourceIntf.class, OutOfBandResource.class, NotForBootableJar.class)
             .addClass(ExpectedFailingWithStandaloneMicroprofileConfiguration.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       return war;

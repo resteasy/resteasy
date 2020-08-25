@@ -90,6 +90,12 @@ the usage of `standalone-microprofile.xml` configuration file:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dts.standalone.microprofile
 
+### Bootable jar testing
+Run testsuite or test against Bootable jar, not against Wildfly:
+
+> mvn clean verify -Dts.bootable -Ddefault=false -Ddisable.microprofile.tests -Dserver.version=21.0.0.Beta1-SNAPSHOT -Dserver.home=not-needed-for-bootable.jar 
+
+
 ### Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``
 

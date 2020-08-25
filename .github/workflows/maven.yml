@@ -36,7 +36,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
-        run: mvn clean install -fae '-Dserver.version=${{ matrix.wildfly-version }}'
+        run: mvn clean install -B -fae '-Dserver.version=${{ matrix.wildfly-version }}'
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -68,4 +68,4 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build Java Docs with Java ${{ matrix.java }}
-        run: mvn clean install -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc
+        run: mvn clean install -B -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc

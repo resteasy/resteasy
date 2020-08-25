@@ -6,6 +6,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousResource;
 import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousStateless;
 import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousStatelessLocal;
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(NotForBootableJar.class) // no EJB layer so far
 public class AsynchronousCdiTest {
 
    public static final Long DELAY = 5000L;
