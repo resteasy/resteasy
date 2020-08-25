@@ -14,6 +14,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationApplication;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationSingletonResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationStatefulResource;
@@ -39,6 +40,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(NotForBootableJar.class) // no EJB layer so far
 public class EJBCDIValidationTest {
 
    private static Client client;
@@ -51,6 +53,7 @@ public class EJBCDIValidationTest {
       .addClasses(EJBCDIValidationStatefulResource.class)
       .addClasses(EJBCDIValidationSingletonResource.class)
       .addClass(ExpectedFailingWithStandaloneMicroprofileConfiguration.class)
+      .addClass(NotForBootableJar.class)
       .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")

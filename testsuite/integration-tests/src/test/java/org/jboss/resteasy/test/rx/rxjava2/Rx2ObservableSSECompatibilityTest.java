@@ -13,6 +13,7 @@ import javax.ws.rs.sse.SseEventSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
@@ -47,6 +49,7 @@ import io.reactivex.Observable;
 @RunWith(Arquillian.class)
 @RunAsClient
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Category(NotForBootableJar.class) // no RX layer so far
 public class Rx2ObservableSSECompatibilityTest {
 
    private static ResteasyClient client;

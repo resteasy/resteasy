@@ -6,6 +6,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonLocalIF;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonRootResource;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonSubResource;
@@ -36,7 +37,8 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // java.lang.NoClassDefFoundError: javax/ejb/EJBException (MP is missing EJB3)
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class, // java.lang.NoClassDefFoundError: javax/ejb/EJBException (MP is missing EJB3)
+    NotForBootableJar.class // no EJB layer so far
 })
 public class SingletonTest {
    static Client client;

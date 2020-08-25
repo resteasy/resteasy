@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -95,7 +96,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing jboss.naming.context.java.jboss.exported.jms.RemoteConnectionFactory
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class, // MP is missing jboss.naming.context.java.jboss.exported.jms.RemoteConnectionFactory
+    NotForBootableJar.class // no EJB layer so far
 })
 public class ReverseInjectionTest extends AbstractInjectionTestBase {
    private static Logger log = Logger.getLogger(ReverseInjectionTest.class);
@@ -134,7 +136,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
    public static Archive<?> createTestArchive() throws Exception {
       initQueue();
       WebArchive war = TestUtil.prepareArchive("resteasy-reverse-injection-test")
-            .addClasses(AbstractInjectionTestBase.class, ReverseInjectionTest.class, PortProviderUtil.class)
+            .addClasses(AbstractInjectionTestBase.class, ReverseInjectionTest.class, PortProviderUtil.class, NotForBootableJar.class)
             .addClasses(Constants.class, PersistenceUnitProducer.class, UtilityProducer.class, Utilities.class)
             .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class)
             .addClasses(CDIInjectionResourceBinding.class, CDIInjectionResourceProducer.class)

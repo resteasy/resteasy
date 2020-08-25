@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBApplication;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBBook;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBBookReader;
@@ -54,9 +55,9 @@ import static org.junit.Assert.assertEquals;
  * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
-
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing EJB3
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class, // MP is missing EJB3
+    NotForBootableJar.class // no EJB layer so far
 })
 public class EJBTest {
 
@@ -78,6 +79,7 @@ public class EJBTest {
       // test needs to use special annotations in Application class, TestApplication class could not be used
       war.addClass(EJBApplication.class);
       war.addClass(PortProviderUtil.class);
+      war.addClass(NotForBootableJar.class);
       war.addClasses(EJBBook.class, Constants.class, Counter.class, UtilityProducer.class, Utilities.class)
          .addClasses(EJBBookReader.class, EJBBookReaderImpl.class)
          .addClasses(EJBBookWriterImpl.class)

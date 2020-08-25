@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
@@ -32,7 +33,8 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class    //  MP is missing javax.mail
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,    //  MP is missing javax.mail
+    NotForBootableJar.class    //  no mail layer so far
 })
 public class EncodingMimeMultipartFormProviderTest {
 

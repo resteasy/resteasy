@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.sse.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ejb.Singleton;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,18 +14,17 @@ import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import java.io.IOException;
 
-@Singleton
 @Path("/broadcast")
 public class SseBroadcastResource {
 
-   private final Object sseBroadcasterLock = new Object();
-   private volatile SseBroadcaster sseBroadcaster;
-   private volatile boolean onErrorCalled = false;
-   private volatile boolean onCloseCalled = false;
+   private static final Object sseBroadcasterLock = new Object();
+   private static volatile SseBroadcaster sseBroadcaster;
+   private static volatile boolean onErrorCalled = false;
+   private static volatile boolean onCloseCalled = false;
 
    private static final Logger logger = Logger.getLogger(SseBroadcastResource.class);
 
-   SseEventSink subscribedSink = null;
+   static SseEventSink subscribedSink = null;
 
    @GET
    @Path("/subscribe")
