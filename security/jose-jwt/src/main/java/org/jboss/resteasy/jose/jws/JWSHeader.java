@@ -3,6 +3,7 @@ package org.jboss.resteasy.jose.jws;
 import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import java.io.Serializable;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JWSHeader implements Serializable
 {
    @JsonProperty("alg")
@@ -25,6 +27,9 @@ public class JWSHeader implements Serializable
    @JsonProperty("cty")
    private String contentType;
 
+   @JsonProperty("kid")
+   private String keyId;
+
    public JWSHeader()
    {
    }
@@ -34,6 +39,12 @@ public class JWSHeader implements Serializable
       this.algorithm = algorithm;
       this.type = type;
       this.contentType = contentType;
+   }
+
+   public JWSHeader(final Algorithm algorithm, final String type, final String contentType, final String keyId) {
+      this.algorithm = algorithm;
+      this.type = type;
+      this.keyId = keyId;
    }
 
    public Algorithm getAlgorithm()
@@ -51,6 +62,9 @@ public class JWSHeader implements Serializable
       return contentType;
    }
 
+   public String getKeyId() {
+      return keyId;
+   }
 
    @JsonIgnore
    public MediaType getMediaType()
@@ -63,7 +77,6 @@ public class JWSHeader implements Serializable
    static
    {
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
    }
 
    public String toString()
@@ -76,7 +89,6 @@ public class JWSHeader implements Serializable
       {
          throw new RuntimeException(e);
       }
-
 
    }
 

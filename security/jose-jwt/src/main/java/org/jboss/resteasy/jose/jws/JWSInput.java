@@ -1,19 +1,18 @@
 package org.jboss.resteasy.jose.jws;
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jboss.resteasy.jose.jws.util.Base64Url;
+import org.jboss.resteasy.jose.jws.util.JsonSerialization;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
-
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,48 +24,38 @@ public class JWSInput
    String encodedHeader;
    String encodedContent;
    String encodedSignature;
+   String encodedSignatureInput;
    JWSHeader header;
    Providers providers;
    byte[] content;
    byte[] signature;
-
-   private static ObjectMapper mapper = new ObjectMapper();
-
-   static
-   {
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-   }
 
    public JWSInput(final String wire)
    {
       this(wire, null);
    }
 
-   public JWSInput(final String wire, final Providers providers)
-   {
+public JWSInput(final String wire, final Providers providers) {
+   try {
       this.providers = providers;
       this.wireString = wire;
       String[] parts = wire.split("\\.");
-      if (parts.length < 2 || parts.length > 3) throw new IllegalArgumentException(Messages.MESSAGES.parsingError());
+      if (parts.length < 2 || parts.length > 3) throw new IllegalArgumentException("Parsing error");
       encodedHeader = parts[0];
       encodedContent = parts[1];
-      try
-      {
-         content = Base64Url.decode(encodedContent);
-         if (parts.length > 2)
-         {
-            encodedSignature = parts[2];
-            signature = Base64Url.decode(encodedSignature);
+      encodedSignatureInput = encodedHeader + '.' + encodedContent;
+      content = Base64Url.decode(encodedContent);
+      if (parts.length > 2) {
+         encodedSignature = parts[2];
+         signature = Base64Url.decode(encodedSignature);
 
-         }
-         byte[] headerBytes = Base64Url.decode(encodedHeader);
-         header = mapper.readValue(headerBytes, JWSHeader.class);
       }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
+      byte[] headerBytes = Base64Url.decode(encodedHeader);
+      header = JsonSerialization.readValue(headerBytes, JWSHeader.class);
+   } catch (Throwable t) {
+      throw new RuntimeException(t);
    }
+}
 
    public String getWireString()
    {
@@ -87,6 +76,9 @@ public class JWSInput
    {
       return encodedSignature;
    }
+   public String getEncodedSignatureInput() {
+      return encodedSignatureInput;
+   }
 
    public JWSHeader getHeader()
    {
@@ -101,6 +93,25 @@ public class JWSInput
    public byte[] getSignature()
    {
       return signature;
+   }
+
+   public boolean verify(String key) {
+      if (header.getAlgorithm().getProvider() == null) {
+         throw new RuntimeException("signing algorithm not supported");
+      }
+      return header.getAlgorithm().getProvider().verify(this, key);
+   }
+
+   public <T> T readJsonContent(Class<T> type) throws JWSInputException {
+      try {
+         return JsonSerialization.readValue(content, type);
+      } catch (IOException e) {
+         throw new JWSInputException(e);
+      }
+   }
+
+   public String readContentAsString() {
+      return new String(content, StandardCharsets.UTF_8);
    }
 
    @SuppressWarnings("unchecked")
@@ -132,6 +143,4 @@ public class JWSInput
          throw new RuntimeException(e);
       }
    }
-
-
 }

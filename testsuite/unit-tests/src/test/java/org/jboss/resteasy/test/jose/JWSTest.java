@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.io.StringWriter;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.ws.rs.core.MediaType;
@@ -27,6 +28,10 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
 import static org.hamcrest.CoreMatchers.containsString;
+
+import org.bouncycastle.util.io.pem.PemWriter;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.hamcrest.CoreMatchers;
 
 /**
  * @tpSubChapter Jose tests
@@ -126,5 +131,30 @@ public class JWSTest {
       String msg = input.readContent(String.class);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "Hello World", msg);
       Assert.assertTrue(VERIFY_ERROR_MSG, HMACProvider.verify(input, key));
+   }
+
+   @Test
+   public void testJWT() throws Exception {
+      KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+      StringWriter writer = new StringWriter();
+      try (PemWriter pemWriter = new PemWriter(writer)) {
+         pemWriter.writeObject(new PemObject("RSA PUBLIC KEY", keyPair.getPublic().getEncoded()));
+         pemWriter.flush();
+      }
+      logger.info(writer.toString());
+
+      String content = "{\"sub\": \"1234567890\",\"name\": \"John Doe\",\"iat\": 1516239022}";
+      String encoded = new JWSBuilder()
+              .type("JWT")
+              .content(content.getBytes(StandardCharsets.UTF_8))
+              .rsa256(keyPair.getPrivate());
+
+      logger.info(encoded);
+      Assert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
+
+      JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
+      String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);
+      Assert.assertEquals(RESPONSE_ERROR_MSG, content, msg);
+      Assert.assertTrue(VERIFY_ERROR_MSG, RSAProvider.verify(input, keyPair.getPublic()));
    }
 }
