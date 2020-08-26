@@ -575,7 +575,6 @@ public class MediaTypeMap<T>
       Collections.sort(matches, new TypedEntryComparator(type));
       cached = convert(matches);
       if (useCache) {
-         // don't care about variable volatility.  Really rare to add entries post boot
          Map<CachedMediaTypeAndClass, List<T>> cache = classCache;
          if (classCache == null) {
             synchronized (this)
