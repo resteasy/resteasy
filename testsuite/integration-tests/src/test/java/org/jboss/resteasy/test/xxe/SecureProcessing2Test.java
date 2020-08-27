@@ -17,12 +17,10 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
@@ -379,7 +377,6 @@ public class SecureProcessing2Test {
     * @tpSince RESTEasy 3.0.20.Final
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testSecurityDefaultDTDsTrueExpansionTrueWithApacheLinkMessage() throws Exception {
       doTestSkipFailsFailsSkipWithApacheLinkMessage("dtt");
    }

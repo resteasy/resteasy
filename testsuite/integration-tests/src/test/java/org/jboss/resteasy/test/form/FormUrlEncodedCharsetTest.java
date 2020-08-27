@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.form.resource.FormUrlEncodedCharsetResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -15,7 +14,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -98,7 +96,6 @@ public class FormUrlEncodedCharsetTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testFormUTF16() throws UnsupportedEncodingException {
       Form form = new Form();
       form.param("name", alephBetGimel);

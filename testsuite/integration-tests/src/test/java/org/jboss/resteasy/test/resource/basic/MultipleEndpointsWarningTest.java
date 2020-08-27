@@ -8,7 +8,6 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.resource.basic.resource.LogHandler;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleEndpointsWarningResource;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -20,7 +19,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.util.logging.LoggingPermission;
@@ -105,7 +103,6 @@ public class MultipleEndpointsWarningTest
     * @tpSince RESTEasy 3.0.20.Final
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testDuplicate() throws Exception {
       Response response = client.target(generateURL("/duplicate")).request().get();
       Assert.assertEquals(LogHandler.MESSAGE_CODE + " should've been logged once", new Long(1), response.readEntity(long.class));

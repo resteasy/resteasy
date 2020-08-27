@@ -19,8 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.experimental.categories.Category;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 
 /**
  * @tpSubChapter Resources
@@ -73,7 +71,6 @@ public class DefaultCharsetTest {
    }
 
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testCharset() throws Exception {
       doTest("_true",    "/true",    "/nocharset",     "UTF-8");  // "resteasy.add.charset" set to true, text media type, charset not set
       doTest("_true",    "/true",    "/charset",       "UTF-16"); // "resteasy.add.charset" set to true, text media type, charset already set

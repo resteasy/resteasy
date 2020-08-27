@@ -26,8 +26,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.experimental.categories.Category;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy: RESTEASY-1225
@@ -71,7 +69,6 @@ public class AsynchContextualDataTest {
     * @tpSince RESTEasy 3.1.1.Final
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testContextualData() throws Exception {
       String id = "334";
 
