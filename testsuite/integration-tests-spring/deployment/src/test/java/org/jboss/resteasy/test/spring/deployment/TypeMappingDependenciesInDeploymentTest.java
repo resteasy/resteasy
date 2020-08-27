@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.spring.deployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.TypeMappingResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -14,14 +13,12 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.util.logging.LoggingPermission;
@@ -94,7 +91,6 @@ public class TypeMappingDependenciesInDeploymentTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void test() throws Exception {
       // acceptJSONAndXMLRequestNoProducesJSONExtension() throws Exception {
       requestAndAssert("noproduces", "json", "application/json, application/xml", "application/json");

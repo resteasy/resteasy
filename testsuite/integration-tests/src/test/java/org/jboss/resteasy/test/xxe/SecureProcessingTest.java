@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingBar;
@@ -22,7 +21,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
@@ -395,7 +393,6 @@ public class SecureProcessingTest {
     * @tpSince RESTEasy 3.0.20.Final
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testSecurityTrueDTDsTrueExpansionTrueWithApacheLinkMessage() throws Exception {
       doTestSkipFailsFailsSkipWithApacheLinkMessage("ttt");
    }

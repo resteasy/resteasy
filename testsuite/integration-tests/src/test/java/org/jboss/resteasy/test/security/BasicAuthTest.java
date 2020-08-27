@@ -12,7 +12,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
@@ -281,7 +280,6 @@ public class BasicAuthTest {
     */
    @Test
    @Category({
-        NotForForwardCompatibility.class,
         // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
         ExpectedFailingWithStandaloneMicroprofileConfiguration.class
    })

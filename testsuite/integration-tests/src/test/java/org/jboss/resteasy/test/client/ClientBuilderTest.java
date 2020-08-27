@@ -15,14 +15,12 @@ import javax.ws.rs.core.FeatureContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -38,7 +36,6 @@ public class ClientBuilderTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
       war.addClass(TestUtil.class);
-      war.addClass(NotForForwardCompatibility.class);
       // Arquillian in the deployment and use of TestUtil
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
@@ -88,7 +85,6 @@ public class ClientBuilderTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testDoubleRegistration() {
       int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
       int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
