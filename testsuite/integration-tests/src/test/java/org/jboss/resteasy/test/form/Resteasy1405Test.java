@@ -23,7 +23,6 @@ import javax.xml.bind.Marshaller;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.test.form.resteasy1405.ByFieldForm;
 import org.jboss.resteasy.test.form.resteasy1405.BySetterForm;
@@ -49,7 +48,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class})
 public class Resteasy1405Test
 {
 

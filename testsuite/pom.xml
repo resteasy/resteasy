@@ -101,11 +101,6 @@
     <profiles>
         <profile>
             <id>default</id>
-            <activation>
-                <property>
-                    <name>!forward.compatibility</name>
-                </property>
-            </activation>
             <modules>
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
@@ -115,25 +110,6 @@
                 <module>integration-tests-embedded</module>
                 <module>microprofile-tck</module>
             </modules>
-        </profile>
-        <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->
-        <profile>
-            <id>forward.compatibility</id>
-            <activation>
-                <property>
-                    <name>forward.compatibility</name>
-                </property>
-            </activation>
-            <modules>
-                <module>arquillian-utils</module>
-                <module>unit-tests</module>
-                <!-- Uncomment module below when EAP/Widlfly with Resteasy 3.1 is released -->
-                <module>integration-tests</module>
-                <module>integration-tests-spring</module>
-            </modules>
-            <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForForwardCompatibility</additional.surefire.excluded.groups>
-            </properties>
         </profile>
         <profile>
             <id>home</id>
