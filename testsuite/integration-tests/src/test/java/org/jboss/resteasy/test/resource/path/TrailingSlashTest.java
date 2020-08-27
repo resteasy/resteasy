@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.path;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.resource.path.resource.TrailingSlashResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -124,7 +123,6 @@ public class TrailingSlashTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testSlash() {
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/test/"));
