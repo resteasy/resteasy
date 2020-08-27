@@ -6,7 +6,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -38,7 +37,6 @@ public class ResteasyJAXRSImplTest
    public static Archive<?> deploy()
    {
       WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplTest.class.getSimpleName());
-      war.addClass(NotForForwardCompatibility.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new PropertyPermission("arquillian.*", "read"),
               new RuntimePermission("accessDeclaredMembers"),
@@ -102,7 +100,6 @@ public class ResteasyJAXRSImplTest
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testInContainerRuntimeDelegate() throws Exception
    {
       testRuntimeDelegateGetInstance();

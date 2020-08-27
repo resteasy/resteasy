@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.atom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.atom.Content;
@@ -163,7 +162,6 @@ public class AtomComplexModelTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testNewClient() throws Exception {
       String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<entry xmlns=\"http://www.w3.org/2005/Atom\">" +

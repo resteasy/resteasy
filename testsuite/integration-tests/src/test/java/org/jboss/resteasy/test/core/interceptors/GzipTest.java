@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
@@ -286,7 +285,6 @@ public class GzipTest {
     * @tpSince RESTEasy 3.1.0.Final
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testMaxDefaultSizeSending() throws Exception {
       byte[] b = new byte[10000001];
       Variant variant = new Variant(MediaType.APPLICATION_OCTET_STREAM_TYPE, "", "gzip");
