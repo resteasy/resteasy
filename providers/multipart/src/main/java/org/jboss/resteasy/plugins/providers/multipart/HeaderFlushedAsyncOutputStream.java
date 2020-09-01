@@ -46,13 +46,13 @@ public class HeaderFlushedAsyncOutputStream extends AsyncOutputStream {
             } else {
                value = obj.toString();
             }
-            ret = stream.asyncWrite(key.getBytes(StandardCharsets.US_ASCII))
-                    .thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.COLON_SPACE_BYTES))
-                    .thenCompose(v -> stream.asyncWrite(value.getBytes(StandardCharsets.US_ASCII)))
-                    .thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES));
+            stream.asyncWrite(key.getBytes(StandardCharsets.US_ASCII));
+            stream.asyncWrite(AbstractMultipartWriter.COLON_SPACE_BYTES);
+            stream.asyncWrite(value.getBytes(StandardCharsets.US_ASCII));
+            ret = stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES);
          }
       }
-      return ret.thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES));
+      return stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES);
    }
 
    @Override
