@@ -7,6 +7,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -25,11 +26,13 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
 
+import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil11;
 import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -67,6 +70,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    private ExecutableType[] defaultValidatedExecutableTypes;
    private boolean suppressPath;
    private boolean cdiActive;
+   private static ConstraintTypeUtil11 util = new ConstraintTypeUtil11();
 
    public GeneralValidatorImpl(final ValidatorFactory validatorFactory, final boolean isExecutableValidationEnabled, final Set<ExecutableType> defaultValidatedExecutableTypes)
    {
@@ -101,20 +105,22 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       Validator validator = getValidator(request);
       Set<ConstraintViolation<Object>> cvs = null;
-
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
+      if (alreadyFoundClassOrPropertyConstraint(violationsContainer))
+      {
+         return;
+      }
       try
       {
          cvs = validator.validate(object, groups);
       }
       catch (Exception e)
       {
-         SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
          violationsContainer.setException(e);
          violationsContainer.setFieldsValidated(true);
          throw toValidationException(e, violationsContainer);
       }
 
-      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
       violationsContainer.addViolations(cvs);
       violationsContainer.setFieldsValidated(true);
    }
@@ -816,6 +822,27 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       for (Annotation annotation : clazz.getAnnotations())
       {
          if (annotation.annotationType().getName().equals(name))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   private static boolean alreadyFoundClassOrPropertyConstraint(SimpleViolationsContainer container)
+   {
+      Set<ConstraintViolation<Object>> set = container.getViolations();
+      if (set.isEmpty())
+      {
+         return false;
+      }
+      Iterator<ConstraintViolation<Object>> it = set.iterator();
+      for (ConstraintViolation<?> cv = it.next(); it.hasNext(); cv = it.next())
+      {
+         ConstraintType.Type type = util.getConstraintType(cv);
+         if ((ConstraintType.Type.CLASS.equals(type)
+               || ConstraintType.Type.FIELD.equals(type)
+               || ConstraintType.Type.PROPERTY.equals(type)))
          {
             return true;
          }
