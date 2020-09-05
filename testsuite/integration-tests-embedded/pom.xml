@@ -103,6 +103,20 @@
          <groupId>org.jboss.logging</groupId>
          <artifactId>jboss-logging-processor</artifactId>
       </dependency>
+      <dependency>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>arquillian-utils</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.glassfish</groupId>
+          <artifactId>jakarta.el</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.hibernate.validator</groupId>
+          <artifactId>hibernate-validator</artifactId>
+      </dependency>
    </dependencies>
 
    <build>
