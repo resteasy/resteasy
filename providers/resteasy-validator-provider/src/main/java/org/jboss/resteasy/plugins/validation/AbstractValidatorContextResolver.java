@@ -12,8 +12,6 @@ import javax.validation.ValidationException;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
@@ -56,7 +54,7 @@ public class AbstractValidatorContextResolver
                catch (NamingException e)
                {
                   LogMessages.LOGGER.info(Messages.MESSAGES.usingValidatorFactoryDoesNotSupportCDI());
-                  HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
+                  Configuration<?> config = Validation.byDefaultProvider().configure();
                   validatorFactory = tmpValidatorFactory = config.buildValidatorFactory();
                }
             }
