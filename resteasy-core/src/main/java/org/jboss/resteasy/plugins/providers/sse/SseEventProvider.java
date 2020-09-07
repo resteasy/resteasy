@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.OutboundSseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -36,6 +37,16 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
    public static final MediaType GENERAL_STREAM_TYPE = new MediaType("application", "x-stream-general");
+
+   private final Providers providers;
+
+   public SseEventProvider() {
+      this(null);
+   }
+
+   public SseEventProvider(final Providers providers) {
+      this.providers = providers;
+   }
 
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -108,8 +119,9 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             }
 
             entityStream.write(SseConstants.DATA_LEAD);
+            final Providers p = providers != null ? providers : ResteasyProviderFactory.getInstance();
             @SuppressWarnings("rawtypes")
-            MessageBodyWriter writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
+            MessageBodyWriter writer = p.getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
             if (writer == null)
@@ -268,8 +280,9 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             Type finalPayloadType = payloadType;
 
             ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.DATA_LEAD));
+            final Providers p = providers != null ? providers : ResteasyProviderFactory.getInstance();
             @SuppressWarnings("rawtypes")
-            AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
+            AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)p.getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
             if (writer == null)
