@@ -59,11 +59,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private final Object lock = new Object();
 
+   private final ResteasyProviderFactory providerFactory;
+
+   @Deprecated
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
+   {
+      this(writer, ResteasyProviderFactory.getInstance());
+   }
+
+   public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer, final ResteasyProviderFactory providerFactory)
    {
       this.writer = writer;
       contextDataMap = ResteasyContext.getContextDataMap();
-
+      this.providerFactory = providerFactory;
       request = ResteasyContext.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
       asyncContext = request.getAsyncContext();
 
@@ -199,7 +207,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   {
                      // Get element media type from @Produces.
                      jaxrsResponse = (BuiltResponse) Response.ok("").build();
-                     MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response, ResteasyProviderFactory.getInstance(), method);
+                     MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
                      Map<String, String> parameterMap = new HashMap<String, String>();
                      parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType.toString());
                      String[] streamType = getStreamType(method);
@@ -217,7 +225,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                CompletableFuture<Void> ret = new CompletableFuture<>();
                ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
-                     ResteasyProviderFactory.getInstance(), t -> {
+                     providerFactory, t -> {
                         AsyncOutputStream aos;
                         try
                         {

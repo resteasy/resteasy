@@ -16,6 +16,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -28,7 +29,6 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 @Provider
@@ -38,13 +38,13 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
 {
    public static final MediaType GENERAL_STREAM_TYPE = new MediaType("application", "x-stream-general");
 
-   private final Providers providers;
+   @Context
+   private Providers providers;
 
    public SseEventProvider() {
-      this(null);
    }
 
-   public SseEventProvider(final Providers providers) {
+   protected SseEventProvider(final Providers providers) {
       this.providers = providers;
    }
 
@@ -119,9 +119,8 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             }
 
             entityStream.write(SseConstants.DATA_LEAD);
-            final Providers p = providers != null ? providers : ResteasyProviderFactory.getInstance();
             @SuppressWarnings("rawtypes")
-            MessageBodyWriter writer = p.getMessageBodyWriter(payloadClass,
+            MessageBodyWriter writer = providers.getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
             if (writer == null)
@@ -280,9 +279,8 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             Type finalPayloadType = payloadType;
 
             ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.DATA_LEAD));
-            final Providers p = providers != null ? providers : ResteasyProviderFactory.getInstance();
             @SuppressWarnings("rawtypes")
-            AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)p.getMessageBodyWriter(payloadClass,
+            AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)providers.getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
             if (writer == null)
