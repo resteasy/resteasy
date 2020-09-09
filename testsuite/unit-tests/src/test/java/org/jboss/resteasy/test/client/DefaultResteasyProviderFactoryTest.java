@@ -27,8 +27,9 @@ public class DefaultResteasyProviderFactoryTest {
       rpf.setProperties(map);
       ResteasyClientBuilderImpl.setProviderFactory(rpf);
       Client client = ResteasyClientBuilderImpl.newClient();
-      Assert.assertEquals("foo", client.getConfiguration().getProperty("bar"));
+      Assert.assertEquals("bar", client.getConfiguration().getProperty("foo"));
       client.close();
+      ResteasyClientBuilderImpl.setProviderFactory(null);
    }
 
 }
