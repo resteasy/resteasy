@@ -71,6 +71,22 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected boolean cookieManagementEnabled;
    protected boolean disableAutomaticRetries = false;
 
+   static ResteasyProviderFactory PROVIDER_FACTORY;
+
+   public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
+      PROVIDER_FACTORY = providerFactory;
+   }
+
+   public ResteasyClientBuilderImpl() {
+      if (PROVIDER_FACTORY != null) {
+         ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
+         if (ResteasyProviderFactory.peekInstance() != null) {
+            localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+         }
+         providerFactory = localProviderFactory;
+      }
+   }
+
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
     *
