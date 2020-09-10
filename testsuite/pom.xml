@@ -101,6 +101,11 @@
     <profiles>
         <profile>
             <id>default</id>
+            <activation>
+                <property>
+                    <name>!skipDefaultProfile</name>
+                </property>
+            </activation>
             <modules>
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
