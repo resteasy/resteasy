@@ -550,8 +550,8 @@ public class MediaTypeMap<T>
       CachedMediaTypeAndClass cacheEntry = null;
       if (useCache)
       {
+         cacheEntry = new CachedMediaTypeAndClass(type, accept);
          if (classCache != null) {
-            cacheEntry = new CachedMediaTypeAndClass(type, accept);
             cached = classCache.get(cacheEntry);
             if (cached != null) return cached;
          }
@@ -576,14 +576,14 @@ public class MediaTypeMap<T>
       cached = convert(matches);
       if (useCache) {
          Map<CachedMediaTypeAndClass, List<T>> cache = classCache;
-         if (classCache == null) {
+         if (cache == null) {
             synchronized (this)
             {
                if (classCache == null)
                {
-                  cache = new HashMap<>();
-                  classCache = cache;
+                  classCache = new HashMap<>();
                }
+               cache = classCache;
             }
          }
          cache.put(cacheEntry, cached);
