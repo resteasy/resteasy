@@ -7,9 +7,9 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -21,18 +21,19 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ClientHeadersDefaultFactoryCDITest {
 
-   private static UndertowJaxrsServer server;
-   private static WeldContainer container;
+   private UndertowJaxrsServer undertowJaxrsServer;
+   private WeldContainer weldContainer;
 
    static class Worker {
 
       @Inject
       @RestClient
-      private TestResourceIntf service;
+      private ClientHeaderParamIntf service;
 
       public String work() {
          return service.hello("Stefano");
@@ -43,7 +44,7 @@ public class ClientHeadersDefaultFactoryCDITest {
    @RegisterRestClient(baseUri="http://localhost:8081")
    @RegisterClientHeaders
    @ClientHeaderParam(name="IntfHeader", value="intfValue")
-   public interface TestResourceIntf {
+   public interface ClientHeaderParamIntf {
 
       @Path("hello/{h}")
       @GET
@@ -52,13 +53,23 @@ public class ClientHeadersDefaultFactoryCDITest {
    }
 
    @Path("/")
-   public static class TestResource {
+   public static class ClientParamResource {
 
       @Path("hello/{h}")
       @GET
       public String hello(@PathParam("h") String h, @Context HttpHeaders httpHeaders) {
-         return "IntfHeader: " + httpHeaders.getRequestHeader("IntfHeader").get(0)
-                 + " - MthdHeader: " + httpHeaders.getRequestHeader("MthdHeader").get(0);
+         return getValue(httpHeaders, "IntfHeader")
+                 + " - "
+                 + getValue(httpHeaders, "MthdHeader");
+      }
+
+      private String getValue(HttpHeaders httpHeaders, String headerName) {
+         List<String> values = httpHeaders.getRequestHeader(headerName);
+         if (values.size() > 0) {
+            return headerName + ": " + values.get(0);
+         }
+
+         return headerName + ": NO VALUE";
       }
    }
 
@@ -68,30 +79,35 @@ public class ClientHeadersDefaultFactoryCDITest {
       @Override
       public Set<Class<?>> getClasses() {
          HashSet<Class<?>> classes = new HashSet<Class<?>>();
-         classes.add(TestResource.class);
+         classes.add(ClientParamResource.class);
          return classes;
       }
    }
 
-   @BeforeClass
-   public static void init() throws Exception {
+   @Before
+   public void init() throws Exception {
       Weld weld = new Weld();
       weld.addBeanClass(Worker.class);
-      weld.addBeanClass(TestResourceIntf.class);
-      container = weld.initialize();
-      server = new UndertowJaxrsServer().start();
-      server.deploy(MyApp.class);
+      weld.addBeanClass(ClientHeaderParamIntf.class);
+      weldContainer = weld.initialize();
+      undertowJaxrsServer = new UndertowJaxrsServer().start();
+      undertowJaxrsServer.deploy(MyApp.class);
    }
 
-   @AfterClass
-   public static void stop() throws Exception {
-      server.stop();
-      container.shutdown();
+   @After
+   public void stop() throws Exception {
+      if (undertowJaxrsServer != null) {
+         undertowJaxrsServer.stop();
+      }
+      if (weldContainer != null) {
+         weldContainer.close();
+      }
+      RestClientExtension.clearBeanManager();
    }
 
    @Test
    public void test() {
-      String result = container.select(Worker.class).get().work();
+      String result = weldContainer.select(Worker.class).get().work();
       Assert.assertTrue(result.contains("IntfHeader: intfValue"));
       Assert.assertTrue(result.contains("MthdHeader: hello"));
    }
