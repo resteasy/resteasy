@@ -237,13 +237,12 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                            return;
                         }
                         // eager composition to guarantee ordering
-                        CompletionStage<Void> a = aos.asyncWrite(SseConstants.DOUBLE_EOL);
-                        CompletionStage<Void> b = aos.asyncFlush();
+                          CompletionStage<Void> a = aos.asyncWrite(SseConstants.DOUBLE_EOL)
+                                  .thenCompose(v ->  aos.asyncFlush());
                         // we've queued a response flush, so avoid a second one being queued
                         responseFlushed = true;
 
-                        a.thenCompose(v -> b)
-                        .thenAccept(v -> {
+                        a.thenAccept(v -> {
                            ret.complete(null);
                         }).exceptionally(e -> {
                            if(e instanceof CompletionException)
@@ -297,9 +296,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
          }
          // eager composition to guarantee ordering
-         CompletionStage<Void> a = internalFlushResponseToClient(true);
-         CompletionStage<Void> b = writeEvent(event);
-         return a.thenCompose(v -> b);
+         return internalFlushResponseToClient(true)
+                 .thenCompose(v ->  writeEvent(event));
       }
    }
 
@@ -355,10 +353,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                writer.writeTo(event, event.getClass(), null, new Annotation[]{}, mediaType, null, bout);
                AsyncOutputStream aos = response.getAsyncOutputStream();
                // eager composition to guarantee ordering
-               CompletionStage<Void> a = aos.asyncWrite(bout.toByteArray());
-               CompletionStage<Void> b = aos.asyncFlush();
-               return a
-                     .thenCompose(v -> b)
+               return aos.asyncWrite(bout.toByteArray())
+                       .thenCompose(v ->  aos.asyncFlush())
                      .exceptionally(e -> {
                         if(e instanceof CompletionException)
                            e = e.getCause();
