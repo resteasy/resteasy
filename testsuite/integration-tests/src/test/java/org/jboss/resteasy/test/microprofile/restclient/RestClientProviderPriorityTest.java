@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Arquillian.class)
 @RunAsClient
-public class RestClientProviderPriority
+public class RestClientProviderPriorityTest
 {
     @ArquillianResource
     URL url;
@@ -39,7 +39,7 @@ public class RestClientProviderPriority
     @Deployment
     public static Archive<?> deploy()
     {
-        WebArchive war = TestUtil.prepareArchive(RestClientProviderPriority.class.getSimpleName());
+        WebArchive war = TestUtil.prepareArchive(RestClientProviderPriorityTest.class.getSimpleName());
         war.addClass(HelloResource.class);
         war.addClass(HelloClient.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -49,15 +49,7 @@ public class RestClientProviderPriority
 
     private String generateURL(String path)
     {
-        return PortProviderUtil.generateURL(path, RestClientProviderPriority.class.getSimpleName());
-    }
-
-    @Test
-    public void helloUndefined() throws Exception {
-        HelloClient helloClient =
-            RestClientBuilder.newBuilder().baseUrl(new URL(generateURL(""))).build(HelloClient.class);
-
-        assertEquals("Hello undefined", helloClient.hello(null));
+        return PortProviderUtil.generateURL(path, RestClientProviderPriorityTest.class.getSimpleName());
     }
 
     @Test
@@ -91,14 +83,11 @@ public class RestClientProviderPriority
         @GET
         @Path("/hello")
         public String hello(@QueryParam("who") String who) {
-            if (who == null || who.isEmpty()) {
-                who = "undefined";
-            }
-
             return "Hello " + who;
         }
     }
 
+    // RESTEASY-2678 - the @Priority annotation was ignored, so the priority would be -1 and this would execute first.
     @Priority(value = Integer.MAX_VALUE)
     public static class HelloFooProvider implements ClientRequestFilter {
         @Override
