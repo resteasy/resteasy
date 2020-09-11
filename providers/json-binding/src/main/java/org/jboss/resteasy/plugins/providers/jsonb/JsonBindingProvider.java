@@ -69,7 +69,13 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       Jsonb jsonb = getJsonb(type);
       final EmptyCheckInputStream is = new EmptyCheckInputStream(entityStream);
 
+      System.out.println("<><><><><><><><><><>" + JsonBindingProvider.class.getCanonicalName());
+      System.out.println("-=-=-=-=-=-=-=-=ANNOTATIONS: " + annotations.length + ", " + annotations);
+
       try {
+         for (Annotation anno : annotations) {
+            System.out.println(anno);
+         }
 
          if (type.isAnnotationPresent(DeserializeAs.class)) {
             DeserializeAs target = type.getAnnotation(DeserializeAs.class);
@@ -77,8 +83,6 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          } else {
             return jsonb.fromJson(is, genericType);
          }
-
-
 
          // If null is returned, considered to be empty stream
       } catch (Throwable e)
