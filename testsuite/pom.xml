@@ -131,7 +131,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>20.0.0.Beta1</server.version>
+                <server.version>20.0.1.Final</server.version>
             </properties>
         </profile>
         <profile>
@@ -139,7 +139,7 @@
             <activation>
                 <property>
                     <name>server.version</name>
-                    <value>20.0.0.Beta1</value>
+                    <value>20.0.1.Final</value>
                 </property>
             </activation>
             <properties>
