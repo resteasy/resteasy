@@ -29,6 +29,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
+import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl.SourceBuilder;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -496,8 +497,8 @@ public class SseTest
       List<String> results = new ArrayList<String>();
       Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
-      SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
-      sourceImpl.setAlwaysReconnect(false);
+      SourceBuilder builder = (SourceBuilder) SseEventSource.target(target);
+      SseEventSource sourceImpl = builder.alwaysReconnect(false).build();
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> results.add(event.readData()));
@@ -513,8 +514,8 @@ public class SseTest
       //test for [Resteasy-1863]:SseEventSourceImpl should not close Client instance
       results.clear();
       WebTarget target2 = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
-      SseEventSourceImpl sourceImpl2 = (SseEventSourceImpl)SseEventSource.target(target2).build();
-      sourceImpl2.setAlwaysReconnect(false);
+      SourceBuilder builder2 = (SourceBuilder) SseEventSource.target(target2);
+      SseEventSource sourceImpl2 = builder2.alwaysReconnect(false).build();
       try (SseEventSource source = sourceImpl2)
       {
          source.register(event -> results.add(event.readData()));
@@ -535,8 +536,8 @@ public class SseTest
       Client client = ClientBuilder.newBuilder().build();
       final AtomicInteger errors = new AtomicInteger(0);
       WebTarget target = client.target(generateURL("/service/server-sent-events/noContent"));
-      SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
-      sourceImpl.setAlwaysReconnect(false);
+      SourceBuilder builder = (SourceBuilder) SseEventSource.target(target);
+      SseEventSource sourceImpl = builder.alwaysReconnect(false).build();
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {

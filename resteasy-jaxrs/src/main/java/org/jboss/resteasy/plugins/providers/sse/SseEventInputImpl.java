@@ -21,25 +21,21 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 
 public class SseEventInputImpl implements EventInput, Closeable
 {
-   private Annotation[] annotations;
+   private final Annotation[] annotations;
 
-   private MediaType mediaType;
+   private final MediaType mediaType;
 
-   private boolean textLike;
+   private final boolean textLike;
 
-   private MultivaluedMap<String, String> httpHeaders;
+   private final MultivaluedMap<String, String> httpHeaders;
 
-   private InputStream inputStream;
+   private final InputStream inputStream;
 
    private volatile boolean isClosed = false;
 
-   private boolean lastFieldWasData;
+   private final boolean escape;
 
-   private boolean escape = false;
-
-   private Providers providers;
-
-   private final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
+   private static final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
 
    public SseEventInputImpl(final Annotation[] annotations, final MediaType streamType, final MediaType elementType,
                             final MultivaluedMap<String, String> httpHeaders, final InputStream inputStream)
@@ -66,6 +62,12 @@ public class SseEventInputImpl implements EventInput, Closeable
 
    public InboundSseEvent read() throws IOException
    {
+      return read(null);
+   }
+
+   public InboundSseEvent read(Providers providers) throws IOException
+   {
+      boolean lastFieldWasData = false;
       byte[] chunk = null;
       try
       {
@@ -160,7 +162,7 @@ public class SseEventInputImpl implements EventInput, Closeable
                   }
                }
 
-               processField(eventBuilder, fieldName, mediaType, temSave.toByteArray());
+               lastFieldWasData = processField(lastFieldWasData, eventBuilder, fieldName, mediaType, temSave.toByteArray());
                temSave.reset();
                currentState = SseConstants.EVENT.START;
                continue;
@@ -171,11 +173,8 @@ public class SseEventInputImpl implements EventInput, Closeable
             throw new IOException(Messages.MESSAGES.readEventException(), e);
          }
       }
-      InboundSseEventImpl event = (InboundSseEventImpl) eventBuilder.build();
-      if (this.providers != null)
-      {
-         event.setProvider(this.providers);
-      }
+
+      InboundSseEventImpl event = (InboundSseEventImpl) eventBuilder.providers(providers).build();
       return event;
    }
 
@@ -206,7 +205,7 @@ public class SseEventInputImpl implements EventInput, Closeable
       return b;
    }
 
-   private void processField(final InboundSseEventImpl.Builder inboundEventBuilder, final String name,
+   private static boolean processField(boolean lastFieldWasData, final InboundSseEventImpl.Builder inboundEventBuilder, final String name,
          final MediaType mediaType, final byte[] value)
    {
       Charset charset = StandardCharsets.UTF_8;
@@ -246,7 +245,7 @@ public class SseEventInputImpl implements EventInput, Closeable
       {
          LogMessages.LOGGER.skipUnkownFiled(name);
       }
-      lastFieldWasData = newLastFieldWasData;
+      return newLastFieldWasData;
    }
 
    public byte[] readEvent(final InputStream in) throws IOException
@@ -302,10 +301,5 @@ public class SseEventInputImpl implements EventInput, Closeable
          }
       }
       return null;
-   }
-
-   public void setProviders(Providers providers)
-   {
-      this.providers = providers;
    }
 }
