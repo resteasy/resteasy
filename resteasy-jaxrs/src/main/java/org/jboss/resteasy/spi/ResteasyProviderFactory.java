@@ -1777,7 +1777,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected int getPriority(Integer override, Map<Class<?>, Integer> contracts, Class type, Class<?> component)
    {
-      if (override != null) return override;
+      if (override != null && override != -1) return override;
       if (contracts != null)
       {
          Integer p = contracts.get(type);
