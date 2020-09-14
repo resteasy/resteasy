@@ -245,7 +245,6 @@
                                     <log-time>true</log-time>
                                     <offline>true</offline>
                                     <plugin-options>
-                                        <jboss-maven-dist/>
                                         <jboss-fork-embedded>true</jboss-fork-embedded>
                                     </plugin-options>
                                     <feature-packs>
