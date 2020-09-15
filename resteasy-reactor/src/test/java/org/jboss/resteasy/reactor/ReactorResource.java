@@ -2,6 +2,7 @@ package org.jboss.resteasy.reactor;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -10,6 +11,7 @@ import org.jboss.resteasy.annotations.Stream;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Path("/")
@@ -46,5 +48,12 @@ public class ReactorResource
    public Mono<Integer> injectionAsync(@Async @Context Integer value)
    {
       return Mono.just(value);
+   }
+
+   @Path("delay/{secs}")
+   @GET
+   public Mono<String> delay(@PathParam("secs") int delay) {
+       return Mono.just("I delayed for " + delay + " seconds.")
+           .delayElement(Duration.ofSeconds(delay));
    }
 }
