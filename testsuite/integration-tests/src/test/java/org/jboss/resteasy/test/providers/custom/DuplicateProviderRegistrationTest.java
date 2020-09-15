@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers.custom;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
@@ -12,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -34,6 +36,7 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
  * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
+@Category(NotForBootableJar.class)  // no log check support for bootable-jar in RESTEasy TS so far
 public class DuplicateProviderRegistrationTest {
 
    private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
@@ -44,6 +47,7 @@ public class DuplicateProviderRegistrationTest {
       WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
       war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
             TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
+      war.addClass(NotForBootableJar.class);
       // Arquillian in the deployment, test reads the server.log
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks"),

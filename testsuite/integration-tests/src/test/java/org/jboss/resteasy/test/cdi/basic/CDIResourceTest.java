@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -51,7 +52,11 @@ import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class    //  java.lang.ClassNotFoundException: javax.faces.webapp.FacesServlet (MP is missing JSF)
+    // java.lang.ClassNotFoundException: javax.faces.webapp.FacesServlet (MP is missing JSF)
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,
+    // this test doesn't use Arquillian, so additional bootable-jar support needs to be added here
+    // in order to have this test functional on bootable jar
+    NotForBootableJar.class
 })
 public class CDIResourceTest {
 

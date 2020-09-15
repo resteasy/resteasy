@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class    //  MP is missing javax.mail
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,    //  MP is missing javax.mail
 })
 public class EncodingMimeMultipartFormProviderTest {
 

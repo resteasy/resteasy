@@ -90,6 +90,19 @@ the usage of `standalone-microprofile.xml` configuration file:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dts.standalone.microprofile
 
+### Bootable jar testing
+Run testsuite or test against Bootable jar, not against Wildfly:
+
+> mvn clean verify -Dts.bootable -Ddefault=false -Ddisable.microprofile.tests -Dserver.version=21.0.0.Beta1-SNAPSHOT -Dserver.home=not-needed-for-bootable.jar 
+
+Please notice that when running integration tests against a bootable JAR, the following applies:
+
+* `-Dtestsuite.wildfly.galleon.pack.group.id` can be used to set the Group Id for the WildFly Galleon feature pack 
+artifact (e.g. org.jboss.eap would use a productized version), the default being `org.wildfly`
+* `-Dserver.version` will be used to set the version for the WildFly Galleon feature pack artifact
+* `-Dserver.home` must be set to some literal (like in the above example) since this prevents the `download` profile
+from being executed and the server distribution to be downloaded and unpacked consequently. 
+
 ### Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``
 
