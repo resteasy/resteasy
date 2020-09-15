@@ -2,7 +2,10 @@
 <jboss-deployment-structure>
     <deployment>
         <dependencies>
-            <module name="org.bouncycastle" services="import"/>
+            <module name="org.bouncycastle.bcmail" services="import"/>
+            <module name="org.bouncycastle.bcpg" services="import"/>
+            <module name="org.bouncycastle.bcpkix" services="import"/>
+            <module name="org.bouncycastle.bcprov" services="import"/>
         </dependencies>
     </deployment>
 </jboss-deployment-structure>
