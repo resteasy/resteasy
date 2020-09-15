@@ -17,6 +17,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -63,7 +64,8 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing jboss.naming.context.java.jboss.exported.jms.RemoteConnectionFactory
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class, // MP is missing jboss.naming.context.java.jboss.exported.jms.RemoteConnectionFactory
+    NotForBootableJar.class // needs ejb + standalone-full
 })
 public class MDBInjectionTest extends AbstractInjectionTestBase {
    protected static final Logger log = LogManager.getLogger(MDBInjectionTest.class.getName());
