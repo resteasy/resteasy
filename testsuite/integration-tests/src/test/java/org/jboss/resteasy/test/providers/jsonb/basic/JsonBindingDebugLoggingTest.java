@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.jsonb.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.DebugLoggingServerSetup;
@@ -20,6 +21,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.ProcessingException;
@@ -48,6 +50,7 @@ import static org.hamcrest.Matchers.greaterThan;
  */
 @RunWith(Arquillian.class)
 @ServerSetup({DebugLoggingServerSetup.class}) // TBD: remove debug logging activation?
+@Category(NotForBootableJar.class) // no log check support for bootable-jar in RESTEasy TS so far
 public class JsonBindingDebugLoggingTest {
 
    static ResteasyClient client;
@@ -59,6 +62,7 @@ public class JsonBindingDebugLoggingTest {
       war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
       war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
       war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
+      war.addClass(NotForBootableJar.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new ReflectPermission("suppressAccessChecks"),
               new RuntimePermission("accessDeclaredMembers"),

@@ -54,7 +54,7 @@ import java.util.Map;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class    //  MP is missing javax.mail
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,    //  MP is missing javax.mail
 })
 public class MimeMultipartProviderTest {
 

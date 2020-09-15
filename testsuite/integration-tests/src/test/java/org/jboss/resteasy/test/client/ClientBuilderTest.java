@@ -15,12 +15,14 @@ import javax.ws.rs.core.FeatureContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -29,6 +31,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
+@Category(NotForBootableJar.class)  // no log check support for bootable-jar in RESTEasy TS so far
 public class ClientBuilderTest {
 
    @SuppressWarnings(value = "unchecked")
@@ -36,6 +39,7 @@ public class ClientBuilderTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
       war.addClass(TestUtil.class);
+      war.addClass(NotForBootableJar.class);
       // Arquillian in the deployment and use of TestUtil
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
