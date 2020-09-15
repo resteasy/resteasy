@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <defaultProtocol type="Servlet 3.0" />
+
+    <group qualifier="integration-tests" default="true">
+        <container qualifier="${container.qualifier.managed}" default="true">
+            <configuration>
+                <property name="installDir">${install.dir}</property>
+                <property name="jarFile">${bootable.jar}</property>
+
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} -Djboss.socket.binding.port-offset=${container.offset.managed}</property>
+                <property name="jbossArguments">${securityManagerArg}</property>
+                <!-- -Djboss.inst is not necessarily needed, only in case the test case neeeds path to the instance it runs in.
+                     In the future, Arquillian should capable of injecting it into @ArquillianResource File or such. -->
+                <property name="allowConnectingToRunningServer">true</property>
+                <property name="managementAddress">${node}</property>
+                <property name="managementPort">${container.management.port.managed}</property>
+
+                <!-- AS7-4070 -->
+                <property name="waitForPorts">8787 ${container.management.port.managed}</property>
+                <property name="waitForPortsTimeoutInSeconds">8</property>
+            </configuration>
+        </container>
+        <container qualifier="${container.qualifier.managed.encoding}">
+            <configuration>
+                <property name="installDir">${install.dir}-encoding</property>
+                <property name="jarFile">${bootable.jar}</property>
+
+                <!-- Forcing file.encoding=us-ascii in order to test RESTEASY-2171 -->
+                <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} -Djboss.socket.binding.port-offset=7000
+                </property>
+                <property name="jbossArguments">${securityManagerArg}</property>
+                <!-- -Djboss.inst is not necessarily needed, only in case the test case neeeds path to the instance it runs in.
+                     In the future, Arquillian should capable of injecting it into @ArquillianResource File or such. -->
+                <property name="allowConnectingToRunningServer">true</property>
+                <property name="managementAddress">${node}</property>
+                <property name="managementPort">${container.management.port.managed.encoding}</property>
+                <!-- AS7-4070 -->
+                <property name="waitForPorts">8787 ${container.management.port.managed.encoding}</property>
+                <property name="waitForPortsTimeoutInSeconds">8</property>
+            </configuration>
+        </container>
+    </group>
+
+</arquillian>

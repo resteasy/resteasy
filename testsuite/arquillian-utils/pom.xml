@@ -30,6 +30,20 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>bootablejar.profile</id>
+            <activation>
+                <property>
+                    <name>ts.bootable</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-bootable</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -38,6 +52,14 @@
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-depchain</artifactId>
             <type>pom</type>
+            <exclusions>
+                <!-- TODO remove this exclusion once this depends on Jakarta Inject -->
+                <!-- superseded by jakarta.inject:jakarta.inject-api -->
+                <exclusion>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -130,6 +152,12 @@
                 <exclusion>
                     <groupId>org.sonatype.aether</groupId>
                     <artifactId>aether-api</artifactId>
+                </exclusion>
+                <!-- TODO remove this exclusion once this depends on Jakarta Inject -->
+                <!-- superseded by jakarta.inject:jakarta.inject-api -->
+                <exclusion>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
