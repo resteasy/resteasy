@@ -6,6 +6,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.BasicAuthentication;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.security.resource.SecurityContextResource;
@@ -41,7 +42,8 @@ import java.nio.file.Paths;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({
-    ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class,
+    NotForBootableJar.class // requires different security configuration
 })
 public class SecurityContextTest {
 

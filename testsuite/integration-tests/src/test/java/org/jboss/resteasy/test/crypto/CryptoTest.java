@@ -5,6 +5,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.security.KeyTools;
 import org.jboss.resteasy.security.smime.EnvelopedInput;
@@ -28,6 +29,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -58,6 +60,7 @@ import java.util.Base64;
 @SuppressWarnings(value = "unchecked")
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(NotForBootableJar.class) // RESTEasy crypto module is private in WF so it's not necessary to test this with bootable jar
 public class CryptoTest {
    private static final String ERROR_CONTENT_MSG = "Wrong content of response";
    private static final String ERROR_CORE_MSG = "Wrong BouncyCastleProvider and RESTEasy integration";
