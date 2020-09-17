@@ -449,7 +449,6 @@ public class SpringResourceBuilder extends ResourceBuilder {
                 if (!requestParam.defaultValue().equals(ValueConstants.DEFAULT_NONE)) {
                     parameter.setDefaultValue(requestParam.defaultValue());
                 }
-                parameter.setEncoded(true);
             }
             else if ((header = findAnnotation(annotations, RequestHeader.class)) != null)
             {
@@ -480,7 +479,6 @@ public class SpringResourceBuilder extends ResourceBuilder {
                 if (parameter.getParamName().isEmpty() && !uriParam.value().isEmpty()) {
                     parameter.setParamName(uriParam.value());
                 }
-                parameter.setEncoded(true);
             }
             else if ((matrix = findAnnotation(annotations, MatrixVariable.class)) != null)
             {

@@ -11,7 +11,6 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import org.jboss.resteasy.annotations.SseElementType;
 import org.jboss.resteasy.test.rx.resource.Thing;
 
 import io.reactivex.BackpressureStrategy;
@@ -24,8 +23,7 @@ public class Rx2FlowableableSSECompatibilityResourceImpl {
 
    @GET
    @Path("eventStream/thing")
-   @Produces("text/event-stream")
-   @SseElementType("application/json")
+   @Produces("text/event-stream;element-type=application/json")
    public void eventStreamThing(@Context SseEventSink eventSink,
       @Context Sse sse) {
       new ScheduledThreadPoolExecutor(5).execute(() -> {
@@ -40,8 +38,7 @@ public class Rx2FlowableableSSECompatibilityResourceImpl {
 
    @GET
    @Path("flowable/thing")
-   @Produces("text/event-stream")
-   @SseElementType("application/json")
+   @Produces("text/event-stream;element-type=application/json")
    public Flowable<Thing> flowableSSE() {
       return Flowable.create(
          new FlowableOnSubscribe<Thing>() {

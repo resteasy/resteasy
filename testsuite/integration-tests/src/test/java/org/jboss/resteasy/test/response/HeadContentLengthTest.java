@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.response.resource.SimpleResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -13,7 +12,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -61,7 +59,6 @@ public class HeadContentLengthTest {
     * @tpSince RESTEasy 3.0.19
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testHeadContentLength() {
       Builder builder = client.target(generateURL("/simpleresource")).request();
       builder.accept(MediaType.TEXT_PLAIN_TYPE);

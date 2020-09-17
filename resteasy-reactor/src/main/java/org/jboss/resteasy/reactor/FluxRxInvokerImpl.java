@@ -258,8 +258,7 @@ public class FluxRxInvokerImpl implements FluxRxInvoker
       {
          builder.executor(executorService);
       }
-      SseEventSourceImpl sseEventSource = (SseEventSourceImpl) builder.build();
-      sseEventSource.setAlwaysReconnect(false);
+      SseEventSourceImpl sseEventSource = (SseEventSourceImpl) builder.alwaysReconnect(false).build();
       return sseEventSource;
    }
 

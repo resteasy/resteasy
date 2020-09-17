@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.providers.sse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,11 +59,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private final Object lock = new Object();
 
+   private final ResteasyProviderFactory providerFactory;
+
+   @Deprecated
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
+   {
+      this(writer, ResteasyProviderFactory.getInstance());
+   }
+
+   public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer, final ResteasyProviderFactory providerFactory)
    {
       this.writer = writer;
       contextDataMap = ResteasyContext.getContextDataMap();
-
+      this.providerFactory = providerFactory;
       request = ResteasyContext.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
       asyncContext = request.getAsyncContext();
 
@@ -174,7 +181,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
                MediaType[] mediaTypes = method.getProduces();
-               if (mediaTypes != null &&  Arrays.asList(mediaTypes).contains(MediaType.SERVER_SENT_EVENTS_TYPE))
+               if (mediaTypes != null &&  getSseEventType(mediaTypes) != null)
                {
                   // @Produces("text/event-stream")
                   SseElementType sseElementType = FindAnnotation.findAnnotation(method.getMethodAnnotations(),SseElementType.class);
@@ -189,7 +196,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   else
                   {
                      // No element media type declared.
-                     jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
+                     jaxrsResponse = (BuiltResponse) Response.ok().type(getSseEventType(mediaTypes)).build();
 //                   // use "element-type=text/plain"?
                   }
                }
@@ -200,7 +207,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   {
                      // Get element media type from @Produces.
                      jaxrsResponse = (BuiltResponse) Response.ok("").build();
-                     MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response, ResteasyProviderFactory.getInstance(), method);
+                     MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
                      Map<String, String> parameterMap = new HashMap<String, String>();
                      parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType.toString());
                      String[] streamType = getStreamType(method);
@@ -218,7 +225,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                CompletableFuture<Void> ret = new CompletableFuture<>();
                ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
-                     ResteasyProviderFactory.getInstance(), t -> {
+                     providerFactory, t -> {
                         AsyncOutputStream aos;
                         try
                         {
@@ -230,13 +237,12 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                            return;
                         }
                         // eager composition to guarantee ordering
-                        CompletionStage<Void> a = aos.asyncWrite(SseConstants.DOUBLE_EOL);
-                        CompletionStage<Void> b = aos.asyncFlush();
+                          CompletionStage<Void> a = aos.asyncWrite(SseConstants.DOUBLE_EOL)
+                                  .thenCompose(v ->  aos.asyncFlush());
                         // we've queued a response flush, so avoid a second one being queued
                         responseFlushed = true;
 
-                        a.thenCompose(v -> b)
-                        .thenAccept(v -> {
+                        a.thenAccept(v -> {
                            ret.complete(null);
                         }).exceptionally(e -> {
                            if(e instanceof CompletionException)
@@ -290,9 +296,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
          }
          // eager composition to guarantee ordering
-         CompletionStage<Void> a = internalFlushResponseToClient(true);
-         CompletionStage<Void> b = writeEvent(event);
-         return a.thenCompose(v -> b);
+         return internalFlushResponseToClient(true)
+                 .thenCompose(v ->  writeEvent(event));
       }
    }
 
@@ -348,10 +353,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                writer.writeTo(event, event.getClass(), null, new Annotation[]{}, mediaType, null, bout);
                AsyncOutputStream aos = response.getAsyncOutputStream();
                // eager composition to guarantee ordering
-               CompletionStage<Void> a = aos.asyncWrite(bout.toByteArray());
-               CompletionStage<Void> b = aos.asyncFlush();
-               return a
-                     .thenCompose(v -> b)
+               return aos.asyncWrite(bout.toByteArray())
+                       .thenCompose(v ->  aos.asyncFlush())
                      .exceptionally(e -> {
                         if(e instanceof CompletionException)
                            e = e.getCause();
@@ -404,18 +407,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       throw new RuntimeException(Messages.MESSAGES.expectedStreamModeGeneralOrRaw(mode));
    }
 
-   private boolean contains(String[] ss, String t)
-   {
-      for (String s : ss)
-      {
-         if (s.startsWith(t))
-         {
-            return true;
-         }
-      }
-      return false;
-   }
-
    @Override
    public boolean equals(Object o) {
       return this == o;
@@ -427,4 +418,14 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       // required by checkcode
       return super.hashCode();
    }
+   private MediaType getSseEventType(MediaType[] mediaTypes) {
+      for (MediaType type : mediaTypes) {
+        if (type.getType().equalsIgnoreCase(MediaType.SERVER_SENT_EVENTS_TYPE.getType())
+              && type.getSubtype().equalsIgnoreCase(MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype()))
+        {
+           return type;
+        }
+      }
+      return null;
+  }
 }

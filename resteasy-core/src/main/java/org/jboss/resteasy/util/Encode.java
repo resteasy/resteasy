@@ -214,6 +214,9 @@ public class Encode
 
    public static String decodePath(String path)
    {
+      if (path.indexOf('%') == -1) {
+          return path;
+      }
       Matcher matcher = encodedCharsMulti.matcher(path);
       int start=0;
       StringBuilder builder = new StringBuilder();
@@ -422,6 +425,16 @@ public class Encode
          if (!encodePercent && currentChar == '%')
          {
             result.append(currentChar);
+            continue;
+         }
+         if (Character.isHighSurrogate(currentChar)) {
+            String part = segment.substring(i, i + 2);
+            try {
+               result.append(URLEncoder.encode(part, StandardCharsets.UTF_8.name()));
+            } catch (UnsupportedEncodingException e) {
+               throw new RuntimeException(e);
+            }
+            ++i;
             continue;
          }
          String encoding = encode(currentChar, encodingMap);

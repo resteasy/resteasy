@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.5.6.Final</version>
+        <version>4.5.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>resteasy-jaxrs-dist</artifactId>
@@ -92,12 +92,6 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                  <groupId>com.google.guava</groupId>
-                  <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

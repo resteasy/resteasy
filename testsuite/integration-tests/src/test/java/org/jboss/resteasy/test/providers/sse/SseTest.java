@@ -1,8 +1,11 @@
 package org.jboss.resteasy.test.providers.sse;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
@@ -29,6 +32,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
+import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl.SourceBuilder;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -38,6 +42,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -51,6 +57,7 @@ public class SseTest
    {
       WebArchive war = TestUtil.prepareArchive(SseTest.class.getSimpleName());
       war.addClass(SseTest.class);
+      war.addAsResource("org/jboss/resteasy/test/providers/sse/bigmsg.json", "org/jboss/resteasy/test/providers/sse/bigmsg.json");
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml", "web.xml");
       war.addAsWebResource("org/jboss/resteasy/test/providers/sse/index.html", "index.html");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -58,7 +65,8 @@ public class SseTest
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class,
-            AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
+              AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
+
    }
 
    private String generateURL(String path)
@@ -498,8 +506,8 @@ public class SseTest
       List<String> results = new ArrayList<String>();
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
-      SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
-      sourceImpl.setAlwaysReconnect(false);
+      SourceBuilder builder = (SourceBuilder) SseEventSource.target(target);
+      SseEventSource sourceImpl = builder.alwaysReconnect(false).build();
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> results.add(event.readData()));
@@ -515,8 +523,8 @@ public class SseTest
       //test for [Resteasy-1863]:SseEventSourceImpl should not close Client instance
       results.clear();
       WebTarget target2 = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
-      SseEventSourceImpl sourceImpl2 = (SseEventSourceImpl)SseEventSource.target(target2).build();
-      sourceImpl2.setAlwaysReconnect(false);
+      SourceBuilder builder2 = (SourceBuilder) SseEventSource.target(target2);
+      SseEventSource sourceImpl2 = builder2.alwaysReconnect(false).build();
       try (SseEventSource source = sourceImpl2)
       {
          source.register(event -> results.add(event.readData()));
@@ -538,8 +546,8 @@ public class SseTest
       Client client = ClientBuilder.newBuilder().build();
       final AtomicInteger errors = new AtomicInteger(0);
       WebTarget target = client.target(generateURL("/service/server-sent-events/noContent"));
-      SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
-      sourceImpl.setAlwaysReconnect(false);
+      SourceBuilder builder = (SourceBuilder) SseEventSource.target(target);
+      SseEventSource sourceImpl = builder.alwaysReconnect(false).build();
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {
@@ -558,7 +566,45 @@ public class SseTest
       Assert.assertTrue("error is not expected", errors.get() == 0);
       client.close();
    }
-
+   //Test for RESTEASY-2689 which is reported in quarkus: https://github.com/quarkusio/quarkus/issues/11824
+   @Test
+   @InSequence(14)
+   public void testBigMessage() throws Exception
+   {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final AtomicInteger errors = new AtomicInteger(0);
+      final List<String> results = new ArrayList<String>();
+      Client client = ClientBuilder.newBuilder().build();
+      WebTarget target = client.target(generateURL("/service/server-sent-events/bigmsg"));
+      SseEventSource msgEventSource = SseEventSource.target(target).build();
+      try (SseEventSource eventSource = msgEventSource)
+      {
+         Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+         eventSource.register(event -> {
+            results.add(event.readData());
+            latch.countDown();
+         }, ex -> {
+               errors.incrementAndGet();
+               logger.error(ex.getMessage(), ex);
+               throw new RuntimeException(ex);
+            }) ;
+         eventSource.open();
+         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+         Assert.assertEquals(0, errors.get());
+         Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      }
+      Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
+      Assert.assertTrue("1 messages are expected, but is : " + results.size(), results.size() == 1);
+      java.nio.file.Path filepath= Paths.get(SseTest.class.getResource("bigmsg.json").toURI());
+      String bigMsg = new String(Files.readAllBytes(filepath));
+      ObjectMapper om = new ObjectMapper();
+      @SuppressWarnings("unchecked")
+      Map<String, Object> m1 = (Map<String, Object>)(om.readValue(bigMsg, Map.class));
+      @SuppressWarnings("unchecked")
+      Map<String, Object> m2 = (Map<String, Object>)(om.readValue(results.get(0), Map.class));
+      Assert.assertTrue("Unexpceted big size message", m1.equals(m2));
+      client.close();
+   }
    //    @Test
    //    //This will open a browser and test with html sse client
    //    public void testHtmlSse() throws Exception

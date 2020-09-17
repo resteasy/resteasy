@@ -76,6 +76,15 @@ public class SpringWebTest {
     }
 
     @Test
+    public void verifyGetUsingNonEnglishChars() {
+        WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/hello3?name=Γιώργος");
+        Response response = target.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        String str = response.readEntity(String.class);
+        Assert.assertEquals("Unexpected response content from the server", "hello Γιώργος", str);
+    }
+
+    @Test
     public void verifyPathWithWildcard() {
         WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/wildcard/whatever/world");
         Response response = target.request().get();

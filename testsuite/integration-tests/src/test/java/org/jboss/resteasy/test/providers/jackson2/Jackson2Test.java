@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2JAXBResource;
@@ -24,7 +23,6 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.util.HashMap;
@@ -177,7 +175,6 @@ public class Jackson2Test {
     * @tpSince RESTEasy 3.1.0.Final
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testJacksonJsonpDisabled() throws Exception {
       WebTarget target = client.target(PortProviderUtil.generateURL("/products/333?callback=foo", JSONP_DISABLED));
       Response response = target.request().get();
@@ -196,7 +193,6 @@ public class Jackson2Test {
     * @tpSince RESTEasy 3.0.16 (as testJacksonJsonp() but Jackson2JsonpInterceptor would have been enabled)
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testJacksonJsonpDefault() throws Exception {
       WebTarget target = client.target(generateURL("/products/333?callback=foo"));
       Response response = target.request().get();

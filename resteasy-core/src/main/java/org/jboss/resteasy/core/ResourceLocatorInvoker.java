@@ -48,7 +48,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       this.method = locator;
       this.methodInjector = injector.createMethodInjector(locator, providerFactory);
       hasProduces = method.getMethod().isAnnotationPresent(Produces.class) || method.getMethod().getClass().isAnnotationPresent(Produces.class);
-      methodStatisticsLogger = ((StatisticsControllerImpl)providerFactory.getStatisticsController()).EMPTY;
+      methodStatisticsLogger = StatisticsControllerImpl.EMPTY;
    }
 
    @Override
@@ -57,6 +57,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    }
 
 
+   @SuppressWarnings("unchecked")
    protected Object resolveTarget(HttpRequest request, HttpResponse response)
    {
       Object locatorResource = this.resource.createResource(request, response, providerFactory);
@@ -85,6 +86,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       if (obj == null || !(obj instanceof CompletionStage)) {
          return constructLocator(locator, uriInfo, (Object[])obj);
       }
+      @SuppressWarnings("unchecked")
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
 
       return stagedArgs.exceptionally(t -> {
@@ -129,6 +131,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       return method.getMethod();
    }
 
+   @SuppressWarnings("unchecked")
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
       Object resource = resolveTarget(request, response);
@@ -139,6 +142,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
 
    }
 
+   @SuppressWarnings("unchecked")
    public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
       Object resource = resolveTargetFromLocator(request, response, locator);

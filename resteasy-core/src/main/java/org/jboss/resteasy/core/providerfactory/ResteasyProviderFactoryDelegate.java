@@ -386,6 +386,7 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
       resteasyProviderFactoryDelegator.addHeaderDelegate(clazz, header);
    }
 
+   @SuppressWarnings("deprecation")
    @Override
    public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
          MediaType mediaType)
@@ -494,6 +495,7 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
       return resteasyProviderFactoryDelegator.getPossibleMessageBodyWritersMap(type, genericType, annotations, accept);
    }
 
+   @SuppressWarnings("deprecation")
    @Override
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
          MediaType mediaType)

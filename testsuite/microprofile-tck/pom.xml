@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-testsuite</artifactId>
-    <version>4.5.6.Final</version>
+    <version>4.5.7-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -125,7 +125,7 @@
             <configuration>
               <skip>${skip.mp.tck}</skip>
               <dir>target/classes</dir>
-              <params>--port=8765</params>
+              <params>--port=8765 --disable-banner=true</params>
             </configuration>
           </execution>
         </executions><dependencies>

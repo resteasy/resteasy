@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.custom;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
@@ -13,7 +12,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -47,7 +45,6 @@ public class DuplicateProviderRegistrationTest {
       WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
       war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
             TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
-      war.addClass(NotForForwardCompatibility.class);
       // Arquillian in the deployment, test reads the server.log
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks"),
@@ -75,7 +72,6 @@ public class DuplicateProviderRegistrationTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testDuplicateProvider() {
       int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
       Client client = ClientBuilder.newClient();
@@ -95,7 +91,6 @@ public class DuplicateProviderRegistrationTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testFromJavadoc() {
       int initRESTEASY002155WarningCount = getRESTEASY002155WarningCount();
       int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();

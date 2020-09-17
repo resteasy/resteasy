@@ -3,13 +3,11 @@ package org.jboss.resteasy.test.providers.custom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
@@ -51,7 +49,6 @@ public class MissingProducerTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testMissingProducer() {
       Assert.assertEquals(ERR_MSG, 1, parseLog1() - initLogMsg1Count);
       Assert.assertEquals(ERR_MSG, 1, parseLog2() - initLogMsg2Count);

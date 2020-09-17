@@ -1,8 +1,7 @@
 package org.jboss.resteasy.microprofile.client.header;
 
-import static org.jboss.resteasy.microprofile.client.utils.ListCastUtils.castToListOfStrings;
-
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
+import org.eclipse.microprofile.rest.client.ext.DefaultClientHeadersFactoryImpl;
 import org.jboss.resteasy.microprofile.client.impl.MpClientInvocation;
 import org.jboss.resteasy.microprofile.client.utils.ClientRequestContextUtils;
 
@@ -11,11 +10,12 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.jboss.resteasy.microprofile.client.utils.ListCastUtils.castToListOfStrings;
 
 
 /**
@@ -45,17 +45,22 @@ public class ClientHeadersRequestFilter implements ClientRequestFilter {
                 (key, values) -> headers.put(key, castToListOfStrings(values))
         );
 
+        @SuppressWarnings("unchecked")
         MultivaluedMap<String,String> containerHeaders = (MultivaluedMap<String, String>) requestContext.getProperty(MpClientInvocation.CONTAINER_HEADERS);
         if(containerHeaders == null)
             containerHeaders = EMPTY_MAP;
         // stupid final rules
         MultivaluedMap<String,String> incomingHeaders = containerHeaders;
 
-        factory.map(f -> f.update(incomingHeaders, headers))
-                .orElse(headers)
-                .forEach(
-                        (key, values) -> requestContext.getHeaders().put(key, castToListOfObjects(values))
-                );
+        if (!factory.isPresent() || factory.get() instanceof DefaultClientHeadersFactoryImpl) {
+            // When using the default factory, pass the proposed outgoing headers onto the request context.
+            // Propagation with the default factory will then overwrite any values if required.
+            headers.forEach((key, values) -> requestContext.getHeaders().put(key, castToListOfObjects(values)));
+        }
+
+        factory.ifPresent(f -> f.update(incomingHeaders, headers)
+                .forEach((key, values) -> requestContext.getHeaders().put(key, castToListOfObjects(values)))
+        );
     }
 
     private static List<Object> castToListOfObjects(List<String> values) {

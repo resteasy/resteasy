@@ -45,6 +45,7 @@ import io.reactivex.Single;
 public class RestClientProxyTest
 {
 
+   public static final String EMOJIS = "\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00";
    @ArquillianResource
    URL url;
 
@@ -99,6 +100,27 @@ public class RestClientProxyTest
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       assertEquals("foo", value.get());
+   }
+
+   //RESTEASY-2633
+   @Test
+   public void testEncodingMultiByteCharacters() throws Exception
+   {
+      RestClientBuilder builder = RestClientBuilder.newBuilder();
+      HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
+
+      assertNotNull(client);
+      CountDownLatch latch = new CountDownLatch(1);
+      AtomicReference<String> value = new AtomicReference<String>();
+      value.set(null);
+      Single<String> single = client.single(EMOJIS);
+      single.subscribe((String s) -> {
+         value.set(s);
+         latch.countDown();
+      });
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      assertEquals(EMOJIS, value.get());
    }
 
    @Test

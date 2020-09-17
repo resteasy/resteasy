@@ -45,10 +45,8 @@ public class RxTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
-      List<Class> classes = server.getDeployment().getActualResourceClasses();
-      classes.add(RxResource.class);
-      List<Class> providers = server.getDeployment().getActualProviderClasses();
-      providers.add(RxInjector.class);
+      server.getDeployment().getActualResourceClasses().add(RxResource.class);
+      server.getDeployment().getActualProviderClasses().add(RxInjector.class);
       server.getDeployment().start();
       server.getDeployment().registration();
       server.start();

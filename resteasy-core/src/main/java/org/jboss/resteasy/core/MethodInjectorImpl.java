@@ -54,12 +54,11 @@ public class MethodInjectorImpl implements MethodInjector
       return expectsBody;
    }
 
-   @SuppressWarnings(value = "unchecked")
-   public static Method findInterfaceBasedMethod(Class root, Method method)
+   public static Method findInterfaceBasedMethod(Class<?> root, Method method)
    {
       if (method.getDeclaringClass().isInterface() || root.isInterface()) return method;
 
-      for (Class intf : root.getInterfaces())
+      for (Class<?> intf : root.getInterfaces())
       {
          try
          {
@@ -79,6 +78,7 @@ public class MethodInjectorImpl implements MethodInjector
       return params;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public Object injectArguments(HttpRequest input, HttpResponse response)
    {
@@ -129,11 +129,14 @@ public class MethodInjectorImpl implements MethodInjector
       if (argsObj == null || !(argsObj instanceof CompletionStage)) {
          Object returnObj = invoke(request, httpResponse, resource, (Object[]) argsObj);
          if (returnObj instanceof CompletionStage) {
-            return new CompletionStageHolder((CompletionStage)returnObj);
+            @SuppressWarnings("rawtypes")
+            CompletionStage cs = (CompletionStage)returnObj;
+            return new CompletionStageHolder(cs);
          } else {
             return returnObj;
          }
       }
+      @SuppressWarnings("unchecked")
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)argsObj;
       return stagedArgs.thenApply(args -> invoke(request, httpResponse, resource, args));
    }
