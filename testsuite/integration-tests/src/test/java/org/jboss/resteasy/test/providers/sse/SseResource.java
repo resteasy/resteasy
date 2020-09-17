@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test.providers.sse;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -341,4 +344,60 @@ public class SseResource
       }
       eventSink.close();
    }
+
+   @GET
+   @Path("/bigmsg")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void bigEventMsg(@Context SseEventSink sink) throws IOException, URISyntaxException
+   {
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      this.eventSink = sink;
+      ExecutorService service = (ExecutorService) servletContext
+            .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      java.io.InputStream inputStream = SseResource.class.getResourceAsStream("bigmsg.json");
+      String bigMsg = toString(new InputStreamReader(inputStream));
+      service.execute(new Thread()
+      {
+         public void run()
+         {
+            if (!eventSink.isClosed() && sending)
+            {
+               try
+               {
+                  synchronized (openLock)
+                  {
+                     eventSink.send(sse.newEvent(bigMsg));
+                  }
+                  Thread.sleep(200);
+               }
+               catch (final InterruptedException e)
+               {
+                  logger.error(e.getMessage(), e);
+               }
+
+            }
+         }
+      });
+   }
+
+   public static String toString(final Reader input) throws IOException {
+
+       final char[] buffer = new char[2048];
+       StringBuilder strBuilder = new StringBuilder();
+       try (Reader r = input) {
+           int n = r.read(buffer);
+           while (-1 != n) {
+               if (n == 0) {
+                   throw new IOException("0 bytes read in violation of InputStream.read(byte[])");
+               }
+               strBuilder.append(buffer, 0, n);
+               n = r.read(buffer);
+           }
+           return strBuilder.toString();
+       }
+   }
+
 }
