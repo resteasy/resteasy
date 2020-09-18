@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Product;
@@ -21,6 +22,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -33,6 +35,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class JsonFilterWithServletConditionalFilterTest {
 
    static ResteasyClient client;

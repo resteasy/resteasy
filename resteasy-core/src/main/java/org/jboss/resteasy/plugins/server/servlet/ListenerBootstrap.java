@@ -58,17 +58,17 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    public static URL[] findWebInfLibClasspaths(ServletContext servletContext)
    {
       ArrayList<URL> list = new ArrayList<URL>();
-      Set<String> libJars = servletContext.getResourcePaths("/WEB-INF/lib");
+      Set libJars = servletContext.getResourcePaths("/WEB-INF/lib");
       if (libJars == null)
       {
          URL[] empty = {};
          return empty;
       }
-      for (String jar : libJars)
+      for (Object jar : libJars)
       {
          try
          {
-            list.add(servletContext.getResource(jar));
+            list.add(servletContext.getResource((String) jar));
          }
          catch (MalformedURLException e)
          {

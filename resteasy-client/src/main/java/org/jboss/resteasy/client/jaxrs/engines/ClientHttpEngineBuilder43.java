@@ -107,7 +107,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          else if (that.getKeyStore() != null || that.getTrustStore() != null)
          {
             SSLContext ctx = SSLContexts.custom()
-               .setProtocol(SSLConnectionSocketFactory.TLS)
+               .useProtocol(SSLConnectionSocketFactory.TLS)
                .setSecureRandom(null)
                .loadKeyMaterial(that.getKeyStore(),
                         that.getKeyStorePassword() != null ? that.getKeyStorePassword().toCharArray() : null)
@@ -205,9 +205,6 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          {
             httpClientBuilder.disableCookieManagement();
          }
-         if (that.isDisableAutomaticRetries()) {
-            httpClientBuilder.disableAutomaticRetries();
-         }
          httpClient = httpClientBuilder.build();
       }
       else {
@@ -223,9 +220,6 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                if (!that.isCookieManagementEnabled())
                {
                   httpClientBuilder.disableCookieManagement();
-               }
-               if (that.isDisableAutomaticRetries()) {
-                  httpClientBuilder.disableAutomaticRetries();
                }
                return httpClientBuilder.build();
             }

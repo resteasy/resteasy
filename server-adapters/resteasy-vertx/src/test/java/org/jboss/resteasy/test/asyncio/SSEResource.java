@@ -21,7 +21,9 @@ public class SSEResource {
   public void reset(@Context SseEventSink sink, @Context Sse sse) {
     exception = false;
     isClosed = false;
-    sink.send(sse.newEvent("RESET"));
+    try (SseEventSink s = sink) {
+      s.send(sse.newEvent("RESET"));
+    }
   }
 
   @GET
@@ -62,15 +64,17 @@ public class SSEResource {
   @Path("check")
   @Produces(MediaType.SERVER_SENT_EVENTS)
   public void check(@Context SseEventSink sink, @Context Sse sse) {
-    if (!isClosed) {
-      sink.send(sse.newEvent("Not closed"));
-      return;
+    try (SseEventSink s = sink) {
+      if (!isClosed) {
+        s.send(sse.newEvent("Not closed"));
+        return;
+      }
+      if (!exception) {
+        s.send(sse.newEvent("No IllegalStateException is thrown"));
+        return;
+      }
+      s.send(sse.newEvent("CHECK"));
     }
-    if (!exception) {
-      sink.send(sse.newEvent("No IllegalStateException is thrown"));
-      return;
-    }
-    sink.send(sse.newEvent("CHECK"));
   }
 
   @GET

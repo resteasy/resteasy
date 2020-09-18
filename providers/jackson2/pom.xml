@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.5.7-SNAPSHOT</version>
+        <version>4.5.6.Final</version>
 	    <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-jackson2-provider</artifactId>
@@ -69,7 +69,7 @@
             <artifactId>jboss-servlet-api_4.0_spec</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
+            <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
             <exclusions>
                 <exclusion>
@@ -78,7 +78,32 @@
 		        </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-compat-qual</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.j2objc</groupId>
+                    <artifactId>j2objc-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>animal-sniffer-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>

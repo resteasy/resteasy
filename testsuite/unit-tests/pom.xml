@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-testsuite</artifactId>
-        <version>4.5.7-SNAPSHOT</version>
+        <version>4.5.6.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -64,12 +64,6 @@
             <version>${version.resteasy.testsuite}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <scope>test</scope>
-        </dependency>
-      
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>

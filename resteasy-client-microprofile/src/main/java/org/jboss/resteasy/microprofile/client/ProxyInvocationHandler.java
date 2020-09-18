@@ -104,19 +104,16 @@ public class ProxyInvocationHandler implements InvocationHandler {
                                 // minimum supported types
                                 switch (genericTypes[0].getTypeName()) {
                                     case "java.lang.String":
-                                        @SuppressWarnings("unchecked")
                                         ParamConverter<String> stringConverter = (ParamConverter<String>) converter;
                                         argsReplacement[index] = stringConverter.toString((String) arg);
                                         replacementNeeded = true;
                                         break;
                                     case "java.lang.Integer":
-                                        @SuppressWarnings("unchecked")
                                         ParamConverter<Integer> intConverter = (ParamConverter<Integer>) converter;
                                         argsReplacement[index] = intConverter.toString((Integer) arg);
                                         replacementNeeded = true;
                                         break;
                                     case "java.lang.Boolean":
-                                        @SuppressWarnings("unchecked")
                                         ParamConverter<Boolean> boolConverter = (ParamConverter<Boolean>) converter;
                                         argsReplacement[index] = boolConverter.toString((Boolean) arg);
                                         replacementNeeded = true;

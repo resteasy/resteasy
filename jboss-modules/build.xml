@@ -109,13 +109,13 @@
         </module-def>
 
         <module-def name="com.github.fge.jackson-coreutils">
-            <maven-resource group="com.github.java-json-tools" artifact="jackson-coreutils"/>
-            <maven-resource group="com.github.java-json-tools" artifact="msg-simple"/>
-            <maven-resource group="com.github.java-json-tools" artifact="btf"/>
+            <maven-resource group="com.github.fge" artifact="jackson-coreutils"/>
+            <maven-resource group="com.github.fge" artifact="msg-simple"/>
+            <maven-resource group="com.github.fge" artifact="btf"/>
         </module-def>
 
         <module-def name="com.github.fge.json-patch">
-            <maven-resource group="com.github.java-json-tools" artifact="json-patch"/>
+            <maven-resource group="com.github.fge" artifact="json-patch"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxb-provider">

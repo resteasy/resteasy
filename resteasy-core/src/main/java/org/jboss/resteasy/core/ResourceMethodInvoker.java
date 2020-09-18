@@ -101,7 +101,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       this.parentProviderFactory = providerFactory;
       this.method = method;
       this.methodAnnotations = this.method.getAnnotatedMethod().getAnnotations();
-      methodStatisticsLogger = StatisticsControllerImpl.EMPTY;
+      methodStatisticsLogger = ((StatisticsControllerImpl)providerFactory.getStatisticsController()).EMPTY;
 
       resourceInfo = new ResourceInfo()
       {
@@ -372,7 +372,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response) {
       Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
       if (resource instanceof CompletionStage) {
-         @SuppressWarnings("unchecked")
          CompletionStage<Object> stage = (CompletionStage<Object>)resource;
          return stage
                  .thenCompose(target -> invokeDryRun(request, response, target));
@@ -385,7 +384,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    {
       Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
       if (resource instanceof CompletionStage) {
-         @SuppressWarnings("unchecked")
          CompletionStage<Object> stage = (CompletionStage<Object>)resource;
          return stage
                  .thenApply(target -> invoke(request, response, target)).toCompletableFuture().getNow(null);
@@ -419,7 +417,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return invokeOnTarget(request, response, target);
    }
 
-   @SuppressWarnings("unchecked")
    protected CompletionStage<Object> invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
@@ -506,7 +503,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          Object ret = internalInvokeOnTarget(request, response, target);
          if (ret != null && ret instanceof CompletionStage) {
-            @SuppressWarnings("unchecked")
             CompletionStage<Object> retStage = (CompletionStage<Object>)ret;
             CompletionStage<BuiltResponse> stage = retStage
                     .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
@@ -636,7 +632,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
    }
 
-   @SuppressWarnings("unchecked")
    private Object internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException {
       PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
       try {
@@ -767,17 +762,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return MediaType.WILDCARD_TYPE;
    }
 
+   @SuppressWarnings(value = "unchecked")
    protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)
    {
       if (accepts == null || accepts.size() == 0 || entity == null)
       {
          return MediaType.WILDCARD_TYPE;
       }
-      Class<?> clazz = entity.getClass();
+      Class clazz = entity.getClass();
       Type type = this.method.getGenericReturnType();
       if (entity instanceof GenericEntity)
       {
-         GenericEntity<?> gen = (GenericEntity<?>) entity;
+         GenericEntity gen = (GenericEntity) entity;
          clazz = gen.getRawType();
          type = gen.getType();
       }

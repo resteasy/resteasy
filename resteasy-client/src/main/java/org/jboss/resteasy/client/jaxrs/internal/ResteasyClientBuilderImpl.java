@@ -69,23 +69,6 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected List<String> sniHostNames = new ArrayList<>();
    protected boolean trustSelfSignedCertificates = true;
    protected boolean cookieManagementEnabled;
-   protected boolean disableAutomaticRetries = false;
-
-   static ResteasyProviderFactory PROVIDER_FACTORY;
-
-   public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
-      PROVIDER_FACTORY = providerFactory;
-   }
-
-   public ResteasyClientBuilderImpl() {
-      if (PROVIDER_FACTORY != null) {
-         ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
-         if (ResteasyProviderFactory.peekInstance() != null) {
-            localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
-         }
-         providerFactory = localProviderFactory;
-      }
-   }
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -698,13 +681,4 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       return cookieManagementEnabled;
    }
 
-   @Override
-   public ResteasyClientBuilder disableAutomaticRetries() {
-      this.disableAutomaticRetries = true;
-      return this;
-   }
-   @Override
-   public boolean isDisableAutomaticRetries() {
-      return disableAutomaticRetries;
-   }
 }

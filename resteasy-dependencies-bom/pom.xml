@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-dependencies</artifactId>
-    <version>4.5.7-SNAPSHOT</version>
+    <version>4.5.6.Final</version>
     <packaging>pom</packaging>
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
@@ -19,7 +19,7 @@
         <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson>2.11.1</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.10.4</version.com.fasterxml.jackson>
         <version.com.google.guava>28.1-jre</version.com.google.guava>
         <version.com.google.inject.guice>4.2.2</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
@@ -41,10 +41,10 @@
         <version.jakarta.validation-api>2.0.2</version.jakarta.validation-api>
         <version.javax.ws.rs-api>2.0.1.Final</version.javax.ws.rs-api>
         <version.junit>4.12</version.junit>
-        <version.log4j>2.13.3</version.log4j>
+        <version.log4j>2.9.1</version.log4j>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
-        <version.org.apache.httpcomponents.httpclient>4.5.12</version.org.apache.httpcomponents.httpclient>
-        <version.org.apache.httpcomponents.httpcore>4.4.13</version.org.apache.httpcomponents.httpcore>
+        <version.org.apache.httpcomponents.httpclient>4.5.10</version.org.apache.httpcomponents.httpclient>
+        <version.org.apache.httpcomponents.httpcore>4.4.12</version.org.apache.httpcomponents.httpcore>
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.8.3</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
@@ -73,7 +73,7 @@
         <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
         <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
-        <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
+        <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
         <version.org.slf4j>1.7.29</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
@@ -82,10 +82,10 @@
         <version.org.wildfly.security.wildfly-elytron>1.7.0.Final</version.org.wildfly.security.wildfly-elytron>
         <version.weld.api>3.0.SP4</version.weld.api>
         <version.weld>3.0.5.Final</version.weld>
-        <version.json.patch>1.13</version.json.patch>
+        <version.json.patch>1.9</version.json.patch>
 
         <!-- MicroProfile versions -->
-        <version.microprofile.restclient>1.4.1</version.microprofile.restclient>
+        <version.microprofile.restclient>1.4.0</version.microprofile.restclient>
         <version.microprofile.config>1.4</version.microprofile.config>
         <version.microprofile.context-propagation>1.0.1</version.microprofile.context-propagation>
 
@@ -905,7 +905,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.github.java-json-tools</groupId>
+                <groupId>com.github.fge</groupId>
                 <artifactId>json-patch</artifactId>
                 <version>${version.json.patch}</version>
             </dependency>

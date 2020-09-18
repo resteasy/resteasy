@@ -346,7 +346,6 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
         }
     }
 
-    @SuppressWarnings("unchecked")
     private Class<? extends Annotation> resolveScope() {
 
         String configuredScope = getOptionalProperty(REST_SCOPE_FORMAT, String.class).orElse(null);

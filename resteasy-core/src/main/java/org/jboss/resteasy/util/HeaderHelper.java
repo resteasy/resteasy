@@ -9,7 +9,8 @@ import java.util.Set;
  */
 public class HeaderHelper
 {
-   public static void setAllow(MultivaluedMap<String, Object> headers, String[] methods)
+   @SuppressWarnings(value = "unchecked")
+   public static void setAllow(MultivaluedMap headers, String[] methods)
    {
       if (methods == null)
       {
@@ -33,7 +34,8 @@ public class HeaderHelper
       headers.putSingle("Allow", builder.toString());
    }
 
-   public static void setAllow(MultivaluedMap<String, Object> headers, Set<String> methods)
+   @SuppressWarnings(value = "unchecked")
+   public static void setAllow(MultivaluedMap headers, Set<String> methods)
    {
       if (methods == null)
       {

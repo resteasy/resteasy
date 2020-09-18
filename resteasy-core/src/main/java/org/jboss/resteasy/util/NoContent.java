@@ -14,7 +14,7 @@ import java.io.InputStream;
  */
 public class NoContent
 {
-   public static InputStream noContentCheck( MultivaluedMap<String, String> httpHeaders, InputStream is) throws NoContentException
+   public static InputStream noContentCheck( MultivaluedMap httpHeaders, InputStream is) throws NoContentException
    {
       contentLengthCheck(httpHeaders);
       NoContentInputStreamDelegate delegate = new NoContentInputStreamDelegate(is);
@@ -22,9 +22,10 @@ public class NoContent
 
    }
 
-   public static boolean isContentLengthZero(MultivaluedMap<String, String> httpHeaders)
+   public static boolean isContentLengthZero(MultivaluedMap httpHeaders)
    {
       if (httpHeaders == null) return false;
+      @SuppressWarnings(value = "unchecked")
       String contentLength = (String)httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (contentLength != null)
       {
@@ -34,7 +35,7 @@ public class NoContent
       return false;
    }
 
-   public static void contentLengthCheck(MultivaluedMap<String, String> httpHeaders) throws NoContentException
+   public static void contentLengthCheck(MultivaluedMap httpHeaders) throws NoContentException
    {
       if (isContentLengthZero(httpHeaders)) throw new NoContentException(Messages.MESSAGES.noContentContentLength0());
    }

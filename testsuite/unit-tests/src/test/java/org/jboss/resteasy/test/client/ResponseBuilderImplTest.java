@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.client;
 
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
@@ -35,6 +37,7 @@ public class ResponseBuilderImplTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testStringEntityTagValue() throws Exception {
       Response response = Response.ok("entityValue").tag("etagValue").build();
       Assert.assertEquals(ERROR_MESSAGE, "\"etagValue\"", response.getHeaderString("ETag"));
@@ -58,6 +61,7 @@ public class ResponseBuilderImplTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testNotModifiedWithStringEntityTagValue() throws Exception {
       Response response = Response.notModified("etagValue").build();
       Assert.assertEquals(ERROR_MESSAGE, "\"etagValue\"", response.getHeaderString("ETag"));

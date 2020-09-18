@@ -81,6 +81,17 @@ public class ResteasyUriInfo implements UriInfo
       this.matchingPath = initData.getMatchingPath();
    }
 
+   private void processUris() {
+      requestURI = URI.create(absoluteString);
+      absolutePath = queryIdx < 0 ? requestURI : URI.create(absoluteString.substring(0, queryIdx));
+      baseURI = absolutePath;
+      String tmpContextPath = contextPath;
+      if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
+      if (!tmpContextPath.startsWith("/")) tmpContextPath = "/" + tmpContextPath;
+      String baseString = absoluteString.substring(0, pathStart);
+      baseString += tmpContextPath;
+      baseURI = URI.create(baseString);
+   }
 
    protected void initialize(CharSequence absoluteUri, String queryString, String contextPath)
    {
@@ -262,7 +273,8 @@ public class ResteasyUriInfo implements UriInfo
     */
    public void setRequestUri(URI relative)
    {
-      setUri(getBaseUri(), relative);
+      if (baseURI == null) processUris();
+      setUri(baseURI, relative);
    }
 
    public String getPath()
@@ -289,9 +301,7 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getRequestUri()
    {
-      if (requestURI == null) {
-          requestURI = URI.create(absoluteString);
-      }
+      if (requestURI == null) processUris();
       return requestURI;
    }
 
@@ -302,9 +312,7 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getAbsolutePath()
    {
-      if (absolutePath == null) {
-          absolutePath = queryIdx < 0 ? getRequestUri() : URI.create(absoluteString.substring(0, queryIdx));
-      }
+      if (absolutePath == null) processUris();
       return absolutePath;
    }
 
@@ -315,14 +323,7 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getBaseUri()
    {
-       if (baseURI == null) {
-         String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         if (!tmpContextPath.startsWith("/")) tmpContextPath = "/" + tmpContextPath;
-         String baseString = absoluteString.substring(0, pathStart);
-         baseString += tmpContextPath;
-         baseURI = URI.create(baseString);
-      }
+      if (baseURI == null) processUris();
       return baseURI;
    }
 
@@ -463,14 +464,14 @@ public class ResteasyUriInfo implements UriInfo
                   matchedUris.add(decoded);
                }
             } else {
-               return Collections.emptyList();
+               return Collections.EMPTY_LIST;
             }
          }
          return Collections.unmodifiableList(matchedUris);
       }
       else
       {
-         if (encodedMatchedUris == null) return Collections.emptyList();
+         if (encodedMatchedUris == null) return Collections.EMPTY_LIST;
          return Collections.unmodifiableList(encodedMatchedUris);
       }
    }

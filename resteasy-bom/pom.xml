@@ -13,7 +13,7 @@
     <description/>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-bom</artifactId>
-    <version>4.5.7-SNAPSHOT</version>
+    <version>4.5.6.Final</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -170,6 +170,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-rxjava</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
                  <artifactId>resteasy-rxjava2</artifactId>
                  <version>${project.version}</version>
             </dependency>
@@ -181,6 +186,41 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                  <artifactId>resteasy-wadl-undertow-connector</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-keystone-as7</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-keystone-core</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>login-module-authenticator</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-oauth</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>skeleton-key-as7</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>skeleton-key-core</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>skeleton-key-idp</artifactId>
                  <version>${project.version}</version>
             </dependency>
             <dependency>

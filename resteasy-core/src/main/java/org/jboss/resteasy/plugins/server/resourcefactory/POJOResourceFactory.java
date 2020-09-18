@@ -65,7 +65,6 @@ public class POJOResourceFactory implements ResourceFactory
       this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(resourceClass, factory);
    }
 
-   @SuppressWarnings("unchecked")
    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
       Object obj = constructorInjector.construct(request, response, true);

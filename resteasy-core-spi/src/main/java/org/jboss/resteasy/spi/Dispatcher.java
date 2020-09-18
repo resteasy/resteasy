@@ -20,6 +20,5 @@ public interface Dispatcher
 
    void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor);
 
-   @SuppressWarnings("rawtypes")
    Map<Class, Object> getDefaultContextObjects();
 }

@@ -14,6 +14,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceAppScoped;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceReqScoped;
@@ -29,6 +30,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -71,6 +73,7 @@ public class ApplicationScopeValidationTest {
    }
 
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testValidationApplicationScope()
    {
       WebTarget target = client.target(generateURL("/testapp/send"));

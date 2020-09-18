@@ -5,6 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailing;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.DefaultMediaTypeCustomObject;
@@ -86,7 +87,7 @@ public class DefaultMediaTypeTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({ ExpectedFailing.class })
+   @Category({ ExpectedFailing.class, NotForForwardCompatibility.class })
    public void postDate() throws Exception {
       WebTarget target = client.target(generateURL("/postDate"));
       ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
@@ -122,7 +123,7 @@ public class DefaultMediaTypeTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({ ExpectedFailing.class })
+   @Category({ ExpectedFailing.class, NotForForwardCompatibility.class })
    public void postFoo() throws Exception {
       WebTarget target = client.target(generateURL("/postFoo"));
       ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);

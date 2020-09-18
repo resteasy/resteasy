@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonViewService;
@@ -18,6 +19,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.GET;
@@ -89,6 +91,7 @@ public class JacksonJsonViewTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testJacksonProxyJsonViewTest() throws Exception {
       JacksonViewProxy proxy = client.target(generateURL("")).proxy(JacksonViewProxy.class);
       Something p = proxy.getSomething();

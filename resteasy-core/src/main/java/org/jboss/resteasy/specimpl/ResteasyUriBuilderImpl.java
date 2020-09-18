@@ -368,7 +368,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
 
    @SuppressWarnings("unchecked")
    @Override
-   public UriBuilder path(@SuppressWarnings("rawtypes") Class resource) throws IllegalArgumentException
+   public UriBuilder path(Class resource) throws IllegalArgumentException
    {
       if (resource == null) throw new IllegalArgumentException(Messages.MESSAGES.pathNull());
       Path ann = (Path) resource.getAnnotation(Path.class);
@@ -385,7 +385,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
    }
 
    @Override
-   public UriBuilder path(@SuppressWarnings("rawtypes")Class resource, String method) throws IllegalArgumentException
+   public UriBuilder path(Class resource, String method) throws IllegalArgumentException
    {
       if (resource == null) throw new IllegalArgumentException(Messages.MESSAGES.resourceNull());
       if (method == null) throw new IllegalArgumentException(Messages.MESSAGES.methodNull());

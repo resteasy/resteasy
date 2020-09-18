@@ -53,7 +53,6 @@ public class FormInjector implements ValueInjector
    {
       Object obj =  constructorInjector.construct(unwrapAsync);
       if (obj instanceof CompletionStage) {
-         @SuppressWarnings("unchecked")
          CompletionStage<Object> stage = (CompletionStage<Object>)obj;
          return stage.thenCompose(target -> {
             CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, target, unwrapAsync);

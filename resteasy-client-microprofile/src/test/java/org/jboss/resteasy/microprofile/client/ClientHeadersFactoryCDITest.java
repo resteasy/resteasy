@@ -116,12 +116,10 @@ public class ClientHeadersFactoryCDITest {
    public static void stop() throws Exception {
       server.stop();
       container.shutdown();
-      RestClientExtension.clearBeanManager();
    }
 
    @Test
    public void test() {
-      Assert.assertTrue(container.isRunning());
       String result = container.select(Worker.class).get().work();
       Assert.assertEquals("hello Stefano", result);
       Assert.assertEquals(1, Counter.COUNT.get());

@@ -35,7 +35,7 @@ public class SnapshotMap<K,V> implements ConcurrentMap<K, V> {
     private volatile boolean snapFirst;
 
     public SnapshotMap(final boolean lockSnapshots) {
-        this.delegate = Collections.emptyMap();
+        this.delegate = Collections.EMPTY_MAP;
         this.lockSnapshots = lockSnapshots;
     }
 

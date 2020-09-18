@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>4.5.7-SNAPSHOT</version>
+    <version>4.5.6.Final</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-1630-jetty-resteasy-servlet-initializer</artifactId>
@@ -15,6 +15,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.shrinkwrap.resolvers>2.2.4</version.shrinkwrap.resolvers>
     <version.maven.model>3.2.5</version.maven.model>
   </properties>
 
@@ -22,6 +23,7 @@
     <dependency>
       <groupId>org.jboss.shrinkwrap.resolver</groupId>
       <artifactId>shrinkwrap-resolver-depchain</artifactId>
+      <version>${version.shrinkwrap.resolvers}</version>
       <scope>test</scope>
       <type>pom</type>
       <exclusions>
@@ -125,11 +127,6 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-validator-provider</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.el</groupId>

@@ -12,11 +12,11 @@ public class StringToPrimitive
     * @param primitiveType
     * @return
     */
-   public static boolean isPrimitive(Class<?> primitiveType) {
+   public static boolean isPrimitive(Class primitiveType) {
       return primitiveType.isPrimitive() || primitiveType.equals(String.class);
    }
 
-   public static Object stringToPrimitiveBoxType(Class<?> primitiveType, String value)
+   public static Object stringToPrimitiveBoxType(Class primitiveType, String value)
    {
       if (primitiveType.equals(String.class)) return value;
       if (primitiveType.equals(boolean.class))

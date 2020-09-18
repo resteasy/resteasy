@@ -19,11 +19,11 @@ public class JndiComponentResourceFactory implements ResourceFactory
    private String jndiName;
    private InitialContext ctx;
    private volatile Object reference;
-   private Class<?> scannable;
+   private Class scannable;
    private boolean cache;
 
 
-   public JndiComponentResourceFactory(final String jndiName, final Class<?> scannable, final boolean cacheReference)
+   public JndiComponentResourceFactory(final String jndiName, final Class scannable, final boolean cacheReference)
    {
       this.jndiName = jndiName;
       this.scannable = scannable;
