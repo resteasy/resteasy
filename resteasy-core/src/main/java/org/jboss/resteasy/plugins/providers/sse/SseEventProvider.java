@@ -70,7 +70,6 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
          throws IOException, WebApplicationException
    {
       Charset charset = StandardCharsets.UTF_8;
-      boolean textLike = MediaTypeHelper.isTextLike(mediaType);
       boolean escape = event instanceof OutboundSseEventImpl ? ((OutboundSseEventImpl)event).isEscape() : false;
       if (event.getComment() != null)
       {
@@ -136,7 +135,19 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
                   @Override
                   public void write(int b) throws IOException
                   {
-                     if (textLike)
+                     //Look at if this actually escape EOL and send valid sse message
+                     if (escape) {
+                        if (b == '\n' || b == '\r' || b == '\\')
+                        {
+                           entityStream.write('\\');
+                           entityStream.write(b);
+                        }
+                        else
+                        {
+                           entityStream.write(b);
+                        }
+                     }
+                     else
                      {
                         if (b == '\n' || b == '\r')
                         {
@@ -156,18 +167,6 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
                            isNewLine = false;
                         }
                      }
-                     else
-                     {
-                        if (escape && (b == '\n' || b == '\r' || b == '\\'))
-                        {
-                           entityStream.write('\\');
-                           entityStream.write(b);
-                        }
-                        else
-                        {
-                           entityStream.write(b);
-                        }
-                     }
                   }
 
                   @Override
@@ -179,10 +178,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
                   @Override
                   public void close() throws IOException
                   {
-                     if (!textLike)
-                     {
-                        entityStream.write(SseConstants.EOL);
-                     }
+                     entityStream.write(SseConstants.EOL);
                      entityStream.close();
                   }
                });
