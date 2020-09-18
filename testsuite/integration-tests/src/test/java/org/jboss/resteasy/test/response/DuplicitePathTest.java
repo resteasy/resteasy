@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.response.resource.DuplicitePathDupliciteApplicationOne;
@@ -21,6 +22,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.WebTarget;
@@ -97,6 +99,7 @@ public class DuplicitePathTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testDuplicationTwoAppTwoResourceSameMethodPath() throws Exception {
       WebTarget base = client.target(generateURL("/a/b/c"));
       Response response = null;
@@ -120,6 +123,7 @@ public class DuplicitePathTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testDuplicationMoreAccepts() throws Exception {
       int initWarningsCount = getWarningCount();
       WebTarget base = client.target(generateURL("/f/g/i"));
@@ -143,6 +147,7 @@ public class DuplicitePathTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testDuplicationMoretypes() throws Exception {
       int initWarningsCount = getWarningCount();
       WebTarget base = client.target(generateURL("/f/g/j"));
@@ -166,6 +171,7 @@ public class DuplicitePathTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testDuplicationOneAppTwoResourcesWithSamePath() throws Exception {
       int initWarningsCount = getWarningCount();
       WebTarget base = client.target(generateURL("/f/b/c"));
@@ -188,6 +194,7 @@ public class DuplicitePathTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testDuplicationPathInMethod() throws Exception {
       int initWarningsCount = getWarningCount();
       WebTarget base = client.target(generateURL("/f/g/h"));

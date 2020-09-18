@@ -38,7 +38,7 @@ public class HeaderDelegateAsProviderTest {
       WebArchive war = TestUtil.prepareArchive(HeaderDelegateAsProviderTest.class.getSimpleName());
       war.addClass(HeaderDelegateAsProviderHeader.class);
       war.addClass(HeaderDelegateAsProviderHeaderDelegate.class);
-      war.addAsResource(HeaderDelegateAsProviderTest.class.getPackage(),
+      war.addAsResource(SerializableWithParametersTest.class.getPackage(),
          "javax.ws.rs.ext.Providers_HeaderDelegateAsProvider",
          "META-INF/services/javax.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, HeaderDelegateAsProviderResource.class);

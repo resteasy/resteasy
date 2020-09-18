@@ -35,9 +35,6 @@ public class NettyUtil
          uriString = uri;
       } else {
          String host = request.headers().get(HttpHeaderNames.HOST, "unknown");
-         if ("".equals(host)) {
-            host = "unknown";
-         }
          uriString = protocol + "://" + host + uri;
       }
 

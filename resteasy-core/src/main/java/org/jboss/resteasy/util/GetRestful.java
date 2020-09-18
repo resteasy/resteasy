@@ -19,7 +19,7 @@ public class GetRestful
     * @param clazz class
     * @return list of class and intertfaces that have jax-rs annotations
     */
-   public static Class<?> getRootResourceClass(Class<?> clazz)
+   public static Class getRootResourceClass(Class clazz)
    {
       return AnnotationResolver.getClassWithAnnotation(clazz, Path.class);
    }
@@ -30,7 +30,7 @@ public class GetRestful
     * @param clazz class
     * @return list of class and interfaces that have jax-rs annotations
     */
-   public static boolean isSubResourceClass(Class<?> clazz)
+   public static boolean isSubResourceClass(Class clazz)
    {
       // check class & superclasses for JAX-RS annotations
       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
@@ -38,7 +38,7 @@ public class GetRestful
          if (hasJAXRSAnnotations(actualClass))
             return true;
          // ok, no @Path or @HttpMethods so look in interfaces.
-         for (Class<?> intf : actualClass.getInterfaces())
+         for (Class intf : actualClass.getInterfaces())
          {
             if (hasJAXRSAnnotations(intf))
                return true;
@@ -54,7 +54,7 @@ public class GetRestful
     * @param clazz class
     * @return list of class and interfaces that have jax-rs annotations
     */
-   public static Class<?> getSubResourceClass(Class<?> clazz)
+   public static Class getSubResourceClass(Class clazz)
    {
       // check class & superclasses for JAX-RS annotations
       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
@@ -64,7 +64,7 @@ public class GetRestful
       }
 
       // ok, no @Path or @HttpMethods so look in interfaces.
-      for (Class<?> intf : clazz.getInterfaces())
+      for (Class intf : clazz.getInterfaces())
       {
          if (hasJAXRSAnnotations(intf))
             return intf;
@@ -123,7 +123,7 @@ public class GetRestful
       return false;
    }
 
-   public static boolean isRootResource(Class<?> clazz)
+   public static boolean isRootResource(Class clazz)
    {
       return getRootResourceClass(clazz) != null;
    }

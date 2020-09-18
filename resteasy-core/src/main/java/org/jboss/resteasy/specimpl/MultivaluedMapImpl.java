@@ -16,7 +16,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
 {
    public void putSingle(K key, V value)
    {
-      List<V> list = new ArrayList<V>(2);
+      List<V> list = new ArrayList<V>();
       list.add(value);
       put(key, list);
    }
@@ -75,7 +75,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
    {
       List<V> list = get(key);
       if (list == null)
-         put(key, list = new ArrayList<V>(2));
+         put(key, list = new ArrayList<V>());
       return list;
    }
 

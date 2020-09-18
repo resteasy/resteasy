@@ -17,11 +17,11 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<NewCookie> {
+public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
    public static final NewCookieHeaderDelegate INSTANCE = new NewCookieHeaderDelegate();
    private static final String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
-   public NewCookie fromString(String newCookie) throws IllegalArgumentException {
+   public Object fromString(String newCookie) throws IllegalArgumentException {
       if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
       String cookieName = null;
       String cookieValue = null;
@@ -89,8 +89,9 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
       }
    }
 
-   public String toString(NewCookie cookie) {
-      if (cookie == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
+   public String toString(Object value) {
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
+      NewCookie cookie = (NewCookie) value;
       StringBuilder b = new StringBuilder();
 
       b.append(cookie.getName()).append('=');

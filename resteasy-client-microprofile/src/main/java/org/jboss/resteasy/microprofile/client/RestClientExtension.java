@@ -77,10 +77,6 @@ public class RestClientExtension implements Extension {
         return manager != null;
     }
 
-    public static void clearBeanManager() {
-        manager = null;
-    }
-
     private static class RestClientData {
         private final Class<?> javaClass;
         private final Optional<String> baseUri;

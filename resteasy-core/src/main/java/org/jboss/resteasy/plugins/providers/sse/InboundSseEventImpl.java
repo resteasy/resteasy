@@ -36,7 +36,7 @@ public class InboundSseEventImpl implements InboundSseEvent
 
    private final MultivaluedMap<String, String> headers;
 
-   private final Providers providers;
+   private Providers providers;
 
    static class Builder
    {
@@ -55,8 +55,6 @@ public class InboundSseEventImpl implements InboundSseEvent
       private final MultivaluedMap<String, String> headers;
 
       private final StringBuilder commentBuilder;
-
-      private Providers providers;
 
       Builder(final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> headers)
       {
@@ -113,12 +111,6 @@ public class InboundSseEventImpl implements InboundSseEvent
          return this;
       }
 
-      public Builder providers(Providers providers)
-      {
-         this.providers = providers;
-         return this;
-      }
-
       public InboundSseEvent build()
       {
          //from https://html.spec.whatwg.org/multipage/server-sent-events.html#processField
@@ -126,13 +118,13 @@ public class InboundSseEventImpl implements InboundSseEvent
          //then remove the last character from the data buffer
          return new InboundSseEventImpl(name, id, commentBuilder.length() > 0 ? commentBuilder.substring(0,
                commentBuilder.length() - 1) : null, reconnectDelay, dataStream.toByteArray(), annotations, mediaType,
-               headers, providers);
+               headers);
       }
    }
 
    private InboundSseEventImpl(final String name, final String id, final String comment, final long reconnectDelay,
          final byte[] data, final Annotation[] annotations, final MediaType mediaType,
-         final MultivaluedMap<String, String> headers, final Providers providers)
+         final MultivaluedMap<String, String> headers)
    {
       this.name = name;
       this.id = id;
@@ -142,7 +134,6 @@ public class InboundSseEventImpl implements InboundSseEvent
       this.annotations = annotations;
       this.mediaType = mediaType;
       this.headers = headers;
-      this.providers = providers;
    }
 
    public String getName()
@@ -203,7 +194,6 @@ public class InboundSseEventImpl implements InboundSseEvent
    {
       //System.out.println("Thread " + Thread.currentThread().getName() + "read data");
       final MediaType effectiveMediaType = mediaType == null ? this.mediaType : mediaType;
-      @SuppressWarnings("rawtypes")
       MessageBodyReader reader = null;
       if (this.providers != null)
       {
@@ -225,7 +215,7 @@ public class InboundSseEventImpl implements InboundSseEvent
    }
 
    @SuppressWarnings("unchecked")
-   private <T> T readAndCast(GenericType<T> type, MediaType effectiveMediaType, @SuppressWarnings("rawtypes") MessageBodyReader reader)
+   private <T> T readAndCast(GenericType<T> type, MediaType effectiveMediaType, MessageBodyReader reader)
    {
       try
       {
@@ -270,4 +260,11 @@ public class InboundSseEventImpl implements InboundSseEvent
    {
       return mediaType;
    }
+
+   public void setProvider(Providers providers)
+   {
+      this.providers = providers;
+
+   }
+
 }

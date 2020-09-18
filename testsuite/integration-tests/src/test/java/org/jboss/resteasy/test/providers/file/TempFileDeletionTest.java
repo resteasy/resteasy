@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.providers.file.resource.TempFileDeletionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -20,6 +21,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.experimental.categories.Category;
 
 /**
  * @tpSubChapter File provider
@@ -43,6 +45,7 @@ public class TempFileDeletionTest {
     * @tpSince RESTEasy 3.1.3.Final
     */
    @Test
+   @Category(NotForForwardCompatibility.class)
    public void testDeleteOnServer() throws Exception {
       Client client = ClientBuilder.newClient();
       WebTarget base = client.target(PortProviderUtil.generateURL("/test/post", TempFileDeletionTest.class.getSimpleName()));

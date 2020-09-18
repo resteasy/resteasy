@@ -26,7 +26,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
    private boolean encode;
    private String encodedName;
 
-   public QueryParamInjector(final Class<?> type, final Type genericType, final AccessibleObject target, final String paramName, final String defaultValue, final boolean encode, final Annotation[] annotations, final ResteasyProviderFactory factory)
+   public QueryParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String paramName, final String defaultValue, final boolean encode, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       super(type, genericType, paramName, QueryParam.class, defaultValue, target, annotations, factory);
       this.encode = encode;

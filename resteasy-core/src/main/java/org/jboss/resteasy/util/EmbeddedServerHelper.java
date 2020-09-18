@@ -16,12 +16,14 @@ public class EmbeddedServerHelper {
 
    public String checkAppDeployment(final ResteasyDeployment deployment) {
 
+      ResteasyDeployment appDeployment = deployment;
+
       ApplicationPath appPath = null;
       if (deployment.getApplicationClass() != null)
       {
          try
          {
-            Class<?> clazz = Class.forName(deployment.getApplicationClass());
+            Class clazz = Class.forName(deployment.getApplicationClass());
             appPath = (ApplicationPath) clazz.getAnnotation(ApplicationPath.class);
 
          } catch (ClassNotFoundException e)

@@ -37,11 +37,7 @@ public final class ResteasyContext
 
    public static <T> T getContextData(Class<T> type)
    {
-      Map<Class<?>, Object> contextDataMap = getContextDataMap(false);
-      if (contextDataMap == null) {
-         return null;
-      }
-      return (T) contextDataMap.get(type);
+      return (T) getContextDataMap().get(type);
    }
 
    public static <T> T popContextData(Class<T> type)

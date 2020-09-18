@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.resource.basic.resource.ResourceInfoInjectionFilter;
 import org.jboss.resteasy.test.resource.basic.resource.ResourceInfoInjectionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -14,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -59,6 +61,7 @@ public class ResourceInfoInjectionTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testNotFound() throws Exception {
       WebTarget target = client.target(generateURL("/bogus"));
       Response response = target.request().get();
@@ -72,6 +75,7 @@ public class ResourceInfoInjectionTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testAsync() throws Exception {
       WebTarget target = client.target(generateURL("/async"));
       Response response = target.request().post(Entity.entity("hello", "text/plain"));

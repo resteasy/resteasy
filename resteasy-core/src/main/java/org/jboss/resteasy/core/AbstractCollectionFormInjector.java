@@ -44,7 +44,6 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
    /**
     * {@inheritDoc} Creates a collection instance and fills it with content by using the super implementation.
     */
-   @SuppressWarnings("unchecked")
    @Override
    public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {

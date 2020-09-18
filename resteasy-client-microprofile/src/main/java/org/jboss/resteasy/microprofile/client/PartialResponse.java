@@ -54,7 +54,6 @@ public class PartialResponse extends Response implements Serializable {
     }
 
 
-    @SuppressWarnings("unchecked")
     @Override
     public synchronized <T> T readEntity(Class<T> entityType) {
 

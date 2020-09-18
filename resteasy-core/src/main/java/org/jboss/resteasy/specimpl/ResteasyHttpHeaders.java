@@ -177,7 +177,7 @@ public class ResteasyHttpHeaders implements HttpHeaders
    {
       List<String> vals = requestHeaders.get(ACCEPT_LANGUAGE);
       if (vals == null || vals.isEmpty()) {
-         return Collections.singletonList(Locale.forLanguageTag("*"));
+         return Collections.emptyList();
       }
       List<WeightedLanguage> languages = new ArrayList<WeightedLanguage>();
       for (String v : vals) {

@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.5.7-SNAPSHOT</version>
+        <version>4.5.6.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -103,7 +103,7 @@
             <id>default</id>
             <activation>
                 <property>
-                    <name>!skipDefaultProfile</name>
+                    <name>!forward.compatibility</name>
                 </property>
             </activation>
             <modules>
@@ -115,6 +115,25 @@
                 <module>integration-tests-embedded</module>
                 <module>microprofile-tck</module>
             </modules>
+        </profile>
+        <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->
+        <profile>
+            <id>forward.compatibility</id>
+            <activation>
+                <property>
+                    <name>forward.compatibility</name>
+                </property>
+            </activation>
+            <modules>
+                <module>arquillian-utils</module>
+                <module>unit-tests</module>
+                <!-- Uncomment module below when EAP/Widlfly with Resteasy 3.1 is released -->
+                <module>integration-tests</module>
+                <module>integration-tests-spring</module>
+            </modules>
+            <properties>
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForForwardCompatibility</additional.surefire.excluded.groups>
+            </properties>
         </profile>
         <profile>
             <id>home</id>
@@ -135,7 +154,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>20.0.1.Final</server.version>
+                <server.version>20.0.0.Beta1</server.version>
             </properties>
         </profile>
         <profile>
@@ -143,7 +162,7 @@
             <activation>
                 <property>
                     <name>server.version</name>
-                    <value>20.0.1.Final</value>
+                    <value>20.0.0.Beta1</value>
                 </property>
             </activation>
             <properties>

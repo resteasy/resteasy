@@ -46,7 +46,7 @@ public class HeaderFlushedAsyncOutputStream extends AsyncOutputStream {
             } else {
                value = obj.toString();
             }
-            ret = ret.thenCompose(v -> stream.asyncWrite(key.getBytes(StandardCharsets.US_ASCII)))
+            ret = stream.asyncWrite(key.getBytes(StandardCharsets.US_ASCII))
                     .thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.COLON_SPACE_BYTES))
                     .thenCompose(v -> stream.asyncWrite(value.getBytes(StandardCharsets.US_ASCII)))
                     .thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES));

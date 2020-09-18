@@ -72,7 +72,6 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          InputStream bis = new ByteArrayInputStream(byteBuffer, byteBufferOffset, byteBufferLength);
          if (tempFile == null)
             return bis;
-         @SuppressWarnings("resource")
          InputStream fis = new FileInputStream(tempFile);
          return new SequenceInputStream(bis, fis);
       }

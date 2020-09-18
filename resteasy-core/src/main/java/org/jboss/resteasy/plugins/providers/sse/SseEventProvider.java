@@ -16,19 +16,18 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.OutboundSseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 @Provider
@@ -37,16 +36,6 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
    public static final MediaType GENERAL_STREAM_TYPE = new MediaType("application", "x-stream-general");
-
-   @Context
-   private Providers providers;
-
-   public SseEventProvider() {
-   }
-
-   protected SseEventProvider(final Providers providers) {
-      this.providers = providers;
-   }
 
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -119,8 +108,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             }
 
             entityStream.write(SseConstants.DATA_LEAD);
-            @SuppressWarnings("rawtypes")
-            MessageBodyWriter writer = providers.getMessageBodyWriter(payloadClass,
+            MessageBodyWriter writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
             if (writer == null)
@@ -221,7 +209,6 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
    }
 
    @Override
-   @SuppressWarnings({"unchecked"})
    public CompletionStage<Void> asyncWriteTo(OutboundSseEvent event, Class<?> type, Type genericType,
                                              Annotation[] annotations, MediaType mediaType,
                                              MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream)
@@ -279,8 +266,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             Type finalPayloadType = payloadType;
 
             ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.DATA_LEAD));
-            @SuppressWarnings("rawtypes")
-            AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)providers.getMessageBodyWriter(payloadClass,
+            AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
             if (writer == null)
