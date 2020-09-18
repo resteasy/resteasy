@@ -37,6 +37,10 @@ import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 public class SseResource
 {
 
+   public static final String jsonMessage = "{\n"
+                                           + " \"message\": \"json\",\n"
+                                           + " \"foo\": \"bar\"\n"
+                                           + "}";
    private final Object outputLock = new Object();
    private final Object sseBroadcasterLock = new Object();
 
@@ -382,7 +386,43 @@ public class SseResource
          }
       });
    }
+   @GET
+   @Path("/json")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void jsonMessage(@Context SseEventSink sink) throws IOException, URISyntaxException
+   {
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      this.eventSink = sink;
+      ExecutorService service = (ExecutorService) servletContext
+            .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(new Thread()
+      {
+         public void run()
+         {
+            if (!eventSink.isClosed() && sending)
+            {
+               try
+               {
+                  synchronized (openLock)
+                  {
+                     eventSink.send(sse.newEventBuilder().id("jsonType").
+                             data(SseResource.jsonMessage).
+                             mediaType(MediaType.APPLICATION_JSON_TYPE).build());
+                  }
+                  Thread.sleep(200);
+               }
+               catch (final InterruptedException e)
+               {
+                  logger.error(e.getMessage(), e);
+               }
 
+            }
+         }
+      });
+   }
    public static String toString(final Reader input) throws IOException {
 
        final char[] buffer = new char[2048];

@@ -605,6 +605,43 @@ public class SseTest
       Assert.assertTrue("Unexpceted big size message", m1.equals(m2));
       client.close();
    }
+   //Test for https://issues.redhat.com/browse/RESTEASY-2695
+   @Test
+   @InSequence(15)
+   public void testSetJsonType() throws Exception
+   {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final AtomicInteger errors = new AtomicInteger(0);
+      final List<String> results = new ArrayList<String>();
+      Client client = ClientBuilder.newBuilder().build();
+      WebTarget target = client.target(generateURL("/service/server-sent-events/json"));
+      SseEventSource msgEventSource = SseEventSource.target(target).build();
+      try (SseEventSource eventSource = msgEventSource)
+      {
+         Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+         eventSource.register(event -> {
+            results.add(event.readData());
+            latch.countDown();
+         }, ex -> {
+               errors.incrementAndGet();
+               logger.error(ex.getMessage(), ex);
+               throw new RuntimeException(ex);
+            }) ;
+         eventSource.open();
+         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+         Assert.assertEquals(0, errors.get());
+         Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      }
+      Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
+      Assert.assertTrue("1 messages are expected, but is : " + results.size(), results.size() == 1);
+      ObjectMapper om = new ObjectMapper();
+      @SuppressWarnings("unchecked")
+      Map<String, Object> m1 = (Map<String, Object>)(om.readValue(SseResource.jsonMessage, Map.class));
+      @SuppressWarnings("unchecked")
+      Map<String, Object> m2 = (Map<String, Object>)(om.readValue(results.get(0), Map.class));
+      Assert.assertTrue("Unexpceted big size message", m1.equals(m2));
+      client.close();
+   }
    //    @Test
    //    //This will open a browser and test with html sse client
    //    public void testHtmlSse() throws Exception
