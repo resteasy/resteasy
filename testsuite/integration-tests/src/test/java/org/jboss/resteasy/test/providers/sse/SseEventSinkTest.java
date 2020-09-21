@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.sse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -39,28 +40,24 @@ public class SseEventSinkTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(SseTest.class.getSimpleName());
-      war.addClass(SseEventSinkTest.class);
-      war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml", "web.xml");
-      war.addAsWebResource("org/jboss/resteasy/test/providers/sse/index.html", "index.html");
+      WebArchive war = TestUtil.prepareArchive(SseEventSinkTest.class.getSimpleName());
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class,
-            AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
+      return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class),ExecutorServletContextListener.class);
    }
 
    private String generateURL(String path)
    {
-      return PortProviderUtil.generateURL(path, SseTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, SseEventSinkTest.class.getSimpleName());
    }
 
    @After
    public void stopSendEvent() throws Exception
    {
       Client isOpenClient = ClientBuilder.newClient();
-      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/service/server-sent-events/stopevent"))
+      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/server-sent-events/stopevent"))
             .request();
       isOpenRequest.get();
 
@@ -73,7 +70,7 @@ public class SseEventSinkTest
       final List<String> results = new ArrayList<String>();
       final AtomicInteger errors = new AtomicInteger(0);
       Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/service/server-sent-events/events"));
+      WebTarget target = client.target(generateURL("/server-sent-events/events"));
       SseEventSource eventSource = SseEventSource.target(target).build();
 
       Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
@@ -91,7 +88,7 @@ public class SseEventSinkTest
       Assert.assertEquals(0, errors.get());
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Client isOpenClient = ClientBuilder.newClient();
-      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/service/server-sent-events/isopen"))
+      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/server-sent-events/isopen"))
             .request();
 
       javax.ws.rs.core.Response response = isOpenRequest.get();
@@ -100,7 +97,7 @@ public class SseEventSinkTest
       eventSource.close();
       Assert.assertFalse("Closed eventSource state is expceted", eventSource.isOpen());
 
-      WebTarget messageTarget = ClientBuilder.newClient().target(generateURL("/service/server-sent-events"));
+      WebTarget messageTarget = ClientBuilder.newClient().target(generateURL("/server-sent-events"));
       for (int counter = 0; counter < 5; counter++)
       {
          String msg = "messageAfterClose";
