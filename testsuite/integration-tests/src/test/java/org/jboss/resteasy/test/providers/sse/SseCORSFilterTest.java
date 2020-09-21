@@ -1,4 +1,5 @@
 package org.jboss.resteasy.test.providers.sse;
+import java.util.Arrays;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -28,14 +29,12 @@ public class SseCORSFilterTest
    public static Archive<?> deploy()
    {
       WebArchive war = TestUtil.prepareArchive(SseCORSFilterTest.class.getSimpleName());
-      war.addClass(SseCORSFilterTest.class);
-      war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/filter/web.xml", "web.xml");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class,
-            CORSFilter.class, ExecutorServletContextListener.class);
+      return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class,
+            CORSFilter.class), ExecutorServletContextListener.class);
    }
 
    private String generateURL(String path)
@@ -48,7 +47,7 @@ public class SseCORSFilterTest
    {
 
       Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/service/server-sent-events/events"));
+      WebTarget target = client.target(generateURL("/server-sent-events/events"));
       Response response = target.request().get();
       Assert.assertEquals("response OK is expected", 200, response.getStatus());
       Assert.assertTrue("CORS http header is expected in event response",
@@ -58,7 +57,7 @@ public class SseCORSFilterTest
       Assert.assertEquals("text/event-stream is expected", mt, MediaType.SERVER_SENT_EVENTS_TYPE);
 
       Client isOpenClient = ClientBuilder.newClient();
-      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/service/server-sent-events/isopen"))
+      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/server-sent-events/isopen"))
             .request();
       javax.ws.rs.core.Response isOpenResponse = isOpenRequest.get();
       Assert.assertTrue("EventSink open is expected ", isOpenResponse.readEntity(Boolean.class));
