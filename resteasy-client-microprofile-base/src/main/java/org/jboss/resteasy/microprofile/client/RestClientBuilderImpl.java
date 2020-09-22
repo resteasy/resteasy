@@ -21,6 +21,7 @@ import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
+import javax.annotation.PostConstruct;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.BeanParam;
@@ -356,7 +357,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (config != null) {
                 // property using fully-qualified class name takes precedence
                 Optional<String> prop = config.getOptionalValue(
-                        aClass.getCanonicalName()+"/mp-rest/queryParamStyle", String.class);
+                        aClass.getName()+"/mp-rest/queryParamStyle", String.class);
                 if (prop.isPresent()) {
                     queryParamStyle(QueryParamStyle.valueOf(
                             prop.get().trim().toUpperCase()));
@@ -391,7 +392,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (config != null) {
                 // property using fully-qualified class name takes precedence
                 Optional<Boolean> prop = config.getOptionalValue(
-                        aClass.getCanonicalName()+"/mp-rest/followRedirects", Boolean.class);
+                        aClass.getName()+"/mp-rest/followRedirects", Boolean.class);
                 if (prop.isPresent()) {
                     if (prop.get() != followRedirect) {
                         followRedirects(prop.get());
@@ -588,7 +589,16 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             return PROVIDER_FACTORY.injectedInstance(clazz);
         } else {
             try {
-                return clazz.newInstance();
+                Object obj = clazz.newInstance();
+                // 2.0 TCK has class with PostConstruct
+                for (Method m : obj.getClass().getMethods()) {
+                    if (m.getAnnotation(PostConstruct.class) != null) {
+                        m.invoke(obj, null);
+                        return obj;
+                    }
+                }
+                return obj;
+                //return clazz.newInstance();
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to register " + clazz, t);
             }
