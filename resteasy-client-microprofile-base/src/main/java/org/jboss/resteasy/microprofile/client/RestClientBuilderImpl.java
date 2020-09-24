@@ -356,7 +356,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (config != null) {
                 // property using fully-qualified class name takes precedence
                 Optional<String> prop = config.getOptionalValue(
-                        aClass.getCanonicalName()+"/mp-rest/queryParamStyle", String.class);
+                        aClass.getName()+"/mp-rest/queryParamStyle", String.class);
                 if (prop.isPresent()) {
                     queryParamStyle(QueryParamStyle.valueOf(
                             prop.get().trim().toUpperCase()));
@@ -391,7 +391,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (config != null) {
                 // property using fully-qualified class name takes precedence
                 Optional<Boolean> prop = config.getOptionalValue(
-                        aClass.getCanonicalName()+"/mp-rest/followRedirects", Boolean.class);
+                        aClass.getName()+"/mp-rest/followRedirects", Boolean.class);
                 if (prop.isPresent()) {
                     if (prop.get() != followRedirect) {
                         followRedirects(prop.get());
