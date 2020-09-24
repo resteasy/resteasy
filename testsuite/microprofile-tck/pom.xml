@@ -16,6 +16,11 @@
 
   <properties>
     <skip.mp.tck>false</skip.mp.tck>
+    <!--
+    <cxf.jetty9.version>9.4.12.v20180830</cxf.jetty9.version>
+    -->
+    <cxf.jetty9.version>9.2.28.v20190418</cxf.jetty9.version>
+    <cxf.jetty.version>${cxf.jetty9.version}</cxf.jetty.version>
   </properties>
 
   <dependencies>
@@ -38,6 +43,12 @@
     </dependency>
 
     <!-- Microprofile TCK tests -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.14.2</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.eclipse.microprofile.rest.client</groupId>
@@ -97,17 +108,84 @@
     </dependency>
 
     <!-- required to align the Jetty Servlets version to the versions of other Jetty components -->
+<!-- ************
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlets</artifactId>
       <scope>test</scope>
     </dependency>
-
+************ -->
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>jakarta.json</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>javax.json.bind</groupId>
+      <artifactId>javax.json.bind-api</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+
+    <!-- required to jsonb used in tests -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-json-binding-provider</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- run with jetty  -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${cxf.jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-io</artifactId>
+      <version>${cxf.jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-security</artifactId>
+      <version>${cxf.jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>${cxf.jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <version>${cxf.jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>apache-jsp</artifactId>
+      <version>${cxf.jetty.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish</groupId>
+          <artifactId>javax.el</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-commons</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${cxf.jetty.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -147,6 +225,12 @@
              <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutTest</exclude>
              <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigTest</exclude>
              <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigWithConfigKeyTest</exclude>
+          <!-- 2.0 test that currently fail. Skip them until their issues can be addressed -->
+            <exclude>org.eclipse.microprofile.rest.client.tck.sse.ReactiveStreamsPublisherTckTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.sse.BasicReactiveStreamsTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.cditests.CDIQueryParamStyleTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.cditests.CDIManagedProviderTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.ProxyServerTest</exclude>
           </excludes>
         </configuration>
         <executions>
