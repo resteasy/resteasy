@@ -106,12 +106,14 @@ public class ClientHelper extends CommonProviders
       if (Utils.isA(provider, ClientRequestFilter.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider);
+         Utils.injectProperties(rpf, provider);
          addClientRequestFilter(provider, priority);
          newContracts.put(ClientRequestFilter.class, priority);
       }
       if (Utils.isA(provider, ClientResponseFilter.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider);
+         Utils.injectProperties(rpf, provider);
          addClientResponseFilter(provider, priority);
          newContracts.put(ClientResponseFilter.class, priority);
       }
@@ -184,6 +186,7 @@ public class ClientHelper extends CommonProviders
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider.getClass());
          JaxrsInterceptorRegistry<ClientRequestFilter> registry = getRequestFiltersForWrite();
+         Utils.injectProperties(rpf, provider);
          registry.registerSingleton((ClientRequestFilter) provider, priority);
          attachedRequestFilters = false;
          requestFilters = registry;
@@ -193,6 +196,7 @@ public class ClientHelper extends CommonProviders
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider.getClass());
          JaxrsInterceptorRegistry<ClientResponseFilter> registry = getResponseFiltersForWrite();
+         Utils.injectProperties(rpf, provider);
          registry.registerSingleton((ClientResponseFilter) provider, priority);
          attachedResponseFilters = false;
          responseFilters = registry;

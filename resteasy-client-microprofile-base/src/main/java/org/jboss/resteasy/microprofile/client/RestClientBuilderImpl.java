@@ -9,6 +9,8 @@ import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactor
 import org.eclipse.microprofile.rest.client.ext.QueryParamStyle;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
@@ -22,6 +24,11 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
+
+
+
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.BeanParam;
@@ -32,6 +39,7 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ParamConverterProvider;
+
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -70,7 +78,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     private static final String RESTEASY_PROPERTY_PREFIX = "resteasy.";
 
     private static final String DEFAULT_MAPPER_PROP = "microprofile.rest.client.disable.default.mapper";
-
+    private static final Logger LOGGER = Logger.getLogger(RestClientBuilderImpl.class);
     private static final DefaultMediaTypeFilter DEFAULT_MEDIA_TYPE_FILTER = new DefaultMediaTypeFilter();
     public static final MethodInjectionFilter METHOD_INJECTION_FILTER = new MethodInjectionFilter();
     public static final ClientHeadersRequestFilter HEADERS_REQUEST_FILTER = new ClientHeadersRequestFilter();
@@ -91,7 +99,9 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             }
             builderDelegate.providerFactory(localProviderFactory);
         }
-
+        if (getBeanManager() != null) {
+           builderDelegate.getProviderFactory().setInjectorFactory(new CdiInjectorFactory(getBeanManager()));
+        }
         configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
 
         try {
@@ -323,7 +333,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         interfaces[2] = Closeable.class;
 
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
-                new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
+                new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, getBeanManager()));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
     }
@@ -583,16 +593,11 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         return this;
     }
 
-    private static Object newInstanceOf(Class<?> clazz) {
+    private Object newInstanceOf(Class<?> clazz) {
         if (PROVIDER_FACTORY != null) {
             return PROVIDER_FACTORY.injectedInstance(clazz);
-        } else {
-            try {
-                return clazz.newInstance();
-            } catch (Throwable t) {
-                throw new RuntimeException("Failed to register " + clazz, t);
-            }
         }
+        return this.getBuilderDelegate().getProviderFactory().injectedInstance(clazz);
     }
 
     @Override
@@ -722,7 +727,15 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     ResteasyClientBuilder getBuilderDelegate() {
         return builderDelegate;
     }
-
+    private static BeanManager getBeanManager() {
+       try {
+           CDI<Object> current = CDI.current();
+           return current != null ? current.getBeanManager() : null;
+       } catch (IllegalStateException e) {
+           LOGGER.warnf("CDI container is not available");
+           return null;
+       }
+   }
     private String getSystemProperty(String key, String def) {
         if (System.getSecurityManager() == null) {
             return System.getProperty(key, def);
