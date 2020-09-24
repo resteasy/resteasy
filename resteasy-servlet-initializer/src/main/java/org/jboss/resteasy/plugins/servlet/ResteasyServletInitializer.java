@@ -50,9 +50,9 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
             continue;
          if (clazz.isAnnotationPresent(Path.class))
             resources.add(clazz);
-         if (clazz.isAnnotationPresent(Provider.class))
+         else if (clazz.isAnnotationPresent(Provider.class))
             providers.add(clazz);
-         if (Application.class.isAssignableFrom(clazz))
+         else if (Application.class.isAssignableFrom(clazz))
             appClasses.add(clazz);
       }
       if (appClasses.size() == 0 && resources.size() == 0) return;

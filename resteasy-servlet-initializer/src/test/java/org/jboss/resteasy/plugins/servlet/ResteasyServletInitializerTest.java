@@ -16,7 +16,6 @@ import javax.servlet.ServletRegistration;
 
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.plugins.servlet.testapp.AppAndResource;
 import org.jboss.resteasy.plugins.servlet.testapp.AppWithAppPath;
 import org.jboss.resteasy.plugins.servlet.testapp.AppWithNoAppPath;
 import org.jboss.resteasy.plugins.servlet.testapp.Resource1;
@@ -151,36 +150,6 @@ public class ResteasyServletInitializerTest
       verify(mockReg).setInitParameter("javax.ws.rs.Application", AppWithAppPath.class.getName());
       verify(mockReg).setInitParameter("resteasy.servlet.mapping.prefix", "/myAppPath");
       verify(mockReg).setInitParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES, Resource1.class.getName());
-      verifyNoMoreInteractions(mockServletContext);
-      verifyNoMoreInteractions(mockReg);
-   }
-
-   /**
-    * Tests that a single class can be both an Application subclass and resource
-    * class.
-    */
-   @Test
-   public void testAppAndResourceInSameClass() throws Exception
-   {
-      ResteasyServletInitializer rsi = new ResteasyServletInitializer();
-      ServletContext mockServletContext = mock(ServletContext.class);
-      ServletRegistration.Dynamic mockReg = mock(ServletRegistration.Dynamic.class);
-      when(mockServletContext.getServletRegistration(AppAndResource.class.getName())).thenReturn(null);
-      when(mockServletContext.getServletRegistrations()).thenReturn(Collections.emptyMap());
-      when(mockServletContext.addServlet(AppAndResource.class.getName(), HttpServlet30Dispatcher.class))
-            .thenReturn(mockReg);
-
-      rsi.onStartup(setOf(AppAndResource.class), mockServletContext);
-      verify(mockServletContext).getServletRegistration(AppAndResource.class.getName());
-      verify(mockServletContext).getServletRegistrations();
-      verify(mockServletContext).addServlet(AppAndResource.class.getName(), HttpServlet30Dispatcher.class);
-      verify(mockReg).setLoadOnStartup(1);
-      verify(mockReg).setAsyncSupported(true);
-      verify(mockReg).addMapping("/app/*");
-      verify(mockReg).setInitParameter("javax.ws.rs.Application", AppAndResource.class.getName());
-      verify(mockReg).setInitParameter("resteasy.servlet.mapping.prefix", "/app");
-      verify(mockReg).setInitParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES,
-            AppAndResource.class.getName());
       verifyNoMoreInteractions(mockServletContext);
       verifyNoMoreInteractions(mockReg);
    }
