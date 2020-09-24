@@ -84,13 +84,12 @@
         <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
-        <!-- todo replace this version with Final is released
+        <!-- todo replace this version when Final is released
         -->
         <version.microprofile.restclient>2.0-RC2</version.microprofile.restclient>
 
         <!-- todo rls move this property when updating all versions for MP-rest-client 2.0
         and return version to ${version.microprofile.restclient}
-        <version.microprofile.restclient.tck>1.4.0</version.microprofile.restclient.tck>
         -->
         <version.microprofile.restclient.tck>2.0-RC2</version.microprofile.restclient.tck>
 
