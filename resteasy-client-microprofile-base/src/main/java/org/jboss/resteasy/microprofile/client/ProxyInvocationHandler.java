@@ -51,12 +51,11 @@ public class ProxyInvocationHandler implements InvocationHandler {
     public ProxyInvocationHandler(final Class<?> restClientInterface,
                            final Object target,
                            final Set<Object> providerInstances,
-                           final ResteasyClient client) {
+                           final ResteasyClient client, final BeanManager beanManager) {
         this.target = target;
         this.providerInstances = providerInstances;
         this.client = client;
         this.closed = new AtomicBoolean();
-        BeanManager beanManager = getBeanManager(restClientInterface);
         if (beanManager != null) {
             this.creationalContext = beanManager.createCreationalContext(null);
             this.interceptorChains = initInterceptorChains(beanManager, creationalContext, restClientInterface);
