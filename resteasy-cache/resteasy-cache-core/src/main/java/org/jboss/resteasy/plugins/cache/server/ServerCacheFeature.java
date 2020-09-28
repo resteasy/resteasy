@@ -73,17 +73,13 @@ public class ServerCacheFeature implements Feature
    {
       GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
          .defaultCacheName("resteasy-default-cache")
-         .globalJmxStatistics()
-         .allowDuplicateDomains(true)
-         .enable()
-         .jmxDomain("resteasy-default-cache")
+         .jmx().enable()
          .build();
       Configuration configuration = new ConfigurationBuilder()
          .memory()
          .evictionType(EvictionType.COUNT)
-         .evictionStrategy(EvictionStrategy.LIRS)
+         .evictionStrategy(EvictionStrategy.REMOVE)
          .size(100)
-         .jmxStatistics().enable()
          .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
       Cache<Object, Object> c = manager.getCache("resteasy-default-cache");
