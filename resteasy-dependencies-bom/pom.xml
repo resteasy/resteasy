@@ -79,8 +79,8 @@
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
-        <version.weld.api>3.0.SP4</version.weld.api>
-        <version.weld>3.0.5.Final</version.weld>
+        <version.weld.api>3.1.SP3</version.weld.api>
+        <version.weld>3.1.5.Final</version.weld>
         <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
