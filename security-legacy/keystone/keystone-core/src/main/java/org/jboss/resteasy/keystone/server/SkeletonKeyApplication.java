@@ -174,10 +174,6 @@ public class SkeletonKeyApplication
    protected Cache getDefaultCache()
    {
       GlobalConfiguration gconfig = new GlobalConfigurationBuilder().defaultCacheName("custom-cache")
-         .globalJmxStatistics()
-         .allowDuplicateDomains(true)
-         .enable()
-         .jmxDomain("custom-cache")
          .build();
 
       Configuration configuration = new ConfigurationBuilder()
@@ -185,7 +181,6 @@ public class SkeletonKeyApplication
           .evictionType(EvictionType.COUNT)
           .evictionStrategy(EvictionStrategy.NONE)
           .size(1000)
-         .jmxStatistics().enable()
          .build();
       ConfigurationBuilder configBuilder = new ConfigurationBuilder().read(configuration);
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);

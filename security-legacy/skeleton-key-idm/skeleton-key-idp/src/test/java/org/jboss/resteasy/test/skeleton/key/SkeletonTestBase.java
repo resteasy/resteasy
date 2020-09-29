@@ -113,10 +113,6 @@ public class SkeletonTestBase
    public static Cache getDefaultCache()
    {
       GlobalConfiguration gconfig = new GlobalConfigurationBuilder().defaultCacheName("custom-cache")
-         .globalJmxStatistics()
-         .allowDuplicateDomains(true)
-         .enable()
-         .jmxDomain("custom-cache")
          .build();
 
       Configuration configuration = new ConfigurationBuilder()
@@ -124,7 +120,6 @@ public class SkeletonTestBase
          .evictionType(EvictionType.COUNT)
          .evictionStrategy(EvictionStrategy.NONE)
          .size(5000)
-         .jmxStatistics().enable()
          .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
       return manager.getCache("custom-cache");
