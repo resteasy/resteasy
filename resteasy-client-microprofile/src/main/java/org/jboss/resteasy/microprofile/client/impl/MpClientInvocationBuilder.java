@@ -9,6 +9,9 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
+import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvoker;
+
+import javax.ws.rs.client.CompletionStageRxInvoker;
 
 
 public class MpClientInvocationBuilder extends ClientInvocationBuilder {
@@ -19,6 +22,11 @@ public class MpClientInvocationBuilder extends ClientInvocationBuilder {
                                      final List<AsyncInvocationInterceptorFactory> asyncInterceptorFactories) {
         super(client, uri, configuration);
         this.asyncInterceptorFactories = asyncInterceptorFactories;
+    }
+
+    @Override
+    public CompletionStageRxInvoker rx() {
+        return new AsyncInterceptorRxInvoker(this, invocation.getClient().asyncInvocationExecutor());
     }
 
     @Override
