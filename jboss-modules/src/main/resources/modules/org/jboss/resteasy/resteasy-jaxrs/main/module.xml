@@ -53,5 +53,7 @@
         <module name="org.eclipse.microprofile.restclient"/>
         <module name="org.eclipse.microprofile.config.api" export="true" optional="true"/> <!-- not really optional, just a workaround for WFLY12/13 missing MP Config API -->
         <module name="org.jboss.resteasy.resteasy-jaxrs-public" export="true"/>
+        <module name="org.jboss.resteasy.resteasy-cdi"/>
+        <module name="org.jboss.weld.api"/>
     </dependencies>
 </module>
