@@ -43,7 +43,7 @@ public class IgnoredMediaTypes
       MediaType mt = MediaType.valueOf(mime);
       if (mt.isWildcardType() || mediaType.isWildcardType()) return true;
       if (!mediaType.getType().equals(mt.getType())) return false;
-      if (mt.isWildcardSubtype() || mt.isWildcardSubtype()) return true;
+      if (mt.isWildcardSubtype() || mediaType.isWildcardSubtype()) return true;
       if (mt.getSubtype().startsWith("*+"))
       {
          String compare = getSubtype(mt.getSubtype());
