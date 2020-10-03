@@ -7,7 +7,6 @@ import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -36,8 +35,7 @@ public class HeaderFlushedAsyncOutputStream extends AsyncOutputStream {
       RuntimeDelegate delegate = RuntimeDelegate.getInstance();
 
       for (String key : headers.keySet()) {
-         List<Object> objs = headers.get(key);
-         for (Object obj : objs) {
+         for (Object obj : headers.get(key)) {
             String value;
             RuntimeDelegate.HeaderDelegate headerDelegate = delegate
                   .createHeaderDelegate(obj.getClass());
