@@ -44,13 +44,30 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.jboss.resteasy.client.exception.ResteasyBadRequestException;
+import org.jboss.resteasy.client.exception.ResteasyClientErrorException;
+import org.jboss.resteasy.client.exception.ResteasyForbiddenException;
+import org.jboss.resteasy.client.exception.ResteasyInternalServerErrorException;
+import org.jboss.resteasy.client.exception.ResteasyNotAcceptableException;
+import org.jboss.resteasy.client.exception.ResteasyNotAllowedException;
+import org.jboss.resteasy.client.exception.ResteasyNotAuthorizedException;
+import org.jboss.resteasy.client.exception.ResteasyNotFoundException;
+import org.jboss.resteasy.client.exception.ResteasyNotSupportedException;
+import org.jboss.resteasy.client.exception.ResteasyRedirectionException;
+import org.jboss.resteasy.client.exception.ResteasyServerErrorException;
+import org.jboss.resteasy.client.exception.ResteasyServiceUnavailableException;
+import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
+import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory.CloseableContext;
 import org.jboss.resteasy.util.DelegatingOutputStream;
@@ -191,7 +208,17 @@ public class ClientInvocation implements Invocation
             }
          }
          if (status >= 300 && status < 400)
-            throw new RedirectionException(response);
+         {
+            boolean serverSide = ResteasyProviderFactory.searchContextData(Dispatcher.class) != null;
+            if (!serverSide || useOriginalBehavior())
+            {
+               throw new RedirectionException(response);
+            }
+            else
+            {
+               throw new ResteasyRedirectionException(response);
+            }
+         }
 
          return handleErrorStatus(response);
       }
@@ -214,36 +241,73 @@ public class ClientInvocation implements Invocation
    public static <T> T handleErrorStatus(Response response)
    {
       final int status = response.getStatus();
-      switch (status)
+      boolean serverSide = ResteasyProviderFactory.searchContextData(Dispatcher.class) != null;
+      if (!serverSide || useOriginalBehavior())
       {
-         case 400 :
-            throw new BadRequestException(response);
-         case 401 :
-            throw new NotAuthorizedException(response);
-         case 403 :
-            throw new ForbiddenException(response);
-         case 404 :
-            throw new NotFoundException(response);
-         case 405 :
-            throw new NotAllowedException(response);
-         case 406 :
-            throw new NotAcceptableException(response);
-         case 415 :
-            throw new NotSupportedException(response);
-         case 500 :
-            throw new InternalServerErrorException(response);
-         case 503 :
-            throw new ServiceUnavailableException(response);
-         default :
-            break;
+         switch (status)
+         {
+            case 400 :
+               throw new BadRequestException(response);
+            case 401 :
+               throw new NotAuthorizedException(response);
+            case 403 :
+               throw new ForbiddenException(response);
+            case 404 :
+               throw new NotFoundException(response);
+            case 405 :
+               throw new NotAllowedException(response);
+            case 406 :
+               throw new NotAcceptableException(response);
+            case 415 :
+               throw new NotSupportedException(response);
+            case 500 :
+               throw new InternalServerErrorException(response);
+            case 503 :
+               throw new ServiceUnavailableException(response);
+            default :
+               break;
+         }
+
+         if (status >= 400 && status < 500)
+            throw new ClientErrorException(response);
+         if (status >= 500)
+            throw new ServerErrorException(response);
+
+         throw new WebApplicationException(response);
       }
+      else
+      {
+         switch (status)
+         {
+            case 400 :
+               throw new ResteasyBadRequestException(response);
+            case 401 :
+               throw new ResteasyNotAuthorizedException(response);
+            case 403 :
+               throw new ResteasyForbiddenException(response);
+            case 404 :
+               throw new ResteasyNotFoundException(response);
+            case 405 :
+               throw new ResteasyNotAllowedException(response);
+            case 406 :
+               throw new ResteasyNotAcceptableException(response);
+            case 415 :
+               throw new ResteasyNotSupportedException(response);
+            case 500 :
+               throw new ResteasyInternalServerErrorException(response);
+            case 503 :
+               throw new ResteasyServiceUnavailableException(response);
+            default :
+               break;
+         }
 
-      if (status >= 400 && status < 500)
-         throw new ClientErrorException(response);
-      if (status >= 500)
-         throw new ServerErrorException(response);
+         if (status >= 400 && status < 500)
+            throw new ResteasyClientErrorException(response);
+         if (status >= 500)
+            throw new ResteasyServerErrorException(response);
 
-      throw new WebApplicationException(response);
+         throw new ResteasyWebApplicationException(response);
+      }
    }
 
    public ClientConfiguration getClientConfiguration()
@@ -781,6 +845,12 @@ public class ClientInvocation implements Invocation
       {
          return get();
       }
+   }
+
+   private static boolean useOriginalBehavior()
+   {
+      Config config = ConfigProvider.getConfig();
+      return config.getOptionalValue(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR, boolean.class).orElse(false);
    }
 
    public void setActualTarget(WebTarget target)
