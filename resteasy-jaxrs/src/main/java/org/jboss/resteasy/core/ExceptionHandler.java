@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.client.exception.ResteasyNotFoundException;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -258,7 +259,7 @@ public class ExceptionHandler
 
    protected Response handleWebApplicationException(WebApplicationException wae)
    {
-      if (wae instanceof NotFoundException)
+      if (wae instanceof NotFoundException || wae instanceof ResteasyNotFoundException)
       {
          LogMessages.LOGGER.failedToExecuteDebug(wae);
       }

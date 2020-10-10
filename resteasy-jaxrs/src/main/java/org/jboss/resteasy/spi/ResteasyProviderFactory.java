@@ -779,6 +779,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       contextualData.pop();
    }
 
+   public static Object searchContextData(Object o)
+   {
+      for (int i = contextualData.size() - 1; i >= 0; i--)
+      {
+         Map<Class<?>, Object> map = contextualData.get(i);
+         if (map.containsKey(o))
+         {
+            return map.get(o);
+         }
+      }
+      return null;
+   }
+
    /**
     * Will not initialize singleton if not set.
     *
