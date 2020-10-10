@@ -1062,6 +1062,21 @@ String s = config.getOptionalValue("prop_name", String.class).orElse("d'oh");
                                 will not occur.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.original.webapplicationexception.behavior
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                When set to "true", this parameter will restore the original behavior in which
+                                a Client running in a resource method will throw a JAX-RS WebApplicationException
+                                instead of a ResteasyWebApplicationException. See section
+                                <link linkend='ResteasyWebApplicationException'>ResteasyWebApplicationException</link>
+                                for more information.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
