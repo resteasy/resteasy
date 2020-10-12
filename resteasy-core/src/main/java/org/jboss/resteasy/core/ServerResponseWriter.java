@@ -355,7 +355,7 @@ public class ServerResponseWriter
          //JAX-RS 2.0 Section 3.8.4, 3.8.5
          List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
          if (accepts.isEmpty()) {
-            accepts = Collections.singleton(MediaType.WILDCARD_TYPE);
+            accepts = Collections.singletonList(MediaType.WILDCARD_TYPE);
          }
          List<SortableMediaType> M = new ArrayList<SortableMediaType>();
          boolean hasStarStar = false;
