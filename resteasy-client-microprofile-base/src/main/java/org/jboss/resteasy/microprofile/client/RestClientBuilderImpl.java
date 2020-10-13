@@ -24,9 +24,6 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
-
-
-
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.net.ssl.HostnameVerifier;
@@ -100,7 +97,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             builderDelegate.providerFactory(localProviderFactory);
         }
         if (getBeanManager() != null) {
-           builderDelegate.getProviderFactory().setInjectorFactory(new CdiInjectorFactory(getBeanManager()));
+            builderDelegate.getProviderFactory()
+                    .setInjectorFactory(new CdiInjectorFactory(getBeanManager()));
         }
         configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
 
@@ -132,8 +130,15 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     }
 
     @Override
-    public RestClientBuilder proxyAddress(String var1, int var2){
-        // TODO implement under a different jira and branch
+    public RestClientBuilder proxyAddress(String host, int port){
+        if (host == null) {
+            throw new IllegalArgumentException("proxyHost must not be null");
+        }
+        if (port <=0 || port > 65535) {
+            throw new IllegalArgumentException("Invalid port number");
+        }
+        this.proxyHost = host;
+        this.proxyPort = port;
         return this;
     }
 
@@ -231,64 +236,61 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         ClassLoader classLoader = aClass.getClassLoader();
 
-        List<String> noProxyHosts = Arrays.asList(
-                getSystemProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
-        String envProxyHost = getSystemProperty("http.proxyHost", null);
+
 
         T actualClient;
         ResteasyClient client;
 
         ResteasyClientBuilder resteasyClientBuilder;
+        List<String> noProxyHosts = Arrays.asList(
+                getSystemProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
+        if (this.proxyHost != null) {
+            resteasyClientBuilder = builderDelegate.defaultProxy(proxyHost, this.proxyPort);
+        } else {
+            String envProxyHost = getSystemProperty("http.proxyHost", null);
+            boolean isUriMatched = false;
+            if (envProxyHost != null && !noProxyHosts.isEmpty()) {
+                for (String s : noProxyHosts) {
+                    Pattern p = Pattern.compile(s);
+                    Matcher m = p.matcher(baseURI.getHost());
+                    isUriMatched = m.matches();
+                    if (isUriMatched) {
+                        break;
+                    }
+                }
+            }
 
-        boolean isUriMatched = false;
-        if (envProxyHost != null && !noProxyHosts.isEmpty()) {
-            for (String s : noProxyHosts) {
-                Pattern p = Pattern.compile(s);
-                Matcher m = p.matcher(baseURI.getHost());
-                isUriMatched = m.matches();
-                if (isUriMatched) {
-                    break;
+            if (envProxyHost != null && !isUriMatched) {
+                // Use proxy, if defined in the env variables
+                resteasyClientBuilder = builderDelegate.defaultProxy(envProxyHost,
+                        Integer.parseInt(getSystemProperty("http.proxyPort", "80")));
+            } else {
+                // Search for proxy settings passed in the client builder, if passed and use them if found
+                String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
+                        .filter(String.class::isInstance).map(String.class::cast).orElse(null);
+
+                Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
+                        .filter(Integer.class::isInstance).map(Integer.class::cast).orElse(null);
+
+                String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
+                        .filter(String.class::isInstance).map(String.class::cast).orElse(null);
+
+                if (userProxyHost != null && userProxyPort != null) {
+                    resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
+                } else {
+                    // ProxySelector if applicable
+                    selectHttpProxy().ifPresent(
+                            proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
+
+                    resteasyClientBuilder = builderDelegate;
                 }
             }
         }
 
-        if (envProxyHost != null && !isUriMatched) {
-            // Use proxy, if defined in the env variables
-            resteasyClientBuilder = builderDelegate.defaultProxy(
-                    envProxyHost,
-                    Integer.parseInt(getSystemProperty("http.proxyPort", "80")));
-        } else {
-            // Search for proxy settings passed in the client builder, if passed and use them if found
-            String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .orElse(null);
-
-            Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
-                    .filter(Integer.class::isInstance)
-                    .map(Integer.class::cast)
-                    .orElse(null);
-
-            String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .orElse(null);
-
-            if (userProxyHost != null && userProxyPort != null) {
-                resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
-            } else {
-                //ProxySelector if applicable
-                selectHttpProxy()
-                    .ifPresent(proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
-
-                resteasyClientBuilder = builderDelegate;
-            }
-        }
-
         if (this.executorService != null) {
-           resteasyClientBuilder.executorService(this.executorService);
+            resteasyClientBuilder.executorService(this.executorService);
         } else {
-           resteasyClientBuilder.executorService(Executors.newCachedThreadPool(), true);
+            resteasyClientBuilder.executorService(Executors.newCachedThreadPool(), true);
         }
         resteasyClientBuilder.register(DEFAULT_MEDIA_TYPE_FILTER);
         resteasyClientBuilder.register(METHOD_INJECTION_FILTER);
@@ -410,8 +412,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                     RegisterRestClient registerRestClient =
                             (RegisterRestClient)aClass.getAnnotation(RegisterRestClient.class);
                     if (registerRestClient !=null &&
-                        registerRestClient.configKey() != null &&
-                        !registerRestClient.configKey().isEmpty()) {
+                            registerRestClient.configKey() != null &&
+                            !registerRestClient.configKey().isEmpty()) {
 
                         //property using configKey
                         prop = config.getOptionalValue(
@@ -728,14 +730,14 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         return builderDelegate;
     }
     private static BeanManager getBeanManager() {
-       try {
-           CDI<Object> current = CDI.current();
-           return current != null ? current.getBeanManager() : null;
-       } catch (IllegalStateException e) {
-           LOGGER.warnf("CDI container is not available");
-           return null;
-       }
-   }
+        try {
+            CDI<Object> current = CDI.current();
+            return current != null ? current.getBeanManager() : null;
+        } catch (IllegalStateException e) {
+            LOGGER.warnf("CDI container is not available");
+            return null;
+        }
+    }
     private String getSystemProperty(String key, String def) {
         if (System.getSecurityManager() == null) {
             return System.getProperty(key, def);
@@ -758,6 +760,9 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
     private Long readTimeout;
     private TimeUnit readTimeoutUnit;
+
+    private String proxyHost;
+    private Integer proxyPort = null;
 
     private SSLContext sslContext;
     private KeyStore trustStore;
