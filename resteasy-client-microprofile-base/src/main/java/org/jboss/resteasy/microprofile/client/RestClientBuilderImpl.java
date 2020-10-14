@@ -322,7 +322,6 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 .build();
         ((MpClient)client).setQueryParamStyle(queryParamStyle);
         client.register(AsyncInterceptorRxInvokerProvider.class);
-
         actualClient = client.target(baseURI)
                 .proxyBuilder(aClass)
                 .classloader(classLoader)
