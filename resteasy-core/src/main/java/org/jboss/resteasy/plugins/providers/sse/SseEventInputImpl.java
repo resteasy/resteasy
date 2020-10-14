@@ -270,7 +270,7 @@ public class SseEventInputImpl implements EventInput, Closeable
                eolBuffer[pos] = b;
                //if it meets \r\r , \n\n , \r\n\r\n or \n\r\n\r\n
                if ((pos > 0 && eolBuffer[pos] == eolBuffer[pos - 1])
-                     || (pos >= 3 && new String(eolBuffer, 0, pos, StandardCharsets.UTF_8).contains(DELIMITER)))
+                     || (pos >= 3 && new String(eolBuffer, 0, pos+1, StandardCharsets.UTF_8).contains(DELIMITER)))
                {
                   boundary = true;
                }
