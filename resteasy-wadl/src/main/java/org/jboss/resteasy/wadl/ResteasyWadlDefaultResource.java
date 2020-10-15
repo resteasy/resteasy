@@ -18,8 +18,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-@Path("/")
-public class ResteasyWadlDefaultResource {
+public abstract class ResteasyWadlDefaultResource {
 
    private Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
 
