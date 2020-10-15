@@ -12,10 +12,12 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
+import org.reactivestreams.Publisher;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,7 +95,7 @@ public class BuiltResponse extends AbstractBuiltResponse
             {
                try
                {
-                  if (!EventInput.class.isInstance(entity))
+                  if (!Publisher.class.isInstance(entity) &&  !EventInput.class.isInstance(entity))
                   {
                      close();
                   }
