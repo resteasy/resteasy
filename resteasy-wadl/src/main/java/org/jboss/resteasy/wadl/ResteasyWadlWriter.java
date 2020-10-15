@@ -354,9 +354,6 @@ public class ResteasyWadlWriter {
        private void collectClassesForSchemaGeneration(ResteasyWadlMethodMetaData methodMetaData) {
            if (!schemaGenerationEnabled())
                return;
-           // support runtime rescan.
-//           schemaClasses.clear();
-//           generatedSchemas.clear();
 
            _addClass(methodMetaData.getMethod().getReturnType());
 
