@@ -368,7 +368,7 @@ public class ResteasyWadlWriter {
            }
        }
 
-       public void processClassesForSchema() {
+       private void processClassesForSchema() {
            try {
                final JAXBContext context = JAXBContext.newInstance(schemaClasses.toArray(new Class[schemaClasses.size()]));
 
