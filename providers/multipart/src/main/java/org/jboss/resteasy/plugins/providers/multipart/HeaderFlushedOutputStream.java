@@ -4,7 +4,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -30,8 +29,7 @@ public class HeaderFlushedOutputStream extends OutputStream {
       RuntimeDelegate delegate = RuntimeDelegate.getInstance();
 
       for (String key : headers.keySet()) {
-         List<Object> objs = headers.get(key);
-         for (Object obj : objs) {
+         for (Object obj : headers.get(key)) {
             String value;
             RuntimeDelegate.HeaderDelegate headerDelegate = delegate
                   .createHeaderDelegate(obj.getClass());
