@@ -21,47 +21,57 @@ import java.util.Map;
 @Path("/")
 public class ResteasyWadlDefaultResource {
 
-   private Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
+    public ResteasyWadlDefaultResource() {
 
-   private void loadServices(ResteasyDeployment deployment) {
-         services.put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
-   }
+        ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
+        wadlGrammar.enableSchemaGeneration();
+        getWadlWriter().setWadlGrammar(wadlGrammar);
 
-   public Map<String, ResteasyWadlServiceRegistry> getServices() {
-      return services;
-   }
+    }
 
-   ResteasyWadlWriter wadlWriter = new ResteasyWadlWriter(); // create a default servlet writer.
+    private Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
 
-   public ResteasyWadlWriter getWadlWriter() {
-      return wadlWriter;
-   }
+    private void loadServices(ResteasyDeployment deployment) {
+        services.put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
+    }
 
-   @GET
-   @Path("/application.xml")
-   @Produces("application/xml")
-   public String output(@Context ResteasyDeployment deployment) {
-      loadServices(deployment);
+    public Map<String, ResteasyWadlServiceRegistry> getServices() {
+        return services;
+    }
 
-      try {
-         return wadlWriter.getStringWriter("", services).toString();
-      } catch (JAXBException e) {
-         LogMessages.LOGGER.error(Messages.MESSAGES.cantProcessWadl(), e);
-      }
-      return null;
-   }
+    ResteasyWadlWriter wadlWriter = new ResteasyWadlWriter(); // create a default servlet writer.
+
+    public ResteasyWadlWriter getWadlWriter() {
+        return wadlWriter;
+    }
+
+    @GET
+    @Path("/application.xml")
+    @Produces("application/xml")
+    public String output(@Context ResteasyDeployment deployment) {
+        loadServices(deployment);
+
+        try {
+            return wadlWriter.getStringWriter("", services).toString();
+        } catch (JAXBException e) {
+            LogMessages.LOGGER.error(Messages.MESSAGES.cantProcessWadl(), e);
+        }
+        return null;
+    }
 
 
-   @GET
-   @Path("/wadl-extended/{path}")
-   @Produces("application/xml")
-   public Response grammars(@PathParam("path") String path, @Context ResteasyDeployment deployment) {
-      loadServices(deployment);
+    @GET
+    @Path("/wadl-extended/{path}")
+    @Produces("application/xml")
+    public Response grammars(@PathParam("path") String path, @Context ResteasyDeployment deployment) {
 
-      return Response
-            .ok()
-            .type(MediaType.APPLICATION_XML_TYPE)
-            .entity(wadlWriter.getWadlGrammar().getSchemaOfUrl(path))
-            .build();
-   }
+        loadServices(deployment);
+        wadlWriter.createApplication("", services);
+
+        return Response
+                .ok()
+                .type(MediaType.APPLICATION_XML_TYPE)
+                .entity(wadlWriter.getWadlGrammar().getSchemaOfUrl(path))
+                .build();
+    }
 }

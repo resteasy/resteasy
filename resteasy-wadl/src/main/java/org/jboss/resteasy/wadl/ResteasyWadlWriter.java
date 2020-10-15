@@ -72,18 +72,18 @@ public class ResteasyWadlWriter {
 
    public StringWriter getStringWriter(String base, Map<String, ResteasyWadlServiceRegistry> serviceRegistries) throws JAXBException {
 
-      Application app = createApplication(base, serviceRegistries);
+      createApplication(base, serviceRegistries);
 
       JAXBContext context = JAXBContext.newInstance(Application.class);
       Marshaller marshaller = context.createMarshaller();
       StringWriter stringWriter = new StringWriter();
       PrintWriter writer = new PrintWriter(stringWriter);
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-      marshaller.marshal(app, writer);
+      marshaller.marshal(wadlApp, writer);
       return stringWriter;
    }
 
-    private Application createApplication(String base, Map<String, ResteasyWadlServiceRegistry> serviceRegistries) {
+    public void createApplication(String base, Map<String, ResteasyWadlServiceRegistry> serviceRegistries) {
             ObjectFactory factory = new ObjectFactory();
             Application app = factory.createApplication();
             for (Map.Entry<String, ResteasyWadlServiceRegistry> entry : serviceRegistries.entrySet()) {
@@ -100,8 +100,6 @@ public class ResteasyWadlWriter {
 
             wadlApp = app;
         }
-
-        return wadlApp;
     }
 
     private void processWadl(ResteasyWadlServiceRegistry serviceRegistry, Resources root) {
@@ -151,6 +149,9 @@ public class ResteasyWadlWriter {
             method.getResponse().add(response);
          }
       }
+
+      if (wadlGrammar != null)
+          wadlGrammar.processClassesForSchema();
 
       for (ResteasyWadlServiceRegistry subService : serviceRegistry.getLocators())
          processWadl(subService, root);
@@ -354,16 +355,14 @@ public class ResteasyWadlWriter {
            if (!schemaGenerationEnabled())
                return;
            // support runtime rescan.
-           schemaClasses.clear();
-           generatedSchemas.clear();
+//           schemaClasses.clear();
+//           generatedSchemas.clear();
 
            _addClass(methodMetaData.getMethod().getReturnType());
 
            for (ResteasyWadlMethodParamMetaData paramMetaData : methodMetaData.getParameters()) {
                _addClass(paramMetaData.getType());
            }
-
-           processClassesForSchema();
        }
 
        private void _addClass(Class<?> clazz) {
@@ -372,7 +371,7 @@ public class ResteasyWadlWriter {
            }
        }
 
-       private void processClassesForSchema() {
+       public void processClassesForSchema() {
            try {
                final JAXBContext context = JAXBContext.newInstance(schemaClasses.toArray(new Class[schemaClasses.size()]));
 
