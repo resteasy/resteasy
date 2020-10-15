@@ -6,7 +6,9 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.spi.util.Types;
+import org.reactivestreams.Publisher;
 
 import javax.ws.rs.core.GenericType;
 
@@ -60,7 +62,7 @@ public class BodyEntityExtractor implements EntityExtractor
             gt = new GenericType(method.getReturnType());
          }
          Object obj = ClientInvocation.extractResult(gt, response, method.getAnnotations());
-         if (obj instanceof InputStream || obj instanceof Reader)
+         if (obj instanceof InputStream || obj instanceof Reader || obj instanceof Publisher || obj instanceof EventInput)
             releaseConnectionAfter = false;
          return obj;
       }
