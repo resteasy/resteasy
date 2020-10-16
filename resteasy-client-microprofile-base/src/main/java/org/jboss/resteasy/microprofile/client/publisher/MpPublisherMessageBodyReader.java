@@ -42,10 +42,6 @@ public class MpPublisherMessageBodyReader implements MessageBodyReader<Publisher
                                  Annotation[] annotations, MediaType mediaType,
                                  MultivaluedMap<String, String> httpHeaders,
                                  InputStream entityStream) throws IOException, WebApplicationException {
-        //ExecutorService executor = Executors.newSingleThreadExecutor();
-        //ClientConfiguration clinetConfiguraiton = new ClientConfiguration(getProviderFactory());
-        /*MpPublisher publisher = new MpPublisher(entityStream, executor, providers,
-                annotations, mediaType, httpHeaders);*/
        MediaType streamType = mediaType;
        if (mediaType.getParameters() != null)
        {
