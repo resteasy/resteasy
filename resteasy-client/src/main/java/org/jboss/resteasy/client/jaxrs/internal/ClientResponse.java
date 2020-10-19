@@ -6,6 +6,7 @@ import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
+import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.AbstractBuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
@@ -15,12 +16,14 @@ import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
+import org.reactivestreams.Publisher;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -252,9 +255,14 @@ public abstract class ClientResponse extends BuiltResponse
       }
       finally
       {
-         ResteasyContext.popContextData(Providers.class);
-         if (current != null) ResteasyContext.pushContext(Providers.class, current);
-         if (obj instanceof ProvidersContextRetainer) ((ProvidersContextRetainer) obj).setProviders(configuration);
+         if (!Publisher.class.isAssignableFrom(type) && !EventInput.class.isAssignableFrom(type))
+         {
+            ResteasyContext.popContextData(Providers.class);
+            if (current != null)
+               ResteasyContext.pushContext(Providers.class, current);
+            if (obj instanceof ProvidersContextRetainer)
+               ((ProvidersContextRetainer) obj).setProviders(configuration);
+         }
       }
    }
 

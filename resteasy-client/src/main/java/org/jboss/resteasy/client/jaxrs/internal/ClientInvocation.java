@@ -57,6 +57,7 @@ import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DelegatingOutputStream;
+import org.reactivestreams.Publisher;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -162,7 +163,7 @@ public class ClientInvocation implements Invocation
             {
                T rtn = response.readEntity(responseType, annotations);
                if (InputStream.class.isInstance(rtn) || Reader.class.isInstance(rtn)
-                     || EventInput.class.isInstance(rtn))
+                     || EventInput.class.isInstance(rtn) || Publisher.class.isInstance(rtn))
                {
                   if (response instanceof ClientResponse)
                   {
