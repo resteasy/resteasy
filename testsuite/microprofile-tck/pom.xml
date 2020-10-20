@@ -16,8 +16,8 @@
 
   <properties>
     <skip.mp.tck>false</skip.mp.tck>
-    <cxf.jetty9.version>9.2.28.v20190418</cxf.jetty9.version>
-    <cxf.jetty.version>${cxf.jetty9.version}</cxf.jetty.version>
+    <jetty9.version>9.2.28.v20190418</jetty9.version>
+    <jetty.version>${jetty9.version}</jetty.version>
   </properties>
 
   <dependencies>
@@ -133,32 +133,32 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-io</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-security</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>apache-jsp</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.glassfish</groupId>
@@ -173,7 +173,7 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <version>${cxf.jetty.version}</version>
+      <version>${jetty.version}</version>
     </dependency>
 
   </dependencies>
