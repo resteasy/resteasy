@@ -15,6 +15,7 @@ import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerPro
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
@@ -27,7 +28,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
 
 import java.io.Closeable;
@@ -392,10 +392,10 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         for (Method method : methods) {
             Path methodPathAnno = method.getAnnotation(Path.class);
             if (methodPathAnno != null) {
-                template = classPathAnno == null ? (ResteasyUriBuilder) UriBuilder.fromUri(methodPathAnno.value())
-                        : (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value() + "/" + methodPathAnno.value());
+                template = classPathAnno == null ? (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(methodPathAnno.value())
+                        : (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(classPathAnno.value() + "/" + methodPathAnno.value());
             } else if (classPathAnno != null) {
-                template = (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value());
+                template = (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(classPathAnno.value());
             }
 
             if (template == null) {
