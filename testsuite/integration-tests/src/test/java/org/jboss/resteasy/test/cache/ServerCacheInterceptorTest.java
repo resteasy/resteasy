@@ -8,6 +8,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly19;
+import org.jboss.resteasy.category.ExpectedFailingOnWildFly21;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.cache.server.InfinispanCache;
@@ -38,7 +39,8 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({ExpectedFailingOnWildFly19.class})
+//Remove ExpectedFailingOnWildFly21 after https://issues.redhat.com/browse/WFLY-13988 is resolved
+@Category({ExpectedFailingOnWildFly19.class, ExpectedFailingOnWildFly21.class})
 public class ServerCacheInterceptorTest {
 
    private static ResteasyClient clientA;
