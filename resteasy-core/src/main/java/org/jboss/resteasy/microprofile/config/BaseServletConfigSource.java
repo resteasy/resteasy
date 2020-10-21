@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.spi.ConfigSource;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * I know this implementation is weird, but we do this for two reasons
@@ -35,6 +36,10 @@ public class BaseServletConfigSource {
           return Collections.<String, String>emptyMap();
        }
        return source.getProperties();
+    }
+
+    public Set<String> getPropertyNames() {
+        return getProperties().keySet();
     }
 
     public String getValue(String propertyName) {

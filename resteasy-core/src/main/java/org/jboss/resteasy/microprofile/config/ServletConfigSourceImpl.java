@@ -8,7 +8,9 @@ import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ServletConfigSourceImpl implements ConfigSource {
    private volatile String name;
@@ -29,6 +31,16 @@ public class ServletConfigSourceImpl implements ConfigSource {
          }
       }
       return map;
+   }
+
+   @Override
+   public Set<String> getPropertyNames() {
+      ServletConfig config = ResteasyContext.getContextData(ServletConfig.class);
+      if (config == null) {
+         return Collections.<String>emptySet();
+      }
+
+      return new HashSet<String>(Collections.list(config.getInitParameterNames()));
    }
 
    @Override
