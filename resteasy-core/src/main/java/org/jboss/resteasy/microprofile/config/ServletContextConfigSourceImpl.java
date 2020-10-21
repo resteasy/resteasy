@@ -7,7 +7,9 @@ import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ServletContextConfigSourceImpl implements ConfigSource {
 
@@ -29,6 +31,16 @@ public class ServletContextConfigSourceImpl implements ConfigSource {
          }
       }
       return map;
+   }
+
+   @Override
+   public Set<String> getPropertyNames() {
+      ServletContext context = ResteasyContext.getContextData(ServletContext.class);
+      if (context == null) {
+         return Collections.<String>emptySet();
+      }
+
+      return new HashSet<String>(Collections.list(context.getInitParameterNames()));
    }
 
    @Override

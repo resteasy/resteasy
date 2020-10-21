@@ -98,7 +98,7 @@
 
         <!-- SmallRye versions -->
         <version.io.smallrye.context-propagation>1.0.1</version.io.smallrye.context-propagation>
-        <version.io.smallrye.smallrye-config>1.6.1</version.io.smallrye.smallrye-config>
+        <version.io.smallrye.smallrye-config>1.9.2</version.io.smallrye.smallrye-config>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.19</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
