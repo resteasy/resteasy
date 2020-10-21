@@ -40,7 +40,7 @@
         <version.jakarta.json.bind-api>1.0.2</version.jakarta.json.bind-api>
         <version.jakarta.validation-api>2.0.2</version.jakarta.validation-api>
         <version.javax.ws.rs-api>2.0.1.Final</version.javax.ws.rs-api>
-        <version.junit>4.12</version.junit>
+        <version.junit>4.13.1</version.junit>
         <version.log4j>2.13.3</version.log4j>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.13</version.org.apache.httpcomponents.httpclient>
