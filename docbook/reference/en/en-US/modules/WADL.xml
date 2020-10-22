@@ -41,7 +41,7 @@
 import javax.ws.rs.Path;
 
 @Path("/")
-    public class MyWadlResource extends ResteasyWadlDefaultResource {
+public class MyWadlResource extends ResteasyWadlDefaultResource {
 }]]></programlisting>
         <para>As the sample shown above, it will enable the <code>ResteasyWadlDefaultResource</code> and serves this URL by default:</para>
         <programlisting><![CDATA[/application.xml]]></programlisting>
