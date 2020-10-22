@@ -63,6 +63,7 @@ public class MyWadlResource extends ResteasyWadlDefaultResource {
 }]]></programlisting>
         <para>With the above setup, the WADL module will generate GRAMMAR automatically and register the service under this url:</para>
         <programlisting><![CDATA[/wadl-extended/xsd0.xsd]]></programlisting>
+        <para>Above is the basic usage of WADL module under servlet container deployment.</para>
     </section>
     <section>
         <title>RESTEasy WADL support for Sun JDK HTTP Server</title>
