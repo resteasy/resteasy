@@ -139,6 +139,18 @@
             </properties>
         </profile>
         <profile>
+            <id>server-version-21x-exclusions</id>
+            <activation>
+                <property>
+                    <name>server.version</name>
+                    <value>21.0.0.Final</value>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly21</additional.surefire.excluded.groups>
+            </properties>
+        </profile>
+        <profile>
             <id>server-version-20x-exclusions</id>
             <activation>
                 <property>
