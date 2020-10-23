@@ -18,8 +18,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-@Path("/")
-public class ResteasyWadlDefaultResource {
+public abstract class ResteasyWadlDefaultResource {
 
    private Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
 
@@ -57,6 +56,7 @@ public class ResteasyWadlDefaultResource {
    @Produces("application/xml")
    public Response grammars(@PathParam("path") String path, @Context ResteasyDeployment deployment) {
       loadServices(deployment);
+      wadlWriter.createApplication("", services);
 
       return Response
             .ok()

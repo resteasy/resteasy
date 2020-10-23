@@ -43,7 +43,7 @@ public class TestWadlFunctions extends WADLTestSetup {
       this.client = client;
    }
 
-   private static ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+   private static ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
 
 
    @BeforeClass
