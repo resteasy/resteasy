@@ -5,6 +5,7 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl.SourceBuilder;
@@ -27,6 +28,7 @@ public class FlowableRxInvokerImpl implements FlowableRxInvoker
    private ClientInvocationBuilder syncInvoker;
    private ScheduledExecutorService executorService;
    private BackpressureStrategy backpressureStrategy = BackpressureStrategy.BUFFER;
+   private ClientInvoker clientInvoker;
 
    public FlowableRxInvokerImpl(final SyncInvoker syncInvoker, final ExecutorService executorService)
    {
@@ -257,6 +259,9 @@ public class FlowableRxInvokerImpl implements FlowableRxInvoker
          builder.executor(executorService);
       }
       SseEventSourceImpl sseEventSource = (SseEventSourceImpl) builder.alwaysReconnect(false).build();
+      if (clientInvoker != null) {
+         sseEventSource.setClientInvoker(clientInvoker);
+      }
       return sseEventSource;
    }
 
@@ -272,5 +277,13 @@ public class FlowableRxInvokerImpl implements FlowableRxInvoker
       {
          return null;
       }
+   }
+
+   public ClientInvoker getClientInvoker() {
+      return clientInvoker;
+   }
+
+   public void setClientInvoker(ClientInvoker clientInvoker) {
+      this.clientInvoker = clientInvoker;
    }
 }

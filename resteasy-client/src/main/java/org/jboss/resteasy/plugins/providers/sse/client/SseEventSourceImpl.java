@@ -24,6 +24,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -53,6 +54,8 @@ public class SseEventSourceImpl implements SseEventSource
    private final boolean alwaysReconnect;
 
    private volatile ClientResponse response;
+
+   private ClientInvoker clientInvoker;
 
    public static class SourceBuilder extends Builder
    {
@@ -275,7 +278,15 @@ public class SseEventSourceImpl implements SseEventSource
       onCompleteConsumers.forEach(Runnable::run);
    }
 
-   private class EventHandler implements Runnable
+   public ClientInvoker getClientInvoker() {
+      return clientInvoker;
+   }
+
+   public void setClientInvoker(ClientInvoker clientInvoker) {
+      this.clientInvoker = clientInvoker;
+   }
+
+private class EventHandler implements Runnable
    {
 
       private final CountDownLatch connectedLatch;
@@ -320,15 +331,16 @@ public class SseEventSourceImpl implements SseEventSource
          try
          {
             final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
-            Invocation request = null;
+            ClientInvocation request = null;
             if (entity == null)
             {
-               request = requestBuilder.build(verb);
+               request = (ClientInvocation) requestBuilder.build(verb);
             }
             else
             {
-               request = requestBuilder.build(verb, entity);
+               request = (ClientInvocation) requestBuilder.build(verb, entity);
             }
+            request.setClientInvoker(clientInvoker);
             response = (ClientResponse) request.invoke();
             if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
             {

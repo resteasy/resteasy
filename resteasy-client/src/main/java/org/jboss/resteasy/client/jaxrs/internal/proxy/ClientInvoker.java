@@ -124,6 +124,14 @@ public class ClientInvoker implements MethodInvoker
          executor = request.asyncInvocationExecutor();
       }
       RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
+      try {
+         Method setClientInvoker = rxInvoker.getClass().getMethod("setClientInvoker", ClientInvoker.class);
+         if (setClientInvoker != null) {
+            setClientInvoker.invoke(rxInvoker, this);
+         }
+      } catch (Exception e1) {
+         //
+      }
       Type type = method.getGenericReturnType();
       if (type instanceof ParameterizedType)
       {

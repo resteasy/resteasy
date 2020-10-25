@@ -15,7 +15,8 @@ public class FlowableRxInvokerProvider implements RxInvokerProvider<FlowableRxIn
    @Override
    public boolean isProviderFor(Class<?> clazz)
    {
-      return FlowableRxInvoker.class.equals(clazz);
+//      return FlowableRxInvoker.class.equals(clazz);
+      return clazz.isAssignableFrom(FlowableRxInvoker.class);
    }
 
    @Override

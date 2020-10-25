@@ -17,6 +17,7 @@ import javax.ws.rs.client.RxInvokerProvider;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -86,6 +87,15 @@ public class ClientHelper extends CommonProviders
       if (rxInvokerProviderClass != null)
       {
          return rpf.createProviderInstance(rxInvokerProviderClass);
+      }
+      Map<Class<?>, Class<? extends RxInvokerProvider<?>>> map = getReactiveClassesForWrite();
+      for (Entry<Class<?>, Class<? extends RxInvokerProvider<?>>> entry : map.entrySet()) {
+         if (clazz.isAssignableFrom(entry.getKey())) {
+            RxInvokerProvider rip = rpf.createProviderInstance(entry.getValue());
+            if (rip != null) {
+               return rip;
+            }
+         }
       }
       return null;
    }
