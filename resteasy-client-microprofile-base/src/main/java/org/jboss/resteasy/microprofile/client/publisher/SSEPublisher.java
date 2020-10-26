@@ -15,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -63,35 +64,44 @@ public class SSEPublisher<T> implements Publisher<T> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void pump(final SSEProcessor processor, final SseEventInputImpl input) {
         Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
-        executor.execute(() -> {
-            ResteasyContext.pushContextDataMap(contextDataMap);
-            Type typeArgument;
-            InboundSseEvent event;
-            if (genericType instanceof ParameterizedType) {
-                typeArgument = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-                if (typeArgument.equals(InboundSseEvent.class)) {
-                    try {
-                        while ((event = input.read(providers)) != null) {
-                            processor.emit(event);
+        Runnable readEventTask = new Runnable() {
+            @Override
+            public void run() {
+                ResteasyContext.pushContextDataMap(contextDataMap);
+                Type typeArgument;
+                InboundSseEvent event;
+                if (genericType instanceof ParameterizedType) {
+                    typeArgument = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+                    if (typeArgument.equals(InboundSseEvent.class)) {
+                        try {
+                            while ((event = input.read(providers)) != null) {
+                                processor.emit(event);
+                            }
+                        } catch (Exception e) {
+                            processor.onError(e);
+                            return;
                         }
-                    } catch (Exception e) {
-                        processor.onError(e);
-                        return;
-                    }
-                processor.onCompletion();
-                } else {
-                    try {
-                        while ((event = input.read(providers)) != null) {
-                            processor.emit(event.readData((Class) typeArgument));
+                    processor.onCompletion();
+                    } else {
+                        try {
+                            while ((event = input.read(providers)) != null) {
+                                processor.emit(event.readData((Class) typeArgument));
+                            }
+                        } catch (Exception e) {
+                            processor.onError(e);
+                            return;
                         }
-                    } catch (Exception e) {
-                        processor.onError(e);
-                        return;
                     }
+                    processor.onCompletion();
                 }
-                processor.onCompletion();
             }
-        });
+        };
+        try {
+            executor.execute(readEventTask);
+        } catch (RejectedExecutionException e) {
+            LOGGER.warnf("Executor %s rejected emit event task", executor);
+            new Thread(readEventTask, "SseClientPublisherNewThread").start();
+        }
     }
 
     /**
