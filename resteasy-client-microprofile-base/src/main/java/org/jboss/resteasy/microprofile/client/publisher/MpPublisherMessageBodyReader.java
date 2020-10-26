@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -23,10 +25,15 @@ import org.reactivestreams.Publisher;
 @Provider
 @Consumes(MediaType.SERVER_SENT_EVENTS)
 public class MpPublisherMessageBodyReader implements MessageBodyReader<Publisher<?>> {
-
     @Context
     protected Providers providers;
-
+    private ExecutorService executor;
+    public MpPublisherMessageBodyReader(final ExecutorService  ex) {
+       executor = ex;
+    }
+    public MpPublisherMessageBodyReader() {
+        executor = Executors.newCachedThreadPool();
+     }
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return Publisher.class.isAssignableFrom(type) && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
@@ -44,6 +51,6 @@ public class MpPublisherMessageBodyReader implements MessageBodyReader<Publisher
             }
         }
         SseEventInputImpl sseEventInput = new SseEventInputImpl(annotations, streamType, mediaType, httpHeaders, entityStream);
-        return new SSEPublisher<>(genericType, providers, sseEventInput);
+        return new SSEPublisher<>(genericType, providers, sseEventInput, executor);
     }
 }

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.microprofile.client.publisher;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -8,9 +9,12 @@ import org.reactivestreams.Subscription;
 
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.InboundSseEvent;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,19 +34,21 @@ public class SSEPublisher<T> implements Publisher<T> {
     private final SseEventInputImpl input;
     private final Type genericType;
     private final Providers providers;
+    private final ExecutorService executor;
 
     private static final Logger LOGGER = Logger.getLogger(SSEPublisher.class);
 
-    public SSEPublisher(final Type genericType, final Providers providers, final SseEventInputImpl input) {
+    public SSEPublisher(final Type genericType, final Providers providers, final SseEventInputImpl input, final ExecutorService es) {
         this.genericType = genericType;
         this.input = input;
         this.providers = providers;
+        this.executor = es;
     }
 
     @Override
     public void subscribe(final Subscriber<? super T> downstream) {
         SSEProcessor<? super T> processor = new SSEProcessor<>(downstream,
-                512); // TODO should retrieve this value from the configuration.
+                Integer.getInteger("resteasy.microprofile.sseclient.buffersize", 512));
         downstream.onSubscribe(processor);
         pump(processor, input);
     }
@@ -56,32 +62,36 @@ public class SSEPublisher<T> implements Publisher<T> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void pump(final SSEProcessor processor, final SseEventInputImpl input) {
-        Type typeArgument;
-        InboundSseEvent event;
-        if (genericType instanceof ParameterizedType) {
-            typeArgument = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-            if (typeArgument.equals(InboundSseEvent.class)) {
-                try {
-                    while ((event = input.read(providers)) != null) {
-                        processor.emit(event);
+        Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
+        executor.execute(() -> {
+            ResteasyContext.pushContextDataMap(contextDataMap);
+            Type typeArgument;
+            InboundSseEvent event;
+            if (genericType instanceof ParameterizedType) {
+                typeArgument = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+                if (typeArgument.equals(InboundSseEvent.class)) {
+                    try {
+                        while ((event = input.read(providers)) != null) {
+                            processor.emit(event);
+                        }
+                    } catch (Exception e) {
+                        processor.onError(e);
+                        return;
                     }
-                } catch (Exception e) {
-                    processor.onError(e);
-                    return;
-                }
                 processor.onCompletion();
-            } else {
-                try {
-                    while ((event = input.read(providers)) != null) {
-                        processor.emit(event.readData((Class) typeArgument));
+                } else {
+                    try {
+                        while ((event = input.read(providers)) != null) {
+                            processor.emit(event.readData((Class) typeArgument));
+                        }
+                    } catch (Exception e) {
+                        processor.onError(e);
+                        return;
                     }
-                } catch (Exception e) {
-                    processor.onError(e);
-                    return;
                 }
                 processor.onCompletion();
             }
-        }
+        });
     }
 
     /**

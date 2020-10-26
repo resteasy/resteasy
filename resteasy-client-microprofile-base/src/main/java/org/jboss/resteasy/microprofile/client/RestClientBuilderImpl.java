@@ -21,6 +21,7 @@ import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.microprofile.client.impl.MpClient;
 import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
+import org.jboss.resteasy.microprofile.client.publisher.MpPublisherMessageBodyReader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
@@ -290,11 +291,13 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         if (this.executorService != null) {
             resteasyClientBuilder.executorService(this.executorService);
         } else {
-            resteasyClientBuilder.executorService(Executors.newCachedThreadPool(), true);
+            this.executorService = Executors.newCachedThreadPool();
+            resteasyClientBuilder.executorService(executorService, true);
         }
         resteasyClientBuilder.register(DEFAULT_MEDIA_TYPE_FILTER);
         resteasyClientBuilder.register(METHOD_INJECTION_FILTER);
         resteasyClientBuilder.register(HEADERS_REQUEST_FILTER);
+        register(new MpPublisherMessageBodyReader(executorService));
         resteasyClientBuilder.sslContext(sslContext);
         resteasyClientBuilder.trustStore(trustStore);
         resteasyClientBuilder.keyStore(keyStore, keystorePassword);
