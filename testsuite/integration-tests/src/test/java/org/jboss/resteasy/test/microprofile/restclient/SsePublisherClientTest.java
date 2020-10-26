@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.microprofile.restclient;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -55,30 +55,37 @@ public class SsePublisherClientTest {
        assertEquals(resteasyBuilder.getClass(), builder.getClass());
        MPSseClient client = builder.baseUrl(new URL(generateURL(""))).build(MPSseClient.class);
        Publisher<String> publisher = client.getStrings();
-       CountDownLatch resultsLatch = new CountDownLatch(12);
-       StringSubscriber subscriber = new StringSubscriber(12, resultsLatch);
+       CountDownLatch resultsLatch = new CountDownLatch(5);
+
+       final Set<String> eventStrings = new HashSet<>();
+       StringSubscriber subscriber = new StringSubscriber(eventStrings, resultsLatch);
        publisher.subscribe(subscriber);
-       assertTrue(resultsLatch.await(30, TimeUnit.SECONDS));
+       Thread.sleep(1000);
+       subscriber.request(5);
+       assertTrue(resultsLatch.await(10, TimeUnit.SECONDS));
+       //sent 12 items, expects these 10 values [msg4, msg3, msg2, msg1, msg8, msg11, msg7, msg10, msg9, msg0]
+       assertTrue(eventStrings.size() == 10);
+       //msg5 and msg6 are dropped
+       assertFalse(eventStrings.contains("msg5") || eventStrings.contains("msg6"));
        assertNull(subscriber.throwable);
     }
 
     private static class StringSubscriber implements Subscriber<String>, AutoCloseable {
 
-        final Set<String> eventStrings = new HashSet<>();
         final CountDownLatch eventLatch;
         Throwable throwable;
         Subscription subscription;
-        long requestedEvents;
+        Set<String> eventStrings;
 
-        StringSubscriber(final long requestedEvents, final CountDownLatch eventLatch) {
-            this.requestedEvents = requestedEvents;
+        StringSubscriber(final Set<String> eventStrings, final CountDownLatch eventLatch) {
             this.eventLatch = eventLatch;
+            this.eventStrings = eventStrings;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
             subscription = s;
-            s.request(requestedEvents);
+            request(5);
         }
 
         @Override
@@ -99,6 +106,9 @@ public class SsePublisherClientTest {
         @Override
         public void close() throws Exception {
             subscription.cancel();
+        }
+        public void request(long requestedEvents) {
+            subscription.request(requestedEvents);
         }
     }
 }
