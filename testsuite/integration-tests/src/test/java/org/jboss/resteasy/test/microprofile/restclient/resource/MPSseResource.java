@@ -12,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.sse.ExecutorServletContextListener;
 
 @Path("/")
@@ -23,7 +22,6 @@ public class MPSseResource {
 
     @Context
     private ServletContext servletContext;
-    private static final Logger logger = Logger.getLogger(MPSseResource.class);
 
     @GET
     @Path("/events")
@@ -33,19 +31,9 @@ public class MPSseResource {
             throw new IllegalStateException("No client connected.");
         }
         ExecutorService service = (ExecutorService) servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
-        service.execute(new Thread() {
-            public void run() {
-
-                try {
-
-                    for (int i = 0; i < 12; i++) {
-                        sink.send(sse.newEvent("msg" + i));
-                        Thread.sleep(10);
-                    }
-                } catch (final InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                }
-
+        service.execute(() -> {
+            for (int i = 0; i < 12; i++) {
+                sink.send(sse.newEvent("msg" + i));
             }
         });
     }
