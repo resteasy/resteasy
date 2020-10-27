@@ -94,7 +94,7 @@
             <id>default</id>
             <activation>
                 <property>
-                    <name>!forward.compatibility</name>
+                    <name>!ts.bootable</name>
                 </property>
             </activation>
             <modules>
