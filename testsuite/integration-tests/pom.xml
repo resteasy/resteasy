@@ -264,7 +264,6 @@
                                         <layer>h2-default-datasource</layer>
                                         <layer>undertow-legacy-https</layer>
                                         <layer>ejb</layer>
-                                        <layer>mail</layer>
                                     </layers>
                                 </configuration>
                             </execution>
