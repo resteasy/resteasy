@@ -90,6 +90,9 @@ the usage of `standalone-microprofile.xml` configuration file:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dts.standalone.microprofile
 
+Please notice that the `-Dts.standalone.microprofile` property usage is not compatible with `-Delytron` property since both will try to set 
+a custom value for the server configuration file property, leading to unexpected results.
+
 ### Bootable jar testing
 Run testsuite or test against Bootable jar, not against Wildfly:
 
