@@ -5,6 +5,7 @@ import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlWriter;
 
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 import java.io.InputStream;
@@ -74,6 +75,9 @@ public class WadlTestApplication extends Application {
       return classes;
    }
 
+   @Path("/")
+   private static class MyWadlResource extends ResteasyWadlDefaultResource {}
+
    /**
     * @see javax.ws.rs.core.Application#getSingletons()
     */
@@ -89,7 +93,7 @@ public class WadlTestApplication extends Application {
                }
             }
          }
-         ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+         ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
          ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
          wadlGrammar.enableSchemaGeneration();
          defaultResource.getWadlWriter().setWadlGrammar(wadlGrammar);

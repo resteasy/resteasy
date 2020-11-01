@@ -22,6 +22,8 @@ public class WADLNettyContainerTest {
    private static int port = TestPortProvider.getPort();
    private static Client client = ClientBuilder.newClient();
 
+
+
    @BeforeClass
    public static void setup() throws Exception {
       ResteasyDeployment deployment = new ResteasyDeployment();
@@ -37,7 +39,7 @@ public class WADLNettyContainerTest {
       deployment.getRegistry().addPerRequestResource(BasicResource.class);
       deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
 
-      ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+      ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
 
       deployment.getRegistry().addSingletonResource(defaultResource);
 
