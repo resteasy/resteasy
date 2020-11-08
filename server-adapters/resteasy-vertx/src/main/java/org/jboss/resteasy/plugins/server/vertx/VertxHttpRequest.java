@@ -67,7 +67,7 @@ public class VertxHttpRequest extends BaseHttpRequest
       this.request = request;
       this.dispatcher = dispatcher;
       this.httpHeaders = VertxUtil.extractHttpHeaders(request);
-      this.httpMethod = request.rawMethod();
+      this.httpMethod = request.method().name();
       this.executionContext = new VertxExecutionContext(this, response, dispatcher);
    }
 

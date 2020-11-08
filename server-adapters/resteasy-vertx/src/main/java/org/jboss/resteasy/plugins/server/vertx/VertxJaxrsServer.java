@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.server.vertx;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
@@ -255,7 +255,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer>
       protected HttpServer server;
 
       @Override
-      public void start(Future<Void> startFuture) throws Exception
+      public void start(Promise<Void> startPromise) throws Exception
       {
          Helper helper = deploymentMap.get(config().getString("helper"));
          server = vertx.createHttpServer(helper.serverOptions);
@@ -263,10 +263,10 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer>
          server.listen(ar -> {
             if (ar.succeeded())
             {
-               startFuture.complete();
+               startPromise.complete();
             } else
             {
-               startFuture.fail(ar.cause());
+               startPromise.fail(ar.cause());
             }
          });
       }
