@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core.registry;
 
+import org.jboss.resteasy.config.ResteasyConfig;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -504,7 +504,7 @@ public class SegmentNode
       String[] mm = matchingMethods(sortList);
       if (mm != null)
       {
-         boolean isFailFast = Boolean.valueOf(ResteasyConfigProvider.getConfig().getOptionalValue(
+         boolean isFailFast = Boolean.valueOf(ResteasyConfig.instance.getOptionalValue(
                          ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING,String.class)
                          .orElse("false"));
          if(isFailFast) {

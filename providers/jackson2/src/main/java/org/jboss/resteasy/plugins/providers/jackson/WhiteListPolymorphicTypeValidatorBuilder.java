@@ -2,8 +2,7 @@ package org.jboss.resteasy.plugins.providers.jackson;
 
 import java.util.StringTokenizer;
 
-import org.eclipse.microprofile.config.Config;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
+import org.jboss.resteasy.config.ResteasyConfig;
 
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
@@ -15,7 +14,7 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
 
    public WhiteListPolymorphicTypeValidatorBuilder() {
       super();
-      Config c = ResteasyConfigProvider.getConfig();
+      ResteasyConfig c = ResteasyConfig.instance;
       String allowIfBaseType = c.getOptionalValue(BASE_TYPE_PROP, String.class).orElse(null);
       if (allowIfBaseType != null) {
          StringTokenizer st = new StringTokenizer(allowIfBaseType, ",", false);
