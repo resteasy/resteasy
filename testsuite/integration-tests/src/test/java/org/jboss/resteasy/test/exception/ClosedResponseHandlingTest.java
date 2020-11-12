@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.exception;
 
 import java.lang.reflect.ReflectPermission;
 
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.client.WebTarget;
@@ -72,10 +71,10 @@ public class ClosedResponseHandlingTest {
    /**
     * @tpTestDetails RESTEasy client errors that result in a closed Response are correctly handled.
     *                Note that the default behavior has changed after RESTEASY-2728.
-    * @tpPassCrit An InternalServerErrorException is returned
+    * @tpPassCrit An NotAcceptableException is returned
     * @tpSince RESTEasy 3.6.3
     */
-   @Test(expected = InternalServerErrorException.class)
+   @Test(expected = NotAcceptableException.class)
    public void testNotAcceptableNewBehavior() {
       new ResteasyClientBuilder().build().target(generateURL("/testNotAcceptable")).request().get(String.class);
    }
@@ -103,10 +102,10 @@ public class ClosedResponseHandlingTest {
    /**
     * @tpTestDetails Closed Response instances should be handled correctly with full tracing enabled.
     *                Note that the default behavior has changed after RESTEASY-2728.
-    * @tpPassCrit An InternalServerErrorException is returned
+    * @tpPassCrit An NotSupportedException is returned
     * @tpSince RESTEasy 3.6.3
     */
-   @Test(expected = InternalServerErrorException.class)
+   @Test(expected = NotSupportedException.class)
    public void testNotSupportedTracedNewBehavior() {
       new ResteasyClientBuilder().build().target(generateURL("/testNotSupportedTraced")).request().get(String.class);
    }

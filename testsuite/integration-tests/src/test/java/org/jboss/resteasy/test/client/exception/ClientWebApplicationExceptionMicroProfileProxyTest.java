@@ -112,11 +112,12 @@ public class ClientWebApplicationExceptionMicroProfileProxyTest {
          } catch (ResteasyWebApplicationException rwae) {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
          } catch (WebApplicationException e) {
+            final String msg = String.format("Failed on %d: %s", i, ClientWebApplicationExceptionTest.newExceptions[i].getResponse());
             Response response = e.getResponse();
-            Assert.assertEquals(500, response.getStatus());
-            Assert.assertNull(response.getHeaderString("foo"));
-            Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
-            Assert.assertEquals(WebApplicationException.class, e.getClass());
+            Assert.assertEquals(msg, ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
+            Assert.assertNull(msg, response.getHeaderString("foo"));
+            Assert.assertTrue(msg, response.readEntity(String.class).isEmpty());
+            Assert.assertEquals(msg, WebApplicationException.class, e.getClass());
          }
       }
    }
@@ -171,15 +172,10 @@ public class ClientWebApplicationExceptionMicroProfileProxyTest {
     *
     *                2. For each ResteasyWebApplicationException in ClientWebApplicationExceptionTest.newExceptions, the resource method noCatchNew() is called.
     *
-    *                3. noCatchNew() calls newException(), which throws the matching member of newExceptions. The resulting
-    *                   HTTP response has status 500, no added headers, and an entity that represents a stacktrace.
+    *                3. noCatchNew() calls newException(), which throws the matching member of newExceptions.
     *
     *                4. In noCatchNew(), the original behavior causes the HTTP response to be turned into a WebApplicationException,
-    *                   which is thrown by the Client. The resulting HTTP response has status 500, no added headers, and an entity
-    *                   that represents a stacktrace.
-    *
-    *                5. The client side Client constructs and throws a WebApplicationException which is checked for status 500, no
-    *                   added headers, and entity representing a stacktrace.
+    *                   which is thrown by the Client.
     *
     * @tpSince RESTEasy 3.14.0.Final
     */
@@ -195,9 +191,9 @@ public class ClientWebApplicationExceptionMicroProfileProxyTest {
                Assert.fail("didn't expect ResteasyWebApplicationException");
             } catch (WebApplicationException e) {
                Response response = e.getResponse();
-               Assert.assertEquals(500, response.getStatus());
+               Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
                Assert.assertNull(response.getHeaderString("foo"));
-               Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
+               Assert.assertTrue(response.readEntity(String.class).isEmpty());
                Assert.assertEquals(WebApplicationException.class, e.getClass());
             } catch (Exception e) {
                Assert.fail("expected WebApplicationException");
@@ -233,9 +229,8 @@ public class ClientWebApplicationExceptionMicroProfileProxyTest {
             Assert.fail("didn't expect ResteasyWebApplicationException");
          } catch (WebApplicationException e) {
             Response response = e.getResponse();
-            Assert.assertEquals(500, response.getStatus());
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), response.getStatus());
             Assert.assertNull(response.getHeaderString("foo"));
-            Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
             Assert.assertEquals(WebApplicationException.class, e.getClass());
          } catch (Exception e) {
             Assert.fail("expected WebApplicationException");
@@ -269,9 +264,9 @@ public class ClientWebApplicationExceptionMicroProfileProxyTest {
             Assert.fail("didn't expect ResteasyWebApplicationException");
          } catch (WebApplicationException e) {
             Response response = e.getResponse();
-            Assert.assertEquals(500, response.getStatus());
+            Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
             Assert.assertNull(response.getHeaderString("foo"));
-            Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
+            Assert.assertTrue(response.readEntity(String.class).isEmpty());
             Assert.assertEquals(WebApplicationException.class, e.getClass());
          } catch (Exception e) {
             Assert.fail("expected WebApplicationException");

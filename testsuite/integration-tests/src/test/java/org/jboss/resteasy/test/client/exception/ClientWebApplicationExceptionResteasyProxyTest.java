@@ -104,9 +104,11 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
          } catch (WebApplicationException e) {
             Response response = e.getResponse();
-            Assert.assertEquals(500, response.getStatus());
+            Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
             Assert.assertNull(response.getHeaderString("foo"));
-            Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
+            Assert.assertTrue(response.readEntity(String.class).isEmpty());
+            // We compare the old exception here because this is coming from a client resulting in the exception thrown
+            // at the client not wrapped.
             Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
          }
       }
@@ -187,9 +189,11 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
                Assert.fail("Didn't expect ResteasyWebApplicationException");
             } catch (WebApplicationException e) {
                Response response = e.getResponse();
-               Assert.assertEquals(500, response.getStatus());
+               Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
                Assert.assertNull(response.getHeaderString("foo"));
-               Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
+               Assert.assertTrue(response.readEntity(String.class).isEmpty());
+               // We compare the old exception here because this is coming from a client resulting in the exception thrown
+               // at the client not wrapped.
                Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
             } catch (Exception e) {
                Assert.fail("expected WebApplicationException");
@@ -225,9 +229,8 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
          } catch (WebApplicationException e) {
             Response response = e.getResponse();
-            Assert.assertEquals(500, response.getStatus());
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), response.getStatus());
             Assert.assertNull(response.getHeaderString("foo"));
-            Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
             Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
          } catch (Exception e) {
             Assert.fail("expected WebApplicationException");
@@ -261,9 +264,11 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
          } catch (WebApplicationException e) {
             Response response = e.getResponse();
-            Assert.assertEquals(500, response.getStatus());
+            Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
             Assert.assertNull(response.getHeaderString("foo"));
-            Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
+            Assert.assertTrue(response.readEntity(String.class).isEmpty());
+            // We compare the old exception here because this is coming from a client resulting in the exception thrown
+            // at the client not wrapped.
             Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
          } catch (Exception e) {
             Assert.fail("expected WebApplicationException");
