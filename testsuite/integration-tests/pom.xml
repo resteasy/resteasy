@@ -255,6 +255,15 @@
                                             <includedPackages>
                                                 <package>org.jboss.resteasy.resteasy-rxjava2</package>
                                             </includedPackages>
+                                            <!--
+                                                Required for BC - this is needed to resemble what in
+                                                jboss-deployment-structure-bouncycastle.xml.
+                                                That deployment structure is used by some test cases and is expected
+                                                to reflect the server module working configuration.
+                                            -->
+                                            <includedPackages>
+                                                <package>org.bouncycastle</package>
+                                            </includedPackages>
                                         </feature-pack>
                                     </feature-packs>
                                     <layers>
