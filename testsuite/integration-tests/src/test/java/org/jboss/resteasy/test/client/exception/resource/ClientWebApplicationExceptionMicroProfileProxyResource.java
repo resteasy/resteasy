@@ -7,6 +7,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
+import org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -63,10 +64,7 @@ public class ClientWebApplicationExceptionMicroProfileProxyResource {
    @GET
    @Path("exception/new/{i}")
    public String newException(@PathParam("i") int i) throws Exception {
-      ResteasyWebApplicationException wae = ClientWebApplicationExceptionTest.newExceptions[i];
-      Assert.assertNull(wae.getResponse());
-      Assert.assertEquals(wae.getOriginalResponse(), ClientWebApplicationExceptionTest.commonResponse);
-      throw wae;
+      throw ClientWebApplicationExceptionTest.newExceptions[i];
    }
 
    /**
@@ -176,7 +174,7 @@ public class ClientWebApplicationExceptionMicroProfileProxyResource {
          return proxy.oldException(i);
       } catch (ResteasyWebApplicationException e) {
          Assert.assertNull(e.getResponse());
-         Response originalResponse = e.getOriginalResponse();
+         Response originalResponse = WebApplicationExceptionWrapper.unwrap(e).getResponse();
          Assert.assertNotNull(originalResponse);
          Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), originalResponse.getStatus());
          Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), originalResponse.getHeaderString("foo"));
@@ -206,7 +204,7 @@ public class ClientWebApplicationExceptionMicroProfileProxyResource {
          return proxy.newException(i);
       } catch (ResteasyWebApplicationException e) {
          Assert.assertNull(e.getResponse());
-         Response originalResponse = e.getOriginalResponse();
+         Response originalResponse = WebApplicationExceptionWrapper.unwrap(e).getResponse();
          Assert.assertNotNull(originalResponse);
          Assert.assertEquals(500, originalResponse.getStatus());
          Assert.assertNull(originalResponse.getHeaderString("foo"));
