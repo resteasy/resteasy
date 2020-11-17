@@ -11,11 +11,16 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,15 +34,34 @@ public class ServletUtil
       if (servletPrefix != null && servletPrefix.length() > 0 && !servletPrefix.equals("/"))
       {
          if (!contextPath.endsWith("/") && !servletPrefix.startsWith("/"))
-               contextPath += "/";
+            contextPath += "/";
          contextPath += servletPrefix;
       }
       String queryString = request.getQueryString();
       String absolute;
-      if (queryString != null && queryString.length() > 0) {
+      if (queryString != null && queryString.length() > 0)
+      {
          absolute = request.getRequestURL().append('?').append(queryString).toString();
-      } else {
+      }
+      else
+      {
          absolute = request.getRequestURL().toString();
+      }
+      if (!absolute.contains(contextPath))
+      {
+         String encodedContextPath = Arrays.stream(contextPath.substring(1).split("/"))
+                                           .map(s -> {
+                                              try {
+                                                 return URLEncoder.encode(s, "UTF-8");
+                                                } catch (UnsupportedEncodingException ex) {
+                                                 return s;
+                                              }
+                                             })
+                                           .collect(Collectors.joining("/", "/", ""));
+         if (absolute.contains(encodedContextPath))
+         {
+            absolute = absolute.replace(encodedContextPath, contextPath);
+         }
       }
       return new ResteasyUriInfo(absolute, contextPath);
    }
@@ -49,7 +73,8 @@ public class ServletUtil
       ResteasyHttpHeaders headers = new ResteasyHttpHeaders(requestHeaders);
 
       String contentType = request.getContentType();
-      if (contentType != null) headers.getMutableHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
+      if (contentType != null)
+         headers.getMutableHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
 
       Map<String, Cookie> cookies = extractCookies(request);
       headers.setCookies(cookies);
@@ -68,7 +93,8 @@ public class ServletUtil
       {
          for (javax.servlet.http.Cookie cookie : request.getCookies())
          {
-            cookies.put(cookie.getName(), new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion()));
+            cookies.put(cookie.getName(), new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
+                  cookie.getDomain(), cookie.getVersion()));
 
          }
       }
@@ -79,7 +105,8 @@ public class ServletUtil
    {
       List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT);
-      if (accepts == null) return acceptableMediaTypes;
+      if (accepts == null)
+         return acceptableMediaTypes;
 
       for (String accept : accepts)
       {
@@ -92,12 +119,14 @@ public class ServletUtil
    {
       List<String> acceptable = new ArrayList<String>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE);
-      if (accepts == null) return acceptable;
+      if (accepts == null)
+         return acceptable;
 
       for (String accept : accepts)
       {
          String[] splits = accept.split(",");
-         for (String split : splits) acceptable.add(split.trim());
+         for (String split : splits)
+            acceptable.add(split.trim());
       }
       return acceptable;
    }
