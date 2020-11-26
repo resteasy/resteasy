@@ -155,6 +155,11 @@ public class InjectorFactoryImpl implements InjectorFactory
    @Override
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
    {
+      return OptionalInjections.wrap(genericType, innerType -> createParameterExtractor0(injectTargetClass, injectTarget, defaultName, genericType.equals(innerType) ? type : Types.getRawType(innerType), innerType, annotations, useDefault, providerFactory));
+   }
+
+   private ValueInjector createParameterExtractor0(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
+   {
       DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
       boolean encode = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
       String defaultVal = null;
