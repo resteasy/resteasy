@@ -741,7 +741,22 @@ public class MyApplication extends Application
                                 are escaped to prevent an XSS attack. If this parameter is set to "true", escaping
                                 will not occur.
                             </entry>
-</row>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.original.webapplicationexception.behavior
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                When set to "true", this parameter will restore the original behavior in which
+                                a Client running in a resource method will throw a JAX-RS WebApplicationException
+                                instead of a ResteasyWebApplicationException. See section
+                                <link linkend='ResteasyWebApplicationException'>ResteasyWebApplicationException</link>
+                                for more information.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>

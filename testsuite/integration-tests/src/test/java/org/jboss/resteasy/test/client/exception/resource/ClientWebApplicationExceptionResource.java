@@ -11,26 +11,13 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionTest;
 import org.junit.Assert;
 
 @Path("test")
 public class ClientWebApplicationExceptionResource {
 
    private static Client client = ClientBuilder.newClient();
-   private static WebTarget target = client.target(ClientWebApplicationExceptionTest.generateURL("/app/test/"));
-
-
-   /**
-    * Sets the System property ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR
-    * @param value value property is set to
-    */
-   @GET
-   @Path("behavior/{value}")
-   public void setBehavior(@PathParam("value") String value) {
-      System.setProperty(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR, value);
-   }
+   private static WebTarget target = client.target(ClientWebApplicationExceptionExceptions.generateURL("/app/test/"));
 
    /**
     * Throws an instance of WebApplicationException from oldExceptions table. The Response returned by
@@ -42,7 +29,7 @@ public class ClientWebApplicationExceptionResource {
    @GET
    @Path("exception/old/{i}")
    public String oldException(@PathParam("i") int i) throws Exception {
-      throw ClientWebApplicationExceptionTest.oldExceptions[i];
+      throw ClientWebApplicationExceptionExceptions.oldExceptions[i];
    }
 
    /**
@@ -55,7 +42,7 @@ public class ClientWebApplicationExceptionResource {
    @GET
    @Path("exception/new/{i}")
    public String newException(@PathParam("i") int i) throws Exception {
-      throw ClientWebApplicationExceptionTest.newExceptions[i];
+      throw ClientWebApplicationExceptionExceptions.newExceptions[i];
    }
 
    /**
@@ -107,10 +94,10 @@ public class ClientWebApplicationExceptionResource {
          throw new Exception("didn't expect ResteasyWebApplicationException");
       } catch (WebApplicationException e) {
          Response response = e.getResponse();
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), response.getStatus());
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), response.getHeaderString("foo"));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getEntity(), response.readEntity(String.class));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptions[i].getResponse().getStatus(), response.getStatus());
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptions[i].getResponse().getHeaderString("foo"), response.getHeaderString("foo"));
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptions[i].getResponse().getEntity(), response.readEntity(String.class));
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptionMap.get(response.getStatus()), e.getClass());
          throw e;
       } catch (Exception e) {
          throw new Exception("expected ResteasyWebApplicationException, not " + e.getClass());
@@ -141,7 +128,7 @@ public class ClientWebApplicationExceptionResource {
          Assert.assertEquals(500, response.getStatus());
          Assert.assertNull(response.getHeaderString("foo"));
          Assert.assertTrue(response.readEntity(String.class).contains("Caused by"));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptionMap.get(response.getStatus()), e.getClass());
          throw e;
       } catch (Exception e) {
          throw new Exception("expected ResteasyWebApplicationException, not " + e.getClass());
@@ -169,10 +156,10 @@ public class ClientWebApplicationExceptionResource {
       } catch (ResteasyWebApplicationException e) {
          Response originalResponse = WebApplicationExceptionWrapper.unwrap(e).getResponse();
          Assert.assertNotNull(originalResponse);
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), originalResponse.getStatus());
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), originalResponse.getHeaderString("foo"));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getEntity(), originalResponse.readEntity(String.class));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptionMap.get(originalResponse.getStatus()), e.getClass());
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptions[i].getResponse().getStatus(), originalResponse.getStatus());
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptions[i].getResponse().getHeaderString("foo"), originalResponse.getHeaderString("foo"));
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.oldExceptions[i].getResponse().getEntity(), originalResponse.readEntity(String.class));
+         Assert.assertEquals(ClientWebApplicationExceptionExceptions.newExceptionMap.get(originalResponse.getStatus()), e.getClass());
          throw e;
       } catch (Exception e) {
          throw new Exception("expected ResteasyWebApplicationException, not " + e.getClass());

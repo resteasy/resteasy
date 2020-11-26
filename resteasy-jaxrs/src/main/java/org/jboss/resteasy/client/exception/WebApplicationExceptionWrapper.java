@@ -63,7 +63,7 @@ public interface WebApplicationExceptionWrapper<T extends WebApplicationExceptio
         boolean originalBehavior = false;
         try {
             final String s = config.getParameter(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR);
-            originalBehavior = (s != null && (s.isEmpty() || Boolean.parseBoolean(s)));
+            originalBehavior = Boolean.parseBoolean(s);
         } catch (Exception ignore) {
             // nothing to do, assume false
         }
