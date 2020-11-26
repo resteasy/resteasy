@@ -86,7 +86,7 @@
         <!-- MicroProfile versions -->
         <!-- todo replace this version when Final is released
         -->
-        <version.microprofile.restclient>2.0-RC2</version.microprofile.restclient>
+        <version.microprofile.restclient>2.0-RC3</version.microprofile.restclient>
 
         <!-- todo rls move this property when updating all versions for MP-rest-client 2.0
         and return version to ${version.microprofile.restclient}
