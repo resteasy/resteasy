@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.ExecutorService;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -79,11 +80,13 @@ public class ClientInvoker implements MethodInvoker
             return ClientInvoker.this.declaring;
          }
       };
-      for (DynamicFeature feature : invokerConfig.getDynamicFeatures())
-      {
-         feature.configure(info, new FeatureContextDelegate(invokerConfig));
+      Set<DynamicFeature> dynamicFeatures = invokerConfig.getDynamicFeatures();
+      if (null != dynamicFeatures) {
+         for (DynamicFeature feature : dynamicFeatures)
+         {
+            feature.configure(info, new FeatureContextDelegate(invokerConfig));
+         }
       }
-
 
       this.processors = ProcessorFactory.createProcessors(declaring, method, invokerConfig, config.getDefaultConsumes());
       accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
