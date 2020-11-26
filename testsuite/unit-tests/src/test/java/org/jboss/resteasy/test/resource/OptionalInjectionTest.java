@@ -31,7 +31,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalStringAbsent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/string");
+        MockHttpRequest req = createMockHttpRequest("/optional/string");
         Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
@@ -39,28 +39,28 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalStringPresent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/string?value=88");
+        MockHttpRequest req = createMockHttpRequest("/optional/string?valueQ1=88");
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testOptionalHolderAbsent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/holder");
+        MockHttpRequest req = createMockHttpRequest("/optional/holder");
         Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testOptionalHolderPresent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/holder?value=88");
+        MockHttpRequest req = createMockHttpRequest("/optional/holder?valueQ2=88");
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testOptionalLongAbsent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.post("/optional/long");
+        MockHttpRequest req = createMockHttpRequest("/optional/long", false);
         req.addFormHeader("notvalue", "badness");
         req.setInputStream(new ByteArrayInputStream(new byte[0]));
 
@@ -70,7 +70,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testMatrixParamAbsent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.post("/optional/matrix");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/matrix", false);
         Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
@@ -79,7 +79,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testMatrixParamPresent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.post("/optional/matrix;value=24");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/matrix;valueM=24", false);
         Assert.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
@@ -93,7 +93,7 @@ public class OptionalInjectionTest {
 
     @Test(expected = NotFoundException.class)
     public void testPathParamNeverAbsentThrowsException() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/path/");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/path/");
         registry.getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity();
@@ -101,7 +101,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testHeaderParamAbsent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/header");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/header");
         Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
@@ -111,8 +111,8 @@ public class OptionalInjectionTest {
 
     @Test
     public void testHeaderParamPresent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/header");
-        httpRequest.header("value", "24");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/header");
+        httpRequest.header("valueH", "24");
         Assert.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
@@ -121,7 +121,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testCookieParamAbsent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/cookie");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/cookie");
         Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
@@ -130,8 +130,8 @@ public class OptionalInjectionTest {
 
     @Test
     public void testCookieParamPresent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/cookie");
-        httpRequest.cookie("value", "24");
+        MockHttpRequest httpRequest = createMockHttpRequest("/optional/cookie");
+        httpRequest.cookie("valueC", "24");
         Assert.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
@@ -141,8 +141,8 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalLongPresent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.post("/optional/long");
-        req.addFormHeader("value", "88");
+        MockHttpRequest req = createMockHttpRequest("/optional/long", false);
+        req.addFormHeader("valueF", "88");
 
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
@@ -150,7 +150,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalIntAbsent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/int");
+        MockHttpRequest req = createMockHttpRequest("/optional/int");
 
         Assert.assertEquals("424242", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
@@ -158,7 +158,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalIntPresent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/int?value=88");
+        MockHttpRequest req = createMockHttpRequest("/optional/int?valueQ4=88");
 
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
@@ -166,7 +166,7 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalDoubleAbsent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/double");
+        MockHttpRequest req = createMockHttpRequest("/optional/double");
 
         Assert.assertEquals("4242.0", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
@@ -174,9 +174,37 @@ public class OptionalInjectionTest {
 
     @Test
     public void testOptionalDoublePresent() throws Exception {
-        MockHttpRequest req = MockHttpRequest.get("/optional/double?value=88.88");
+        MockHttpRequest req = createMockHttpRequest("/optional/double?valueQ3=88.88");
 
         Assert.assertEquals("88.88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
+    }
+
+    /**
+     * Builds an instance of {@code MockHttpRequest} for {@code GET} calls, properly configured to make
+     * sure that all the {@code FormParam} are properly injected in all test cases otherwise we
+     * end up with a {@code NullPointerException}.
+     * @param uri the uri of the endpoint to test.
+     * @return an instance of {@code MockHttpRequest} properly configured.
+     * @throws Exception in case the provided uri is not properly formed.
+     */
+    private static MockHttpRequest createMockHttpRequest(String uri) throws Exception {
+        return createMockHttpRequest(uri, true);
+    }
+
+    /**
+     * Builds an instance of {@code MockHttpRequest} properly configured to make sure that all
+     * the {@code FormParam} are properly injected in all test cases otherwise we end up with
+     * a {@code NullPointerException}.
+     * @param uri the uri of the endpoint to test.
+     * @param isGet the flag indicating whether a GET call is expected otherwise a POST call will be
+     *              performed.
+     * @return an instance of {@code MockHttpRequest} properly configured.
+     * @throws Exception in case the provided uri is not properly formed.
+     */
+    private static MockHttpRequest createMockHttpRequest(String uri, boolean isGet) throws Exception {
+        MockHttpRequest req = isGet ? MockHttpRequest.get(uri) : MockHttpRequest.post(uri);
+        req.addFormHeader("foo", "bar");
+        return req;
     }
 }
