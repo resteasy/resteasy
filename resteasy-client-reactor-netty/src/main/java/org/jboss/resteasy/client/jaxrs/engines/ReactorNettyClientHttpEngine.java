@@ -161,7 +161,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
         final HttpClient.ResponseReceiver<?> responseReceiver =
             payload.<HttpClient.ResponseReceiver<?>>map(bytes -> requestSender.send(
                 (httpClientRequest, outbound) ->
-                    outbound.sendObject(Mono.just(outbound.alloc().buffer().writeBytes(bytes))))
+                        outbound.sendByteArray(Mono.just(bytes)))
             ).orElse(requestSender);
 
         final Mono<ClientResponse> responseMono = responseReceiver
