@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -175,7 +176,8 @@ public class WADLUndertowContainerTest {
       }
       return null;
    }
-
+   @Path("/")
+   private static class MyWadlResource extends ResteasyWadlDefaultResource {}
 
    @ApplicationPath("/base")
    public static class MyApp extends Application {
@@ -186,9 +188,10 @@ public class WADLUndertowContainerTest {
             return classes;
       }
 
+
       @Override
       public Set<Object> getSingletons() {
-         ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+         ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
          ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
          wadlGrammar.enableSchemaGeneration();
          defaultResource.getWadlWriter().setWadlGrammar(wadlGrammar);
@@ -210,7 +213,7 @@ public class WADLUndertowContainerTest {
 
       @Override
       public Set<Object> getSingletons() {
-         ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+         ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
          ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
          wadlGrammar.enableSchemaGeneration();
          defaultResource.getWadlWriter().setWadlGrammar(wadlGrammar);
