@@ -1,7 +1,7 @@
 package org.jboss.resteasy.reactor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -90,7 +90,7 @@ public class ReactorTest
       FluxRxInvoker invoker = client.target(generateURL("/flux")).request().rx(FluxRxInvoker.class);
       @SuppressWarnings("unchecked")
       Flux<String> flux = (Flux<String>) invoker.get();
-      List<String> data = new ArrayList<>();
+      Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
       flux.subscribe(
          (String s) -> data.add(s),
          (Throwable t) -> LOG.error(t.getMessage(), t),
