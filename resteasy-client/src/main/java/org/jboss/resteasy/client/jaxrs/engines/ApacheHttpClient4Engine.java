@@ -45,6 +45,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +67,17 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    static
    {
-      processId = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
+      try {
+         processId = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+            @Override
+            public String run() throws Exception
+            {        return ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");        }
+
+
+         });
+      } catch (PrivilegedActionException pae)
+      {      throw new RuntimeException(pae);    }
+
    }
 
    protected HttpClient httpClient;
