@@ -57,7 +57,7 @@
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                         <security.provider>${security.provider}</security.provider>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -159,7 +159,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly20</additional.surefire.excluded.groups>
+                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly20</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <profile>
@@ -171,7 +171,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly19</additional.surefire.excluded.groups>
+                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly19</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <profile>
@@ -183,7 +183,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly18</additional.surefire.excluded.groups>
+                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly18</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->
