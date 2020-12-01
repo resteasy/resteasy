@@ -200,7 +200,7 @@
                     which are in standalone-full.xml but not in 
                     standalone-microprofile.xml
                 -->
-                <microprofile.excluded.groups>org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration,org.jboss.resteasy.category.ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11</microprofile.excluded.groups>
+                <microprofile.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration,org.jboss.resteasy.category.ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11</microprofile.excluded.groups>
             </properties>
         </profile>
         
