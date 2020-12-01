@@ -59,7 +59,17 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    static
    {
-      processId = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
+      try {
+         processId = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+            @Override
+            public String run() throws Exception
+            {        return ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");        }
+
+
+         });
+      } catch (PrivilegedActionException pae)
+      {      throw new RuntimeException(pae);    }
+
    }
 
    protected final HttpClient httpClient;
