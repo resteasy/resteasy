@@ -89,8 +89,8 @@
             <artifactId>bcmail-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <groupId>org.jboss.spec.jakarta.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

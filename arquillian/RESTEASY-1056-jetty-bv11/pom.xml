@@ -62,6 +62,18 @@
         <scope>test</scope>
     </dependency>
     <dependency>
+        <groupId>org.jboss.spec.jakarta.ws.rs</groupId>
+        <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.spec.javax.xml.bind</groupId>
+        <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+    </dependency>
+    <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-core-spi</artifactId>
         <version>${project.version}</version>
