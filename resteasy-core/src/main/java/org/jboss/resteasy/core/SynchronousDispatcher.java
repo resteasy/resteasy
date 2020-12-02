@@ -209,7 +209,7 @@ public class SynchronousDispatcher implements Dispatcher
             }
          }
       }
-      if (response.isCommitted())
+      if (response.isCommitted() && response.suppressExceptionDuringChunkedTransfer())
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.responseIsCommitted());
          onComplete.accept(null);

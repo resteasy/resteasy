@@ -120,8 +120,20 @@ public class HttpServletResponseWrapper implements HttpResponse
    protected MultivaluedMap<String, Object> outputHeaders;
    protected ResteasyProviderFactory factory;
    protected OutputStream outputStream = new DeferredOutputStream();
+   protected volatile boolean suppressExceptionDuringChunkedTransfer = true;
    protected HttpServletRequest request;
    protected Map<Class<?>, Object> contextDataMap;
+
+   // RESTEASY-1784
+   @Override
+   public void setSuppressExceptionDuringChunkedTransfer(boolean suppressExceptionDuringChunkedTransfer) {
+      this.suppressExceptionDuringChunkedTransfer = suppressExceptionDuringChunkedTransfer;
+   }
+
+   @Override
+   public boolean suppressExceptionDuringChunkedTransfer() {
+      return suppressExceptionDuringChunkedTransfer;
+   }
 
    /**
     * RESTEASY-684 wants to defer access to outputstream until a write happens
