@@ -4,8 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Configurable;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.mock.MockDispatcherFactory;

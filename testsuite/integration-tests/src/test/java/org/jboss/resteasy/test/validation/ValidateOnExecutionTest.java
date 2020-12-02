@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.validation;
 
 import javax.validation.ValidationException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +17,7 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Class;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Interface;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorTwoLevels_Class;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.spring.deployment.resource;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("/count")
 public class SpringBeanProcessorCounter {

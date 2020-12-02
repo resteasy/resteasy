@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 public @interface LinkResource {
    /**
     * The type of entity that should receive links for this service. Defaults to the request's body
-    * entity type, or the response entity type if they are not a {@link java.util.Collection Collection} or a {@link javax.ws.rs.core.Response Response}.
+    * entity type, or the response entity type if they are not a {@link java.util.Collection Collection} or a {@link jakarta.ws.rs.core.Response Response}.
     */
    Class<?> value() default Void.class;
 
@@ -27,23 +27,23 @@ public @interface LinkResource {
     * The link relation. This defaults as follows:
     * <dl>
     *  <dt>list</dt>
-    *  <dd>{@link javax.ws.rs.GET GET} for {@link ResourceFacade} entities or methods that return a {@link java.util.Collection Collection}</dd>
+    *  <dd>{@link jakarta.ws.rs.GET GET} for {@link ResourceFacade} entities or methods that return a {@link java.util.Collection Collection}</dd>
     * </dl>
     * <dl>
     *  <dt>self</dt>
-    *  <dd>{@link javax.ws.rs.GET GET} for non-{@link ResourceFacade} and non-{@link java.util.Collection Collection} entities</dd>
+    *  <dd>{@link jakarta.ws.rs.GET GET} for non-{@link ResourceFacade} and non-{@link java.util.Collection Collection} entities</dd>
     * </dl>
     * <dl>
     *  <dt>remove</dt>
-    *  <dd>{@link javax.ws.rs.DELETE DELETE}</dd>
+    *  <dd>{@link jakarta.ws.rs.DELETE DELETE}</dd>
     * </dl>
     * <dl>
     *  <dt>add</dt>
-    *  <dd>{@link javax.ws.rs.POST POST}</dd>
+    *  <dd>{@link jakarta.ws.rs.POST POST}</dd>
     * </dl>
     * <dl>
     *  <dt>update</dt>
-    *  <dd>{@link javax.ws.rs.PUT PUT}</dd>
+    *  <dd>{@link jakarta.ws.rs.PUT PUT}</dd>
     * </dl>
     */
    String rel() default "";
@@ -88,7 +88,7 @@ public @interface LinkResource {
     * EL expression that should return a boolean indicating whether or not this service link should be used.
     * This is useful for security constraints limiting access to resources. Defaults to using the
     * {@link javax.annotation.security.RolesAllowed @RolesAllowed} annotation using the current
-    * {@link javax.ws.rs.core.SecurityContext SecurityContext} to check the current user's permissions.
+    * {@link jakarta.ws.rs.core.SecurityContext SecurityContext} to check the current user's permissions.
     * </p>
     * <p>
     * This can be a normal constant boolean value ("true" or "false") or an EL expression

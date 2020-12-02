@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import java.util.List;
 
 public class SubResourceLocatorPlatformServiceImpl implements SubResourceLocatorPlatformServiceResource {

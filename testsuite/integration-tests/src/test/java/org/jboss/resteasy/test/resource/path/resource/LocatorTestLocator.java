@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.path.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("locator")
 public class LocatorTestLocator {

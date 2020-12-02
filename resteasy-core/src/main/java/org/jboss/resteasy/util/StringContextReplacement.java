@@ -2,7 +2,7 @@ package org.jboss.resteasy.util;
 
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;

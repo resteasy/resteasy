@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.spring.deployment.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Path("/test")

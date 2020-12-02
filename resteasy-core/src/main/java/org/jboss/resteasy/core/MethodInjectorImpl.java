@@ -14,8 +14,8 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;

@@ -6,7 +6,7 @@ import org.jboss.resteasy.util.WeightedMediaType;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @tpSubChapter Requests
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for javax.ws.rs.core.MediaType class.
+ * @tpTestCaseDetails Test for jakarta.ws.rs.core.MediaType class.
  * @tpSince RESTEasy 3.0.16
  */
 public class MediaTypeTest {

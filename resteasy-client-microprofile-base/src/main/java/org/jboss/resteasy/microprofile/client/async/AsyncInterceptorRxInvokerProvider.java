@@ -1,8 +1,8 @@
 package org.jboss.resteasy.microprofile.client.async;
 
-import javax.ws.rs.client.CompletionStageRxInvoker;
-import javax.ws.rs.client.RxInvokerProvider;
-import javax.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.client.CompletionStageRxInvoker;
+import jakarta.ws.rs.client.RxInvokerProvider;
+import jakarta.ws.rs.client.SyncInvoker;
 import java.util.concurrent.ExecutorService;
 
 public class AsyncInterceptorRxInvokerProvider implements RxInvokerProvider<CompletionStageRxInvoker>

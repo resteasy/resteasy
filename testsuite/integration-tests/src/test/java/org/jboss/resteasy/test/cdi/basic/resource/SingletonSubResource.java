@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
 import javax.ejb.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
 
 @Singleton
 public class SingletonSubResource {

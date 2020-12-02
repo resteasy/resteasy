@@ -2,7 +2,7 @@ package org.jboss.resteasy.springmvc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletResponseWrapper;

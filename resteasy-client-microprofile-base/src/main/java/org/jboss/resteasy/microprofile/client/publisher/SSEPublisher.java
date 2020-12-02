@@ -7,8 +7,8 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.sse.InboundSseEvent;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

@@ -5,9 +5,9 @@ import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
 public class AbstractJsonpProvider
 {
    @Context
-   javax.ws.rs.ext.Providers providers;
+   jakarta.ws.rs.ext.Providers providers;
 
    private static final JsonReaderFactory readerFactory = Json.createReaderFactory(null);
    private static final JsonWriterFactory writerFactory = Json.createWriterFactory(null);

@@ -9,7 +9,7 @@ import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionClassConstraint;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionClassValidator;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionResource;
@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import java.util.Arrays;
 import java.util.HashMap;

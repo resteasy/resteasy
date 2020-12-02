@@ -11,10 +11,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.HandlesTypes;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +27,7 @@ import java.util.Set;
 public class ResteasyServletInitializer implements ServletContainerInitializer
 {
    private static final String RESTEASY_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
-   private static final String APPLICATION = "javax.ws.rs.Application";
+   private static final String APPLICATION = "jakarta.ws.rs.Application";
    static final Set<String> ignoredPackages = new HashSet<String>();
 
    static

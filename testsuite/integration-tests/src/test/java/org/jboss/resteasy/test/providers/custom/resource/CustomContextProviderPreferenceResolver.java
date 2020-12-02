@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.plugins.validation.AbstractValidatorContextResolver;
 import org.jboss.resteasy.spi.validation.GeneralValidator;

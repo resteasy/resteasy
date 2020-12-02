@@ -6,7 +6,7 @@ import org.jboss.resteasy.annotations.Decorators;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;

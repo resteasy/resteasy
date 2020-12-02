@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
 import javax.annotation.Priority;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 
 // reverse order, This filter should be second

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 public interface ParameterSubResRoot {
    @Path("sub/{path}")

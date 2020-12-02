@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.spring.inmodule.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class SpringLocatingLocatingResource {

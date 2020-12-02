@@ -3,7 +3,7 @@ package org.jboss.resteasy.microprofile.client.header;
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;

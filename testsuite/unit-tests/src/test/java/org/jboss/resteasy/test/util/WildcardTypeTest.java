@@ -6,7 +6,7 @@ import org.jboss.resteasy.spi.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;

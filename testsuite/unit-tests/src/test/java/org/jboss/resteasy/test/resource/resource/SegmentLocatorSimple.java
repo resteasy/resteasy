@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.resource;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 public class SegmentLocatorSimple {
    @GET

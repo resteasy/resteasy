@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.core.interceptors.resource;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 /**
  * Created by rsearls on 9/5/17.

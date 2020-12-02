@@ -2,10 +2,10 @@ package org.jboss.resteasy.test.providers.multipart.resource;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 @Path("Api")
 public interface ProxyApiService {

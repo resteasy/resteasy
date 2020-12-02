@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class AbstractJaxbClassResource {

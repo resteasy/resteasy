@@ -1,8 +1,8 @@
 package org.jboss.resteasy.microprofile.client;
 
 import javax.annotation.Priority;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
 import java.lang.reflect.Method;
 
 import static org.jboss.resteasy.microprofile.client.utils.ClientRequestContextUtils.getMethod;

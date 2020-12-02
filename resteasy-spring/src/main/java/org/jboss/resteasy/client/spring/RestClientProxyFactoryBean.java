@@ -12,7 +12,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.net.URI;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} to generate a client

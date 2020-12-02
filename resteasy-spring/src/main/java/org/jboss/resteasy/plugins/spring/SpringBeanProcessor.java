@@ -31,9 +31,9 @@ import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

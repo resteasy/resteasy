@@ -3,12 +3,12 @@ package org.jboss.resteasy.test.providers.plain.resource;
 import org.jboss.logging.Logger;
 import org.junit.Assert;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Encoded;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.Encoded;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.nio.charset.Charset;
 
 @Path("/")

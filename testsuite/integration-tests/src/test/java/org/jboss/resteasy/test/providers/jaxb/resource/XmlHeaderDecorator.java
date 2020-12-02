@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 import org.jboss.resteasy.annotations.DecorateTypes;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import javax.xml.bind.Marshaller;
 import java.lang.annotation.Annotation;
 

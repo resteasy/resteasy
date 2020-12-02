@@ -3,9 +3,9 @@ package org.jboss.resteasy.plugins.cache.server;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

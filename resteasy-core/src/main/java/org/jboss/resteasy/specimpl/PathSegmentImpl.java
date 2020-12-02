@@ -2,8 +2,8 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.util.Encode;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
 import java.util.ArrayList;
 import java.util.List;
 

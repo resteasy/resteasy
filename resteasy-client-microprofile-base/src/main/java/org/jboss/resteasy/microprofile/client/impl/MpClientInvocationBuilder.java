@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvoker;
 
-import javax.ws.rs.client.CompletionStageRxInvoker;
+import jakarta.ws.rs.client.CompletionStageRxInvoker;
 
 
 public class MpClientInvocationBuilder extends ClientInvocationBuilder {

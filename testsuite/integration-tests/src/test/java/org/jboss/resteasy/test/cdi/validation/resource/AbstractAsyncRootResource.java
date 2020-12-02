@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.cdi.validation.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
 
 
 public abstract class AbstractAsyncRootResource implements AsyncRootResource

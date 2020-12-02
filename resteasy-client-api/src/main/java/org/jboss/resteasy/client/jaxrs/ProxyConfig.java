@@ -1,6 +1,6 @@
 package org.jboss.resteasy.client.jaxrs;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class ProxyConfig
 {

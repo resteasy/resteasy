@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerDateFormatter;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerFruit;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerService;
@@ -18,7 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Invocation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

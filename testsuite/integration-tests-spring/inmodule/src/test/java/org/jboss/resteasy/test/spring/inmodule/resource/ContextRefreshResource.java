@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.spring.inmodule.resource;
 
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
 @Path("refresh")
 @Component

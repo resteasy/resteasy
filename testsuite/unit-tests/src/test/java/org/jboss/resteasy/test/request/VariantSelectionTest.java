@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.request;
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Variant;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.resteasy_atom.i18n;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;

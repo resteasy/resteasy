@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.form.resource.FormResource;
 import org.jboss.resteasy.test.form.resource.FormResourceSecond;
@@ -22,11 +22,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -84,7 +84,7 @@ public class FormResourceTest {
       Assert.assertEquals(200, status);
       boolean sv1 = false;
       boolean sv2 = false;
-      MultivaluedMap<String, String> form = response.readEntity(new javax.ws.rs.core.GenericType<MultivaluedMap<String, String>>() {
+      MultivaluedMap<String, String> form = response.readEntity(new jakarta.ws.rs.core.GenericType<MultivaluedMap<String, String>>() {
       });
       Assert.assertEquals(2, form.get("servername").size());
       for (String str : form.get("servername")) {

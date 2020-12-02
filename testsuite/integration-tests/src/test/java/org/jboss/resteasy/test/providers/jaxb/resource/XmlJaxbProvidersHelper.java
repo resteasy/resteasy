@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;

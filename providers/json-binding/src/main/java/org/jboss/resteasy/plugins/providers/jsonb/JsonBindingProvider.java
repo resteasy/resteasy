@@ -10,14 +10,14 @@ import java.util.concurrent.CompletionStage;
 
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.jboss.resteasy.core.ResteasyContext;
@@ -65,7 +65,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    public Object readFrom(Class<Object> type, Type genericType,
                                  Annotation[] annotations, MediaType mediaType,
                                  MultivaluedMap<String, String> httpHeaders,
-                                 InputStream entityStream) throws java.io.IOException, javax.ws.rs.WebApplicationException {
+                                 InputStream entityStream) throws java.io.IOException, jakarta.ws.rs.WebApplicationException {
       Jsonb jsonb = getJsonb(type);
       final EmptyCheckInputStream is = new EmptyCheckInputStream(entityStream);
 
@@ -126,7 +126,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
                        MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream)
-         throws java.io.IOException, javax.ws.rs.WebApplicationException {
+         throws java.io.IOException, jakarta.ws.rs.WebApplicationException {
       Jsonb jsonb = getJsonb(type);
       try
       {

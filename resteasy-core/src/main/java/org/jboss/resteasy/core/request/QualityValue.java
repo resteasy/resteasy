@@ -2,7 +2,7 @@ package org.jboss.resteasy.core.request;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
-import javax.ws.rs.BadRequestException;
+import jakarta.ws.rs.BadRequestException;
 
 /**
  * @author Pascal S. de Kloe

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.client.proxy.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
 
 public class ProxyJaxbResourceMessageResource implements ProxyJaxbResourcePostMessageIntf {

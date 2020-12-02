@@ -1,6 +1,6 @@
 package org.jboss.resteasy.propertyeditor.mediatype.editor;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.beans.PropertyEditorSupport;
 
 /**
@@ -13,7 +13,7 @@ import java.beans.PropertyEditorSupport;
  * class they handle. Also, these need to have the same name
  * as that class plus the Editor suffix
  *
- * This is a property editor for javax.ws.rs.core.MediaType.  This
+ * This is a property editor for jakarta.ws.rs.core.MediaType.  This
  * editor does not reside in the same package as MediaType, so
  * a custom binding between the required type and the property editor
  * would need to be defined in order to Spring-framework to use it.

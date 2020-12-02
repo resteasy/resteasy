@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

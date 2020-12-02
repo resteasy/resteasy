@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.QueryParam;
 import java.util.List;
 
 public interface ParameterSubResGenericInterface<T> {

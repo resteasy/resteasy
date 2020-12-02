@@ -7,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorEndPointCDI;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorEndPointEJB;
@@ -35,7 +35,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;

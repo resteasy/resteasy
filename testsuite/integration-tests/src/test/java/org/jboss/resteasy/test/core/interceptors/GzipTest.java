@@ -3,12 +3,12 @@ package org.jboss.resteasy.test.core.interceptors;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -59,7 +59,7 @@ public class GzipTest {
       WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
       war.addClasses(GzipIGZIP.class, Pair.class);
       // Activate gzip compression:
-      war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+      war.addAsManifestResource("org/jboss/resteasy/test/client/jakarta.ws.rs.ext.Providers", "services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
    }
 

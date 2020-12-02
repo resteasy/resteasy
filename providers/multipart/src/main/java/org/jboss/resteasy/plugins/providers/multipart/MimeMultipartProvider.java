@@ -11,11 +11,11 @@ import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param type        the class of instance that is to be written.
     * @param genericType the type of instance to be written, obtained either
     *                    by reflection of a resource method return type or via inspection
-    *                    of the returned instance. {@link javax.ws.rs.core.GenericEntity}
+    *                    of the returned instance. {@link jakarta.ws.rs.core.GenericEntity}
     *                    provides a way to specify this information at runtime.
     * @param annotations an array of the annotations attached to the message entity instance.
     * @param mediaType   the media type of the HTTP entity.
@@ -115,12 +115,12 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * Read a type from the {@link InputStream}.
     * <p>
     * In case the entity input stream is empty, the reader is expected to either return a
-    * Java representation of a zero-length entity or throw a {@link javax.ws.rs.core.NoContentException}
+    * Java representation of a zero-length entity or throw a {@link jakarta.ws.rs.core.NoContentException}
     * in case no zero-length entity representation is defined for the supported Java type.
     * A {@code NoContentException}, if thrown by a message body reader while reading a server
-    * request entity, is automatically translated by JAX-RS server runtime into a {@link javax.ws.rs.BadRequestException}
+    * request entity, is automatically translated by JAX-RS server runtime into a {@link jakarta.ws.rs.BadRequestException}
     * wrapping the original {@code NoContentException} and rethrown for a standard processing by
-    * the registered {@link javax.ws.rs.ext.ExceptionMapper exception mappers}.
+    * the registered {@link jakarta.ws.rs.ext.ExceptionMapper exception mappers}.
     * </p>
     *
     * @param type         the type that is to be read from the entity stream.
@@ -141,7 +141,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     *                     stream.
     * @return the type that was read from the stream. In case the entity input stream is empty, the reader
     *         is expected to either return an instance representing a zero-length entity or throw
-    *         a {@link javax.ws.rs.core.NoContentException} in case no zero-length entity representation is
+    *         a {@link jakarta.ws.rs.core.NoContentException} in case no zero-length entity representation is
     *         defined for the supported Java type.
     * @throws java.io.IOException if an IO error arises. In case the entity input stream is empty
     *                             and the reader is not able to produce a Java representation for
@@ -174,7 +174,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     *
     * @param mimeMultipart the instance to write.
     * @param type         the class of instance that is to be written.
-    * @param genericType  the type of instance to be written. {@link javax.ws.rs.core.GenericEntity}
+    * @param genericType  the type of instance to be written. {@link jakarta.ws.rs.core.GenericEntity}
     *                     provides a way to specify this information at runtime.
     * @param annotations  an array of the annotations attached to the message entity instance.
     * @param mediaType    the media type of the HTTP entity.

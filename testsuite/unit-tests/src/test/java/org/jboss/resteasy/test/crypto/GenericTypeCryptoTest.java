@@ -6,7 +6,7 @@ import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;

@@ -13,15 +13,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEventSource;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.sse.SseEventSource;
 import javax.xml.bind.JAXBElement;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -478,7 +478,7 @@ public class SseTest
          Assert.assertEquals(0, errors.get());
          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       }
-      JAXBElement<String> jaxbElement = results.get(0).readData(new javax.ws.rs.core.GenericType<JAXBElement<String>>()
+      JAXBElement<String> jaxbElement = results.get(0).readData(new jakarta.ws.rs.core.GenericType<JAXBElement<String>>()
       {
       }, MediaType.APPLICATION_XML_TYPE);
       Assert.assertEquals("xmldata is expceted", jaxbElement.getValue(), "xmldata");

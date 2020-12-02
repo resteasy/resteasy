@@ -3,11 +3,11 @@ package org.jboss.resteasy.test.resource.param.resource;
 import org.jboss.resteasy.test.resource.param.QueryParamAsPrimitiveTest;
 import org.junit.Assert;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 
 @Path("/array/default/override")
 public class QueryParamAsPrimitiveResourceArrayDefaultOverride {

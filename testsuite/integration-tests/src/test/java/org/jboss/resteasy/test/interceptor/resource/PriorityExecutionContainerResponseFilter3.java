@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.interceptor.resource;
 import org.jboss.resteasy.test.interceptor.PriorityExecutionTest;
 
 import javax.annotation.Priority;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 
 @Priority(100)

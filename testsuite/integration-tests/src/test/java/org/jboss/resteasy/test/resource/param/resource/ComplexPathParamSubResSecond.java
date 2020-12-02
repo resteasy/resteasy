@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 public class ComplexPathParamSubResSecond {
    @GET

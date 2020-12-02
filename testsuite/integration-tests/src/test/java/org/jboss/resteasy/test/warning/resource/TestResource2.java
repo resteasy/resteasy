@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.warning.resource;
 
 import org.jboss.resteasy.test.core.interceptors.resource.TestSubResource;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
 /**
  * Created by rsearls on 9/5/17.

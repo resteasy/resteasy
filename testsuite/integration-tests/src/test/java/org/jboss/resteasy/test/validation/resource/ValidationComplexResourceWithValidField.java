@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.validation.resource;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class ValidationComplexResourceWithValidField {

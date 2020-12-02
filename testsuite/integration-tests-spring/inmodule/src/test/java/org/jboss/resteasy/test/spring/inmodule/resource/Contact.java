@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.spring.inmodule.resource;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement

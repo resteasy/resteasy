@@ -21,9 +21,9 @@ public @interface RestfulData
 
    /**
     * what content type does this support? This has the same allowed values as
-    * javax.ws.rs.Consumes
+    * jakarta.ws.rs.Consumes
     *
-    * @see javax.ws.rs.Consumes
+    * @see jakarta.ws.rs.Consumes
     * */
    String[] value = null;
 

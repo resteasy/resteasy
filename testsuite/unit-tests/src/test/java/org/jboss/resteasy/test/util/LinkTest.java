@@ -6,8 +6,8 @@ import org.jboss.resteasy.test.util.resource.LinkResource;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilderException;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.UriBuilderException;
 import java.lang.reflect.Method;
 import java.net.URI;
 
@@ -16,7 +16,7 @@ import java.net.URI;
 /**
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for javax.ws.rs.core.Link class.
+ * @tpTestCaseDetails Test for jakarta.ws.rs.core.Link class.
  * @tpSince RESTEasy 3.0.16
  */
 public class LinkTest {

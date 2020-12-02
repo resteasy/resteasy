@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.asynch.resource;
 
-import javax.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.AsyncResponse;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class JaxrsAsyncServletAsyncResponseBlockingQueue extends ArrayBlockingQueue<AsyncResponse> {

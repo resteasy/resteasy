@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ValueConstants;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.container.Suspended;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashSet;

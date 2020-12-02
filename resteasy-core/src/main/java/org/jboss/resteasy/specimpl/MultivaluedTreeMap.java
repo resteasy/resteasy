@@ -1,6 +1,6 @@
 package org.jboss.resteasy.specimpl;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

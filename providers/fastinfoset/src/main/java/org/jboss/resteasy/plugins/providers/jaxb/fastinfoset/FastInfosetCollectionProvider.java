@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
 

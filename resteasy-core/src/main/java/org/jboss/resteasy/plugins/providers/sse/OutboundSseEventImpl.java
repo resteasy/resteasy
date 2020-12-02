@@ -2,11 +2,11 @@ package org.jboss.resteasy.plugins.providers.sse;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.SseEvent;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.SseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 

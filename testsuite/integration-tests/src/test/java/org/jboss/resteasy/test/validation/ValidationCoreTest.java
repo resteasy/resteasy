@@ -10,7 +10,7 @@ import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
@@ -30,8 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import java.util.Iterator;
 
 /**
@@ -53,7 +53,7 @@ public class ValidationCoreTest {
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
-            .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
+            .addAsResource("META-INF/services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 

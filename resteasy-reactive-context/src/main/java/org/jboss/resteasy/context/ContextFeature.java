@@ -1,9 +1,9 @@
 package org.jboss.resteasy.context;
 
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.ext.Provider;
 
 import org.eclipse.microprofile.context.spi.ContextManagerProvider;
 import org.jboss.resteasy.core.ResteasyContext;

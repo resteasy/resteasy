@@ -2,7 +2,7 @@ package org.jboss.resteasy.spi;
 
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

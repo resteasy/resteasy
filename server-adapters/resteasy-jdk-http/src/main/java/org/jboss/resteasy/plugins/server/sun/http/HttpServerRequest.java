@@ -9,8 +9,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;

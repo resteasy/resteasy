@@ -15,7 +15,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
