@@ -12,7 +12,7 @@ import java.util.Set;
  * 2. Because Graal VM will barf with an unhandled reference if we reference servlet classes directly
  *
  */
-public class BaseServletConfigSource {
+public class BaseServletConfigSource implements ConfigSource {
     protected ConfigSource source;
     protected final boolean available;
     protected final int defaultOrdinal;
@@ -34,17 +34,20 @@ public class BaseServletConfigSource {
         }
     }
 
-    public Map<String, String> getProperties() {
+   @Override
+   public Map<String, String> getProperties() {
        if (!available) {
           return Collections.<String, String>emptyMap();
        }
        return source.getProperties();
     }
 
-    public Set<String> getPropertyNames() {
+   @Override
+   public Set<String> getPropertyNames() {
         return getProperties().keySet();
     }
 
+    @Override
     public int getOrdinal() {
        if (!available) {
           return defaultOrdinal;
@@ -52,13 +55,15 @@ public class BaseServletConfigSource {
        return source.getOrdinal();
    }
 
-    public String getValue(String propertyName) {
+   @Override
+   public String getValue(String propertyName) {
        if (!available) {
           return null;
        }
        return source.getValue(propertyName);
     }
 
+    @Override
     public String getName() {
        return name;
     }
