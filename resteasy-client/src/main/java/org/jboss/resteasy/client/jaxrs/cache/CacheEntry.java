@@ -3,8 +3,8 @@ package org.jboss.resteasy.client.jaxrs.cache;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCache.Entry;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCache.Header;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

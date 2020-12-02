@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.xxe.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class XxeSecureProcessingMovieResource {

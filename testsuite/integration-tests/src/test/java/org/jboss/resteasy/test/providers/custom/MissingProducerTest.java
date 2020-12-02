@@ -33,14 +33,14 @@ public class MissingProducerTest {
       return TestUtil.getWarningCount("Unable to load builtin provider org.jboss.resteasy.Missing from ", false, DEFAULT_CONTAINER_QUALIFIER);
    }
    private static int parseLog3() {
-      return TestUtil.getWarningCount("classes/META-INF/services/javax.ws.rs.ext.Providers", false, DEFAULT_CONTAINER_QUALIFIER);
+      return TestUtil.getWarningCount("classes/META-INF/services/jakarta.ws.rs.ext.Providers", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(MissingProducerTest.class.getSimpleName());
-      war.addAsResource(MissingProducerTest.class.getPackage(), "MissingProducer.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
+      war.addAsResource(MissingProducerTest.class.getPackage(), "MissingProducer.Providers", "META-INF/services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 

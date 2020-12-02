@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.exception.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/test")
 public class ResponseExceptionMapperRuntimeExceptionResource implements ResponseExceptionMapperRuntimeExceptionResourceInterface {

@@ -2,7 +2,7 @@ package org.jboss.resteasy.spi.util;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Context;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

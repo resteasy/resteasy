@@ -20,9 +20,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.CommandFailedException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -32,7 +32,7 @@ import java.nio.file.Paths;
 /**
  * @tpSubChapter Security
  * @tpChapter Integration tests
- * @tpTestCaseDetails Basic test for RESTEasy authentication using programmatic security with javax.ws.rs.core.SecurityContext
+ * @tpTestCaseDetails Basic test for RESTEasy authentication using programmatic security with jakarta.ws.rs.core.SecurityContext
  * @tpSince RESTEasy 3.0.16
  */
 @ServerSetup({SecurityContextTest.SecurityDomainSetup.class})

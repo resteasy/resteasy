@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.OPTIONS;
+import jakarta.ws.rs.Path;
 
 @Path("{x:.*}")
 public class WiderMappingDefaultOptions {

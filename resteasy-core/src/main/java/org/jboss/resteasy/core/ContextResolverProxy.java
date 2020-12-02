@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core;
 
-import javax.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ContextResolver;
 import java.util.List;
 
 /**

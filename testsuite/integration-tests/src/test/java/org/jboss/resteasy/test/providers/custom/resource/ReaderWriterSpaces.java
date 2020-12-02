@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/spaces")
 public class ReaderWriterSpaces {

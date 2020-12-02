@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCollectionFoo;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCollectionNamespacedFoo;
@@ -21,8 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 /**
@@ -71,7 +71,7 @@ public class JaxbCollectionTest {
 
       ResteasyWebTarget target = client.target(generateURL("/array"));
       Response response = target.request().accept("application/xml").post(Entity.xml(xml));
-      List<JaxbCollectionFoo> list = response.readEntity(new javax.ws.rs.core.GenericType<List<JaxbCollectionFoo>>() {
+      List<JaxbCollectionFoo> list = response.readEntity(new jakarta.ws.rs.core.GenericType<List<JaxbCollectionFoo>>() {
       });
       Assert.assertEquals("The response doesn't contain 1 item, which is expected", 1, list.size());
       Assert.assertEquals("The response doesn't contain correct element value", list.get(0).getTest(), "hello");
@@ -92,7 +92,7 @@ public class JaxbCollectionTest {
 
       ResteasyWebTarget target = client.target(generateURL("/list"));
       Response response = target.request().post(Entity.xml(xml));
-      JaxbCollectionFoo[] list = response.readEntity(new javax.ws.rs.core.GenericType<JaxbCollectionFoo[]>() {
+      JaxbCollectionFoo[] list = response.readEntity(new jakarta.ws.rs.core.GenericType<JaxbCollectionFoo[]>() {
       });
       Assert.assertEquals("The response doesn't contain 1 item, which is expected", 1, list.length);
       Assert.assertEquals("The response doesn't contain correct element value", list[0].getTest(), "hello");
@@ -113,7 +113,7 @@ public class JaxbCollectionTest {
 
       ResteasyWebTarget target = client.target(generateURL("/namespaced/array"));
       Response response = target.request().post(Entity.xml(xml));
-      List<JaxbCollectionNamespacedFoo> list = response.readEntity(new javax.ws.rs.core.GenericType<List<JaxbCollectionNamespacedFoo>>() {
+      List<JaxbCollectionNamespacedFoo> list = response.readEntity(new jakarta.ws.rs.core.GenericType<List<JaxbCollectionNamespacedFoo>>() {
       });
       Assert.assertEquals("The response doesn't contain 1 item, which is expected", 1, list.size());
       Assert.assertEquals("The response doesn't contain correct element value", list.get(0).getTest(), "hello");
@@ -135,7 +135,7 @@ public class JaxbCollectionTest {
 
       ResteasyWebTarget target = client.target(generateURL("/namespaced/list"));
       Response response = target.request().post(Entity.xml(xml));
-      JaxbCollectionNamespacedFoo[] list = response.readEntity(new javax.ws.rs.core.GenericType<JaxbCollectionNamespacedFoo[]>() {
+      JaxbCollectionNamespacedFoo[] list = response.readEntity(new jakarta.ws.rs.core.GenericType<JaxbCollectionNamespacedFoo[]>() {
       });
       Assert.assertEquals("The response doesn't contain 1 item, which is expected", 1, list.length);
       Assert.assertEquals("The response doesn't contain correct element value", list[0].getTest(), "hello");

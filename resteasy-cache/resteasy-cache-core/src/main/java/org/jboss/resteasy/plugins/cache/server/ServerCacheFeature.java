@@ -2,9 +2,9 @@ package org.jboss.resteasy.plugins.cache.server;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Configurable;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.Configuration;

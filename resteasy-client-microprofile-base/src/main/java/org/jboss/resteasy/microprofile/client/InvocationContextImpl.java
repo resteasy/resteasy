@@ -3,7 +3,7 @@ package org.jboss.resteasy.microprofile.client;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
 import javax.interceptor.InvocationContext;
-import javax.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.client.ResponseProcessingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -71,7 +71,7 @@ public class InvocationContextImpl implements InvocationContext {
             if (cause instanceof ResponseProcessingException) {
                 ResponseProcessingException rpe = (ResponseProcessingException) cause;
                 // Note that the default client engine leverages a single connection
-                // MP FT: we need to close the response otherwise we would not be able to retry if the method returns javax.ws.rs.core.Response
+                // MP FT: we need to close the response otherwise we would not be able to retry if the method returns jakarta.ws.rs.core.Response
                 rpe.getResponse().close();
                 cause = rpe.getCause();
                 if (cause instanceof RuntimeException) {

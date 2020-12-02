@@ -2,7 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import java.util.Collections;
 import java.util.List;
 

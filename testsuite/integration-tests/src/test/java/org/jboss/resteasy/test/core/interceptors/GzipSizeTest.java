@@ -3,13 +3,13 @@ package org.jboss.resteasy.test.core.interceptors;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +54,7 @@ public class GzipSizeTest {
       WebArchive war = TestUtil.prepareArchive(GzipSizeTest.class.getSimpleName());
       war.addClasses(GzipIGZIP.class, Pair.class);
       // Activate gzip compression on server:
-      war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+      war.addAsManifestResource("org/jboss/resteasy/test/client/jakarta.ws.rs.ext.Providers", "services/jakarta.ws.rs.ext.Providers");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT, "16");
       return TestUtil.finishContainerPrepare(war, contextParam, GzipResource.class);

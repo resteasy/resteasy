@@ -179,7 +179,7 @@ public interface LogMessages extends BasicLogger
 
    @LogMessage(level = Level.WARN)
    @Message(id = BASE
-         + 175, value = "The use of %s is deprecated, please use javax.ws.rs.Application as a context-param instead")
+         + 175, value = "The use of %s is deprecated, please use jakarta.ws.rs.Application as a context-param instead")
    void useOfApplicationClass(String className);
 
    @LogMessage(level = Level.WARN)

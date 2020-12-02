@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.form.resource;
 
-import javax.ws.rs.HeaderParam;
+import jakarta.ws.rs.HeaderParam;
 
 public class FormResourceClientFormSecond {
    @HeaderParam("custom-header")

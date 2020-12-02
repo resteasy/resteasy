@@ -11,9 +11,9 @@ import javax.ejb.Timer;
 import javax.ejb.TimerService;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

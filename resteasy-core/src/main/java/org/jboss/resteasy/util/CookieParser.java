@@ -3,7 +3,7 @@ package org.jboss.resteasy.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Cookie;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 

@@ -3,7 +3,7 @@ package org.jboss.resteasy.client.jaxrs.i18n;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;

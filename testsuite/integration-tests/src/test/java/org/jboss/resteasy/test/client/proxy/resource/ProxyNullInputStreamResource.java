@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
-import javax.ws.rs.HEAD;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.HEAD;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 /**
  * Created by rsearls on 8/23/17.

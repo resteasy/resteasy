@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import java.lang.reflect.Array;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 /**
  *

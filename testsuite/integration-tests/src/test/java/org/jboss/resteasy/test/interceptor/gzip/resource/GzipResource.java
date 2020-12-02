@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.interceptor.gzip.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import java.util.Optional;
 
 

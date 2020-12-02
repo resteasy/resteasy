@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
 import org.jboss.logging.Logger;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public class RESTEasyParamBasicProxyResource implements RESTEasyParamBasicProxy
 {

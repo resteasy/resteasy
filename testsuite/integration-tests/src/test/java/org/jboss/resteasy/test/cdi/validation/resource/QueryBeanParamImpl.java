@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.validation.resource;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 public class QueryBeanParamImpl implements QueryBeanParam
 {

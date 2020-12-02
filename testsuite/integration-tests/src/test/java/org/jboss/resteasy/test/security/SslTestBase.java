@@ -11,7 +11,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import java.io.File;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.isIpv6;

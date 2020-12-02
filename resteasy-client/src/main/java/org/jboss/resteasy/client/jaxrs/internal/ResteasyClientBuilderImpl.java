@@ -17,9 +17,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.core.Configuration;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.core.Configuration;
 
 import java.security.AccessController;
 import java.security.KeyStore;
@@ -110,7 +110,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          this.providerFactory = new ResteasyProviderFactoryDelegate(providerFactory)
          {
             @Override
-            public javax.ws.rs.RuntimeType getRuntimeType()
+            public jakarta.ws.rs.RuntimeType getRuntimeType()
             {
                return RuntimeType.CLIENT;
             }

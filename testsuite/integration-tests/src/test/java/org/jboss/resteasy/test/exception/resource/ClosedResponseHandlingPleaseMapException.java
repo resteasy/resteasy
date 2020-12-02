@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.exception.resource;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public class ClosedResponseHandlingPleaseMapException extends RuntimeException {
 

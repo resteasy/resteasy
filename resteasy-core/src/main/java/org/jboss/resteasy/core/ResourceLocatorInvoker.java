@@ -17,8 +17,8 @@ import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.util.GetRestful;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.Produces;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.path.resource;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.PathSegment;
 
 public class LocatorWithClassHierarchyPathSegmentImpl implements PathSegment {
 

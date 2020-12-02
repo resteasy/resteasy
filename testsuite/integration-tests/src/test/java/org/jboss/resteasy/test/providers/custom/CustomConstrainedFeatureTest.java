@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class CustomConstrainedFeatureTest {
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(CustomConstrainedFeatureTest.class.getSimpleName());
-      war.addAsResource(CustomConstrainedFeatureTest.class.getPackage(), CUSTOM_PROVIDERS_FILENAME, "META-INF/services/javax.ws.rs.ext.Providers");
+      war.addAsResource(CustomConstrainedFeatureTest.class.getPackage(), CUSTOM_PROVIDERS_FILENAME, "META-INF/services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, CustomConstrainedFeatureResource.class, CustomServerConstrainedFeature.class, CustomClientConstrainedFeature.class);
    }
 
@@ -62,7 +62,7 @@ public class CustomConstrainedFeatureTest {
       // providerFactory.register(CustomClientConstrainedFeature.class);
       // providerFactory.register(CustomServerConstrainedFeature.class);
       // ResteasyClientImpl client = new ResteasyClientBuilderImpl().build();
-      // the line below does the same as if there is providers file in META-INF/services/javax.ws.rs.ext.Providers
+      // the line below does the same as if there is providers file in META-INF/services/jakarta.ws.rs.ext.Providers
       ResteasyClient client = (ResteasyClient)ClientBuilder.newBuilder().register(CustomClientConstrainedFeature.class).register(CustomServerConstrainedFeature.class).build();
       assertTrue(CustomConstrainedFeatureResource.ERROR_CLIENT_FEATURE, CustomClientConstrainedFeature.wasInvoked());
       assertFalse(CustomConstrainedFeatureResource.ERROR_SERVER_FEATURE, CustomServerConstrainedFeature.wasInvoked());

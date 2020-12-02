@@ -3,8 +3,8 @@ package org.jboss.resteasy.plugins.guice.ext;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 public class UriBuilderProvider implements Provider<UriBuilder>
 {

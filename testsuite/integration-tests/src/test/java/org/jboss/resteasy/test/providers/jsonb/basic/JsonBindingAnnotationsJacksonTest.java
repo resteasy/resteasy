@@ -3,12 +3,12 @@ package org.jboss.resteasy.test.providers.jsonb.basic;
 import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -153,7 +153,7 @@ public class JsonBindingAnnotationsJacksonTest {
          Assert.assertThat("Wrong response code", responseCode, is(400));
          String responseBody = response.readEntity(String.class);
          Assert.assertTrue("Wrong response error message: " + responseBody,
-                 responseBody.startsWith("javax.ws.rs.ProcessingException: RESTEASY008200"));
+                 responseBody.startsWith("jakarta.ws.rs.ProcessingException: RESTEASY008200"));
       } finally {
          client.close();
       }

@@ -16,8 +16,8 @@ import org.jboss.resteasy.test.mapper.resource.SprocketDBExceptionMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;

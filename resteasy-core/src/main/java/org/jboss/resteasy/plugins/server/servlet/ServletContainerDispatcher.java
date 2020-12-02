@@ -9,9 +9,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
@@ -77,7 +77,7 @@ public class ServletContainerDispatcher
          globalDispatcher = ctxDeployment.getDispatcher();
       }
 
-      String application = bootstrap.getInitParameter("javax.ws.rs.Application");
+      String application = bootstrap.getInitParameter("jakarta.ws.rs.Application");
       String useGlobalStr = bootstrap.getInitParameter("resteasy.servlet.context.deployment");
       boolean useGlobal = globalFactory != null;
       if (useGlobalStr != null) useGlobal = Boolean.parseBoolean(useGlobalStr);

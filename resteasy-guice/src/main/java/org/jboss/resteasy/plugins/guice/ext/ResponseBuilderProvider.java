@@ -3,8 +3,8 @@ package org.jboss.resteasy.plugins.guice.ext;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 public class ResponseBuilderProvider implements Provider<Response.ResponseBuilder>
 {

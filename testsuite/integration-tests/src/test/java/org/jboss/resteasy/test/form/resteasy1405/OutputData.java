@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.form.resteasy1405;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class OutputData
 {

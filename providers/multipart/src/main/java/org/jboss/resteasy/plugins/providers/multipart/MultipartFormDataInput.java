@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

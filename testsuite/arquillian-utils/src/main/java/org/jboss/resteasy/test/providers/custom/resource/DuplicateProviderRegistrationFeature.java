@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 
 public class DuplicateProviderRegistrationFeature implements Feature {
    @Override

@@ -4,7 +4,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.spi.LoggableFailure;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.lang.annotation.Annotation;

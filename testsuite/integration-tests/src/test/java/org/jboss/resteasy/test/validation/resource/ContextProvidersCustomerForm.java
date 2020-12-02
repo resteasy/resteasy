@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.validation.resource;
 
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 
 public class ContextProvidersCustomerForm {
    @FormParam("customer")

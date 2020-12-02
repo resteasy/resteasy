@@ -18,7 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.enterprise.util.AnnotationLiteral;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public abstract class ContextProvidersTestBase {
    static final MediaType MULTIPART_FORM_DATA = new MediaType("multipart", "form-data");
    static final MediaType MULTIPART_RELATED = new MediaType("multipart", "related");
 
-   static final javax.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new javax.ws.rs.core.GenericType<List<ContextProvidersName>>() {
+   static final jakarta.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new jakarta.ws.rs.core.GenericType<List<ContextProvidersName>>() {
    };
 
    public abstract static class S1 extends AnnotationLiteral<PartType> implements PartType {

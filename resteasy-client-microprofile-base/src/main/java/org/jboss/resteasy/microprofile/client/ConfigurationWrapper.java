@@ -1,8 +1,8 @@
 package org.jboss.resteasy.microprofile.client;
 
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Feature;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.Feature;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;

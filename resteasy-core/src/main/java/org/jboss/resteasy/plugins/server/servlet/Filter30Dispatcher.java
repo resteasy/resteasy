@@ -9,7 +9,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.NewCookie;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -36,7 +36,7 @@ public class Filter30Dispatcher extends FilterDispatcher
          @Override
          public void addNewCookie(NewCookie cookie)
          {
-            outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+            outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
          }
       };
    }

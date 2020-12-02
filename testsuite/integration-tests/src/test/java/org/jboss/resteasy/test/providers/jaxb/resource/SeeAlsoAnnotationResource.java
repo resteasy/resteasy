@@ -2,10 +2,10 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.junit.Assert;
 
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("/see")
 public class SeeAlsoAnnotationResource {

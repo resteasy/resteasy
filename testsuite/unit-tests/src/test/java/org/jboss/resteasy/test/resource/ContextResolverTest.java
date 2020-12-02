@@ -11,13 +11,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
 
 /**
  * @tpSubChapter Resource
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for javax.ws.rs.ext.ContextResolver class.
+ * @tpTestCaseDetails Test for jakarta.ws.rs.ext.ContextResolver class.
  * @tpSince RESTEasy 3.0.16
  */
 public class ContextResolverTest {

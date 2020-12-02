@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompany;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompanyConverter;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompanyConverterProvider;
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for org.jboss.resteasy.spi.StringConverter class
  *                    StringConverter is deprecated.
- *                    See javax.ws.rs.ext.ParamConverter
+ *                    See jakarta.ws.rs.ext.ParamConverter
  *                    See org.jboss.resteasy.test.resource.param.ParamConverterTest
  */
 @RunWith(Arquillian.class)

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 

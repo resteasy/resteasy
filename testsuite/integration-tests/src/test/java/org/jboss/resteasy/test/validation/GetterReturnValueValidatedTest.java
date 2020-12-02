@@ -8,7 +8,7 @@ import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.GetterReturnValueValidatedResourceResetCount;
 import org.jboss.resteasy.test.validation.resource.GetterReturnValueValidatedResourceWithGetterViolation;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Response
@@ -41,7 +41,7 @@ public class GetterReturnValueValidatedTest {
       WebArchive war = TestUtil.prepareArchive(GetterReturnValueValidatedTest.class.getSimpleName())
             .addClasses(GetterReturnValueValidatedResourceWithGetterViolation.class)
             .addClasses(GetterReturnValueValidatedResourceResetCount.class)
-            .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
+            .addAsResource("META-INF/services/jakarta.ws.rs.ext.Providers")
             .addAsResource(GetterReturnValueValidatedTest.class.getPackage(), "GetterReturnValueValidatedValidation.xml", "META-INF/validation.xml");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }

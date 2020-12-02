@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.exception.resource;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 public class ClientExceptionsCustomException extends WebApplicationException {
 

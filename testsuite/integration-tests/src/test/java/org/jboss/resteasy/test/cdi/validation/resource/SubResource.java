@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.cdi.validation.resource;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.core.Response;
 
 public interface SubResource extends ValidResource
 {

@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.providers.jaxb;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;

@@ -4,9 +4,9 @@ import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.KeyTools;
 import org.jboss.resteasy.security.smime.SignedOutput;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;

@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.container.CompletionCallback;
+import jakarta.ws.rs.container.CompletionCallback;
 
 import org.jboss.logging.Logger;
 

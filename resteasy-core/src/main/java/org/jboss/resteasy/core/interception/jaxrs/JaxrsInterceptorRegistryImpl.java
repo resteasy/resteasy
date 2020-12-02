@@ -7,10 +7,10 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 
 import javax.annotation.Priority;
-import javax.ws.rs.NameBinding;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.NameBinding;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.core.Application;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;

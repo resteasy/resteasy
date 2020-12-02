@@ -1,6 +1,6 @@
 package org.jboss.resteasy.microprofile.client;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 /**
  * This interface is implemented by every proxy created by {@link RestClientBuilderImpl}.

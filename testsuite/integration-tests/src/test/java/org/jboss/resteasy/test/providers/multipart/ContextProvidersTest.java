@@ -15,13 +15,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.util.AnnotationLiteral;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,7 +60,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1119.
- *      Unable to find contextual data of type: javax.ws.rs.ext.Providers if ClientBuilder.newClient is used.
+ *      Unable to find contextual data of type: jakarta.ws.rs.ext.Providers if ClientBuilder.newClient is used.
  * @tpSince RESTEasy 3.0.16
  */
 @SuppressWarnings("deprecation")
@@ -87,7 +87,7 @@ public class ContextProvidersTest {
    static final MediaType MULTIPART_MIXED = new MediaType("multipart", "mixed");
    static final MediaType MULTIPART_FORM_DATA = new MediaType("multipart", "form-data");
    static final MediaType MULTIPART_RELATED = new MediaType("multipart", "related");
-   static final javax.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new javax.ws.rs.core.GenericType<List<ContextProvidersName>>() {
+   static final jakarta.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new jakarta.ws.rs.core.GenericType<List<ContextProvidersName>>() {
    };
 
    @Deployment
@@ -106,7 +106,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Form data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -144,7 +144,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Mixed data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -175,7 +175,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails List data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -204,7 +204,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Map data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -239,7 +239,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Related data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -273,7 +273,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Multipart form data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -299,7 +299,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Xop data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -316,7 +316,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Mixed data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -340,7 +340,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Form data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -365,7 +365,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails List data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -389,7 +389,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Map data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -413,7 +413,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Related data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -438,7 +438,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Multipart form data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -468,7 +468,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Xop data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test

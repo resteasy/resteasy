@@ -14,11 +14,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.ext.ReaderInterceptor;
 import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
@@ -87,7 +87,7 @@ public class DuplicateProviderRegistrationTest {
    }
 
    /**
-    * @tpTestDetails This test is taken from javax.ws.rs.core.Configurable javadoc
+    * @tpTestDetails This test is taken from jakarta.ws.rs.core.Configurable javadoc
     * @tpSince RESTEasy 3.0.17
     */
    @Test

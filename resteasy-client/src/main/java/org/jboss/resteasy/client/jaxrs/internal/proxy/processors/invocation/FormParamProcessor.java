@@ -7,8 +7,8 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Form;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

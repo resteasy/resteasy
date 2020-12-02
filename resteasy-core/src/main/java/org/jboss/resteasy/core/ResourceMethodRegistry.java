@@ -25,7 +25,7 @@ import org.jboss.resteasy.util.AnnotationResolver;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;

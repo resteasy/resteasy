@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.core.servlet.resource;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public interface ServletMappingProxy {

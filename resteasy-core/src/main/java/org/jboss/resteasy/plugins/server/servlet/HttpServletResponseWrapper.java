@@ -12,8 +12,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
@@ -312,7 +312,7 @@ public class HttpServletResponseWrapper implements HttpResponse
 
    public void addNewCookie(NewCookie cookie)
    {
-      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+      outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
    public void sendError(int status) throws IOException

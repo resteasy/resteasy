@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.rx.rxjava2;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

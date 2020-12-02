@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.xxe.resource.xxeJackson;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import javax.xml.bind.JAXBElement;
 import java.util.List;
 import java.util.Map;
