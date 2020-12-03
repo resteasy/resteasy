@@ -147,7 +147,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly21</additional.surefire.excluded.groups>
+                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly21</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <profile>
