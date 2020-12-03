@@ -366,6 +366,10 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
       if (o instanceof Object[])
       {
          Object[] array = Object[].class.cast(o);
+         if (array.length == 0)
+         {
+            return "[]";
+         }
          StringBuffer sb = new StringBuffer("[").append(convertArrayToString(array[0]));
          for (int i = 1; i < array.length; i++)
          {
