@@ -11,7 +11,9 @@
     <packaging>jar</packaging>
     <name>RESTEasy Jackson 2 Provider</name>
     <description/>
-
+    <properties>
+        <version.com.fasterxml.jackson>2.11.2-$$jakarta9$$</version.com.fasterxml.jackson>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

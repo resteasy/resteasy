@@ -19,7 +19,7 @@
         <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson>2.11.4</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.11.4-$$jakarta9$$</version.com.fasterxml.jackson>
         <version.com.google.guava>30.1-jre</version.com.google.guava>
         <version.com.google.inject.guice>4.2.2</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
@@ -70,7 +70,7 @@
         <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
         <version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>2.0.0.Final</version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>
         <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>2.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
-        <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
+        <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final-$$jakarta9$$</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
         <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
@@ -86,7 +86,7 @@
         <!-- MicroProfile versions -->
         <!-- todo replace this version when Final is released
         -->
-        <version.microprofile.restclient>2.0</version.microprofile.restclient>
+        <version.microprofile.restclient>2.0-$$jakarta9$$</version.microprofile.restclient>
 
         <!-- todo rls move this property when updating all versions for MP-rest-client 2.0
         and return version to ${version.microprofile.restclient}
