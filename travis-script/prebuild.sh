@@ -5,7 +5,7 @@ pushd $TRAVIS_HOME/jboss-jakarta-jaxrs-api_spec/jaxrs-api
 mvn --quiet clean install -DskipTest=true
 popd
 
-git clone --depth=1 --branch=master https://github.com/stuartwdouglas/optimus.git $TRAVIS_HOME/optimus
+git clone --depth=1 --branch=main https://github.com/stuartwdouglas/optimus.git $TRAVIS_HOME/optimus
 pushd $TRAVIS_HOME/optimus
 mvn --quiet clean install -DskipTest=true
 popd
