@@ -1,6 +1,7 @@
 install:
  - mvn -B clean; java -version
 script:
+ - travis_wait 60 travis-scripts/prebuild.sh
  - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} install
 
 language: java
