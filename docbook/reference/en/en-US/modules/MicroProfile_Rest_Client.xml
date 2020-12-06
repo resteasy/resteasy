@@ -412,6 +412,13 @@ of a registered <classname>ResponseExceptionMapper</classname>, a default <class
 will map any response with status >= 400 to a <classname>WebApplicationException</classname>.
 </para>
 
+<para><emphasis role="bold">Note.</emphasis> Related to the change described in section 
+<link linkend="ResteasyWebApplicationException">"Resteasy WebApplicationExceptions"</link>,
+RESTEasy's default <classname>ResponseExceptionMapper</classname> will map a response with status >= 300.
+The original behavior can be restored by setting the configuration parameter "resteasy.original.webapplicationexception.behavior"
+to "true".
+</para>
+
 </sect1>
 
 <sect1>

@@ -44,6 +44,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
+import org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -109,6 +110,7 @@ public class ClientInvocation implements Invocation
     * @param <T> type
     * @return extracted result of type T
     */
+   @SuppressWarnings("unchecked")
    public static <T> T extractResult(GenericType<T> responseType, Response response, Annotation[] annotations)
    {
       int status = response.getStatus();
@@ -191,7 +193,9 @@ public class ClientInvocation implements Invocation
             }
          }
          if (status >= 300 && status < 400)
-            throw new RedirectionException(response);
+         {
+            throw WebApplicationExceptionWrapper.wrap(new RedirectionException(response));
+         }
 
          return handleErrorStatus(response);
       }
@@ -217,33 +221,33 @@ public class ClientInvocation implements Invocation
       switch (status)
       {
          case 400 :
-            throw new BadRequestException(response);
+            throw WebApplicationExceptionWrapper.wrap(new BadRequestException(response));
          case 401 :
-            throw new NotAuthorizedException(response);
+            throw WebApplicationExceptionWrapper.wrap(new NotAuthorizedException(response));
          case 403 :
-            throw new ForbiddenException(response);
+            throw WebApplicationExceptionWrapper.wrap(new ForbiddenException(response));
          case 404 :
-            throw new NotFoundException(response);
+            throw WebApplicationExceptionWrapper.wrap(new NotFoundException(response));
          case 405 :
-            throw new NotAllowedException(response);
+            throw WebApplicationExceptionWrapper.wrap(new NotAllowedException(response));
          case 406 :
-            throw new NotAcceptableException(response);
+            throw WebApplicationExceptionWrapper.wrap(new NotAcceptableException(response));
          case 415 :
-            throw new NotSupportedException(response);
+            throw WebApplicationExceptionWrapper.wrap(new NotSupportedException(response));
          case 500 :
-            throw new InternalServerErrorException(response);
+            throw WebApplicationExceptionWrapper.wrap(new InternalServerErrorException(response));
          case 503 :
-            throw new ServiceUnavailableException(response);
+            throw WebApplicationExceptionWrapper.wrap(new ServiceUnavailableException(response));
          default :
             break;
       }
 
       if (status >= 400 && status < 500)
-         throw new ClientErrorException(response);
+         throw WebApplicationExceptionWrapper.wrap(new ClientErrorException(response));
       if (status >= 500)
-         throw new ServerErrorException(response);
+         throw WebApplicationExceptionWrapper.wrap(new ServerErrorException(response));
 
-      throw new WebApplicationException(response);
+      throw WebApplicationExceptionWrapper.wrap(new WebApplicationException(response));
    }
 
    public ClientConfiguration getClientConfiguration()
