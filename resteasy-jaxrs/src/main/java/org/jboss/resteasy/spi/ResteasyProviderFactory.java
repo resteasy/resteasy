@@ -31,6 +31,7 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
@@ -108,6 +109,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -292,6 +294,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    private boolean initialized = false;
 
    protected ResourceBuilder resourceBuilder;
+   // RESTEASY-1865 resource factories for singleton resources
+   private Map<Class<?>, SingletonResource> singletonResourceFactories;
+
    private StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
 
    public ResteasyProviderFactory()
@@ -400,6 +405,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       builtinsRegistered = false;
       registerBuiltins = true;
 
+      singletonResourceFactories = new HashMap<>();
       injectorFactory = parent == null ? new InjectorFactoryImpl() : parent.getInjectorFactory();
       registerDefaultInterceptorPrecedences();
       addHeaderDelegateIfAbsent(MediaType.class, new MediaTypeHeaderDelegate());
@@ -2859,6 +2865,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return (T) obj;
    }
 
+   public void registerSingletonResource(SingletonResource resource)
+   {
+      singletonResourceFactories.put(resource.getScannableClass(), resource);
+   }
+
+   private <T> boolean isSingletonResource(Class<T> resourceClass)
+   {
+      return singletonResourceFactories.containsKey(resourceClass);
+   }
+
    /**
     * Property and constructor injection using the InjectorFactory.
     *
@@ -2868,68 +2884,55 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param <T> type
     * @return instance of type T
     */
-   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
-   {
-      Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
+   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response) {
       Object obj = null;
-      if (constructor == null)
+
+      if (isSingletonResource(clazz))
       {
+         SingletonResource factory = singletonResourceFactories.get(clazz);
+         obj = CompletableFuture.completedFuture(factory.createResource(request, response, this)).toCompletableFuture().getNow(null);
+      }
+      else
+      {
+      Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
+
+      if (constructor == null) {
          // TODO this is solely to pass the TCK.  This is WRONG WRONG WRONG!  I'm challenging.
          if (false)//if (clazz.isAnonymousClass())
          {
             constructor = clazz.getDeclaredConstructors()[0];
             constructor.setAccessible(true);
-            if (!Modifier.isStatic(clazz.getModifiers()))
-            {
+            if (!Modifier.isStatic(clazz.getModifiers())) {
                Object[] args = {null};
-               try
-               {
+               try {
                   obj = constructor.newInstance(args);
-               }
-               catch (InstantiationException e)
-               {
+               } catch (InstantiationException e) {
+                  throw new RuntimeException(e);
+               } catch (IllegalAccessException e) {
+                  throw new RuntimeException(e);
+               } catch (InvocationTargetException e) {
                   throw new RuntimeException(e);
                }
-               catch (IllegalAccessException e)
-               {
-                  throw new RuntimeException(e);
-               }
-               catch (InvocationTargetException e)
-               {
-                  throw new RuntimeException(e);
-               }
-            }
-            else
-            {
-               try
-               {
+            } else {
+               try {
                   obj = constructor.newInstance();
-               }
-               catch (InstantiationException e)
-               {
+               } catch (InstantiationException e) {
                   throw new RuntimeException(e);
-               }
-               catch (IllegalAccessException e)
-               {
+               } catch (IllegalAccessException e) {
                   throw new RuntimeException(e);
-               }
-               catch (InvocationTargetException e)
-               {
+               } catch (InvocationTargetException e) {
                   throw new RuntimeException(e);
                }
             }
-         }
-         else
-         {
+         } else {
             throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
          }
-      }
-      else
-      {
+      } else {
          ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
          obj = constructorInjector.construct(request, response);
 
       }
+   }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
       propertyInjector.inject(request, response, obj);
