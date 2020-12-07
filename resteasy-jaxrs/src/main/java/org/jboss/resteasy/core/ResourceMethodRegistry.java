@@ -281,6 +281,10 @@ public class ResourceMethodRegistry implements Registry
       {
          processMethod(rf, base, method);
       }
+
+      if (rf instanceof SingletonResource) {
+         providerFactory.registerSingletonResource((SingletonResource) rf);
+      }
    }
 
    /**
