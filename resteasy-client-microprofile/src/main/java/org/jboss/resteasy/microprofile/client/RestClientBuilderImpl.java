@@ -36,10 +36,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessController;
 import java.security.KeyStore;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,6 +55,10 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.*;
 
 class RestClientBuilderImpl implements RestClientBuilder {
 
@@ -173,21 +181,59 @@ class RestClientBuilderImpl implements RestClientBuilder {
         ClassLoader classLoader = aClass.getClassLoader();
 
         List<String> noProxyHosts = Arrays.asList(
-           ConfigProvider.getConfig().getOptionalValue("http.nonProxyHosts", String.class).orElse("localhost|127.*|[::1]").split("|"));
-        String proxyHost = ConfigProvider.getConfig().getOptionalValue("http.proxyHost", String.class).orElse(null);
+                getSystemProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
+        String envProxyHost = getSystemProperty("http.proxyHost", null);
 
         T actualClient;
         ResteasyClient client;
 
         ResteasyClientBuilder resteasyClientBuilder;
-        if (proxyHost != null && !noProxyHosts.contains(baseURI.getHost())) {
-            // Use proxy, if defined
-            resteasyClientBuilder = builderDelegate.defaultProxy(
-                    proxyHost,
-                    ConfigProvider.getConfig().getOptionalValue("http.proxyPort", int.class).orElse(80));
-        } else {
-            resteasyClientBuilder = builderDelegate;
+
+        boolean isUriMatched = false;
+        if (envProxyHost != null && !noProxyHosts.isEmpty()) {
+            for (String s : noProxyHosts) {
+                Pattern p = Pattern.compile(s);
+                Matcher m = p.matcher(baseURI.getHost());
+                isUriMatched = m.matches();
+                if (isUriMatched) {
+                    break;
+                }
+            }
         }
+
+        if (envProxyHost != null && !isUriMatched) {
+            // Use proxy, if defined in the env variables
+            resteasyClientBuilder = builderDelegate.defaultProxy(
+                    envProxyHost,
+                    Integer.parseInt(getSystemProperty("http.proxyPort", "80")));
+        } else {
+            // Search for proxy settings passed in the client builder, if passed and use them if found
+            String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .orElse(null);
+
+            Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
+                    .filter(Integer.class::isInstance)
+                    .map(Integer.class::cast)
+                    .orElse(null);
+
+            String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .orElse(null);
+
+            if (userProxyHost != null && userProxyPort != null) {
+                resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
+            } else {
+                //ProxySelector if applicable
+                selectHttpProxy()
+                        .ifPresent(proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
+
+                resteasyClientBuilder = builderDelegate;
+            }
+        }
+
         // this is rest easy default
         ExecutorService executorService = this.executorService != null ? this.executorService : Executors.newFixedThreadPool(10);
 
@@ -228,6 +274,14 @@ class RestClientBuilderImpl implements RestClientBuilder {
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, asyncInterceptorFactories));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
+    }
+
+    private Optional<InetSocketAddress> selectHttpProxy() {
+        return ProxySelector.getDefault().select(baseURI).stream()
+                .filter(proxy -> proxy.type() == java.net.Proxy.Type.HTTP)
+                .map(java.net.Proxy::address)
+                .map(InetSocketAddress.class::cast)
+                .findFirst();
     }
 
     private boolean isMapperDisabled() {
@@ -530,6 +584,13 @@ class RestClientBuilderImpl implements RestClientBuilder {
 
     ResteasyClientBuilder getBuilderDelegate() {
         return builderDelegate;
+    }
+
+    private String getSystemProperty(String key, String def) {
+        if (System.getSecurityManager() == null) {
+            return System.getProperty(key, def);
+        }
+        return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(key, def));
     }
 
     private final ResteasyClientBuilder builderDelegate;
