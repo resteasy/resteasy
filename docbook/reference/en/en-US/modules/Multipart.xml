@@ -1208,23 +1208,22 @@ String name = proxy.putMultipartForm(new JsonFormResource
            request.  They send them only for the file parts.  This can cause
            character encoding and unmarshalling errors on the server side. To correct
            this there is an option to define an other, non-rfc compliant fallback value.
-           This can be done dynamically per request with the PreProcessInterceptor
-            infrastructure of RESTEasy. In the following example we will set
+           This can be done dynamically per request with the filter facility of JAX-RS
+           3.0. In the following example we will set
            <code>"*/*; charset=UTF-8"</code> as the new default fallback:
             <programlisting>
 <![CDATA[
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
 @Provider
-@ServerInterceptor
-public class ContentTypeSetterPreProcessorInterceptor
-    implements PreProcessInterceptor {
+public class InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8
+   implements ContainerRequestFilter {
 
-    public ServerResponse preProcess(HttpRequest request, ResourceMethod method)
-            throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, "*/*; charset=UTF-8");
-        return null;
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext) throws IOException
+   {
+      requestContext.setProperty(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, "*/*; charset=UTF-8");
+   }
 }]]></programlisting>
         </para>
     </section>
@@ -1232,7 +1231,7 @@ public class ContentTypeSetterPreProcessorInterceptor
     <section id="multipart_overwrite_content_type">
         <title>Overwriting the content type for multipart messages</title>
        <para>Using attribute, InputPart.DEFAULT_CONTENT_TYPE_PROPERTY
-          and an interceptor enables the setting of a default Content-Type,
+          and a filter enables the setting of a default Content-Type,
           It is also possible to override the Content-Type by setting a
           different media type with method <code>InputPart.setMediaType()</code>.
            Here is an example:
@@ -1271,15 +1270,14 @@ public Response setMediaType(MultipartInput input) throws IOException
 <![CDATA[import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
 @Provider
-@ServerInterceptor
-public class ContentTypeSetterPreProcessorInterceptor
-    implements PreProcessInterceptor {
+public class InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8
+   implements ContainerRequestFilter {
 
-    public ServerResponse preProcess(HttpRequest request, ResourceMethod method)
-            throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
-        return null;
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext) throws IOException
+   {
+      requestContext.setProperty(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
+   }
 }]]></programlisting>
 
         <para>If both <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code> and
