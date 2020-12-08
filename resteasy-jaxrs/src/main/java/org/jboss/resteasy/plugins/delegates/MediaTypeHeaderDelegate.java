@@ -7,7 +7,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import java.util.HashMap;
-import javax.ws.rs.BadRequestException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -114,7 +113,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          }
          if (!MediaType.MEDIA_TYPE_WILDCARD.equals(major))
          {
-            throw new BadRequestException(Messages.MESSAGES.failureParsingMediaType(type));
+            throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
          }
          subtype = MediaType.MEDIA_TYPE_WILDCARD;
       }
@@ -132,11 +131,11 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       if (major.length() < 1 || subtype.length() < 1)
       {
-         throw new BadRequestException(Messages.MESSAGES.failureParsingMediaType(type));
+         throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       if (!isValid(major) || !isValid(subtype))
       {
-         throw new BadRequestException(Messages.MESSAGES.failureParsingMediaType(type));
+         throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       String params = null;
       if (paramIndex > -1) params = type.substring(paramIndex + 1);

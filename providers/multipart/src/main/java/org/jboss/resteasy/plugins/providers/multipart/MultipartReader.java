@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import javax.ws.rs.BadRequestException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,7 +35,7 @@ public class MultipartReader implements MessageBodyReader<MultipartInput>
    public MultipartInput readFrom(Class<MultipartInput> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       String boundary = mediaType.getParameters().get("boundary");
-      if (boundary == null) throw new BadRequestException(Messages.MESSAGES.unableToGetBoundary());
+      if (boundary == null) throw new IOException(Messages.MESSAGES.unableToGetBoundary());
       MultipartInputImpl input = new MultipartInputImpl(mediaType, workers);
       /*
       StringWriter writer = new StringWriter();

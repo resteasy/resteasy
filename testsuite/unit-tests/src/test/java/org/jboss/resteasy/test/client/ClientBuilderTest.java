@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.BadRequestException;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -33,7 +32,7 @@ public class ClientBuilderTest {
     * @tpPassCrit IllegalArgumentException is raised
     * @tpSince RESTEasy 3.0.16
     */
-   @Test(expected = BadRequestException.class)
+   @Test(expected = IllegalArgumentException.class)
    public void entityStringThrowsExceptionWhenUnparsableTest() throws Exception {
       Entity.entity("entity", "\\//\\");
       Assert.fail();
