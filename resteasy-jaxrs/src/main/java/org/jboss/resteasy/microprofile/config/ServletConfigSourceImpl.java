@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ServletConfigSourceImpl implements ConfigSource, Serializable {
    private static final long serialVersionUID = -4813255978856565562L;
@@ -63,5 +64,10 @@ public class ServletConfigSourceImpl implements ConfigSource, Serializable {
    @Override
    public int getOrdinal() {
       return 60;
+   }
+
+   @Override
+   public Set<String> getPropertyNames() {
+      return getProperties().keySet();
    }
 }

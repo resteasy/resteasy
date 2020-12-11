@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class FilterConfigSourceImpl implements ConfigSource, Serializable {
    private static final long serialVersionUID = -9072596616524032694L;
@@ -63,5 +64,10 @@ public class FilterConfigSourceImpl implements ConfigSource, Serializable {
    @Override
    public int getOrdinal() {
       return 50;
+   }
+
+   @Override
+   public Set<String> getPropertyNames() {
+      return getProperties().keySet();
    }
 }

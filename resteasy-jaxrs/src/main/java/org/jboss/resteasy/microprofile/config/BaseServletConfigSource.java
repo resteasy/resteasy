@@ -3,6 +3,7 @@ package org.jboss.resteasy.microprofile.config;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
 
@@ -44,5 +45,9 @@ public class BaseServletConfigSource implements Serializable {
 
     public String getName() {
        return source.getName();
+    }
+
+    public Set<String> getPropertyNames() {
+        return source.getPropertyNames();
     }
 }

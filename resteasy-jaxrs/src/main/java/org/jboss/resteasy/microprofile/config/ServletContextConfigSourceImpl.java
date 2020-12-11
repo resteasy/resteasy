@@ -1,15 +1,16 @@
 package org.jboss.resteasy.microprofile.config;
 
-import org.eclipse.microprofile.config.spi.ConfigSource;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.servlet.ServletContext;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.ServletContext;
+
+import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class ServletContextConfigSourceImpl implements ConfigSource, Serializable {
 
@@ -61,5 +62,10 @@ public class ServletContextConfigSourceImpl implements ConfigSource, Serializabl
    @Override
    public int getOrdinal() {
       return 40;
+   }
+
+   @Override
+   public Set<String> getPropertyNames() {
+      return getProperties().keySet();
    }
 }
