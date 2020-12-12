@@ -3,15 +3,19 @@ package org.jboss.resteasy.client.jaxrs.engines.vertx;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -30,12 +34,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpHeaders;
-import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
@@ -117,14 +115,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
     }
 
     private CompletableFuture<ClientResponse> submit(final ClientInvocation request) {
-
-        HttpMethod method;
-        try {
-            method = HttpMethod.valueOf(request.getMethod());
-        } catch (IllegalArgumentException e) {
-            method = HttpMethod.OTHER;
-        }
-
+        HttpMethod method = HttpMethod.valueOf(request.getMethod());
         Object entity = request.getEntity();
         Buffer body;
         if (entity != null) {
@@ -134,6 +125,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         }
 
         RequestOptions options = new RequestOptions();
+        options.setMethod(method);
         MultiMap headers = MultiMap.caseInsensitiveMultiMap();
         request.getHeaders().asMap().forEach(headers::add);
         options.setHeaders(headers);
@@ -147,34 +139,19 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         options.setPort(uri.getPort());
         options.setURI(uri.getRawPath());
 
-        CompletableFuture<ClientResponse> future = new CompletableFuture<>();
-
-        // Using this method is fine
-        // This will go away with Vert.x 4
-        @SuppressWarnings("deprecation")
-        HttpClientRequest clientRequest = httpClient.request(method, options, response -> {
-            future.complete(toRestEasyResponse(request.getClientConfiguration(), response));
-        });
-        if (method == HttpMethod.OTHER) {
-            clientRequest.setRawMethod(request.getMethod());
-        }
-
         Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
         if (timeout != null) {
             long timeoutMs = unwrapTimeout(timeout);
             if (timeoutMs > 0) {
-                clientRequest.setTimeout(timeoutMs);
+                options.setTimeout(timeoutMs);
             }
         }
 
-        clientRequest.exceptionHandler(future::completeExceptionally);
-        if (body != null) {
-            clientRequest.end(body);
-        } else {
-            clientRequest.end();
-        }
-
-        return future;
+        return httpClient.request(options)
+                .compose(httpClientRequest -> body != null ? httpClientRequest.send(body) : httpClientRequest.send())
+                .map(httpClientResponse -> toRestEasyResponse(request.getClientConfiguration(), httpClientResponse))
+                .toCompletionStage()
+                .toCompletableFuture();
     }
 
     private long unwrapTimeout(final Object timeout) {
@@ -240,8 +217,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         return ret;
     }
 
-    private static byte[] requestContent(ClientInvocation request)
-    {
+    private static byte[] requestContent(ClientInvocation request) {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         request.getDelegatingOutputStream().setDelegate(baos);
         try {
@@ -253,9 +229,8 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         }
     }
 
-
     private ClientResponse toRestEasyResponse(ClientConfiguration clientConfiguration,
-                                               HttpClientResponse clientResponse) {
+                                              HttpClientResponse clientResponse) {
 
 
         InputStreamAdapter adapter = new InputStreamAdapter(clientResponse, 4 * 1024);
@@ -295,8 +270,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
                         }
                         is.close();
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     // Swallowing because other ClientHttpEngine implementations are swallowing as well.
                     // What is better?  causing a potential leak with inputstream slowly or cause an unexpected
                     // and unhandled io error and potentially cause the service go down?

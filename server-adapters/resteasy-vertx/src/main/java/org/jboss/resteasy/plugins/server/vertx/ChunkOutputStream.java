@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import io.vertx.core.Promise;
 import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
@@ -96,21 +97,21 @@ public class ChunkOutputStream extends AsyncOutputStream
          buffer.appendBytes(b, dataToWriteOffset, spaceLeftInCurrentChunk);
          dataToWriteOffset = dataToWriteOffset + spaceLeftInCurrentChunk;
          dataLengthLeftToWrite = dataLengthLeftToWrite - spaceLeftInCurrentChunk;
-         Future<Void> future;
+         Promise<Void> promise;
          if(handler != null) {
-            future = Future.future();
-            futures.add(future);
+            promise = Promise.promise();
+            futures.add(promise.future());
          } else {
-            future = null;
+            promise = null;
          }
-         flush(future);
+         flush(promise);
       }
       if (dataLengthLeftToWrite > 0)
       {
          buffer.appendBytes(b, dataToWriteOffset, dataLengthLeftToWrite);
       }
       if(handler != null) {
-         CompositeFuture.all(futures).setHandler(handler);
+         CompositeFuture.all(futures).onComplete(handler);
       }
    }
 
