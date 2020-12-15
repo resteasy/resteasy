@@ -71,4 +71,18 @@ public class ThreadLocalStack<T>
    {
       local.set(null);
    }
+
+   public T get(int i)
+   {
+      ArrayList<T> stack = getStack(false);
+      if (stack == null)
+      {
+         return null;
+      }
+      if (i < 0 || i > size())
+      {
+         return null;
+      }
+      return stack.get(i);
+   }
 }
