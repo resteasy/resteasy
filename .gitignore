@@ -15,6 +15,9 @@ target
 **/.checkstyle
 **/.factorypath
 
+# VS Code
+###################
+**/.vscode/
 
 # Packages #
 ############
