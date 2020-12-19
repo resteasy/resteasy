@@ -162,9 +162,11 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder ifModifiedSince(String strDate, Date lastModified)
    {
-      Date date = DateUtil.parseDate(strDate);
-
-      if (date.getTime() >= lastModified.getTime())
+      // The supported date formats have precision in seconds
+      // so the resulting date has precision in seconds
+      final Date date = DateUtil.parseDate(strDate);
+      // Compare timestamps with precision in seconds
+      if (date.getTime() >= getTimeWithPrecisionInSeconds(lastModified))
       {
          return Response.notModified();
       }
@@ -174,9 +176,11 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder ifUnmodifiedSince(String strDate, Date lastModified)
    {
-      Date date = DateUtil.parseDate(strDate);
-
-      if (date.getTime() >= lastModified.getTime())
+      // The supported date formats have precision in seconds
+      // so the resulting date has precision in seconds
+      final Date date = DateUtil.parseDate(strDate);
+      // Compare timestamps with precision in seconds
+      if (date.getTime() >= getTimeWithPrecisionInSeconds(lastModified))
       {
          return null;
       }
@@ -237,5 +241,14 @@ public class RequestImpl implements Request
       return Response.status(SC_PRECONDITION_FAILED);
    }
 
+   /**
+    * @param date the date for which we want the timestamp rounded down.
+    * @return the number of milliseconds rounded down to the lowest thousand since
+    * January 1, 1970, 00:00:00 GMT represented by this date.
+    */
+   private static long getTimeWithPrecisionInSeconds(Date date)
+   {
+      return date.getTime() / 1_000L * 1_000L;
+   }
 
 }

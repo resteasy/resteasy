@@ -91,6 +91,48 @@ public class PreconditionTest {
    }
 
    /**
+    * @tpTestDetails Sets header IF_UNMODIFIED_SINCE date is the second just before last modified
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test
+   public void testIfUnmodifiedSinceJustBeforeLastModified() {
+      WebTarget base = client.target(generateURL("/millis"));
+      try (Response response = base.request()
+          .header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Fri, 11 Dec 2020 22:47:14 GMT")
+          .get()) {
+         Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+      }
+   }
+
+   /**
+    * @tpTestDetails Sets header IF_UNMODIFIED_SINCE date is the second just after last modified
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test
+   public void testIfUnmodifiedSinceJustAfterLastModified() {
+      WebTarget base = client.target(generateURL("/millis"));
+      try (Response response = base.request()
+          .header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Fri, 11 Dec 2020 22:47:16 GMT")
+          .get()) {
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      }
+   }
+
+   /**
+    * @tpTestDetails Sets header IF_UNMODIFIED_SINCE date is the same second as last modified
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test
+   public void testIfUnmodifiedSinceSameSecondAsLastModified() {
+      WebTarget base = client.target(generateURL("/millis"));
+      try (Response response = base.request()
+          .header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Fri, 11 Dec 2020 22:47:15 GMT")
+          .get()) {
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      }
+   }
+
+   /**
     * @tpTestDetails Sets header IF_MODIFIED_SINCE date before last modified
     * @tpSince RESTEasy 3.0.16
     */
@@ -119,6 +161,48 @@ public class PreconditionTest {
          response.close();
       } catch (Exception e) {
          throw new RuntimeException(e);
+      }
+   }
+
+   /**
+    * @tpTestDetails Sets header IF_MODIFIED_SINCE date is the second just before last modified
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test
+   public void testIfModifiedSinceJustBeforeLastModified() {
+      WebTarget base = client.target(generateURL("/millis"));
+      try (Response response = base.request()
+          .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Fri, 11 Dec 2020 22:47:14 GMT")
+          .get()) {
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      }
+   }
+
+   /**
+    * @tpTestDetails Sets header IF_MODIFIED_SINCE date is the second just after last modified
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test
+   public void testIfModifiedSinceJustAfterLastModified() {
+      WebTarget base = client.target(generateURL("/millis"));
+      try (Response response = base.request()
+          .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Fri, 11 Dec 2020 22:47:16 GMT")
+          .get()) {
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+      }
+   }
+
+   /**
+    * @tpTestDetails Sets header IF_MODIFIED_SINCE date is the same second as last modified
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test
+   public void testIfModifiedSinceSameSecondAsLastModified() {
+      WebTarget base = client.target(generateURL("/millis"));
+      try (Response response = base.request()
+          .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Fri, 11 Dec 2020 22:47:15 GMT")
+          .get()) {
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
       }
    }
 
@@ -498,7 +582,7 @@ public class PreconditionTest {
    }
 
    /**
-    * @tpTestDetails Response if IF_MATH is missing
+    * @tpTestDetails Response if IF_MATCH is missing
     * @tpSince RESTEasy 3.0.17
     */
    @Test
@@ -512,7 +596,7 @@ public class PreconditionTest {
    }
 
    /**
-    * @tpTestDetails Response if IF_MATH is missing and IF_NONE_MATCH don't match
+    * @tpTestDetails Response if IF_MATCH is missing and IF_NONE_MATCH don't match
     * @tpSince RESTEasy 3.0.17
     */
    @Test
