@@ -26,6 +26,8 @@ import java.util.Set;
 @HandlesTypes({Application.class, Path.class, Provider.class})
 public class ResteasyServletInitializer implements ServletContainerInitializer
 {
+   private static final String RESTEASY_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
+   private static final String APPLICATION = "javax.ws.rs.Application";
    static final Set<String> ignoredPackages = new HashSet<String>();
 
    static
@@ -36,14 +38,8 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
    @Override
    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException
    {
-      if (classes == null || classes.size() == 0) return;
-      for (ServletRegistration reg : servletContext.getServletRegistrations().values())
-      {
-         if (reg.getInitParameter("javax.ws.rs.Application") != null)
-         {
-            return; // there's already a servlet mapping, do nothing
-         }
-      }
+      if (classes == null || classes.size() == 0)
+         return;
 
       Set<Class<?>> appClasses = new HashSet<Class<?>>();
       Set<Class<?>> providers = new HashSet<Class<?>>();
@@ -95,36 +91,80 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
 
    }
 
+   private Set<ServletRegistration> getServletsForApplication(Class<?> applicationClass, ServletContext servletContext)
+   {
+      Set<ServletRegistration> set = new HashSet<>();
+      ServletRegistration reg = servletContext.getServletRegistration(applicationClass.getName());
+      if (reg != null && reg.getMappings().size() == 1)
+         set.add(reg);
+
+      for (ServletRegistration sr : servletContext.getServletRegistrations().values())
+      {
+         String appClassName = sr.getInitParameter(APPLICATION);
+         if (applicationClass.getName().equals(appClassName) && sr.getMappings().size() == 1)
+            set.add(sr);
+      }
+      return set;
+   }
 
    protected void register(Class<?> applicationClass, Set<Class<?>> providers, Set<Class<?>> resources, ServletContext servletContext)
    {
+      Set<ServletRegistration> servletsForApp = getServletsForApplication(applicationClass, servletContext);
+      // ignore @ApplicationPath if application is already mapped in web.xml
+      if (!servletsForApp.isEmpty())
+      {
+         for (ServletRegistration servletReg : servletsForApp)
+         {
+            String servletClassName = servletReg.getClassName();
+            if (servletClassName == null)
+               servletContext.addServlet(servletReg.getName(), HttpServlet30Dispatcher.class);
+            String prefix = servletReg.getMappings().iterator().next();
+            if (prefix.endsWith("*"))
+               prefix = prefix.substring(0, prefix.length() - 1);
+            if (prefix.length() > 1 && prefix.endsWith("/"))
+               prefix = prefix.substring(0, prefix.length() - 1);
+            registerResourcesAndProviders(servletReg, providers, resources, applicationClass, prefix);
+         }
+         return;
+      }
       ApplicationPath path = applicationClass.getAnnotation(ApplicationPath.class);
       if (path == null)
       {
-         // todo we don't support this yet, i'm not sure if partial deployments are supported in all servlet containers
+         // Application subclass has no @ApplicationPath and no declared mappings to use
+         // TODO: add debug message indicating that an Application was detected but could
+         // not be mapped
          return;
       }
-      ServletRegistration.Dynamic reg = servletContext.addServlet(applicationClass.getName(), HttpServlet30Dispatcher.class);
-      reg.setLoadOnStartup(1);
-      reg.setAsyncSupported(true);
-      reg.setInitParameter("javax.ws.rs.Application", applicationClass.getName());
+      ServletRegistration.Dynamic reg;
+      String mapping = path.value();
+      String prefix;
 
-      if (path != null)
+      if (!mapping.startsWith("/"))
+         mapping = "/" + mapping;
+      prefix = mapping;
+      if (!prefix.equals("/") && prefix.endsWith("/"))
+         prefix = prefix.substring(0, prefix.length() - 1);
+      if (!mapping.endsWith("/*"))
       {
-         String mapping = path.value();
-         if (!mapping.startsWith("/")) mapping = "/" + mapping;
-         String prefix = mapping;
-         if (!prefix.equals("/") && prefix.endsWith("/")) prefix = prefix.substring(0, prefix.length() - 1);
-         if (!mapping.endsWith("/*"))
-         {
-            if (mapping.endsWith("/")) mapping += "*";
-            else mapping += "/*";
-         }
-         // resteasy.servlet.mapping.prefix
-         reg.setInitParameter("resteasy.servlet.mapping.prefix", prefix);
-         reg.addMapping(mapping);
+         if (mapping.endsWith("/"))
+            mapping += "*";
+         else
+            mapping += "/*";
       }
 
+      reg = servletContext.addServlet(applicationClass.getName(), HttpServlet30Dispatcher.class);
+      reg.setLoadOnStartup(1);
+      reg.setAsyncSupported(true);
+      reg.addMapping(mapping);
+      registerResourcesAndProviders(reg, providers, resources, applicationClass, prefix);
+   }
+
+   private void registerResourcesAndProviders(ServletRegistration reg, Set<Class<?>> providers, Set<Class<?>> resources,
+         Class<?> appClass, String prefix)
+   {
+      reg.setInitParameter(APPLICATION, appClass.getName());
+      // resteasy.servlet.mapping.prefix
+      reg.setInitParameter(RESTEASY_MAPPING_PREFIX, prefix);
       if (resources.size() > 0)
       {
          StringBuilder builder = new StringBuilder();
