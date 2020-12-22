@@ -122,7 +122,6 @@ public class MockHttpRequest extends BaseHttpRequest
       request.httpMethod = "PUT";
       return request;
    }
-   
    public static MockHttpRequest patch(String uri) throws URISyntaxException
    {
       MockHttpRequest request = initWithUri(uri);
