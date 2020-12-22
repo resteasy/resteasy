@@ -3,7 +3,9 @@ package org.jboss.resteasy.microprofile.config;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 
 public class ServletContextConfigSource extends BaseServletConfigSource implements ConfigSource {
-   private static final boolean SERVLET_AVAILABLE;
+
+   public static final int BUILT_IN_DEFAULT_ORDINAL = 40;
+
    private static Class<?> clazz = null;
    static {
       try {
@@ -14,15 +16,10 @@ public class ServletContextConfigSource extends BaseServletConfigSource implemen
       {
          //RESTEASY-2228: allow loading and running this ConfigSource even when Servlet API is not available
       }
-      SERVLET_AVAILABLE = clazz != null;
    }
 
    public ServletContextConfigSource() {
-      super(SERVLET_AVAILABLE, clazz);
+      super(clazz, BUILT_IN_DEFAULT_ORDINAL);
    }
 
-   @Override
-   public int getOrdinal() {
-      return 40;
-   }
 }
