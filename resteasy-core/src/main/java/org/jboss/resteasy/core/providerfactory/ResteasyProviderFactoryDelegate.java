@@ -60,11 +60,11 @@ import org.jboss.resteasy.spi.statistics.StatisticsController;
 public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
 {
 
-   private final ResteasyProviderFactory resteasyProviderFactoryDelegator;
+   private final ResteasyProviderFactoryImpl resteasyProviderFactoryDelegator;
 
    public ResteasyProviderFactoryDelegate(final ResteasyProviderFactory resteasyProviderFactoryDelegator)
    {
-      this.resteasyProviderFactoryDelegator = Objects.requireNonNull(resteasyProviderFactoryDelegator);
+      this.resteasyProviderFactoryDelegator = Objects.requireNonNull((ResteasyProviderFactoryImpl) resteasyProviderFactoryDelegator);
    }
 
    @Override
@@ -630,4 +630,8 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
       return resteasyProviderFactoryDelegator.getStatisticsController();
    }
 
+   @Override
+   protected boolean isOnServer() {
+      return resteasyProviderFactoryDelegator.isOnServer();
+   }
 }

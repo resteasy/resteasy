@@ -78,6 +78,7 @@ import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.ContextInjector;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -1763,5 +1764,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public StatisticsController getStatisticsController() {
       return statisticsController;
+   }
+
+   @Override
+   protected boolean isOnServer() {
+      return ResteasyContext.searchContextData(Dispatcher.class) != null;
    }
 }
