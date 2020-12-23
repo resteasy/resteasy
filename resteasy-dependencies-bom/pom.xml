@@ -93,12 +93,12 @@
         -->
         <version.microprofile.restclient.tck>2.0-RC2</version.microprofile.restclient.tck>
 
-        <version.microprofile.config>1.4</version.microprofile.config>
+        <version.microprofile.config>2.0</version.microprofile.config>
         <version.microprofile.context-propagation>1.0.1</version.microprofile.context-propagation>
 
         <!-- SmallRye versions -->
         <version.io.smallrye.context-propagation>1.0.1</version.io.smallrye.context-propagation>
-        <version.io.smallrye.smallrye-config>1.9.2</version.io.smallrye.smallrye-config>
+        <version.io.smallrye.smallrye-config>2.0.0-RC3</version.io.smallrye.smallrye-config>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.19</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
