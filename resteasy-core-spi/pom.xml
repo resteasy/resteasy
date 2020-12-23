@@ -98,6 +98,18 @@
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <test.config.prop>sys-prop-value</test.config.prop>
+                    </systemPropertyVariables>
+                    <environmentVariables>
+                        <TEST_CONFIG_ENV>env-value</TEST_CONFIG_ENV>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>

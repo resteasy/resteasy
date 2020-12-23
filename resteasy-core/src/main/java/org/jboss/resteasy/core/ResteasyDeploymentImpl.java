@@ -1,8 +1,6 @@
 package org.jboss.resteasy.core;
 
-import org.eclipse.microprofile.config.Config;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.JaxrsServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -11,6 +9,7 @@ import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFa
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -320,11 +319,11 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
 
       Object tracingText;
       Object thresholdText;
+      Object context = getDefaultContextObjects() == null ? null : getDefaultContextObjects().get(ResteasyConfiguration.class);
 
-      Config config = ResteasyConfigProvider.getConfig();
+      org.jboss.resteasy.spi.config.Configuration config = ConfigurationFactory.getInstance().getConfiguration((ResteasyConfiguration) context);
       tracingText = config.getOptionalValue(ResteasyContextParameters.RESTEASY_TRACING_TYPE, String.class).orElse(null);
       thresholdText = config.getOptionalValue(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, String.class).orElse(null);
-      Object context = getDefaultContextObjects() == null ? null : getDefaultContextObjects().get(ResteasyConfiguration.class);
 
       if (tracingText != null) {
          providerFactory.property(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
