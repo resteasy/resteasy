@@ -354,4 +354,6 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract void initializeClientProviders(ResteasyProviderFactory factory);
 
    public abstract StatisticsController getStatisticsController();
+
+   protected abstract boolean isOnServer();
 }

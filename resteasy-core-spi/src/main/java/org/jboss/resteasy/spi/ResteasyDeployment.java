@@ -14,6 +14,11 @@ import javax.ws.rs.core.Application;
 @SuppressWarnings("rawtypes")
 public interface ResteasyDeployment
 {
+   static boolean onServer()
+   {
+      return ResteasyProviderFactory.getInstance().isOnServer();
+   }
+
    void start();
 
    void merge(ResteasyDeployment other);

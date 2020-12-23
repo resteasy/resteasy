@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -21,6 +24,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -62,6 +66,25 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotAcceptableException.class)
    public void testNotAcceptable() {
+      WebTarget behaviorTarget = new ResteasyClientBuilderImpl().build().target(generateURL("/behavior"));
+      try {
+         Response behaviorResponse = behaviorTarget.path("true").request().get();
+         Assert.assertEquals(204, behaviorResponse.getStatus());
+         new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable")).request().get(String.class);
+      } finally {
+         Response behaviorResponse = behaviorTarget.path("false").request().get();
+         Assert.assertEquals(204, behaviorResponse.getStatus());
+      }
+   }
+
+   /**
+    * @tpTestDetails RESTEasy client errors that result in a closed Response are correctly handled.
+    *                Note that the default behavior has changed after RESTEASY-2728.
+    * @tpPassCrit An NotAcceptableException is returned
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test(expected = NotAcceptableException.class)
+   public void testNotAcceptableNewBehavior() {
       Client c = new ResteasyClientBuilderImpl().build();
       try {
          c.target(generateURL("/testNotAcceptable")).request().get(String.class);
@@ -71,12 +94,33 @@ public class ClosedResponseHandlingTest {
    }
 
    /**
-    * @tpTestDetails Closed Response instances should be handled correctly with full tracing enabled.
-    * @tpPassCrit A NotSupportedException is returned
+    * @tpTestDetails RESTEasy client errors that result in a closed Response are correctly handled.
+    *                Note that ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR
+    *                must be set to "true" to enforce old Client behavior.
+    * @tpPassCrit A NotAcceptableException is returned
     * @tpSince RESTEasy 4.0.0.CR1
     */
    @Test(expected = NotSupportedException.class)
    public void testNotSupportedTraced() {
+      WebTarget behaviorTarget = ClientBuilder.newClient().target(generateURL("/behavior"));
+      try {
+         Response behaviorResponse = behaviorTarget.path("true").request().get();
+         Assert.assertEquals(204, behaviorResponse.getStatus());
+         ClientBuilder.newClient().target(generateURL("/testNotSupportedTraced")).request().get(String.class);
+      } finally {
+         Response behaviorResponse = behaviorTarget.path("false").request().get();
+         Assert.assertEquals(204, behaviorResponse.getStatus());
+      }
+   }
+
+   /**
+    * @tpTestDetails Closed Response instances should be handled correctly with full tracing enabled.
+    *                Note that the default behavior has changed after RESTEASY-2728.
+    * @tpPassCrit An NotSupportedException is returned
+    * @tpSince RESTEasy 4.6.0
+    */
+   @Test(expected = NotSupportedException.class)
+   public void testNotSupportedTracedNewBehavior() {
       Client c = new ResteasyClientBuilderImpl().build();
       try {
          c.target(generateURL("/testNotSupportedTraced")).request().get(String.class);

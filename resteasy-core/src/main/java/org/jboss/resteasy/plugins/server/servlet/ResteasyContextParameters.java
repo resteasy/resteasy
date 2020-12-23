@@ -29,6 +29,7 @@ public interface ResteasyContextParameters {
    String RESTEASY_SECURE_RANDOM_MAX_USE = "resteasy.secure.random.max.use";
    String RESTEASY_ADD_CHARSET = "resteasy.add.charset";
    String RESTEASY_DISABLE_HTML_SANITIZER = "resteasy.disable.html.sanitizer";
+   String RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR = "resteasy.original.webapplicationexception.behavior";
 
    /**
     * Enable tracing support.
