@@ -60,7 +60,7 @@ public class AbstractValidatorContextResolver
             }
          }
       }
-      return validatorFactory;
+      return tmpValidatorFactory;
    }
 
    BootstrapConfiguration getConfig()

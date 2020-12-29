@@ -44,7 +44,6 @@ public class JndiComponentResourceFactory implements ResourceFactory
 
    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
-      if (reference != null) return reference;
       Object ref = reference;
       if (ref == null)
       {

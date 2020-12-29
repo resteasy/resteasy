@@ -56,7 +56,8 @@ public class SnapshotMap<K,V> implements ConcurrentMap<K, V> {
     }
 
     private boolean delegateUpdate() {
-        return !snapFirst && delegate != null && !lockSnapshots && this.delegate != Collections.EMPTY_MAP;
+        Map<K, V> currentDelegate;
+        return !snapFirst && (currentDelegate = delegate) != null && !lockSnapshots && currentDelegate != Collections.EMPTY_MAP;
     }
 
     @Override

@@ -201,18 +201,21 @@ public class PatchMethodFilter implements ContainerRequestFilter
 
    private ObjectMapper getObjectMapper()
    {
-      if (objectMapper == null)
+      ObjectMapper currentObjectMapper = objectMapper;
+      if (currentObjectMapper == null)
       {
          synchronized (this)
          {
-            if (objectMapper == null)
+            currentObjectMapper = objectMapper;
+            if (currentObjectMapper == null)
             {
                ObjectMapper contextMapper = getContextObjectMapper();
-               objectMapper = (contextMapper == null) ? new ObjectMapper() : contextMapper;
+               currentObjectMapper = (contextMapper == null) ? new ObjectMapper() : contextMapper;
+               this.objectMapper = currentObjectMapper;
             }
          }
       }
-      return objectMapper;
+      return currentObjectMapper;
    }
 
    private ObjectMapper getContextObjectMapper()

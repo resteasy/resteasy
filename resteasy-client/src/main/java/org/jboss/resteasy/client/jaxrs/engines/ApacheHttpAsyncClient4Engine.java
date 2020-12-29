@@ -261,7 +261,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       private ResultFuture<T> future;
       private SharedInputStream sharedStream;
 
-      private volatile boolean hasResult;
+      private boolean hasResult;
       private volatile T result;
       private volatile Exception exception;
       private volatile boolean completed;

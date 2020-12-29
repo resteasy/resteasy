@@ -54,14 +54,12 @@ public class DocumentProvider extends AbstractEntityProvider<Document> implement
    }
 
    private void lazyInit() {
-      boolean init = this.init;
       if (!init) {
          synchronized (this) {
-            init = this.init;
             if (!init) {
-               this.init = true;
                this.documentBuilder = DocumentBuilderFactory.newInstance();
                this.transformerFactory = TransformerFactory.newInstance();
+               this.init = true;
             }
          }
       }

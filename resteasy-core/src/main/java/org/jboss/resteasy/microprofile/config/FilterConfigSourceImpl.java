@@ -54,19 +54,22 @@ public class FilterConfigSourceImpl implements ResteasyConfigSource {
 
    @Override
    public String getName() {
-      if (name == null) {
+      String currentName = name;
+      if (currentName == null) {
          synchronized(this) {
-            if (name == null) {
+            currentName = name;
+            if (currentName == null) {
                ServletContext servletContext = ResteasyContext.getContextData(ServletContext.class);
                FilterConfig filterConfig = ResteasyContext.getContextData(FilterConfig.class);
                StringBuilder sb = new StringBuilder();
-               name = sb.append(servletContext != null ? servletContext.getServletContextName() : null).append(":")
+               currentName = sb.append(servletContext != null ? servletContext.getServletContextName() : null).append(":")
                      .append(filterConfig != null ? filterConfig.getFilterName() : null)
                      .append(":FilterConfigSource").toString();
+               this.name = currentName;
             }
          }
       }
-      return name;
+      return currentName;
    }
 
    @Override

@@ -154,7 +154,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
 
    protected class OnDemandInterceptorFactory extends AbstractInterceptorFactory
    {
-      protected volatile Object interceptor;
+      private Object interceptor;
 
       public OnDemandInterceptorFactory(final Class declaring)
       {
@@ -165,23 +165,22 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
       @Override
       protected void initialize()
       {
-         interceptor = createInterceptor();
-         providerFactory.injectProperties(interceptor);
+         final Object currentInterceptor = createInterceptor();
+         providerFactory.injectProperties(currentInterceptor);
+         // No need to make it volatile as we have a volatile write just after it
+         interceptor = currentInterceptor;
          initialized = true;
       }
 
       protected void checkInitialize()
       {
-         Object tmp = interceptor;
-         if (tmp == null)
+         if (!initialized)
          {
             synchronized (this)
             {
-               tmp = interceptor;
-               if (tmp == null)
+               if (!initialized)
                {
                   initialize();
-                  tmp = interceptor;
                }
             }
          }
@@ -192,6 +191,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
       protected Object getInterceptor()
       {
          checkInitialize();
+         // No need to make it volatile as we have a volatile read just before it
          return interceptor;
       }
    }
@@ -255,7 +255,8 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
 
    public T[] preMatch()
    {
-      if (cachedPreMatch == null)
+      T[] currentPreMatch = cachedPreMatch;
+      if (currentPreMatch == null)
       {
          List<Match> matches = new ArrayList<Match>();
          for (InterceptorFactory factory : interceptors)
@@ -266,16 +267,20 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
                matches.add(match);
             }
          }
-         cachedPreMatch = createArray(matches);
+         currentPreMatch = createArray(matches);
+         cachedPreMatch = currentPreMatch;
       }
-      return cachedPreMatch;
+      return currentPreMatch;
    }
 
 
    public T[] postMatch(Class declaring, AccessibleObject target)
    {
-      if(cachedPostMatch != null && declaring == null && target == null) {
-         return cachedPostMatch;
+      if (declaring == null && target == null) {
+         T[] currentPostMatch = cachedPostMatch;
+         if (currentPostMatch != null) {
+            return currentPostMatch;
+         }
       }
 
       List<Match> matches = new ArrayList<Match>();

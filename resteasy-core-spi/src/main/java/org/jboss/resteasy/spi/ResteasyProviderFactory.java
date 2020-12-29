@@ -124,11 +124,11 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
                   instance = result = newInstance(); //TODO use reflection directly, to avoid circular dependency
                }
                if (registerBuiltinByDefault)
-                  instance.registerBuiltin();
+                  result.registerBuiltin();
             }
          }
       }
-      return instance;
+      return result;
    }
 
    public static ResteasyProviderFactory newInstance()
