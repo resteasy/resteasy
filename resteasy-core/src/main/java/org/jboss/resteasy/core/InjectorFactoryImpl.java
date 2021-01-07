@@ -297,7 +297,10 @@ public class InjectorFactoryImpl implements InjectorFactory
 
         static ValueInjector wrap(Type paramType, Function<Type, ValueInjector> injectorFactory) {
             return Optional.ofNullable(optionalTypes.get(Types.getRawType(paramType)))
-                    .<ValueInjector>map(oi -> new DelegatingInjector(oi, injectorFactory.apply(oi.valueType.apply(paramType))))
+                    .<ValueInjector>map(oi -> {
+                       ValueInjector valueInjector = injectorFactory.apply(oi.valueType.apply(paramType));
+                       return valueInjector == null ? null : new DelegatingInjector(oi, valueInjector);
+                    })
                     .orElseGet(() -> injectorFactory.apply(paramType));
         }
 
