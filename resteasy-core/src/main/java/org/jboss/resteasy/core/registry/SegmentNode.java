@@ -2,11 +2,11 @@ package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -504,9 +504,9 @@ public class SegmentNode
       String[] mm = matchingMethods(sortList);
       if (mm != null)
       {
-         boolean isFailFast = Boolean.valueOf(ResteasyConfigProvider.getConfig().getOptionalValue(
-                         ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING,String.class)
-                         .orElse("false"));
+         boolean isFailFast = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(
+                 ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, boolean.class)
+                 .orElse(false);
          if(isFailFast) {
             throw new RuntimeException(Messages.MESSAGES
                     .multipleMethodsMatchFailFast(requestToString(request), mm));

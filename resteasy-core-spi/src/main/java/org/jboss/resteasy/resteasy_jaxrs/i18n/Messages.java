@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
+import java.util.NoSuchElementException;
 
 import javax.validation.ElementKind;
 import javax.ws.rs.core.MediaType;
@@ -844,4 +845,10 @@ public interface Messages
 
    @Message(id = BASE + 13, value = "Error creating array from %s")
    String errorCreatingArray(String s);
+
+   @Message(id = BASE + 2043, value = "Value %s cannot be converted to type %s with property name %s")
+   IllegalArgumentException cannotConvertParameter(Object value, Class<?> type, String name);
+
+   @Message(id = BASE + 2044, value = "Property %s not found")
+   NoSuchElementException propertyNotFound(String name);
 }

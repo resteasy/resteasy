@@ -132,6 +132,7 @@
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.smallrye.config</groupId>

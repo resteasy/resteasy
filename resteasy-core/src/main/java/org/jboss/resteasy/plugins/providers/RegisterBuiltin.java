@@ -2,10 +2,10 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.RuntimeType;
@@ -185,7 +185,7 @@ public class RegisterBuiltin
       return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
          @Override
          public Boolean run() {
-            final String value = ResteasyConfigProvider.getConfig().getOptionalValue("resteasy.allowGzip", String.class).orElse(null);
+            final String value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("resteasy.allowGzip", String.class).orElse(null);
             if ("".equals(value)) return Boolean.FALSE;
             return Boolean.parseBoolean(value);
          }
