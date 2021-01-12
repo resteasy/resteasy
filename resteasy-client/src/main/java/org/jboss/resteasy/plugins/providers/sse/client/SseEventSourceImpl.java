@@ -258,11 +258,12 @@ public class SseEventSourceImpl implements SseEventSource
       {
          return;
       }
-      if (response != null)
+      final ClientResponse clientResponse = response;
+      if (clientResponse != null)
       {
          try
          {
-            response.releaseConnection(false);
+            clientResponse.releaseConnection(false);
          }
          catch (IOException e)
          {
@@ -329,11 +330,12 @@ public class SseEventSourceImpl implements SseEventSource
             {
                request = requestBuilder.build(verb, entity);
             }
-            response = (ClientResponse) request.invoke();
-            if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
+            final ClientResponse clientResponse = (ClientResponse) request.invoke();
+            response = clientResponse;
+            if (Family.SUCCESSFUL.equals(clientResponse.getStatusInfo().getFamily()))
             {
                onConnection();
-               eventInput = response.readEntity(SseEventInputImpl.class);
+               eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                //if 200<= response code <300 and response contentType is null, fail the connection.
                if (eventInput == null && !alwaysReconnect)
                {
@@ -345,9 +347,9 @@ public class SseEventSourceImpl implements SseEventSource
             {
                //Let's buffer the entity in case the response contains an entity the user would like to retrieve from the exception.
                //This will also ensure that the connection is correctly closed.
-               response.bufferEntity();
+               clientResponse.bufferEntity();
                //Throw an instance of WebApplicationException depending on the response.
-               ClientInvocation.handleErrorStatus(response);
+               ClientInvocation.handleErrorStatus(clientResponse);
             }
          }
          catch (ServiceUnavailableException ex)

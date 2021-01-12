@@ -334,8 +334,8 @@ public abstract class AsyncResponseConsumer
    private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer
    {
       private boolean sentEntity;
-      private volatile boolean onCompleteReceived = false;
-      private volatile boolean sendingEvent = false;
+      private boolean onCompleteReceived;
+      private volatile boolean sendingEvent;
 
       AsyncRawStreamingResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
@@ -485,8 +485,8 @@ public abstract class AsyncResponseConsumer
    {
       private SseImpl sse;
       private SseEventSink sseEventSink;
-      private volatile boolean onCompleteReceived = false;
-      private volatile boolean sendingEvent = false;
+      private boolean onCompleteReceived;
+      private volatile boolean sendingEvent;
 
       private AsyncGeneralStreamingSseResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {

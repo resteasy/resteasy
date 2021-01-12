@@ -26,9 +26,9 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class ResteasyClientImpl implements ResteasyClient
 {
-   protected volatile ClientHttpEngine httpEngine;
-   protected volatile ExecutorService asyncInvocationExecutor;
-   protected volatile ScheduledExecutorService scheduledExecutorService;
+   protected final ClientHttpEngine httpEngine;
+   protected final ExecutorService asyncInvocationExecutor;
+   protected final ScheduledExecutorService scheduledExecutorService;
    protected ClientConfiguration configuration;
    protected boolean closed;
    protected boolean cleanupExecutor;
@@ -46,10 +46,7 @@ public class ResteasyClientImpl implements ResteasyClient
 
    protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor, final ClientConfiguration configuration)
    {
-      this.cleanupExecutor = cleanupExecutor;
-      this.httpEngine = httpEngine;
-      this.asyncInvocationExecutor = asyncInvocationExecutor;
-      this.configuration = configuration;
+      this(httpEngine, asyncInvocationExecutor, cleanupExecutor, null, configuration);
    }
 
    public ClientHttpEngine httpEngine()

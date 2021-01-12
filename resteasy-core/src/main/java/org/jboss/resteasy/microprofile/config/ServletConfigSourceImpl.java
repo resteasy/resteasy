@@ -53,19 +53,22 @@ public class ServletConfigSourceImpl implements ResteasyConfigSource {
 
    @Override
    public String getName() {
-      if (name == null) {
+      String currentName = name;
+      if (currentName == null) {
          synchronized(this) {
-            if (name == null) {
+            currentName = name;
+            if (currentName == null) {
                ServletContext servletContext = ResteasyContext.getContextData(ServletContext.class);
                ServletConfig servletConfig = ResteasyContext.getContextData(ServletConfig.class);
                StringBuilder sb = new StringBuilder();
-               name = sb.append(servletContext != null ? servletContext.getServletContextName() : null).append(":")
+               currentName = sb.append(servletContext != null ? servletContext.getServletContextName() : null).append(":")
                      .append(servletConfig != null ? servletConfig.getServletName() : null)
                      .append(":ServletConfigSource").toString();
+               this.name = currentName;
             }
          }
       }
-      return name;
+      return currentName;
    }
 
    @Override
