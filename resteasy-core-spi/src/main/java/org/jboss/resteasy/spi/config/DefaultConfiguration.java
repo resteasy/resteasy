@@ -166,11 +166,11 @@ public class DefaultConfiguration implements Configuration {
 
         @Override
         public String apply(final String name) {
-            String value = config == null ? null : config.getInitParameter(name);
+            String value = System.getProperty(name);
             if (value == null) {
-                value = System.getProperty(name);
-                if (value == null) {
-                    value = System.getenv(name);
+                value = System.getenv(name);
+                if (value == null && config != null) {
+                    value = config.getInitParameter(name);
                 }
             }
             return value;
