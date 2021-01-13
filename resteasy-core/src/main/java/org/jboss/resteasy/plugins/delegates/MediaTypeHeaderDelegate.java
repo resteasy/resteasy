@@ -69,11 +69,11 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
           result = internalParse(type);
           final int size = map.size();
           if (size >= MAX_MT_CACHE_SIZE) {
-              map.clear();
-              reverseMap.clear();
+              clearCache();
           }
+          final String normalisedType = internalToString(result);
           map.put(type, result);
-          reverseMap.put(result, type);
+          reverseMap.put(result, normalisedType);
       }
       return result;
    }
@@ -159,8 +159,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
           result = internalToString(type);
           final int size = reverseMap.size();
           if (size >= MAX_MT_CACHE_SIZE) {
-             reverseMap.clear();
-             map.clear();
+             clearCache();
           }
           reverseMap.put(type, result);
           map.put(result, type);
@@ -168,7 +167,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
       return result;
    }
 
-   private String internalToString(MediaType type)
+   private static String internalToString(MediaType type)
    {
       StringBuilder buf = new StringBuilder();
 
@@ -182,5 +181,11 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
          else buf.append(val);
       }
       return buf.toString();
+   }
+
+   static void clearCache()
+   {
+      map.clear();
+      reverseMap.clear();
    }
 }
