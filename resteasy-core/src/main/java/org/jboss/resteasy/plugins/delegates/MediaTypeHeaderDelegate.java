@@ -72,8 +72,9 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
               map.clear();
               reverseMap.clear();
           }
-          map.put(type, result);
-          reverseMap.put(result, type);
+          String normalisedType = INSTANCE.toString(result);
+          map.put(normalisedType, result);
+          reverseMap.put(result, normalisedType);
       }
       return result;
    }
