@@ -6,7 +6,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>resteasy-jsapi</artifactId>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         
         <dependency>

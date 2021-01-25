@@ -1,29 +1,27 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
 import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.utils.PermissionUtil;
+import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -38,7 +36,6 @@ public class ClientBuilderTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
       war.addClass(TestUtil.class);
-      war.addClass(NotForForwardCompatibility.class);
       // Arquillian in the deployment and use of TestUtil
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
@@ -46,6 +43,7 @@ public class ClientBuilderTest {
             new LoggingPermission("control", ""),
             new PropertyPermission("arquillian.*", "read"),
             new PropertyPermission("jboss.home.dir", "read"),
+            new PropertyPermission("jboss.server.base.dir", "read"),
             new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
@@ -87,7 +85,6 @@ public class ClientBuilderTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testDoubleRegistration() {
       int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
       int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
@@ -101,37 +98,6 @@ public class ClientBuilderTest {
       Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2, TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155);
       Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
 
-      client.close();
-   }
-
-   /**
-    * @tpTestDetails Sets http proxy based on client properties
-    * @tpPassCrit Default proxy has to be set
-    */
-   @Test
-   public void testHttpProxySetup() {
-      final String testProxyHost = "myproxy.com";
-      final String testProxyPort = "8080";
-      final String testProxyScheme = "https";
-      ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder().property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, testProxyHost);
-      Client client = clientBuilder.build();
-      Assert.assertEquals(testProxyHost, clientBuilder.getDefaultProxyHostname());
-      // since port was not set, it must be -1
-      Assert.assertEquals(-1, clientBuilder.getDefaultProxyPort());
-      // since scheme was not set, it must be http
-      Assert.assertEquals("http", clientBuilder.getDefaultProxyScheme());
-      client.close();
-      clientBuilder.property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, testProxyPort).property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "https");
-      client = clientBuilder.build();
-      Assert.assertEquals(testProxyHost, clientBuilder.getDefaultProxyHostname());
-      Assert.assertEquals(Integer.parseInt(testProxyPort), clientBuilder.getDefaultProxyPort());
-      Assert.assertEquals(testProxyScheme, clientBuilder.getDefaultProxyScheme());
-      client.close();
-      clientBuilder.property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, Integer.parseInt(testProxyPort)).property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "https");
-      client = clientBuilder.build();
-      Assert.assertEquals(testProxyHost, clientBuilder.getDefaultProxyHostname());
-      Assert.assertEquals(Integer.parseInt(testProxyPort), clientBuilder.getDefaultProxyPort());
-      Assert.assertEquals(testProxyScheme, clientBuilder.getDefaultProxyScheme());
       client.close();
    }
 }

@@ -4,7 +4,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,12 +14,12 @@
     <description/>
     <properties>
         <dep.arq.weld.se>2.0.0.Final</dep.arq.weld.se>
-        <dep.arq.version>1.1.15.Final</dep.arq.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+           <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -32,8 +32,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-              <groupId>javax.enterprise</groupId>
-              <artifactId>cdi-api</artifactId>
+              <groupId>jakarta.enterprise</groupId>
+              <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
         <dependency>
              <groupId>org.jboss.weld</groupId>
@@ -76,13 +76,11 @@
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
-            <version>${dep.arq.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-container-spi</artifactId>
-            <version>${dep.arq.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

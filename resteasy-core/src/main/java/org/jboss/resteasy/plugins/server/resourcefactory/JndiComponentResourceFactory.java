@@ -5,9 +5,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -22,11 +19,11 @@ public class JndiComponentResourceFactory implements ResourceFactory
    private String jndiName;
    private InitialContext ctx;
    private volatile Object reference;
-   private Class scannable;
+   private Class<?> scannable;
    private boolean cache;
 
 
-   public JndiComponentResourceFactory(final String jndiName, final Class scannable, final boolean cacheReference)
+   public JndiComponentResourceFactory(final String jndiName, final Class<?> scannable, final boolean cacheReference)
    {
       this.jndiName = jndiName;
       this.scannable = scannable;
@@ -45,9 +42,8 @@ public class JndiComponentResourceFactory implements ResourceFactory
    {
    }
 
-   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
+   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
-      if (reference != null) return CompletableFuture.completedFuture(reference);
       Object ref = reference;
       if (ref == null)
       {
@@ -67,7 +63,7 @@ public class JndiComponentResourceFactory implements ResourceFactory
             }
          }
       }
-      return CompletableFuture.completedFuture(ref);
+      return ref;
    }
 
    public void unregistered()

@@ -10,6 +10,7 @@ The integration tests run with specified Wildfly server.
 categories for tests, server setup task etc.
 - integration-tests - contains tests to run in container (Wildfly)
 - integration-tests-spring - tests for resteasy integration with spring
+- integration-tests-embedded - contain tests that are configured to run in each of the standalone containers, (Undertow, Vertx, Netty4, Sun jdk).
 - unit-tests - standalone tests not running in container
 
 ## Guidance for new tests
@@ -52,6 +53,9 @@ To run the testsuite with failing tests included for testing purposes:
 ### Single test
 > mvn surefire:test@default-test -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
 
+When running `microprofile-tck` tests, use the following in order to activate WireMock:
+> mvn wiremock:run -Dparams="--port=8765" -Ddir="target/classes" surefire:test@default-test -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
+
 ### Speciality single test JsonBindingTest and JsonBindingAnnotationsJacksonTest
 To run test JsonBindingTest requires the use of a speciality surefire syntax.
 > mvn surefire:test@jsonb-test  -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=JsonBindingTest -fn
@@ -75,13 +79,6 @@ Use ``ipv6`` property and specify IP address for EAP binding for IPv6 testing. E
 Run testsuite or test with the Wildfly with security manager enabled:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dsecurity.manager
-
-### Remote server
-Run testsuite or test connecting to a running server:
-
-> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Darquillian.remote
-
-Keep in mind that the remote server needs to be started with the option `-Dnode=127.0.0.1` or the binding IP in order for some tests to work properly.
 
 ### Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``

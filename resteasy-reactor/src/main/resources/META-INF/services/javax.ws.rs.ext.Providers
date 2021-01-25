@@ -1,0 +1,6 @@
+org.jboss.resteasy.reactor.MonoProvider
+org.jboss.resteasy.reactor.MonoRxInvokerImpl
+org.jboss.resteasy.reactor.MonoRxInvokerProvider
+org.jboss.resteasy.reactor.FluxProvider
+org.jboss.resteasy.reactor.FluxRxInvokerImpl
+org.jboss.resteasy.reactor.FluxRxInvokerProvider

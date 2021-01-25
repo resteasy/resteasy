@@ -15,6 +15,7 @@
                 <!ENTITY _FormParam SYSTEM "modules/_FormParam.xml">
                 <!ENTITY _Form SYSTEM "modules/_Form.xml">
                 <!ENTITY _NewParam SYSTEM "modules/_NewParam.xml">
+                <!ENTITY _OptionalParam SYSTEM "modules/_OptionalParam.xml">
                 <!ENTITY Cache_NoCache_CacheControl SYSTEM "modules/Cache_NoCache_CacheControl.xml">
                 <!ENTITY _DefaultValue SYSTEM "modules/_DefaultValue.xml">
                 <!ENTITY _Encoded_and_encoding SYSTEM "modules/_Encoded_and_encoding.xml">
@@ -39,9 +40,9 @@
                 <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
                 <!ENTITY MicroProfile_Rest_Client SYSTEM "modules/MicroProfile_Rest_Client.xml">               
                 <!ENTITY AJAX_Client SYSTEM "modules/AJAX_Client.xml">
-                <!ENTITY WADL SYSTEM "modules/WADL.xml">				
+                <!ENTITY WADL SYSTEM "modules/WADL.xml">
+                <!ENTITY Tracing_Feature SYSTEM "modules/tracing.xml">
                 <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
-                <!ENTITY Migration_to_3_1 SYSTEM "modules/Migration_to_3.1.xml">
                 <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
                 <!ENTITY Multipart SYSTEM "modules/Multipart.xml">
                 <!ENTITY Atom SYSTEM "modules/Atom.xml">
@@ -67,7 +68,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>4.1.0-SNAPSHOT</releaseinfo>
+      <releaseinfo>4.7.0-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>
@@ -113,6 +114,7 @@ This one is short
    &_FormParam;
    &_Form;
    &_NewParam;
+   &_OptionalParam;
    &_DefaultValue;
    &_Encoded_and_encoding;
    &_Context;
@@ -153,11 +155,10 @@ This one is short
    &MicroProfile_Rest_Client;
    &AJAX_Client;
    &WADL;
+   &Tracing_Feature;
    &Validation;
    &I18N;
    &Maven_and_RESTEasy;
-   &Migration_to_3_5;
-   &Migration_to_3_1;
    &Migration_from_older_versions;
    &Books;
 </book>

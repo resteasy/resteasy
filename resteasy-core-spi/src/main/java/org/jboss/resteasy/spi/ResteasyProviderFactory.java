@@ -2,6 +2,9 @@ package org.jboss.resteasy.spi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import javax.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -120,11 +124,11 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
                   instance = result = newInstance(); //TODO use reflection directly, to avoid circular dependency
                }
                if (registerBuiltinByDefault)
-                  instance.registerBuiltin();
+                  result.registerBuiltin();
             }
          }
       }
-      return instance;
+      return result;
    }
 
    public static ResteasyProviderFactory newInstance()
@@ -132,7 +136,23 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
       //TODO implement this differently: call getInstance(), retrieve the class, classloader, constructor from it, store locally in singletons, use those starting from now.
       try
       {
-         return (ResteasyProviderFactory) Thread.currentThread().getContextClassLoader()
+         ClassLoader loader = null;
+         if (System.getSecurityManager() == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+         } else {
+            try {
+               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                  @Override
+                  public ClassLoader run() throws Exception {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
+         }
+
+         return (ResteasyProviderFactory) loader
                .loadClass("org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl").getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
@@ -319,7 +339,7 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    // Configurable
    public abstract Map<String, Object> getMutableProperties();
 
-   public abstract ResteasyProviderFactory setProperties(Map<String, ?> properties);
+   public abstract ResteasyProviderFactory setProperties(Map<String, Object> properties);
 
    public abstract Collection<Feature> getEnabledFeatures();
 
@@ -332,4 +352,8 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract ResourceBuilder getResourceBuilder();
 
    public abstract void initializeClientProviders(ResteasyProviderFactory factory);
+
+   public abstract StatisticsController getStatisticsController();
+
+   protected abstract boolean isOnServer();
 }

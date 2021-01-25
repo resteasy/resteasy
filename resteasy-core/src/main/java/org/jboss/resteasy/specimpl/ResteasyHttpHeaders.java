@@ -26,6 +26,7 @@ public class ResteasyHttpHeaders implements HttpHeaders
 {
 
    private MultivaluedMap<String, String> requestHeaders;
+   private MultivaluedMap<String, String> unmodifiableRequestHeaders;
    private Map<String, Cookie> cookies;
 
    public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders)
@@ -33,16 +34,27 @@ public class ResteasyHttpHeaders implements HttpHeaders
       this(requestHeaders, new HashMap<String, Cookie>());
    }
 
+   public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final boolean eagerlyInitializeEntrySet)
+   {
+      this(requestHeaders, new HashMap<String, Cookie>(), eagerlyInitializeEntrySet);
+   }
+
    public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final Map<String, Cookie> cookies)
    {
+      this(requestHeaders, cookies, true);
+   }
+
+   public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final Map<String, Cookie> cookies, final boolean eagerlyInitializeEntrySet)
+   {
       this.requestHeaders = requestHeaders;
-      this.cookies = (cookies == null ? new HashMap<String, Cookie>() : cookies);
+      this.unmodifiableRequestHeaders = new UnmodifiableMultivaluedMap<>(requestHeaders, eagerlyInitializeEntrySet);
+      this.cookies = (cookies == null ? new HashMap<>() : cookies);
    }
 
    @Override
    public MultivaluedMap<String, String> getRequestHeaders()
    {
-      return requestHeaders;
+      return unmodifiableRequestHeaders;
    }
 
    public MultivaluedMap<String, String> getMutableHeaders()
@@ -63,9 +75,8 @@ public class ResteasyHttpHeaders implements HttpHeaders
    @Override
    public List<String> getRequestHeader(String name)
    {
-      List<String> vals = requestHeaders.get(name);
-      if (vals == null) return Collections.<String>emptyList();
-      return Collections.unmodifiableList(vals);
+      List<String> vals = unmodifiableRequestHeaders.get(name);
+      return vals == null ? Collections.<String>emptyList() : vals;
    }
 
    @Override
@@ -166,7 +177,7 @@ public class ResteasyHttpHeaders implements HttpHeaders
    {
       List<String> vals = requestHeaders.get(ACCEPT_LANGUAGE);
       if (vals == null || vals.isEmpty()) {
-         return Collections.emptyList();
+         return Collections.singletonList(Locale.forLanguageTag("*"));
       }
       List<WeightedLanguage> languages = new ArrayList<WeightedLanguage>();
       for (String v : vals) {

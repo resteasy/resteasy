@@ -9,21 +9,29 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
+import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Configuration;
 
+import java.security.AccessController;
 import java.security.KeyStore;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -64,16 +72,50 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected int responseBufferSize;
    protected List<String> sniHostNames = new ArrayList<>();
    protected boolean trustSelfSignedCertificates = true;
+   protected boolean cookieManagementEnabled;
+   protected boolean disableAutomaticRetries = false;
+   protected boolean followRedirects;
+
+   static ResteasyProviderFactory PROVIDER_FACTORY;
+
+   public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
+      PROVIDER_FACTORY = providerFactory;
+   }
+
+   public ResteasyClientBuilderImpl() {
+      if (PROVIDER_FACTORY != null) {
+         ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
+         if (ResteasyProviderFactory.peekInstance() != null) {
+            localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+         }
+         providerFactory = localProviderFactory;
+      }
+   }
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
     *
     * @param providerFactory provider factory
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
+   @Override
    public ResteasyClientBuilderImpl providerFactory(ResteasyProviderFactory providerFactory)
    {
-      this.providerFactory = providerFactory;
+      if (providerFactory instanceof LocalResteasyProviderFactory)
+      {
+         this.providerFactory = providerFactory;
+      }
+      else
+      {
+         this.providerFactory = new ResteasyProviderFactoryDelegate(providerFactory)
+         {
+            @Override
+            public javax.ws.rs.RuntimeType getRuntimeType()
+            {
+               return RuntimeType.CLIENT;
+            }
+         };
+      }
       return this;
    }
 
@@ -81,7 +123,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Executor to use to run AsyncInvoker invocations.
     *
     * @param asyncExecutor executor service
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     * @deprecated use {@link ResteasyClientBuilderImpl#executorService(ExecutorService)} instead
     */
    @Deprecated
@@ -95,7 +137,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     *
     * @param asyncExecutor executor service
     * @param cleanupExecutor true if the Client should close the executor when it is closed
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    @Deprecated
    public ResteasyClientBuilderImpl asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
@@ -110,7 +152,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     *
     * @param ttl time to live
     * @param unit the time unit of the ttl argument
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl connectionTTL(long ttl, TimeUnit unit)
    {
@@ -139,7 +181,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * If connection pooling enabled, how many connections to pool per url?
     *
     * @param maxPooledPerRoute max pool size per url
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl maxPooledPerRoute(int maxPooledPerRoute)
    {
@@ -151,7 +193,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * If connection pooling is enabled, how long will we wait to get a connection?
     * @param timeout the timeout
     * @param unit the units the timeout is in
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl connectionCheckoutTimeout(long timeout, TimeUnit unit)
    {
@@ -163,7 +205,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Number of connections allowed to pool.
     *
     * @param connectionPoolSize connection pool size
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl connectionPoolSize(int connectionPoolSize)
    {
@@ -176,7 +218,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Value of -1 will use a SelfExpandingBufferedInputStream.
     *
     * @param size response buffer size
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl responseBufferSize(int size)
    {
@@ -189,7 +231,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Disable trust management and hostname verification.  <i>NOTE</i> this is a security
     * hole, so only set this option if you cannot or do not want to verify the identity of the
     * host you are communicating with.
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl disableTrustManager()
    {
@@ -201,7 +243,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * SSL policy used to verify hostnames
     *
     * @param policy SSL policy
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl hostnameVerification(HostnameVerificationPolicy policy)
    {
@@ -213,7 +255,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Negates all ssl and connection specific configuration
     *
     * @param httpEngine http engine
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl httpEngine(ClientHttpEngine httpEngine)
    {
@@ -268,7 +310,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Adds a TLS/SSL SNI Host Name for authentication.
     *
     * @param sniHostNames host names
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl sniHostNames(String... sniHostNames) {
       this.sniHostNames.addAll(Arrays.asList(sniHostNames));
@@ -279,7 +321,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Specify a default proxy.  Default port and schema will be used.
     *
     * @param hostname host name
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl defaultProxy(String hostname)
    {
@@ -291,7 +333,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     *
     * @param hostname host name
     * @param port port
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl defaultProxy(String hostname, int port)
    {
@@ -304,11 +346,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * @param hostname host name
     * @param port port
     * @param scheme scheme
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl defaultProxy(String hostname, int port, final String scheme)
    {
-      this.defaultProxy = new HttpHost(hostname, port, scheme);
+      this.defaultProxy = hostname != null ? new HttpHost(hostname, port, scheme) : null;
       return this;
    }
 
@@ -316,12 +358,32 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    {
       if (providerFactory == null)
       {
+         ClassLoader loader = null;
+         if (System.getSecurityManager() == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+         }else {
+            try {
+               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                  @Override
+                  public ClassLoader run() throws Exception {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
+         }
          // create a new one
-         providerFactory = new LocalResteasyProviderFactory(RegisterBuiltin.getClientInitializedResteasyProviderFactory(Thread.currentThread().getContextClassLoader()));
+         providerFactory = new LocalResteasyProviderFactory(RegisterBuiltin.getClientInitializedResteasyProviderFactory(loader));
 
          if (ResteasyProviderFactory.peekInstance() != null)
          {
             providerFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+         }
+         // Execution of 'if' above overwrites providerFactory clientRequestFilterRegistry
+         // Reregister provider as appropriate.
+         if (RegisterBuiltin.isGZipEnabled()) {
+            providerFactory.registerProvider(AcceptEncodingGZIPFilter.class, true);
          }
       }
       return providerFactory;
@@ -335,8 +397,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       {
          config.property(entry.getKey(), entry.getValue());
       }
-      // check for proxy config parameters
-      setProxyIfNeeded(config);
+
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
@@ -345,7 +406,20 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          executor = Executors.newCachedThreadPool();
       }
 
+      boolean resetProxy = false;
+      if (this.defaultProxy == null) {
+         resetProxy = true;
+         // check for proxy config parameters
+         setProxyIfNeeded(config);
+      }
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
+      if (resetProxy) {
+         this.defaultProxy = null;
+      }
+      Iterator<ClientConfigProvider> serviceLoaderIterator = ServiceLoader.load(ClientConfigProvider.class).iterator();
+      if (serviceLoaderIterator.hasNext()) {
+         config.register(new ClientConfigProviderFilter(serviceLoaderIterator.next()), Priorities.AUTHENTICATION);
+      }
       return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
@@ -451,13 +525,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public ResteasyClientBuilderImpl withConfig(Configuration config)
    {
-      providerFactory = new ResteasyProviderFactoryImpl() {
-         @Override
-         public RuntimeType getRuntimeType()
-         {
-            return RuntimeType.CLIENT;
-         }
-      };
+      providerFactory = new LocalResteasyProviderFactory();
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {
@@ -481,6 +549,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    public ResteasyClientBuilder executorService(ExecutorService executorService)
    {
       return asyncExecutor(executorService, false);
+   }
+
+   @Override
+   public ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor)
+   {
+      return asyncExecutor(executorService, cleanupExecutor);
    }
 
    @Override
@@ -620,4 +694,36 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       return verifier;
    }
 
+   @Override
+   public ResteasyClientBuilder enableCookieManagement()
+   {
+      this.cookieManagementEnabled = true;
+      return this;
+   }
+
+   @Override
+   public boolean isCookieManagementEnabled()
+   {
+      return cookieManagementEnabled;
+   }
+
+   @Override
+   public ResteasyClientBuilder disableAutomaticRetries() {
+      this.disableAutomaticRetries = true;
+      return this;
+   }
+   @Override
+   public boolean isDisableAutomaticRetries() {
+      return disableAutomaticRetries;
+   }
+   @Override
+   public ResteasyClientBuilder setFollowRedirects(boolean followRedirects) {
+      this.followRedirects = followRedirects;
+      return this;
+   }
+
+   @Override
+   public boolean isFollowRedirects() {
+      return followRedirects;
+   }
 }

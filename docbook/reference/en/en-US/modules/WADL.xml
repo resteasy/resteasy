@@ -8,7 +8,12 @@
     <para>RESTEasy has its own support to generate WADL for its resources, and it supports several different containers. The following text will show you how to use this feature in different containers.
     </para>
     <section>
-        <title>RESTEasy WADL Support for Servlet Container</title>
+        <title>RESTEasy WADL Support for Servlet Container(Deprecated)</title>
+        <note>
+            <para>
+                The content introduced in this section is outdated, and the <code>ResteasyWadlServlet</code> class is deprecated because it doesn't support the GRAMMAR generation. Please check the <code>ResteasyWadlDefaultResource</code> introduced in the later section.
+            </para>
+        </note>
         <para>
             RESTEasy WADL uses ResteasyWadlServlet to support servlet container. It can be registered into web.xml to enable WADL feature. Here is an example to show the usages of ResteasyWadlServlet in web.xml:
         </para>
@@ -26,6 +31,39 @@
             The preceding configuration in web.xml shows how to enable ResteasyWadlServlet and mapped it to /application.xml. And then the WADL can be accessed from the configured URL:
         </para>
         <programlisting><![CDATA[/application.xml]]></programlisting>
+    </section>
+    <section>
+    <title>RESTEasy WADL Support for Servlet Container(Updated)</title>
+        <para>
+            This section introduces the recommended way to enable WADL support under Servlet Container situation. Firstly, you need to add a class then extends the <code>ResteasyWadlDefaultResource</code> to serve a resource path. Here is an example:
+        </para>
+        <programlisting><![CDATA[import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
+import javax.ws.rs.Path;
+
+@Path("/")
+public class MyWadlResource extends ResteasyWadlDefaultResource {
+}]]></programlisting>
+        <para>As the sample shown above, it will enable the <code>ResteasyWadlDefaultResource</code> and serves this URL by default:</para>
+        <programlisting><![CDATA[/application.xml]]></programlisting>
+        <para>To enable the GRAMMAR generation, you can extend the <code>ResteasyWadlDefaultResource</code> list this:</para>
+        <programlisting><![CDATA[import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
+import org.jboss.resteasy.wadl.ResteasyWadlWriter;
+
+import javax.ws.rs.Path;
+
+@Path("/")
+public class MyWadlResource extends ResteasyWadlDefaultResource {
+
+    public MyWadlResource() {
+        ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
+        wadlGrammar.enableSchemaGeneration();
+        getWadlWriter().setWadlGrammar(wadlGrammar);
+
+    }
+}]]></programlisting>
+        <para>With the above setup, the WADL module will generate GRAMMAR automatically and register the service under this url:</para>
+        <programlisting><![CDATA[/wadl-extended/xsd0.xsd]]></programlisting>
+        <para>Above is the basic usage of WADL module under servlet container deployment.</para>
     </section>
     <section>
         <title>RESTEasy WADL support for Sun JDK HTTP Server</title>
@@ -69,7 +107,7 @@ public class ResteasyWadlDefaultResource]]></programlisting>
         <title>RESTEasy WADL support for Netty Container</title>
         <para>RESTEasy WADL support for Netty Container is simliar to the support for JDK HTTP Server. It also uses ResteasyWadlDefaultResource to serve '/application.xml' and ResteasyWadlGenerator to generate WADL info for resources. Here is the sample code:
         </para>
-        <programlisting><![CDATA[ResteasyDeployment deployment = new ResteasyDeployment();
+        <programlisting><![CDATA[ResteasyDeployment deployment = new ResteasyDeploymentImpl();
 
 netty = new NettyJaxrsServer();
 netty.setDeployment(deployment);

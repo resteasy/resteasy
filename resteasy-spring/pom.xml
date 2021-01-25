@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
     </parent>
     <artifactId>resteasy-spring</artifactId>
     <packaging>jar</packaging>
@@ -114,7 +114,7 @@
             </exclusions>
         </dependency>
         <!--
-           Needed for javax.annotation.security.* which is part of javaee 6 XXX
+           Needed for javax.annotation.security.*
            should this dependency be <scope>provided</scope> and only used if
            detected runtime?
         -->
@@ -125,8 +125,8 @@
 
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
         </dependency>
 
         <dependency>

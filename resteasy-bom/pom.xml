@@ -3,15 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>35</version>
+        <relativePath/>
+   </parent>
 
     <name>RESTEasy Maven Import (BOM)</name>
     <description/>
+    <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-bom</artifactId>
+    <version>4.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -73,6 +75,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-spring-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-json-p-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -89,6 +96,11 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-netty4</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-netty4-cdi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -125,6 +137,56 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-servlet-initializer</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client-vertx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client-reactor-netty</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client-microprofile</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client-jetty</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+           <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-cdi</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-rxjava2</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-wadl</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-wadl-undertow-connector</artifactId>
+                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                 <artifactId>resteasy-vertx</artifactId>
+                 <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

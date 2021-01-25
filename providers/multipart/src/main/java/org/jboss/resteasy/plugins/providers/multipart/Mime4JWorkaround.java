@@ -1,21 +1,3 @@
-/****************************************************************
- * Licensed to the Apache Software Foundation (ASF) under one   *
- * or more contributor license agreements.  See the NOTICE file *
- * distributed with this work for additional information        *
- * regarding copyright ownership.  The ASF licenses this file   *
- * to you under the Apache License, Version 2.0 (the            *
- * "License"); you may not use this file except in compliance   *
- * with the License.  You may obtain a copy of the License at   *
- *                                                              *
- *   http://www.apache.org/licenses/LICENSE-2.0                 *
- *                                                              *
- * Unless required by applicable law or agreed to in writing,   *
- * software distributed under the License is distributed on an  *
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
- * KIND, either express or implied.  See the License for the    *
- * specific language governing permissions and limitations      *
- * under the License.                                           *
- ****************************************************************/
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import java.io.BufferedInputStream;
@@ -48,7 +30,7 @@ import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.stream.BodyDescriptorBuilder;
 import org.apache.james.mime4j.stream.MimeConfig;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
  * Copy code from org.apache.james.mime4j.message.DefaultMessageBuilder.parseMessage().
@@ -69,13 +51,13 @@ public class Mime4JWorkaround {
     public static Message parseMessage(InputStream is) throws IOException, MimeIOException {
         try {
             MessageImpl message = new MessageImpl();
-            MimeConfig cfg = new MimeConfig();
+            MimeConfig cfg = MimeConfig.DEFAULT;
             boolean strict = cfg.isStrictParsing();
             DecodeMonitor mon = strict ? DecodeMonitor.STRICT : DecodeMonitor.SILENT;
             BodyDescriptorBuilder bdb = new DefaultBodyDescriptorBuilder(null, strict ? DefaultFieldParser.getParser() : LenientFieldParser.getParser(), mon);
 
             StorageProvider storageProvider;
-            if (ResteasyConfigProvider.getConfig().getOptionalValue(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class).orElse(null) != null) {
+            if (ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class).orElse(null) != null) {
                 storageProvider = DefaultStorageProvider.getInstance();
             } else {
                 StorageProvider backend = new CustomTempFileStorageProvider();

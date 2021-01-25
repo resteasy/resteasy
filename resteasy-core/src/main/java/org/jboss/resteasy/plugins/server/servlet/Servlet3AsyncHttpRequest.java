@@ -10,6 +10,7 @@ import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.RunnableWithException;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -23,8 +24,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -69,8 +71,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
       {
          private Object responseLock = new Object();
-         protected WeakReference<Thread> creatingThread = new WeakReference<Thread>(Thread.currentThread());
-         protected ScheduledFuture timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+         protected ScheduledFuture<?> timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
          private Servle3AsychronousResponse()
          {
@@ -250,11 +251,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 
          protected void handleTimeout()
          {
+            if (done) return;
             if (timeoutHandler != null)
             {
                timeoutHandler.handleTimeout(this);
             }
-            if (done) return;
             resume(new ServiceUnavailableException());
          }
 
@@ -300,6 +301,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          return asynchronousResponse;
       }
 
+      @Override
+      public void complete() {
+         if (wasSuspended && asynchronousResponse != null) asynchronousResponse.complete();
+      }
+
       protected AsyncContext setupAsyncContext()
       {
          if (servletRequest.isAsyncStarted())
@@ -332,5 +338,38 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          return wasSuspended;
       }
 
+    @Override
+    public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+        CompletableFuture<Void> ret = new CompletableFuture<>();
+        if(hasInterceptors && isOnIoThread()) {
+           ret.completeExceptionally(new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
+           return ret;
+        }
+        try {
+            f.run();
+            ret.complete(null);
+        } catch (Exception e) {
+            ret.completeExceptionally(e);
+        }
+        return ret;
+    }
+
+    @Override
+    public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+       // check if this CF is already resolved
+       CompletableFuture<Void> ret = f.toCompletableFuture();
+       // if it's not resolved, we may need to suspend
+       if(!ret.isDone() && !isSuspended()) {
+           suspend();
+           return ret;
+       }
+       return f;
+    }
+
+    private boolean isOnIoThread()
+    {
+       // Undertow-specific, but servlet has no equivalent
+       return Thread.currentThread().getClass().getName().equals("org.xnio.nio.WorkerThread");
+    }
    }
 }

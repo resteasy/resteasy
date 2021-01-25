@@ -10,14 +10,13 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesPerson;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.TestResource;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,7 +26,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -109,7 +107,6 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testNotAcceptableException() {
       Response response = authorizedClient.target(generateURL("/" + TestResource.TEST_PATH)).request()
             .accept(MediaType.APPLICATION_JSON_TYPE).get();
@@ -133,7 +130,6 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testMethodNotAllowedException() {
       Response response = authorizedClient.target(generateURL("/" + TestResource.TEST_PATH)).request().post(null);
       Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
@@ -157,7 +153,6 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testNotSupportedException() {
       Response response = authorizedClient.target(generateURL("/" + TestResource.TEST_PATH + "/json")).request()
             .post(Entity.entity("[{name:\"Zack\"}]", MediaType.APPLICATION_XML_TYPE));
@@ -181,7 +176,6 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testForbiddenException() {
       Response response = userAuthorizedClient.target(generateURL("/secured/json")).request()
             .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));
@@ -189,7 +183,6 @@ public class SpringMvcHttpResponseCodesTest {
    }
 
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testOK() {
       Response response = authorizedClient.target(generateURL("/secured/json")).request()
             .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));

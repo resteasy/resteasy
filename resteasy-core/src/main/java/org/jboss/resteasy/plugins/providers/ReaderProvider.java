@@ -18,6 +18,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
@@ -26,6 +27,8 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
+// FIXME: this does not implement AsyncMessageBodyWriter, but I think the current implementation is flawed as we read chars and write
+// them as if they were bytes, which will never work outside of ASCII
 public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWriter<Reader>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -43,7 +46,7 @@ public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWri
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return Reader.class.isAssignableFrom(type);
+      return Reader.class.isAssignableFrom(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    public long getSize(Reader inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>31</version>
+        <version>35</version>
         <relativePath/>
     </parent>
 
@@ -14,7 +14,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -100,8 +100,11 @@
                 <module>resteasy-core</module>
                 <module>resteasy-client-api</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client-microprofile</module>  
+                <module>resteasy-client-microprofile-base</module>
+                <module>resteasy-client-microprofile</module>
                 <module>resteasy-client-jetty</module>
+                <module>resteasy-client-vertx</module>
+                <module>resteasy-client-reactor-netty</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -109,12 +112,14 @@
                 <module>security</module>
                 <module>resteasy-links</module>
                 <module>resteasy-spring</module>
+                <module>resteasy-spring-web</module>
                 <module>resteasy-jsapi</module>
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>resteasy-stats</module>
                 <module>resteasy-reactive-context</module>
                 <module>resteasy-rxjava2</module>
+                <module>resteasy-reactor</module>
                 <module>server-adapters</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
@@ -129,60 +134,6 @@
                         <groupId>org.jboss.resteasy</groupId>
                         <artifactId>resteasy-dependencies</artifactId>
                         <version>${project.version}</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-        </profile>
-        <profile>
-            <id>jsapi-testing</id>
-            <modules>
-                <module>resteasy-jsapi-testing</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>resteasy-dependencies-eap</id>
-            <activation>
-                <property>
-                    <name>resteasy.dependencies.eap</name>
-                </property>
-            </activation>
-            <modules>
-                <module>resteasy-core-spi</module>
-                <module>resteasy-core</module>
-                <module>resteasy-client-api</module>
-                <module>resteasy-client</module>
-                <module>resteasy-client-jetty</module>
-                <module>resteasy-client-microprofile</module>  
-                <module>providers</module>
-                <module>resteasy-bom</module>
-                <module>resteasy-cache</module>
-                <module>resteasy-dependencies-bom</module>
-                <module>resteasy-guice</module>
-                <module>security</module>
-                <module>resteasy-links</module>
-                <module>resteasy-spring</module>
-                <module>resteasy-jsapi</module>
-                <module>resteasy-cdi</module>
-                <module>resteasy-servlet-initializer</module>
-                <module>resteasy-stats</module>
-                <module>resteasy-reactive-context</module>
-                <module>resteasy-rxjava2</module>
-                <module>server-adapters</module>
-                <module>jboss-modules</module>
-                <module>resteasy-wadl</module>
-                <module>resteasy-wadl-undertow-connector</module>
-                <module>arquillian</module>
-                <module>profiling-tests</module>
-                <module>testsuite</module>
-            </modules>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.resteasy.test.eap</groupId>
-                        <artifactId>resteasy-dependencies-eap</artifactId>
-                        <version>1.0.0</version>
                         <type>pom</type>
                         <scope>import</scope>
                     </dependency>
@@ -224,7 +175,7 @@
           <repositories>
               <repository>
                   <id>jboss</id>
-                  <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+                  <url>https://repository.jboss.org/nexus/content/groups/public/</url>
               </repository>
           </repositories>
       </profile>
@@ -252,7 +203,7 @@
                     <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
-                        <runOrder>reversealphabetical</runOrder>
+                        <runOrder>alphabetical</runOrder>
                         <argLine>${surefire.system.args}</argLine>
                     </configuration>
                 </plugin>
@@ -356,9 +307,22 @@
                                 <bannedDependencies>
                                     <searchTransitive>true</searchTransitive>
                                     <excludes>
-                                        <!-- RESTEASY-1887 activation api is also in javax.activation:activation,
-                                             which is the only having the com/sun impl too, so we exclude the api -->
+                                        <exclude>javax.activation:activation</exclude>
                                         <exclude>javax.activation:javax.activation-api</exclude>
+                                        <exclude>javax.enterprise:cdi-api</exclude>
+                                        <exclude>javax.inject:javax.inject</exclude>
+                                        <exclude>javax.json:javax.json-api</exclude>
+                                        <exclude>javax.persistence:javax.persistence-api</exclude>
+                                        <exclude>javax.persistence:persistence-api</exclude>
+                                        <exclude>javax.security.enterprise:javax.security.enterprise-api</exclude>
+                                        <exclude>javax.servlet:servlet-api</exclude>
+                                        <exclude>javax.transaction:jta</exclude>
+                                        <exclude>javax.validation:validation-api</exclude>
+                                        <exclude>javax.xml:jaxrpc-api</exclude>
+                                        <exclude>javax.xml.bind:jaxb-api</exclude>
+                                        <exclude>javax.xml.soap:saaj-api</exclude>
+                                        <exclude>javax.xml.stream:stax-api</exclude>
+                                        <exclude>log4j:log4j</exclude>
                                     </excludes>
                                 </bannedDependencies>
                             </rules>

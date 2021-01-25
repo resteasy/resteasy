@@ -374,9 +374,9 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
 
        <para>
           Alternatively, you can use RESTEasy's support of 
-          <ulink url="https://reactiverse.io/reactive-contexts/">Reactive Contexts</ulink> by using <code>Context.wrap</code>
+          <ulink url="https://github.com/eclipse/microprofile-context-propagation">MicroProfile Context Propagation</ulink> by using <code>ThreadContext.contextualRunnable</code>
           around your <code>Runnable</code>, which will take care of capturing and restoring all 
-          registered contexts (you will need to import the <code>resteasy-reactive-context</code> module):
+          registered contexts (you will need to import the <code>resteasy-context-propagation</code> module):
        </para>
        
 <programlisting>
@@ -387,9 +387,14 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
    System.out.println("request (inline): " + request);
    System.out.println("application (inline): " + ResteasyContext.getContextData(Application.class));
    CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
+   ThreadContext threadContext = ThreadContext.builder()
+                                                   .propagated(ThreadContext.ALL_REMAINING)
+                                                   .unchanged()
+                                                   .cleared()
+                                                   .build();
    ExecutorService executor = Executors.newSingleThreadExecutor();
    executor.submit(
-         Context.wrap(new Runnable() {
+         threadContext.contextualRunnable(new Runnable() {
             public void run() {
                try {
                   System.out.println("request (async): " + request); 
@@ -1198,7 +1203,7 @@ public class RxCompletionStageProxyTest {
    private static RxCompletionStageResource proxy;
    
    static {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(RxCompletionStageResource.class);
    }
    
@@ -1240,7 +1245,7 @@ public class Rx2FlowableProxyTest {
    private static Rx2FlowableResource proxy;
    
    static {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(Rx2FlowableResource.class);
    }
    

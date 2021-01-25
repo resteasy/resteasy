@@ -50,7 +50,8 @@ public class ContainerRequestContextTest {
       expected.put("foo", Collections.singletonList("foo"));
       expected.put("bar", Collections.singletonList("bar"));
 
-      assertEquals("Wrong parameter in getUriInfo response", expected, containerRequestContext.getUriInfo().getQueryParameters());
+      MultivaluedMap<String, String> queryParameters = containerRequestContext.getUriInfo().getQueryParameters();
+      assertEquals("Wrong parameter in getUriInfo response", expected, queryParameters);
 
       containerRequestContext.setRequestUri(new URI("http://foo.bar"));
       logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());

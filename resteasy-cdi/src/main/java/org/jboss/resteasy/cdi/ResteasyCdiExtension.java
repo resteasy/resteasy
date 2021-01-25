@@ -1,12 +1,15 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.lang.reflect.Method;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -120,7 +123,8 @@ public class ResteasyCdiExtension implements Extension
       if(!annotatedType.getJavaClass().isInterface()
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
-               && annotatedType.isAnnotationPresent(Provider.class))
+         && annotatedType.isAnnotationPresent(Provider.class)
+         && !isUnproxyableClass(annotatedType.getJavaClass()))
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
          event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
@@ -260,5 +264,61 @@ public class ResteasyCdiExtension implements Extension
    public List<Class> getResources()
    {
       return resources;
+   }
+
+   /**
+    * Check for select case of unproxyable bean type.
+    * (see CDI 2.0 spec, section 3.11)
+    * @param clazz
+    * @return
+    */
+   private boolean isUnproxyableClass(Class clazz) {
+      // Unproxyable bean type: classes which are declared final,
+      // or expose final methods,
+      // or have no non-private no-args constructor
+      return isFinal(clazz) ||
+            hasNonPrivateNonStaticFinalMethod(clazz) ||
+            hasNoNonPrivateNoArgsConstructor(clazz);
+   }
+
+   private boolean isFinal(Class clazz) {
+      return Modifier.isFinal(clazz.getModifiers());
+   }
+
+   // Adapted from weld-core-impl:3.0.5.Final's Reflections.getNonPrivateNonStaticFinalMethod()
+   private boolean hasNonPrivateNonStaticFinalMethod(Class<?> type) {
+      for (Class<?> clazz = type; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+         for (Method method : clazz.getDeclaredMethods()) {
+            if (isFinal(method) && !isPrivate(method) && !isStatic(method)) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
+   private boolean hasNoNonPrivateNoArgsConstructor(Class<?> clazz) {
+      Constructor<?> constructor;
+      try {
+         constructor = clazz.getConstructor();
+      } catch (NoSuchMethodException exception) {
+         return true;
+      }
+
+      // Note: this probably can only be private if the provider also has
+      // a non-private @Context constructor, which is unlikely but possible.
+      return isPrivate(constructor);
+   }
+
+   private boolean isFinal(Member member) {
+      return Modifier.isFinal(member.getModifiers());
+   }
+
+   private boolean isPrivate(Member member) {
+      return Modifier.isPrivate(member.getModifiers());
+   }
+
+   private boolean isStatic(Member member) {
+      return Modifier.isStatic(member.getModifiers());
    }
 }

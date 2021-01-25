@@ -17,15 +17,15 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  */
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class JsonValueProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonValue>, MessageBodyWriter<JsonValue>
+public class JsonValueProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonValue>, AsyncBufferedMessageBodyWriter<JsonValue>
 {   @Override
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {

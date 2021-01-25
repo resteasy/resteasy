@@ -12,7 +12,6 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.html.resource.HeadersInViewResponseResource;
@@ -24,7 +23,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -65,7 +63,6 @@ public class HeadersInViewResponseTest {
     * @tpSince RESTEasy 3.1.3.Final
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testView() throws Exception {
 
       Invocation.Builder request = client.target(generateURL("/test/get")).request();

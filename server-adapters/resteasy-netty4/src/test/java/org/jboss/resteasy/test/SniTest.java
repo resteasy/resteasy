@@ -43,10 +43,8 @@ public class SniTest
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("");
       server.setSecurityDomain(null);
-
+      server.getDeployment().getScannedResourceClasses().add(ResteasyTrailingSlashTest.Resource.class.getName());
       server.start();
-
-      server.getDeployment().getRegistry().addPerRequestResource(ResteasyTrailingSlashTest.Resource.class);
    }
 
    @AfterClass
@@ -103,7 +101,7 @@ public class SniTest
    }
 
    private String callRestService(Client client) {
-      WebTarget target = client.target("https://localhost:8081/test");
+      WebTarget target = client.target(String.format("https://%s:%d/test", TestPortProvider.getHost(), TestPortProvider.getPort()));
       return target.request().get(String.class);
    }
 

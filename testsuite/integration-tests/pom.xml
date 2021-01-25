@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-testsuite</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -185,6 +185,7 @@
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 
     <dependencies>
@@ -198,14 +199,6 @@
                     <artifactId>hamcrest-core</artifactId>
                 </exclusion>
             </exclusions>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- TODO Workaround dependency for arquillian to work with container using Remoting 5. Remove when updated version of
-        wildfly-arquillian-container-managed is available -->
-        <dependency>
-            <groupId>org.wildfly.security</groupId>
-            <artifactId>wildfly-elytron</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -251,7 +244,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.smallrye</groupId>
+            <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config</artifactId>
         </dependency>
 
@@ -376,8 +369,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -592,6 +585,9 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
+                                <systemPropertyVariables>
+                                    <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
+                                </systemPropertyVariables>
                                 <excludes>
                                     <!-- Tests requires excluding JsonBindingProvider-->
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
@@ -609,6 +605,9 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
+                                <systemPropertyVariables>
+                                    <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
+                                </systemPropertyVariables>
                                 <includes>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                     <include>**/SseJsonEventTest.java</include>
@@ -622,6 +621,49 @@
                         </execution>
 
                     </executions>
+            </plugin>
+
+            <!-- generate archive needed by project resteasy-quarkus-testsuite -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly/assembly.xml</descriptor>
+                    </descriptors>
+                    <finalName>resteasy-integration-tests-${project.version}-sources</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>trigger-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-integration-tests</artifactId>
+                    <version>${project.version}</version>
+                    <packaging>zip</packaging>
+                    <classifier>sources</classifier>
+                    <file>${project.build.directory}/resteasy-integration-tests-${project.version}-sources.zip</file>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-assembly-zip</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

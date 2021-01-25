@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
+import java.util.NoSuchElementException;
 
 import javax.validation.ElementKind;
 import javax.ws.rs.core.MediaType;
@@ -652,7 +653,7 @@ public interface Messages
    String unableToDetermineBaseClass();
 
    @Message(id = BASE
-         + 870, value = "Unable to extract parameter from http request: {0} value is ''{1}'' for {2}", format = Format.MESSAGE_FORMAT)
+         + 870, value = "Unable to extract parameter from http request: {0} value is \''{1}\'' for {2}", format = Format.MESSAGE_FORMAT)
    String unableToExtractParameter(String paramSignature, String strVal, AccessibleObject target);
 
    @Message(id = BASE
@@ -839,6 +840,15 @@ public interface Messages
    @Message(id = BASE + 1099, value = "MultiValuedCollectionParamConverter unable to parse: %s")
    String unableToParse(String s);
 
+   @Message(id = BASE + 2042, value = "Multiple resource methods match request %s. Matching methods: %s")
+   String multipleMethodsMatchFailFast(String request, String[] methods);
+
    @Message(id = BASE + 13, value = "Error creating array from %s")
    String errorCreatingArray(String s);
+
+   @Message(id = BASE + 2043, value = "Value %s cannot be converted to type %s with property name %s")
+   IllegalArgumentException cannotConvertParameter(Object value, Class<?> type, String name);
+
+   @Message(id = BASE + 2044, value = "Property %s not found")
+   NoSuchElementException propertyNotFound(String name);
 }

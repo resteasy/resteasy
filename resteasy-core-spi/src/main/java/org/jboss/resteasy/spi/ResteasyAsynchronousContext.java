@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi;
 
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -8,6 +9,10 @@ import java.util.concurrent.TimeUnit;
  */
 public interface ResteasyAsynchronousContext
 {
+   void initialRequestStarted();
+   void initialRequestEnded();
+   boolean isOnInitialRequest();
+
    boolean isSuspended();
    ResteasyAsynchronousResponse getAsyncResponse();
 
@@ -16,4 +21,9 @@ public interface ResteasyAsynchronousContext
    ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException;
 
    ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException;
+
+   void complete();
+
+   CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors);
+   CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f);
 }

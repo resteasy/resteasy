@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +34,12 @@ public class URLConnectionEngine implements ClientHttpEngine
 
    protected SSLContext sslContext;
    protected HostnameVerifier hostnameVerifier;
+   protected Integer readTimeout;
+   protected Integer connectTimeout;
+   protected String proxyHost;
+   protected Integer proxyPort;
+   protected String proxyScheme;
+   protected boolean followRedirects;
 
    /**
     * {@inheritDoc}
@@ -56,7 +65,7 @@ public class URLConnectionEngine implements ClientHttpEngine
       }
 
       //Creating response with stream content
-      ClientResponse response = new ClientResponse(request.getClientConfiguration(), RESTEasyTracingLogger.empty())
+      ClientResponse response = new FinalizedClientResponse(request.getClientConfiguration(), RESTEasyTracingLogger.empty())
       {
          private InputStream stream;
 
@@ -157,8 +166,24 @@ public class URLConnectionEngine implements ClientHttpEngine
     */
    protected HttpURLConnection createConnection(final ClientInvocation request) throws IOException
    {
-      HttpURLConnection connection = (HttpURLConnection) request.getUri().toURL().openConnection();
+      Proxy proxy = null;
+      if (this.proxyHost != null && this.proxyPort != null) {
+         proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
+      } else {
+         proxy = Proxy.NO_PROXY;
+      }
+
+      HttpURLConnection connection = (HttpURLConnection) request.getUri().toURL().openConnection(proxy);
       connection.setRequestMethod(request.getMethod());
+
+      if (this.connectTimeout != null)
+      {
+         connection.setConnectTimeout(this.connectTimeout);
+      }
+      if (this.readTimeout != null)
+      {
+         connection.setReadTimeout(this.readTimeout);
+      }
 
       return connection;
    }
@@ -246,5 +271,35 @@ public class URLConnectionEngine implements ClientHttpEngine
    public void setHostnameVerifier(HostnameVerifier hostnameVerifier)
    {
       this.hostnameVerifier = hostnameVerifier;
+   }
+
+   public void setConnectTimeout(Integer connectTimeout)
+   {
+      this.connectTimeout = connectTimeout;
+   }
+
+   public void setReadTimeout(Integer readTimeout)
+   {
+      this.readTimeout = readTimeout;
+   }
+
+   public void setProxyHost(String proxyHost) {
+      this.proxyHost = proxyHost;
+   }
+
+   public void setProxyPort(Integer proxyPort) {
+      this.proxyPort = proxyPort;
+   }
+
+   public void setProxyScheme(String proxyScheme) {
+      this.proxyScheme = proxyScheme;
+   }
+
+   public void setFollowRedirects(boolean followRedirects) {
+      this.followRedirects = followRedirects;
+   }
+
+   public boolean isFollowRedirects() {
+      return this.followRedirects;
    }
 }

@@ -10,7 +10,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.ReaderInterceptor;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +26,7 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"unchecked", "rawtypes"})
+@Deprecated
 public abstract class ReaderUtility
 {
    private ResteasyProviderFactory factory;
@@ -94,7 +94,7 @@ public abstract class ReaderUtility
                         Annotation[] annotations, MediaType mediaType) throws IOException
    {
       return doRead(type, genericType, mediaType, annotations, request
-              .getHttpHeaders().getRequestHeaders(), request.getInputStream());
+              .getMutableHeaders(), request.getInputStream());
    }
 
    public <T> T doRead(Class<T> type, Type genericType, MediaType mediaType,

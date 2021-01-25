@@ -184,6 +184,25 @@ public class TempFileDeletionResource
          }
       </programlisting>
       <para>
+        Note that in order to support <link linkend="Asynchronous_IO">Async IO</link>, you need to implement the
+        <code>AsyncMessageBodyWriter</code> interface, which requires you to implement this extra method:
+      </para>
+      <programlisting>
+         @Provider
+         @Produces("text/plain")
+         @Consumes("text/plain")
+         public class DefaultTextPlain implements MessageBodyReader, AsyncMessageBodyWriter {
+            // ...
+            public CompletionStage&lt;Void&gt; asyncWriteTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, AsyncOutputStream entityStream) {
+               String charset = mediaType.getParameters().get("charset");
+               if (charset == null)
+                  return entityStream.asyncWrite(o.toString().getBytes(StandardCharsets.UTF_8));
+               else
+                  return entityStream.asyncWrite(o.toString().getBytes(charset));
+            }
+         }
+      </programlisting>
+      <para>
 
 
          The RESTEasy ServletContextLoader will automatically scan your WEB-INF/lib and classes directories for classes

@@ -13,7 +13,6 @@ import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.SetterParameter;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -74,84 +73,147 @@ public class ResourcePropertyInjector implements PropertyInjector
       }
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
-      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+      CompletionStage<Void> ret = null;
       for (FieldInjector injector : fields)
       {
-         ret = ret.thenCompose(v ->
-            injector.injector.inject(request, response, unwrapAsync)
-            .thenAccept(value -> {
-               try
-               {
-                  injector.param.getField().set(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
+          Object injectedObject = injector.injector.inject(request, response, unwrapAsync);
+          if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
+              ret = ret.thenCompose(v ->
+                      ((CompletionStage<Object>)injectedObject)
+                              .thenAccept(value -> {
+                                  try
+                                  {
+                                      injector.param.getField().set(target, value);
+                                  }
+                                  catch (IllegalAccessException e)
+                                  {
+                                      throw new InternalServerErrorException(e);
+                                  }
+                              }));
+
+          } else {
+              try {
+                  injector.param.getField().set(target, CompletionStageHolder.resolve(injectedObject));
+              } catch (IllegalAccessException e) {
                   throw new InternalServerErrorException(e);
-               }
-            }));
+              }
+          }
       }
       for (SetterInjector injector : setters)
       {
-         ret = ret.thenCompose(v ->
-            injector.injector.inject(request, response, unwrapAsync)
-            .thenAccept(value -> {
-               try
-               {
-                  injector.param.getSetter().invoke(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
+          Object injectedObject = injector.injector.inject(request, response, unwrapAsync);
+          if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
+              ret = ret.thenCompose(v ->
+                      ((CompletionStage<Object>)injectedObject)
+                              .thenAccept(value -> {
+                                  try
+                                  {
+                                      injector.param.getSetter().invoke(target, value);
+                                  }
+                                  catch (IllegalAccessException e)
+                                  {
+                                      throw new InternalServerErrorException(e);
+                                  }
+                                  catch (InvocationTargetException e)
+                                  {
+                                      throw new ApplicationException(e.getCause());
+                                  }
+                              }));
+          } else {
+              try
+              {
+                  injector.param.getSetter().invoke(target, CompletionStageHolder.resolve(injectedObject));
+              }
+              catch (IllegalAccessException e)
+              {
                   throw new InternalServerErrorException(e);
-               }
-               catch (InvocationTargetException e)
-               {
+              }
+              catch (InvocationTargetException e)
+              {
                   throw new ApplicationException(e.getCause());
-               }
-            }));
+              }
+
+          }
       }
       return ret;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
-      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+      CompletionStage<Void> ret = null;
       for (FieldInjector injector : fields)
       {
-         ret = ret.thenCompose(v ->
-            injector.injector.inject(unwrapAsync)
-            .thenAccept(value -> {
-               try
-               {
-                  injector.param.getField().set(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
+          Object injectedObject = injector.injector.inject(unwrapAsync);
+          if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
+              ret = ret.thenCompose(v ->
+                      ((CompletionStage<Object>)injectedObject)
+                              .thenAccept(value -> {
+                                  try
+                                  {
+                                      injector.param.getField().set(target, value);
+                                  }
+                                  catch (IllegalAccessException e)
+                                  {
+                                      throw new InternalServerErrorException(e);
+                                  }
+                              }));
+
+          } else {
+              try
+              {
+                  injector.param.getField().set(target, CompletionStageHolder.resolve(injectedObject));
+              }
+              catch (IllegalAccessException e)
+              {
                   throw new InternalServerErrorException(e);
-               }
-            }));
+              }
+          }
       }
       for (SetterInjector injector : setters)
       {
-         ret = ret.thenCompose(v ->
-            injector.injector.inject(unwrapAsync)
-            .thenAccept(value -> {
-               try
-               {
-                  injector.param.getSetter().invoke(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
+          Object injectedObject = injector.injector.inject(unwrapAsync);
+          if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
+              ret = ret.thenCompose(v ->
+                      ((CompletionStage<Object>)injectedObject)
+                              .thenAccept(value -> {
+                                  try
+                                  {
+                                      injector.param.getSetter().invoke(target, value);
+                                  }
+                                  catch (IllegalAccessException e)
+                                  {
+                                      throw new InternalServerErrorException(e);
+                                  }
+                                  catch (InvocationTargetException e)
+                                  {
+                                      throw new ApplicationException(e.getCause());
+                                  }
+                              }));
+          } else {
+              try
+              {
+                  injector.param.getSetter().invoke(target, CompletionStageHolder.resolve(injectedObject));
+              }
+              catch (IllegalAccessException e)
+              {
                   throw new InternalServerErrorException(e);
-               }
-               catch (InvocationTargetException e)
-               {
+              }
+              catch (InvocationTargetException e)
+              {
                   throw new ApplicationException(e.getCause());
-               }
-            }));
+              }
+
+          }
       }
       return ret;
    }

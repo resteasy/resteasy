@@ -16,6 +16,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status.Family;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
@@ -49,7 +50,7 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
 
-   private boolean alwaysReconnect;
+   private final boolean alwaysReconnect;
 
    private volatile ClientResponse response;
 
@@ -62,6 +63,9 @@ public class SseEventSourceImpl implements SseEventSource
       private String name = null;
 
       private ScheduledExecutorService executor;
+
+      //tck requires this default behavior
+      private boolean alwaysReconnect = true;
 
       public SourceBuilder()
       {
@@ -76,7 +80,7 @@ public class SseEventSourceImpl implements SseEventSource
 
       public SseEventSource build()
       {
-         return new SseEventSourceImpl(target, name, reconnect, false, executor);
+         return new SseEventSourceImpl(target, name, reconnect, false, executor, alwaysReconnect);
       }
 
       @Override
@@ -102,6 +106,11 @@ public class SseEventSourceImpl implements SseEventSource
          this.executor = executor;
          return this;
       }
+
+      public Builder alwaysReconnect(boolean alwaysReconnect) {
+         this.alwaysReconnect = alwaysReconnect;
+         return this;
+      }
    }
 
    public SseEventSourceImpl(final WebTarget target)
@@ -111,10 +120,10 @@ public class SseEventSourceImpl implements SseEventSource
 
    public SseEventSourceImpl(final WebTarget target, final boolean open)
    {
-      this(target, null, RECONNECT_DEFAULT, open, null);
+      this(target, null, RECONNECT_DEFAULT, open, null, true);
    }
 
-   private SseEventSourceImpl(final WebTarget target, final String name, final long reconnectDelay, final boolean open, final ScheduledExecutorService executor)
+   private SseEventSourceImpl(final WebTarget target, final String name, final long reconnectDelay, final boolean open, final ScheduledExecutorService executor, final boolean alwaysReconnect)
    {
       if (target == null)
       {
@@ -122,8 +131,7 @@ public class SseEventSourceImpl implements SseEventSource
       }
       this.target = target;
       this.reconnectDelay = reconnectDelay;
-      //tck requries this
-      this.alwaysReconnect = true;
+      this.alwaysReconnect = alwaysReconnect;
 
       if (executor == null)
       {
@@ -250,11 +258,12 @@ public class SseEventSourceImpl implements SseEventSource
       {
          return;
       }
-      if (response != null)
+      final ClientResponse clientResponse = response;
+      if (clientResponse != null)
       {
          try
          {
-            response.releaseConnection(false);
+            clientResponse.releaseConnection(false);
          }
          catch (IOException e)
          {
@@ -265,11 +274,6 @@ public class SseEventSourceImpl implements SseEventSource
       }
       sseEventSourceScheduler.shutdownNow();
       onCompleteConsumers.forEach(Runnable::run);
-   }
-
-   public void setAlwaysReconnect(boolean always)
-   {
-      this.alwaysReconnect = always;
    }
 
    private class EventHandler implements Runnable
@@ -314,7 +318,6 @@ public class SseEventSourceImpl implements SseEventSource
          }
 
          SseEventInputImpl eventInput = null;
-         long delay = reconnectDelay;
          try
          {
             final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
@@ -327,24 +330,26 @@ public class SseEventSourceImpl implements SseEventSource
             {
                request = requestBuilder.build(verb, entity);
             }
-            response = (ClientResponse) request.invoke();
-            if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
+            final ClientResponse clientResponse = (ClientResponse) request.invoke();
+            response = clientResponse;
+            if (Family.SUCCESSFUL.equals(clientResponse.getStatusInfo().getFamily()))
             {
                onConnection();
-               eventInput = response.readEntity(SseEventInputImpl.class);
+               eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                //if 200<= response code <300 and response contentType is null, fail the connection.
                if (eventInput == null && !alwaysReconnect)
                {
                   internalClose();
+                  return;
                }
             }
             else
             {
                //Let's buffer the entity in case the response contains an entity the user would like to retrieve from the exception.
                //This will also ensure that the connection is correctly closed.
-               response.bufferEntity();
+               clientResponse.bufferEntity();
                //Throw an instance of WebApplicationException depending on the response.
-               ClientInvocation.handleErrorStatus(response);
+               ClientInvocation.handleErrorStatus(clientResponse);
             }
          }
          catch (ServiceUnavailableException ex)
@@ -353,42 +358,38 @@ public class SseEventSourceImpl implements SseEventSource
             {
                onConnection();
                Date requestTime = new Date();
-               delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               long localReconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
                onErrorConsumers.forEach(consumer -> {
                   consumer.accept(ex);
                });
+               reconnect(localReconnectDelay);
             }
             else
             {
                onUnrecoverableError(ex);
             }
+            return;
          }
          catch (Throwable e)
          {
             onUnrecoverableError(e);
+            return;
          }
 
+         final Providers providers = (ClientConfiguration) target.getConfiguration();
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput == null || eventInput.isClosed())
             {
-               reconnect(delay);
+               reconnect(reconnectDelay);
                break;
             }
             try
             {
-               eventInput.setProviders((ClientConfiguration) target.getConfiguration());
-               InboundSseEvent event = eventInput.read();
+               InboundSseEvent event = eventInput.read(providers);
                if (event != null)
                {
                   onEvent(event);
-                  if (event.isReconnectDelaySet())
-                  {
-                     delay = event.getReconnectDelay();
-                  }
-                  onEventConsumers.forEach(consumer -> {
-                     consumer.accept(event);
-                  });
                }
                //event sink closed
                else if (!alwaysReconnect)
@@ -399,7 +400,7 @@ public class SseEventSourceImpl implements SseEventSource
             }
             catch (IOException e)
             {
-               reconnect(delay);
+               reconnect(reconnectDelay);
                break;
             }
          }
@@ -434,15 +435,17 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void onEvent(final InboundSseEvent event)
       {
-         if (event == null)
-         {
-            return;
-         }
          if (event.getId() != null)
          {
             lastEventId = event.getId();
          }
-
+         if (event.isReconnectDelaySet())
+         {
+            reconnectDelay = event.getReconnectDelay();
+         }
+         onEventConsumers.forEach(consumer -> {
+            consumer.accept(event);
+         });
       }
 
       private Invocation.Builder buildRequest(MediaType... mediaTypes)

@@ -11,8 +11,14 @@ import javax.ws.rs.core.Application;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 public interface ResteasyDeployment
 {
+   static boolean onServer()
+   {
+      return ResteasyProviderFactory.getInstance().isOnServer();
+   }
+
    void start();
 
    void merge(ResteasyDeployment other);
@@ -151,6 +157,10 @@ public interface ResteasyDeployment
 
    void setScannedJndiComponentResources(List<String> scannedJndiComponentResources);
 
+   Map<String, List<String>> getScannedResourceClassesWithBuilder();
+
+   void setScannedResourceClassesWithBuilder(Map<String, List<String>> scannedResourceClassesWithBuilder);
+
    boolean isWiderRequestMatching();
 
    void setWiderRequestMatching(boolean widerRequestMatching);
@@ -166,4 +176,6 @@ public interface ResteasyDeployment
    Object getProperty(String key);
 
    void setProperty(String key, Object value);
+
+   void setStatisticsEnabled(boolean statisticsEnabled);
 }

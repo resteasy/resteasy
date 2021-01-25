@@ -3,11 +3,10 @@ package org.jboss.resteasy.test.resource.param;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
-import org.jboss.resteasy.test.resource.param.resource.CookieInjectionResource;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.resource.param.resource.CookieInjectionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -16,7 +15,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.CookieParam;
@@ -39,7 +37,6 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class CookieInjectionTest {
 
-   private final Logger logger = Logger.getLogger(CookieInjectionTest.class);
    static Client client;
 
    public interface CookieProxy {
@@ -68,7 +65,7 @@ public class CookieInjectionTest {
 
    @BeforeClass
    public static void init() {
-      client = ClientBuilder.newClient();
+      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).enableCookieManagement().build();
    }
 
    @AfterClass
@@ -128,7 +125,6 @@ public class CookieInjectionTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testCookieExpire() {
       _testExpire("/expire");
       _testExpire("/expire1");
@@ -141,7 +137,6 @@ public class CookieInjectionTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testProxyExpire() {
       CookieProxy proxy = ProxyBuilder.builder(CookieProxy.class, client.target(generateURL("/"))).build();
       Response response = proxy.expire();

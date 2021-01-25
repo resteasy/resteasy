@@ -1,21 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.management.ManagementFactory;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -35,13 +19,32 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
@@ -56,7 +59,17 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    static
    {
-      processId = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
+      try {
+         processId = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+            @Override
+            public String run() throws Exception
+            {        return ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");        }
+
+
+         });
+      } catch (PrivilegedActionException pae)
+      {      throw new RuntimeException(pae);    }
+
    }
 
    protected final HttpClient httpClient;
@@ -104,7 +117,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = new File(ResteasyConfigProvider.getConfig().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
+   protected File fileUploadTempFileDir = new File(ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
 
    public ManualClosingApacheHttpClient43Engine()
    {
@@ -261,12 +274,22 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       {
          loadHttpMethod(request, httpMethod);
 
-         HttpContext ctx = null;
-         if (httpContextProvider != null)
-         {
-            ctx = httpContextProvider.getContext();
+         if (System.getSecurityManager() == null) {
+            res = httpClient.execute(httpMethod,
+                    ((httpContextProvider == null)? null : httpContextProvider.getContext()));
+         } else {
+            try {
+               res = AccessController.doPrivileged(new PrivilegedExceptionAction<HttpResponse>() {
+                  @Override
+                  public HttpResponse run() throws Exception {
+                     return httpClient.execute(httpMethod,
+                             ((httpContextProvider == null)? null : httpContextProvider.getContext()));
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
          }
-         res = httpClient.execute(httpMethod, ctx);
       }
       catch (Exception e)
       {
@@ -278,7 +301,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
          cleanUpAfterExecute(httpMethod);
       }
 
-      ClientResponse response = new ClientResponse(request.getClientConfiguration(), request.getTracingLogger())
+      ClientResponse response = new FinalizedClientResponse(request.getClientConfiguration(), request.getTracingLogger())
       {
          InputStream stream;
 
@@ -478,11 +501,13 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       this.chunked = chunked;
    }
 
+   @Override
    public boolean isFollowRedirects()
    {
       return followRedirects;
    }
 
+   @Override
    public void setFollowRedirects(boolean followRedirects)
    {
       this.followRedirects = followRedirects;
@@ -534,17 +559,21 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       AbstractHttpEntity entityToBuild = null;
       DeferredFileOutputStream memoryManagedOutStream = writeRequestBodyToOutputStream(request);
 
+      MediaType mediaType = request.getHeaders().getMediaType();
+
       if (memoryManagedOutStream.isInMemory())
       {
          ByteArrayEntity entityToBuildByteArray = new ByteArrayEntity(memoryManagedOutStream.getData());
-         entityToBuildByteArray
-               .setContentType(new BasicHeader(HTTP.CONTENT_TYPE, request.getHeaders().getMediaType().toString()));
+         if (mediaType != null) {
+            entityToBuildByteArray
+                    .setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
+         }
          entityToBuild = entityToBuildByteArray;
       }
       else
       {
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(),
-               request.getHeaders().getMediaType().toString());
+               mediaType == null ? null : mediaType.toString());
       }
       if (request.isChunked())
       {

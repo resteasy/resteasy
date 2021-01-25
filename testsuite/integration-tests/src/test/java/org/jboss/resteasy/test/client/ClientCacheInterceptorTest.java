@@ -231,4 +231,28 @@ public class ClientCacheInterceptorTest
       }
    }
 
+
+   @Test
+   // Reproduces RESTEASY-2301
+   public void testCachedValueWithMultipleAccept() throws Exception
+   {
+       BrowserCache cache = new LightweightBrowserCache();
+       CacheInterceptor interceptor = new CacheInterceptor(cache);
+       final String url = generateURL();
+       ClientInvocationBuilder requestA = (ClientInvocationBuilder) client.target(url).register(interceptor).path("echo")
+               .queryParam("msg", "Hello world").request();
+       try (ClientResponse responseA = (ClientResponse) requestA.accept(JSON_NO_CHARSET, XML_NO_CHARSET + ";q=0.5").get())
+      {
+         Assert.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
+         Assert.assertEquals("Content type must be " + JSON_WITH_CHARSET, JSON_WITH_CHARSET,
+                 responseA.getHeaderString("Content-Type"));
+         Assert.assertNotNull("Cache must contain data", cache.getAny(requestA.getURI().toString()));
+
+         // the response must be cached as json
+         Assert.assertNotNull("Cache must contain data for the given accepted content type",
+                 cache.get(requestA.getURI().toString(), MediaType.APPLICATION_JSON_TYPE));
+
+      }
+   }
+
 }

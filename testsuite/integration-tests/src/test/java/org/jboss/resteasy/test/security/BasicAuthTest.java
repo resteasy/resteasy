@@ -20,7 +20,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
+import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -42,6 +42,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
+
 /**
  * @tpSubChapter Security
  * @tpChapter Integration tests
@@ -51,6 +53,7 @@ import org.junit.runner.RunWith;
 @ServerSetup({BasicAuthTest.SecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({ExpectedFailingOnWildFly18.class}) //WFLY-12655
 public class BasicAuthTest {
 
    private static final String WRONG_RESPONSE = "Wrong response content.";
@@ -157,6 +160,7 @@ public class BasicAuthTest {
          Assert.fail();
       } catch (NotAuthorizedException e) {
          Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, e.getResponse().getStatus());
+         Assert.assertTrue("WWW-Authenticate header is not included", e.getResponse().getHeaderString("WWW-Authenticate").contains("Basic realm="));
       }
    }
 
@@ -223,6 +227,7 @@ public class BasicAuthTest {
       {
          Response response = noAutorizationClient.target(generateURL("/secured")).request().get();
          Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+         Assert.assertTrue("WWW-Authenticate header is not included", response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
          response.close();
       }
 
@@ -263,7 +268,6 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.1.1
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
    public void testContentTypeWithForbiddenMessage() {
       Response response = unauthorizedClient.target(generateURL("/secured/denyWithContentType")).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
@@ -280,6 +284,7 @@ public class BasicAuthTest {
       Response response = noAutorizationClient.target(generateURL("/secured/denyWithContentType")).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
       Assert.assertEquals("Incorrect Content-type header", "text/html;charset=UTF-8", response.getHeaderString("Content-type"));
+      Assert.assertTrue("WWW-Authenticate header is not included", response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
    }
 
     /**
@@ -301,6 +306,7 @@ public class BasicAuthTest {
     public void testWithClientRequestFilterWrongPassword(){
         Response response = unauthorizedClientUsingRequestFilterWithWrongPassword.target(generateURL("/secured/authorized")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+        Assert.assertTrue("WWW-Authenticate header is not included", response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
     }
 
     /**
@@ -312,6 +318,33 @@ public class BasicAuthTest {
         Response response = unauthorizedClientUsingRequestFilter.target(generateURL("/secured/authorized")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         Assert.assertEquals(WRONG_RESPONSE, ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+    }
+
+    /**
+     * @tpTestDetails Test that client correctly loads ClientConfigProvider implementation and uses credentials when making a request.
+     * Also test these credentials are ignored if different are set.
+     */
+    @Test
+    public void testClientConfigProviderCredentials() throws IOException {
+        String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithBASIC();
+
+        Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
+                ClientConfigProviderTestJarHelper.TestType.TEST_CREDENTIALS_ARE_USED_FOR_BASIC,
+                jarPath,
+                new String[]{generateURL("/secured/authorized")});
+        String line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
+        Assert.assertEquals("200", line);
+        process.destroy();
+
+        process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
+                ClientConfigProviderTestJarHelper.TestType.TEST_CLIENTCONFIG_CREDENTIALS_ARE_IGNORED_IF_DIFFERENT_SET,
+                jarPath,
+                new String[]{generateURL("/secured/authorized")});
+        line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
+        Assert.assertEquals("401", line);
+        process.destroy();
+
+        Assert.assertTrue(new File(jarPath).delete());
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

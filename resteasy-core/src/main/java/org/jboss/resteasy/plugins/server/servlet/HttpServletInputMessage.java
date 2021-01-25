@@ -185,6 +185,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
       return decodedFormParameters;
    }
 
+   @Override
    public boolean formParametersRead()
    {
       return decodedFormParameters != null;
@@ -282,5 +283,17 @@ public class HttpServletInputMessage extends BaseHttpRequest
          }
       }
       return true;
+   }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return request.getRemoteHost();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return request.getRemoteAddr();
    }
 }

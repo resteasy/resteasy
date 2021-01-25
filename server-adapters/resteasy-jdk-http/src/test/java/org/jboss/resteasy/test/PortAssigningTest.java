@@ -19,7 +19,7 @@ public class PortAssigningTest
       //given
       SunHttpJaxrsServer server = new SunHttpJaxrsServer();
       server.setPort(0);
-
+      server.getDeployment();
       //when
       server.start();
       int ip = server.getPort();

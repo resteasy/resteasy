@@ -116,10 +116,12 @@ public class InterceptorResource {
       expectedList.add(InterceptorResponseFilterInterceptor.class);         // InterceptorResponseFilter.filter()
       expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.isWriteable() // Called as initial check
       expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.isWriteable() // Called as initial check
-      expectedList.add(InterceptorBookWriterInterceptorInterceptor.class);  // InterceptorBookWriterInterceptor.aroundWriteTo()
-      expectedList.add(InterceptorBookWriterInterceptor.class);             // InterceptorBookWriter.[isWriteable() and writeTo()]
       expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.isWriteable()
       expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.isWriteable()                   30
+      expectedList.add(InterceptorBookWriterInterceptorInterceptor.class);  // InterceptorBookWriterInterceptor.aroundWriteTo()
+      expectedList.add(InterceptorBookWriterInterceptor.class);             // InterceptorBookWriter.[isWriteable() and writeTo()]
+      expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.writeTo()
+      expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.writeTo()
       expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.writeTo()
       expectedList.add(InterceptorTwo.class);                      // InterceptorBookWriter.writeTo()
       expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.writeTo()
@@ -131,18 +133,19 @@ public class InterceptorResource {
       expectedList.add(InterceptorThree.class);                      // InterceptorResource.test()
       expectedList.add(InterceptorFour.class);                      // InterceptorResource.test()
       expectedList.add(InterceptorThree.class);                      // Stereotyped.test()
-      expectedList.add(InterceptorFour.class);                      // Stereotyped.test()                         50
+      expectedList.add(InterceptorFour.class);                      // Stereotyped.test()                         42
 
       ArrayList<Object> visitList = InterceptorVisitList.getList();
       boolean status = expectedList.size() == visitList.size();
       if (!status) {
          log.info("expectedList.size() [" + expectedList.size() + "] != visitList.size() [" + visitList.size() + "]");
-      }
-      for (int i = 0; i < expectedList.size(); i++) {
-         if (!expectedList.get(i).isAssignableFrom(visitList.get(i).getClass())) {
-            status = false;
-            log.info("visitList.get(" + i + ") incorrect: should be an instance of: " + expectedList.get(i) + ", is: " + visitList.get(i));
-            break;
+      } else {
+         for (int i = 0; i < expectedList.size(); i++) {
+            if (!expectedList.get(i).isAssignableFrom(visitList.get(i).getClass())) {
+               status = false;
+               log.info("visitList.get(" + i + ") incorrect: should be an instance of: " + expectedList.get(i) + ", is: " + visitList.get(i));
+               break;
+            }
          }
       }
       if (!status) {

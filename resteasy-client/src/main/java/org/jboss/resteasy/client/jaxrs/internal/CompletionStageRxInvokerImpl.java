@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 
@@ -20,7 +19,7 @@ import javax.ws.rs.core.Response;
  */
 public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
 {
-   private final SyncInvoker builder;
+   private final ClientInvocationBuilder builder;
 
    private final ExecutorService executor;
 
@@ -31,332 +30,166 @@ public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
 
    public CompletionStageRxInvokerImpl(final SyncInvoker builder, final ExecutorService executor)
    {
-      this.builder = builder;
+      this.builder = (ClientInvocationBuilder)builder;
       this.executor = executor;
+   }
+
+   private ClientInvocation createClientInvocation(String method, Entity<?> entity)
+   {
+      ClientInvocation invocation = builder.createClientInvocation(builder.invocation);
+      invocation.setMethod(method);
+      invocation.setEntity(entity);
+      return invocation;
    }
 
    @Override
    public CompletionStage<Response> get()
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.get());
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.get(), executor);
-      }
-
+      return createClientInvocation(HttpMethod.GET, null).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> get(Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.get(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.get(responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.GET, null).submitCF(responseType);
    }
 
    @Override
    public <T> CompletionStage<T> get(GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.get(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.get(responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.GET, null).submitCF(responseType);
    }
 
    @Override
    public CompletionStage<Response> put(Entity<?> entity)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.put(entity));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.put(entity), executor);
-      }
+      return createClientInvocation(HttpMethod.PUT, entity).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> put(Entity<?> entity, Class<T> clazz)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.put(entity, clazz));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.put(entity, clazz), executor);
-      }
+      return createClientInvocation(HttpMethod.PUT, entity).submitCF(clazz);
    }
 
    @Override
    public <T> CompletionStage<T> put(Entity<?> entity, GenericType<T> type)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.put(entity, type));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.put(entity, type), executor);
-      }
+      return createClientInvocation(HttpMethod.PUT, entity).submitCF(type);
    }
 
    @Override
    public CompletionStage<Response> post(Entity<?> entity)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.post(entity));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.post(entity), executor);
-      }
+      return createClientInvocation(HttpMethod.POST, entity).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> post(Entity<?> entity, Class<T> clazz)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.post(entity, clazz));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.post(entity, clazz), executor);
-      }
+      return createClientInvocation(HttpMethod.POST, entity).submitCF(clazz);
    }
 
    @Override
    public <T> CompletionStage<T> post(Entity<?> entity, GenericType<T> type)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.post(entity, type));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.post(entity, type), executor);
-      }
+      return createClientInvocation(HttpMethod.POST, entity).submitCF(type);
    }
 
    @Override
    public CompletionStage<Response> delete()
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.delete());
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.delete(), executor);
-      }
+      return createClientInvocation(HttpMethod.DELETE, null).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> delete(Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.delete(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.delete(responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.DELETE, null).submitCF(responseType);
    }
 
    @Override
    public <T> CompletionStage<T> delete(GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.delete(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.delete(responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.DELETE, null).submitCF(responseType);
    }
 
    @Override
    public CompletionStage<Response> head()
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.head());
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.head(), executor);
-      }
+      return createClientInvocation(HttpMethod.HEAD, null).submitCF();
    }
 
    @Override
    public CompletionStage<Response> options()
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.options());
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.options(), executor);
-      }
+      return createClientInvocation(HttpMethod.OPTIONS, null).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> options(Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.options(responseType));
-      }
-      {
-         return CompletableFuture.supplyAsync(() -> builder.options(responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.OPTIONS, null).submitCF(responseType);
    }
 
    @Override
    public <T> CompletionStage<T> options(GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.options(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.options(responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.OPTIONS, null).submitCF(responseType);
    }
 
    @Override
    public CompletionStage<Response> trace()
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.trace());
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.trace(), executor);
-      }
+      return createClientInvocation("TRACE", null).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> trace(Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.trace(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.trace(responseType), executor);
-      }
+      return createClientInvocation("TRACE", null).submitCF(responseType);
    }
 
    @Override
    public <T> CompletionStage<T> trace(GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.trace(responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.trace(responseType), executor);
-      }
+      return createClientInvocation("TRACE", null).submitCF(responseType);
    }
 
    @Override
    public CompletionStage<Response> method(String name)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name), executor);
-      }
+      return createClientInvocation(name, null).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, responseType), executor);
-      }
+      return createClientInvocation(name, null).submitCF(responseType);
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, responseType), executor);
-      }
+      return createClientInvocation(name, null).submitCF(responseType);
    }
 
    @Override
    public CompletionStage<Response> method(String name, Entity<?> entity)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, entity));
-      }
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, entity), executor);
-      }
+      return createClientInvocation(name, entity).submitCF();
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, Entity<?> entity, Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, entity, responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, entity, responseType), executor);
-      }
+      return createClientInvocation(name, entity).submitCF(responseType);
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, Entity<?> entity, GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, entity, responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(name, entity, responseType), executor);
-      }
+      return createClientInvocation(name, entity).submitCF(responseType);
    }
 
    public ExecutorService getExecutor()
@@ -366,38 +199,17 @@ public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
 
    public CompletionStage<Response> patch(Entity<?> entity)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(HttpMethod.PATCH, entity));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(HttpMethod.PATCH, entity), executor);
-      }
+      return createClientInvocation(HttpMethod.PATCH, entity).submitCF();
    }
 
    public <T> CompletionStage<T> patch(Entity<?> entity, Class<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(HttpMethod.PATCH, entity, responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(HttpMethod.PATCH, entity, responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.PATCH, entity).submitCF(responseType);
    }
 
    public <T> CompletionStage<T> patch(Entity<?> entity, GenericType<T> responseType)
    {
-      if (executor == null)
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(HttpMethod.PATCH, entity, responseType));
-      }
-      else
-      {
-         return CompletableFuture.supplyAsync(() -> builder.method(HttpMethod.PATCH, entity, responseType), executor);
-      }
+      return createClientInvocation(HttpMethod.PATCH, entity).submitCF(responseType);
    }
 
 }

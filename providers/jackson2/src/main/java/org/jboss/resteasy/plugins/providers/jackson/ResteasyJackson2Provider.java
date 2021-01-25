@@ -9,6 +9,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.Consumes;
@@ -19,6 +20,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 
@@ -30,7 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.jaxrs.cfg.AnnotationBundleKey;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -46,7 +49,7 @@ import com.fasterxml.jackson.jaxrs.util.ClassKey;
 @Provider
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
+public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements AsyncBufferedMessageBodyWriter<Object>
 {
 
    DecoratorMatcher decoratorMatcher = new DecoratorMatcher();
@@ -69,13 +72,13 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
    private static class ClassAnnotationKey
    {
-      private AnnotationBundleKey annotations;
+      private AnnotationArrayKey annotations;
       private ClassKey classKey;
       private int hash;
 
       private ClassAnnotationKey(final Class<?> clazz, final Annotation[] annotations)
       {
-         this.annotations = new AnnotationBundleKey(annotations, AnnotationBundleKey.class);
+         this.annotations = new AnnotationArrayKey(annotations);
          this.classKey = new ClassKey(clazz);
          hash = this.annotations.hashCode();
          hash = 31 * hash + classKey.hashCode();
@@ -102,6 +105,48 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       }
    }
 
+   // Alternative to Jackson's AnnotationBundleKey that uses object equality
+   // instead of referential equality (==) due to how parameter annotations are proxied and not cached.
+   private static class AnnotationArrayKey
+   {
+      private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
+
+      private final Annotation[] annotations;
+      private final int hash;
+
+      private AnnotationArrayKey(final Annotation[] annotations)
+      {
+         if (annotations == null || annotations.length == 0) {
+            this.annotations = NO_ANNOTATIONS;
+         } else {
+            this.annotations = annotations;
+         }
+         this.hash = calcHash(this.annotations);
+      }
+
+      private static int calcHash(Annotation[] annotations)
+      {
+         int result = annotations.length;
+         result = 31 * result + Arrays.hashCode(annotations);
+         return result;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return hash;
+      }
+
+      @Override
+      public boolean equals(Object object)
+      {
+         if (this == object) return true;
+         if (object == null || getClass() != object.getClass()) return false;
+         AnnotationArrayKey that = (AnnotationArrayKey) object;
+         return hash == that.hash && java.util.Arrays.equals(annotations, that.annotations);
+      }
+   }
+
    protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _readers
          = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
 
@@ -116,6 +161,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
+         PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
+         //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
+         //be sure to keep that in synch if changing anything here.
+         if (ptv == null || ptv instanceof LaissezFaireSubTypeValidator) {
+            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         }
          endpoint = _configForReading(mapper, annotations, null);
          _readers.put(key, endpoint);
       }
@@ -177,6 +228,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
+         PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
+         //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
+         //be sure to keep that in synch if changing anything here.
+         if (ptv == null || ptv instanceof LaissezFaireSubTypeValidator) {
+            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         }
          endpoint = _configForWriting(mapper, annotations, null);
 
          // and cache for future reuse

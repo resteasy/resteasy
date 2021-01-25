@@ -114,7 +114,9 @@ public class JaxrsAsyncServletTest {
       long end = System.currentTimeMillis() - start;
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("Wrong content of response", "hello", response.readEntity(String.class));
-      Assert.assertTrue("Wrong time of request", end < 1000);  // should take less than 1 second
+      // The time out is set to 2 seconds, this is a best guess test and if future failures are present this should be
+      // reconsidered with some sort of offset.
+      Assert.assertTrue("Wrong time of request", end < 2000);
       response.close();
       client.close();
    }

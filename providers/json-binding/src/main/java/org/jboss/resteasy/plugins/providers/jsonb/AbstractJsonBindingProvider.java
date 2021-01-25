@@ -21,22 +21,31 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
 
    @Context
    javax.ws.rs.ext.Providers providers;
-   private static Jsonb jsonbObj = null;
+   private volatile Jsonb jsonbObj;
 
    protected Jsonb getJsonb(Class<?> type) {
       ContextResolver<Jsonb> contextResolver = providers.getContextResolver(Jsonb.class, MediaType.APPLICATION_JSON_TYPE);
       if (contextResolver != null)
       {
          return contextResolver.getContext(type);
-      } else
+      }
+      else
       {
-         if (jsonbObj == null)
+         Jsonb currentJsonbObj = jsonbObj;
+         if (currentJsonbObj == null)
          {
-            JsonProviderImpl jProviderImpl = new JsonProviderImpl();
-            JsonBindingBuilder jbBuilder = new JsonBindingBuilder();
-            jsonbObj = jbBuilder.withProvider(jProviderImpl).build();
+            synchronized (this)
+            {
+               currentJsonbObj = jsonbObj;
+               if (currentJsonbObj == null) {
+                  JsonProviderImpl jProviderImpl = new JsonProviderImpl();
+                  JsonBindingBuilder jbBuilder = new JsonBindingBuilder();
+                  currentJsonbObj = jbBuilder.withProvider(jProviderImpl).build();
+                  this.jsonbObj = currentJsonbObj;
+               }
+            }
          }
-         return jsonbObj;
+         return currentJsonbObj;
       }
    }
 

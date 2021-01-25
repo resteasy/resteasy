@@ -2,9 +2,11 @@ package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -17,12 +19,9 @@ import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +72,7 @@ public class SegmentNode
       }
    }
 
-   public ResourceInvoker match(HttpRequest request, int start)
+   public MatchCache match(HttpRequest request, int start)
    {
       String path = ((ResteasyUriInfo) request.getUri()).getMatchingPath();
       RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
@@ -104,6 +103,8 @@ public class SegmentNode
             ResourceInvoker invoker = expression.getInvoker();
             if (invoker instanceof ResourceLocatorInvoker)
             {
+               MatchCache ctx = new MatchCache();
+               ctx.invoker = invoker;
                ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
                int length = matcher.start(expression.getNumGroups() + 1);
                if (length == -1)
@@ -135,7 +136,7 @@ public class SegmentNode
                }
                expression.populatePathParams(request, matcher, path);
                logger.log("MATCH_LOCATOR", invoker.getMethod());
-               return invoker;
+               return ctx;
             }
             else
             {
@@ -150,10 +151,10 @@ public class SegmentNode
       {
          throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(request.getUri().getRequestUri()));
       }
-      Match match = match(matches, request.getHttpMethod(), request);
-      match.expression.populatePathParams(request, match.matcher, path);
-      logger.log("MATCH_PATH_SELECTED", match.expression.getRegex());
-      return match.expression.getInvoker();
+      MatchCache match = match(matches, request.getHttpMethod(), request);
+      match.match.expression.populatePathParams(request, match.match.matcher, path);
+      logger.log("MATCH_PATH_SELECTED", match.match.expression.getRegex());
+      return match;
 
    }
 
@@ -302,29 +303,7 @@ public class SegmentNode
                || "qs".equals(name)) continue;
             params.put(name, entry.getValue());
          }
-         Annotation[] annotations = match.expression.invoker.getMethod().getAnnotations();
-         boolean hasProduces = false;
-         for (Annotation annotation : annotations)
-         {
-            if (annotation instanceof Produces)
-            {
-               hasProduces = true;
-               break;
-            }
-         }
-         if (!hasProduces)
-         {
-            annotations = match.expression.invoker.getMethod().getClass().getAnnotations();
-            for (Annotation annotation : annotations)
-            {
-               if (annotation instanceof Produces)
-               {
-                  hasProduces = true;
-                  break;
-               }
-            }
-         }
-         if (hasProduces)
+         if (match.expression.invoker.hasProduces())
          {
             params.put(RESTEASY_SERVER_HAS_PRODUCES, "true");
          }
@@ -373,7 +352,7 @@ public class SegmentNode
       }
    }
 
-   public Match match(List<Match> matches, String httpMethod, HttpRequest request)
+   public MatchCache match(List<Match> matches, String httpMethod, HttpRequest request)
    {
       MediaType contentType = request.getHttpHeaders().getMediaType();
 
@@ -511,7 +490,6 @@ public class SegmentNode
 
                   for (SortFactor consume : consumeCombo)
                   {
-                     final Method m = match.expression.getInvoker().getMethod();
                      sortList.add(new SortEntry(match, consume, sortFactor, produce));
                   }
                }
@@ -526,10 +504,23 @@ public class SegmentNode
       String[] mm = matchingMethods(sortList);
       if (mm != null)
       {
-         LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), mm);
+         boolean isFailFast = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(
+                 ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, boolean.class)
+                 .orElse(false);
+         if(isFailFast) {
+            throw new RuntimeException(Messages.MESSAGES
+                    .multipleMethodsMatchFailFast(requestToString(request), mm));
+         } else {
+            LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), mm);
+         }
       }
-      request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.getAcceptType());
-      return sortEntry.match;
+      MediaType acceptType = sortEntry.getAcceptType();
+      request.setAttribute(RESTEASY_CHOSEN_ACCEPT, acceptType);
+      MatchCache ctx =  new MatchCache();
+      ctx.chosen = acceptType;
+      ctx.match = sortEntry.match;
+      ctx.invoker = sortEntry.match.expression.invoker;
+      return ctx;
    }
 
    protected void addExpression(MethodExpression expression)

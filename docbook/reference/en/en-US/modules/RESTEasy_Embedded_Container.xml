@@ -73,7 +73,7 @@ public class UndertowTest
    @Test
    public void testApplicationPath() throws Exception
    {
-      server.deploy(MyApp.class);
+      server.deployOldStyle(MyApp.class);
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/base/test"))
                          .request().get(String.class);
@@ -84,7 +84,7 @@ public class UndertowTest
    @Test
    public void testApplicationContext() throws Exception
    {
-      server.deploy(MyApp.class, "/root");
+      server.deployOldStyle(MyApp.class, "/root");
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/root/test"))
                          .request().get(String.class);
@@ -138,7 +138,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jdk-http</artifactId>
-      <version>4.1.0-SNAPSHOT</version>
+      <version>4.7.0-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
 
@@ -167,7 +167,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-netty4</artifactId>
-      <version>4.1.0-SNAPSHOT</version>
+      <version>4.7.0-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
 
@@ -194,7 +194,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-vertx</artifactId>
-      <version>4.1.0-SNAPSHOT</version>
+      <version>4.7.0-SNAPSHOT</version>
   </dependency>
     ]]></programlisting>
 
@@ -240,5 +240,27 @@ public class UndertowTest
     ]]></programlisting>
 
   </section>
-
+   <section>
+   <title>EmbeddedJaxrsServer</title>
+   <para>
+       <classname>EmbeddedJaxrsServer</classname> is an interface provided to enable each embedded container
+       wrapper class to configurate, start and stop its container in a standard fashion.
+       Each of <classname>UndertowJaxrsServer</classname>, <classname>SunHttpJaxrsServer</classname>,
+       <classname>NettyJaxrsServer</classname>, and <classname>VertxJaxrsServer</classname> implements
+       <classname>EmbeddedJaxrsServer</classname>.
+   </para>
+   <programlisting> <![CDATA[
+      public interface EmbeddedJaxrsServer<T> {
+         T deploy();
+         T start();
+         void stop();
+         ResteasyDeployment getDeployment();
+         T setDeployment(ResteasyDeployment deployment);
+         T setPort(int port);
+         T setHostname(String hostname);
+         T setRootResourcePath(String rootResourcePath);
+         T setSecurityDomain(SecurityDomain sc);
+      }
+    ]]></programlisting>
+   </section>
 </chapter>

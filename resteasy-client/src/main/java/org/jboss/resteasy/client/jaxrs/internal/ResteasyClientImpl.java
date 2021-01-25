@@ -26,9 +26,9 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class ResteasyClientImpl implements ResteasyClient
 {
-   protected volatile ClientHttpEngine httpEngine;
-   protected volatile ExecutorService asyncInvocationExecutor;
-   protected volatile ScheduledExecutorService scheduledExecutorService;
+   protected final ClientHttpEngine httpEngine;
+   protected final ExecutorService asyncInvocationExecutor;
+   protected final ScheduledExecutorService scheduledExecutorService;
    protected ClientConfiguration configuration;
    protected boolean closed;
    protected boolean cleanupExecutor;
@@ -46,10 +46,7 @@ public class ResteasyClientImpl implements ResteasyClient
 
    protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor, final ClientConfiguration configuration)
    {
-      this.cleanupExecutor = cleanupExecutor;
-      this.httpEngine = httpEngine;
-      this.asyncInvocationExecutor = asyncInvocationExecutor;
-      this.configuration = configuration;
+      this(httpEngine, asyncInvocationExecutor, cleanupExecutor, null, configuration);
    }
 
    public ClientHttpEngine httpEngine()
@@ -210,7 +207,7 @@ public class ResteasyClientImpl implements ResteasyClient
    {
       abortIfClosed();
       if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -218,7 +215,7 @@ public class ResteasyClientImpl implements ResteasyClient
    {
       abortIfClosed();
       if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -226,7 +223,7 @@ public class ResteasyClientImpl implements ResteasyClient
    {
       abortIfClosed();
       if (uriBuilder == null) throw new NullPointerException(Messages.MESSAGES.uriBuilderWasNull());
-      return new ClientWebTarget(this, uriBuilder, configuration);
+      return createClientWebTarget(this, uriBuilder, configuration);
    }
 
    @Override
@@ -235,7 +232,7 @@ public class ResteasyClientImpl implements ResteasyClient
       abortIfClosed();
       if (link == null) throw new NullPointerException(Messages.MESSAGES.linkWasNull());
       URI uri = link.getUri();
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -249,4 +246,15 @@ public class ResteasyClientImpl implements ResteasyClient
 
    }
 
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, String uri, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uri, configuration);
+   }
+
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, URI uri, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uri, configuration);
+   }
+
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, UriBuilder uriBuilder, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uriBuilder, configuration);
+   }
 }

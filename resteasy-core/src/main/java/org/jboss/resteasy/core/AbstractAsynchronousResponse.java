@@ -1,12 +1,12 @@
 package org.jboss.resteasy.core;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -15,12 +15,13 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
-
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -34,6 +35,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected HttpResponse response;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
+   protected AsyncWriterInterceptor[] asyncWriterInterceptors;
    protected Annotation[] annotations;
    protected TimeoutHandler timeoutHandler;
    protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
@@ -138,6 +140,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    }
 
    @Override
+   public AsyncWriterInterceptor[] getAsyncWriterInterceptors()
+   {
+      return asyncWriterInterceptors;
+   }
+
+   @Override
    public Annotation[] getAnnotations()
    {
       return annotations;
@@ -170,51 +178,52 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyContext.pushContextDataMap(contextDataMap);
-      Response response = null;
-      if (entity == null)
-      {
-         response = Response.noContent().build();
-      }
-      else if (entity instanceof Response)
-      {
-         response = (Response) entity;
-      }
-      else
-      {
-         if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
-         MediaType type = method.resolveContentType(request, entity);
-         BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
-         if (!(entity instanceof GenericEntity))
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+         Response response = null;
+         if (entity == null)
          {
-            jaxrsResponse.setGenericType(method.getGenericReturnType());
+            response = Response.noContent().build();
          }
-         jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
-         response = jaxrsResponse;
-      }
-      try
-      {
-         dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
-            if(t != null)
+         else if (entity instanceof Response)
+         {
+            response = (Response) entity;
+         }
+         else
+         {
+            if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
+            MediaType type = method.resolveContentType(request, entity);
+            BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
+            if (!(entity instanceof GenericEntity))
             {
-               internalResume(t, t2 -> {
-                  onComplete.accept(t);
-                  // callbacks done by internalResume
-               });
+               jaxrsResponse.setGenericType(method.getGenericReturnType());
             }
-            else
-            {
-               onComplete.accept(null);
-               completionCallbacks(null);
-            }
-         });
-      }
-      catch (Throwable e)
-      {
-         return internalResume(e, t -> {
-            onComplete.accept(e);
-            // callbacks done by internalResume
-         });
+            jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
+            response = jaxrsResponse;
+         }
+         try
+         {
+            dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
+               if(t != null)
+               {
+                  internalResume(t, t2 -> {
+                     onComplete.accept(t);
+                     // callbacks done by internalResume
+                  });
+               }
+               else
+               {
+                  onComplete.accept(null);
+                  completionCallbacks(null);
+               }
+            });
+         }
+         catch (Throwable e)
+         {
+            return internalResume(e, t -> {
+               onComplete.accept(e);
+               // callbacks done by internalResume
+            });
+         }
       }
       return true;
    }
@@ -227,11 +236,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Throwable exc, Consumer<Throwable> onComplete)
    {
-      ResteasyContext.pushContextDataMap(contextDataMap);
-      dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
-         onComplete.accept(t);
-         completionCallbacks(exc);
-      });
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+         dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
+            onComplete.accept(t);
+            completionCallbacks(exc);
+         });
+      }
       return true;
    }
 

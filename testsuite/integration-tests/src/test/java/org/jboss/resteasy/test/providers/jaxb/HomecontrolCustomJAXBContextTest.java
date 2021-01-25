@@ -19,6 +19,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.ObjectFactory
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.ErrorType;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.RoleType;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.UserType;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -60,6 +62,10 @@ public class HomecontrolCustomJAXBContextTest {
               IDType.class,
               ErrorMessageType.class
       );
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new ReflectPermission("suppressAccessChecks"),
+              new RuntimePermission("accessDeclaredMembers")
+      ), "permissions.xml");
       war.addAsWebInfResource(HomecontrolCustomJAXBContextTest.class.getPackage(), "homecontrol/web.xml");
       return TestUtil.finishContainerPrepare(war, null, HomecontrolCustomJAXBContextTest.class);
    }

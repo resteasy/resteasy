@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.jsonb.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.DebugLoggingServerSetup;
@@ -12,6 +11,7 @@ import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLo
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedGet;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedSet;
 import org.jboss.resteasy.utils.LogCounter;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,9 +28,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.io.FilePermission;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -48,7 +50,6 @@ import static org.hamcrest.Matchers.greaterThan;
 @ServerSetup({DebugLoggingServerSetup.class}) // TBD: remove debug logging activation?
 public class JsonBindingDebugLoggingTest {
 
-   private static final Logger LOG = Logger.getLogger(JsonBindingDebugLoggingTest.class);
    static ResteasyClient client;
 
    @Deployment
@@ -58,6 +59,18 @@ public class JsonBindingDebugLoggingTest {
       war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
       war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
       war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new ReflectPermission("suppressAccessChecks"),
+              new RuntimePermission("accessDeclaredMembers"),
+              new PropertyPermission("arquillian.debug", "read"),
+              new PropertyPermission("user.dir", "read"),
+              new FilePermission("<<ALL FILES>>", "read"), // required to read jbossas-managed/log/server.log file
+              new PropertyPermission("node", "read"),
+              new PropertyPermission("ipv6", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("jboss.server.base.dir", "read")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
    }
 
@@ -104,7 +117,6 @@ public class JsonBindingDebugLoggingTest {
       // perform request
       WebTarget base = client.target(generateURL("/get/nok"));
       Response response = base.request().get();
-
       // check response
       Assert.assertThat("Wrong response code", response.getStatus(), is(500));
       Assert.assertThat("Response message doesn't contains full stacktrace",
@@ -117,16 +129,16 @@ public class JsonBindingDebugLoggingTest {
       ));
 
       Assert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(2));
+              applicationExcpetionLog.count(), is(1));
       Assert.assertThat("RESTEasy exception should be logged",
-              resteasyExceptionLog.count(), is(1));
+              resteasyExceptionLog.count(), is(0));
       Assert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(2));
+              yassonExceptionLog.count(), greaterThan(0));
       Assert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
 
-      Assert.assertThat("There are not only 2 error logs in server",
-              errorStringLog.count(), is(2));
+      Assert.assertThat("There are not only 1 error logs in server",
+              errorStringLog.count(), is(1));
    }
 
 
@@ -287,7 +299,7 @@ public class JsonBindingDebugLoggingTest {
       Assert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
       Assert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
+              yassonExceptionLog.count(), greaterThan(0));
       Assert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
       Assert.assertThat("Yasson exception stacktrace should be logged",

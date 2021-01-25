@@ -1,21 +1,7 @@
-/*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
+import org.jboss.resteasy.spi.config.Configuration;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
  * Utility class that provides a port number for the Resteasy embedded container.
@@ -46,8 +32,9 @@ public class PortProvider
     */
    public static int getPort()
    {
+      final Configuration configuration = ConfigurationFactory.getInstance().getConfiguration();
       int port = -1;
-      String property =  ResteasyConfigProvider.getConfig().getOptionalValue(ENV_VAR_NAME, String.class).orElse(null);
+      String property =  configuration.getOptionalValue(ENV_VAR_NAME, String.class).orElse(null);
       if (property != null)
       {
          try
@@ -61,7 +48,7 @@ public class PortProvider
 
       if (port == -1)
       {
-         property = ResteasyConfigProvider.getConfig().getOptionalValue(PROPERTY_NAME, String.class).orElse(null);
+         property = configuration.getOptionalValue(PROPERTY_NAME, String.class).orElse(null);
          if (property != null)
          {
             try
@@ -89,8 +76,9 @@ public class PortProvider
     */
    public static String getHost()
    {
+      final Configuration configuration = ConfigurationFactory.getInstance().getConfiguration();
       String host = null;
-      String property = ResteasyConfigProvider.getConfig().getOptionalValue(ENV_VAR_HOSTNAME, String.class).orElse(null);
+      String property = configuration.getOptionalValue(ENV_VAR_HOSTNAME, String.class).orElse(null);
       if (property != null)
       {
          host = property;
@@ -98,7 +86,7 @@ public class PortProvider
 
       if (host == null)
       {
-         property = ResteasyConfigProvider.getConfig().getOptionalValue(PROPERTY_HOSTNAME, String.class).orElse(null);
+         property = configuration.getOptionalValue(PROPERTY_HOSTNAME, String.class).orElse(null);
          if (property != null)
          {
             host = property;

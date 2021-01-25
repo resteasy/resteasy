@@ -1,9 +1,9 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import javax.ws.rs.Priorities;
-
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.spi.util.Types;
+
+import javax.ws.rs.Priorities;
 
 /**
  * Allow us to sort message body implementations that are more specific for their types
@@ -37,6 +37,21 @@ public class SortedKey<T> implements Comparable<SortedKey<T>>, MediaTypeMap.Type
    public SortedKey(final Class<?> intf, final T reader, final Class<?> readerClass)
    {
       this(intf, reader, readerClass, Priorities.USER, false);
+   }
+
+   /**
+    * Direct populate
+    *
+    * @param obj
+    * @param isBuiltin
+    * @param template template class of component type
+    * @param priority
+    */
+   public SortedKey(final T obj, final boolean isBuiltin, final Class<?> template, final int priority) {
+      this.obj = obj;
+      this.isBuiltin = isBuiltin;
+      this.template = template;
+      this.priority = priority;
    }
 
    public int compareTo(SortedKey<T> tMessageBodyKey)
@@ -73,5 +88,9 @@ public class SortedKey<T> implements Comparable<SortedKey<T>>, MediaTypeMap.Type
    public T getObj()
    {
       return obj;
+   }
+
+   public int getPriority() {
+      return priority;
    }
 }

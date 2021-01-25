@@ -91,6 +91,11 @@ public class DelegatingHttpRequest implements HttpRequest
    }
 
    @Override
+   public boolean formParametersRead() {
+      return delegate.formParametersRead();
+   }
+
+   @Override
    public Object getAttribute(String attribute)
    {
       return delegate.getAttribute(attribute);
@@ -137,5 +142,17 @@ public class DelegatingHttpRequest implements HttpRequest
    public boolean wasForwarded()
    {
       return delegate.wasForwarded();
+   }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return delegate.getRemoteHost();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return delegate.getRemoteAddress();
    }
 }

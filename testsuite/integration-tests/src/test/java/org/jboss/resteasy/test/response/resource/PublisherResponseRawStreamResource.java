@@ -6,10 +6,13 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.annotations.Stream;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.reactivestreams.Publisher;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 @Path("")
@@ -22,7 +25,12 @@ public class PublisherResponseRawStreamResource {
    @Produces("application/json")
    @Stream(Stream.MODE.RAW)
    public Publisher<String> chunked() {
-      return Flowable.fromArray("one", "two");
+      return Flowable.create(source ->{
+         for(int i=0;i<30;i++) {
+            source.onNext(i+"-"+ResteasyContext.getContextDataLevelCount());
+         }
+         source.onComplete();
+      }, BackpressureStrategy.BUFFER);
    }
 
    @GET
@@ -45,5 +53,13 @@ public class PublisherResponseRawStreamResource {
    @Path("infinite-done")
    public String sseInfiniteDone() {
       return String.valueOf(terminated);
+   }
+
+   @GET
+   @Path("slow-async-io")
+   @Produces(MediaType.TEXT_PLAIN)
+   @Stream(Stream.MODE.RAW)
+   public Publisher<SlowString> slowAsyncWriter() {
+      return Flowable.fromArray(new SlowString("one"), new SlowString("two"));
    }
 }

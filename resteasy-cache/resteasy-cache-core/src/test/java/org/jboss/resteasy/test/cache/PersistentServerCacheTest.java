@@ -145,14 +145,15 @@ public class PersistentServerCacheTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
-      server.start();
       deployment = server.getDeployment();
+      deployment.start();
 
       dispatcher = deployment.getDispatcher();
       deployment.getProviderFactory().property("server.request.cache.infinispan.config.file", "infinispan.xml");
       deployment.getProviderFactory().property("server.request.cache.infinispan.cache.name", "TestCache");
       deployment.getProviderFactory().register(ServerCacheFeature.class);
       deployment.getRegistry().addPerRequestResource(TestResource.class);
+      server.start();
    }
 
    @After

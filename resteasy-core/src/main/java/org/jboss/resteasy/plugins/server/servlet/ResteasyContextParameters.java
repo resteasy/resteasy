@@ -29,6 +29,7 @@ public interface ResteasyContextParameters {
    String RESTEASY_SECURE_RANDOM_MAX_USE = "resteasy.secure.random.max.use";
    String RESTEASY_ADD_CHARSET = "resteasy.add.charset";
    String RESTEASY_DISABLE_HTML_SANITIZER = "resteasy.disable.html.sanitizer";
+   String RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR = "resteasy.original.webapplicationexception.behavior";
 
    /**
     * Enable tracing support.
@@ -81,6 +82,7 @@ public interface ResteasyContextParameters {
 
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
+   String RESTEASY_SCANNED_RESOURCE_CLASSES_WITH_BUILDER = "resteasy.scanned.resource.classes.with.builder";
    String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";
    String RESTEASY_SCANNED_JNDI_RESOURCES = "resteasy.scanned.jndi.resources";
    String RESTEASY_CONTEXT_OBJECTS = "resteasy.context.objects";
@@ -90,4 +92,12 @@ public interface ResteasyContextParameters {
    String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy.wider.request.matching";
 
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
+   String RESTEASY_PATCH_FILTER_DISABLED = "resteasy.patchfilter.disabled";
+
+    String RESTEASY_STATISTICS_ENABLED = "resteasy.statistics.enabled";
+
+    // Added for quarkus.  Initial use switch from warning msg to exception message.
+    String RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING = "resteasy.fail.fast.on.multiple.resources.matching";
+    String RESTEASY_MATCH_CACHE_ENABLED = "resteasy.match.cache.enabled";
+    String RESTEASY_MATCH_CACHE_SIZE = "resteasy.match.cache.size";
 }

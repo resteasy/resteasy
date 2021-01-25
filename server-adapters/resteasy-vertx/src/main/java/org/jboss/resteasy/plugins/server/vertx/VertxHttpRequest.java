@@ -1,23 +1,5 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
-import io.vertx.core.Context;
-import org.jboss.resteasy.core.AbstractAsynchronousResponse;
-import org.jboss.resteasy.core.AbstractExecutionContext;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.BaseHttpRequest;
-import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
-import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.specimpl.ResteasyUriInfo;
-
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -25,7 +7,32 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.ServiceUnavailableException;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.core.AbstractAsynchronousResponse;
+import org.jboss.resteasy.core.AbstractExecutionContext;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.NotImplementedYetException;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.RunnableWithException;
+
+import io.vertx.core.Context;
+import io.vertx.core.http.HttpServerRequest;
 
 /**
  * Abstraction for an inbound http request on the server, or a response from a server to a client
@@ -49,16 +56,18 @@ public class VertxHttpRequest extends BaseHttpRequest
    private VertxExecutionContext executionContext;
    private final Context context;
    private volatile boolean flushed;
+   private HttpServerRequest request;
 
-   public VertxHttpRequest(final Context context, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod, final SynchronousDispatcher dispatcher, final VertxHttpResponse response, final boolean is100ContinueExpected)
+   public VertxHttpRequest(final Context context, final HttpServerRequest request, final ResteasyUriInfo uri, final SynchronousDispatcher dispatcher, final VertxHttpResponse response, final boolean is100ContinueExpected)
    {
       super(uri);
       this.context = context;
       this.is100ContinueExpected = is100ContinueExpected;
       this.response = response;
+      this.request = request;
       this.dispatcher = dispatcher;
-      this.httpHeaders = httpHeaders;
-      this.httpMethod = httpMethod;
+      this.httpHeaders = VertxUtil.extractHttpHeaders(request);
+      this.httpMethod = request.method().name();
       this.executionContext = new VertxExecutionContext(this, response, dispatcher);
    }
 
@@ -223,6 +232,10 @@ public class VertxHttpRequest extends BaseHttpRequest
          return asyncResponse;
       }
 
+      @Override
+      public void complete() {
+         if (wasSuspended && asyncResponse != null) asyncResponse.complete();
+      }
 
       /**
        * Vertx implementation of {@link AsyncResponse}.
@@ -385,5 +398,70 @@ public class VertxHttpRequest extends BaseHttpRequest
             resume(new ServiceUnavailableException());
          }
       }
+
+      @Override
+      public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+          // check if this CF is already resolved
+          CompletableFuture<Void> ret = f.toCompletableFuture();
+          // if it's not resolved, we may need to suspend
+          if(!ret.isDone() && !isSuspended()) {
+              suspend();
+          }
+          return ret;
+      }
+
+      @Override
+      public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+          if(!Context.isOnEventLoopThread()) {
+              // we're blocking
+              try {
+                  f.run();
+              } catch (Exception e) {
+                  CompletableFuture<Void> ret = new CompletableFuture<>();
+                  ret.completeExceptionally(e);
+                  return ret;
+              }
+              return CompletableFuture.completedFuture(null);
+          } else if(!hasInterceptors) {
+              Map<Class<?>, Object> context = ResteasyContext.getContextDataMap();
+              // turn any sync request into async
+              if(!isSuspended()) {
+                  suspend();
+              }
+              CompletableFuture<Void> ret = new CompletableFuture<>();
+              this.request.context.executeBlocking(future -> {
+                  try(CloseableContext newContext = ResteasyContext.addCloseableContextDataLevel(context)){
+                      f.run();
+                      future.complete();
+                  } catch (RuntimeException e) {
+                      throw e;
+                  } catch (Exception e) {
+                      throw new RuntimeException(e);
+                  }
+              }, res -> {
+                  if(res.succeeded())
+                      ret.complete(null);
+                  else
+                      ret.completeExceptionally(res.cause());
+              });
+              return ret;
+          } else {
+             CompletableFuture<Void> ret = new CompletableFuture<>();
+             ret.completeExceptionally(new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
+             return ret;
+          }
+      }
+   }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return request.remoteAddress().host();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return request.remoteAddress().host();
    }
 }

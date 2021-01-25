@@ -1,6 +1,9 @@
 package org.jboss.resteasy.security.smime;
 
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 
 import javax.ws.rs.Produces;
@@ -8,7 +11,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,7 +27,7 @@ import java.util.Base64;
  */
 @Provider
 @Produces("text/plain")
-public class PKCS7SignatureTextWriter implements MessageBodyWriter<SignedOutput>
+public class PKCS7SignatureTextWriter implements AsyncMessageBodyWriter<SignedOutput>
 {
    static
    {
@@ -60,4 +63,18 @@ public class PKCS7SignatureTextWriter implements MessageBodyWriter<SignedOutput>
       }
    }
 
+   @Override
+   public CompletionStage<Void> asyncWriteTo(SignedOutput out, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream) {
+       try
+       {
+          byte[] encoded = PKCS7SignatureWriter.sign(providers, out);
+          return entityStream.asyncWrite(Base64.getEncoder().encodeToString(encoded).getBytes(StandardCharsets.UTF_8));
+       }
+       catch (Exception e)
+       {
+          return ProviderHelper.completedException(new WriterException(e));
+       }
+   }
 }

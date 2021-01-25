@@ -1,15 +1,19 @@
 package org.jboss.resteasy.plugins.validation;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.validation.Constraint;
 import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintDefinitionException;
 import javax.validation.ConstraintViolation;
@@ -22,6 +26,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
 
+import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
@@ -64,6 +69,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    private ExecutableType[] defaultValidatedExecutableTypes;
    private boolean suppressPath;
    private boolean cdiActive;
+   private static ConstraintTypeUtilImpl util = new ConstraintTypeUtilImpl();
 
    public GeneralValidatorImpl(final ValidatorFactory validatorFactory, final boolean isExecutableValidationEnabled, final Set<ExecutableType> defaultValidatedExecutableTypes)
    {
@@ -98,6 +104,11 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       Validator validator = getValidator(request);
       Set<ConstraintViolation<Object>> cvs = null;
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
+      if (alreadyFoundClassOrPropertyConstraint(violationsContainer))
+      {
+         return;
+      }
 
       try
       {
@@ -105,13 +116,11 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       catch (Exception e)
       {
-         SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
          violationsContainer.setException(e);
          violationsContainer.setFieldsValidated(true);
          throw toValidationException(e, violationsContainer);
       }
 
-      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
       violationsContainer.addViolations(cvs);
       violationsContainer.setFieldsValidated(true);
    }
@@ -217,13 +226,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    public boolean isValidatable(Class<?> clazz)
    {
       // Called from resteasy-jaxrs.
-      if (cdiActive)
+      if (cdiActive && !(hasEJBScope(clazz) && hasNoClassOrFieldOrPropertyConstraints(clazz)))
       {
          return false;
       }
       return true;
    }
-
 
    @Override
    public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory)
@@ -231,7 +239,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       try
       {
          // Called from resteasy-jaxrs.
-         if (cdiActive && injectorFactory instanceof CdiInjectorFactory)
+         if (cdiActive && injectorFactory instanceof CdiInjectorFactory
+               && !(hasEJBScope(clazz) && hasNoClassOrFieldOrPropertyConstraints(clazz)))
          {
             return false;
          }
@@ -683,5 +692,158 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       Class<?> clazz = o.getClass();
       return clazz.getAnnotation(ApplicationScoped.class) != null;
+   }
+
+   private static boolean hasNoClassOrFieldOrPropertyConstraints(Class<?> clazz)
+   {
+      return !hasClassConstraint(clazz) && !hasFieldConstraint(clazz) && !hasPropertyConstraint(clazz);
+   }
+
+   private static boolean hasPropertyConstraint(Class<?> clazz)
+   {
+      for (Method method : clazz.getDeclaredMethods())
+      {
+         if (isGetter(method))
+         {
+            for (Annotation annotation : method.getAnnotations())
+            {
+               if (isConstraintAnnotation(annotation.annotationType()))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+      for (Class<?> intf : clazz.getInterfaces())
+      {
+         if (hasPropertyConstraint(intf))
+         {
+            return true;
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != null && !superClass.equals(Object.class))
+      {
+         return hasPropertyConstraint(superClass);
+      }
+      return false;
+   }
+
+   private static boolean hasFieldConstraint(Class<?> clazz)
+   {
+      for (Field field : clazz.getDeclaredFields())
+      {
+         for (Annotation annotation : field.getAnnotations())
+         {
+            if (isConstraintAnnotation(annotation.annotationType()))
+            {
+               return true;
+            }
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != null && !superClass.equals(Object.class))
+      {
+         return hasFieldConstraint(superClass);
+      }
+      return false;
+   }
+
+   private static boolean hasClassConstraint(Class<?> clazz)
+   {
+      if (classHasConstraintAnnotation(clazz))
+      {
+         return true;
+      }
+      for (Class<?> intf : clazz.getInterfaces())
+      {
+         if (classHasConstraintAnnotation(intf))
+         {
+            return true;
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != Object.class && superClass != null)
+      {
+         return hasClassConstraint(superClass);
+      }
+      return false;
+   }
+
+   private static boolean classHasConstraintAnnotation(Class<?> clazz)
+   {
+      for (Annotation annotation : clazz.getAnnotations())
+      {
+         if (isConstraintAnnotation(annotation.annotationType()))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   private static boolean isConstraintAnnotation(Class<?> clazz)
+   {
+      return clazz.isAnnotation() && clazz.getAnnotation(Constraint.class) != null;
+   }
+
+   private static boolean hasEJBScope(Class<?> clazz)
+   {
+      return classHasAnnotations(clazz, new String[] {"javax.ejb.Stateless", "javax.ejb.Stateful", "javax.ejb.Singleton"});
+   }
+
+   private static boolean classHasAnnotations(Class<?> clazz, String[] names)
+   {
+      for (String name : names)
+      {
+         if (isAnnotationPresent(clazz, name))
+         {
+            return true;
+         }
+         for (Class<?> intf : clazz.getInterfaces())
+         {
+            if (isAnnotationPresent(intf, name))
+            {
+               return true;
+            }
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != Object.class && superClass != null)
+      {
+         return classHasAnnotations(superClass, names);
+      }
+      return false;
+   }
+
+   private static boolean isAnnotationPresent(Class<?> clazz, String name)
+   {
+      for (Annotation annotation : clazz.getAnnotations())
+      {
+         if (annotation.annotationType().getName().equals(name))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   private static boolean alreadyFoundClassOrPropertyConstraint(SimpleViolationsContainer container)
+   {
+      Set<ConstraintViolation<Object>> set = container.getViolations();
+      if (set.isEmpty())
+      {
+         return false;
+      }
+      Iterator<ConstraintViolation<Object>> it = set.iterator();
+      for (ConstraintViolation<?> cv = it.next(); it.hasNext(); cv = it.next())
+      {
+         ConstraintType.Type type = util.getConstraintType(cv);
+         if ((ConstraintType.Type.CLASS.equals(type) || ConstraintType.Type.PROPERTY.equals(type)))
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }

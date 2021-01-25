@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.apache.james.mime4j.dom.Multipart;
 import org.apache.james.mime4j.dom.field.ContentDispositionField;
 import org.apache.james.mime4j.dom.field.FieldName;
 import org.apache.james.mime4j.message.BodyPart;
@@ -23,13 +24,21 @@ import java.util.Map;
  */
 public class MultipartFormDataInputImpl extends MultipartInputImpl implements
       MultipartFormDataInput {
-   protected Map<String, List<InputPart>> formDataMap = new HashMap<String, List<InputPart>>();
+   protected Map<String, List<InputPart>> formDataMap;
 
    public MultipartFormDataInputImpl(final MediaType contentType, final Providers workers) {
       super(contentType, workers);
    }
 
+   public MultipartFormDataInputImpl(final Multipart multipart, final Providers workers)
+           throws IOException {
+      super(multipart, workers);
+   }
+
    public Map<String, List<InputPart>> getFormDataMap() {
+      if (formDataMap == null) {
+         formDataMap = new HashMap<String, List<InputPart>>();
+      }
       return formDataMap;
    }
 
@@ -65,10 +74,10 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
       if (disposition instanceof ContentDispositionField) {
          String name = ((ContentDispositionField) disposition)
                .getParameter("name");
-         List<InputPart> list = formDataMap.get(name);
+         List<InputPart> list = getFormDataMap().get(name);
          if (list == null) {
             list = new LinkedList<InputPart>();
-            formDataMap.put(name, list);
+            getFormDataMap().put(name, list);
          }
          list.add(currPart);
       } else {

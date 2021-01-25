@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Providers</name>
@@ -12,6 +12,17 @@
 
     <artifactId>providers-pom</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>jaxb</module>
+        <module>fastinfoset</module>
+        <module>jackson2</module>
+        <module>json-p-ee7</module>
+        <module>json-binding</module>
+        <module>resteasy-atom</module>
+        <module>multipart</module>
+        <module>resteasy-html</module>
+        <module>resteasy-validator-provider</module>
+    </modules>
     <profiles>
         <profile>
             <id>travis-ci</id>

@@ -20,8 +20,8 @@
             String value = response.readEntity(String.class);
             response.close();  // You should close connections!
 
-            ResteasyClient client = new ResteasyClientBuilder().build();
-            ResteasyWebTarget target = client.target("http://foo.com/resource");
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target("http://foo.com/resource");
         </programlisting>
         <para>
             RESTEasy will automatically load a set of default providers. (Basically all classes listed in all
@@ -42,7 +42,7 @@
         </para>
         
         <programlisting>
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       ResteasyWebTarget target = client.target("http://localhost:8081/test");
       target.setChunked(b.booleanValue());
       Invocation.Builder request = target.request();
@@ -53,7 +53,7 @@
         </para>
         
         <programlisting>
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       ResteasyWebTarget target = client.target("http://localhost:8081/test");
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       request.setChunked(b);
@@ -72,6 +72,16 @@
         supports chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
         for more information.
         </para>
+
+		<note>
+			<para>
+	          To follow REST principles and avoid introducing state management in applications, <classname>javax.ws.rs.client.Client</classname> instances do not provide support for cookie management by default.
+	          However, you can enable it if necessary using <classname>ResteasyClientBuilder</classname>:
+			</para>
+			<programlisting>
+				Client client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).enableCookieManagement().build();
+			</programlisting>
+		</note>
     </section>
     <para>
 
@@ -142,7 +152,7 @@ public interface SimpleClient
         </programlisting>
         Alternatively you can use the RESTEasy client extension interfaces directly:
         <programlisting>
-            ResteasyClient client = new ResteasyClientBuilder().build();
+            ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
             ResteasyWebTarget target = client.target("http://example.com/base/uri");
 
             SimpleClient simple = target.proxy(SimpleClient.class);
@@ -465,7 +475,7 @@ followNextLink(): forwarded
    ...
    public void test() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       TestResource proxy = client.target(BASE_URL).proxy(TestResource.class);
       String name = proxy.dispatch(BASE_URL + "a");
       System.out.println("name: " + name);
@@ -529,6 +539,16 @@ name: b
            option for those already running on the Jetty server.
        </para>
        <para>
+           <code class="classname">VertxClientHttpEngine</code> is built on top
+           of <emphasis>Eclipse Vert.x</emphasis>, which provides a non-blocking HTTP client based
+           on Vert.x framework.
+       </para>
+       <para>
+           <code class="classname">ReactorNettyClientHttpEngine</code> is built on top
+           of <emphasis>Reactor Netty</emphasis>, which provides a non-blocking HTTP client based
+           on Netty framework.
+       </para>
+       <para>
            Finally,
            <code class="classname">InMemoryClientEngine</code> is
            an implementation that dispatches requests to a server in the same JVM and
@@ -557,6 +577,14 @@ name: b
                        <entry>JettyClientEngine</entry>
                        <entry>Uses Eclipse Jetty</entry>
                    </row>
+                   <row>
+                       <entry>ReactorNettyClientHttpEngine</entry>
+                       <entry>Uses Reactor Netty</entry>
+                   </row>
+                 <row>
+                   <entry>VertxClientHttpEngine</entry>
+                   <entry>Uses Eclipse Vert.x</entry>
+                 </row>
                    <row>
                        <entry>InMemoryClientEngine</entry>
                        <entry>Dispatches requests to a server in the same JVM</entry>
@@ -605,7 +633,7 @@ ClientHttpEngine myEngine = new ClientHttpEngine() {
     }
 };
 
-ResteasyClient client = new RESTEasyClientBuilder().httpEngine(myEngine).build();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(myEngine).build();
        </programlisting>
 
        <para>
@@ -672,9 +700,60 @@ ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient,
          <programlisting>
 ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
 engine.setFollowRedirects(true);
-Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
      </programlisting>
       </para>
+    </section>
+    <section id="https">
+        <title>Configuring SSL</title>
+        <para>
+            To enable SSL on client, a <classname>ClientHttpEngine</classname> containing a SSLContext can be created to build
+            client as in the following example:
+            <programlisting>
+ClientHttpEngine myEngine = new ClientHttpEngine() {
+   ...
+   public void setSslContext(SSLContext sslContext) {
+      this.sslContext = sslContext;
+   }
+
+   @Override
+   public HostnameVerifier getHostnameVerifier() {
+      return hostnameVerifier;
+   }
+};
+myEngine.setSslContext(mySslContext)
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(myEngine).build();
+            </programlisting>
+            An alternative is to set up a keystore and truststore and pass a custom SslContext to ClientBuilder:
+            <programlisting>
+Client sslClient = ClientBuilder.newBuilder().sslContext(mySslContext).build();
+            </programlisting>
+            If you don't want to create a SSLContext, you can build client with a keystore and truststore. Note if both
+            SSLContext and keystore/truststore are configured, the later will be ignored by Resteasy ClientBuilder.
+            <programlisting>
+Client sslClient = ClientBuilder.newBuilder().keystore(keystore,mypassword).
+                      trustKeystore(trustStore).build();
+            </programlisting>
+            During handshaking, a custom HostNameVerifier can be called to allow the connection if URL's hostname and
+            the server's identification hostname match.
+            <programlisting>
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+                       .hostnameVerifier(myhostnameVerifier).build();
+            </programlisting>
+            Resteasy provides another simple way to set up a HostnameVerifier. It allows configuring ResteasyClientBuilder with
+            a <classname>HostnameVerificationPolicy</classname> without creating a custom HostNameVerifier:
+            <programlisting>
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+                       .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
+            </programlisting>
+            <itemizedlist>
+                <listitem>Setting HostnameVerificationPolicy.ANY will allow all connections without a check.</listitem>
+                <listitem>HostnameVerificationPolicy.WILDCARD only allows wildcards in subdomain names i.e. *.foo.com.</listitem>
+                <listitem>HostnameVerificationPolicy.STRICT checks if DNS names match the content of the Public Suffix List
+            (https://publicsuffix.org/list/public_suffix_list.dat). Please note if this public suffix list isn't the check
+            you want, you should create your own HostNameVerifier instead of this policy setting.</listitem>
+            </itemizedlist>
+        </para>
     </section>
     <section id="http_proxy">
       <title>HTTP proxy</title>
@@ -818,7 +897,7 @@ response.close();
             <emphasis>ResteasyClientBuilder</emphasis>.
         </para>
         <programlisting>
-    Client asyncClient = new ResteasyClientBuilder().useAsyncHttpEngine()
+    Client asyncClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).useAsyncHttpEngine()
                              .build();
     Future&lt;Response&gt; future = asyncClient
                              .target("http://locahost:8080/test").request()
@@ -892,7 +971,7 @@ response.close();
         <title>Jetty Client Engine</title>
         <para>
             As a drop in replacement, RESTEasy allows selecting a Jetty 9.4+ based HTTP engine.
-            The Jetty implementation is newer and lessl tested, but if may end up being a good choice
+            The Jetty implementation is newer and less tested, but it may end up being a good choice
             when relying on Jetty as server side already.  The Jetty Server can even share execution
             resources with Client libraries if you configure them to use e.g. the same QueuedThreadPool.
         </para>
@@ -901,8 +980,82 @@ response.close();
             artifact to the Maven project; then the client can be built as follows:
         </para>
         <programlisting>
-   ResteasyClient client = new ResteasyClientBuilder().clientEngine(
-      new JettyClientEngine(new HttpClient())).build();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clientEngine(
+   new JettyClientEngine(new HttpClient())).build();
+        </programlisting>
+    </section>
+
+     <section id="vertx_client">
+         <title>Vertx Client Engine</title>
+         <para>
+           Still as a drop in replacement, RESTEasy allows selecting a Vert.x-based HTTP engine.
+           The Vert.x implementation can perform asynchronous client invocations. It provides the following features:
+         </para>
+         <itemizedlist>
+             <listitem>
+                 <para>HTTP/1.1</para>
+             </listitem>
+             <listitem>
+                 <para>HTTP/2</para>
+             </listitem>
+             <listitem>
+                 <para>SSL/TLS (including native SSL engine)</para>
+             </listitem>
+             <listitem>
+                 <para>Efficient client connection pooling</para>
+             </listitem>
+             <listitem>
+                 <para>Optional native IO on Linux and BSD for greater performance</para>
+             </listitem>
+             <listitem>
+                 <para>Domain sockets</para>
+             </listitem>
+             <listitem>
+                 <para>HTTP Metrics with Dropwizard or Micrometer</para>
+             </listitem>
+         </itemizedlist>
+         <para>
+           The Vert.x engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-vertx</emphasis>
+           artifact to the Maven project; then the client can be built as follows:
+         </para>
+         <programlisting>
+VertxClientHttpEngine engine = new VertxClientHttpEngine();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+  .clientEngine(engine).build();
+         </programlisting>
+         <para>
+           A Vert.x instance can also be provided when creating the client engine, as well as options configuration:
+         </para>
+         <programlisting>
+HttpClientOptions options = new HttpClientOptions()
+ .setSsl(true);
+ .setTrustStoreOptions(new JksOptions()
+   .setPath("/path/to/your/truststore.jks")
+   .setPassword("password-of-your-truststore")
+);
+VertxClientHttpEngine engine = new VertxClientHttpEngine(vertx, options);
+         </programlisting>
+       <para>You can read more about HttpClient configuration <ulink url="https://vertx.io/docs/vertx-core/java/#_making_requests">here</ulink>.</para>
+     </section>
+
+    <section id="reactor_netty_client">
+        <title>Reactor Netty Client Engine</title>
+        <para>
+            Still as a drop in replacement, RESTEasy allows selecting a Reactor Netty based HTTP engine.
+            The Reactor Netty implementation is newer and less tested, but can be a good choice if the user
+            application is already dependening on Netty and performs asynchronous client invocations.
+        </para>
+        <para>
+            The Reactor Netty engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-reactor-netty</emphasis>
+            artifact to the Maven project; then the client can be built as follows:
+        </para>
+        <programlisting>
+ReactorNettyClientHttpEngine engine = new ReactorNettyClientHttpEngine(
+   HttpClient.create(),
+   new DefaultChannelGroup(new DefaultEventExecutor()),
+   HttpResources.get());
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+   .clientEngine(engine).build();
         </programlisting>
     </section>
 

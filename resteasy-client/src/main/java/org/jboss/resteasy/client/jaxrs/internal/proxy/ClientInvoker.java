@@ -5,7 +5,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.ClientContext;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.DefaultEntityExtractorFactory;
@@ -31,6 +30,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.ExecutorService;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -80,11 +80,13 @@ public class ClientInvoker implements MethodInvoker
             return ClientInvoker.this.declaring;
          }
       };
-      for (DynamicFeature feature : invokerConfig.getDynamicFeatures())
-      {
-         feature.configure(info, new FeatureContextDelegate(invokerConfig));
+      Set<DynamicFeature> dynamicFeatures = invokerConfig.getDynamicFeatures();
+      if (null != dynamicFeatures) {
+         for (DynamicFeature feature : dynamicFeatures)
+         {
+            feature.configure(info, new FeatureContextDelegate(invokerConfig));
+         }
       }
-
 
       this.processors = ProcessorFactory.createProcessors(declaring, method, invokerConfig, config.getDefaultConsumes());
       accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
@@ -122,7 +124,7 @@ public class ClientInvoker implements MethodInvoker
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
       {
-         executor = webTarget.getResteasyClient().asyncInvocationExecutor();
+         executor = request.asyncInvocationExecutor();
       }
       RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
       Type type = method.getGenericReturnType();
@@ -164,10 +166,9 @@ public class ClientInvoker implements MethodInvoker
 
          }
       }
+      ClientInvocationBuilder builder = (ClientInvocationBuilder) target.request();
+      ClientInvocation clientInvocation = (ClientInvocation) builder.build(httpMethod);
 
-      ClientConfiguration parentConfiguration=(ClientConfiguration) target.getConfiguration();
-      ClientInvocation clientInvocation = new ClientInvocation(this.webTarget.getResteasyClient(), target.getUri(),
-            new ClientRequestHeaders(parentConfiguration), parentConfiguration);
       clientInvocation.setClientInvoker(this);
       if (target != this.webTarget) {
          clientInvocation.setActualTarget(target);
@@ -185,7 +186,6 @@ public class ClientInvoker implements MethodInvoker
 
          }
       }
-      clientInvocation.setMethod(httpMethod);
       return clientInvocation;
    }
 

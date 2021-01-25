@@ -65,10 +65,9 @@ public class WeightedLanguage implements Comparable<WeightedLanguage>
    {
       String rtn = language;
       if (params == null || params.size() == 0) return rtn;
-      for (String name : params.keySet())
+      for (Map.Entry<String,String> paramEntry : params.entrySet())
       {
-         String val = params.get(name);
-         rtn += ";" + name + "=\"" + val + "\"";
+         rtn += ";" + paramEntry.getKey() + "=\"" + paramEntry.getValue() + "\"";
       }
       return rtn;
    }

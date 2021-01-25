@@ -1,5 +1,22 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -11,22 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -134,7 +135,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    @Override
    public MultivaluedMap<String, String> getHeaders()
    {
-      return httpRequest.getHttpHeaders().getRequestHeaders();
+      return ((ResteasyHttpHeaders) httpRequest.getHttpHeaders()).getMutableHeaders();
    }
 
    @Override
@@ -233,8 +234,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    {
       if(suspended && !inFilter)
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         httpRequest.getAsyncContext().getAsyncResponse().resume(response);
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+            httpRequest.getAsyncContext().getAsyncResponse().resume(response);
+         }
       }
       else
       {
@@ -255,9 +257,8 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          return;
       }
 
-      ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
-      try {
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
          filter();
       }catch(Throwable t) {
          // don't throw to client
@@ -277,8 +278,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
       }
       else
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         writeException(t);
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+            writeException(t);
+         }
       }
    }
 
@@ -297,7 +299,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
       final long totalTimestamp = tracingLogger.timestamp("REQUEST_FILTER_SUMMARY");
 
-      while(currentFilter < requestFilters.length)
+      while(requestFilters != null && currentFilter < requestFilters.length)
       {
          ContainerRequestFilter filter = requestFilters[currentFilter++];
          try
@@ -350,7 +352,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
             }
          }
       }
-      tracingLogger.logDuration("REQUEST_FILTER_SUMMARY", totalTimestamp, requestFilters.length);
+      tracingLogger.logDuration("REQUEST_FILTER_SUMMARY", totalTimestamp, requestFilters == null ? 0 : requestFilters.length);
       // here it means we reached the last filter
       // some frameworks don't support async request filters, in which case suspend() is forbidden
       // so if we get here we're still synchronous and don't have a continuation, which must be in

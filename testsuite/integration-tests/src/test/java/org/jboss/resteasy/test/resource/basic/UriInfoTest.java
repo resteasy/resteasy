@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedQueryResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedTemplateResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEscapedMatrParamResource;
@@ -23,7 +22,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -216,7 +214,6 @@ public class UriInfoTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class})
    public void testQueryParamsMutability() throws Exception {
       basicTest("/queryParams?a=a,b", "UriInfoQueryParamsResource");
    }

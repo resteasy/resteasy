@@ -9,10 +9,10 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResourceInvoker;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -22,7 +22,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.net.URI;
 import java.security.SecureRandom;
@@ -96,10 +95,10 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       private int getMaxUses()
       {
          maxUses = DEFAULT_MAX_USES;
-         ServletContext context = ResteasyContext.getContextData(ServletContext.class);
+         ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
          if (context != null)
          {
-            String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
+            String s = context.getParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
             if (s != null)
             {
                try

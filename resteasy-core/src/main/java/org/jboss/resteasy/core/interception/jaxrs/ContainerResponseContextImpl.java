@@ -1,5 +1,26 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ServerResponseWriter.RunnableWithIOException;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Dispatcher;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -10,28 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.core.ServerResponseWriter.RunnableWithIOException;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Dispatcher;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -300,9 +299,8 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          return;
       }
 
-      ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
-      try {
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
          filter();
       }catch(Throwable t) {
          // don't throw to client
@@ -322,8 +320,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       }
       else
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         writeException(t);
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+            writeException(t);
+         }
       }
    }
 
@@ -402,8 +401,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
 
       // if we've never been suspended, the caller is valid so let it handle any exception
       if(filterReturnIsMeaningful) {
-         continuation.run();
-         onComplete.accept(null);
+         continuation.run(onComplete);
          return;
       }
       // if we've been suspended then the caller is a filter and have to invoke our continuation
@@ -411,14 +409,14 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       // try to write it out
       try
       {
-         continuation.run();
-         onComplete.accept(null);
-         if(weSuspended)
-         {
-            // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
-            HttpServletRequest httpServletRequest = (HttpServletRequest) contextDataMap.get(HttpServletRequest.class);
-            httpServletRequest.getAsyncContext().complete();
-         }
+         continuation.run((t) -> {
+            onComplete.accept(t);
+            if(weSuspended)
+            {
+               // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
+               request.getAsyncContext().complete();
+            }
+         });
       } catch (IOException e)
       {
          LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);

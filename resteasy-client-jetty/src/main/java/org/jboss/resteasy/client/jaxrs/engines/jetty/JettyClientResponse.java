@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
-import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
-class JettyClientResponse extends ClientResponse {
+class JettyClientResponse extends FinalizedClientResponse {
    private final Runnable cancel;
    private InputStream stream;
 

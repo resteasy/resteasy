@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
 import java.lang.reflect.Constructor;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -42,16 +43,26 @@ public class FormInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
-      return constructorInjector.construct(unwrapAsync)
-            .thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
-                                    .thenApply(v -> target));
+      Object obj =  constructorInjector.construct(unwrapAsync);
+      if (obj instanceof CompletionStage) {
+         @SuppressWarnings("unchecked")
+         CompletionStage<Object> stage = (CompletionStage<Object>)obj;
+         return stage.thenCompose(target -> {
+            CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, target, unwrapAsync);
+            return propertyStage == null ? CompletableFuture.completedFuture(target) : propertyStage
+                    .thenApply(v -> target);
+         });
+      }
+      CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, obj, unwrapAsync);
+      return propertyStage == null ? obj : propertyStage.thenApply(v -> obj);
+
    }
 }

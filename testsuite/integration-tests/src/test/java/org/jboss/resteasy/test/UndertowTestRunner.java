@@ -27,12 +27,16 @@ import io.undertow.Undertow;
 /**
  * Test runner to use instead of Arquillian to run tests in the IDE
  *
+ * If HV is giving you trouble, add this line to AbstractValidatorContextResolver.getValidatorFactory() in the catch block:
+ * config.messageInterpolator(new ParameterMessageInterpolator());
+ *
  * @author Stéphane Épardaud <stef@epardaud.fr>
  */
 public class UndertowTestRunner extends BlockJUnit4ClassRunner
 {
 
    private Set<Class<?>> classes = new HashSet<>();
+   private Class<?> application;
 
    public UndertowTestRunner(final Class<?> klass) throws InitializationError
    {
@@ -55,10 +59,13 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
                   Asset asset = entry.getValue().getAsset();
                   if(asset instanceof ClassAsset) {
                      Class<?> classAsset = ((ClassAsset)asset).getSource();
-                     if((classAsset.isAnnotationPresent(Path.class)
-                           || classAsset.isAnnotationPresent(Provider.class))
-                           && !classAsset.isInterface())
-                        classes.add(classAsset);
+                     if(classAsset.isAnnotationPresent(Provider.class)) {
+                        if(Application.class.isAssignableFrom(classAsset))
+                           application = classAsset;
+                        else if(classAsset.isAnnotationPresent(Path.class)
+                              && !classAsset.isInterface())
+                           classes.add(classAsset);
+                     }
                   }
                }
                return;
@@ -77,13 +84,24 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
    {
       UndertowJaxrsServer server = new UndertowJaxrsServer().start(Undertow.builder()
             .addHttpListener(8080, "localhost"));
-      server.deploy(new Application() {
-         @Override
-         public Set<Class<?>> getClasses()
+      Application app;
+      if(application != null) {
+         try
          {
-            return classes;
+            app = (Application) application.newInstance();
+         } catch (InstantiationException | IllegalAccessException e)
+         {
+            throw new RuntimeException(e);
          }
-      }, super.getTestClass().getJavaClass().getSimpleName());
+      }else
+         app = new Application() {
+            @Override
+            public Set<Class<?>> getClasses()
+            {
+               return classes;
+            }
+         };
+      server.deploy(app, super.getTestClass().getJavaClass().getSimpleName());
       try
       {
          super.run(notifier);
@@ -94,4 +112,5 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
       }
 
    }
+
 }

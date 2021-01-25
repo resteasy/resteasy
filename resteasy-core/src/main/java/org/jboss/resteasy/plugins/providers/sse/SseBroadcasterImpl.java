@@ -17,6 +17,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class SseBroadcasterImpl implements SseBroadcaster
@@ -62,7 +63,13 @@ public class SseBroadcasterImpl implements SseBroadcaster
          //is it necessay to close the subsribed SseEventSink ?
          outputQueue.forEach(eventSink -> {
             eventSink.close();
-            notifyOnCloseListeners(eventSink);
+            try {
+               eventSink.close();
+            } catch (RuntimeException e) {
+               LogMessages.LOGGER.debug(e.getLocalizedMessage());
+            } finally {
+               notifyOnCloseListeners(eventSink);
+            }
          });
       }
       finally
@@ -141,25 +148,31 @@ public class SseBroadcasterImpl implements SseBroadcaster
    public CompletionStage<?> broadcast(OutboundSseEvent event)
    {
       checkClosed();
-      //return event immediately and doesn't block anything
-      return CompletableFuture.runAsync(() -> {
-         outputQueue.forEach(eventSink -> {
-            SseEventSink outputImpl = eventSink;
-            try
-            {
-               outputImpl.send(event).whenComplete((object, err) -> {
-                  if (err != null)
-                  {
-                     notifyOnErrorListeners(eventSink, err);
-                  }
-               });
+      CompletionStage<?> ret = CompletableFuture.completedFuture(null);
+      for (SseEventSink eventSink : outputQueue)
+      {
+         ret = ret.thenCompose(v -> {
+            try {
+               return eventSink.send(event)
+                     .exceptionally(err -> {
+                        // do not propagate the exception to the returned CF
+                        // apparently, the goal is to close this sink and not report the error
+                        // of the broadcast operation
+                        notifyOnErrorListeners(eventSink, err);
+                        return null;
+                     });
             }
-            catch (IllegalStateException e)
+            catch (Exception e)
             {
+               // do not propagate the exception to the returned CF
+               // apparently, the goal is to close this sink and not report the error
+               // of the broadcast operation
                notifyOnErrorListeners(eventSink, e);
+               return CompletableFuture.completedFuture(null);
             }
          });
-      });
+      }
+      return ret;
    }
 
 }

@@ -13,7 +13,11 @@ target
 **/.project
 **/.classpath
 **/.checkstyle
+**/.factorypath
 
+# VS Code
+###################
+**/.vscode/
 
 # Packages #
 ############

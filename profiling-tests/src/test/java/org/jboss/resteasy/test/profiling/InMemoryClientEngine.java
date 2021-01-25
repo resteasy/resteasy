@@ -23,6 +23,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
@@ -152,7 +153,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
 
    public void commitHeaders(ClientInvocation request, MockHttpRequest mockHttpRequest)
    {
-      MultivaluedMap<String, String> headers = mockHttpRequest.getHttpHeaders().getRequestHeaders();
+      MultivaluedMap<String, String> headers = mockHttpRequest.getMutableHeaders();
       headers.putAll(request.getHeaders().asMap());
    }
 
@@ -185,7 +186,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
       return null;
    }
 
-   public static class InMemoryClientResponse extends ClientResponse
+   public static class InMemoryClientResponse extends FinalizedClientResponse
    {
       private InputStream stream;
 

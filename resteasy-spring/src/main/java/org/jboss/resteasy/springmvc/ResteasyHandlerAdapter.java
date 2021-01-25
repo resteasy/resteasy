@@ -94,7 +94,7 @@ public class ResteasyHandlerAdapter extends
          BuiltResponse jaxrsResponse = null;
          try
          {
-            jaxrsResponse = (BuiltResponse) requestWrapper.getInvoker().invoke(request, response).toCompletableFuture().getNow(null);
+            jaxrsResponse = (BuiltResponse) requestWrapper.getInvoker().invoke(request, response);
          }
          catch (CompletionException e)
          {

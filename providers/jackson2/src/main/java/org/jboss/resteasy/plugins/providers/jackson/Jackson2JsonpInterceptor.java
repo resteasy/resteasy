@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
@@ -14,12 +16,14 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputWriter;
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
+import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
@@ -56,7 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Provider
 @ConstrainedTo(RuntimeType.SERVER)
-public class Jackson2JsonpInterceptor implements WriterInterceptor{
+public class Jackson2JsonpInterceptor implements AsyncWriterInterceptor{
 
    /**
     * "text/javascript" media type. Default media type of script tags.
@@ -91,10 +95,12 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
    /**
     * Default {@link ObjectMapper} for type resolution. Used if none is provided by {@link Providers}.
     */
-   protected static final ObjectMapper DEFAULT_MAPPER = new ObjectMapper();
+   protected static final ObjectMapper DEFAULT_MAPPER;
 
    static {
-      jsonpCompatibleMediaTypes.add(MediaType.APPLICATION_JSON_TYPE  , MediaType.APPLICATION_JSON_TYPE.toString());
+      DEFAULT_MAPPER = new ObjectMapper();
+      DEFAULT_MAPPER.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+      jsonpCompatibleMediaTypes.add(MediaType.APPLICATION_JSON  , MediaType.APPLICATION_JSON_TYPE.toString());
       jsonpCompatibleMediaTypes.add(APPLICATION_JAVASCRIPT_MEDIA_TYPE, APPLICATION_JAVASCRIPT_MEDIA_TYPE.toString());
       jsonpCompatibleMediaTypes.add(APPLICATION_PLUS_JSON_TYPE       , APPLICATION_PLUS_JSON_TYPE.toString());
       jsonpCompatibleMediaTypes.add(TEXT_JSON_TYPE                   , TEXT_JSON_TYPE.toString());
@@ -179,6 +185,33 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
       } else {
          context.proceed();
       }
+   }
+
+   @Override
+   public CompletionStage<Void> asyncAroundWriteTo(AsyncWriterInterceptorContext context) {
+       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+
+       String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
+       if (enabled && function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
+
+          AsyncOutputWriter writer = new AsyncOutputWriter(context.getAsyncOutputStream());
+          CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+          if (wrapInTryCatch) {
+              ret = ret.thenCompose(v -> writer.asyncWrite("try{"));
+          }
+          ret = ret.thenCompose(v -> writer.asyncWrite(function + "("))
+                  .thenCompose(v -> writer.asyncFlush())
+                  .thenCompose(v -> context.asyncProceed())
+                  .thenCompose(v -> writer.asyncFlush())
+                  .thenCompose(v -> writer.asyncWrite(")"));
+
+          if (wrapInTryCatch) {
+              ret = ret.thenCompose(v -> writer.asyncWrite("}catch(e){}"));
+          }
+          return ret.thenCompose(v -> writer.asyncFlush());
+       } else {
+          return context.asyncProceed();
+       }
    }
 
    /**

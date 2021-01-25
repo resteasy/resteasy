@@ -72,19 +72,17 @@ public class ServerCacheFeature implements Feature
    protected ServerCache getDefaultCache()
    {
       GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
-         .globalJmxStatistics()
-         .allowDuplicateDomains(true)
-         .enable()
-         .jmxDomain("custom-cache")
+         .defaultCacheName("resteasy-default-cache")
+         .jmx().enable()
          .build();
       Configuration configuration = new ConfigurationBuilder()
-         .eviction()
-         .strategy(EvictionStrategy.LIRS)
-         .type(EvictionType.COUNT).size(100)
-         .jmxStatistics().enable()
+         .memory()
+         .evictionType(EvictionType.COUNT)
+         .evictionStrategy(EvictionStrategy.REMOVE)
+         .size(100)
          .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
-      Cache<Object, Object> c = manager.getCache("custom-cache");
+      Cache<Object, Object> c = manager.getCache("resteasy-default-cache");
       return new InfinispanCache(c);
    }
 

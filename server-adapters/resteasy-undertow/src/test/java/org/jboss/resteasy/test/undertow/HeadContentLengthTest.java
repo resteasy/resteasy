@@ -66,7 +66,8 @@ public class HeadContentLengthTest
    @Test
    public void testHeadContentLength() throws Exception
    {
-      server.deploy(MyApp.class);
+      server.deploy(MyApp.class, "/");
+
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/base/test"));
       Response getResponse = target.request().buildGet().invoke();

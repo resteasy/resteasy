@@ -1,23 +1,7 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletionStage;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.SseEventSink;
-
 import org.jboss.resteasy.annotations.Stream;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
@@ -34,6 +18,23 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.sse.OutboundSseEvent;
+import javax.ws.rs.sse.SseEventSink;
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -104,25 +105,26 @@ public abstract class AsyncResponseConsumer
 
    protected void internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyContext.pushContextDataMap(contextDataMap);
-      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
-      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+         HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+         HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
 
-      BuiltResponse builtResponse = createResponse(entity, httpRequest);
-      try
-      {
-         sendBuiltResponse(builtResponse, httpRequest, httpResponse, e -> {
-            if(e != null)
-            {
-               exceptionWhileResuming(e);
-            }
+         BuiltResponse builtResponse = createResponse(entity, httpRequest);
+         try
+         {
+            sendBuiltResponse(builtResponse, httpRequest, httpResponse, e -> {
+               if(e != null)
+               {
+                  exceptionWhileResuming(e);
+               }
+               onComplete.accept(e);
+            });
+         }
+         catch (Throwable e)
+         {
+            exceptionWhileResuming(e);
             onComplete.accept(e);
-         });
-      }
-      catch (Throwable e)
-      {
-         exceptionWhileResuming(e);
-         onComplete.accept(e);
+         }
       }
    }
 
@@ -151,15 +153,16 @@ public abstract class AsyncResponseConsumer
 
    protected void internalResume(Throwable t, Consumer<Throwable> onComplete)
    {
-      ResteasyContext.pushContextDataMap(contextDataMap);
-      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
-      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
-      try {
-         dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
-      }catch(Throwable t2) {
-         // ignore t2 and report the original exception without going through filters
-         dispatcher.unhandledAsynchronousException(httpResponse, t);
-         onComplete.accept(t);
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+         HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+         HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+         try {
+            dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
+         }catch(Throwable t2) {
+            // ignore t2 and report the original exception without going through filters
+            dispatcher.unhandledAsynchronousException(httpResponse, t);
+            onComplete.accept(t);
+         }
       }
    }
 
@@ -237,7 +240,13 @@ public abstract class AsyncResponseConsumer
          }
          else
          {
-            internalResume(u, x -> complete(u));
+            // since this is called by the CompletionStage API, we want to unwrap its exceptions in order for the
+            // exception mappers to function
+            if(u instanceof CompletionException) {
+                u = u.getCause();
+            }
+            Throwable throwable = u;
+            internalResume(throwable, x -> complete(throwable));
          }
       }
 
@@ -325,6 +334,8 @@ public abstract class AsyncResponseConsumer
    private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer
    {
       private boolean sentEntity;
+      private boolean onCompleteReceived;
+      private volatile boolean sendingEvent;
 
       AsyncRawStreamingResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
@@ -369,16 +380,31 @@ public abstract class AsyncResponseConsumer
 
       protected void addNextElement(Object element)
       {
+         sendingEvent = true;
          internalResume(element, t -> {
-            if(t != null)
-            {
-               complete(t);
-            }
-            else
-            {
-               subscription.request(1);
+            synchronized(this) {
+               sendingEvent = false;
+               if(onCompleteReceived) {
+                  super.onComplete();
+               }
+               else if(t != null)
+               {
+                  complete(t);
+               }
+               else
+               {
+                  subscription.request(1);
+               }
             }
          });
+      }
+
+      @Override
+      public synchronized void onComplete()
+      {
+         onCompleteReceived = true;
+         if(sendingEvent == false)
+            super.onComplete();
       }
 
       @Override
@@ -459,8 +485,8 @@ public abstract class AsyncResponseConsumer
    {
       private SseImpl sse;
       private SseEventSink sseEventSink;
-      private volatile boolean onCompleteReceived = false;
-      private volatile boolean sendingEvent = false;
+      private boolean onCompleteReceived;
+      private volatile boolean sendingEvent;
 
       private AsyncGeneralStreamingSseResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {

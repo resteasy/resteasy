@@ -1,14 +1,19 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.config.Configuration;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.config.DefaultConfiguration;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.Application;
+import java.util.Arrays;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +26,7 @@ import java.util.Map;
 public abstract class ConfigurationBootstrap implements ResteasyConfiguration
 {
    private ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+   private final Configuration config = new DefaultConfiguration(this);
 
 
    public ResteasyDeployment createDeployment()
@@ -137,6 +143,11 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
          processScannedJndiComponentResources(scannedJndi);
       }
 
+      String scannedResourceClassesWithBuilder = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCE_CLASSES_WITH_BUILDER);
+      if (scannedResourceClassesWithBuilder != null) {
+         processScannedResourceClassesWithBuilder(scannedResourceClassesWithBuilder);
+      }
+
 
       String jndiResources = getParameter(ResteasyContextParameters.RESTEASY_JNDI_RESOURCES);
       if (jndiResources != null && ! "".equals(jndiResources.trim()))
@@ -234,6 +245,12 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
 
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
+
+      String statisticsEnabled = getParameter(ResteasyContextParameters.RESTEASY_STATISTICS_ENABLED);
+      if (statisticsEnabled != null)
+      {
+         deployment.setStatisticsEnabled(Boolean.valueOf(statisticsEnabled));
+      }
       return deployment;
    }
 
@@ -280,6 +297,29 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       }
    }
 
+   // this string should be in the form: builder_class1:resource_class1,resource_class2;builder_class2:resource_class3
+   protected void processScannedResourceClassesWithBuilder(String scannedResourceClassesWithBuilder)
+   {
+      String[] parts = scannedResourceClassesWithBuilder.trim().split(";");
+      for (String part : parts)
+      {
+         int separationIndex = part.indexOf(":");
+         if (separationIndex > 0 && (separationIndex < part.length() - 1)) {
+            String resourceBuilder = part.substring(0, separationIndex);
+            String resourceClassesStr = part.substring(separationIndex + 1);
+            final String[] newResourceClasses = resourceClassesStr.trim().split(",");
+            if (newResourceClasses.length == 0) {
+               continue;
+            }
+            if (deployment.getScannedResourceClassesWithBuilder().get(resourceBuilder) == null) {
+               deployment.getScannedResourceClassesWithBuilder().put(resourceBuilder, Arrays.asList(newResourceClasses));
+            } else {
+               deployment.getScannedResourceClassesWithBuilder().get(resourceBuilder).addAll(Arrays.asList(newResourceClasses));
+            }
+         }
+      }
+   }
+
    protected void processScannedJndiComponentResources(String jndiResources)
    {
       String[] resources = jndiResources.trim().split(",");
@@ -309,7 +349,24 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
 
    public String getParameter(String name)
    {
-      return ResteasyConfigProvider.getConfig().getOptionalValue(name, String.class).orElse(null);
+      String propName = null;
+      if (System.getSecurityManager() == null) {
+         propName = config.getOptionalValue(name, String.class).orElse(null);
+
+      } else {
+
+         try {
+            propName = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+               @Override
+               public String run() throws Exception {
+                  return config.getOptionalValue(name, String.class).orElse(null);
+               }
+            });
+         } catch (PrivilegedActionException pae) {
+            throw new RuntimeException(pae);
+         }
+      }
+      return propName;
    }
 
 }

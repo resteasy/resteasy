@@ -4,44 +4,50 @@
 
 RESTEasy is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.  It is mainly a JAX-RS implementation but you'll find some other experimental code in the repository.
 
-The project page can be found at http://resteasy.jboss.org
+The project page can be found at [https://resteasy.github.io](https://resteasy.github.io).
 
 ## JAX-RS
-RESTEasy is a JBoss project that provides various frameworks to help you build RESTful Web Services and RESTful Java applications. It is a portable implementation of the JAX-RS specification. JAX-RS is a JCP specification that provides a Java API for RESTful Web Services over the HTTP protocol.
 
-Read the entire specification [here](https://jax-rs-spec.java.net/)
-
-The RESTEasy code is in the github repository, (https://github.com/resteasy/Resteasy.git).
+RESTEasy is a JBoss project that provides various frameworks to help you build RESTful Web Services and RESTful Java applications. It is a portable implementation of the JAX-RS specification. The full name of JAX-RS is Jakarta RESTful Web Services that provides a Java API for RESTful Web Services over the HTTP protocol. Please note that the specification is now under the [Eclipse EE4J Project](https://github.com/eclipse-ee4j). You can read the entire specification at [Jakarta RESTful Web Services](https://github.com/eclipse-ee4j/jaxrs-api).
 
 ## Getting started with RESTEasy
-- Read a [book](http://resteasy.jboss.org/books.html)
+
+- Read a [book](https://resteasy.github.io/books)
 - Check out the [examples](https://github.com/resteasy/resteasy-examples) in the repository.
-- Read the [documentation](http://resteasy.jboss.org/docs).
+- Read the [documentation](https://resteasy.github.io/docs).
+- The blog is [here](https://resteasy.github.io//blogs).
 
 ## Documentation
 
-To read the documentation you can [read it online](http://resteasy.jboss.org/docs). This is generated automatically from the [maven build](https://github.com/resteasy/Resteasy/tree/master/jaxrs/docbook)
-
-A wiki exists with historical documents. You can find it [here](https://developer.jboss.org/wiki/ResteasyWIKI)
+To read the documentation you can [read it online](https://resteasy.github.io/docs).
 
 ## Issues
-Issues are kept in [JIRA](https://issues.jboss.org/browse/RESTEASY).
+
+Issues are kept in [JIRA](https://issues.redhat.com/projects/RESTEASY/issues).
 
 ## Build
-After pulling down a clone of the RESTEasy repository run
 
-	mvn install
+Currently RESTEasy can be built with JDK 1.8 and 11.
 
-Currently it can be built using JDK 1.8 and 11.
-If you don't have the JBoss Nexus repository configured in your own local Maven settings, you might need to add enable the 'jboss-repository' profile:
+If you want to purely build the project without running the tests, you need to pull down a clone of the RESTEasy repository and run:
 
-       mvn -Pjboss-repository install
+```bash
+$ mvn install -Dmaven.test.skip=true
+```
 
+If you want to build the project with testings run, you may need to specify a profile to use, and may need to configure the Wildfly version you want to run the tests with. Here is an example:
 
-### Requirements
-- Java Cryptography Extension [JCE](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
+```bash
+$ export SERVER_VERSION=17.0.0.Final
+$ mvn -B -Pjboss-repository -fae -Dserver.version=$SERVER_VERSION install
+```
+
+You may want to check our [Travis CI](https://github.com/resteasy/Resteasy/blob/master/.travis.yml) configuration to see our testing configuration matrix as build example.
+
+And the example of full build processes can be checked [here](https://travis-ci.org/resteasy/Resteasy).
 
 ## Contribute
+
 You are most welcome to contribute to RESTEasy!
 
 Read the [Contribution guidelines](./CONTRIBUTING.md)

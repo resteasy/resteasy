@@ -24,6 +24,7 @@ import org.jboss.logging.Logger;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
+import java.security.SecurityPermission;
 import java.util.PropertyPermission;
 
 /**
@@ -52,6 +53,7 @@ public class AsyncPostProcessingTest {
             new PropertyPermission("org.jboss.resteasy.port", "read"),
             new RuntimePermission("accessDeclaredMembers"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
+            new SecurityPermission("insertProvider"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,

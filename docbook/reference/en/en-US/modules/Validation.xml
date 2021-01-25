@@ -5,7 +5,7 @@
    RESTEasy provides the support for validation mandated by the
    <ulink url="http://www.jcp.org/en/jsr/detail?id=339">JAX-RS: Java API for RESTful Web Services 2.1 </ulink>,
    given the presence of an implementation of the
-   <ulink url="http://beanvalidation.org/1.1/spec/">Bean Validation specification</ulink>
+   <ulink url="https://beanvalidation.org/2.0/spec/">Bean Validation specification</ulink>
    such as <ulink url="http://hibernate.org/validator/">Hibernate Validator</ulink>. 
    </para>
    
@@ -294,7 +294,7 @@ public class ConstraintType
    </para>
    
 <programlisting><![CDATA[
-ResteasyClient client = new ResteasyClientBuilder().build();
+Client client = ClientBuilder.newClient();
 Invocation.Builder request = client.target(...).request();
 Response response = request.get();
 if (Boolean.valueOf(response.getHeaders().getFirst(Validation.VALIDATION_HEADER)))
@@ -473,4 +473,24 @@ public interface GeneralValidatorCDI extends GeneralValidator
    The validator in resteasy-validator-provider implements GeneralValidatorCDI.
    </para>
    </section>
+   
+   <section>
+      <title>Validation Implementations</title>
+         
+    <para>
+    As mentioned above, RESTEasy validation requires an implementation of the
+    <ulink url="https://beanvalidation.org/2.0/spec/">Bean Validation specification</ulink>
+    such as <ulink url="http://hibernate.org/validator/">Hibernate Validator</ulink>. Hibernate
+    Validator is supplied automatically when RESTEasy is running in the context of WildFly. Otherwise,
+    it should be made available. For example, in maven
+    
+    <programlisting>
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
+            &lt;artifactId&gt;hibernate-validator/artifactId&gt;
+        &lt;/dependency&gt;
+    </programlisting>
+    </para>
+   </section>
+   
 </chapter>

@@ -1,11 +1,13 @@
 package org.jboss.resteasy.specimpl;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Unmodifiable implementation of {@link javax.ws.rs.core.MultivaluedMap} interface
@@ -18,9 +20,51 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
 
    private final MultivaluedMap<K, V> delegate;
 
+   private volatile Set<java.util.Map.Entry<K, List<V>>> entrySet;
+
    public UnmodifiableMultivaluedMap(final MultivaluedMap<K, V> delegate)
    {
+      this(delegate, true);
+   }
+
+   public UnmodifiableMultivaluedMap(final MultivaluedMap<K, V> delegate, final boolean eagerlyInitializeEntrySet)
+   {
       this.delegate = delegate;
+      if (eagerlyInitializeEntrySet) {
+         this.entrySet = buildEntrySet();
+      }
+   }
+
+   private Set<java.util.Map.Entry<K, List<V>>> buildEntrySet()
+   {
+      Set<java.util.Map.Entry<K, List<V>>> entrySetDelegator = delegate.entrySet();
+      Set<java.util.Map.Entry<K, List<V>>> entrySetToReturn = new HashSet<>();
+      for (final java.util.Map.Entry<K, List<V>> entry : entrySetDelegator)
+      {
+         entrySetToReturn.add(new Entry<K, List<V>>()
+         {
+
+            @Override
+            public K getKey()
+            {
+               return entry.getKey();
+            }
+
+            @Override
+            public List<V> getValue()
+            {
+               List<V> value = entry.getValue();
+               return value == null ? null : Collections.unmodifiableList(value);
+            }
+
+            @Override
+            public List<V> setValue(List<V> value)
+            {
+               throw new UnsupportedOperationException();
+            }
+         });
+      }
+      return Collections.unmodifiableSet(entrySetToReturn);
    }
 
    @Override
@@ -75,13 +119,17 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
    @Override
    public Set<Entry<K, List<V>>> entrySet()
    {
-      return Collections.unmodifiableSet(delegate.entrySet());
+      if (this.entrySet == null) {
+         this.entrySet = buildEntrySet();
+      }
+      return this.entrySet;
    }
 
    @Override
    public List<V> get(Object key)
    {
-      return delegate.get(key);
+      List<V> list = delegate.get(key);
+      return list == null ? null : Collections.unmodifiableList(list);
    }
 
    @Override
@@ -138,4 +186,9 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
       return delegate.isEmpty();
    }
 
+   @Override
+   public String toString()
+   {
+      return delegate.toString();
+   }
 }

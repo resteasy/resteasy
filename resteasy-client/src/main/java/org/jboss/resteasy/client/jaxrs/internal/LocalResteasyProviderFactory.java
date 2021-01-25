@@ -2,8 +2,6 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import javax.ws.rs.RuntimeType;
 
-import org.jboss.resteasy.core.providerfactory.ClientHelper;
-import org.jboss.resteasy.core.providerfactory.NOOPServerHelper;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -18,9 +16,16 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class LocalResteasyProviderFactory extends ResteasyProviderFactoryImpl
 {
 
+   public LocalResteasyProviderFactory()
+   {
+      super(RuntimeType.CLIENT);
+   }
+
    public LocalResteasyProviderFactory(final ResteasyProviderFactory factory)
    {
-      super(factory, true);
+      super(RuntimeType.CLIENT, factory);
+      // make sure snapshots are locked after a copy
+      ((ResteasyProviderFactoryImpl)factory).lockSnapshots();
    }
 
    @Override
@@ -29,10 +34,4 @@ public class LocalResteasyProviderFactory extends ResteasyProviderFactoryImpl
       return RuntimeType.CLIENT;
    }
 
-   @Override
-   protected void initializeUtils()
-   {
-      clientHelper = new ClientHelper(this);
-      serverHelper = NOOPServerHelper.INSTANCE;
-   }
 }

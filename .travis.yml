@@ -6,25 +6,12 @@ script:
 language: java
 jdk:
   - openjdk8
-  - oraclejdk11
 env:
-  - SERVER_VERSION=14.0.0.Final
-  - SERVER_VERSION=15.0.0.Final
-  - SERVER_VERSION=16.0.0.Final
-  - SERVER_VERSION=16.0.0.Final ELYTRON=true
+  - SERVER_VERSION=21.0.1.Final ELYTRON=true
 jobs:
-  exclude:
-    - jdk: oraclejdk11
-      env: SERVER_VERSION=16.0.0.Final ELYTRON=true
-  include:
-    - stage: "javadoc"
-      script: mvn -B -Pjboss-repository -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-      jdk: openjdk8
-      env: SERVER_VERSION=16.0.0.Final
-    - stage: "javadoc"
-      script: mvn -B -Pjboss-repository -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-      jdk: oraclejdk11
-      env: SERVER_VERSION=16.0.0.Final
+addons:
+  hosts:
+    - localhost.localdomain
 ##cache:
 # directories:
 #  - $HOME/.m2

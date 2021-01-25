@@ -200,6 +200,15 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
     */
    public abstract ResteasyClientBuilder defaultProxy(String hostname, int port, String scheme);
 
+   /**
+    * Enable state (cookie) management.
+    *
+    * @return the updated client builder instance
+    */
+   public abstract ResteasyClientBuilder enableCookieManagement();
+
+   public abstract boolean isCookieManagementEnabled();
+
    public abstract SSLContext getSSLContext();
 
    public abstract KeyStore getKeyStore();
@@ -213,6 +222,14 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
    public abstract long getReadTimeout(TimeUnit unit);
 
    public abstract long getConnectionTimeout(TimeUnit unit);
+
+   /**
+    * boolean, notify apache to disable its automatic retries.
+    */
+   public abstract ResteasyClientBuilder disableAutomaticRetries();
+   public abstract boolean isDisableAutomaticRetries();
+
+   public abstract ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor);
 
    @Override
    public abstract ResteasyClient build();
@@ -246,4 +263,14 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
 
    @Override
    public abstract ResteasyClientBuilder readTimeout(long timeout, TimeUnit unit);
+
+   /**
+    * Follow redirects added for MicroProfile-rest-client but can be used by
+    * tradition clients as well.
+    * @param followRedirects
+    * @return
+    */
+   public abstract ResteasyClientBuilder setFollowRedirects(boolean followRedirects);
+
+   public abstract boolean isFollowRedirects();
 }

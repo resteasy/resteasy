@@ -8,14 +8,11 @@ import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.FormParam;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -32,15 +29,10 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       List<String> list = request.getDecodedFormParameters().get(paramName);
-      if (list == null)
-      {
-         // FIXME: looks like a bug, no?
-         extractValues(null);
-      }
-      else if (encode)
+      if (list != null && encode)
       {
          List<String> encodedList = new ArrayList<String>();
          for (String s : list)
@@ -49,11 +41,11 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
          }
          list = encodedList;
       }
-      return CompletableFuture.completedFuture(extractValues(list));
+      return extractValues(list);
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectFormParam());
    }

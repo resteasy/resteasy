@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 
 import javax.ws.rs.Consumes;
@@ -7,14 +10,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class StringTextStar implements MessageBodyReader<String>, MessageBodyWriter<String>
+public class StringTextStar implements MessageBodyReader<String>, AsyncMessageBodyWriter<String>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -44,7 +48,7 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return String.class.equals(type);
+      return String.class.equals(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    public long getSize(String o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -64,5 +68,24 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
       if (charset == null) entityStream.write(o.getBytes(StandardCharsets.UTF_8));
       else entityStream.write(o.getBytes(charset));
 
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(String o, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      String charset = mediaType.getParameters().get("charset");
+      if (charset == null)
+         return entityStream.asyncWrite(o.getBytes(StandardCharsets.UTF_8));
+      else {
+         try
+         {
+            return entityStream.asyncWrite(o.getBytes(charset));
+         } catch (UnsupportedEncodingException e)
+         {
+            return ProviderHelper.completedException(e);
+         }
+      }
    }
 }

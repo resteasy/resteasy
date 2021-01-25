@@ -1,21 +1,3 @@
-/****************************************************************
- * Licensed to the Apache Software Foundation (ASF) under one   *
- * or more contributor license agreements.  See the NOTICE file *
- * distributed with this work for additional information        *
- * regarding copyright ownership.  The ASF licenses this file   *
- * to you under the Apache License, Version 2.0 (the            *
- * "License"); you may not use this file except in compliance   *
- * with the License.  You may obtain a copy of the License at   *
- *                                                              *
- *   http://www.apache.org/licenses/LICENSE-2.0                 *
- *                                                              *
- * Unless required by applicable law or agreed to in writing,   *
- * software distributed under the License is distributed on an  *
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
- * KIND, either express or implied.  See the License for the    *
- * specific language governing permissions and limitations      *
- * under the License.                                           *
- ****************************************************************/
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import java.io.IOException;
@@ -23,6 +5,8 @@ import java.io.InputStream;
 import java.util.Stack;
 
 import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
+import org.apache.james.mime4j.codec.Base64InputStream;
 import org.apache.james.mime4j.dom.Body;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.Header;
@@ -41,6 +25,7 @@ import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.message.HeaderImpl;
 import org.apache.james.mime4j.message.MessageImpl;
 import org.apache.james.mime4j.message.MultipartImpl;
+import org.apache.james.mime4j.util.MimeUtil;
 
 
 /**
@@ -152,15 +137,10 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
     public void body(BodyDescriptor bd, final InputStream is) throws MimeException, IOException {
         expect(Entity.class);
 
-        // NO NEED TO MANUALLY RUN DECODING.
-        // The parser has a "setContentDecoding" method. We should
-        // simply instantiate the MimeStreamParser with that method.
-
-        // final String enc = bd.getTransferEncoding();
+        final String enc = bd.getTransferEncoding();
 
         final Body body;
 
-        /*
         final InputStream decodedStream;
         if (MimeUtil.ENC_BASE64.equals(enc)) {
             decodedStream = new Base64InputStream(is);
@@ -169,14 +149,14 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
         } else {
             decodedStream = is;
         }
-        */
+
 
         //Code change here to unilaterally use binaryBody
         //Code left commented out here to make diffs easy in the future when apache-mime4j updates.
         //if (bd.getMimeType().startsWith("text/")) {
         //    body = bodyFactory.textBody(is, bd.getCharset());
         //} else {
-        body = bodyFactory.binaryBody(is);
+        body = bodyFactory.binaryBody(decodedStream);
         //}
 
         Entity entity = ((Entity) stack.peek());

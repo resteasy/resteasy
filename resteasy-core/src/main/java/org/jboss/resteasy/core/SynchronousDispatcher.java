@@ -1,28 +1,8 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
-
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
-import org.jboss.resteasy.plugins.server.servlet.Cleanable;
-import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.plugins.server.Cleanable;
+import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -41,20 +21,48 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class SynchronousDispatcher implements Dispatcher
 {
    protected ResteasyProviderFactory providerFactory;
    protected Registry registry;
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
+   @SuppressWarnings("rawtypes")
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean bufferExceptionEntityRead = false;
    protected boolean bufferExceptionEntity = true;
+
+   {
+      // This is to make sure LogMessages are preloaded as profiler shows a runtime hit
+      // This will also insure that this initialization is done at static init time when loaded with Graal
+      // Not a big deal if you remove this.
+      @SuppressWarnings("unused")
+      LogMessages preload = LogMessages.LOGGER;
+   }
+
    public SynchronousDispatcher(final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
@@ -174,6 +182,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
+   @SuppressWarnings("unchecked")
    public static <T extends Throwable> void rethrow(Throwable t) throws T
    {
       throw (T)t;
@@ -200,7 +209,7 @@ public class SynchronousDispatcher implements Dispatcher
             }
          }
       }
-      if (response.isCommitted())
+      if (response.isCommitted() && response.suppressExceptionDuringChunkedTransfer())
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.responseIsCommitted());
          onComplete.accept(null);
@@ -331,8 +340,10 @@ public class SynchronousDispatcher implements Dispatcher
       return invoker;
    }
 
+   @SuppressWarnings("unchecked")
    public void pushContextObjects(final HttpRequest request, final HttpResponse response)
    {
+      @SuppressWarnings("rawtypes")
       Map contextDataMap = ResteasyContext.getContextDataMap();
       contextDataMap.put(HttpRequest.class, request);
       contextDataMap.put(HttpResponse.class, response);
@@ -432,7 +443,10 @@ public class SynchronousDispatcher implements Dispatcher
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
          logger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
-         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
+         request.getAsyncContext().initialRequestStarted();
+         jaxrsResponse = invoker.invoke(request, response);
+         request.getAsyncContext().initialRequestEnded();
+
          if (request.getAsyncContext().isSuspended())
          {
             /**
@@ -474,7 +488,9 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
-         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
+         request.getAsyncContext().initialRequestStarted();
+         jaxrsResponse = invoker.invoke(request, response);
+         request.getAsyncContext().initialRequestEnded();
 
          tracingLogger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
@@ -499,6 +515,7 @@ public class SynchronousDispatcher implements Dispatcher
       catch (Exception e)
       {
          //logger.error("invoke() failed mapping exception", e);
+         invoker.getMethodStatisticsLogger().incFailureCnt();
          writeException(request, response, e, t->{});
          return;
       }
@@ -576,8 +593,19 @@ public class SynchronousDispatcher implements Dispatcher
       {
          ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory,
             t -> {
-               if(t != null)
-                  writeException(request, response, t, t2 -> {});
+               if(t != null) {
+                  // if we're async we can't trust UnhandledException to be caught
+                  if(request.getAsyncContext().isSuspended()
+                        && !request.getAsyncContext().isOnInitialRequest()) {
+                     try {
+                        writeException(request, response, t, t2 -> {});
+                     }catch(Throwable ex) {
+                        unhandledAsynchronousException(response, ex);
+                     }
+                  } else {
+                     rethrow(t);
+                  }
+               }
             });
       }
       catch (Exception e)

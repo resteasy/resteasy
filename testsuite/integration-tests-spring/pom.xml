@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-testsuite</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,7 +16,7 @@
     <name>RESTEasy Main testsuite: Spring integration tests</name>
 
     <properties>
-        <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
+        <version.org.springframework>5.0.14.RELEASE</version.org.springframework>
         <version.org.aspectj>1.7.3</version.org.aspectj>
         <version.aopalliance>1.0</version.aopalliance>
     </properties>
@@ -28,17 +28,11 @@
     </modules>
 
     <dependencies>
-        <!-- TODO Workaround dependency for arquillian to work with container using Remoting 5. Remove when updated version of
-        wildfly-arquillian-container-managed is available -->
-        <dependency>
-            <groupId>org.wildfly.security</groupId>
-            <artifactId>wildfly-elytron</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

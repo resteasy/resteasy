@@ -25,6 +25,7 @@ public class StudentResource
 
    @GET
    @Path("/{id}")
+   @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    public Student getStudent(@PathParam("id") long id)
    {
@@ -64,6 +65,19 @@ public class StudentResource
    @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    public Student patchStudent(@PathParam("id") long id, Student student)
+   {
+      if (studentsMap.get(id) == null)
+      {
+         throw new NotFoundException();
+      }
+      studentsMap.put(id, student);
+      return student;
+   }
+   @PATCH
+   @Path("/{id}")
+   @Consumes("application/merge-patch+json")
+   @Produces(MediaType.APPLICATION_JSON)
+   public Student mergePatchStudent(@PathParam("id") long id, Student student)
    {
       if (studentsMap.get(id) == null)
       {

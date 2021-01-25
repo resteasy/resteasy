@@ -4,7 +4,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -30,8 +30,7 @@ public class HeaderFlushedOutputStream extends OutputStream {
       RuntimeDelegate delegate = RuntimeDelegate.getInstance();
 
       for (String key : headers.keySet()) {
-         List<Object> objs = headers.get(key);
-         for (Object obj : objs) {
+         for (Object obj : headers.get(key)) {
             String value;
             RuntimeDelegate.HeaderDelegate headerDelegate = delegate
                   .createHeaderDelegate(obj.getClass());
@@ -40,13 +39,13 @@ public class HeaderFlushedOutputStream extends OutputStream {
             } else {
                value = obj.toString();
             }
-            stream.write(key.getBytes());
-            stream.write(": ".getBytes());
-            stream.write(value.getBytes());
-            stream.write("\r\n".getBytes());
+            stream.write(key.getBytes(StandardCharsets.US_ASCII));
+            stream.write(AbstractMultipartWriter.COLON_SPACE_BYTES);
+            stream.write(value.getBytes(StandardCharsets.US_ASCII));
+            stream.write(AbstractMultipartWriter.LINE_SEPARATOR_BYTES);
          }
       }
-      stream.write("\r\n".getBytes());
+      stream.write(AbstractMultipartWriter.LINE_SEPARATOR_BYTES);
 
    }
 

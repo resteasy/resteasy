@@ -70,6 +70,24 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
    private String ssp;
    private String authority;
 
+   public ResteasyUriBuilderImpl(){}
+   /*
+    * Constructor allows subclass to clone retaining values.
+    */
+   public ResteasyUriBuilderImpl(final String host, final String scheme, final int port,
+                                 final String userInfo, final String path, final String query,
+                                 final String fragment, final String ssp, final String authority) {
+      this.host = host;
+      this.scheme = scheme;
+      this.port = port;
+      this.userInfo = userInfo;
+      this.path = path;
+      this.query = query;
+      this.fragment = fragment;
+      this.ssp = ssp;
+      this.authority = authority;
+   }
+
    @Override
    public UriBuilder clone()
    {
@@ -368,7 +386,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
 
    @SuppressWarnings("unchecked")
    @Override
-   public UriBuilder path(Class resource) throws IllegalArgumentException
+   public UriBuilder path(@SuppressWarnings("rawtypes") Class resource) throws IllegalArgumentException
    {
       if (resource == null) throw new IllegalArgumentException(Messages.MESSAGES.pathNull());
       Path ann = (Path) resource.getAnnotation(Path.class);
@@ -385,7 +403,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
    }
 
    @Override
-   public UriBuilder path(Class resource, String method) throws IllegalArgumentException
+   public UriBuilder path(@SuppressWarnings("rawtypes")Class resource, String method) throws IllegalArgumentException
    {
       if (resource == null) throw new IllegalArgumentException(Messages.MESSAGES.resourceNull());
       if (method == null) throw new IllegalArgumentException(Messages.MESSAGES.methodNull());
@@ -455,6 +473,11 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
          return this;
       }
       this.query = Encode.encodeQueryString(query);
+      return this;
+   }
+
+   public UriBuilder replaceQueryNoEncoding(String query) {
+      this.query = query;
       return this;
    }
 
@@ -988,7 +1011,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
          query += param;
       }
       // don't set values if values is null
-      if (values == null) return this;
+      if (values == null || values.length == 0) return this;
       return queryParam(name, values);
    }
 
@@ -1032,6 +1055,13 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
    public String getFragment()
    {
       return fragment;
+   }
+
+   public String getAuthority() {
+      return authority;
+   }
+   public String getSsp() {
+      return ssp;
    }
 
    @Override

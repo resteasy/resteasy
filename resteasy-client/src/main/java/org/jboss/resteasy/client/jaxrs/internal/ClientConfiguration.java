@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -103,22 +104,26 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
    public WriterInterceptor[] getWriterInterceptors(Class declaring, AccessibleObject target)
    {
-      return providerFactory.getClientWriterInterceptorRegistry().postMatch(declaring, target);
+      JaxrsInterceptorRegistry<WriterInterceptor> writerInterceptors = providerFactory.getClientWriterInterceptorRegistry();
+      return writerInterceptors == null ? null : writerInterceptors.postMatch(declaring, target);
    }
 
    public ReaderInterceptor[] getReaderInterceptors(Class declaring, AccessibleObject target)
    {
-      return providerFactory.getClientReaderInterceptorRegistry().postMatch(declaring, target);
+      JaxrsInterceptorRegistry<ReaderInterceptor> readerInterceptors = providerFactory.getClientReaderInterceptorRegistry();
+      return readerInterceptors == null ? null : readerInterceptors.postMatch(declaring, target);
    }
 
    public ClientRequestFilter[] getRequestFilters(Class declaring, AccessibleObject target)
    {
-      return providerFactory.getClientRequestFilterRegistry().postMatch(declaring, target);
+      JaxrsInterceptorRegistry<ClientRequestFilter> requestFilters = providerFactory.getClientRequestFilterRegistry();
+      return requestFilters == null ? null : requestFilters.postMatch(declaring, target);
    }
 
    public ClientResponseFilter[] getResponseFilters(Class declaring, AccessibleObject target)
    {
-      return providerFactory.getClientResponseFilters().postMatch(declaring, target);
+      JaxrsInterceptorRegistry<ClientResponseFilter> filters = providerFactory.getClientResponseFilters();
+      return filters == null ? null : filters.postMatch(declaring, target);
    }
 
    public Set<DynamicFeature> getDynamicFeatures()
@@ -176,13 +181,13 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    @Override
    public Set<Class<?>> getClasses()
    {
-      return providerFactory.getProviderClasses();
+      return providerFactory.getClasses();
    }
 
    @Override
    public Set<Object> getInstances()
    {
-      return providerFactory.getProviderInstances();
+      return providerFactory.getInstances();
    }
 
    @Override

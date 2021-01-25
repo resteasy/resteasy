@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import javax.ws.rs.client.ClientBuilder;
@@ -26,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
@@ -44,6 +46,7 @@ import java.util.Hashtable;
 @ServerSetup({CustomForbiddenMessageTest.SecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({ExpectedFailingOnWildFly18.class}) //WFLY-12655
 public class CustomForbiddenMessageTest {
 
    private static ResteasyClient authorizedClient;

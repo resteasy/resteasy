@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -110,6 +112,14 @@ public class NettyTest
       public String absolute(@Context UriInfo info)
       {
          return "uri: " + info.getRequestUri().toString();
+      }
+
+      @GET
+      @Path("request")
+      @Produces("text/plain")
+      public String getRequest(@Context HttpRequest req)
+      {
+         return req.getRemoteAddress() + "/" + req.getRemoteHost();
       }
    }
 
@@ -280,5 +290,14 @@ public class NettyTest
       client.close();
       Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
       Assert.assertEquals(uri, response.subSequence(5, response.length()));
+   }
+
+   @Test
+   public void testRequest() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/request"));
+      String val = target.request().get(String.class);
+      final String pattern = "^127.0.0.1/.+";
+      Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern), Pattern.matches(pattern, val));
    }
 }

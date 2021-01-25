@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.WriterInterceptor;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,7 +23,7 @@ import java.util.Map;
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
-
+@Deprecated
 public abstract class WriterUtility
 {
    private ResteasyProviderFactory factory;

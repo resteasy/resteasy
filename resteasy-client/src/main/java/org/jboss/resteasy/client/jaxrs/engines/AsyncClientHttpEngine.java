@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.ws.rs.client.InvocationCallback;
@@ -43,5 +45,32 @@ public interface AsyncClientHttpEngine extends ClientHttpEngine
     * @return Future with the result or Exception
     */
    <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor);
+
+   /**
+    * Submits an asynchronous request.
+    *
+    * @param <T> type
+    * @param request Request
+    * @param buffered buffer the response?
+    * @param extractor ResultExtractor for extracting a result out of a ClientResponse. Is run inside the io-thread
+    * @return {@link CompletableFuture} with the result or Exception
+    */
+   default <T> CompletableFuture<T> submit(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor)
+   {
+      return submit(request, buffered, extractor, null);
+   }
+
+   /**
+    * Submits an asynchronous request.
+    *
+    * @param <T> type
+    * @param request Request
+    * @param buffered buffer the response?
+    * @param extractor ResultExtractor for extracting a result out of a ClientResponse. Is run inside the io-thread
+    * @param executorService the executor to use for asynchronous execution
+    * @return {@link CompletableFuture} with the result or Exception
+    */
+   <T> CompletableFuture<T> submit(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor,
+         ExecutorService executorService);
 
 }

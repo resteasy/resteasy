@@ -8,8 +8,11 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -18,6 +21,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -54,6 +58,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -190,6 +195,49 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       }
    }
 
+   @Override
+   public <T> CompletableFuture<T> submit(ClientInvocation request,
+         boolean buffered,
+         ResultExtractor<T> extractor,
+         ExecutorService executorService) {
+      if (buffered) {
+         final CompletableFuture<T> cf = new CompletableFuture<>();
+         final InvocationCallback<T> callback = new InvocationCallback<T>()
+         {
+            @Override
+            public void completed(T response)
+            {
+               cf.complete(response);
+            }
+
+            @Override
+            public void failed(Throwable throwable)
+            {
+               cf.completeExceptionally(throwable);
+            }
+         };
+         submit(request, buffered, callback, extractor);
+         return cf;
+      } else {
+         final Supplier<T> supplier = () -> {
+            try {
+               return submit(request, buffered, null, extractor).get();
+            } catch (InterruptedException|ExecutionException e) {
+               throw new RuntimeException(e);
+            }
+         };
+
+         if(executorService == null)
+         {
+            return CompletableFuture.supplyAsync(supplier);
+         }
+         else
+         {
+            return CompletableFuture.supplyAsync(supplier, executorService);
+         }
+      }
+   }
+
 
    /**
     * ResponseConsumer which transfers the response piecewise from the io-thread to the blocking handler-thread.
@@ -198,6 +246,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
     */
    private static class StreamingResponseConsumer<T> implements HttpAsyncResponseConsumer<T>
    {
+      @SuppressWarnings("serial")
       private static final IOException unallowedBlockingReadException = new IOException("blocking reads inside an async io-handler are not allowed") {
          public synchronized Throwable fillInStackTrace() {
             //do nothing and return
@@ -212,7 +261,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       private ResultFuture<T> future;
       private SharedInputStream sharedStream;
 
-      private volatile boolean hasResult;
+      private boolean hasResult;
       private volatile T result;
       private volatile Exception exception;
       private volatile boolean completed;
@@ -620,7 +669,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    /**
     * ClientResponse with surefire releaseConnection
     */
-   private static class ConnectionResponse extends ClientResponse
+   private static class ConnectionResponse extends FinalizedClientResponse
    {
 
       private InputStream connection;
@@ -721,7 +770,10 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       {
          byte[] requestContent = requestContent(request);
          ByteArrayEntity entity = new ByteArrayEntity(requestContent);
-         entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, request.getHeaders().getMediaType().toString()));
+         final MediaType mediaType = request.getHeaders().getMediaType();
+         if (mediaType != null) {
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
+         }
          commitHeaders(request, httpRequest);
          ((HttpEntityEnclosingRequest) httpRequest).setEntity(entity);
       }

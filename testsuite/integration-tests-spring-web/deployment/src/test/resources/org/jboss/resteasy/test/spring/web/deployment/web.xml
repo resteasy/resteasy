@@ -1,0 +1,58 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+
+    <!-- This is similar to the way Quarkus configures RESTEasy -->
+
+    <!-- Needs to contain all the Spring Controllers that will be used -->
+    <context-param>
+        <param-name>resteasy.scanned.resource.classes.with.builder</param-name>
+        <param-value>org.jboss.resteasy.spi.metadata.SpringResourceBuilder:org.jboss.resteasy.test.spring.web.deployment.resource.TestController,
+            org.jboss.resteasy.test.spring.web.deployment.resource.ResponseEntityController,org.jboss.resteasy.test.spring.web.deployment.resource.ResponseStatusController,
+            org.jboss.resteasy.test.spring.web.deployment.resource.GreetingControllerWithNoRequestMapping</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>org.jboss.resteasy.plugins.providers.DefaultTextPlain,
+            org.jboss.resteasy.plugins.providers.jsonp.JsonObjectProvider,
+            org.jboss.resteasy.plugins.interceptors.ServerContentEncodingAnnotationFeature,
+            org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFeature,
+            org.jboss.resteasy.plugins.providers.DefaultNumberWriter,
+            org.jboss.resteasy.plugins.providers.jsonb.JsonBindingProvider,
+            org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponseFilter,
+            org.jboss.resteasy.plugins.providers.MultiValuedParamConverterProvider,
+            org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider,
+            org.jboss.resteasy.plugins.providers.DefaultBooleanWriter,
+            org.jboss.resteasy.plugins.providers.ByteArrayProvider,
+            org.jboss.resteasy.plugins.providers.StringTextStar,
+            org.jboss.resteasy.plugins.providers.StreamingOutputProvider,
+            org.jboss.resteasy.plugins.providers.jsonp.JsonStructureProvider,
+            org.jboss.resteasy.plugins.providers.ReaderProvider,
+            org.jboss.resteasy.plugins.providers.DataSourceProvider,
+            org.jboss.resteasy.plugins.providers.InputStreamProvider,
+            org.jboss.resteasy.plugins.providers.jsonp.JsonValueProvider,
+            org.jboss.resteasy.spring.web.ResponseEntityFeature,
+            org.jboss.resteasy.spring.web.ResponseStatusFeature</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.built.response.processors</param-name>
+        <param-value>org.jboss.resteasy.spring.web.ResponseStatusBuiltResponseProcessor</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>Resteasy</filter-name>
+        <filter-class>org.jboss.resteasy.plugins.server.servlet.FilterDispatcher</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Resteasy</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+</web-app>

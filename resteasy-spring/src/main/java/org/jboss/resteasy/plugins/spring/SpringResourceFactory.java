@@ -1,8 +1,5 @@
 package org.jboss.resteasy.plugins.spring;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -38,10 +35,10 @@ public class SpringResourceFactory implements ResourceFactory
       return propertyInjector;
    }
 
-   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response,
+   public Object createResource(HttpRequest request, HttpResponse response,
                         ResteasyProviderFactory factory)
    {
-      return CompletableFuture.completedFuture(beanFactory.getBean(beanName));
+      return beanFactory.getBean(beanName);
    }
 
    public Class<?> getScannableClass()

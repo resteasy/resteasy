@@ -3,7 +3,9 @@ package org.jboss.resteasy.test.providers.sse.resource;
 import org.junit.Assert;
 
 import javax.ejb.Singleton;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -24,6 +26,7 @@ public class SseReconnectResource {
 
    private volatile long startTime = 0L;
    private volatile long endTime = 0L;
+   private volatile long lastEventDeliveryTime;
 
    @GET
    @Path("/defaultReconnectDelay")
@@ -65,4 +68,49 @@ public class SseReconnectResource {
          }
       }
    }
+
+   @GET
+   @Path("/testReconnectDelayIsUsed")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void testReconnectDelay(@Context SseEventSink sseEventSink, @Context Sse sse,
+         @HeaderParam(HttpHeaders.LAST_EVENT_ID_HEADER) @DefaultValue("") String lastEventId)
+   {
+      switch (lastEventId)
+      {
+         case "0" :
+            checkReconnectDelay(TimeUnit.SECONDS.toMillis(3));
+            try (SseEventSink s = sseEventSink)
+            {
+               sendEvent(s, sse, "1", null);
+            }
+            break;
+         case "1" :
+            checkReconnectDelay(TimeUnit.SECONDS.toMillis(3));
+            throw new WebApplicationException(599);
+         default :
+            try (SseEventSink s = sseEventSink)
+            {
+               sendEvent(s, sse, "0", TimeUnit.SECONDS.toMillis(3));
+            }
+            break;
+      }
+   }
+
+   private void sendEvent(SseEventSink sseEventSink, Sse sse, String eventId, Long reconnectDelayInMs)
+   {
+      OutboundSseEvent.Builder outboundSseEventBuilder = sse.newEventBuilder().data("Event " + eventId).id(eventId);
+      if (reconnectDelayInMs != null)
+      {
+         outboundSseEventBuilder.reconnectDelay(reconnectDelayInMs);
+      }
+      sseEventSink.send(outboundSseEventBuilder.build());
+      lastEventDeliveryTime = System.currentTimeMillis();
+   }
+
+   private void checkReconnectDelay(long expectedDelayInMs)
+   {
+      long currentDelayInMs = System.currentTimeMillis() - lastEventDeliveryTime;
+      Assert.assertTrue(currentDelayInMs >= expectedDelayInMs);
+   }
+
 }

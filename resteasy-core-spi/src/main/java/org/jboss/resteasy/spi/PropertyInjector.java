@@ -16,7 +16,7 @@ public interface PropertyInjector
     *
     * @param target target object
     * @param unwrapAsync unwrap async
-    * @return {@link CompletionStage}
+    * @return {@link CompletionStage} or null if async isn't needed
     */
    CompletionStage<Void> inject(Object target, boolean unwrapAsync);
 
@@ -28,7 +28,7 @@ public interface PropertyInjector
     * @param response http response
     * @param target target object
     * @param unwrapAsync unwrap async
-    * @return {@link CompletionStage}
+    * @return {@link CompletionStage} or null if async isn't needed
     * @throws Failure if application failure occurred
     * @throws WebApplicationException if application exception occurred
     */

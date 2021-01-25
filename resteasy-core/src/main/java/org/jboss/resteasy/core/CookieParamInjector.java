@@ -8,14 +8,11 @@ import org.jboss.resteasy.spi.ValueInjector;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -41,19 +38,19 @@ public class CookieParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
-      if (type.equals(Cookie.class)) return CompletableFuture.completedFuture(cookie);
+      if (type.equals(Cookie.class)) return cookie;
 
-      if (cookie == null) return CompletableFuture.completedFuture(extractValues(null));
+      if (cookie == null) return extractValues(null);
       List<String> values = new ArrayList<String>();
       values.add(cookie.getValue());
-      return CompletableFuture.completedFuture(extractValues(values));
+      return extractValues(values);
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectCookieParam());
    }

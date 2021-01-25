@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.HttpResponse;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -10,5 +11,5 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface HttpResponseFactory
 {
-   HttpResponse createResteasyHttpResponse(HttpServletResponse response);
+   HttpResponse createResteasyHttpResponse(HttpServletResponse response, HttpServletRequest request);
 }

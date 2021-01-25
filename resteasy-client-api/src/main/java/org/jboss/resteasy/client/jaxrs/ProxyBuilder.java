@@ -1,6 +1,9 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -13,7 +16,23 @@ public abstract class ProxyBuilder<T>
    {
       try
       {
-         Class clazz = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
+         ClassLoader loader = null;
+         if (System.getSecurityManager() == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+         } else {
+            try {
+               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                  @Override
+                  public ClassLoader run() throws Exception {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
+         }
+
+         Class clazz = loader.loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
          Constructor c = clazz.getConstructor(Class.class, WebTarget.class);
          return (ProxyBuilder<T>) c.newInstance(iface, webTarget);
       }

@@ -61,9 +61,8 @@ public interface TestResourceIntf {
    public String test();
 }
    
-TestResourceIntf service = MicroprofileClientBuilderResolver.instance()
-                              .newBuilder()
-                              .baseUrl(http://localhost:8081/))
+TestResourceIntf service = RestClientBuilder.newBuilder()
+                              .baseUrl("http://localhost:8081/")
                               .build(TestResourceIntf.class);
 String s = service.test();
 </programlisting>
@@ -133,9 +132,8 @@ by registering providers:
 </para>
 
 <programlisting id="listing1">
-TestResourceIntf service = MicroprofileClientBuilderResolver.instance()
-                              .newBuilder()
-                              .baseUrl(http://localhost:8081/))
+TestResourceIntf service = RestClientBuilder.newBuilder()
+                              .baseUrl("http://localhost:8081/")
                               .register(MyClientResponseFilter.class)
                               .register(MyMessageBodyReader.class)
                               .build(TestResourceIntf.class);
@@ -168,11 +166,69 @@ in RESTEasy.
 </sect1>
 
 <sect1>
-<title>Beyond RESTEasy</title>
+<title>Concepts imported from JAX-RS</title>
 
 <para>
-There are a few concepts in MicroProfile Rest Client that do not appear in RESTEasy.
+Beyond the central concept of the client proxy, some basic concepts in MicroProfile Client originate
+in JAX-RS. Some of these have already been introduced in the previous section, since the interface
+implemented by a client proxy represents the facilities provided by a JAX-RS server. For example, the
+HTTP verb annotations and the <code>@Consumes</code> and <code>@Produces</code> annotations originate on the
+JAX-RS server side. Injectable parameters annotated with <code>@PathParameter</code>, <code>@QueryParameter</code>,
+etc., also come from JAX-RS.
 </para>
+
+<para>
+Nearly all of the provider concepts supported by MicroProfile Client also originate in JAX-RS. These are:
+</para>
+
+<itemizedlist>
+   <listitem>javax.ws.rs.client.ClientRequestFilter</listitem>
+   <listitem>javax.ws.rs.client.ClientResponseFilter</listitem>
+   <listitem>javax.ws.rs.ext.MessageBodyReader</listitem>
+   <listitem>javax.ws.rs.ext.MessageBodyWriter</listitem>
+   <listitem>javax.ws.rs.ext.ParamConverter</listitem>
+   <listitem>javax.ws.rs.ext.ReaderInterceptor</listitem>
+   <listitem>javax.ws.rs.ext.WriterInterceptor</listitem>
+</itemizedlist>
+
+<para>
+Like JAX-RS, MicroProfile Client also has the concept of mandated providers. These are
+</para>
+
+<itemizedlist>
+   <listitem>JSON-P <classname>MessageBodyReader</classname> and <classname>MessageBodyWriter</classname>
+   must be provided.</listitem>
+   <listitem>JSON-B <classname>MessageBodyReader</classname> and <classname>MessageBodyWriter</classname>
+   must be provided if the implementation supports JSON-B.</listitem>
+   <listitem><classname>MessageBodyReader</classname>s and <classname>MessageBodyWriter</classname>s
+   must be provided for the following types:
+   <itemizedlist>
+      <listitem>byte[]</listitem>
+      <listitem>String</listitem>
+      <listitem>InputStream</listitem>
+      <listitem>Reader</listitem>
+      <listitem>File</listitem>
+   </itemizedlist>
+   </listitem>
+</itemizedlist>
+</sect1>
+
+<sect1>
+<title>Beyond JAX-RS and RESTEasy</title>
+
+<para>
+Some concepts in MicroProfile Rest Client do not appear in either JAX-RS or RESTEasy.
+</para>
+
+<sect1>
+<title>Default media type</title>
+
+<para>
+Whenever no media type is specified by, for example, <code>@Consumes</code> or <code>@Produces</code> annotations,
+the media type of a request entity or response entity is "application/json". This is different than JAX-RS, where
+the media type defaults to "application/octet-stream".
+</para>
+</sect1>
 
 <sect1>
 <title>Declarative registration of providers</title>
@@ -201,6 +257,142 @@ public interface TestResourceIntf2 {
 <para>
 Declaring <classname>MyClientResponseFilter</classname> and <classname>MyMessageBodyReader</classname>  with
 annotations eliminates the need to call <methodname>RestClientBuilder.register()</methodname>.
+</para>
+</sect1>
+
+<sect1>
+<title>Global registration of providers</title>
+
+<para>
+One more way to register providers is by implementing one or both of the listeners in package
+<code>org.eclipse.microprofile.rest.client.spi</code>:
+</para>
+
+<programlisting>
+public interface RestClientBuilderListener {
+
+    void onNewBuilder(RestClientBuilder builder);
+}
+
+public interface RestClientListener {
+
+    void onNewClient(Class&lt;?&gt; serviceInterface, RestClientBuilder builder);
+}
+</programlisting>
+
+<para>
+which can access a <classname>RestClientBuilder</classname> upon creation of a new <classname>RestClientBuilder</classname> or
+upon the execution of <methodname>RestClientBuilder.build()</methodname>, respectively. Implementations must
+be declared in 
+</para>
+
+<programlisting>
+META-INF/services/org.eclipse.microprofile.rest.client.spi.RestClientBuilderListener
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+META-INF/services/org.eclipse.microprofile.rest.client.spi.RestClientListener
+</programlisting>
+</sect1>
+
+<sect1>
+<title>Declarative specification of headers</title>
+
+<para>
+One way of declaring a header to be included in a request is by annotating one of the resource method
+parameters with <code>@HeaderValue</code>:
+</para>
+
+<programlisting>
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.TEXT_PLAIN)
+String contentLang(@HeaderParam(HttpHeaders.CONTENT_LANGUAGE) String contentLanguage, String subject);
+</programlisting>
+
+<para>
+That option is available with RESTEasy client proxies as well,
+but in case it is inconvenient or otherwise inappropriate to include the necessary parameter,
+MicroProfile Client makes a declarative alternative available through the use of the
+<classname>org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam</classname> annotation: 
+</para>
+
+<programlisting>
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.TEXT_PLAIN)
+@ClientHeaderParam(name=HttpHeaders.CONTENT_LANGUAGE, value="en")
+String contentLang(String subject);
+</programlisting>
+
+<para>
+In this example, the header value is hardcoded, but it is also possible to compute a value:
+</para>
+
+<programlisting>
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.TEXT_PLAIN)
+@ClientHeaderParam(name=HttpHeaders.CONTENT_LANGUAGE, value="{getLanguage}")
+String contentLang(String subject);
+
+default String getLanguage() {
+   return ...;
+}
+</programlisting>
+</sect1>
+
+<sect1>
+<title>Propagating headers on the server</title>
+
+<para>
+An instance of <classname>org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory</classname>,
+</para>
+
+<programlisting>
+public interface ClientHeadersFactory {
+
+/**
+ * Updates the HTTP headers to send to the remote service. Note that providers
+ * on the outbound processing chain could further update the headers.
+ *
+ * @param incomingHeaders - the map of headers from the inbound JAX-RS request. This will
+ * be an empty map if the associated client interface is not part of a JAX-RS request.
+ * @param clientOutgoingHeaders - the read-only map of header parameters specified on the
+ * client interface.
+ * @return a map of HTTP headers to merge with the clientOutgoingHeaders to be sent to
+ * the remote service.
+ */
+MultivaluedMap&lt;String, String&gt; update(MultivaluedMap&lt;String, String&gt; incomingHeaders,
+                                      MultivaluedMap&lt;String, String&gt; clientOutgoingHeaders);
+}
+</programlisting>
+<para>
+if activated, can do a bulk transfer of incoming headers to an outgoing request. The default instance
+<classname>org.eclipse.microprofile.rest.client.ext.DefaultClientHeadersFactoryImpl</classname>
+will return a map consisting of those incoming headers listed in the comma separated configuration property
+</para>
+
+<programlisting>
+org.eclipse.microprofile.rest.client.propagateHeaders
+</programlisting>
+
+<para>
+In order for an instance of <classname>ClientHeadersFactory</classname> to be activated,
+the interface must be annotated with 
+<classname>org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders</classname>. Optionally,
+the annotation may include a value field set to an implementation class; without an explicit value, the
+default instance will be used.
+</para>
+
+<para>
+Although a <classname>ClientHeadersFactory</classname> is not officially designated as a provider, it is
+now (as of MicroProfile REST Client specification 1.4) subject to injection. In particular, when an instance of <classname>ClientHeadersFactory</classname>
+is managed by CDI, then CDI injection is mandatory. When a REST Client is executing in the context
+of a JAX-RS implementation, then @Context injection into a <classname>ClientHeadersFactory</classname> is
+currently optional. RESTEasy supports CDI injection and does not currently support @Context injection.
 </para>
 </sect1>
 
@@ -236,7 +428,7 @@ then it is to be expected that services will often act as clients to other servi
 CDI (Contexts and Dependency Injection) is a fairly rich subject and beyond the scope of this Guide. For more information, see 
 <ulink url="https://www.jcp.org/en/jsr/detail?id=365">JSR 365: Contexts and Dependency Injection for JavaTM 2.0</ulink> 
 (the specification), 
-<ulink url="https://docs.oracle.com/javaee/7/tutorial/cdi-basic.htm">Java EE 7 Tutorial</ulink>, or
+<ulink url="https://javaee.github.io/tutorial/toc.html">Java EE 8 Tutorial</ulink>, or
 <ulink url="https://docs.jboss.org/weld/reference/latest-master/en-US/html/">WELD - CDI Reference Implementation</ulink>.
 </para>
 
@@ -353,16 +545,37 @@ Now, in MicroProfile Rest Client, any interface that is to be managed as a CDI b
 <para>
 Here, the MicroProfile Rest Client implementation creates a proxy for a <classname>TestDataBase</classname> service,
 allowing easy access by <classname>TestResourceImpl</classname>. Notice, though, that there's no indication of
-where the <classname>TestDataBase</classname> implementation lives. That information can be supplied externally with
-the system variable
-</para>
+where the <classname>TestDataBase</classname> implementation lives. That information can be supplied by the optional
+<classname>@RegisterProvider</classname> parameter <code>baseUri</code>:</para>
 
 <programlisting>
-            &lt;fqn of TestDataBase&gt;/mp-rest/url=&lt;URL&gt;
+   @Path("database")
+   @RegisterRestClient(baseUri="https://localhost:8080/webapp")
+   public interface TestDataBase {
+      
+      @Path("")
+      @POST
+      public String getByName(String name);
+   }
 </programlisting>
 
 <para>
- For example,
+which indicates that an implementation of <classname>TestDatabase</classname> can be
+accessed at https://localhost:8080/webapp. The same information can be supplied externally with the system variable
+</para>
+
+<programlisting>
+&lt;fqn of TestDataBase&gt;/mp-rest/uri=&lt;URL&gt;
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+&lt;fqn of TestDataBase&gt;/mp-rest/url=&lt;URL&gt;
+</programlisting>
+
+<para>
+which will override the value hardcoded in <classname>@RegisterRestClient</classname>. For example,
 </para>
 
 <programlisting>
@@ -370,11 +583,256 @@ com.bluemonkeydiamond.TestDatabase/mp-rest/url=https://localhost:8080/webapp
 </programlisting>
 
 <para>
-indicates that an implementation of <classname>com.bluemonkeydiamond.TestDatabase</classname> can be
-accessed at https://localhost:8080/webapp.
+A number of other properties will be examined in the course of creating the proxy, including, for example
+</para>
+
+<programlisting>
+com.bluemonkeydiamond.TestDatabase/mp-rest/providers
+</programlisting>
+
+<para>
+a comma separated list of provider classes to be registered with the proxy. See the MicroProfile Client
+documentation for more such properties.
+</para>
+
+<para>
+These properties can be simplified through the use of the <code>configKey</code> field in 
+<classname>@RegisterRestClient</classname>. For example, setting the <code>configKey</code> as in
+</para>
+
+<programlisting>
+@Path("database")
+@RegisterRestClient(configKey="bmd")
+public interface TestDataBase { ... }
+</programlisting>
+
+<para>
+allows the use of properties like
+</para>
+
+<programlisting>
+bmd/mp-rest/url=https://localhost:8080/webapp
+</programlisting>
+
+<para>
+Note that, since the configKey is not tied to a particular interface name, multiple proxies can be
+configured with the same properties.
+</para>
+</sect1>
+
+<sect1>
+<title>Proxy lifecycle</title>
+
+<para>
+Proxies should be closed so that any resources they hold can be released. Every proxy created by
+<classname>RestClientBuilder</classname> implements the <classname>java.io.Closeable</classname>
+interface, so it is always possible to cast a proxy to <classname>Closeable</classname> and call
+<methodname>close()</methodname>. A nice trick to have the proxy interface explicitly extend
+<classname>Closeable</classname>, which not only avoids the need for a cast but also makes the proxy
+eligible to use in a try-with-resources block:
+</para>
+
+<programlisting>
+@Path("resource")
+public interface TestResourceIntf extends Closeable {
+
+   @Path("test")
+   @GET
+   public String test();
+}
+   
+TestResourceIntf service = RestClientBuilder.newBuilder()
+                              .baseUrl("http://localhost:8081/")
+                              .build(TestResourceIntf.class);
+try (TestResourceIntf tr = service) {
+   String s = service.test();
+}
+</programlisting>
+</sect1>
+
+<sect1>
+<title>Asynchronous support</title>
+
+<para>An interface method can be designated as asynchronous by having it return a
+<classname>java.util.concurrent.CompletionStage</classname>. For example, in
+</para>
+
+<programlisting>
+public interface TestResourceIntf extends Closeable {
+
+   @Path("test")
+   @GET
+   public String test();
+   
+   @Path("testasync")
+   @GET
+   public CompletionStage&lt;String&gt; testAsync();
+}
+</programlisting>
+
+<para>
+the <code>test()</code> method can be turned into the asynchronous method <code>testAsync()</code> by having it return
+a <classname>CompletionStage&lt;String&gt;</classname> instead of a <classname>String</classname>.
+</para>
+
+<para>
+Asynchronous methods are made to be asynchronous by scheduling their execution on a thread distinct from
+the calling thread. The MicroProfile Client implementation will have a default means of doing that, but
+<methodname>RestClientBuilder.executorService(ExecutorService)</methodname> provides a way of substituting
+an application specific <classname>ExecutorService</classname>.
+</para>
+
+<para>
+The classes <classname>AsyncInvocationInterceptorFactory</classname> and
+<classname>AsyncInvocationInterceptor</classname> in package
+<code>org.eclipse.microprofile.rest.client.ext</code> provides a means of communication
+between the calling thread and the asynchronous thread:
+</para>
+
+<programlisting>
+public interface AsyncInvocationInterceptorFactory {
+
+    /**
+     * Implementations of this method should return an implementation of the
+     * <code>AsyncInvocationInterceptor</code> interface.  The MP Rest Client
+     * implementation runtime will invoke this method, and then invoke the
+     * <code>prepareContext</code> and <code>applyContext</code> methods of the
+     * returned interceptor when performing an asynchronous method invocation.
+     * Null return values will be ignored.
+     *
+     * @return Non-null instance of <code>AsyncInvocationInterceptor</code>
+     */
+    AsyncInvocationInterceptor newInterceptor();
+}
+
+public interface AsyncInvocationInterceptor {
+
+    /**
+     * This method will be invoked by the MP Rest Client runtime on the "main"
+     * thread (i.e. the thread calling the async Rest Client interface method)
+     * prior to returning control to the calling method.
+     */
+    void prepareContext();
+
+    /**
+     * This method will be invoked by the MP Rest Client runtime on the "async"
+     * thread (i.e. the thread used to actually invoke the remote service and
+     * wait for the response) prior to sending the request.
+     */
+    void applyContext();
+
+    /**
+     * This method will be invoked by the MP Rest Client runtime on the "async"
+     * thread (i.e. the thread used to actually invoke the remote service and
+     * wait for the response) after all providers on the inbound response flow
+     * have been invoked.
+     *
+     * @since 1.2
+     */
+     void removeContext();
+}
+</programlisting>
+
+<para>
+The following sequence of events occurs:
+</para>
+
+<orderedlist>
+   <listitem>
+      <para>
+      <methodname>AsyncInvocationInterceptorFactory.newInterceptor()</methodname> is called
+      on the calling thread to get an instance of the <classname>AsyncInvocationInterceptor</classname>.
+      </para>
+   </listitem>
+   <listitem>
+      <para>
+      <methodname>AsyncInvocationInterceptor.prepareContext()</methodname> is executed on the calling
+      thread to store information to be used by the request execution.
+      </para>
+   </listitem>
+   <listitem>
+      <para>
+      <methodname>AsyncInvocationInterceptor.applyContext()</methodname> is executed on the 
+      asynchronous thread.
+      </para>
+   </listitem>
+   <listitem>
+      <para>
+      All relevant outbound providers such as interceptors and filters are executed on the asynchronous thread,
+      followed by the request invocation.
+      </para>
+   </listitem>
+   <listitem>
+      <para>
+      All relevant inbound providers are executed on the asynchronous thread, followed by executing
+      <methodname>AsyncInvocationInterceptor.removeContext()</methodname>
+      </para>
+   </listitem>
+   <listitem>
+      <para>
+      The asynchronous thread returns.
+      </para>
+   </listitem>
+</orderedlist>
+
+<para>
+An <classname>AsyncInvocationInterceptorFactory</classname> class is enabled by registering it on the
+client interface with <classname>@RegisterProvider</classname>. 
 </para>
 
 </sect1>
 
+<sect1>
+<title>SSL</title>
+
+<para>
+The MicroProfile Client <classname>RestClientBuilder</classname> interface includes a number
+of methods that support the use of SSL:
+</para>
+
+<programlisting>
+RestClientBuilder hostnameVerifier(HostnameVerifier hostnameVerifier);
+RestClientBuilder keyStore(KeyStore keyStore, String keystorePassword);
+RestClientBuilder sslContext(SSLContext sslContext);
+RestClientBuilder trustStore(KeyStore trustStore);
+</programlisting>
+
+<para>
+For example:
+</para>
+
+<programlisting>
+KeyStore trustStore = ... ;
+HostnameVerifier verifier ... ;
+TestResourceIntf service = RestClientBuilder.newBuilder()
+                              .baseUrl("http://localhost:8081/")
+                              .trustStore(trustStore)
+                              .hostnameVerifier(verifier)
+                              .build(TestResourceIntf.class);
+</programlisting>
+
+<para>
+It is also possible to configure <classname>HostnameVerifier</classname>s, 
+<classname>KeyStore</classname>s, and <classname>TrustStore</classname>s using configuration
+properties:
+</para>
+
+<itemizedlist>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/hostnameVerifier</para></listitem>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/keyStore</para></listitem>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/keyStorePassword</para></listitem>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/keyStoreType</para></listitem>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/trustStore</para></listitem>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/trustStorePassword</para></listitem>
+   <listitem><para>com.bluemonkeydiamond.TestResourceIntf/mp-rest/trustStoreType</para></listitem>
+</itemizedlist>
+
+<para>
+The values of the ".../mp-rest/keyStore" and "../mp-rest/trustStore" parameters can be either
+classpath resources (e.g., "classpath:/client-keystore.jks") or files (e.g., "file:/home/user/client-keystore.jks").
+</para>
+
 </sect1>
+</sect1>
+
 </chapter>

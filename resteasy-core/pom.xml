@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-core</artifactId>
@@ -46,28 +46,46 @@
         </dependency>
         
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.async</groupId>
+            <artifactId>asyncutil</artifactId>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <scope>provided</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
         <!--
-           Needed for javax.annotation.security.* which is part of javaee 6 XXX
+           Needed for javax.annotation.security.*
            should this dependency be <scope>provided</scope> and only used if
            detected runtime?
         -->
@@ -79,24 +97,8 @@
 
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-        </dependency>
-
-        <!-- 4.0 refactor of apache httpclient -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-	        <artifactId>commons-io</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>net.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
@@ -130,9 +132,10 @@
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>io.smallrye</groupId>
+            <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config</artifactId>
             <exclusions>
                <exclusion>

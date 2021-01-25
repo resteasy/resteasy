@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -44,7 +45,7 @@ public class HttpContextTest
    public static void after() throws Exception
    {
       contextBuilder.cleanup();
-      httpServer.stop(0);
+      httpServer.stop(1);
    }
 
    @Test
@@ -75,6 +76,14 @@ public class HttpContextTest
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals("1234", response.readEntity(String.class));
       }
-   }
+
+      {
+          Response response = client.target(generateURL("/request")).request().get();
+          Assert.assertEquals(200, response.getStatus());
+          final String val = response.readEntity(String.class);
+          final String pattern = "^127.0.0.1/.+";
+          Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern), Pattern.matches(pattern, val));
+       }
+}
 
 }

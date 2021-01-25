@@ -43,7 +43,7 @@ public class TestWadlFunctions extends WADLTestSetup {
       this.client = client;
    }
 
-   private static ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+   private static ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
 
 
    @BeforeClass
@@ -63,7 +63,7 @@ public class TestWadlFunctions extends WADLTestSetup {
    public static void after() throws Exception {
 
       contextBuilder.cleanup();
-      httpServer.stop(0);
+      httpServer.stop(1);
       Thread.sleep(100);
    }
 

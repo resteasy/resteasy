@@ -9,7 +9,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -22,12 +25,15 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.security.doseta.i18n.LogMessages;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
+import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
+import org.jboss.resteasy.spi.BlockingAsyncOutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -35,18 +41,18 @@ import org.jboss.resteasy.security.doseta.i18n.Messages;
  */
 @Provider
 @Priority(Priorities.ENTITY_CODER)
-public class DigitalSigningInterceptor implements WriterInterceptor, ContainerResponseFilter, ClientRequestFilter
+public class DigitalSigningInterceptor implements AsyncWriterInterceptor, ContainerResponseFilter, ClientRequestFilter
 {
 
    protected List<DKIMSignature> getHeaders(MultivaluedMap<String, Object> headers)
    {
-      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       List<Object> signatures = headers.get(DKIMSignature.DKIM_SIGNATURE);
       if (signatures == null || signatures.isEmpty())
       {
-         return list;
+         return Collections.EMPTY_LIST;
       }
+      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       for (Object obj : signatures)
       {
@@ -148,6 +154,48 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ContainerRe
       {
          context.setOutputStream(old);
       }
+   }
+
+   @Override
+   public CompletionStage<Void> asyncAroundWriteTo(AsyncWriterInterceptorContext context)
+   {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+      MultivaluedMap<String, Object> headers = context.getHeaders();
+
+      List<DKIMSignature> list = getHeaders(headers);
+
+      if (list.isEmpty())
+      {
+         return context.asyncProceed();
+      }
+
+      //System.out.println("TRACE: Found ContentSignatures");
+      AsyncOutputStream old = context.getAsyncOutputStream();
+      // store body in a byte array so we can use it to calculate signature
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      context.setAsyncOutputStream(new BlockingAsyncOutputStream(baos));
+      return context.asyncProceed()
+              .thenCompose(v -> {
+                  byte[] body = baos.toByteArray();
+
+                  try {
+                      for (DKIMSignature dosetaSignature : list)
+                      {
+                          KeyRepository repository = (KeyRepository) context.getProperty(KeyRepository.class.getName());
+                          sign(repository, headers, body, dosetaSignature);
+                      }
+                  } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException | UnsupportedEncodingException e) {
+                      CompletableFuture<Void> ret = new CompletableFuture<>();
+                      ret.completeExceptionally(e);
+                      return ret;
+                  }
+
+                  return old.asyncWrite(body);
+              }).whenComplete((v, t) -> {
+                  context.setAsyncOutputStream(old);
+                  if(t != null)
+                      throw new RuntimeException(Messages.MESSAGES.failedToSign(), t);
+              });
    }
 
    protected void sign(KeyRepository repository, MultivaluedMap<String, Object> headers, byte[] body, DKIMSignature dosetaSignature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException

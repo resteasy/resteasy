@@ -3,6 +3,7 @@ package org.jboss.resteasy.spi.util;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -11,6 +12,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+
+import javax.annotation.PostConstruct;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
@@ -58,9 +62,9 @@ public final class Types
       for (int i = 0; i < base.getInterfaces().length; i++)
       {
          Class intf = base.getInterfaces()[i];
+         Type generic = base.getGenericInterfaces()[i];
          if (intf.equals(desiredInterface))
          {
-            Type generic = base.getGenericInterfaces()[i];
             if (generic instanceof ParameterizedType)
             {
                ParameterizedType p = (ParameterizedType) generic;
@@ -75,43 +79,49 @@ public final class Types
                return null;
             }
          }
+         Object ret = searchForInterfaceTemplateParameterInSupertype(intf, generic, desiredInterface);
+         if(ret != null)
+            return ret;
       }
-      if (base.getSuperclass() == null || base.getSuperclass().equals(Object.class))
-         return null;
-      Object rtn = searchForInterfaceTemplateParameter(base.getSuperclass(), desiredInterface);
-      if (rtn == null || rtn instanceof Class)
-         return rtn;
-      if (!(rtn instanceof TypeVariable))
-         return null;
-
-      String name = ((TypeVariable) rtn).getName();
-      int index = -1;
-      TypeVariable[] variables = base.getSuperclass().getTypeParameters();
-      if (variables == null || variables.length < 1)
-         return null;
-
-      for (int i = 0; i < variables.length; i++)
-      {
-         if (variables[i].getName().equals(name))
-            index = i;
-      }
-      if (index == -1)
-         return null;
-
-      Type genericSuperclass = base.getGenericSuperclass();
-      if (!(genericSuperclass instanceof ParameterizedType))
-         return null;
-
-      ParameterizedType pt = (ParameterizedType) genericSuperclass;
-      Type type = pt.getActualTypeArguments()[index];
-
-      Class clazz = getRawTypeNoException(type);
-      if (clazz != null)
-         return clazz;
-      return type;
+      return searchForInterfaceTemplateParameterInSupertype(base.getSuperclass(), base.getGenericSuperclass(), desiredInterface);
    }
 
-   /**
+   private static Object searchForInterfaceTemplateParameterInSupertype(Class<?> supertype, Type genericSupertype, Class<?> desiredInterface) {
+       if (supertype == null || supertype.equals(Object.class))
+           return null;
+       Object rtn = searchForInterfaceTemplateParameter(supertype, desiredInterface);
+       if (rtn == null || rtn instanceof Class)
+           return rtn;
+       if (!(rtn instanceof TypeVariable))
+           return null;
+
+       String name = ((TypeVariable) rtn).getName();
+       int index = -1;
+       TypeVariable[] variables = supertype.getTypeParameters();
+       if (variables == null || variables.length < 1)
+           return null;
+
+       for (int i = 0; i < variables.length; i++)
+       {
+           if (variables[i].getName().equals(name))
+               index = i;
+       }
+       if (index == -1)
+           return null;
+
+       if (!(genericSupertype instanceof ParameterizedType))
+           return null;
+
+       ParameterizedType pt = (ParameterizedType) genericSupertype;
+       Type type = pt.getActualTypeArguments()[index];
+
+       Class clazz = getRawTypeNoException(type);
+       if (clazz != null)
+           return clazz;
+       return type;
+   }
+
+/**
     * See if the two methods are compatible, that is they have the same relative signature.
     *
     * @param method first method
@@ -797,5 +807,55 @@ public final class Types
       if (genericType == Double.TYPE)
          return Double.class;
       return genericType;
+   }
+
+   public static boolean hasPostConstruct(Class<?> clazz)
+   {
+      return hasPostConstruct(clazz, (Method mm)-> mm.getParameterCount() == 0);
+   }
+
+   public static boolean hasPostConstruct(Class<?> clazz, Function<Method, Boolean> validateParameterCount)
+   {
+      for (Method m : clazz.getDeclaredMethods())
+      {
+         if (m.getAnnotation(PostConstruct.class) != null)
+         {
+            if (validatePostConstructMethod(m, validateParameterCount))
+            {
+               return true;
+            }
+         }
+      }
+
+      Class<?> parent = clazz.getSuperclass();
+      if (parent != null && parent != Object.class) {
+         return hasPostConstruct(parent, validateParameterCount);
+      }
+
+      return false;
+   }
+
+   private static boolean validatePostConstructMethod(Method m, Function<Method, Boolean> validateParameterCount)
+   {
+      if (!validateParameterCount.apply(m))
+      {
+         return false;
+      }
+      if (!void.class.equals(m.getReturnType()))
+      {
+         return false;
+      }
+      for (Class<?> c : m.getExceptionTypes())
+      {
+         if (!RuntimeException.class.isAssignableFrom(c))
+         {
+            return false;
+         }
+      }
+      if (Modifier.isStatic(m.getModifiers()))
+      {
+         return false;
+      }
+      return true;
    }
 }

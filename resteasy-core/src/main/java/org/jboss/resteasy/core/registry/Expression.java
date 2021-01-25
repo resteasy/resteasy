@@ -103,6 +103,10 @@ public abstract class Expression implements Comparable<Expression>
       return groupCount;
    }
 
+   public boolean isStatic() {
+      return groups.isEmpty();
+   }
+
    public int getNumGroups()
    {
       return groups.size();

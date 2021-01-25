@@ -1,0 +1,19 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+	<id>myAssembly</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<baseDirectory>src</baseDirectory>
+	    <fileSets>
+        <fileSet>
+            <directory>${basedir}/src</directory>
+			   <outputDirectory/>
+			  <excludes>
+				  <exclude>test/resources/arquillian.xml</exclude>
+				  <exclude>test/java/org/jboss/resteasy/test/UndertowTestRunner.java</exclude>
+			  </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>
