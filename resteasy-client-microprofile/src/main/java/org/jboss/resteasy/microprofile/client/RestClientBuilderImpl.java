@@ -376,6 +376,8 @@ class RestClientBuilderImpl implements RestClientBuilder {
                         : (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value() + "/" + methodPathAnno.value());
             } else if (classPathAnno != null) {
                 template = (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value());
+            } else {
+                template = null;
             }
 
             if (template == null) {
