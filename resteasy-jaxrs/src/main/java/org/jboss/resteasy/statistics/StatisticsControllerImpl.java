@@ -4,8 +4,8 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StatisticsControllerImpl implements StatisticsController {
 
@@ -15,7 +15,7 @@ public class StatisticsControllerImpl implements StatisticsController {
    };
 
    boolean isEnabled = false;
-   List<ResourceInvoker> registry = new ArrayList<>();
+   List<ResourceInvoker> registry = new CopyOnWriteArrayList<>();
 
    @Override
    public void register(ResourceInvoker invoker) {
