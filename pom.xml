@@ -101,7 +101,8 @@
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client-microprofile</module>  
+                <module>resteasy-client-microprofile</module>
+                <module>resteasy-client-microprofile-base</module>
                 <module>resteasy-client-jetty</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>

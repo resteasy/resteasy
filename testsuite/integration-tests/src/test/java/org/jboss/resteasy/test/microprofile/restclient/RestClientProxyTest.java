@@ -26,7 +26,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.resteasy.category.MicroProfileDependent;
 import org.jboss.resteasy.microprofile.client.BuilderResolver;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -43,7 +42,6 @@ import io.reactivex.Single;
 
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category(MicroProfileDependent.class)
 public class RestClientProxyTest
 {
 
@@ -62,7 +60,6 @@ public class RestClientProxyTest
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addClass(PortProviderUtil.class);
       war.addClass(Category.class);
-      war.addClass(MicroProfileDependent.class);
       war.addClasses(TestParamConverter.class, TestParamConverterProvider.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient,org.jboss.resteasy.resteasy-rxjava2 services\n"), "MANIFEST.MF");
       return TestUtil.finishContainerPrepare(war, null);

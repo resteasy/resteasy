@@ -124,7 +124,7 @@ public class ClientInvoker implements MethodInvoker
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
       {
-         executor = webTarget.getResteasyClient().asyncInvocationExecutor();
+         executor = request.asyncInvocationExecutor();
       }
       RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
       Type type = method.getGenericReturnType();
@@ -166,31 +166,26 @@ public class ClientInvoker implements MethodInvoker
 
          }
       }
+      ClientInvocationBuilder builder = (ClientInvocationBuilder) target.request();
+      ClientInvocation clientInvocation = (ClientInvocation) builder.build(httpMethod);
 
-      ClientInvocationBuilder builder = null;
+      clientInvocation.setClientInvoker(this);
+      if (target != this.webTarget) {
+         clientInvocation.setActualTarget(target);
+      }
       if (accepts != null)
       {
-         builder = (ClientInvocationBuilder)target.request(accepts);
+         clientInvocation.getHeaders().accept(accepts);
       }
-      else
-      {
-         builder = (ClientInvocationBuilder)target.request();
-      }
-
       for (int i = 0; i < processors.length; i++)
       {
          if (processors != null && processors[i] instanceof InvocationProcessor)
          {
             InvocationProcessor processor = (InvocationProcessor)processors[i];
-            processor.process(builder, args[i]);
+            processor.process(clientInvocation, args[i]);
 
          }
       }
-      ClientInvocation clientInvocation = (ClientInvocation)builder.build(httpMethod);
-      if (target != this.webTarget) {
-         clientInvocation.setActualTarget(target);
-      }
-      clientInvocation.setClientInvoker(this);
       return clientInvocation;
    }
 
