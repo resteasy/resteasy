@@ -93,6 +93,8 @@
         <version.org.hibernate.validator>6.0.20.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
+
+        <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
 
     <distributionManagement>
@@ -957,6 +959,11 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.async</groupId>
+                <artifactId>asyncutil</artifactId>
+                <version>${version.asyncutil}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

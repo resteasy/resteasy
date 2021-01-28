@@ -26,6 +26,8 @@ import javax.ws.rs.core.Configuration;
 import java.security.AccessController;
 import java.security.KeyStore;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -102,6 +104,22 @@ public class ResteasyClientBuilder extends ClientBuilder
     * Proxy scheme property name (string).
     */
    public static final String PROPERTY_PROXY_SCHEME = "org.jboss.resteasy.jaxrs.client.proxy.scheme";
+
+   static ResteasyProviderFactory PROVIDER_FACTORY;
+
+   public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
+      PROVIDER_FACTORY = providerFactory;
+   }
+
+   public ResteasyClientBuilder () {
+      if (PROVIDER_FACTORY != null) {
+         ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
+         if (ResteasyProviderFactory.peekInstance() != null) {
+            localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+         }
+         providerFactory = localProviderFactory;
+      }
+   }
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -397,10 +415,26 @@ public class ResteasyClientBuilder extends ClientBuilder
       return this;
    }
 
-   protected ResteasyProviderFactory getProviderFactory()
+   public ResteasyProviderFactory getProviderFactory()
    {
       if (providerFactory == null)
       {
+         ClassLoader loader = null;
+         if (System.getSecurityManager() == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+         }else {
+            try {
+               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                  @Override
+                  public ClassLoader run() throws Exception {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
+         }
+
          // create a new one
          providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
 
@@ -631,10 +665,116 @@ public class ResteasyClientBuilder extends ClientBuilder
       return asyncExecutor(executorService, false);
    }
 
+   public ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor)
+   {
+      return asyncExecutor(executorService, cleanupExecutor);
+   }
+
    @Override
    public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
    {
       this.scheduledExecutorService = scheduledExecutorService;
       return this;
    }
+
+   public long getConnectionTTL(TimeUnit unit)
+   {
+      return connectionTTLUnit.equals(unit) ? connectionTTL : unit.convert(connectionTTL, connectionTTLUnit);
+   }
+
+   public int getMaxPooledPerRoute()
+   {
+      return maxPooledPerRoute;
+   }
+
+   public long getConnectionCheckoutTimeout(TimeUnit unit)
+   {
+      return TimeUnit.MILLISECONDS.equals(unit) ? connectionCheckoutTimeoutMs : unit.convert(connectionCheckoutTimeoutMs, TimeUnit.MILLISECONDS);
+   }
+
+   public int getConnectionPoolSize()
+   {
+      return connectionPoolSize;
+   }
+
+   public int getResponseBufferSize()
+   {
+      return responseBufferSize;
+   }
+
+   public boolean isTrustManagerDisabled()
+   {
+      return disableTrustManager;
+   }
+
+   public HostnameVerificationPolicy getHostnameVerification()
+   {
+      return policy;
+   }
+
+   public ClientHttpEngine getHttpEngine()
+   {
+      return httpEngine;
+   }
+
+   public boolean isUseAsyncHttpEngine()
+   {
+      return httpEngine != null && (httpEngine instanceof ApacheHttpAsyncClient4Engine);
+   }
+
+   public List<String> getSniHostNames()
+   {
+      return sniHostNames;
+   }
+
+   public String getDefaultProxyHostname()
+   {
+      return defaultProxy != null ? defaultProxy.getHostName() : null;
+   }
+
+   public int getDefaultProxyPort()
+   {
+      return defaultProxy != null ? defaultProxy.getPort() : -1;
+   }
+
+   public String getDefaultProxyScheme()
+   {
+      return defaultProxy != null ? defaultProxy.getSchemeName() : null;
+   }
+
+   public long getReadTimeout(TimeUnit unit)
+   {
+      return socketTimeoutUnits.equals(unit) ? socketTimeout : unit.convert(socketTimeout, socketTimeoutUnits);
+   }
+
+   public long getConnectionTimeout(TimeUnit unit)
+   {
+      return establishConnectionTimeoutUnits.equals(unit) ? establishConnectionTimeout : unit.convert(establishConnectionTimeout, establishConnectionTimeoutUnits);
+   }
+
+   public SSLContext getSSLContext()
+   {
+      return sslContext;
+   }
+
+   public KeyStore getKeyStore()
+   {
+      return clientKeyStore;
+   }
+
+   public String getKeyStorePassword()
+   {
+      return clientPrivateKeyPassword;
+   }
+
+   public KeyStore getTrustStore()
+   {
+      return truststore;
+   }
+
+   public HostnameVerifier getHostnameVerifier()
+   {
+      return verifier;
+   }
+
 }

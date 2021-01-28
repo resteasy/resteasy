@@ -43,6 +43,11 @@ public class ClientInvocationBuilder implements Invocation.Builder
       return new ClientInvocation(client, uri, headers, parent);
    }
 
+   protected ClientInvocation createClientInvocation(ClientInvocation invocation)
+   {
+      return new ClientInvocation(invocation);
+   }
+
    public ClientInvocation getInvocation()
    {
       return invocation;
