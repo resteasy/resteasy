@@ -25,6 +25,15 @@ public interface ClientHttpEngine
     */
    HostnameVerifier getHostnameVerifier();
    ClientResponse invoke(ClientInvocation request);
+
+   default boolean isFollowRedirects() {
+      throw new UnsupportedOperationException();
+   }
+
+   default void setFollowRedirects(boolean followRedirects) {
+      throw new UnsupportedOperationException();
+   }
+
    void close();
 
 }

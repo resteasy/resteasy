@@ -85,6 +85,11 @@ public class ResteasyDeployment
    private Map<String, Object> properties = new TreeMap<String, Object>();
    protected boolean statisticsEnabled;
 
+   public static boolean onServer()
+   {
+      return ResteasyProviderFactory.getInstance().isOnServer();
+   }
+
    @SuppressWarnings(value = "unchecked")
    public void start()
    {

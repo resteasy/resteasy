@@ -761,6 +761,9 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
+                                <systemPropertyVariables>
+                                    <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
+                                </systemPropertyVariables>
                                 <excludes>
                                      <!-- Tests requires excluding JsonBindingProvider-->
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
@@ -777,6 +780,9 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
+                                <systemPropertyVariables>
+                                    <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
+                                </systemPropertyVariables>
                                 <includes>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                     <include>**/SseJsonEventTest.java</include>
