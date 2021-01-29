@@ -87,6 +87,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    @SuppressWarnings("rawtypes")
    AsyncStreamProvider asyncStreamProvider;
    protected boolean isSse;
+   protected boolean isAsyncStreamProvider;
    protected ResourceInfo resourceInfo;
 
    protected boolean expectsBody;
@@ -184,6 +185,20 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if(asyncResponseProvider == null){
          asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
       }
+      if (asyncStreamProvider != null)
+      {
+         for (Annotation annotation : method.getAnnotatedMethod().getAnnotations())
+         {
+            if (annotation.annotationType() == Stream.class)
+            {
+               Stream stream = (Stream)annotation;
+               if (stream.value() == Stream.MODE.GENERAL)
+               {
+                  this.isAsyncStreamProvider = true;
+               }
+            }
+         }
+      }
 
       if (isSseResourceMethod(method))
       {
@@ -212,7 +227,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          return false;
       }
-
       // Second condition to be a SSE resource method is to be injected with a
       // SseEventSink parameter
       MethodParameter[] resourceMethodParameters = resourceMethod.getParams();
@@ -815,6 +829,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public boolean isSse()
    {
       return isSse;
+   }
+
+   public boolean isAsyncStreamProvider()
+   {
+      return isAsyncStreamProvider;
    }
 
    public void markMethodAsAsync()
