@@ -199,7 +199,6 @@ public class ResourceMethodRegistry implements Registry
    {
       Class<?>[] classes = {clazz};
       addResourceFactory(ref, base, classes);
-      if (ref != null) ref.registered(providerFactory);
    }
 
    /**
