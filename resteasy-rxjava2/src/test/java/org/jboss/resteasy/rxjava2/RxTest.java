@@ -83,7 +83,7 @@ public class RxTest
    public void testSingle() throws Exception {
       Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
       single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-      latch.await();
+      latch.await(5, TimeUnit.SECONDS);
       assertEquals("got it", value.get());
    }
 
@@ -91,7 +91,7 @@ public class RxTest
    public void testSingleContext() throws Exception {
       Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
       single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-      latch.await();
+      latch.await(5, TimeUnit.SECONDS);
       assertEquals("got it", value.get());
    }
 
@@ -105,7 +105,7 @@ public class RxTest
          (String s) -> data.add(s),
          (Throwable t) -> LOG.error(t.getMessage(), t),
          () -> latch.countDown());
-      latch.await();
+      latch.await(5, TimeUnit.SECONDS);
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
    }
 
@@ -119,7 +119,7 @@ public class RxTest
          (String s) -> data.add(s),
          (Throwable t) -> LOG.error(t.getMessage(), t),
          () -> latch.countDown());
-      latch.await();
+      latch.await(5, TimeUnit.SECONDS);
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
    }
 
@@ -133,7 +133,7 @@ public class RxTest
          (String s) -> data.add(s),
          (Throwable t) -> LOG.error(t.getMessage(), t),
          () -> latch.countDown());
-      latch.await();
+      latch.await(5, TimeUnit.SECONDS);
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
    }
 
@@ -147,7 +147,7 @@ public class RxTest
          (String s) -> data.add(s),
          (Throwable t) -> LOG.error(t.getMessage(), t),
          () -> {latch.countDown(); LOG.info("onComplete()");});
-      latch.await();
+      latch.await(5, TimeUnit.SECONDS);
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
    }
 
