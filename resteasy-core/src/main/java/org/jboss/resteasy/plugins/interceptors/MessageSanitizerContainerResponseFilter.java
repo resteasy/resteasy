@@ -30,17 +30,16 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
    @Override
    public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {
-
-      ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
-      if (deployment != null)
-      {
-         Boolean disable = (Boolean) deployment.getProperty(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER);
-         if (disable != null && disable)
-         {
-            return;
-         }
-      }
       if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
+         ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
+         if (deployment != null)
+         {
+            Boolean disable = (Boolean) deployment.getProperty(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER);
+            if (disable != null && disable)
+            {
+               return;
+            }
+         }
          Object entity = responseContext.getEntity();
          if (entity != null && entity instanceof String) {
             List<Object> contentTypes = responseContext.getHeaders().get("Content-Type");
