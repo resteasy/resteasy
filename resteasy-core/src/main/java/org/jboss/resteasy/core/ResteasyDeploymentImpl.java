@@ -179,7 +179,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
 
       AcceptHeaderByFileSuffixFilter suffixNegotiationFilter = null;
-      if (mediaTypeMappings != null)
+      if (mediaTypeMappings != null && !mediaTypeMappings.isEmpty())
       {
          Map<String, MediaType> extMap = new HashMap<String, MediaType>();
          for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
@@ -197,7 +197,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
 
 
-      if (languageExtensions != null)
+      if (languageExtensions != null && !languageExtensions.isEmpty())
       {
          if (suffixNegotiationFilter == null)
          {
