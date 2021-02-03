@@ -46,7 +46,7 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      if ((mediaTypeMappings == null || mediaTypeMappings.isEmpty()) && (languageMappings == null || languageMappings.isEmpty()))
+      if (mediaTypeMappings.isEmpty() && languageMappings.isEmpty())
       {
          return;
       }
