@@ -3,7 +3,7 @@
     <para>RESTEasy integrates with Springframework in various forms. In this chapter we introduce different methods to
         integrate Springframework with RESTEasy.
     </para>
-    <para>RESTEasy currently supports Spring version 5.2.0.RELEASE</para>
+    <para>RESTEasy currently supports Spring version _SPRING_VER_</para>
     <section id="BasicIntegration">
         <title>Basic Integration</title>
         <para>For Maven users, you must use the <code>resteasy-spring</code> artifact. And here is the dependency you
