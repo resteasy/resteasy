@@ -106,6 +106,24 @@
                     </options>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>process-spring-version</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>${project.basedir}/scripts/set_spring_dep_ver.sh</executable>
+                    <environmentVariables>
+                        <BASEDIR>${project.basedir}</BASEDIR>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
