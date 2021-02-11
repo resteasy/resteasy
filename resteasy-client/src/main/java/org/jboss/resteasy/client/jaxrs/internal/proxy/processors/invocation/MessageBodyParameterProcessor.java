@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 
 import javax.ws.rs.client.Entity;
@@ -27,6 +28,13 @@ public class MessageBodyParameterProcessor implements InvocationProcessor
       this.mediaType = mediaType;
       this.genericType = genericType;
       this.annotations = annotations;
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public void process(ClientInvocationBuilder invocation, Object param)
+   {
+      invocation.getInvocation().setEntity(Entity.entity(param == null? null : new GenericEntity<Object>(param, genericType), mediaType, annotations));
    }
 
    @SuppressWarnings("unchecked")

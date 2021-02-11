@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 
 import javax.ws.rs.core.Cookie;
@@ -33,6 +34,21 @@ public class CookieParamProcessor implements InvocationProcessor
    public String getCookieName()
    {
       return cookieName;
+   }
+
+   @Override
+   public void process(ClientInvocationBuilder request, Object object)
+   {
+      if (object == null) return;  // don't set a null value
+      if (object instanceof Cookie)
+      {
+         Cookie cookie = (Cookie) object;
+         request.cookie(cookie);
+      }
+      else
+      {
+         request.cookie(new Cookie(cookieName, request.getInvocation().getClientConfiguration().toString(object)));
+      }
    }
 
    @Override
