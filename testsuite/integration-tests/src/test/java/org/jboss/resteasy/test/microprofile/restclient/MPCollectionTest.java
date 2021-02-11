@@ -23,7 +23,7 @@ import java.util.List;
  * @tpSubChapter MicroProfile Config
  * @tpChapter Integration tests
  * @tpTestCaseDetails Show how to get the proxy for the service.
- * @tpSince RESTEasy 4.6.0
+ * @tpSince RESTEasy 3.15.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient

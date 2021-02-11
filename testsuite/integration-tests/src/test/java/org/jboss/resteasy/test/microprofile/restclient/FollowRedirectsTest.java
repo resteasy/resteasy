@@ -24,7 +24,7 @@ import java.net.URI;
  * @tpSubChapter MicroProfile rest client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Show followsRedirects flag works.
- * @tpSince RESTEasy 4.6.0
+ * @tpSince RESTEasy 3.15.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient

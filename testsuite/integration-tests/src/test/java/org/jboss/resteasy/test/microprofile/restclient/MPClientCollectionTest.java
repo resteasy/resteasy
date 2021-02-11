@@ -30,7 +30,7 @@ import java.util.List;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Show how to use injection to get access to the service.
  *                    Show configuration required for a GenericType return type.
- * @tpSince RESTEasy 4.6.0
+ * @tpSince RESTEasy 3.15.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient

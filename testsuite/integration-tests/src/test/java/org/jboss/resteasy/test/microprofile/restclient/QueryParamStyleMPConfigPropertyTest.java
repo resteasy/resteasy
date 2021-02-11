@@ -24,7 +24,7 @@ import java.util.List;
  * @tpSubChapter MicroProfile rest client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Show using microprofile-config property, "/mp-rest/queryParamStyle" works.
- * @tpSince RESTEasy 4.6.0
+ * @tpSince RESTEasy 3.15.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient
