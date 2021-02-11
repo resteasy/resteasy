@@ -835,4 +835,78 @@ classpath resources (e.g., "classpath:/client-keystore.jks") or files (e.g., "fi
 </sect1>
 </sect1>
 
+<sect1>
+<title>MicroProfile REST Client 2.0</title>
+
+<para>
+MicroProfile REST Client version 2.0 has some new features, which are implemented by RESTEasy.
+</para>
+
+<itemizedlist>
+  <listitem>
+  QueryParamStyle: Allows specifying how collections of query parameters should be formatted. By calling
+  <programlisting>
+public interface QueryClient {
+    Response sendMultiValues(@QueryParam("key") List&lt;String&gt; values);
+}
+QueryClient client = RestClientBuilder.newBuilder()
+                                      .baseUri(someUri)
+                                      .queryParamStyle(QueryParamStyle.COMMA_SEPARATED)
+                                      .build(QueryClient.class);
+Response response = client.sendMultiValues(Collections.asList("abc", "mno", "xyz"));
+  </programlisting>
+  <para>the query parameters will be sent as "key=abc,mno,xyz". Two other options are
+  <code>QueryParamStyle.ARRAY_PAIRS</code>, which gives "<code>key[]=abc&amp;key[]=mno&amp;key[]=xyz</code>",
+  and the default <code>QueryParamStyle.MULTI_PAIRS</code>, which gives
+  "<code>key=abc&amp;key=mno&amp;key=xyz</code>".</para>
+  </listitem>
+  <listitem>
+  Proxy server support: An HTTP proxy server can be configured as follows:
+  <programlisting>
+ProxiedClient client = RestClientBuilder.newBuilder()
+                                        .baseUri(someUri)
+                                        .proxyAddress("myproxy.mycompany.com", 8080)
+                                        .build(ProxiedClient.class);  
+  </programlisting>
+  </listitem>
+  <listitem>
+  Automatically following redirects: A client can be configured to follow redirect responses
+  automatically:
+  <programlisting>
+RedirectClient client = RestClientBuilder.newBuilder()
+                                         .baseUri(someUri)
+                                         .followRedirects(true)
+                                         .build(RedirectClient.class);
+  </programlisting>
+  </listitem>
+  <listitem>
+  JSON-B ContextResolver support: RESTEasy provides <classname>JsonBindingProvider</classname>
+  for processing JSON-B entities.
+  </listitem>
+  <listitem>
+  Support for Server Sent Events (SSEs): A client can receive a reactive <classname>Publisher</classname>:
+  <programlisting>
+public interface SseClient {
+
+    @GET
+    @Path("ssePath")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    Publisher&lt;InboundSseEvent&gt; getEvents();
+}
+  </programlisting>
+  <para>to which it can subscribe:</para>
+  <programlisting>
+void testSseClient() {
+    SseClient client = RestClientBuilder.newBuilder().baseUri(someUri).build(SseClient.class);
+    Publisher&lt;InboundSseEvent&gt; publisher = client.getEvents();
+    publisher.subscribe(new Subscriber&lt;InboundSseEvent&gt;(){ ... });
+  </programlisting>
+  <para>For more about SSE handling, see <link linkend="SSE-Server">Server-Sent Events (SSE)</link></para>.
+  </listitem>
+</itemizedlist>
+
+  <para><emphasis role="bold">NOTE:</emphasis> Implementations of MicroProfile REST Client 2.0, like
+  RESTEasy, require Jakarta EE 8 dependency jars.</para>
+</sect1>
+
 </chapter>
