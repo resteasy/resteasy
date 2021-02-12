@@ -357,6 +357,45 @@
                 </plugins>
             </build>
         </profile>
+
+        <!--
+            By default, ${version.resteasy.testsuite} version for RESTEasy restclient is used.
+            But use.mp.from.project.profile allows to use ${project.version} version for RESTEasy restclient.
+                This is useful for test runs where we test resteasy version without RESTEasy restclient available.
+                In this case, tests with RESTEasy restclient are used for compatibility testing only.
+        -->
+        <profile>
+            <id>not.use.mp.from.project.profile</id>
+            <activation>
+                <property>
+                    <name>!ts.use.mp.from.project</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-client-microprofile</artifactId>
+                    <version>${version.resteasy.testsuite}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>use.mp.from.project.profile</id>
+            <activation>
+                <property>
+                    <name>ts.use.mp.from.project</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-client-microprofile</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -397,13 +436,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${version.resteasy.testsuite}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client-microprofile</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
         </dependency>
