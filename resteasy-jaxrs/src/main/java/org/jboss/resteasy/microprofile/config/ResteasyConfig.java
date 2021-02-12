@@ -1,18 +1,24 @@
 package org.jboss.resteasy.microprofile.config;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Optional;
 
 import javax.servlet.ServletContext;
 
-import org.eclipse.microprofile.config.Config;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class ResteasyConfig
 {
-   private Config config;
+   private static final Method GET_CONFIG;
+   private static final Method GET_OPTIONAL_VALUE;
+   private static final Method GET_PROPERTY_NAMES;
+   private Object config;
 
    public enum SOURCE
    {
@@ -21,23 +27,59 @@ public class ResteasyConfig
       SERVLET_CONTEXT
    }
 
+   static {
+      Method getConfig;
+      Method getOptionalValue;
+      Method getPropertyNames;
+      try {
+          final ClassLoader classLoader = getClassLoader();
+          Class.forName("org.jboss.resteasy.microprofile.config.ServletConfigSourceImpl", false, classLoader);
+          final Class<?> configProvider = Class.forName("org.eclipse.microprofile.config.ConfigProvider", false, classLoader);
+          getConfig = configProvider.getDeclaredMethod("getConfig", ClassLoader.class);
+          final Class<?> clazz = Class.forName("org.eclipse.microprofile.config.Config", false, classLoader);
+          getOptionalValue = clazz.getDeclaredMethod("getOptionalValue", String.class, Class.class);
+          getPropertyNames = clazz.getDeclaredMethod("getPropertyNames");
+      } catch (Throwable ignore) {
+          getConfig = null;
+          getOptionalValue = null;
+          getPropertyNames = null;
+      }
+      GET_CONFIG = getConfig;
+      GET_OPTIONAL_VALUE = getOptionalValue;
+      GET_PROPERTY_NAMES = getPropertyNames;
+   }
+
    public ResteasyConfig()
    {
-      try
+      if (GET_CONFIG != null)
       {
-         Class.forName("org.eclipse.microprofile.config.spi.ConfigSource");
-         Class.forName("org.jboss.resteasy.microprofile.config.ServletConfigSourceImpl");
-         config = ResteasyConfigProvider.getConfig();
-      }
-      catch (Throwable e)
-      {
-         // Leave config == null.
+         try
+         {
+            config = GET_CONFIG.invoke(null, getClassLoader());
+         }
+         catch (Exception e)
+         {
+            // Leave config == null.
+         }
       }
    }
 
+   @SuppressWarnings("unchecked")
    public String getValue(String propertyName)
    {
-      return config == null ? null : config.getOptionalValue(propertyName, String.class).orElse(null);
+      if (config == null)
+      {
+         return null;
+      }
+      try
+      {
+         Optional<String> opt = (Optional<String>) GET_OPTIONAL_VALUE.invoke(config, propertyName, String.class);
+         return opt.orElse(null);
+      }
+      catch (IllegalAccessException | InvocationTargetException e) {
+         LogMessages.LOGGER.debugf(e, "Failed to invoke the configuration API method %s.", GET_OPTIONAL_VALUE);
+         return null;
+     }
    }
 
    public String getValue(String propertyName, SOURCE source)
@@ -72,6 +114,7 @@ public class ResteasyConfig
       }
    }
 
+   @SuppressWarnings("unchecked")
    public String getValue0(String propertyName, SOURCE source, String defaultValue)
    {
       if (config == null)
@@ -102,7 +145,15 @@ public class ResteasyConfig
       }
       else
       {
-         return config.getOptionalValue(propertyName, String.class).orElse(defaultValue);
+         try
+         {
+            Optional<String> opt = (Optional<String>) GET_OPTIONAL_VALUE.invoke(config, propertyName, String.class);
+            return opt.orElse(defaultValue);
+         }
+         catch (IllegalAccessException | InvocationTargetException e) {
+            LogMessages.LOGGER.debugf(e, "Failed to invoke the configuration API method %s.", GET_OPTIONAL_VALUE);
+            return defaultValue;
+        }
       }
    }
 
@@ -111,11 +162,19 @@ public class ResteasyConfig
       return config == null ? null : getPropertyNames0();
    }
 
+   @SuppressWarnings("unchecked")
    public Iterable<String> getPropertyNames0()
    {
       if (System.getSecurityManager() == null)
       {
-         return config.getPropertyNames();
+         try
+         {
+            return (Iterable<String>) GET_PROPERTY_NAMES.invoke(config);
+         }
+         catch (IllegalAccessException | InvocationTargetException e) {
+            LogMessages.LOGGER.debugf(e, "Failed to invoke the configuration API method %s.", GET_PROPERTY_NAMES);
+            return null;
+         }
       }
       else
       {
@@ -126,7 +185,14 @@ public class ResteasyConfig
                @Override
                public Iterable<String> run() throws Exception
                {
-                  return config.getPropertyNames();
+                  try
+                  {
+                     return (Iterable<String>) GET_PROPERTY_NAMES.invoke(config);
+                  }
+                  catch (IllegalAccessException | InvocationTargetException e) {
+                     LogMessages.LOGGER.debugf(e, "Failed to invoke the configuration API method %s.", GET_PROPERTY_NAMES);
+                     return null;
+                  }
                }
             });
          }
@@ -137,4 +203,29 @@ public class ResteasyConfig
          return value;
       }
    }
+
+   private static ClassLoader getClassLoader()
+   {
+      if (System.getSecurityManager() == null)
+      {
+          final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+          return tccl != null ? tccl : ResteasyConfig.class.getClassLoader();
+      }
+      try
+      {
+         return AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>()
+         {
+            @Override
+            public ClassLoader run() throws Exception
+            {
+               final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+               return tccl != null ? tccl : ResteasyConfig.class.getClassLoader();
+            }
+         });
+      }
+      catch (PrivilegedActionException e)
+      {
+         throw new RuntimeException(Messages.MESSAGES.unableToFindClassloader(ResteasyConfig.class.getName()));
+      }
+  }
 }
