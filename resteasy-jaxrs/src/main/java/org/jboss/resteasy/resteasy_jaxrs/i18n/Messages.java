@@ -630,6 +630,9 @@ public interface Messages
    @Message(id = BASE + + 870, value = "Unable to extract parameter from http request: {0} value is \''{1}\'' for {2}", format = Format.MESSAGE_FORMAT)
    String unableToExtractParameter(String paramSignature, String strVal, AccessibleObject target);
 
+   @Message(id = BASE + 872, value = "Unable to access context classloader or find a classloader for : {1}", format=Format.MESSAGE_FORMAT)
+   String unableToFindClassloader(String classname);
+
    @Message(id = BASE + 875, value = "Unable to find a constructor that takes a String param or a valueOf() or fromString() method for {0} on {1} for basetype: {2}", format=Format.MESSAGE_FORMAT)
    String unableToFindConstructor(String paramSignature, AccessibleObject target, String className);
 

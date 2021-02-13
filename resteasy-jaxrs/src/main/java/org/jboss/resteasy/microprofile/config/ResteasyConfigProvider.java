@@ -5,6 +5,10 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 
+/**
+ * @deprecated No longer used.
+ */
+@Deprecated
 public final class ResteasyConfigProvider
 {
    public static Config getConfig() {

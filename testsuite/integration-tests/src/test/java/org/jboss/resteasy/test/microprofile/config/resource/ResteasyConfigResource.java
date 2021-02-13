@@ -7,10 +7,10 @@ import javax.ws.rs.Path;
 
 import org.eclipse.microprofile.config.Config;
 import org.jboss.resteasy.microprofile.config.ResteasyConfig;
+import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
 
 @Path("")
 public class ResteasyConfigResource {
