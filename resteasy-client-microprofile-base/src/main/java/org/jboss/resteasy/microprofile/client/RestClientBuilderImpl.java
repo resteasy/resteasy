@@ -335,9 +335,10 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         interfaces[1] = RestClientProxy.class;
         interfaces[2] = Closeable.class;
 
+        final BeanManager beanManager = getBeanManager();
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces,
-                new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, getBeanManager()));
-        ClientHeaderProviders.registerForClass(aClass, proxy);
+                new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, beanManager));
+        ClientHeaderProviders.registerForClass(aClass, proxy, beanManager);
         return proxy;
     }
 
