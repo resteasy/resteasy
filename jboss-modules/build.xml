@@ -93,6 +93,11 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-cdi"/>
         </module-def>
 
+        <module-def name="org.jboss.resteasy.resteasy-client-microprofile">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile-base"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.resteasy-crypto">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto"/>
         </module-def>
@@ -131,8 +136,6 @@
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile-base"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.jose-jwt">
