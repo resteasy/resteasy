@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+
 import java.util.Collection;
 import java.lang.reflect.Array;
 
@@ -15,6 +17,9 @@ public abstract class AbstractCollectionProcessor<T>
    {
       this.paramName = paramName;
    }
+
+   protected abstract ClientInvocationBuilder apply(ClientInvocationBuilder target, Object object);
+   protected abstract ClientInvocationBuilder apply(ClientInvocationBuilder target, Object[] objects);
 
    protected abstract T apply(T target, Object object);
 

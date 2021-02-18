@@ -120,6 +120,7 @@ public class ClientHeadersFactoryCDITest {
 
    @Test
    public void test() {
+      Assert.assertTrue(container.isRunning());
       String result = container.select(Worker.class).get().work();
       Assert.assertEquals("hello Stefano", result);
       Assert.assertEquals(1, Counter.COUNT.get());

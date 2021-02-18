@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
+import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.AbstractBuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
@@ -13,6 +14,7 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
+import org.reactivestreams.Publisher;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
@@ -246,11 +248,13 @@ public abstract class ClientResponse extends BuiltResponse
       }
       finally
       {
-         ResteasyProviderFactory.popContextData(Providers.class);
-         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
-         if (obj instanceof ProvidersContextRetainer)
+         if (!Publisher.class.isAssignableFrom(type) && !EventInput.class.isAssignableFrom(type))
          {
-            ((ProvidersContextRetainer) obj).setProviders(configuration);
+            ResteasyProviderFactory.popContextData(Providers.class);
+            if (current != null)
+               ResteasyProviderFactory.pushContext(Providers.class, current);
+            if (obj instanceof ProvidersContextRetainer)
+               ((ProvidersContextRetainer) obj).setProviders(configuration);
          }
       }
    }

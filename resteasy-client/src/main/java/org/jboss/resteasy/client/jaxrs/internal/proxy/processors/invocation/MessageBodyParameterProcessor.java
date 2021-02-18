@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 
@@ -34,6 +35,13 @@ public class MessageBodyParameterProcessor implements InvocationProcessor
    public void process(ClientInvocationBuilder invocation, Object param)
    {
       invocation.getInvocation().setEntity(Entity.entity(param == null? null : new GenericEntity<Object>(param, genericType), mediaType, annotations));
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public void process(ClientInvocation invocation, Object param)
+   {
+      invocation.setEntity(Entity.entity(param == null? null : new GenericEntity<Object>(param, genericType), mediaType, annotations));
    }
 
    public void build(ClientRequest request, Object object)

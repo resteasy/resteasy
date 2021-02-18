@@ -2,8 +2,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-   <display-name>FilterDisplayName</display-name>
-   
    <context-param>
       <param-name>system</param-name>
       <param-value>system-context</param-value>
@@ -25,7 +23,7 @@
    </context-param>
 
    <filter>
-      <filter-name>FilterName</filter-name>
+      <filter-name>Resteasy</filter-name>
       <filter-class>org.jboss.resteasy.plugins.server.servlet.FilterDispatcher</filter-class>
       <init-param>
          <param-name>javax.ws.rs.Application</param-name>
@@ -50,7 +48,7 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>FilterName</filter-name>
+        <filter-name>Resteasy</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

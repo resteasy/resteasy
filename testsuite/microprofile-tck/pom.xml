@@ -14,6 +14,12 @@
   <name>MicroProfile Rest Client TCK</name>
   <packaging>jar</packaging>
 
+  <properties>
+    <skip.mp.tck>false</skip.mp.tck>
+    <jetty9.version>9.2.28.v20190418</jetty9.version>
+    <jetty.version>${jetty9.version}</jetty.version>
+  </properties>
+
   <dependencies>
 
     <!-- REST Client implementation-->
@@ -34,6 +40,12 @@
     </dependency>
 
     <!-- Microprofile TCK tests -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.14.2</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.eclipse.microprofile.rest.client</groupId>
@@ -94,16 +106,76 @@
 
     <!-- required to align the Jetty Servlets version to the versions of other Jetty components -->
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlets</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>jakarta.json</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>javax.json.bind</groupId>
+      <artifactId>javax.json.bind-api</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+
+    <!-- required to jsonb used in tests -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-json-binding-provider</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- run with jetty  -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-io</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-security</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>apache-jsp</artifactId>
+      <version>${jetty.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish</groupId>
+          <artifactId>javax.el</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-commons</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -111,7 +183,7 @@
       <plugin>
         <groupId>uk.co.automatictester</groupId>
         <artifactId>wiremock-maven-plugin</artifactId>
-        <version>4.1.0</version>
+        <version>6.0.0</version>
         <executions>
           <execution>
             <phase>generate-test-sources</phase>
@@ -119,24 +191,27 @@
               <goal>run</goal>
             </goals>
             <configuration>
+              <skip>${skip.mp.tck}</skip>
               <dir>target/classes</dir>
-              <params>--port=8765</params>
+              <params>--port=8765 --disable-banner=true</params>
             </configuration>
           </execution>
-        </executions>
+        </executions><dependencies>
+        <dependency>
+          <groupId>com.github.tomakehurst</groupId>
+          <artifactId>wiremock</artifactId>
+          <version>2.26.3</version>
+        </dependency>
+      </dependencies>
       </plugin>
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>${skip.mp.tck}</skip>
-          <excludes>
-             <!-- https://github.com/eclipse/microprofile-rest-client/issues/265 -->
-             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutBuilderIndependentOfMPConfigTest</exclude>
-             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutTest</exclude>
-             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigTest</exclude>
-             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigWithConfigKeyTest</exclude>
-          </excludes>
+          <systemPropertyVariables>
+            <org.eclipse.microprofile.rest.client.tck.timeoutCushion>30</org.eclipse.microprofile.rest.client.tck.timeoutCushion>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -154,8 +229,23 @@
             </configuration>
           </execution>
         </executions>
+
       </plugin>
 
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>skip-mp-tck</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+      <properties>
+        <skip.mp.tck>true</skip.mp.tck>
+      </properties>
+    </profile>
+  </profiles>
 </project>

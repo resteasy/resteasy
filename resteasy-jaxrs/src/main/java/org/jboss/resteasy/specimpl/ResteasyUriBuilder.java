@@ -69,6 +69,21 @@ public class ResteasyUriBuilder extends UriBuilder
    private String ssp;
    private String authority;
 
+   public ResteasyUriBuilder(){}
+
+   public ResteasyUriBuilder(final String host, final String scheme, final int port,
+                             final String userInfo, final String path, final String query,
+                             final String fragment, final String ssp, final String authority) {
+      this.host = host;
+      this.scheme = scheme;
+      this.port = port;
+      this.userInfo = userInfo;
+      this.path = path;
+      this.query = query;
+      this.fragment = fragment;
+      this.ssp = ssp;
+      this.authority = authority;
+   }
 
    public UriBuilder clone()
    {
@@ -501,6 +516,11 @@ public class ResteasyUriBuilder extends UriBuilder
          return this;
       }
       this.query = Encode.encodeQueryString(query);
+      return this;
+   }
+
+   public UriBuilder replaceQueryNoEncoding(String query) {
+      this.query = query;
       return this;
    }
 
@@ -1066,6 +1086,13 @@ public class ResteasyUriBuilder extends UriBuilder
    public String getFragment()
    {
       return fragment;
+   }
+
+   public String getAuthority() {
+      return authority;
+   }
+   public String getSsp() {
+      return ssp;
    }
 
    @Override

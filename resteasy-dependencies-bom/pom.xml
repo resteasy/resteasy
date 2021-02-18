@@ -74,7 +74,7 @@
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
         <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
-        <version.microprofile.restclient>1.4.1</version.microprofile.restclient>
+        <version.microprofile.restclient>2.0</version.microprofile.restclient>
         <version.microprofile.config>2.0</version.microprofile.config>
         <version.org.slf4j>1.7.29</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
@@ -93,6 +93,8 @@
         <version.org.hibernate.validator>6.0.22.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
+
+        <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
 
     <distributionManagement>
@@ -957,6 +959,11 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.async</groupId>
+                <artifactId>asyncutil</artifactId>
+                <version>${version.asyncutil}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 
@@ -15,7 +16,6 @@ import java.net.URL;
  */
 public class URIParamProcessor implements InvocationProcessor
 {
-
    @Override
    public void process(ClientInvocationBuilder invocation, Object param)
    {
@@ -24,6 +24,17 @@ public class URIParamProcessor implements InvocationProcessor
       if (uri != null)
       {
          invocation.getInvocation().setUri(uri);
+      }
+   }
+
+   @Override
+   public void process(ClientInvocation invocation, Object param)
+   {
+      URI uri = getUri(param);
+
+      if (uri != null)
+      {
+         invocation.setUri(uri);
       }
    }
 
