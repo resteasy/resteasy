@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.junit.Assert;
 
 import io.reactivex.Single;
 
@@ -59,8 +58,12 @@ public class HelloResource {
     @Path("async-client-target")
     public CompletionStage<String> asyncClientTarget(@HeaderParam("X-Propagated") String propagatedHeader,
                                                 @HeaderParam("X-Not-Propagated") String nonPropagatedHeader) {
-       Assert.assertNull(nonPropagatedHeader);
-       Assert.assertEquals("got-a-value", propagatedHeader);
+        if (nonPropagatedHeader != null) {
+            throw new RuntimeException("nonPropagatedHeader is not null");
+        }
+        if (!propagatedHeader.equals("got-a-value")) {
+            throw new RuntimeException("propagatedHeader is not \"got-a-value\"");
+        }
        return CompletableFuture.completedFuture("OK");
     }
 
@@ -68,8 +71,12 @@ public class HelloResource {
     @Path("async-client")
     public CompletionStage<String> asyncClient(@HeaderParam("X-Propagated") String propagatedHeader,
                                                @HeaderParam("X-Not-Propagated") String nonPropagatedHeader){
-       Assert.assertEquals("got-a-value", propagatedHeader);
-       Assert.assertEquals("got-a-value", nonPropagatedHeader);
+        if (!propagatedHeader.equals("got-a-value")) {
+            throw new RuntimeException("propagatedHeader is not \"got-a-value\"");
+        }
+        if (!nonPropagatedHeader.equals("got-a-value")) {
+            throw new RuntimeException("nonPropagatedHeader is not \"got-a-value\"");
+        }
        return rest.asyncClientTarget();
     }
 
@@ -77,8 +84,12 @@ public class HelloResource {
     @Path("client-target")
     public String clientTarget(@HeaderParam("X-Propagated") String propagatedHeader,
                                @HeaderParam("X-Not-Propagated") String nonPropagatedHeader) {
-       Assert.assertNull(nonPropagatedHeader);
-       Assert.assertEquals("got-a-value", propagatedHeader);
+        if (nonPropagatedHeader != null) {
+            throw new RuntimeException("nonPropagatedHeader is not null");
+        }
+        if (!propagatedHeader.equals("got-a-value")) {
+            throw new RuntimeException("propagatedHeader is not \"got-a-value\"");
+        }
        return "OK";
     }
 
@@ -86,8 +97,12 @@ public class HelloResource {
     @Path("client")
     public String client(@HeaderParam("X-Propagated") String propagatedHeader,
                          @HeaderParam("X-Not-Propagated") String nonPropagatedHeader){
-       Assert.assertEquals("got-a-value", propagatedHeader);
-       Assert.assertEquals("got-a-value", nonPropagatedHeader);
+        if (!propagatedHeader.equals("got-a-value")) {
+            throw new RuntimeException("propagatedHeader is not \"got-a-value\"");
+        }
+        if (!nonPropagatedHeader.equals("got-a-value")) {
+            throw new RuntimeException("nonPropagatedHeader is not \"got-a-value\"");
+        }
        return rest.clientTarget();
     }
 
