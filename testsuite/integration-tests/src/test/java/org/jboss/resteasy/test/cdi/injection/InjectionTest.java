@@ -119,7 +119,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
    private static int invocationCounter;
 
    @SuppressWarnings(value = "unchecked")
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() throws Exception {
       initQueue();
       WebArchive war = TestUtil.prepareArchive(InjectionTest.class.getSimpleName());

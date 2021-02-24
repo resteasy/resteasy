@@ -7,12 +7,16 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
 
 public class HeaderPropagator implements ClientHeadersFactory {
    @Override
    public MultivaluedMap<String, String> update(MultivaluedMap<String, String> containerRequestHeaders, MultivaluedMap<String, String> clientRequestHeaders) {
-       Assert.assertNull(ResteasyProviderFactory.getContextData(HttpHeaders.class));
+       if (ResteasyProviderFactory.getContextData(HttpHeaders.class) != null) {
+           throw new RuntimeException("ResteasyProviderFactory.getContextData(HttpHeaders.class) is not null");
+       }
+       if (ResteasyProviderFactory.getContextData(HttpHeaders.class) != null) {
+           throw new RuntimeException("ResteasyProviderFactory.getContextData(HttpHeaders.class) is not null");
+       }
        List<String> prop = containerRequestHeaders.get("X-Propagated");
        if(prop != null)
           clientRequestHeaders.addAll("X-Propagated", prop);

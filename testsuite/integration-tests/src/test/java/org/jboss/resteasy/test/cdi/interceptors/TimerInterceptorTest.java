@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class TimerInterceptorTest {
    protected static final Logger log = LogManager.getLogger(TimerInterceptorTest.class.getName());
 
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(TimerInterceptorTest.class.getSimpleName())
             .addClasses(UtilityProducer.class, PortProviderUtil.class)
