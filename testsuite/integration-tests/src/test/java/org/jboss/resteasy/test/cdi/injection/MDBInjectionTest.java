@@ -73,7 +73,7 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
    static Client client;
 
    @SuppressWarnings(value = "unchecked")
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() throws Exception {
       initQueue();
       WebArchive war = TestUtil.prepareArchive(MDBInjectionTest.class.getSimpleName());

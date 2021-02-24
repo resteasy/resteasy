@@ -47,7 +47,7 @@ public class AsynchronousCdiTest {
       return PortProviderUtil.generateURL(path, AsynchronousCdiTest.class.getSimpleName());
    }
 
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(AsynchronousCdiTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class)
