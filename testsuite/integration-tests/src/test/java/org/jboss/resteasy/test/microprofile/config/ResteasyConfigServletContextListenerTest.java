@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.MicroProfileDependent;
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigFilter;
 import org.jboss.resteasy.test.microprofile.config.resource.ResteasyConfigResource;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -16,6 +17,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -27,6 +29,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(MicroProfileDependent.class)
 public class ResteasyConfigServletContextListenerTest extends ResteasyConfigTestParent
 {
    @Deployment
