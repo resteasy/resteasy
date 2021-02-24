@@ -49,7 +49,7 @@ public class RestClientProxyTest
    @ArquillianResource
    URL url;
 
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> deploy()
    {
       WebArchive war = TestUtil.prepareArchive(RestClientProxyTest.class.getSimpleName());
