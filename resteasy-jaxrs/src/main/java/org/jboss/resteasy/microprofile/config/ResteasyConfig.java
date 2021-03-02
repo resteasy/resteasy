@@ -33,12 +33,14 @@ public class ResteasyConfig
       Method getPropertyNames;
       try {
           final ClassLoader classLoader = getClassLoader();
-          Class.forName("org.jboss.resteasy.microprofile.config.ServletConfigSourceImpl", false, classLoader);
+          // First check if the API is present.
           final Class<?> configProvider = Class.forName("org.eclipse.microprofile.config.ConfigProvider", false, classLoader);
           getConfig = configProvider.getDeclaredMethod("getConfig", ClassLoader.class);
           final Class<?> clazz = Class.forName("org.eclipse.microprofile.config.Config", false, classLoader);
           getOptionalValue = clazz.getDeclaredMethod("getOptionalValue", String.class, Class.class);
           getPropertyNames = clazz.getDeclaredMethod("getPropertyNames");
+          // Next check if the RESTEasy implementation is on the class path
+          Class.forName("org.jboss.resteasy.microprofile.config.ServletConfigSourceImpl", false, classLoader);
       } catch (Throwable ignore) {
           getConfig = null;
           getOptionalValue = null;
