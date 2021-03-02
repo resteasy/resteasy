@@ -60,11 +60,14 @@ public interface WebApplicationExceptionWrapper<T extends WebApplicationExceptio
      * wrapping feature is turned off
      */
     static WebApplicationException wrap(final WebApplicationException e) {
+        final boolean serverSide = ResteasyProviderFactory.searchContextData(Dispatcher.class) != null;
+        if (!serverSide) {
+            return e;
+        }
         final ResteasyConfig config = ResteasyConfigFactory.getConfig();
         final boolean originalBehavior = Boolean.parseBoolean(config.getValue(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR,
                 ResteasyConfig.SOURCE.SERVLET_CONTEXT, "false"));
-        final boolean serverSide = ResteasyProviderFactory.searchContextData(Dispatcher.class) != null;
-        if (originalBehavior || !serverSide) {
+        if (originalBehavior) {
             return e;
         }
         if (e instanceof WebApplicationExceptionWrapper) {
