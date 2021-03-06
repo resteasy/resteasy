@@ -13,6 +13,11 @@ import javax.ws.rs.core.Application;
  */
 public interface ResteasyDeployment
 {
+   static boolean onServer()
+   {
+      return ResteasyProviderFactory.getInstance().isOnServer();
+   }
+
    void start();
 
    void merge(ResteasyDeployment other);
