@@ -124,19 +124,59 @@ public class SseEventSourceTest {
          SseEventSource msgEventSource = SseEventSource.target(target).build();
          try (SseEventSource eventSource = msgEventSource) {
             eventSource.register(event -> {
-               results.add(event);
-               latch.countDown();
+                results.add(event);
+                latch.countDown();
+            }, ex -> {
+                  errors.incrementAndGet();
+                  logger.error(ex.getMessage(), ex);
+                  throw new RuntimeException(ex);
+               }, () -> {
+                     completed.incrementAndGet();
+                  });
+            eventSource.open();
+
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+         }
+         Assert.assertEquals(0, errors.get());
+         Assert.assertEquals("One message was expected.", 1, results.size());
+         Assert.assertThat("The message doesn't have expected content.", "data",
+               CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
+         Assert.assertEquals("On complete callback should be called one time", 1, completed.get());
+      } finally {
+         client.close();
+      }
+   }
+
+
+   @Test
+   public void testSseEventSourceCountDownOnCompleteCallback() throws Exception {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final AtomicInteger errors = new AtomicInteger(0);
+      final AtomicInteger completed = new AtomicInteger(0);
+      Client client = ClientBuilder.newBuilder().build();
+      try {
+         WebTarget target = client.target(generateURL("/sse/eventssimple"));
+         SseEventSource msgEventSource = SseEventSource.target(target).build();
+         try (SseEventSource eventSource = msgEventSource) {
+            eventSource.register(event -> {
+                results.add(event);
             }, ex -> {
                   errors.incrementAndGet();
                   logger.error(ex.getMessage(), ex);
                   throw new RuntimeException(ex);
                }, () -> {
                   completed.incrementAndGet();
+                  latch.countDown();
                });
             eventSource.open();
 
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            if ((!waitResult) && (results.size() != 1)) {
+               Assert.assertEquals("Waiting for onComlete has timed out and only one message was expected.", 1, results.size());
+            }
+            Assert.assertTrue("Waiting for onComplete has timed out.", waitResult);
          }
          Assert.assertEquals(0, errors.get());
          Assert.assertEquals("One message was expected.", 1, results.size());
