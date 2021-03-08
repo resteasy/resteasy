@@ -445,7 +445,7 @@ public class ReactorNettyClientHttpEngineTest {
         final ClientBuilder builder = ClientBuilder.newBuilder();
         final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
         final ChannelGroup channelGroup = new DefaultChannelGroup(new DefaultEventExecutor());
-        final ConnectionProvider connectionProvider = ConnectionProvider.fixed("");
+        final ConnectionProvider connectionProvider = ConnectionProvider.create("test");
         final HttpClient httpClient =
                 HttpClient.create()
                         .baseUrl("http://localhost:" + mockServer.port())

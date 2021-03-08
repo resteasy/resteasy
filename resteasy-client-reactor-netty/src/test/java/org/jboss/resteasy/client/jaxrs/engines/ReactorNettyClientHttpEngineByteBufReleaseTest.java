@@ -251,7 +251,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         final String connectionPoolName = "ReactorNettyClientHttpEngineByteBufReleaseTest-Connection-Pool";
 
         final HttpClient httpClient =
-                HttpClient.create(ConnectionProvider.fixed(connectionPoolName, CONNECTION_POOL_SIZE))
+                HttpClient.create(ConnectionProvider.create(connectionPoolName, CONNECTION_POOL_SIZE))
                         .protocol(HttpProtocol.HTTP11)
                         .keepAlive(true)
                         .baseUrl("http://localhost:" + mockServer.port())
