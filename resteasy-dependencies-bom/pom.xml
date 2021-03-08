@@ -106,7 +106,7 @@
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
-        <version.io.projectreactor>Dysprosium-SR12</version.io.projectreactor>
+        <version.io.projectreactor>2020.0.4</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
