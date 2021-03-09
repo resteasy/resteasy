@@ -26,8 +26,6 @@ public class RestClientExtension implements Extension {
 
     private Set<Throwable> errors = new LinkedHashSet<>();
 
-    private static BeanManager manager;
-
     public void registerRestClient(@Observes
                                    @WithAnnotations(RegisterRestClient.class) ProcessAnnotatedType<?> type) {
         Class<?> javaClass = type.getAnnotatedType().getJavaClass();
@@ -65,20 +63,29 @@ public class RestClientExtension implements Extension {
         }
     }
 
+    /**
+     *
+     * @deprecated this method is not supported and will eventually be deleted
+     * @return {@code true} if CDI is believed to be activated, otherwise {@code false}
+     */
+    @Deprecated
     public static boolean isCDIActive() {
-        if(manager==null){
-            try {
-                manager = CDI.current().getBeanManager();
-            }catch(IllegalStateException ise){
-               // This happens when a CDIProvider is not available.
-               return false;
-            }
+        try {
+            return CDI.current().getBeanManager() != null;
+        } catch (IllegalStateException ise) {
+            // This happens when a CDIProvider is not available.
+            return false;
         }
-        return manager != null;
     }
 
+    /**
+     * This method currently does nothing.
+     *
+     * @deprecated this method is not supported and will eventually be deleted
+     */
+    @Deprecated
     public static void clearBeanManager() {
-        manager = null;
+        // nothing to do
     }
 
     private static class RestClientData {
@@ -108,9 +115,17 @@ public class RestClientExtension implements Extension {
 
     /**
      * Lifted from CdiConstructorInjector in resteasy-cdi
+     * @deprecated this method is not supported and will eventually be deleted
      */
+    @Deprecated
     public static Object construct(Class<?> clazz){
-        if(isCDIActive()){
+        BeanManager manager;
+        try {
+            manager = CDI.current().getBeanManager();
+        } catch (IllegalStateException ignore) {
+            return null;
+        }
+        if (manager != null) {
             Set<Bean<?>> beans = manager.getBeans(clazz);
             if (beans.isEmpty()) {
                 return null;
