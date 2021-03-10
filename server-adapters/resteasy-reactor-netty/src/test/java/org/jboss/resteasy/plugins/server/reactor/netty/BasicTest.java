@@ -6,38 +6,31 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PATCH;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.Duration;
 import java.util.UUID;
 
+import static org.jboss.resteasy.test.TestPortProvider.getHost;
+import static org.jboss.resteasy.test.TestPortProvider.getPort;
 import static org.junit.Assert.assertEquals;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 public class BasicTest {
     private static Client client;
+    private static String baseUrl;
 
     @BeforeClass
     public static void setup() throws Exception {
-        ResteasyDeployment deployment = ReactorNettyContainer.start();
+        final ResteasyDeployment deployment = ReactorNettyContainer.start();
         deployment.getProviderFactory().registerProvider(JacksonJsonProvider.class);
-        Registry registry = deployment.getRegistry();
+        final Registry registry = deployment.getRegistry();
         registry.addPerRequestResource(BasicResource.class);
-        client = ClientBuilder.newClient().register(JacksonJsonProvider.class);
+        final Client client1 =  ClientBuilder.newClient().register(JacksonJsonProvider.class);
+        setupClient(client1);
+        setupBaseUrl("http://%s:%d%s");
     }
 
     @AfterClass
@@ -77,8 +70,7 @@ public class BasicTest {
     public void pojo() {
         final WebTarget target = client.target(generateURL("/basic/pojo"));
         final Response resp = target.request().get();
-        //System.out.println(resp.readEntity(String.class));
-        assertEquals(42, resp.readEntity(Pojo.class).getAnswer());
+        assertEquals(42, resp.readEntity(BasicResource.Pojo.class).getAnswer());
     }
 
     public void sendBodyTest(final String method) {
@@ -90,62 +82,17 @@ public class BasicTest {
         assertEquals(method.toUpperCase() + " " + randomText, resp);
     }
 
-    @Path("/basic")
-    public static class BasicResource {
-        @GET
-        public String get() {
-            return "Hello world!";
-        }
-
-        @PUT
-        public String post(String input) {
-            return "PUT " + input;
-        }
-
-        @POST
-        public String put(String input) {
-            return "POST " + input;
-        }
-
-        @DELETE
-        public String delete(String input) {
-            return "DELETE " + input;
-        }
-
-        @PATCH
-        public String patch(String input) {
-            return "PATCH " + input;
-        }
-
-        @GET
-        @Path("/pojo")
-        @Produces(MediaType.APPLICATION_JSON)
-        public Pojo pojo() {
-            return new Pojo();
-        }
+    public static void setupBaseUrl(final String baseUrlPath) {
+        baseUrl = baseUrlPath;
     }
 
-    @Path("/mono")
-    public static class MonoResource {
-        @GET
-        public Mono<String> hello(@QueryParam("delay") Integer delayMs) {
-            final Mono<String> businessLogic = Mono.just("Mono says hello!");
-
-            return delayMs != null
-                ? businessLogic.delayElement(Duration.ofMillis(delayMs))
-                : businessLogic;
-        }
+    public static void setupClient(Client jaxrsClient) {
+        client = jaxrsClient;
     }
 
-    public static class Pojo {
-        private int answer = 42;
-
-        public int getAnswer() {
-            return answer;
-        }
-
-        public void setAnswer(int answer) {
-            this.answer = answer;
-        }
+    // better to change this method over TestPortProvider utility class itself
+    // this would do work for now
+    public static String generateURL(final String path) {
+        return String.format(baseUrl, getHost(), getPort(), path);
     }
 }

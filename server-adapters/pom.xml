@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>test-commons</module>
         <module>resteasy-jdk-http</module>
         <module>resteasy-netty4</module>
         <module>resteasy-netty4-cdi</module>

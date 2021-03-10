@@ -2,6 +2,10 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.IdentityCipherSuiteFilter;
+import io.netty.handler.ssl.JdkSslContext;
+import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -31,6 +35,7 @@ import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -69,6 +74,7 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
    protected SecurityDomain domain;
    private Duration idleTimeout;
    private SSLContext sslContext;
+   private ClientAuth clientAuth = ClientAuth.REQUIRE;
    private final EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
 
    private DisposableServer server;
@@ -90,12 +96,15 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
 
       final Handler handler = new Handler();
 
-      HttpServer svrBuilder =
-          HttpServer.create()
+      HttpServer svrBuilder = HttpServer
+              .create()
               .tcpConfiguration(this::configure)
               .port(configuredPort)
               .handle(handler::handle);
 
+      if (sslContext != null) {
+         svrBuilder = svrBuilder.secure(sslContextSpec -> sslContextSpec.sslContext(toNettySSLContext(sslContext)));
+      }
       if (hostname != null && !hostname.trim().isEmpty()) {
          svrBuilder = svrBuilder.host(hostname);
       }
@@ -288,13 +297,22 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       return this;
    }
 
-   public ReactorNettyJaxrsServer setSSLContext(SSLContext sslContext)
+   public ReactorNettyJaxrsServer setSSLContext(final SSLContext sslContext)
    {
+      Objects.requireNonNull(sslContext);
       this.sslContext = sslContext;
       return this;
    }
 
-   private TcpServer configure(final TcpServer baseServer) {
+   public ReactorNettyJaxrsServer setClientAuth(final ClientAuth clientAuth)
+   {
+      Objects.requireNonNull(clientAuth);
+      this.clientAuth = clientAuth;
+      return this;
+   }
+
+   private TcpServer configure(final TcpServer baseServer)
+   {
       if (idleTimeout != null) {
          return baseServer.doOnConnection(conn -> {
             final long idleNanos = idleTimeout.toNanos();
@@ -314,5 +332,20 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
          });
       }
       return baseServer;
+   }
+
+   private SslContext toNettySSLContext(final SSLContext sslContext)
+   {
+      Objects.requireNonNull(sslContext);
+      return new JdkSslContext(
+              sslContext,
+              false,
+              null,
+              IdentityCipherSuiteFilter.INSTANCE,
+              null,
+              clientAuth,
+              null,
+              false
+      );
    }
 }
