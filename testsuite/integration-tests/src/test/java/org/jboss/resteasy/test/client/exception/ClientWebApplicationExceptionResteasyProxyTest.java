@@ -33,16 +33,36 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ClientWebApplicationExceptionResteasyProxyTest {
 
-   private static ClientWebApplicationExceptionProxyResourceInterface proxy;
+   public static final String oldBehaviorDeploymentName = "OldBehaviorClientWebApplicationExceptionResteasyProxyTest";
+   public static final String newBehaviorDeploymentName = "NewBehaviorClientWebApplicationExceptionResteasyProxyTest";
+
+   private static ClientWebApplicationExceptionProxyResourceInterface oldBehaviorProxy;
+   private static ClientWebApplicationExceptionProxyResourceInterface newBehaviorProxy;
 
    static {
       ResteasyClient client = (ResteasyClient) ResteasyClientBuilder.newClient();
-      proxy = client.target(generateURL("/app/test/")).proxy(ClientWebApplicationExceptionProxyResourceInterface.class);
+      oldBehaviorProxy = client.target(PortProviderUtil.generateURL("/app/test/", oldBehaviorDeploymentName))
+              .proxy(ClientWebApplicationExceptionProxyResourceInterface.class);
+      newBehaviorProxy = client.target(PortProviderUtil.generateURL("/app/test/", newBehaviorDeploymentName))
+              .proxy(ClientWebApplicationExceptionProxyResourceInterface.class);
    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientWebApplicationExceptionTest.class.getSimpleName());
+   @Deployment(name = oldBehaviorDeploymentName)
+   public static Archive<?> deployOldBehaviour() {
+      WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName);
+      war.addClass(ClientWebApplicationExceptionTest.class);
+      war.addClass(ClientWebApplicationExceptionResteasyProxyApplication.class);
+      war.addClass(ClientWebApplicationExceptionResteasyProxyResource.class);
+      war.addClass(PortProviderUtil.class);
+      war.addClass(TestUtil.class);
+      war.setWebXML(ClientWebApplicationExceptionResteasyProxyTest.class.getPackage(), "webapplicationexception_web.xml");
+      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      return TestUtil.finishContainerPrepare(war, null, ClientWebApplicationExceptionProxyResourceInterface.class);
+   }
+
+   @Deployment(name = newBehaviorDeploymentName)
+   public static Archive<?> deployNewBehavior() {
+      WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName);
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionResteasyProxyApplication.class);
       war.addClass(ClientWebApplicationExceptionResteasyProxyResource.class);
@@ -50,10 +70,6 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
       war.addClass(TestUtil.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, ClientWebApplicationExceptionProxyResourceInterface.class);
-   }
-
-   public static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ClientWebApplicationExceptionTest.class.getSimpleName());
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +85,7 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
       for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
          try {
             System.setProperty("node", "localhost");
-            proxy.oldException(i);
+            newBehaviorProxy.oldException(i);
             Assert.fail("expected exception");
          } catch (ResteasyWebApplicationException rwae) {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
@@ -97,7 +113,7 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
    public void testNewExceptionsDirectly() throws Exception {
       for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
          try {
-            proxy.newException(i);
+            newBehaviorProxy.newException(i);
             Assert.fail("expected exception");
          } catch (ResteasyWebApplicationException rwae) {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
@@ -132,28 +148,23 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testNoCatchOldBehaviorOldExceptions() throws Exception {
-      proxy.setBehavior("true");
-      try {
-         for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
-            try {
-               proxy.noCatchOld(i);
-               Assert.fail("expected exception");
-            } catch (ResteasyWebApplicationException rwae) {
-               Assert.fail("Didn't expect ResteasyWebApplicationException");
-            } catch (WebApplicationException e) {
-               Response response = e.getResponse();
-               WebApplicationException wae = ClientWebApplicationExceptionTest.oldExceptions[i];
-               Assert.assertEquals(wae.getResponse().getStatus(), response.getStatus());
-               Assert.assertEquals(wae.getResponse().getHeaderString("foo"), response.getHeaderString("foo"));
-               Assert.assertEquals(wae.getResponse().getEntity(), response.readEntity(String.class));
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
-            } catch (Exception e) {
-               Assert.fail("expected WebApplicationException");
-            }
+   public void testNoCatchOldBehaviorOldExceptions() {
+      for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
+         try {
+            oldBehaviorProxy.noCatchOldOld(i);
+            Assert.fail("expected exception");
+         } catch (ResteasyWebApplicationException rwae) {
+            Assert.fail("Didn't expect ResteasyWebApplicationException");
+         } catch (WebApplicationException e) {
+            Response response = e.getResponse();
+            WebApplicationException wae = ClientWebApplicationExceptionTest.oldExceptions[i];
+            Assert.assertEquals(wae.getResponse().getStatus(), response.getStatus());
+            Assert.assertEquals(wae.getResponse().getHeaderString("foo"), response.getHeaderString("foo"));
+            Assert.assertEquals(wae.getResponse().getEntity(), response.readEntity(String.class));
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
+         } catch (Exception e) {
+            Assert.fail("expected WebApplicationException");
          }
-      } finally {
-         proxy.setBehavior("false");
       }
    }
 
@@ -176,29 +187,24 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testNoCatchOldBehaviorNewExceptions() throws Exception {
-      proxy.setBehavior("true");
-      try {
-         for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
-            try {
-               proxy.noCatchNew(i);
-               Assert.fail("expected exception");
-            } catch (ResteasyWebApplicationException rwae) {
-               Assert.fail("Didn't expect ResteasyWebApplicationException");
-            } catch (WebApplicationException e) {
-               Response response = e.getResponse();
-               Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
-               Assert.assertNull(response.getHeaderString("foo"));
-               Assert.assertTrue(response.readEntity(String.class).isEmpty());
-               // We compare the old exception here because this is coming from a client resulting in the exception thrown
-               // at the client not wrapped.
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
-            } catch (Exception e) {
-               Assert.fail("expected WebApplicationException");
-            }
+   public void testNoCatchOldBehaviorNewExceptions() {
+      for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
+         try {
+            oldBehaviorProxy.noCatchOldNew(i);
+            Assert.fail("expected exception");
+         } catch (ResteasyWebApplicationException rwae) {
+            Assert.fail("Didn't expect ResteasyWebApplicationException");
+         } catch (WebApplicationException e) {
+            Response response = e.getResponse();
+            Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
+            Assert.assertNull(response.getHeaderString("foo"));
+            Assert.assertTrue(response.readEntity(String.class).isEmpty());
+            // We compare the old exception here because this is coming from a client resulting in the exception thrown
+            // at the client not wrapped.
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
+         } catch (Exception e) {
+            Assert.fail("expected WebApplicationException");
          }
-      } finally {
-         proxy.setBehavior("false");
       }
    }
 
@@ -217,10 +223,10 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testNoCatchNewBehaviorOldExceptions() throws Exception {
+   public void testNoCatchNewBehaviorOldExceptions() {
       for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
          try {
-            proxy.noCatchOld(i);
+            newBehaviorProxy.noCatchNewOld(i);
             Assert.fail("expected exception");
          } catch (ResteasyWebApplicationException rwae) {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
@@ -250,10 +256,10 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testNoCatchNewBehaviorNewExceptions() throws Exception {
+   public void testNoCatchNewBehaviorNewExceptions() {
       for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
          try {
-            proxy.noCatchNew(i);
+            newBehaviorProxy.noCatchNewNew(i);
             Assert.fail("expected exception");
          } catch (ResteasyWebApplicationException rwae) {
             Assert.fail("Didn't expect ResteasyWebApplicationException");
@@ -291,27 +297,22 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testCatchOldBehaviorOldExceptions() throws Exception {
-      proxy.setBehavior("true");
-      try {
-         for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
-            try {
-               proxy.catchOldOld(i);
-               Assert.fail("expected exception");
-            } catch (ResteasyWebApplicationException rwae) {
-               Assert.fail("Didn't expect ResteasyWebApplicationException");
-            } catch (WebApplicationException e) {
-               Response response = e.getResponse();
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), response.getStatus());
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), response.getHeaderString("foo"));
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getEntity(), response.readEntity(String.class));
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
-            } catch (Exception e) {
-               Assert.fail("expected WebApplicationException");
-            }
+   public void testCatchOldBehaviorOldExceptions() {
+      for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
+         try {
+            oldBehaviorProxy.catchOldOld(i);
+            Assert.fail("expected exception");
+         } catch (ResteasyWebApplicationException rwae) {
+            Assert.fail("Didn't expect ResteasyWebApplicationException");
+         } catch (WebApplicationException e) {
+            Response response = e.getResponse();
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), response.getStatus());
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), response.getHeaderString("foo"));
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getEntity(), response.readEntity(String.class));
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
+         } catch (Exception e) {
+            Assert.fail("expected WebApplicationException");
          }
-      } finally {
-         proxy.setBehavior("false");
       }
    }
 
@@ -334,28 +335,23 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testCatchOldBehaviorNewExceptions() throws Exception {
-      proxy.setBehavior("true");
-      try {
-         for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
-            try {
-               proxy.catchOldNew(i);
-               Assert.fail("expected exception");
-            } catch (ResteasyWebApplicationException e) {
-               Assert.fail("didn't expect ResteasyWebApplicationException");
-            } catch (WebApplicationException e) {
-               Response response = e.getResponse();
-               Assert.assertNotNull(response);
-               Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
-               Assert.assertNull(response.getHeaderString("foo"));
-               Assert.assertTrue(response.readEntity(String.class).length() == 0);
-               Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
-            } catch (Exception e) {
-               Assert.fail("expected WebApplicationException");
-            }
+   public void testCatchOldBehaviorNewExceptions() {
+      for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
+         try {
+            oldBehaviorProxy.catchOldNew(i);
+            Assert.fail("expected exception");
+         } catch (ResteasyWebApplicationException e) {
+            Assert.fail("didn't expect ResteasyWebApplicationException");
+         } catch (WebApplicationException e) {
+            Response response = e.getResponse();
+            Assert.assertNotNull(response);
+            Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), response.getStatus());
+            Assert.assertNull(response.getHeaderString("foo"));
+            Assert.assertTrue(response.readEntity(String.class).length() == 0);
+            Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptionMap.get(response.getStatus()), e.getClass());
+         } catch (Exception e) {
+            Assert.fail("expected WebApplicationException");
          }
-      } finally {
-         proxy.setBehavior("false");
       }
    }
 
@@ -374,10 +370,10 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testCatchNewBehaviorOldExceptions() throws Exception {
+   public void testCatchNewBehaviorOldExceptions() {
       for (int i = 0; i < ClientWebApplicationExceptionTest.oldExceptions.length; i++) {
          try {
-            proxy.catchNewOld(i);
+            newBehaviorProxy.catchNewOld(i);
             Assert.fail("expected exception");
          } catch (ResteasyWebApplicationException e) {
             Assert.fail("didn't expect ResteasyWebApplicationException");
@@ -409,10 +405,10 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpSince RESTEasy 3.14.0.Final
     */
    @Test
-   public void testCatchNewBehaviorNewExceptions() throws Exception {
+   public void testCatchNewBehaviorNewExceptions() {
       for (int i = 0; i < ClientWebApplicationExceptionTest.newExceptions.length; i++) {
          try {
-            proxy.catchNewNew(i);
+            newBehaviorProxy.catchNewNew(i);
             Assert.fail("expected exception");
          } catch (ResteasyWebApplicationException e) {
             Assert.fail("didn't expect ResteasyWebApplicationException");

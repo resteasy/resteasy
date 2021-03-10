@@ -7,14 +7,6 @@ import javax.ws.rs.PathParam;
 public interface ClientWebApplicationExceptionProxyResourceInterface {
 
    /**
-    * Sets the System property ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR
-    * @param value value property is set to
-    */
-   @GET
-   @Path("behavior/{value}")
-   void setBehavior(@PathParam("value") String value);
-
-   /**
     * Throws an instance of WebApplicationException from oldExceptions table. The Response returned by
     * WebApplicationException.getResponse() will be used by the container to create an HTTP response.
     *
@@ -39,27 +31,51 @@ public interface ClientWebApplicationExceptionProxyResourceInterface {
 
    /**
     * Uses a Client or proxy to call oldException() to get an HTTP response derived from a WebApplicationException.
-    * Based on that response, the Client or proxy will throw either a WebApplicationException or ResteasyWebApplicationException,
-    * depending on the value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR.
+    * The Client or proxy will throw a WebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is true.
     *
     * @param i determines element of oldExceptions to be thrown by oldException()
     * @throws Exception
     */
    @GET
-   @Path("nocatch/old/{i}")
-   String noCatchOld(@PathParam("i") int i) throws Exception;
+   @Path("nocatch/old/old/{i}")
+   String noCatchOldOld(@PathParam("i") int i) throws Exception;
+
+   /**
+    * Uses a Client or proxy to call oldException() to get an HTTP response derived from a WebApplicationException.
+    * The Client or proxy will throw a ResteasyWebApplicationException or WebApplicationExceptionWrapper because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is false.
+    *
+    * @param i determines element of oldExceptions to be thrown by oldException()
+    * @throws Exception
+    */
+   @GET
+   @Path("nocatch/new/old/{i}")
+   String noCatchNewOld(@PathParam("i") int i) throws Exception;
 
    /**
     * Uses a Client or proxy to call newException() to get an HTTP response derived from a ResteasyWebApplicationException.
-    * Based on that response, the Client or proxy will throw either a WebApplicationException or ResteasyWebApplicationException,
-    * depending on the value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR.
+    * The Client or proxy will throw a WebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is true.
     *
     * @param i determines element of newExceptions to be thrown by newException()
     * @throws Exception
     */
    @GET
-   @Path("nocatch/new/{i}")
-   String noCatchNew(@PathParam("i") int i) throws Exception;
+   @Path("nocatch/old/new/{i}")
+   String noCatchOldNew(@PathParam("i") int i) throws Exception;
+
+   /**
+    * Uses a Client or proxy to call newException() to get an HTTP response derived from a ResteasyWebApplicationException.
+    * The Client or proxy will throw a ResteasyWebApplicationException or WebApplicationExceptionWrapper because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is false.
+    *
+    * @param i determines element of newExceptions to be thrown by newException()
+    * @throws Exception
+    */
+   @GET
+   @Path("nocatch/new/new/{i}")
+   String noCatchNewNew(@PathParam("i") int i) throws Exception;
 
    /**
     * It is assumed that ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is
