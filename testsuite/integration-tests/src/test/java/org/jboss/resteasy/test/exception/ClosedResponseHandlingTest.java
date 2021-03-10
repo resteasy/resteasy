@@ -6,10 +6,6 @@ import java.util.Map;
 
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -17,6 +13,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingEnableTracingRequestFilter;
+import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionResteasyProxyTest;
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingPleaseMapExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingResource;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -24,9 +21,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -40,9 +38,12 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ClosedResponseHandlingTest {
 
-   @Deployment
-   public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(ClosedResponseHandlingTest.class.getSimpleName());
+   public static final String oldBehaviorDeploymentName = "OldBehaviorClosedResponseHandlingTest";
+   public static final String newBehaviorDeploymentName = "NewBehaviorClosedResponseHandlingTest";
+
+   @Deployment(name = oldBehaviorDeploymentName)
+   public static Archive<?> deployOldBehaviour() {
+       WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName);
        war.addClass(ClosedResponseHandlingTest.class);
        war.addPackage(ClosedResponseHandlingResource.class.getPackage());
        war.addClass(PortProviderUtil.class);
@@ -59,6 +60,21 @@ public class ClosedResponseHandlingTest {
              ClosedResponseHandlingEnableTracingRequestFilter.class);
     }
 
+   @Deployment(name = newBehaviorDeploymentName)
+   public static Archive<?> deployNewBehavior() {
+       WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName);
+       war.addClass(ClosedResponseHandlingTest.class);
+       war.addPackage(ClosedResponseHandlingResource.class.getPackage());
+       war.addClass(PortProviderUtil.class);
+       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+             new ReflectPermission("suppressAccessChecks")
+       ), "permissions.xml");
+       war.setWebXML(ClientWebApplicationExceptionResteasyProxyTest.class.getPackage(), "webapplicationexception_web.xml");
+
+       return TestUtil.finishContainerPrepare(war, null, ClosedResponseHandlingResource.class,
+            ClosedResponseHandlingPleaseMapExceptionMapper.class);
+   }
+
    /**
     * @tpTestDetails RESTEasy client errors that result in a closed Response are correctly handled.
     * @tpPassCrit A NotAcceptableException is returned
@@ -66,15 +82,7 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotAcceptableException.class)
    public void testNotAcceptable() {
-      WebTarget behaviorTarget = new ResteasyClientBuilderImpl().build().target(generateURL("/behavior"));
-      try {
-         Response behaviorResponse = behaviorTarget.path("true").request().get();
-         Assert.assertEquals(204, behaviorResponse.getStatus());
-         new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable")).request().get(String.class);
-      } finally {
-         Response behaviorResponse = behaviorTarget.path("false").request().get();
-         Assert.assertEquals(204, behaviorResponse.getStatus());
-      }
+       new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable", oldBehaviorDeploymentName)).request().get(String.class);
    }
 
    /**
@@ -85,12 +93,7 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotAcceptableException.class)
    public void testNotAcceptableNewBehavior() {
-      Client c = new ResteasyClientBuilderImpl().build();
-      try {
-         c.target(generateURL("/testNotAcceptable")).request().get(String.class);
-      } finally {
-         c.close();
-      }
+      new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable", newBehaviorDeploymentName)).request().get(String.class);
    }
 
    /**
@@ -102,15 +105,8 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotSupportedException.class)
    public void testNotSupportedTraced() {
-      WebTarget behaviorTarget = ClientBuilder.newClient().target(generateURL("/behavior"));
-      try {
-         Response behaviorResponse = behaviorTarget.path("true").request().get();
-         Assert.assertEquals(204, behaviorResponse.getStatus());
-         ClientBuilder.newClient().target(generateURL("/testNotSupportedTraced")).request().get(String.class);
-      } finally {
-         Response behaviorResponse = behaviorTarget.path("false").request().get();
-         Assert.assertEquals(204, behaviorResponse.getStatus());
-      }
+
+      new ResteasyClientBuilderImpl().build().target(generateURL("/testNotSupportedTraced", oldBehaviorDeploymentName)).request().get(String.class);
    }
 
    /**
@@ -121,15 +117,7 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotSupportedException.class)
    public void testNotSupportedTracedNewBehavior() {
-      Client c = new ResteasyClientBuilderImpl().build();
-      try {
-         c.target(generateURL("/testNotSupportedTraced")).request().get(String.class);
-      } finally {
-         c.close();
-      }
-   }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ClosedResponseHandlingTest.class.getSimpleName());
+      new ResteasyClientBuilderImpl().build().target(generateURL("/testNotSupportedTraced", newBehaviorDeploymentName)).request().get(String.class);
    }
 }
