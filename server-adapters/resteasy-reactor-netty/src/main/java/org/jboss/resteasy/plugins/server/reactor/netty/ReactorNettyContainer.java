@@ -33,6 +33,15 @@ public class ReactorNettyContainer {
         reactorNettyJaxrsServer.start();
     }
 
+    public static ResteasyDeployment start(ReactorNettyJaxrsServer server)
+    {
+        final ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+        reactorNettyJaxrsServer = server;
+        reactorNettyJaxrsServer.setDeployment(deployment);
+        reactorNettyJaxrsServer.start();
+        return reactorNettyJaxrsServer.getDeployment();
+    }
+
     public static ResteasyDeployment start(String bindPath, SecurityDomain domain) throws Exception
     {
         ResteasyDeployment deployment = new ResteasyDeploymentImpl();
