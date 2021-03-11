@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.netty.http.server.HttpServerRequest;
 
-import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -269,7 +268,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
          */
         class NettyHttpAsyncResponse extends AbstractAsynchronousResponse {
             private final Object responseLock = new Object();
-            protected ScheduledFuture timeoutFuture;
+            protected ScheduledFuture<?> timeoutFuture;
 
             private ReactorNettyHttpResponse nettyResponse;
             NettyHttpAsyncResponse(
@@ -406,15 +405,6 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
                 return true;
             }
 
-            protected void handleTimeout()
-            {
-                if (timeoutHandler != null)
-                {
-                    timeoutHandler.handleTimeout(this);
-                }
-                if (done) return;
-                resume(new ServiceUnavailableException());
-            }
         }
     }
 }

@@ -286,12 +286,15 @@ public class NettyTest
       out.printf(Locale.US, "GET %s HTTP/1.1\nHost: %s:%d\n\n", uri, getHost(), getPort());
       String statusLine = in.readLine();
       String response = in.readLine();
+
+      Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
+
       while (!response.startsWith("uri"))
       {
          response = in.readLine();
       }
       client.close();
-      Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
+
       Assert.assertEquals(uri, response.subSequence(5, response.length()));
    }
 
