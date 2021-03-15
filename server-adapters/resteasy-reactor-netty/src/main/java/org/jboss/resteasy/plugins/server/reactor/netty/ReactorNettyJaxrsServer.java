@@ -1,14 +1,13 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.ssl.ClientAuth;
-import io.netty.handler.ssl.IdentityCipherSuiteFilter;
-import io.netty.handler.ssl.JdkSslContext;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.handler.timeout.IdleStateHandler;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.net.ssl.SSLContext;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
@@ -22,7 +21,15 @@ import org.jboss.resteasy.util.PortProvider;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Exceptions;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.IdentityCipherSuiteFilter;
+import io.netty.handler.ssl.JdkSslContext;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoProcessor;
 import reactor.netty.DisposableServer;
@@ -30,17 +37,6 @@ import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.tcp.TcpServer;
-
-import javax.net.ssl.SSLContext;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A server adapter built on top of <a
@@ -72,15 +68,15 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
    protected String hostname = null;
    protected int configuredPort = PortProvider.getPort();
    protected int runtimePort = -1;
-   protected ResteasyDeployment deployment;
    protected String root = "";
+   protected ResteasyDeployment deployment;
    protected SecurityDomain domain;
    private Duration idleTimeout;
    private SSLContext sslContext;
-   private ClientAuth clientAuth = ClientAuth.REQUIRE;
-   private final EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
-
    private DisposableServer server;
+   private ClientAuth clientAuth = ClientAuth.REQUIRE;
+   private List<Runnable> cleanUpTasks;
+   private final EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
 
    @Override
    public ReactorNettyJaxrsServer deploy() {
@@ -92,33 +88,35 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       log.info("Starting RestEasy Reactor-based server!");
       serverHelper.checkDeployment(deployment);
 
+      //EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
       String appPath = serverHelper.checkAppDeployment(deployment);
       if (appPath != null && (root == null || "".equals(root))) {
          setRootResourcePath(appPath);
       }
 
-      final Handler handler = new Handler();
-
-      HttpServer svrBuilder = HttpServer
-              .create()
+      HttpServer svrBuilder =
+          HttpServer.create()
               .tcpConfiguration(this::configure)
-              .port(configuredPort)
-              .handle(handler::handle);
+              .port(configuredPort);
 
-      if (sslContext != null) {
-         svrBuilder = svrBuilder.secure(sslContextSpec -> sslContextSpec.sslContext(toNettySSLContext(sslContext)));
+      if( sslContext != null ) {
+         svrBuilder = svrBuilder.secure(
+                 sslContextSpec -> sslContextSpec.sslContext(toNettySSLContext(sslContext))
+         );
       }
+
       if (hostname != null && !hostname.trim().isEmpty()) {
          svrBuilder = svrBuilder.host(hostname);
       }
 
-      if (Boolean.parseBoolean(System.getProperty("resteasy.server.reactor-netty.warmup", "true"))) {
-         log.info("Warming up the reactor-netty server");
-         svrBuilder.warmup().block();
-      }
+      final Handler handler = new Handler();
 
-      server = svrBuilder.bindNow();
+      server = svrBuilder
+              .handle(handler::handle)
+              .bindNow();
+
       runtimePort = server.port();
+
       return this;
    }
 
@@ -155,26 +153,17 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
          // This is a subscription tied to the completion writing the response.
          final MonoProcessor<Void> completionMono = MonoProcessor.create();
 
-         final AtomicBoolean isTimeoutSet = new AtomicBoolean(false);
-
-         final ReactorNettyHttpResponse resteasyResp =
-                 new ReactorNettyHttpResponse(req.method(), resp, completionMono);
-
          return req.receive()
              .aggregate()
              .asInputStream()
-             .doOnDiscard(InputStream.class, is -> {
-                try {
-                   is.close();
-                } catch (final IOException ie) {
-                   log.error("Problem closing discarded input stream", ie);
-                }
-             }).switchIfEmpty(empty)
+             .switchIfEmpty(empty)
              .flatMap(body -> {
                 log.trace("Body read!");
 
-                // These next 2 classes, along with ReactorNettyHttpResponse provide the main '1-way bridges'
-                // between reactor-netty and RestEasy.
+                // These next 2 classes provide the main '1-way bridges' between reactor-netty and RestEasy.
+                final ReactorNettyHttpResponse resteasyResp =
+                    new ReactorNettyHttpResponse(req.method(), resp, completionMono);
+
                 final SynchronousDispatcher dispatcher = (SynchronousDispatcher) deployment.getDispatcher();
 
                 final ReactorNettyHttpRequest resteasyReq =
@@ -184,9 +173,15 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                 if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
                    ThreadLocalResteasyProviderFactory.push(deployment.getProviderFactory());
                 }
-
-                // This is what actually kicks RestEasy into action.
-                deployment.getDispatcher().invoke(resteasyReq, resteasyResp);
+                try {
+                   // This is what actually kicks RestEasy into action.
+                   deployment.getDispatcher().invoke(resteasyReq, resteasyResp);
+                } finally {
+                   //Runs clean up tasks after request is processed
+                   if(cleanUpTasks != null) {
+                      cleanUpTasks.forEach(Runnable::run);
+                   }
+                }
 
                 if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
                    ThreadLocalResteasyProviderFactory.pop();
@@ -201,39 +196,24 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                    }
                 }
 
-                final Mono<Void> actualMono = Optional.ofNullable(resteasyReq.timeout())
-                        .map(timeout -> {
-                            isTimeoutSet.set(true);
-                            return completionMono.timeout(resteasyReq.timeout());
-                        })
-                        .orElse(completionMono);
+                final Mono<Void> actualMono =
+                    resteasyReq.timeout() != null ? completionMono.timeout(resteasyReq.timeout()) : completionMono;
 
                 log.trace("Returning completion signal mono from main Flux.");
                 return actualMono
                     .doOnCancel(() -> log.trace("Subscription cancelled"))
                     .doOnSubscribe(s -> log.trace("Subscription on completion mono: {}", s))
-                    .doFinally(s -> {
-                       try {
-                          body.close();
-                       } catch (final IOException ioe) {
-                          log.error("Failure to close the request's input stream.", ioe);
-                       }
-                       log.trace("The completion mono completed with: {}", s);
-                    });
+                    .doFinally(s -> log.trace("The completion mono completed with: {}", s));
              }).onErrorResume(t -> {
-                if (!resteasyResp.isCommitted()) {
-                    final Mono<Void> sendMono;
-
-                    if (isTimeoutSet.get() && Exceptions.unwrap(t) instanceof TimeoutException) {
-                       sendMono = resp.status(503).send();
-                    } else {
-                       sendMono = resp.status(500).send();
-                    }
-                    sendMono.subscribe(completionMono);
+                final Mono<Void> sendMono;
+                if (t instanceof TimeoutException) {
+                   sendMono = resp.status(503).send();
                 } else {
-                   log.debug("Omitting sending back error response. Response is already committed.");
+                   // [AG] Discuss with @crankydillo.  In what scenario do we get this.
+                   // TODO I see some message like SPI unhandled exception.  What is that about?
+                   sendMono = resp.status(500).sendString(Mono.just(t.getLocalizedMessage())).then();
                 }
-
+                sendMono.subscribe(completionMono);
                 return completionMono;
              })
              .doOnError(err -> log.error("Request processing err.", err))
@@ -307,7 +287,8 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       return this;
    }
 
-   public ReactorNettyJaxrsServer setIdleTimeout(final Duration idleTimeout) {
+   public ReactorNettyJaxrsServer setIdleTimeout(final Duration idleTimeout)
+   {
       this.idleTimeout = idleTimeout;
       return this;
    }
@@ -326,11 +307,30 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       return this;
    }
 
+
+   /**
+    * Sets clean up tasks that are needed immediately after {@link Dispatcher#invoke} yet before any asynchronous asynchronous work is continued by the reactor-netty server.  Since these run on the Netty event loop threads, it is important that they run fast (not block).  It is expected that you take special care with exceptions.  This is useful in certain cases where servlet Filters have options that are hard to achieve with the pure JAX-RS API, such as:
+    *{code}
+    *  doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) {
+    *     establishThreadLocals();
+    *     chain.doFilter(req, resp, chain);
+    *     clearThreadLocals();
+    *  }
+    *{code}
+    * @param cleanUpTasks List of clean up tasks
+    * @return ReactorNettyJaxrsServer
+    */
+   public ReactorNettyJaxrsServer setCleanUpTasks(final List<Runnable> cleanUpTasks) {
+      this.cleanUpTasks = cleanUpTasks;
+      return this;
+   }
+
    private TcpServer configure(final TcpServer baseServer)
    {
       if (idleTimeout != null) {
          return baseServer.doOnConnection(conn -> {
             final long idleNanos = idleTimeout.toNanos();
+            // [AG] Discuss with @crankydillo.  Which methods are you referring to?
             // TODO, why can't I use reactor-netty methods for this??
             conn.channel().pipeline().addFirst("idleStateHandler", new IdleStateHandler(0, 0, idleNanos, TimeUnit.NANOSECONDS));
             conn.channel().pipeline().addAfter("idleStateHandler", "idleEventHandler", new ChannelDuplexHandler() {
@@ -374,16 +374,18 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       if (uri.startsWith(req.scheme() + "://")) {
          uriString = uri;
       } else {
-          uriString = new StringBuilder(100)
+          final StringBuilder sb = new StringBuilder(100);
+
+          uriString = sb
                   .append(req.scheme())
                   .append("://")
                   .append(req.hostAddress().getHostString())
                   .append(":").append(req.hostAddress().getPort())
                   .append(req.uri())
                   .toString();
+
       }
 
       return new ResteasyUriInfo(uriString, contextPath);
    }
-
 }
