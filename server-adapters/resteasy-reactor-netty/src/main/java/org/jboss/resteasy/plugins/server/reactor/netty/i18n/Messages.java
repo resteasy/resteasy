@@ -16,24 +16,9 @@ public interface Messages
     Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
     int BASE = 22500;
 
-    @Message(id = BASE + 0, value = "Already committed")
+    @Message(id = BASE, value = "Already committed")
     String alreadyCommitted();
 
     @Message(id = BASE + 5, value = "Already suspended")
     String alreadySuspended();
-
-    @Message(id = BASE + 10, value = "Chunk size must be at least 1")
-    String chunkSizeMustBeAtLeastOne();
-
-    @Message(id = BASE + 12, value = "Exception caught by handler")
-    String exceptionCaught();
-
-    @Message(id = BASE + 15, value = "Failed to parse request.")
-    String failedToParseRequest();
-
-    @Message(id = BASE + 20, value = "response is committed")
-    String responseIsCommitted();
-
-    @Message(id = BASE + 25, value = "Unexpected")
-    String unexpected();
 }

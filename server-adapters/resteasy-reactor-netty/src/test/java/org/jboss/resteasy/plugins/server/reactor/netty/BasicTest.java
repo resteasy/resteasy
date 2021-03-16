@@ -17,6 +17,7 @@ import java.util.UUID;
 import static org.jboss.resteasy.test.TestPortProvider.getHost;
 import static org.jboss.resteasy.test.TestPortProvider.getPort;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class BasicTest {
     private static Client client;
@@ -64,6 +65,16 @@ public class BasicTest {
     @Test(timeout = 1_000)
     public void patch() {
         sendBodyTest("PATCH");
+    }
+
+    @Test(timeout = 1_000)
+    public void head() {
+        WebTarget target = client.target(generateURL("/basic"));
+        try (Response resp = target.request().head()) {
+            assertEquals(200, resp.getStatus());
+            assertEquals("text/plain;charset=UTF-8", resp.getHeaderString("Content-Type"));
+            assertNull(resp.getHeaderString("Content-Length"));
+        }
     }
 
     @Test(timeout = 1_000)

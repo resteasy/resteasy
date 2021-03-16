@@ -4,10 +4,9 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.netty.http.server.HttpServerResponse;
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
  * response body to the output stream it gets from {@link #getOutputStream}.
  */
 public class ReactorNettyHttpResponse implements HttpResponse {
-    private static final Logger log = LoggerFactory.getLogger(ReactorNettyHttpResponse.class);
+    private static final Logger log = Logger.getLogger(ReactorNettyHttpResponse.class);
 
     private final HttpServerResponse resp;
     private OutputStream out;
@@ -46,10 +45,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
         if (method == null || !method.equals(HttpMethod.HEAD)) {
             this.out = new ChunkOutputStream(this, resp, completionSink);
         } else {
-            // Not entirely sure this is the best way to handle this..
             resp.responseHeaders().remove(HttpHeaderNames.TRANSFER_ENCODING);
-            // TODO out is null; //[RESTEASY-1627] check this bug.
-            // [AG] Discuss with @crankydillo.  I do not have any action for this for now.
         }
     }
 
@@ -80,7 +76,11 @@ public class ReactorNettyHttpResponse implements HttpResponse {
 
             @Override
             public Object getFirst(String key) {
-                return headers.getAll(key).get(0);
+                final List<String> values = headers.getAll(key);
+                if (values.isEmpty()) {
+                    return null;
+                }
+                return values.get(0);
             }
 
             @Override
@@ -222,7 +222,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
             try {
                 out.close();
             } catch (IOException e) {
-                log.warn("Failed to close OutputStream");
+                log.warn("Failed to close OutputStream", e);
             }
         }
 
@@ -237,9 +237,6 @@ public class ReactorNettyHttpResponse implements HttpResponse {
 
     @Override
     public void sendError(int status) {
-
-        log.trace("Sending error. Status: {}.", status);
-
         final Mono<Void> respMono = resp.status(status)
             .header(HttpHeaderNames.CONTENT_LENGTH, HttpHeaderValues.ZERO)
             .then();
@@ -252,9 +249,6 @@ public class ReactorNettyHttpResponse implements HttpResponse {
 
     @Override
     public void sendError(int status, String message) {
-
-        log.trace("Sending error. Status: {}. Message: {}", status, message);
-
         final Mono<Void> respMono = resp.status(status)
             .header(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(message.length()))
             .header(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN)
@@ -297,7 +291,6 @@ public class ReactorNettyHttpResponse implements HttpResponse {
 
     @Override
     public void flushBuffer() throws IOException {
-        log.trace("Flushing response buffer!");
         out.flush();
     }
 

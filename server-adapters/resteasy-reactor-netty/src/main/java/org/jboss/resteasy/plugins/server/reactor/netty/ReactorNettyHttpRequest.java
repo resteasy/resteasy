@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.ResteasyContext;
@@ -13,8 +14,6 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.RunnableWithException;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.netty.http.server.HttpServerRequest;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -24,10 +23,10 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -42,14 +41,14 @@ import static java.util.Objects.requireNonNull;
  * body via {@link #getInputStream}.
  */
 class ReactorNettyHttpRequest extends BaseHttpRequest {
-    private static final Logger log = LoggerFactory.getLogger(ReactorNettyHttpRequest.class);
+    private static final Logger log = Logger.getLogger(ReactorNettyHttpRequest.class);
 
     private final HttpServerRequest req;
     private final ResteasyHttpHeaders resteasyHttpHeaders;
     private String httpMethod;
     private InputStream in;
     private final NettyExecutionContext executionContext;
-    private final Map<String, Object> attributes = new HashMap<String, Object>();
+    private final Map<String, Object> attributes = new HashMap<>();
     private Duration timeout;
 
     ReactorNettyHttpRequest(
@@ -108,22 +107,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
     @Override
     public Enumeration<String> getAttributeNames()
     {
-        Enumeration<String> en = new Enumeration<String>()
-        {
-            private Iterator<String> it = attributes.keySet().iterator();
-            @Override
-            public boolean hasMoreElements()
-            {
-                return it.hasNext();
-            }
-
-            @Override
-            public String nextElement()
-            {
-                return it.next();
-            }
-        };
-        return en;
+        return Collections.enumeration(attributes.keySet());
     }
 
     @Override

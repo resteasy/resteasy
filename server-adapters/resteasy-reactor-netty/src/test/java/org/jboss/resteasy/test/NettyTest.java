@@ -231,22 +231,6 @@ public class NettyTest
       }
    }
 
-   // [AG] Discuss with @crankydillo.  I see that Netty server pushes it to
-   // ResteasyContext, so that one could do `@Context ChannelHandlerContext context`.
-   // Please see https://github.com/resteasy/Resteasy/blob/4.5.8.Final/server-adapters/resteasy-netty4/src/main/java/org/jboss/resteasy/plugins/server/netty/RequestDispatcher.java#L83
-   // However, I am not sure if we need that for Reactor Netty.  I suggest
-   // we delete this test for now, and if a need arises in the future,
-   // we can consider adding the feature.
-   // TODO we do not set 'ChannelHandlerContext' (see resource method)
-   // Are we supposed to be doing something there?
-   //@Test
-   public void testChannelContext() throws Exception {
-      WebTarget target = client.target(generateURL("/context"));
-      String val = target.request().get(String.class);
-      Assert.assertNotNull(val);
-      Assert.assertFalse(val.isEmpty());
-   }
-
    @Test
    public void testPost() {
       WebTarget target = client.target(generateURL("/post"));

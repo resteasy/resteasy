@@ -1,8 +1,6 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import org.jboss.resteasy.spi.AsyncOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -28,7 +26,7 @@ import java.util.function.Supplier;
  */
 public class ChunkOutputStream extends AsyncOutputStream {
 
-   private static final Logger log = LoggerFactory.getLogger(ChunkOutputStream.class);
+   private static final EmitFailureHandler EMIT_FAILURE_HANDLER = EmitFailureHandler.FAIL_FAST;
 
    private final ReactorNettyHttpResponse parentResponse;
 
@@ -54,8 +52,6 @@ public class ChunkOutputStream extends AsyncOutputStream {
     */
    private final Supplier<Sinks.Many<Tuple2<byte[], CompletableFuture<Void>>>> byteSinkSupplier;
 
-   private static final EmitFailureHandler EMIT_FAILURE_HANDLER = EmitFailureHandler.FAIL_FAST;
-
    ChunkOutputStream(
        final ReactorNettyHttpResponse parentResponse,
        final HttpServerResponse reactorNettyResponse,
@@ -65,19 +61,11 @@ public class ChunkOutputStream extends AsyncOutputStream {
        this.completionSink = Objects.requireNonNull(completionSink);
        Objects.requireNonNull(reactorNettyResponse);
        this.byteSinkSupplier = () -> {
-           log.trace("Creating FluxSink for output.");
            final Sinks.Many<Tuple2<byte[], CompletableFuture<Void>>> outSink = Sinks.many().multicast().onBackpressureBuffer();
            final Flux<byte[]> byteFlux = outSink.asFlux().map(tup -> {
-                   log.trace("Submitting bytes to downstream");
                    tup.getT2().complete(null);
                    return tup.getT1();
-               })
-               // TODO remove the log stuff below once we are confident
-               .doOnRequest(l -> log.trace("Requested: {}", l))
-                   .doOnSubscribe(s -> {
-                       log.trace("Subscription on Flux<byte[]> occurred: {}", s);
-                   })
-               .doFinally(s -> log.trace("Flux<byte[]> closing with signal: {}", s));
+               });
 
            SinkSubscriber.subscribe(completionSink, Mono.from(reactorNettyResponse.sendByteArray(byteFlux)));
 
@@ -87,14 +75,13 @@ public class ChunkOutputStream extends AsyncOutputStream {
 
    @Override
    public void write(int b) {
-      byteSink.emitNext(Tuples.of(new byte[] {(byte)b}, new CompletableFuture<>()), EMIT_FAILURE_HANDLER);
+       write(new byte[] {(byte)b}, 0, 1);
    }
 
    @Override
    public void close() throws IOException {
-       log.trace("Closing the ChunkOutputStream.");
        if (!started || byteSink == null) {
-           SinkSubscriber.subscribe(completionSink, Mono.<Void>empty());
+           SinkSubscriber.subscribe(completionSink, Mono.empty());
        } else {
            byteSink.emitComplete(EMIT_FAILURE_HANDLER);
        }
@@ -113,8 +100,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
    }
 
    @Override
-   public void flush() throws IOException {
-       log.trace("Blocking flush called on ChunkOutputStream");
+   public void flush() {
        try {
            asyncFlush().get();
        } catch (final InterruptedException ie) {
@@ -164,7 +150,6 @@ public class ChunkOutputStream extends AsyncOutputStream {
         if (offset != 0 || length != bs.length) {
             bytes = Arrays.copyOfRange(bs, offset, offset + length);
         }
-        log.trace("Sending bytes to the sink");
         byteSink.emitNext(Tuples.of(bytes, cf), EMIT_FAILURE_HANDLER);
         return cf;
    }

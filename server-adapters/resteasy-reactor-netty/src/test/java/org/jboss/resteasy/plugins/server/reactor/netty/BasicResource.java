@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 public class BasicResource {
 
     @GET
+    @Produces("text/plain")
     public String get() {
         return "Hello world!";
     }

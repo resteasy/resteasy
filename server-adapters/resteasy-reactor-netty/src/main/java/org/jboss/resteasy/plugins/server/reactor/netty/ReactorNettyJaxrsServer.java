@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.SSLContext;
+
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
@@ -21,8 +23,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.EmbeddedServerHelper;
 import org.jboss.resteasy.util.PortProvider;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.ClientAuth;
@@ -59,14 +59,9 @@ import reactor.netty.http.server.HttpServerResponse;
  * 3. When paired with a Netty-based client (e.g. the JAX-RS client powered by
  * reactor-netty), the threadpool can be efficiently shared between the client
  * and the server.
- *
  */
 public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNettyJaxrsServer> {
-    // TODO I have a lot of Mono#doOn stuff that is really only meant to help me log
-    // We should remove this once we are confident with the approach.  If we _must_ have
-    // we could do something like pass the Mono's to a 'log' method that would be tied
-    // to log.isTraceEnabled.
-   private static final Logger log = LoggerFactory.getLogger(ReactorNettyJaxrsServer.class);
+   private static final Logger log = Logger.getLogger(ReactorNettyJaxrsServer.class);
 
    protected String hostname = null;
    protected int configuredPort = PortProvider.getPort();
@@ -169,7 +164,6 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                 }
              }).switchIfEmpty(empty)
              .flatMap(body -> {
-                log.trace("Body read!");
 
                 // These next 2 classes, along with ReactorNettyHttpResponse provide the main '1-way bridges'
                 // between reactor-netty and RestEasy.
@@ -198,7 +192,6 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                 }
 
                 if (!resteasyReq.getAsyncContext().isSuspended()) {
-                   log.trace("suspended finish called!");
                    try {
                       resteasyResp.close();
                    } catch (IOException e) {
@@ -213,17 +206,13 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                     })
                     .orElse(completionSink.asMono());
 
-                log.trace("Returning completion signal mono from main Flux.");
                 return actualMono
-                    .doOnCancel(() -> log.trace("Subscription cancelled"))
-                    .doOnSubscribe(s -> log.trace("Subscription on completion mono: {}", s))
                     .doFinally(s -> {
                        try {
                           body.close();
                        } catch (final IOException ioe) {
                           log.error("Failure to close the request's input stream.", ioe);
                        }
-                       log.trace("The completion mono completed with: {}", s);
                     });
              }).onErrorResume(t -> {
                 if (!resteasyResp.isCommitted()) {
@@ -232,19 +221,16 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                    if (isTimeoutSet.get() && Exceptions.unwrap(t) instanceof TimeoutException) {
                       sendMono = resp.status(503).send();
                    } else {
+                      log.error("Unhandled server error.", t);
                       sendMono = resp.status(500).send();
                    }
                    SinkSubscriber.subscribe(completionSink, sendMono);
-
                 } else {
-                   log.debug("Omitting sending back error response. Response is already committed.");
+                   log.error("Unhandled server error, JAXRS response committed.", t);
                 }
 
                 return completionSink.asMono();
-             })
-             .doOnError(err -> log.error("Request processing err.", err))
-             .doFinally(s -> log.trace("Request processing finished with: {}", s))
-             .doOnSubscribe(s -> log.trace("handle subscription: {}", s));
+             });
       }
 
    }
@@ -340,13 +326,13 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
     * loop threads, it is important that they run fast (not block).  It is expected that you take special care with
     * exceptions.  This is useful in certain cases where servlet Filters have options that are hard to achieve with the
     * pure JAX-RS API, such as:
-    *{code}
+    * <code>
     *  doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) {
     *     establishThreadLocals();
     *     chain.doFilter(req, resp, chain);
     *     clearThreadLocals();
     *  }
-    *{code}
+    * </code>
     * @param cleanUpTasks List of clean up tasks
     * @return ReactorNettyJaxrsServer
     */
@@ -359,7 +345,6 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
    {
       if (idleTimeout != null) {
          final long idleNanos = idleTimeout.toNanos();
-         // TODO, why can't I use reactor-netty methods for this??
          conn.channel().pipeline().addFirst("idleStateHandler", new IdleStateHandler(0, 0, idleNanos, TimeUnit.NANOSECONDS));
          conn.channel().pipeline().addAfter("idleStateHandler", "idleEventHandler", new ChannelDuplexHandler() {
             @Override
