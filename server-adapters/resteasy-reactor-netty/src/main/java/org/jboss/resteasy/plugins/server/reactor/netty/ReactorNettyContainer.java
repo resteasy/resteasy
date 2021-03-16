@@ -1,15 +1,14 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.PortProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReactorNettyContainer {
 
-    private static final Logger log = LoggerFactory.getLogger(ReactorNettyContainer.class);
+    private static final Logger log = Logger.getLogger(ReactorNettyContainer.class);
 
     public static ReactorNettyJaxrsServer reactorNettyJaxrsServer;
 

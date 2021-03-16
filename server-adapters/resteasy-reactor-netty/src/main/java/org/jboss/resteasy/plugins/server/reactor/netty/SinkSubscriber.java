@@ -7,6 +7,9 @@ import reactor.core.publisher.Sinks.EmitFailureHandler;
 
 public class SinkSubscriber {
 
+    private SinkSubscriber() {
+    }
+
     /**
      * See {@link reactor.core.publisher.Mono#subscribe(Consumer, Consumer, Runnable)}
      * @param sink - The sink that will consume signals emitted by the mono.
