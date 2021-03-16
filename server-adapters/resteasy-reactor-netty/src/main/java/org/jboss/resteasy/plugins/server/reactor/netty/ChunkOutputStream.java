@@ -110,20 +110,41 @@ public class ChunkOutputStream extends AsyncOutputStream {
 
    @Override
    public void flush() throws IOException {
-       // TODO see note on asyncFlush
        log.trace("Blocking flush called on ChunkOutputStream");
+       try {
+           asyncFlush().get();
+       } catch (final InterruptedException ie) {
+           Thread.currentThread().interrupt();
+           throw new RuntimeException(ie);
+       } catch (final ExecutionException ee) {
+           throw new RuntimeException(ee);
+       }
    }
 
    @Override
    public CompletableFuture<Void> asyncFlush() {
-      // TODO hmm, we should not be completing right here!  I still don't know
-      // what 'flushing' means in reactor-netty context.
-       log.trace("Flushing the ChunkOutputStream.");
-       if (!started || byteSink == null) {
-           return CompletableFuture.completedFuture(null);
-       }
-       byteSink.complete();
-       return completionMono.toFuture();
+
+       // [AG] Discuss with @crankydillo.  Here is my understanding:
+       //   - asyncFlush is used mainly for SSE.
+       //   - The idea seems to be to send the element immediately without
+       //     waiting for the rest of the elements.  Anyway, that's what SSE is.
+       //   - But, at the same time, it is trying to not overload.  So, kind of
+       //     doing backpressure.  Only if the previous flush is complete,
+       //     then request the next element from the app.
+       //   - The backpressure mechanism is already built into Reactor Netty.  But,
+       //     the question is how to communicate that.
+       //   - Please see https://projectreactor.io/docs/netty/release/reference/index.html#_sse.
+       //     It reads `The flushing strategy is "flush after every element" emitted
+       //     by the provided Publisher`.  So, we do not need to call flush individually.
+       //
+       //   In summary, we are not controlling flushing, instead Reactor Netty does.
+       //   Also, this#asyncWrite will manage the backpressure.  I assume Reactor Netty
+       //   will backpressure if it cannot flush, and that would mean an element won't be
+       //   requested so asyncWrite won't complete until the element is pulled.  Also,
+       //   asyncFlush is called right after an asyncWrite.  So, asyncFlush looks
+       //   useless.
+
+       return CompletableFuture.completedFuture(null);
    }
 
     @Override

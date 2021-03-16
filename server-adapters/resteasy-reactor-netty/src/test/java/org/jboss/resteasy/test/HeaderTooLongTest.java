@@ -66,9 +66,17 @@ public class HeaderTooLongTest
    {
       WebTarget target = client.target(generateURL("/org/jboss/resteasy/test"));
       Response response = target.request().header("xheader", longString).get();
-      // TODO I'm guessing the 413 is coming from reactor-netty.  This seems ok to me.
-      // Can check the HTTP spec and see if RestEasy dictates anything in this area.
-      //Assert.assertEquals(400, response.getStatus());
+      // [AG] Discuss with @crankydillo.  Yes, this is coming from Netty.  Reactor Netty
+      // allows configuring the max value.  When I changed our settings as below, I get 200,
+      // because the maxHeaderSize is quite large:
+      //       HttpServer svrBuilder =
+      //          HttpServer.create()
+      //              .tcpConfiguration(this::configure)
+      //              .port(configuredPort)
+      //              .httpRequestDecoder(spec -> spec.maxHeaderSize(Integer.MAX_VALUE));
+      //
+      // The problem though..  Shouldn't it be 431 (Request Header Fields Too Large)
+      // instead of 413 (Payload Too Large)?
       Assert.assertEquals(413, response.getStatus());
    }
 }
