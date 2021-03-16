@@ -34,12 +34,12 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
+import reactor.core.publisher.Sinks;
+import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
-import reactor.netty.tcp.TcpServer;
 
 /**
  * A server adapter built on top of <a
@@ -91,18 +91,17 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       log.info("Starting RestEasy Reactor-based server!");
       serverHelper.checkDeployment(deployment);
 
-      String appPath = serverHelper.checkAppDeployment(deployment);
+      final String appPath = serverHelper.checkAppDeployment(deployment);
       if (appPath != null && (root == null || "".equals(root))) {
          setRootResourcePath(appPath);
       }
 
       final Handler handler = new Handler();
 
-      HttpServer svrBuilder = HttpServer
-          .create()
-          .tcpConfiguration(this::configure)
-          .port(configuredPort)
-          .handle(handler::handle);
+      HttpServer svrBuilder = HttpServer.create()
+              .doOnConnection(this::configure)
+              .port(configuredPort)
+              .handle(handler::handle);
 
       if (sslContext != null) {
          svrBuilder = svrBuilder.secure(sslContextSpec -> sslContextSpec.sslContext(toNettySSLContext(sslContext)));
@@ -152,12 +151,12 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
          // don't know if that's configurable or not..
 
          // This is a subscription tied to the completion writing the response.
-         final MonoProcessor<Void> completionMono = MonoProcessor.create();
+         final Sinks.Empty<Void> completionSink = Sinks.empty();
 
          final AtomicBoolean isTimeoutSet = new AtomicBoolean(false);
 
          final ReactorNettyHttpResponse resteasyResp =
-             new ReactorNettyHttpResponse(req.method(), resp, completionMono);
+             new ReactorNettyHttpResponse(req.method(), resp, completionSink);
 
          return req.receive()
              .aggregate()
@@ -210,9 +209,9 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                 final Mono<Void> actualMono = Optional.ofNullable(resteasyReq.timeout())
                     .map(timeout -> {
                        isTimeoutSet.set(true);
-                       return completionMono.timeout(resteasyReq.timeout());
+                       return completionSink.asMono().timeout(resteasyReq.timeout());
                     })
-                    .orElse(completionMono);
+                    .orElse(completionSink.asMono());
 
                 log.trace("Returning completion signal mono from main Flux.");
                 return actualMono
@@ -235,12 +234,13 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
                    } else {
                       sendMono = resp.status(500).send();
                    }
-                   sendMono.subscribe(completionMono);
+                   SinkSubscriber.subscribe(completionSink, sendMono);
+
                 } else {
                    log.debug("Omitting sending back error response. Response is already committed.");
                 }
 
-                return completionMono;
+                return completionSink.asMono();
              })
              .doOnError(err -> log.error("Request processing err.", err))
              .doFinally(s -> log.trace("Request processing finished with: {}", s))
@@ -355,27 +355,24 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       return this;
    }
 
-   private TcpServer configure(final TcpServer baseServer)
+   private void configure(final Connection conn)
    {
       if (idleTimeout != null) {
-         return baseServer.doOnConnection(conn -> {
-            final long idleNanos = idleTimeout.toNanos();
-            // TODO, why can't I use reactor-netty methods for this??
-            conn.channel().pipeline().addFirst("idleStateHandler", new IdleStateHandler(0, 0, idleNanos, TimeUnit.NANOSECONDS));
-            conn.channel().pipeline().addAfter("idleStateHandler", "idleEventHandler", new ChannelDuplexHandler() {
-               @Override
-               public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-                  if (evt instanceof IdleStateEvent) {
-                     IdleStateEvent e = (IdleStateEvent) evt;
-                     if (e.state() == IdleState.ALL_IDLE) {
-                        ctx.close();
-                     }
+         final long idleNanos = idleTimeout.toNanos();
+         // TODO, why can't I use reactor-netty methods for this??
+         conn.channel().pipeline().addFirst("idleStateHandler", new IdleStateHandler(0, 0, idleNanos, TimeUnit.NANOSECONDS));
+         conn.channel().pipeline().addAfter("idleStateHandler", "idleEventHandler", new ChannelDuplexHandler() {
+            @Override
+            public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+               if (evt instanceof IdleStateEvent) {
+                  IdleStateEvent e = (IdleStateEvent) evt;
+                  if (e.state() == IdleState.ALL_IDLE) {
+                     ctx.close();
                   }
                }
-            });
+            }
          });
-      }
-      return baseServer;
+       }
    }
 
    private SslContext toNettySSLContext(final SSLContext sslContext)
@@ -414,4 +411,5 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
 
       return new ResteasyUriInfo(uriString, contextPath);
    }
+
 }
