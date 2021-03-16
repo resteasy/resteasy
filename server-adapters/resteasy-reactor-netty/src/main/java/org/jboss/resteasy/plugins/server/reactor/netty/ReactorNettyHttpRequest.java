@@ -5,12 +5,14 @@ import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.RunnableWithException;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.netty.http.server.HttpServerRequest;
@@ -43,6 +45,8 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
     private static final Logger log = LoggerFactory.getLogger(ReactorNettyHttpRequest.class);
 
     private final HttpServerRequest req;
+    private final ResteasyHttpHeaders resteasyHttpHeaders;
+    private String httpMethod;
     private InputStream in;
     private final NettyExecutionContext executionContext;
     private final Map<String, Object> attributes = new HashMap<String, Object>();
@@ -59,19 +63,22 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
         this.req = requireNonNull(req);
         this.in = requireNonNull(body);
         this.executionContext = new NettyExecutionContext(this, response, dispatcher);
+
+        final CaseInsensitiveMap<String> map = new CaseInsensitiveMap<>();
+        req.requestHeaders().forEach(e -> map.putSingle(e.getKey().toLowerCase(), e.getValue()));
+        this.resteasyHttpHeaders = new ResteasyHttpHeaders(map);
+
+        this.httpMethod = req.method().name();
     }
 
     @Override
     public HttpHeaders getHttpHeaders() {
-        final MultivaluedMap<String, String> map = new MultivaluedMapImpl<>();
-        req.requestHeaders().forEach(e -> map.putSingle(e.getKey(), e.getValue()));
-        return new ResteasyHttpHeaders(map);
+        return this.resteasyHttpHeaders;
     }
 
     @Override
     public MultivaluedMap<String, String> getMutableHeaders() {
-        // TODO
-        return null;
+        return this.resteasyHttpHeaders.getMutableHeaders();
     }
 
     @Override
@@ -87,12 +94,15 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
 
     @Override
     public String getHttpMethod() {
-        return req.method().name();
+        return this.httpMethod;
     }
 
     @Override
     public void setHttpMethod(String method) {
-        // TODO
+        // Reactor Netty is immutable, so we cannot directly update the Reactor Netty request object,
+        // which we should not anyway.  I believe the use case (or one use case) for this method is to
+        // allow a PreMatching ContainerRequestFilter modify the HTTP method.
+        this.httpMethod = method;
     }
 
     @Override
@@ -141,12 +151,13 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
 
     @Override
     public void forward(String path) {
-        // TODO
+        throw new NotImplementedYetException();
     }
 
     @Override
     public boolean wasForwarded() {
-        // TODO
+        // See this#forward method.  It would throw an exception.
+        // So we're sure it is not forwarded.
         return false;
     }
 
@@ -204,7 +215,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
         public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
             if (wasSuspended)
             {
-                throw new IllegalStateException("oh nos!");
+                throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
             }
             wasSuspended = true;
             return asyncResponse;
