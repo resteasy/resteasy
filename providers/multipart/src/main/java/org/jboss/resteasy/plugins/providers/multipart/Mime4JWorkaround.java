@@ -128,7 +128,7 @@ public class Mime4JWorkaround {
             if (java2SecurityEnabled)
             {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<File>) () -> 
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<File>) () ->
                         File.createTempFile(prefix, suffix, directory));
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
@@ -147,7 +147,7 @@ public class Mime4JWorkaround {
             if (java2SecurityEnabled)
             {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<FileOutputStream>) () -> 
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<FileOutputStream>) () ->
                         new FileOutputStream(file));
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
