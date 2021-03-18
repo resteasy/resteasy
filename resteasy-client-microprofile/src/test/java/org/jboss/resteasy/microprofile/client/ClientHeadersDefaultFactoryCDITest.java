@@ -102,7 +102,6 @@ public class ClientHeadersDefaultFactoryCDITest {
       if (weldContainer != null) {
          weldContainer.close();
       }
-      RestClientExtension.clearBeanManager();
    }
 
    @Test

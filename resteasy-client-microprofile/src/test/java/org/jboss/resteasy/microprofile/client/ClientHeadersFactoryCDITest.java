@@ -116,7 +116,6 @@ public class ClientHeadersFactoryCDITest {
    public static void stop() throws Exception {
       server.stop();
       container.shutdown();
-      RestClientExtension.clearBeanManager();
    }
 
    @Test
