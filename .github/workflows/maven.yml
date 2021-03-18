@@ -35,9 +35,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-      - name: Update docbook
-        if: matrix.os == 'ubuntu-latest'
-        run: pushd docbook; mvn exec:exec; popd
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
         run: mvn clean install -fae '-Dserver.version=${{ matrix.wildfly-version }}'
       - uses: actions/upload-artifact@v2
