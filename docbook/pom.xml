@@ -116,7 +116,7 @@
                 <artifactId>jbang-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>run</id>
+                        <id>replace</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>run</goal>
@@ -128,7 +128,7 @@
                     </execution>
                     <execution>
                         <id>cleanup</id>
-                        <phase>install</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
