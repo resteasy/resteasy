@@ -127,7 +127,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>cleanup</id>
+                        <id>restore</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>run</goal>
