@@ -11,7 +11,7 @@
     <name>RESTEasy Reference Guide (${translation})</name>
     <description/>
     <properties>
-        <jbang.ver>0.45.0</jbang.ver>
+        <jbang.ver>0.67.3</jbang.ver>
         <translation>en-US</translation>
     </properties>
 
