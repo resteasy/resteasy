@@ -172,6 +172,39 @@ public class UndertowTest
 ]]></programlisting>
 
     </section>
+    <section>
+        <title>Reactor-Netty</title>
+        <para>
+            RESTEasy integrates with the reactor-netty project. This
+            server adapter was created to pair with our reactor-netty
+            based JAX-RS client integration. Ultimately, if using
+            reactor-netty for both the server and server-contained
+            clients you will be able to do things like share the same
+            event loop for both server and client calls.
+        </para>
+    <programlisting> <![CDATA[
+   public static void start(ResteasyDeployment deployment) throws Exception
+   {
+      ReactorNettyJaxrsServer server =  new ReactorNettyJaxrsServer();
+      server.setDeployment(new ResteasyDeploymentImpl());
+      server.setDeployment(deployment);
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("");
+      server.setSecurityDomain(null);
+      server.start();
+   }
+    ]]></programlisting>
+
+    <para>Maven project you must include is:</para>
+<programlisting> <![CDATA[
+  <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-reactor-netty</artifactId>
+      <version>4.7.0-SNAPSHOT</version>
+  </dependency>
+]]></programlisting>
+
+    </section>
   <section>
     <title>Vert.x</title>
     <para>
