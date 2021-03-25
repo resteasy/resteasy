@@ -147,7 +147,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>21.0.1.Final</server.version>
+                <server.version>23.0.2.Final</server.version>
             </properties>
         </profile>
         <profile>
