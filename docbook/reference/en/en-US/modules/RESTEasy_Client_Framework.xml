@@ -148,7 +148,7 @@ public interface SimpleClient
             ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
 
             SimpleClient simple = rtarget.proxy(SimpleClient.class);
-            client.putBasic("hello world");
+            simple.putBasic("hello world");
         </programlisting>
         Alternatively you can use the RESTEasy client extension interfaces directly:
         <programlisting>
@@ -156,7 +156,7 @@ public interface SimpleClient
             ResteasyWebTarget target = client.target("http://example.com/base/uri");
 
             SimpleClient simple = target.proxy(SimpleClient.class);
-            client.putBasic("hello world");
+            simple.putBasic("hello world");
         </programlisting>
 
     </para>
