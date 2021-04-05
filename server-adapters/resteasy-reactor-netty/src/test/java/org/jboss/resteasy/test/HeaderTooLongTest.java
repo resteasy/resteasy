@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
+import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyJaxrsServer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -15,6 +16,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
@@ -25,14 +29,12 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class HeaderTooLongTest
 {
-   static String longString = "abcdefghijklmnopqrstuvwxyz";
-   static
-   {
-      for (int i = 0; i < 10; i++)
-      {
-         longString += longString;
-      }
-   }
+   private static final int MAX_HEADER_SIZE = 10;
+
+   final String longString =
+       IntStream.range(0, MAX_HEADER_SIZE + 1)
+           .mapToObj(i -> "a")
+           .collect(Collectors.joining());
 
    @Path("/")
    public static class Resource
@@ -50,7 +52,9 @@ public class HeaderTooLongTest
    @BeforeClass
    public static void setup() throws Exception
    {
-      ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
+      final ReactorNettyJaxrsServer reactorNettyJaxrsServer = new ReactorNettyJaxrsServer();
+      reactorNettyJaxrsServer.setDecoderSpecFn(spec -> spec.maxHeaderSize(MAX_HEADER_SIZE));
+      ReactorNettyContainer.start(reactorNettyJaxrsServer).getRegistry().addPerRequestResource(Resource.class);
       client = ClientBuilder.newClient();
    }
 

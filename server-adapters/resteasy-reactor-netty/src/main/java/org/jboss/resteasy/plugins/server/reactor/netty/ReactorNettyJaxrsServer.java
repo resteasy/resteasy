@@ -6,9 +6,10 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import javax.net.ssl.SSLContext;
 
 import org.jboss.logging.Logger;
@@ -23,20 +24,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.EmbeddedServerHelper;
 import org.jboss.resteasy.util.PortProvider;
 import org.reactivestreams.Publisher;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.IdentityCipherSuiteFilter;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.handler.timeout.IdleStateHandler;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
-import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
+import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
@@ -63,18 +59,22 @@ import reactor.netty.http.server.HttpServerResponse;
 public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNettyJaxrsServer> {
    private static final Logger log = Logger.getLogger(ReactorNettyJaxrsServer.class);
 
+   private final EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
+
    protected String hostname = null;
    protected int configuredPort = PortProvider.getPort();
    protected int runtimePort = -1;
    protected String root = "";
    protected ResteasyDeployment deployment;
    protected SecurityDomain domain;
+
    private Duration idleTimeout;
    private SSLContext sslContext;
-   private DisposableServer server;
    private ClientAuth clientAuth = ClientAuth.REQUIRE;
    private List<Runnable> cleanUpTasks;
-   private final EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
+   private UnaryOperator<HttpRequestDecoderSpec> mkDecoderSpec = spec -> spec;
+
+   private DisposableServer server;
 
    @Override
    public ReactorNettyJaxrsServer deploy() {
@@ -94,9 +94,13 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       final Handler handler = new Handler();
 
       HttpServer svrBuilder = HttpServer.create()
-              .doOnConnection(this::configure)
-              .port(configuredPort)
-              .handle(handler::handle);
+          .port(configuredPort)
+          .httpRequestDecoder(mkDecoderSpec)
+          .handle(handler::handle);
+
+      if (idleTimeout != null) {
+         svrBuilder = svrBuilder.idleTimeout(idleTimeout);
+      }
 
       if (sslContext != null) {
          svrBuilder = svrBuilder.secure(sslContextSpec -> sslContextSpec.sslContext(toNettySSLContext(sslContext)));
@@ -341,23 +345,13 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       return this;
    }
 
-   private void configure(final Connection conn)
-   {
-      if (idleTimeout != null) {
-         final long idleNanos = idleTimeout.toNanos();
-         conn.channel().pipeline().addFirst("idleStateHandler", new IdleStateHandler(0, 0, idleNanos, TimeUnit.NANOSECONDS));
-         conn.channel().pipeline().addAfter("idleStateHandler", "idleEventHandler", new ChannelDuplexHandler() {
-            @Override
-            public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-               if (evt instanceof IdleStateEvent) {
-                  IdleStateEvent e = (IdleStateEvent) evt;
-                  if (e.state() == IdleState.ALL_IDLE) {
-                     ctx.close();
-                  }
-               }
-            }
-         });
-       }
+   /**
+    * @see HttpServer#httpRequestDecoder(Function).
+    *
+    * @param decoderSpecFn
+    */
+   public void setDecoderSpecFn(UnaryOperator<HttpRequestDecoderSpec> decoderSpecFn) {
+      this.mkDecoderSpec = decoderSpecFn;
    }
 
    private SslContext toNettySSLContext(final SSLContext sslContext)
