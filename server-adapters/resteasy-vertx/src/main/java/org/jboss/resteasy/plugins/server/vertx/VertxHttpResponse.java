@@ -146,7 +146,7 @@ public class VertxHttpResponse implements HttpResponse
                response.headers().add(key, delegate.toString(value));
             } else
             {
-               response.headers().set(key, value.toString());
+               response.headers().add(key, value.toString());
             }
          }
       }
