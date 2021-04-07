@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spring.web;
 
+import org.jboss.resteasy.spi.HttpResponseCodes;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -7,14 +9,22 @@ import java.io.IOException;
 
 public class ResponseStatusContainerResponseFilter implements ContainerResponseFilter {
 
-    private final int status;
+    private final int defaultStatusCode;
+    private final int newStatusCode;
 
-    public ResponseStatusContainerResponseFilter(final int status) {
-        this.status = status;
+    public ResponseStatusContainerResponseFilter(final int newStatusCode) {
+        this(HttpResponseCodes.SC_OK, newStatusCode);
+    }
+
+    public ResponseStatusContainerResponseFilter(final int defaultStatusCode, final int newStatusCode) {
+        this.defaultStatusCode = defaultStatusCode;
+        this.newStatusCode = newStatusCode;
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        responseContext.setStatus(status);
+        if (responseContext.getStatus() == defaultStatusCode) { // only set the status if it has not already been set
+            responseContext.setStatus(newStatusCode);
+        }
     }
 }
