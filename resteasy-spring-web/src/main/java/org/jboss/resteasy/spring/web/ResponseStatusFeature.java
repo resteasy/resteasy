@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spring.web;
 
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -27,6 +28,9 @@ public class ResponseStatusFeature implements DynamicFeature {
             httpStatus = responseStatus.value();
         }
 
-        context.register(new ResponseStatusContainerResponseFilter(httpStatus.value()));
+        context.register(new ResponseStatusContainerResponseFilter(
+                void.class.equals(resourceInfo.getResourceMethod().getReturnType()) ? HttpResponseCodes.SC_NO_CONTENT : HttpResponseCodes.SC_OK,
+                httpStatus.value()
+        ));
     }
 }
