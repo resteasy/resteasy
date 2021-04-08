@@ -9,11 +9,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.util.Types;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
+
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -37,6 +41,7 @@ public class ContextParameterInjector implements ValueInjector
    private ResteasyProviderFactory factory;
    private Type genericType;
    private Annotation[] annotations;
+   private boolean outputStreamWasWritten = false;
 
    public ContextParameterInjector(final Class proxy, final Class rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
@@ -123,6 +128,15 @@ public class ContextParameterInjector implements ValueInjector
                }
                throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
             }
+            // Fix for RESTEASY-1721
+            if ("javax.servlet.http.HttpServletResponse".equals(rawType.getName()))
+            {
+               if ("getOutputStream".equals(method.getName()))
+               {
+                  ServletOutputStream sos = (ServletOutputStream) method.invoke(delegate, objects);
+                  return new ContextOutputStream(sos);
+               }
+            }
             return method.invoke(delegate, objects);
          }
          catch (IllegalAccessException e)
@@ -162,7 +176,7 @@ public class ContextParameterInjector implements ValueInjector
       }
 
       return createProxy();
-  }
+   }
 
    protected Object createProxy()
    {
@@ -193,6 +207,52 @@ public class ContextParameterInjector implements ValueInjector
             });
          }
          return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
+      }
+   }
+
+   public boolean outputStreamWasWrittenTo()
+   {
+      return outputStreamWasWritten;
+   }
+
+   public class ContextOutputStream extends ServletOutputStream
+   {
+      private ServletOutputStream delegate;
+
+      public ContextOutputStream(final ServletOutputStream delegate)
+      {
+         this.delegate = delegate;
+      }
+
+      @Override
+      public void write(int b) throws IOException
+      {
+         delegate.write(b);
+         outputStreamWasWritten = true;
+      }
+
+      @Override
+      public boolean isReady()
+      {
+         return delegate.isReady();
+      }
+
+      @Override
+      public void setWriteListener(WriteListener writeListener)
+      {
+         delegate.setWriteListener(writeListener);
+      }
+
+      @Override
+      public void flush() throws IOException
+      {
+         delegate.flush();
+      }
+
+      @Override
+      public void close() throws IOException
+      {
+         delegate.close();
       }
    }
 }
