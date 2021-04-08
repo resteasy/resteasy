@@ -232,7 +232,8 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
     private ClientResponse toRestEasyResponse(ClientConfiguration clientConfiguration,
                                               HttpClientResponse clientResponse) {
 
-
+        // Pause the response while we configure the adapter
+        clientResponse.pause();
         InputStreamAdapter adapter = new InputStreamAdapter(clientResponse, 4 * 1024);
 
         class RestEasyClientResponse extends FinalizedClientResponse {
@@ -283,6 +284,8 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         CaseInsensitiveMap<String> restEasyHeaders = new CaseInsensitiveMap<>();
         clientResponse.headers().forEach(header -> restEasyHeaders.add(header.getKey(), header.getValue()));
         restEasyClientResponse.setHeaders(restEasyHeaders);
+        // Resume the response
+        clientResponse.resume();
         return restEasyClientResponse;
     }
 }
