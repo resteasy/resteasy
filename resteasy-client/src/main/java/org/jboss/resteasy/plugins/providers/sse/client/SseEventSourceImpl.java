@@ -359,9 +359,6 @@ public class SseEventSourceImpl implements SseEventSource
                onConnection();
                Date requestTime = new Date();
                long localReconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
-               onErrorConsumers.forEach(consumer -> {
-                  consumer.accept(ex);
-               });
                reconnect(localReconnectDelay);
             }
             else
