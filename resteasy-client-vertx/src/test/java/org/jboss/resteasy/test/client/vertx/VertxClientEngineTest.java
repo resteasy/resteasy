@@ -45,10 +45,23 @@ import io.vertx.core.http.HttpServerResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 public class VertxClientEngineTest {
+   private static final boolean IS_WINDOWS;
+   private static final boolean SKIP_TESTS;
+
+   static {
+      IS_WINDOWS = System.getProperty("os.name").contains("win");
+      final String value = System.getProperty("skip.vertx.client.tests");
+      if (value == null) {
+         SKIP_TESTS = IS_WINDOWS;
+      } else {
+         SKIP_TESTS = value.isEmpty() || Boolean.parseBoolean(value);
+      }
+   }
    Vertx vertx;
    HttpServer server;
    Client client;
@@ -56,6 +69,7 @@ public class VertxClientEngineTest {
 
    @Before
    public void before() {
+      Assume.assumeFalse(SKIP_TESTS);
       vertx = Vertx.vertx();
       server = vertx.createHttpServer();
       executorService = Executors.newSingleThreadScheduledExecutor();
@@ -63,13 +77,15 @@ public class VertxClientEngineTest {
 
    @After
    public void stop() throws Exception {
-      if (client != null) {
-         client.close();
+      if (!SKIP_TESTS) {
+         if (client != null) {
+            client.close();
+         }
+         CountDownLatch latch = new CountDownLatch(1);
+         vertx.close(ar -> latch.countDown());
+         latch.await(2, TimeUnit.MINUTES);
+         executorService.shutdownNow();
       }
-      CountDownLatch latch = new CountDownLatch(1);
-      vertx.close(ar -> latch.countDown());
-      latch.await(2, TimeUnit.MINUTES);
-      executorService.shutdownNow();
    }
 
    private Client client() throws Exception {
