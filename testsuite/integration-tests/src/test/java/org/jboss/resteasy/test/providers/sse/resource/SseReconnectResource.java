@@ -96,6 +96,23 @@ public class SseReconnectResource {
       }
    }
 
+   static int retry_cnt = 2;
+   @GET
+   @Path("/unavailableAfterRetry")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void failAfterRetry(@Context SseEventSink sink, @Context Sse sse)
+   {
+      if (retry_cnt <= 0) {
+         startTime = System.currentTimeMillis();
+         throw new WebApplicationException(Response.status(503)
+                 .build());
+      } else {
+         throw new WebApplicationException(Response.status(503)
+                 .header(HttpHeaders.RETRY_AFTER, String.valueOf(retry_cnt--))
+                 .build());
+      }
+   }
+
    private void sendEvent(SseEventSink sseEventSink, Sse sse, String eventId, Long reconnectDelayInMs)
    {
       OutboundSseEvent.Builder outboundSseEventBuilder = sse.newEventBuilder().data("Event " + eventId).id(eventId);
