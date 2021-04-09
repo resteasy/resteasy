@@ -92,7 +92,6 @@ public class SseReconnectTest {
    @Test
    public void testSseEndpointUnavailable() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
-      final AtomicInteger errors = new AtomicInteger(0);
       final List<String> results = new ArrayList<String>();
       Client client = ClientBuilder.newBuilder().build();
       try {
@@ -103,16 +102,46 @@ public class SseReconnectTest {
                results.add(event.readData(String.class));
                latch.countDown();
             }, ex -> {
-                  errors.incrementAndGet();
-                  Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
-               });
+              });
             eventSource.open();
 
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertEquals(1, errors.get());
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          }
          Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+      } finally {
+         client.close();
+      }
+   }
+
+   /**
+    * @tpTestDetails SseEventSource receives HTTP 503 + "Retry-After"
+    * from the SSE endpoint. Endpoint does retries but still does not succeed
+    * @tpInfo RESTEASY-2854
+    * @tpSince RESTEasy 4.7.0
+    */
+   @Test
+   public void testSseEndpointUnavailableAfterRetry() throws Exception {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final AtomicInteger errors = new AtomicInteger(0);
+      final List<String> results = new ArrayList<String>();
+      Client client = ClientBuilder.newBuilder().build();
+      try {
+         WebTarget target = client.target(generateURL("/reconnect/unavailableAfterRetry"));
+         SseEventSource msgEventSource = SseEventSource.target(target).build();
+         try (SseEventSource eventSource = msgEventSource) {
+            eventSource.register(event -> {
+               results.add(event.readData(String.class));
+               latch.countDown();
+            }, ex -> {
+               errors.incrementAndGet();
+               Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
+            });
+            eventSource.open();
+
+            boolean waitResult = latch.await(15, TimeUnit.SECONDS);
+            Assert.assertEquals(1, errors.get());
+         }
       } finally {
          client.close();
       }
