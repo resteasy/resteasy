@@ -117,8 +117,8 @@ public class SseReconnectTest {
    /**
     * @tpTestDetails SseEventSource receives HTTP 503 + "Retry-After"
     * from the SSE endpoint. Endpoint does retries but still does not succeed
-    * @tpInfo RESTEASY-1680
-    * @tpSince RESTEasy 3.5.0
+    * @tpInfo RESTEASY-2854
+    * @tpSince RESTEasy 4.7.0
     */
    @Test
    public void testSseEndpointUnavailableAfterRetry() throws Exception {
