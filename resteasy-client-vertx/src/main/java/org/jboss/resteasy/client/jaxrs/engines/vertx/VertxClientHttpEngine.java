@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.engines.vertx;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -147,11 +149,27 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
             }
         }
 
-        return httpClient.request(options)
-                .compose(httpClientRequest -> body != null ? httpClientRequest.send(body) : httpClientRequest.send())
-                .map(httpClientResponse -> toRestEasyResponse(request.getClientConfiguration(), httpClientResponse))
-                .toCompletionStage()
-                .toCompletableFuture();
+        final CompletableFuture<ClientResponse> futureResponse = new CompletableFuture<>();
+        httpClient.request(options)
+                .map(httpClientRequest -> {
+            final Handler<AsyncResult<HttpClientResponse>> handler = event -> {
+                if (event.succeeded()) {
+                    final HttpClientResponse response = event.result();
+                    response.pause();
+                    futureResponse.complete(toRestEasyResponse(request.getClientConfiguration(), response));
+                    response.resume();
+                } else {
+                    futureResponse.completeExceptionally(event.cause());
+                }
+            };
+            if (body != null) {
+                httpClientRequest.send(body, handler);
+            } else {
+                httpClientRequest.send(handler);
+            }
+            return null;
+        });
+        return futureResponse;
     }
 
     private long unwrapTimeout(final Object timeout) {
