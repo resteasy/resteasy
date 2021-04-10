@@ -443,6 +443,7 @@ public class NettyHttpRequest extends BaseHttpRequest
             if (timeoutHandler != null)
             {
                timeoutHandler.handleTimeout(this);
+               return;
             }
             if (done) return;
             resume(new ServiceUnavailableException());

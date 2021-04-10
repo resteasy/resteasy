@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.asynch.resource;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,6 +14,7 @@ import javax.ws.rs.container.Suspended;
 public class AsyncTimeoutResource {
     private static boolean timeout = false;
     private static CountDownLatch latch = new CountDownLatch(1);
+    private static AtomicBoolean timeoutExtended = new AtomicBoolean(false);
 
     @GET
     @Path("async")
@@ -34,5 +36,28 @@ public class AsyncTimeoutResource {
             //ignore
         }
         return Boolean.toString(timeout);
+    }
+
+    @GET
+    @Path("extendedTimeout")
+    public void extendedTimeout(@Suspended AsyncResponse response) {
+        response.setTimeoutHandler(ar -> {
+            if (timeoutExtended.getAndSet(true)) {
+               ar.resume("Extended timeout hello");
+            } else {
+               ar.setTimeout(2, TimeUnit.SECONDS); // wait 2 more seconds
+            }
+        });
+        response.setTimeout(2, TimeUnit.SECONDS);
+    }
+
+    @GET
+    @Path("resumeAfterSettingTimeoutHandler")
+    public void resumeAfterSettingTimeoutHandler(@Suspended AsyncResponse response) {
+        response.setTimeoutHandler(ar -> {
+           ar.resume("From TimeoutHandler");
+        });
+        response.setTimeout(2, TimeUnit.SECONDS);
+        response.resume("From initial");
     }
 }
