@@ -53,4 +53,25 @@ public class AsyncTimeoutTest {
         response.close();
     }
 
+    @Test
+    public void testAsyncTimeoutHandlerExtendsTimeOut() throws Exception {
+        WebTarget base = client.target(generateURL("/extendedTimeout"));
+        long startTime = System.nanoTime();
+        Response response = base.request().get();
+        long elapsedTime = System.nanoTime() - startTime;
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("Extended timeout hello", response.readEntity(String.class));
+        Assert.assertTrue("Timeout fired too quickly", elapsedTime > 4000000000L);
+        response.close();
+    }
+
+    @Test
+    public void testResumeAfterSettingAsyncTimeoutHandler() throws Exception
+    {
+       WebTarget base = client.target(generateURL("/resumeAfterSettingTimeoutHandler"));
+       Response response = base.request().get();
+       Assert.assertEquals(200, response.getStatus());
+       Assert.assertEquals("From initial", response.readEntity(String.class));
+       response.close();
+    }
 }
