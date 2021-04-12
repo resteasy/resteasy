@@ -149,6 +149,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
 
    protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _readers
          = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
+   protected final ConcurrentHashMap<ClassAnnotationKey, Boolean> decorators
+         = new ConcurrentHashMap<ClassAnnotationKey, Boolean>();
 
    @Override
    public Object readFrom(Class<Object> type, final Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
@@ -321,10 +323,24 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
          }
 
          // [RESTEASY-1317] Support Jackson in Atom links
-         if (decoratorMatcher.hasDecorator(DecoratedEntityContainer.class, annotations)) {
-            decoratorMatcher.decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations, mediaType);
+          Object hasDecorator = decorators.get(key);
+         if (hasDecorator == null) {
+            if (decoratorMatcher.hasDecorator(DecoratedEntityContainer.class, annotations))
+            {
+               decoratorMatcher
+                     .decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations,
+                           mediaType);
+               decorators.put(key, Boolean.TRUE);
+            } else {
+               decorators.put(key, Boolean.FALSE);
+            }
+         } else {
+            if ((Boolean)hasDecorator) {
+               decoratorMatcher
+                     .decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations,
+                           mediaType);
+            }
          }
-
          if (System.getSecurityManager() == null) {
             writer.writeValue(jg, value);
          } else {
