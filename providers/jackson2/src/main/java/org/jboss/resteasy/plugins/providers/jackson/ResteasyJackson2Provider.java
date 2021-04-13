@@ -72,9 +72,9 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
 
    private static class ClassAnnotationKey
    {
-      private  Annotation[] annotations;
-      private ClassKey classKey;
-      private int hash;
+      private final  Annotation[] annotations;
+      private final ClassKey classKey;
+      private final int hash;
 
       private ClassAnnotationKey(final Class<?> clazz, final Annotation[] annotations)
       {
