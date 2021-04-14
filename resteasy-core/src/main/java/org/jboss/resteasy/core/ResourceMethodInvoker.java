@@ -567,7 +567,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          return null;
       }
-      if (rtn == null || method.getReturnType().equals(void.class))
+      if (!contextOutputStreamWrittenTo() && (rtn == null || method.getReturnType().equals(void.class)))
       {
          BuiltResponse build = (BuiltResponse) Response.noContent().build();
          build.addMethodAnnotations(getMethodAnnotations());
@@ -808,7 +808,22 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return MediaType.WILDCARD_TYPE;
    }
 
-
+   /**
+    * Checks if any bytes were written to a @Context HttpServletResponse
+    * @see ContextParameterInjector for details
+    * Fix for RESTEASY-1721
+    */
+   private boolean contextOutputStreamWrittenTo()
+   {
+      for (ValueInjector vi : methodInjector.getParams())
+      {
+         if (vi instanceof ContextParameterInjector)
+         {
+            return ((ContextParameterInjector) vi).outputStreamWasWrittenTo();
+         }
+      }
+      return false;
+   }
 
 
    public Set<String> getHttpMethods()
