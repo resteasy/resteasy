@@ -35,6 +35,7 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
@@ -695,8 +696,9 @@ public class StringParameterInjector
          try {
             return paramConverter.fromString(strVal);
          } catch (Exception pce) {
+            LogMessages.LOGGER.unableToExtractParameter(pce, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-               getParamSignature(), strVal, target), pce);
+               getParamSignature(), strVal), pce);
          }
       }
       if (converter != null)
@@ -704,8 +706,9 @@ public class StringParameterInjector
          try {
             return converter.fromString(strVal);
          } catch (Exception pce) {
+            LogMessages.LOGGER.unableToExtractParameter(pce, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-               getParamSignature(), strVal, target), pce);
+               getParamSignature(), strVal), pce);
          }
       }
       else if (unmarshaller != null)
@@ -713,8 +716,9 @@ public class StringParameterInjector
          try {
             return unmarshaller.fromString(strVal);
          } catch (Exception ue) {
+            LogMessages.LOGGER.unableToExtractParameter(ue, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-               getParamSignature(), strVal, target), ue);
+               getParamSignature(), strVal), ue);
          }
       }
       else if (delegate != null)
@@ -722,8 +726,9 @@ public class StringParameterInjector
          try {
             return delegate.fromString(strVal);
          } catch (Exception pce) {
+            LogMessages.LOGGER.unableToExtractParameter(pce, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-               getParamSignature(), strVal, target), pce);
+               getParamSignature(), strVal), pce);
          }
       }
       else if (constructor != null)
@@ -734,11 +739,13 @@ public class StringParameterInjector
          }
          catch (InstantiationException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
          }
          catch (InvocationTargetException e)
          {
@@ -747,7 +754,8 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
+            LogMessages.LOGGER.unableToExtractParameter(targetException, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), targetException);
          }
       }
       else if (valueOf != null)
@@ -758,7 +766,8 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
          }
          catch (InvocationTargetException e)
          {
@@ -767,7 +776,8 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
+            LogMessages.LOGGER.unableToExtractParameter(targetException, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), targetException);
          }
       }
       try
@@ -776,7 +786,8 @@ public class StringParameterInjector
       }
       catch (Exception e)
       {
-         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+         LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
       }
       return null;
    }
