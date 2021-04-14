@@ -1,5 +1,6 @@
 package org.jboss.resteasy.resteasy_jaxrs.i18n;
 
+import java.lang.reflect.AccessibleObject;
 import java.net.URL;
 
 import javax.ws.rs.core.MediaType;
@@ -299,6 +300,10 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 340, value = "Client receive processing failure.")
    void clientReceiveProcessingFailure(@Cause Throwable cause);
+
+   @LogMessage(level = Level.DEBUG)
+   @Message("Unable to extract parameter from http request: %s value is '%s' for %s")
+   void unableToExtractParameter(@Cause Throwable cause, String paramSignature, String strVal, AccessibleObject target);
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  TRACE                                                //
