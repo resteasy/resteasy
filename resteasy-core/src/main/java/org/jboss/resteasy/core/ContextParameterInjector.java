@@ -250,6 +250,18 @@ public class ContextParameterInjector implements ValueInjector
          this.delegate = delegate;
       }
 
+      public void write(byte b[]) throws IOException {
+          delegate.write(b;
+          outputStreamWasWritten = true;
+      }
+     
+      @Override
+      public void write(byte b[], int off, int len) throws IOException
+      {
+         delegate.write(b, off, len);
+         outputStreamWasWritten = true;
+      }
+
       @Override
       public void write(int b) throws IOException
       {
