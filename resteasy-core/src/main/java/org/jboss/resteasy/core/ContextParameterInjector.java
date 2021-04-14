@@ -9,11 +9,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.util.Types;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
+
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -39,6 +43,7 @@ public class ContextParameterInjector implements ValueInjector
    private ResteasyProviderFactory factory;
    private Type genericType;
    private Annotation[] annotations;
+   private volatile boolean outputStreamWasWritten = false;
 
    public ContextParameterInjector(final Class<?> proxy, final Class<?> rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
@@ -125,6 +130,15 @@ public class ContextParameterInjector implements ValueInjector
                }
                throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
             }
+            // Fix for RESTEASY-1721
+            if ("javax.servlet.http.HttpServletResponse".equals(rawType.getName()))
+            {
+               if ("getOutputStream".equals(method.getName()))
+               {
+                  ServletOutputStream sos = (ServletOutputStream) method.invoke(delegate, objects);
+                  return new ContextOutputStream(sos);
+               }
+            }
             return method.invoke(delegate, objects);
          }
          catch (IllegalAccessException e)
@@ -164,7 +178,7 @@ public class ContextParameterInjector implements ValueInjector
       }
 
       return createProxy();
-  }
+   }
 
    protected Object createProxy()
    {
@@ -199,6 +213,11 @@ public class ContextParameterInjector implements ValueInjector
       }
    }
 
+   boolean outputStreamWasWrittenTo()
+   {
+      return outputStreamWasWritten;
+   }
+
    protected Class<?>[] computeInterfaces(Object delegate, Class<?> cls)
    {
       Set<Class<?>> set = new HashSet<>();
@@ -220,5 +239,151 @@ public class ContextParameterInjector implements ValueInjector
          }
       }
       return set.toArray(new Class<?>[]{});
+   }
+
+   private final class ContextOutputStream extends ServletOutputStream
+   {
+      private ServletOutputStream delegate;
+
+      ContextOutputStream(final ServletOutputStream delegate)
+      {
+         this.delegate = delegate;
+      }
+
+      ////////////////////////////////////////////////////////////////
+      /// ServletOutputStream methods
+      ////////////////////////////////////////////////////////////////
+      @Override
+      public void print(String s) throws IOException
+      {
+         delegate.print(s);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void print(boolean b) throws IOException
+      {
+         delegate.print(b);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void print(char c) throws IOException
+      {
+         delegate.print(c);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void print(int i) throws IOException
+      {
+         delegate.print(i);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void print(long l) throws IOException
+      {
+         delegate.print(l);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void print(float f) throws IOException
+      {
+         delegate.print(f);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void print(double d) throws IOException
+      {
+         delegate.print(d);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println() throws IOException
+      {
+         delegate.println();
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(String s) throws IOException
+      {
+         delegate.println(s);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(boolean b) throws IOException
+      {
+         delegate.println(b);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(char c) throws IOException
+      {
+         delegate.print(c);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(int i) throws IOException
+      {
+         delegate.println(i);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(long l) throws IOException
+      {
+         delegate.println(l);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(float f) throws IOException
+      {
+         delegate.println(f);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void println(double d) throws IOException
+      {
+         delegate.println(d);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public boolean isReady()
+      {
+         return delegate.isReady();
+      }
+      @Override
+      public void setWriteListener(WriteListener writeListener)
+      {
+         delegate.setWriteListener(writeListener);
+      }
+
+      ////////////////////////////////////////////////////////////////
+      /// OutputStream methods
+      ////////////////////////////////////////////////////////////////
+      @Override
+      public void write(byte[] b) throws IOException
+      {
+          delegate.write(b);
+          outputStreamWasWritten = true;
+      }
+      @Override
+      public void write(byte[] b, int off, int len) throws IOException
+      {
+         delegate.write(b, off, len);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void write(int b) throws IOException
+      {
+         delegate.write(b);
+         outputStreamWasWritten = true;
+      }
+      @Override
+      public void flush() throws IOException
+      {
+         delegate.flush();
+      }
+      @Override
+      public void close() throws IOException
+      {
+         delegate.close();
+      }
    }
 }
