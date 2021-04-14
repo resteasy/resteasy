@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -116,9 +119,45 @@ public class Mime4JWorkaround {
 
         public StorageOutputStream createStorageOutputStream() throws IOException
         {
-            File file = File.createTempFile(prefix, suffix, directory);
+            return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory));
+        }
 
-            return new TempFileStorageOutputStream(file);
+        private static File createTempFile(String prefix, String suffix, File directory) throws IOException
+        {
+            boolean java2SecurityEnabled = System.getSecurityManager() != null;
+            if (java2SecurityEnabled)
+            {
+                try {
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<File>) () ->
+                        File.createTempFile(prefix, suffix, directory));
+                } catch (PrivilegedActionException pae) {
+                    Throwable cause = pae.getCause();
+                    if (cause instanceof IOException)
+                    {
+                        throw (IOException) cause;
+                    } else throw new RuntimeException(cause);
+                }
+            }
+            return File.createTempFile(prefix, suffix, directory);
+        }
+
+        private static FileOutputStream createFileOutputStream(File file) throws IOException
+        {
+            boolean java2SecurityEnabled = System.getSecurityManager() != null;
+            if (java2SecurityEnabled)
+            {
+                try {
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<FileOutputStream>) () ->
+                        new FileOutputStream(file));
+                } catch (PrivilegedActionException pae) {
+                    Throwable cause = pae.getCause();
+                    if (cause instanceof IOException)
+                    {
+                        throw (IOException) cause;
+                    } else throw new RuntimeException(cause);
+                }
+            }
+            return new FileOutputStream(file);
         }
 
         private static final class TempFileStorageOutputStream extends StorageOutputStream
@@ -130,7 +169,7 @@ public class Mime4JWorkaround {
             TempFileStorageOutputStream(final File file) throws IOException
             {
                 this.file = file;
-                this.out = new FileOutputStream(file);
+                this.out = createFileOutputStream(file);
             }
 
             @Override

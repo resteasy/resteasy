@@ -26,7 +26,9 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -36,14 +38,14 @@ import java.util.concurrent.CompletionStage;
 @SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector
 {
-   private Class rawType;
-   private Class proxy;
+   private Class<?> rawType;
+   private Class<?> proxy;
    private ResteasyProviderFactory factory;
    private Type genericType;
    private Annotation[] annotations;
    private boolean outputStreamWasWritten = false;
 
-   public ContextParameterInjector(final Class proxy, final Class rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
+   public ContextParameterInjector(final Class<?> proxy, final Class<?> rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       this.rawType = rawType;
       this.genericType = genericType;
@@ -66,7 +68,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          return new SseImpl();
       } else if (rawType == CompletionStage.class) {
-         return new CompletionStageHolder((CompletionStage)createProxy());
+         return new CompletionStageHolder((CompletionStage<?>)createProxy());
       }
       return createProxy();
    }
@@ -99,7 +101,7 @@ public class ContextParameterInjector implements ValueInjector
          }
          return (CompletionStage<Object>) contextData;
       } else if (rawType == CompletionStage.class && contextData instanceof CompletionStage) {
-         return new CompletionStageHolder((CompletionStage)contextData);
+         return new CompletionStageHolder((CompletionStage<?>)contextData);
       } else if (!unwrapAsync && rawType != CompletionStage.class && contextData instanceof CompletionStage) {
          throw new LoggableFailure(Messages.MESSAGES.shouldBeUnreachable());
       }
@@ -172,7 +174,7 @@ public class ContextParameterInjector implements ValueInjector
          if (delegate != null) return unwrapIfRequired(null, delegate, unwrapAsync);
          else throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       } else if (rawType == CompletionStage.class) {
-         return new CompletionStageHolder((CompletionStage)createProxy());
+         return new CompletionStageHolder((CompletionStage<?>)createProxy());
       }
 
       return createProxy();
@@ -193,16 +195,17 @@ public class ContextParameterInjector implements ValueInjector
       }
       else
       {
-         Class[] intfs = {rawType};
+         Object delegate = factory.getContextData(rawType, genericType, annotations, false);
+         Class<?>[] intfs = computeInterfaces(delegate, rawType);
          ClassLoader clazzLoader = null;
          final SecurityManager sm = System.getSecurityManager();
          if (sm == null) {
-            clazzLoader = rawType.getClassLoader();
+            clazzLoader = delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
          } else {
             clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
                @Override
                public ClassLoader run() {
-                  return rawType.getClassLoader();
+                  return delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
                }
             });
          }
@@ -213,6 +216,29 @@ public class ContextParameterInjector implements ValueInjector
    public boolean outputStreamWasWrittenTo()
    {
       return outputStreamWasWritten;
+   }
+
+   protected Class<?>[] computeInterfaces(Object delegate, Class<?> cls)
+   {
+      Set<Class<?>> set = new HashSet<>();
+      set.add(cls);
+      if (delegate != null)
+      {
+         Class<?> delegateClass = delegate.getClass();
+         while (delegateClass != null)
+         {
+            for (Class<?> intf : delegateClass.getInterfaces())
+            {
+               set.add(intf);
+               for (Class<?> superIntf : intf.getInterfaces())
+               {
+                  set.add(superIntf);
+               }
+            }
+            delegateClass = delegateClass.getSuperclass();
+         }
+      }
+      return set.toArray(new Class<?>[]{});
    }
 
    public class ContextOutputStream extends ServletOutputStream
