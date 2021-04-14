@@ -627,8 +627,8 @@ public interface Messages
    @Message(id = BASE + 865, value = "Unable to determine base class from Type")
    String unableToDetermineBaseClass();
 
-   @Message(id = BASE + + 870, value = "Unable to extract parameter from http request: {0} value is \''{1}\'' for {2}", format = Format.MESSAGE_FORMAT)
-   String unableToExtractParameter(String paramSignature, String strVal, AccessibleObject target);
+   @Message(id = BASE + 870, value = "Unable to extract parameter from http request: %s value is '%s'")
+   String unableToExtractParameter(String paramSignature, String strVal);
 
    @Message(id = BASE + 872, value = "Unable to access context classloader or find a classloader for : {1}", format=Format.MESSAGE_FORMAT)
    String unableToFindClassloader(String classname);
