@@ -50,5 +50,6 @@ public class HttpServletResponseContextTest
       Response response = request.get();
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("context", response.readEntity(String.class));
+      client.close();
    }
 }
