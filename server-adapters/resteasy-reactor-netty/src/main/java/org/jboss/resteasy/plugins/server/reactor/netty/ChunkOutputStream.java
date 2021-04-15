@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  * Flux<byte[]>}, which is what reactor-netty works with.  Most of the heavy
  * lifting occurs in {@link #asyncWrite(byte[], int, int)}.
  */
-public class ChunkOutputStream extends AsyncOutputStream {
+class ChunkOutputStream extends AsyncOutputStream {
 
    private static final EmitFailureHandler EMIT_FAILURE_HANDLER = EmitFailureHandler.FAIL_FAST;
 

@@ -288,7 +288,7 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
    @Override
    public ReactorNettyJaxrsServer setRootResourcePath(String rootResourcePath)
    {
-      root = rootResourcePath;
+      root = Objects.requireNonNull(rootResourcePath);
       if (root != null && root.equals("/")) {
          root = "";
       } else if (!root.startsWith("/")) {
