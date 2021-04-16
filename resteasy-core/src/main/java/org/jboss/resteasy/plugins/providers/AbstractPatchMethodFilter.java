@@ -32,134 +32,117 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceInvoker;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
-public abstract class AbstractPatchMethodFilter implements ContainerRequestFilter
-{
-    //TODO:thse should go to jaxrs spec apis
+public abstract class AbstractPatchMethodFilter implements ContainerRequestFilter {
+    //TODO:these should go to jaxrs spec apis
     public static final String APPLICATION_JSON_MERGE_PATCH_JSON = "application/merge-patch+json";
 
-    public static final MediaType APPLICATION_JSON_MERGE_PATCH_JSON_TYPE = new MediaType("application",
-          "merge-patch+json");
-    @Context
-    protected Providers providers;
-    @Override
-    @SuppressWarnings(
-          {"rawtypes", "unchecked"})
-    public void filter(final ContainerRequestContext requestContext) throws IOException
-    {
-        if(this.isDisabled(requestContext))
-        {
+    public static final MediaType APPLICATION_JSON_MERGE_PATCH_JSON_TYPE = new MediaType("application", "merge-patch+json");
+    @Context protected Providers providers;
+
+    protected FilterFlag readFilterDisabledFlag(ContainerRequestContext requestContext) {
+        if (requestContext.getMethod().equals("PATCH") && (
+                MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())
+                        || APPLICATION_JSON_MERGE_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))) {
+            ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
+            boolean disabled = false;
+            boolean jsonpfilter = false;
+            if (context == null) {
+                disabled = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED);
+                if (!disabled) {
+                    jsonpfilter = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_JSONP);
+                }
+            } else {
+                disabled = Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED));
+                if (!disabled) {
+                    jsonpfilter = Boolean
+                            .parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_JSONP));
+                }
+            }
+            if (disabled) {
+                return FilterFlag.SKIP;
+            }
+            if (jsonpfilter) {
+                return FilterFlag.JSONP;
+            }
+            return FilterFlag.JACKSON;
+        }
+        //if it's not PATCH method, we always skip the filter
+        return FilterFlag.SKIP;
+    }
+
+    protected abstract boolean isDisabled(ContainerRequestContext context);
+
+    @Override @SuppressWarnings({ "rawtypes", "unchecked" }) public void filter(final ContainerRequestContext requestContext)
+            throws IOException {
+        if (isDisabled(requestContext)) {
             return;
         }
-        try
-        {
+        HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
+        HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
+        //save http headers
+        List<String> patchContentTypeList = new ArrayList<String>();
+        for (String header : request.getHttpHeaders().getRequestHeader(HttpHeaders.CONTENT_TYPE)) {
+            patchContentTypeList.add(header);
+        }
+        List<String> acceptHeaders = new ArrayList<String>();
+        for (String header : request.getHttpHeaders().getRequestHeader(HttpHeaders.ACCEPT)) {
+            acceptHeaders.add(header);
+        }
+        ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
+        try {
+            //change to application/json header to GET target object
+            request.setHttpMethod("GET");
+            requestContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD);
+            requestContext.getHeaders().putSingle(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
             ResourceMethodInvoker methodInvoker = this.getMethodInvoker(requestContext);
             Object targetObject = this.getTargetObject(requestContext, methodInvoker);
-            ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
-            MessageBodyWriter msgBodyWriter = providers.getMessageBodyWriter(
-                  targetObject.getClass(), targetObject.getClass(), methodInvoker.getMethodAnnotations(),
-                  MediaType.APPLICATION_JSON_TYPE);
+            MessageBodyWriter msgBodyWriter = providers.getMessageBodyWriter(targetObject.getClass(), targetObject.getClass(),
+                    methodInvoker.getMethodAnnotations(), MediaType.APPLICATION_JSON_TYPE);
             if (msgBodyWriter == null) {
-                throw new ProcessingException(MESSAGES.couldNotFindWriterForContentType(MediaType.APPLICATION_JSON_TYPE, targetObject.getClass().getName()));
+                throw new ProcessingException(MESSAGES.couldNotFindWriterForContentType(MediaType.APPLICATION_JSON_TYPE,
+                        targetObject.getClass().getName()));
             }
             msgBodyWriter.writeTo(targetObject, targetObject.getClass(), targetObject.getClass(),
-                  methodInvoker.getMethodAnnotations(), MediaType.APPLICATION_JSON_TYPE,
-                  new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
+                    methodInvoker.getMethodAnnotations(), MediaType.APPLICATION_JSON_TYPE,
+                    new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
 
-            byte[] patchResult = applyPatch(requestContext, tmpOutputStream.toByteArray());
-            HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
-            request.setInputStream(new ByteArrayInputStream(patchResult));
-            request.setHttpMethod("PATCH");
-        }
-        catch (ProcessingException pe)
-        {
+        } catch (ProcessingException pe) {
             Throwable c = pe.getCause();
-            if (c != null && c instanceof ApplicationException)
-            {
+            if (c != null && c instanceof ApplicationException) {
                 c = c.getCause();
-                if (c != null && c instanceof NotFoundException)
-                {
+                if (c != null && c instanceof NotFoundException) {
                     throw (NotFoundException) c;
                 }
             }
             throw pe;
-        } catch (Exception e)
-        {
+        } finally {
+            requestContext.getHeaders().put(HttpHeaders.CONTENT_TYPE, patchContentTypeList);
+            requestContext.getHeaders().put(HttpHeaders.ACCEPT, acceptHeaders);
+            request.setHttpMethod("PATCH");
+        }
+        try {
+            byte[] patchResult = applyPatch(requestContext, tmpOutputStream.toByteArray());
+            request.setInputStream(new ByteArrayInputStream(patchResult));
+        } catch (Exception e) {
             throw new BadRequestException(e);
         }
-
-        /*catch (JsonMappingException | JsonParseException e)
-        {
-            throw new BadRequestException(e);
-        }
-        catch (JsonPatchException e)
-        {
-            throw new Failure(e, HttpResponseCodes.SC_CONFLICT);
-        }*/
     }
 
     protected abstract byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws Exception;
 
-    protected boolean isDisabled(ContainerRequestContext requestContext)
-    {
-        if (requestContext.getMethod().equals("PATCH")
-              && (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()) ||
-              APPLICATION_JSON_MERGE_PATCH_JSON_TYPE
-                    .isCompatible(requestContext.getMediaType())))
-        {
-            ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
-            boolean disabled = false;
-            if (context == null)
-            {
-                disabled = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED);
-            }
-            else
-            {
-                disabled = Boolean.parseBoolean(context
-                      .getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED));
-            }
-            return disabled;
-        }
-        //if it's not PATCH , we always skip the filter
-        return true;
-    }
     protected Object getTargetObject(ContainerRequestContext requestContext, ResourceMethodInvoker methodInvoker) {
         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
-        request.setHttpMethod("GET");
-        //save http headers
-        List<String> patchContentTypeList = new ArrayList<String>();
-        for (String header : request.getHttpHeaders().getRequestHeader(HttpHeaders.CONTENT_TYPE))
-        {
-            patchContentTypeList.add(header);
-        }
-        List<String> acceptHeaders = new ArrayList<String>();
-        for (String header : request.getHttpHeaders().getRequestHeader(HttpHeaders.ACCEPT))
-        {
-            acceptHeaders.add(header);
-        }
-        //change to application/json header to GET target object
-        requestContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD);
-        requestContext.getHeaders().putSingle(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
         HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
         Object targetObject = null;
-        try
-        {
+        try {
             targetObject = methodInvoker.invokeDryRun(request, response).toCompletableFuture().getNow(null);
-        }
-        catch (Exception e)
-        {
-            if (e.getCause() instanceof WebApplicationException)
-            {
+        } catch (Exception e) {
+            if (e.getCause() instanceof WebApplicationException) {
                 throw e;
-            }
-            else
-
-            {
+            } else {
                 LogMessages.LOGGER.errorPatchTarget(requestContext.getUriInfo().getRequestUri().toString());
                 throw new ProcessingException("Unexpected error to get the json patch/merge target", e);
             }
-        }finally{
-            requestContext.getHeaders().put(HttpHeaders.CONTENT_TYPE, patchContentTypeList);
-            requestContext.getHeaders().put(HttpHeaders.ACCEPT, acceptHeaders);
         }
         return targetObject;
     }
@@ -168,15 +151,17 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
         Registry methodRegistry = ResteasyContext.getContextData(Registry.class);
         ResourceInvoker resourceInovker = null;
-        try
-        {
+        try {
             resourceInovker = methodRegistry.getResourceInvoker(request);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LogMessages.LOGGER.patchTargetMethodNotFound(requestContext.getUriInfo().getRequestUri().toString());
             throw new ProcessingException("GET method returns the patch/merge json object target not found");
         }
         return (ResourceMethodInvoker) resourceInovker;
     }
+
+    public enum FilterFlag {
+        SKIP, JACKSON, JSONP;
+    }
+
 }

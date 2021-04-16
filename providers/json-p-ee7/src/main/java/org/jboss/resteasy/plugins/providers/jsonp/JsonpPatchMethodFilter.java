@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
+import javax.annotation.Priority;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonMergePatch;
@@ -16,63 +17,48 @@ import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.AbstractPatchMethodFilter;
 import org.jboss.resteasy.spi.HttpRequest;
 
-public class JsonpPatchMethodFilter extends AbstractPatchMethodFilter
-{
+@Provider @Priority(Integer.MAX_VALUE - 1) public class JsonpPatchMethodFilter extends AbstractPatchMethodFilter {
     private static final JsonReaderFactory readerFactory = Json.createReaderFactory(null);
 
     private static final JsonWriterFactory writerFactory = Json.createWriterFactory(null);
 
-    protected byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws Exception
-    {
-        HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
+    protected boolean isDisabled(ContainerRequestContext requestContext) {
+        if (this.readFilterDisabledFlag(requestContext) == FilterFlag.JSONP) {
+            return false;
+        }
+        return true;
+    }
 
-        ContextResolver<JsonReaderFactory> resolver = providers
-              .getContextResolver(JsonReaderFactory.class, requestContext.getMediaType());
-        JsonReaderFactory factory = null;
-        if (resolver != null)
-        {
-            factory = resolver.getContext(JsonReaderFactory.class);
-        }
-        if (factory == null)
-        {
-            factory = readerFactory;
-        }
+    protected byte[] applyPatch(final ContainerRequestContext requestContext, final byte[] targetJsonBytes) throws Exception {
+        HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
+        //TODO: look at if we need to get reader factory from ContextResolver
         Charset charset = AbstractJsonpProvider.getCharset(requestContext.getMediaType());
         ByteArrayInputStream is = new ByteArrayInputStream(targetJsonBytes);
-        JsonReader reader = charset == null ? factory.createReader(is) : factory.createReader(is, charset);
+        if (charset == null) {
+            charset = Charset.defaultCharset();
+        }
+        JsonReader reader = readerFactory.createReader(is, charset);
         JsonObject targetJson = reader.readObject();
         JsonObject result = null;
-        if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
-        {
-            JsonArray jsonArray = factory.createReader(request.getInputStream(), charset).readArray();
+        if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())) {
+            JsonReader arrayReader = readerFactory.createReader(request.getInputStream(), charset);
+            JsonArray jsonArray = arrayReader.readArray();
             JsonPatch patch = Json.createPatch(jsonArray);
-            patch.apply(targetJson);
-        }
-        else
-        {
-            JsonValue mergePatchValue = factory.createReader(request.getInputStream(), charset).readValue();
+            result = patch.apply(targetJson);
+        } else {
+            JsonReader valueReader = readerFactory.createReader(request.getInputStream(), charset);
+            JsonValue mergePatchValue = valueReader.readValue();
             final JsonMergePatch mergePatch = Json.createMergePatch(mergePatchValue);
             result = mergePatch.apply(targetJson).asJsonObject();
         }
-        ContextResolver<JsonWriterFactory> writerResolver = providers
-              .getContextResolver(JsonWriterFactory.class, requestContext.getMediaType());
-        JsonWriterFactory wfactory = null;
-        if (resolver != null)
-        {
-            wfactory = writerResolver.getContext(JsonWriterFactory.class);
-        }
-        if (wfactory == null)
-        {
-            wfactory = writerFactory;
-        }
         ByteArrayOutputStream targetOutputStream = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = wfactory.createWriter(targetOutputStream, charset);
+        JsonWriter jsonWriter = writerFactory.createWriter(targetOutputStream, charset);
         jsonWriter.write(result);
         return targetOutputStream.toByteArray();
     }
