@@ -819,7 +819,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          if (vi instanceof ContextParameterInjector)
          {
-            return ((ContextParameterInjector) vi).outputStreamWasWrittenTo();
+            return ((ContextParameterInjector) vi).isOutputStreamWasWritten();
          }
       }
       return false;
