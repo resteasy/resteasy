@@ -45,26 +45,26 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
                         || APPLICATION_JSON_MERGE_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))) {
             ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
             boolean disabled = false;
-            boolean jsonpfilter = false;
+            boolean legacyFilter = false;
             if (context == null) {
                 disabled = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED);
                 if (!disabled) {
-                    jsonpfilter = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_JSONP);
+                    legacyFilter = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_LEGACY);
                 }
             } else {
                 disabled = Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED));
                 if (!disabled) {
-                    jsonpfilter = Boolean
-                            .parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_JSONP));
+                    legacyFilter = Boolean
+                            .parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_LEGACY));
                 }
             }
             if (disabled) {
                 return FilterFlag.SKIP;
             }
-            if (jsonpfilter) {
-                return FilterFlag.JSONP;
+            if (legacyFilter) {
+                return FilterFlag.JACKSON;
             }
-            return FilterFlag.JACKSON;
+            return FilterFlag.JSONP;
         }
         //if it's not PATCH method, we always skip the filter
         return FilterFlag.SKIP;

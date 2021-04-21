@@ -23,7 +23,8 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.AbstractPatchMethodFilter;
 import org.jboss.resteasy.spi.HttpRequest;
 
-@Provider @Priority(Integer.MAX_VALUE - 1) public class JsonpPatchMethodFilter extends AbstractPatchMethodFilter {
+@Provider @Priority(Integer.MAX_VALUE - 1)
+public class JsonpPatchMethodFilter extends AbstractPatchMethodFilter {
     private static final JsonReaderFactory readerFactory = Json.createReaderFactory(null);
 
     private static final JsonWriterFactory writerFactory = Json.createWriterFactory(null);
