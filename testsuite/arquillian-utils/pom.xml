@@ -17,7 +17,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>arquillian-utils</artifactId>
-    <version>4.5.11.Final</version>
+    <version>4.5.12-SNAPSHOT</version>
     <name>RESTEasy Main testsuite: Arquillian utils</name>
     <packaging>jar</packaging>
     <properties>
