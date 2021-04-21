@@ -32,6 +32,7 @@
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
         <version.compiler.plugin>3.8.0-jboss-2</version.compiler.plugin>
+        <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -200,9 +201,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
                     <configuration>
-                        <forkMode>once</forkMode>
                         <runOrder>alphabetical</runOrder>
                         <argLine>${surefire.system.args}</argLine>
                     </configuration>
