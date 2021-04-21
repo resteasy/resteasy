@@ -137,7 +137,7 @@ public class ClientInvoker implements MethodInvoker
       Object o = null;
       if (e != null)
       {
-         o = rxInvoker.method(getHttpMethod(), Entity.entity(e, request.getHeaders().getMediaType()), gt);
+         o = rxInvoker.method(getHttpMethod(), Entity.entity(e, request.getHeaders().getMediaType(),request.getEntityAnnotations()), gt);
       }
       else
       {
