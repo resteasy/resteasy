@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -10,26 +11,31 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.AbstractPatchMethodFilter;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 
 /*
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  */
-@Provider @Priority(Integer.MAX_VALUE) public class PatchMethodFilter extends AbstractPatchMethodFilter {
+@Provider
+@Priority(Integer.MAX_VALUE)
+public class PatchMethodFilter extends AbstractPatchMethodFilter {
     private volatile ObjectMapper objectMapper;
 
     protected boolean isDisabled(ContainerRequestContext requestContext) {
        return this.readFilterDisabledFlag(requestContext) != FilterFlag.JACKSON;
     }
 
-    protected byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws Exception {
+    protected byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws IOException, Failure {
         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
         ObjectMapper mapper = getObjectMapper();
         PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
@@ -41,17 +47,19 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
         JsonNode targetJson = mapper.readValue(targetJsonBytes, JsonNode.class);
 
         JsonNode result = null;
-        if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())) {
-            JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
-            result = patch.apply(targetJson);
-        } else {
-            final JsonMergePatch mergePatch = JsonMergePatch
-                    .fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
-            result = mergePatch.apply(targetJson);
-        }
         ByteArrayOutputStream targetOutputStream = new ByteArrayOutputStream();
-        mapper.writeValue(targetOutputStream, result);
-
+        try {
+            if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())) {
+                JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+                result = patch.apply(targetJson);
+            } else {
+                final JsonMergePatch mergePatch = JsonMergePatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+                result = mergePatch.apply(targetJson);
+            }
+            mapper.writeValue(targetOutputStream, result);
+        } catch (JsonPatchException e) {
+            throw new Failure(e, HttpResponseCodes.SC_CONFLICT);
+        }
         return targetOutputStream.toByteArray();
     }
 

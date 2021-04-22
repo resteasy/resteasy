@@ -26,6 +26,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
@@ -37,7 +38,8 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
     public static final String APPLICATION_JSON_MERGE_PATCH_JSON = "application/merge-patch+json";
 
     public static final MediaType APPLICATION_JSON_MERGE_PATCH_JSON_TYPE = new MediaType("application", "merge-patch+json");
-    @Context protected Providers providers;
+    @Context
+    protected Providers providers;
 
     protected FilterFlag readFilterDisabledFlag(ContainerRequestContext requestContext) {
         if (requestContext.getMethod().equals("PATCH") && (
@@ -72,7 +74,9 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
 
     protected abstract boolean isDisabled(ContainerRequestContext context);
 
-    @Override @SuppressWarnings({ "rawtypes", "unchecked" }) public void filter(final ContainerRequestContext requestContext)
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void filter(final ContainerRequestContext requestContext)
             throws IOException {
         if (isDisabled(requestContext)) {
             return;
@@ -123,12 +127,13 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
         try {
             byte[] patchResult = applyPatch(requestContext, tmpOutputStream.toByteArray());
             request.setInputStream(new ByteArrayInputStream(patchResult));
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new BadRequestException(e);
         }
     }
 
-    protected abstract byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws Exception;
+    protected abstract byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws IOException,
+            Failure;
 
     protected Object getTargetObject(ContainerRequestContext requestContext, ResourceMethodInvoker methodInvoker) {
         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);

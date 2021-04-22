@@ -37,7 +37,7 @@ public class StudentPatchTest {
    static Client client;
    static final String PATCH_DEPLOYMENT = "Patch";
    static final String DISABLED_PATCH_DEPLOYMENT = "DisablePatch";
-   static final String JSONP_PATCH_DEPLOYMENT = "JSONPPatch";
+   static final String LEGACY_PATCH_DEPLOYMENT = "LegacyPatch";
    @BeforeClass
    public static void setup() {
       client = ClientBuilder.newClient();
@@ -55,11 +55,11 @@ public class StudentPatchTest {
       return TestUtil.finishContainerPrepare(war, null, StudentResource.class, Student.class);
    }
 
-   @Deployment(name=JSONP_PATCH_DEPLOYMENT, order = 2)
-   public static Archive<?> deployJSONPFilter() {
-      WebArchive war = TestUtil.prepareArchive(JSONP_PATCH_DEPLOYMENT);
+   @Deployment(name=LEGACY_PATCH_DEPLOYMENT, order = 2)
+   public static Archive<?> deployLegacyFilter() {
+      WebArchive war = TestUtil.prepareArchive(LEGACY_PATCH_DEPLOYMENT);
       Map<String, String> contextParam = new HashMap<>();
-      contextParam.put(ResteasyContextParameters.RESTEASY_PATCH_FILTER_JSONP, "true");
+      contextParam.put(ResteasyContextParameters.RESTEASY_PATCH_FILTER_LEGACY, "true");
       return TestUtil.finishContainerPrepare(war, contextParam, StudentResource.class, Student.class);
    }
 
@@ -88,15 +88,15 @@ public class StudentPatchTest {
    }
 
    @Test
-   @OperateOnDeployment(JSONP_PATCH_DEPLOYMENT)
+   @OperateOnDeployment(LEGACY_PATCH_DEPLOYMENT)
    public void testJSONPPatchStudent() throws Exception {
-      testPatch(JSONP_PATCH_DEPLOYMENT);
+      testPatch(LEGACY_PATCH_DEPLOYMENT);
    }
 
    @Test
-   @OperateOnDeployment(JSONP_PATCH_DEPLOYMENT)
+   @OperateOnDeployment(LEGACY_PATCH_DEPLOYMENT)
    public void testJSONPMergePatchStudent() throws Exception {
-      testMergePatch(JSONP_PATCH_DEPLOYMENT);
+      testMergePatch(LEGACY_PATCH_DEPLOYMENT);
    }
 
    @Test
