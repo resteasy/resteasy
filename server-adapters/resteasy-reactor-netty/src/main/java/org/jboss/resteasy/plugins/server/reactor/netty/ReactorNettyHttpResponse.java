@@ -11,8 +11,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.netty.http.server.HttpServerResponse;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -232,7 +232,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
     @Override
     public void addNewCookie(NewCookie cookie)
     {
-        resp.responseHeaders().add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+        resp.responseHeaders().add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
     }
 
     @Override
