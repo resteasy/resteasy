@@ -51,7 +51,7 @@ public class ResteasyServletInitializerTest
             .thenReturn((Map) Collections.singletonMap(AppWithNoAppPath.class.getName(), mockReg));
       when(mockServletContext.addServlet(AppWithNoAppPath.class.getName(), HttpServlet30Dispatcher.class))
             .thenReturn(mockReg);
-      when(mockReg.getInitParameter("javax.ws.rs.Application")).thenReturn(null);
+      when(mockReg.getInitParameter("jakarta.ws.rs.Application")).thenReturn(null);
       when(mockReg.getMappings()).thenReturn(Collections.singleton("/myAppMapping/*"));
       when(mockReg.getName()).thenReturn(AppWithNoAppPath.class.getName());
       when(mockReg.getClassName()).thenReturn(null);
@@ -61,11 +61,11 @@ public class ResteasyServletInitializerTest
       verify(mockServletContext).getServletRegistrations();
       verify(mockServletContext).addServlet(AppWithNoAppPath.class.getName(), HttpServlet30Dispatcher.class);
       verify(mockReg, times(2)).getMappings();
-      verify(mockReg).getInitParameter("javax.ws.rs.Application");
+      verify(mockReg).getInitParameter("jakarta.ws.rs.Application");
       verify(mockReg).getName();
       verify(mockReg).getClassName();
       verify(mockReg).setInitParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES, Resource1.class.getName());
-      verify(mockReg).setInitParameter("javax.ws.rs.Application", AppWithNoAppPath.class.getName());
+      verify(mockReg).setInitParameter("jakarta.ws.rs.Application", AppWithNoAppPath.class.getName());
       verify(mockReg).setInitParameter("resteasy.servlet.mapping.prefix", "/myAppMapping");
       verifyNoMoreInteractions(mockServletContext);
       verifyNoMoreInteractions(mockReg);
@@ -147,7 +147,7 @@ public class ResteasyServletInitializerTest
       verify(mockReg).setLoadOnStartup(1);
       verify(mockReg).setAsyncSupported(true);
       verify(mockReg).addMapping("/myAppPath/*");
-      verify(mockReg).setInitParameter("javax.ws.rs.Application", AppWithAppPath.class.getName());
+      verify(mockReg).setInitParameter("jakarta.ws.rs.Application", AppWithAppPath.class.getName());
       verify(mockReg).setInitParameter("resteasy.servlet.mapping.prefix", "/myAppPath");
       verify(mockReg).setInitParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES, Resource1.class.getName());
       verifyNoMoreInteractions(mockServletContext);
