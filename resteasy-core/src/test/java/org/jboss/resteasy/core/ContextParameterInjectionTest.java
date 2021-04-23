@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
