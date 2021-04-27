@@ -18,6 +18,12 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- Dependency versions -->
+        <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
+        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
+        <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
+
         <jboss.home/>
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
