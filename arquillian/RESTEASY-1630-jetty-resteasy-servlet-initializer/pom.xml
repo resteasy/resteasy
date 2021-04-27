@@ -15,7 +15,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.maven.model>3.2.5</version.maven.model>
   </properties>
 
   <dependencies>
@@ -33,37 +32,7 @@
               <groupId>javax.enterprise</groupId>
               <artifactId>cdi-api</artifactId>
           </exclusion>
-          <exclusion>
-              <groupId>org.apache.maven</groupId>
-              <artifactId>maven-model</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.maven</groupId>
-              <artifactId>maven-model-builder</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.maven</groupId>
-              <artifactId>maven-repository-metadata</artifactId>
-          </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>${version.maven.model}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model-builder</artifactId>
-      <version>${version.maven.model}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-repository-metadata</artifactId>
-      <version>${version.maven.model}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.arquillian.container</groupId>
