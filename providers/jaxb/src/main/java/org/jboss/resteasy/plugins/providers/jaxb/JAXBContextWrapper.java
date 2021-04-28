@@ -51,14 +51,14 @@ public class JAXBContextWrapper extends JAXBContext
 
          if (System.getSecurityManager() == null)
          {
-            namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+            namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper");
             mapper[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
          }
          else
          {
             AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
                @Override public Void run() throws Exception {
-                  namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+                  namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper");
                   mapper[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
 
                   return null;
