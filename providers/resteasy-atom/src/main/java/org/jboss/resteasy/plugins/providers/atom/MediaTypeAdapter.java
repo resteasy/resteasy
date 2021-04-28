@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
 import jakarta.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

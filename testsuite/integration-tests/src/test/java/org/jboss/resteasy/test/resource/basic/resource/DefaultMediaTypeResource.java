@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.resource.basic.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

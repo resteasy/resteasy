@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.runner.RunWith;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 

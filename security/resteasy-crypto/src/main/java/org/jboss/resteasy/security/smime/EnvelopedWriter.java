@@ -15,9 +15,9 @@ import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;

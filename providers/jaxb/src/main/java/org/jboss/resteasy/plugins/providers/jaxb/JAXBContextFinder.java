@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import jakarta.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import java.lang.annotation.Annotation;
 
 /**

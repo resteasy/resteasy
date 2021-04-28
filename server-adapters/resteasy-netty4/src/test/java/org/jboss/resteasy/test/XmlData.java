@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

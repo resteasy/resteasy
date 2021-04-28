@@ -71,7 +71,7 @@ public class DebugLoggingTest {
       // enable RESTEasy debug logging
       TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=ALL)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:add(level=ALL)");
+      TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:add(level=ALL)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:add(level=ALL)");
 
       client.close();
@@ -84,7 +84,7 @@ public class DebugLoggingTest {
       // enable RESTEasy debug logging
       TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=INFO)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:remove()");
+      TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:remove()");
       TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:remove()");
 
       client.close();

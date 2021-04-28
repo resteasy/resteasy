@@ -119,7 +119,7 @@ public class XxeSecureProcessingTest {
       Assert.assertEquals(400, response.getStatus());
       String entity = response.readEntity(String.class);
       logger.debug("Result: " + entity);
-      Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
+      Assert.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
       response.close();
    }
 
@@ -149,7 +149,7 @@ public class XxeSecureProcessingTest {
       Assert.assertEquals(400, response.getStatus());
       String entity = response.readEntity(String.class);
       logger.debug("Result: " + entity);
-      Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
+      Assert.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
       response.close();
    }
 
@@ -179,7 +179,7 @@ public class XxeSecureProcessingTest {
       Assert.assertEquals(400, response.getStatus());
       String entity = response.readEntity(String.class);
       logger.debug("Result: " + entity);
-      Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
+      Assert.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
       response.close();
    }
 

@@ -6,8 +6,8 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;

@@ -12,13 +12,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRegistry;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
@@ -154,13 +154,13 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * @return
     * @throws IOException
     */
-   private javax.xml.bind.JAXBContext getJAXBContext(Class<Object> type, MediaType mediaType) throws IOException {
+   private jakarta.xml.bind.JAXBContext getJAXBContext(Class<Object> type, MediaType mediaType) throws IOException {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : getJAXBContext", getClass().getName());
 
-      ContextResolver<javax.xml.bind.JAXBContext> resolver = providers.getContextResolver(
-              javax.xml.bind.JAXBContext.class, mediaType);
+      ContextResolver<jakarta.xml.bind.JAXBContext> resolver = providers.getContextResolver(
+              jakarta.xml.bind.JAXBContext.class, mediaType);
 
-      javax.xml.bind.JAXBContext finder = null;
+      jakarta.xml.bind.JAXBContext finder = null;
       if (resolver != null)
       {
          finder = resolver.getContext(type);

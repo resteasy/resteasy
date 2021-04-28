@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -48,7 +48,7 @@ public class FastinfoSetContext extends JAXBContext
       return new FastinfoSetMarshaller(context);
    }
 
-   public javax.xml.bind.Validator createValidator() throws JAXBException
+   public jakarta.xml.bind.Validator createValidator() throws JAXBException
    {
       return context.createValidator();
    }

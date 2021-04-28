@@ -2,7 +2,7 @@ package org.jboss.resteasy.springmvc.test.resources;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @Path("/org/jboss/resteasy/springmvc/test")
 public class TypeMappingResource

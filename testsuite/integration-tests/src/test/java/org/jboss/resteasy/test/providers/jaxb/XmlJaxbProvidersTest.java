@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import jakarta.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FilePermission;
 import java.io.InputStream;

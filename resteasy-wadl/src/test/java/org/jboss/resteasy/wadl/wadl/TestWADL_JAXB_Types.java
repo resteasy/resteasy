@@ -4,8 +4,8 @@ import org.jboss.resteasy.wadl.jaxb.Application;
 import org.jboss.resteasy.wadl.jaxb.ObjectFactory;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>

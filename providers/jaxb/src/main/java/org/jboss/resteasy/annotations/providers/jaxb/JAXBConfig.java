@@ -1,7 +1,7 @@
 package org.jboss.resteasy.annotations.providers.jaxb;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlNs;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

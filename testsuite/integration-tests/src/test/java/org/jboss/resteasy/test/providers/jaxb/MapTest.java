@@ -26,8 +26,8 @@ import jakarta.ws.rs.client.Entity;
 
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;

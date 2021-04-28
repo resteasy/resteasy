@@ -6,7 +6,7 @@ import org.jboss.resteasy.plugins.providers.atom.app.AppCollection;
 import org.jboss.resteasy.plugins.providers.atom.app.AppService;
 import org.jboss.resteasy.plugins.providers.atom.app.AppWorkspace;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 /**
  * This class shouldn't be renamed. JAXBContext require this name.
