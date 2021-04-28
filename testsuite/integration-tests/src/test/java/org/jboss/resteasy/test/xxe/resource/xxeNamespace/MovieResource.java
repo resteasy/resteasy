@@ -5,7 +5,7 @@ import org.jboss.logging.Logger;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;

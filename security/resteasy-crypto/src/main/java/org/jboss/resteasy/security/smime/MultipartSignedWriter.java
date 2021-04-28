@@ -7,7 +7,7 @@ import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.WriterException;
 
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeMultipart;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;

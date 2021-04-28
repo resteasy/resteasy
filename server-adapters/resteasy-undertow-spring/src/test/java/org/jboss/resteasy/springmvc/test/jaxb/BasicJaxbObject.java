@@ -1,6 +1,6 @@
 package org.jboss.resteasy.springmvc.test.jaxb;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @XmlRootElement

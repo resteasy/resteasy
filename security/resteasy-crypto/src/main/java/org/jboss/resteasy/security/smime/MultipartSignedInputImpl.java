@@ -6,9 +6,9 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.ext.Providers;
 

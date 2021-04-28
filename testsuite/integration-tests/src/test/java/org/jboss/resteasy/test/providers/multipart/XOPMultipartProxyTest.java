@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;

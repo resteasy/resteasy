@@ -536,7 +536,7 @@ public class StringParameterInjector
          {
             for (Annotation ann : baseType.getAnnotations())
             {
-               if (ann.annotationType().getName().equals("javax.xml.bind.annotation.XmlEnum"))
+               if (ann.annotationType().getName().equals("jakarta.xml.bind.annotation.XmlEnum"))
                {
                   valueOf = fromValue;
                }

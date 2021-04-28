@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.datasource.resource;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

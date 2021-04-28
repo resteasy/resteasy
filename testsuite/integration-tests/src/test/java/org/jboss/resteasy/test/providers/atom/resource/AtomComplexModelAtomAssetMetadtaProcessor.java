@@ -5,8 +5,8 @@ import org.jboss.resteasy.plugins.providers.atom.Entry;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 
 import jakarta.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;

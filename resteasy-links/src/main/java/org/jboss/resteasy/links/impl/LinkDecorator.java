@@ -3,8 +3,8 @@ package org.jboss.resteasy.links.impl;
 import java.lang.annotation.Annotation;
 
 import jakarta.ws.rs.core.MediaType;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Marshaller.Listener;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller.Listener;
 
 import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.links.LinksProvider;

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.atom.resource;
 
 import org.jboss.resteasy.annotations.Decorator;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -15,7 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletionStage;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;

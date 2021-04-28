@@ -7,10 +7,10 @@ import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
 
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;

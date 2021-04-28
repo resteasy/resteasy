@@ -4,9 +4,9 @@ import java.net.URI;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;

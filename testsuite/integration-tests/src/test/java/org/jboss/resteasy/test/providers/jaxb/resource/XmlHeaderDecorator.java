@@ -4,7 +4,7 @@ import org.jboss.resteasy.annotations.DecorateTypes;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 
 import jakarta.ws.rs.core.MediaType;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import java.lang.annotation.Annotation;
 
 @DecorateTypes("application/json")

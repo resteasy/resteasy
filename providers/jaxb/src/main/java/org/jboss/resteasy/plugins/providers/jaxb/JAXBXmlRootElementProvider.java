@@ -7,7 +7,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.Provider;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.spi.util.FindAnnotation;

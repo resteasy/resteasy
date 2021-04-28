@@ -16,9 +16,9 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

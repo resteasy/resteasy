@@ -10,10 +10,10 @@ import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.ObjectFact
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.annotation.XmlSchema;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 

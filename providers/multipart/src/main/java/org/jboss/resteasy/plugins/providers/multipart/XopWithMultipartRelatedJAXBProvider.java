@@ -1,24 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.Providers;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.attachment.AttachmentMarshaller;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
+import jakarta.activation.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,6 +12,25 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.activation.DataHandler;
+import javax.xml.transform.stream.StreamSource;
+
+import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 
 /**
  * A special JAXB Provider. It is not a real provider, it is only used as a
@@ -82,6 +83,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
       public boolean isXOPPackage() {
          return true;
       }
+
    }
 
    private static class InputPartBackedDataSource implements DataSource {

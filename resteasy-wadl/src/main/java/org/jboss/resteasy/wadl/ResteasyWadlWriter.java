@@ -17,12 +17,12 @@ import org.jboss.resteasy.wadl.jaxb.Resources;
 import org.jboss.resteasy.wadl.jaxb.Response;
 
 import jakarta.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;

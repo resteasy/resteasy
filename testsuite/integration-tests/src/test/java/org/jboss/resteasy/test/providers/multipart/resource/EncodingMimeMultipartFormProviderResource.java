@@ -4,7 +4,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import javax.mail.internet.ContentDisposition;
+import jakarta.mail.internet.ContentDisposition;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

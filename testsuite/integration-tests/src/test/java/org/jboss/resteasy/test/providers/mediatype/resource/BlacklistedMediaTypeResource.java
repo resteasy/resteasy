@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;

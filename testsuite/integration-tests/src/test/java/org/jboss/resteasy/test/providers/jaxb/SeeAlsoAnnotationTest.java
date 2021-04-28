@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import jakarta.ws.rs.client.Entity;
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import java.io.StringWriter;
 
 /**
