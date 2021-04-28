@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 
 import jakarta.xml.bind.annotation.XmlNs;
 import java.util.HashMap;

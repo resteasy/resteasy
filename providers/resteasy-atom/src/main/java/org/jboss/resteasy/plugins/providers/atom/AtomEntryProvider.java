@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;

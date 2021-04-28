@@ -205,10 +205,10 @@ public interface InputPart {
 <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlRootElement(name = "soup")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -398,10 +398,10 @@ public class Soup {
             <![CDATA[
     package org.jboss.resteasy.test.providers.multipart.resource;
 
-    import javax.xml.bind.annotation.XmlAccessType;
-    import javax.xml.bind.annotation.XmlAccessorType;
-    import javax.xml.bind.annotation.XmlElement;
-    import javax.xml.bind.annotation.XmlRootElement;
+    import jakarta.xml.bind.annotation.XmlAccessType;
+    import jakarta.xml.bind.annotation.XmlAccessorType;
+    import jakarta.xml.bind.annotation.XmlElement;
+    import jakarta.xml.bind.annotation.XmlRootElement;
 
     @XmlRootElement(name = "customer")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -660,10 +660,10 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
 package org.jboss.resteasy.test.providers.multipart.resource;
 
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlMimeType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -832,10 +832,10 @@ public interface MultipartFormDataInput extends MultipartInput {
          <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "name")
 @XmlAccessorType(XmlAccessType.FIELD)
