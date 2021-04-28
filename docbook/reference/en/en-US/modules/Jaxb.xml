@@ -119,8 +119,8 @@ public @interface Pretty {}
 import org.jboss.resteasy.core.interception.DecoratorProcessor;
 import org.jboss.resteasy.annotations.DecorateTypes;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.Produces;
 import java.lang.annotation.Annotation;
