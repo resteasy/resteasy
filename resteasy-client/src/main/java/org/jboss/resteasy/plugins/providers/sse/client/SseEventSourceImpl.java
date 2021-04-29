@@ -378,7 +378,7 @@ public class SseEventSourceImpl implements SseEventSource
          {
             if (eventInput == null || eventInput.isClosed())
             {
-               reconnect(reconnectDelay);
+               internalClose();
                break;
             }
             try
