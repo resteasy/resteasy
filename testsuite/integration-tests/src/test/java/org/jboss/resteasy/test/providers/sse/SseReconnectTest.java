@@ -1,17 +1,10 @@
 package org.jboss.resteasy.test.providers.sse;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.providers.sse.resource.SseReconnectResource;
-import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.WebApplicationException;
@@ -22,11 +15,19 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEvent;
 import javax.ws.rs.sse.SseEventSource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.providers.sse.resource.SseReconnectResource;
+import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -184,10 +185,9 @@ public class SseReconnectTest {
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
             Assert.assertEquals(0, errorCount.get());
-            Assert.assertEquals(2, results.size());
+            Assert.assertEquals(1, results.size());
             Assert.assertTrue(results.get(0).isReconnectDelaySet());
             Assert.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
-            Assert.assertFalse(results.get(1).isReconnectDelaySet());
          }
       }
       finally
