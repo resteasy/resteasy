@@ -22,9 +22,7 @@ public class MonoRxInvokerProvider implements RxInvokerProvider<MonoRxInvoker>
    {
       if (syncInvoker instanceof ClientInvocationBuilder)
       {
-         ClientInvocationBuilder builder = (ClientInvocationBuilder) syncInvoker;
-         PublisherRxInvoker publisherRxInvoker = builder.rx(PublisherRxInvoker.class);
-         return new MonoRxInvokerImpl(publisherRxInvoker);
+         return new MonoRxInvokerImpl((ClientInvocationBuilder) syncInvoker);
       }
       else
       {

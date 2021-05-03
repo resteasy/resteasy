@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -608,7 +609,7 @@ public class ClientInvocation implements Invocation
    }
 
    @SuppressWarnings("unchecked")
-   private static <T> ResultExtractor<T> getGenericTypeExtractor(GenericType<T> responseType) {
+   protected static <T> ResultExtractor<T> getGenericTypeExtractor(GenericType<T> responseType) {
       return response -> {
          if (responseType.getRawType().equals(Response.class))
             return (T) response;
@@ -617,7 +618,7 @@ public class ClientInvocation implements Invocation
    }
 
    @SuppressWarnings("unchecked")
-   private static <T> ResultExtractor<T> getResponseTypeExtractor(Class<T> responseType) {
+   protected static <T> ResultExtractor<T> getResponseTypeExtractor(Class<T> responseType) {
       return response -> {
          if (Response.class.equals(responseType))
             return (T) response;
@@ -658,31 +659,76 @@ public class ClientInvocation implements Invocation
       }
    }
 
-   public Publisher<Response> submitRx()
-   {
-      return doSubmitRx(response -> response, false);
-   }
+   class ReactiveInvocation {
+      private final ReactiveClientHttpEngine reactiveEngine;
 
-   public <T> Publisher<T> submitRx(final Class<T> responseType)
-   {
-      return doSubmitRx(getResponseTypeExtractor(responseType), true);
-   }
-
-   public <T> Publisher<T> submitRx(final GenericType<T> responseType)
-   {
-      return doSubmitRx(getGenericTypeExtractor(responseType), true);
-   }
-
-   private <T> Publisher<T> doSubmitRx(ResultExtractor<T> extractor, boolean buffered) {
-      if (client.httpEngine() instanceof ReactiveClientHttpEngine)
-      {
-         return rxSubmit(
-             (ReactiveClientHttpEngine)client.httpEngine(),
-             getPublisherExtractorFunction(buffered),
-             extractor);
+      public ReactiveInvocation(ReactiveClientHttpEngine reactiveEngine) {
+         this.reactiveEngine = reactiveEngine;
       }
-      throw new UnsupportedOperationException("Reactive invocation is only supported by " +
-          ReactiveClientHttpEngine.class + " implementations.");
+
+      public Publisher<Response> submit()
+      {
+         return doSubmitRx(response -> response, false);
+      }
+
+      public <T> Publisher<T> submit(final Class<T> responseType)
+      {
+         return doSubmitRx(getResponseTypeExtractor(responseType), true);
+      }
+
+      public <T> Publisher<T> submit(final GenericType<T> responseType)
+      {
+         return doSubmitRx(getGenericTypeExtractor(responseType), true);
+      }
+
+      private <T> Publisher<T> doSubmitRx(ResultExtractor<T> extractor, boolean buffered) {
+         return rxSubmit(
+             reactiveEngine,
+             getPublisherExtractorFunction(buffered),
+             extractor
+         );
+      }
+
+      private <T> Publisher<T> rxSubmit(
+          final ReactiveClientHttpEngine reactiveEngine,
+          final Function<ResultExtractor<T>, Publisher<T>> asyncHttpEngineSubmitFn,
+          final ResultExtractor<T> extractor
+      ) {
+         final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(ClientInvocation.this);
+         try(CloseableContext ctx = pushProvidersContext())
+         {
+            ClientResponse aborted = filterRequest(requestContext);
+            if (aborted != null)
+            {
+               // spec requires that aborted response go through filter/interceptor chains.
+               aborted = filterResponse(requestContext, aborted);
+               T result = extractor.extractResult(aborted);
+               return reactiveEngine.just(result);
+            }
+         }
+         catch (Exception ex)
+         {
+            return reactiveEngine.error(ex);
+         }
+
+         return asyncHttpEngineSubmitFn.apply(response -> {
+            try(CloseableContext ctx = pushProvidersContext())
+            {
+               return extractor.extractResult(filterResponse(requestContext, response));
+            }
+         });
+      }
+   }
+
+   /**
+    * If the client's HTTP engine implements {@link ReactiveClientHttpEngine} then you can access
+    * the latter's {@link Publisher} via this method.
+    */
+   public Optional<ReactiveInvocation> reactive() {
+      if (client.httpEngine() instanceof ReactiveClientHttpEngine) {
+         return Optional.of(new ReactiveInvocation((ReactiveClientHttpEngine)client.httpEngine()));
+      }
+      return Optional.empty();
    }
 
    @Override
@@ -796,35 +842,7 @@ public class ClientInvocation implements Invocation
       });
    }
 
-   private <T> Publisher<T> rxSubmit(
-       final ReactiveClientHttpEngine reactiveEngine,
-       final Function<ResultExtractor<T>, Publisher<T>> asyncHttpEngineSubmitFn,
-       final ResultExtractor<T> extractor
-   ) {
-      final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
-      try(CloseableContext ctx = pushProvidersContext())
-      {
-         ClientResponse aborted = filterRequest(requestContext);
-         if (aborted != null)
-         {
-            // spec requires that aborted response go through filter/interceptor chains.
-            aborted = filterResponse(requestContext, aborted);
-            T result = extractor.extractResult(aborted);
-            return reactiveEngine.just(result);
-         }
-      }
-      catch (Exception ex)
-      {
-         return reactiveEngine.error(ex);
-      }
 
-      return asyncHttpEngineSubmitFn.apply(response -> {
-         try(CloseableContext ctx = pushProvidersContext())
-         {
-            return extractor.extractResult(filterResponse(requestContext, response));
-         }
-      });
-   }
 
    private <T> CompletableFuture<T> executorSubmit(ExecutorService executor, final InvocationCallback<T> callback,
          final ResultExtractor<T> extractor)
