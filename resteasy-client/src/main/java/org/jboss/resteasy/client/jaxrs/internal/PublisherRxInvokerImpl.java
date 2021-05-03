@@ -6,9 +6,14 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
-public class PublisherRxInvokerImpl implements PublisherRxInvoker {
+public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
 
     private final ClientInvocationBuilder builder;
 
@@ -16,93 +21,123 @@ public class PublisherRxInvokerImpl implements PublisherRxInvoker {
         this.builder = builder;
     }
 
-    private ClientInvocation createClientInvocation(String method, Entity<?> entity)
-    {
+    private <T> Publisher<T> mkPublisher(
+        final String method,
+        final Entity<?> entity,
+        final Function<ClientInvocation, Publisher<T>> mkPublisher
+    ) {
         ClientInvocation invocation = builder.createClientInvocation(builder.invocation);
         invocation.setMethod(method);
         invocation.setEntity(entity);
-        return invocation;
+        return mkPublisher.apply(invocation);
     }
 
-    // TODO lots of code shared with CompletionStageRxInvokerImpl.  Isolate.
+    protected abstract <T> Publisher<T> toPublisher(final CompletionStage<T> completable);
+
+    // TODO remove this. It sucks that I have to repeat all this, but I can't figure out a way to do the types
+    // with ClientInvocation to make this nicer without higher-kinded types (or a crapton of boilerplate)..
+    private Publisher<Response> mkPublisher(final String method, final Entity<?> entity) {
+        return mkPublisher(method, entity, invocation ->
+            invocation.reactive()
+                .map(ClientInvocation.ReactiveInvocation::submit)
+                .orElseGet(() -> toPublisher(invocation.submitCF()))
+        );
+    }
+
+    private <T> Publisher<T> mkPublisher(final String method, final Entity<?> entity, final Class<T> responseType) {
+        return mkPublisher(method, entity, invocation ->
+            invocation.reactive()
+                .map(r -> r.submit(responseType))
+                .orElseGet(() -> toPublisher(invocation.submitCF(responseType)))
+        );
+    }
+
+    private <T> Publisher<T> mkPublisher(final String method, final Entity<?> entity, final GenericType<T> responseType) {
+        return mkPublisher(method, entity, invocation ->
+            invocation.reactive()
+                .map(r -> r.submit(responseType))
+                .orElseGet(() -> toPublisher(invocation.submitCF(responseType)))
+        );
+    }
+
     @Override
     public Publisher<Response> get() {
-        return createClientInvocation(HttpMethod.GET, null).submitRx();
+        return mkPublisher(HttpMethod.GET, null);
     }
 
     @Override
     public <T> Publisher<T> get(final Class<T> responseType) {
-        return createClientInvocation(HttpMethod.GET, null).submitRx(responseType);
+        return mkPublisher(HttpMethod.GET, null, responseType);
     }
 
     @Override
     public <T> Publisher<T> get(final GenericType<T> responseType) {
-        return createClientInvocation(HttpMethod.GET, null).submitRx(responseType);
+        return mkPublisher(HttpMethod.GET, null, responseType);
     }
 
     @Override
     public Publisher<Response> put(final Entity<?> entity) {
-        return createClientInvocation(HttpMethod.PUT, entity).submitRx();
+        return mkPublisher(HttpMethod.PUT, entity);
     }
 
     @Override
     public <T> Publisher<T> put(final Entity<?> entity, final Class<T> clazz) {
-        return createClientInvocation(HttpMethod.PUT, entity).submitRx(clazz);
+        return mkPublisher(HttpMethod.PUT, entity, clazz);
     }
 
     @Override
     public <T> Publisher<T> put(final Entity<?> entity, final GenericType<T> type) {
-        return createClientInvocation(HttpMethod.PUT, entity).submitRx(type);
+        return mkPublisher(HttpMethod.PUT, entity, type);
     }
 
     @Override
     public Publisher<Response> post(final Entity<?> entity) {
-        return createClientInvocation(HttpMethod.POST, entity).submitRx();
+        return mkPublisher(HttpMethod.POST, entity);
     }
 
     @Override
     public <T> Publisher<T> post(final Entity<?> entity, final Class<T> clazz) {
-        return createClientInvocation(HttpMethod.POST, entity).submitRx(clazz);
+        return mkPublisher(HttpMethod.POST, entity, clazz);
     }
 
     @Override
     public <T> Publisher<T> post(final Entity<?> entity, final GenericType<T> type) {
-        return createClientInvocation(HttpMethod.POST, entity).submitRx(type);
+        return mkPublisher(HttpMethod.POST, entity, type);
     }
 
     @Override
     public Publisher<Response> delete() {
-        return createClientInvocation(HttpMethod.DELETE, null).submitRx();
+        return mkPublisher(HttpMethod.DELETE, null);
     }
 
     @Override
     public <T> Publisher<T> delete(final Class<T> responseType) {
-        return createClientInvocation(HttpMethod.DELETE, null).submitRx(responseType);
+        return mkPublisher(HttpMethod.DELETE, null, responseType);
     }
 
     @Override
     public <T> Publisher<T> delete(final GenericType<T> responseType) {
-        return createClientInvocation(HttpMethod.DELETE, null).submitRx(responseType);
+        return mkPublisher(HttpMethod.DELETE, null, responseType);
     }
 
     @Override
     public Publisher<Response> head() {
-        return createClientInvocation(HttpMethod.HEAD, null).submitRx();
+        return mkPublisher(HttpMethod.HEAD, null);
     }
 
     @Override
     public Publisher<Response> options() {
-        return createClientInvocation(HttpMethod.OPTIONS, null).submitRx();
+        return mkPublisher(HttpMethod.OPTIONS, null);
     }
 
     @Override
     public <T> Publisher<T> options(final Class<T> responseType) {
-        return createClientInvocation(HttpMethod.OPTIONS, null).submitRx(responseType);
+        return mkPublisher(HttpMethod.OPTIONS, null, responseType);
     }
 
     @Override
     public <T> Publisher<T> options(final GenericType<T> responseType) {
-        return createClientInvocation(HttpMethod.OPTIONS, null).submitRx(responseType);
+        return mkPublisher(HttpMethod.OPTIONS, null, responseType);
     }
 
     @Override
@@ -122,31 +157,31 @@ public class PublisherRxInvokerImpl implements PublisherRxInvoker {
 
     @Override
     public Publisher<Response> method(final String name) {
-        return createClientInvocation(name, null).submitRx();
+        return mkPublisher(name, null);
     }
 
     @Override
     public <T> Publisher<T> method(final String name, final Class<T> responseType) {
-        return createClientInvocation(name, null).submitRx(responseType);
+        return mkPublisher(name, null, responseType);
     }
 
     @Override
     public <T> Publisher<T> method(final String name, final GenericType<T> responseType) {
-        return createClientInvocation(name, null).submitRx(responseType);
+        return mkPublisher(name, null, responseType);
     }
 
     @Override
     public Publisher<Response> method(final String name, final Entity<?> entity) {
-        return createClientInvocation(name, entity).submitRx();
+        return mkPublisher(name, entity);
     }
 
     @Override
     public <T> Publisher<T> method(final String name, final Entity<?> entity, final Class<T> responseType) {
-        return createClientInvocation(name, entity).submitRx(responseType);
+        return mkPublisher(name, entity, responseType);
     }
 
     @Override
     public <T> Publisher<T> method(final String name, final Entity<?> entity, final GenericType<T> responseType) {
-        return createClientInvocation(name, entity).submitRx(responseType);
+        return mkPublisher(name, entity, responseType);
     }
 }
