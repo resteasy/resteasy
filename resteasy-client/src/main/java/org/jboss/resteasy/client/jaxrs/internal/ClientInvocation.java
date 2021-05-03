@@ -662,7 +662,7 @@ public class ClientInvocation implements Invocation
    class ReactiveInvocation {
       private final ReactiveClientHttpEngine reactiveEngine;
 
-      public ReactiveInvocation(ReactiveClientHttpEngine reactiveEngine) {
+      ReactiveInvocation(final ReactiveClientHttpEngine reactiveEngine) {
          this.reactiveEngine = reactiveEngine;
       }
 
