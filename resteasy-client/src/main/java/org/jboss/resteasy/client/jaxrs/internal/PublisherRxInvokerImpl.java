@@ -6,10 +6,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
@@ -20,6 +18,8 @@ public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
     public PublisherRxInvokerImpl(final ClientInvocationBuilder builder) {
         this.builder = builder;
     }
+
+    protected abstract <T> Publisher<T> toPublisher(CompletionStage<T> completable);
 
     private <T> Publisher<T> mkPublisher(
         final String method,
@@ -32,10 +32,6 @@ public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
         return mkPublisher.apply(invocation);
     }
 
-    protected abstract <T> Publisher<T> toPublisher(final CompletionStage<T> completable);
-
-    // TODO remove this. It sucks that I have to repeat all this, but I can't figure out a way to do the types
-    // with ClientInvocation to make this nicer without higher-kinded types (or a crapton of boilerplate)..
     private Publisher<Response> mkPublisher(final String method, final Entity<?> entity) {
         return mkPublisher(method, entity, invocation ->
             invocation.reactive()
