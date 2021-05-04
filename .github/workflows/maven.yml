@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest ]
-        java: ['1.8', '11']
+        java: ['8', '11']
         wildfly-version: ['20.0.1.Final', '21.0.1.Final']
 
     steps:
@@ -32,9 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v1
+        uses: AdoptOpenJDK/install-jdk@v1
         with:
-          java-version: ${{ matrix.java }}
+          version: ${{ matrix.java }}
+          impl: hotspot
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
         run: mvn clean install -U -fae '-Dserver.version=${{ matrix.wildfly-version }}'
       - uses: actions/upload-artifact@v2
@@ -64,9 +65,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-javadoc
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v1
+        uses: AdoptOpenJDK/install-jdk@v1
         with:
-          java-version: ${{ matrix.java }}
+          version: ${{ matrix.java }}
+          impl: hotspot
       - name: Build Java Docs with Java ${{ matrix.java }}
         run: mvn clean install -U -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc
 
