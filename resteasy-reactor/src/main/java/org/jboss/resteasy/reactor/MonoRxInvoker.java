@@ -1,7 +1,6 @@
 package org.jboss.resteasy.reactor;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.RxInvoker;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
