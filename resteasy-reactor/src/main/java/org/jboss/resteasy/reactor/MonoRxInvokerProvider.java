@@ -6,7 +6,6 @@ import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.client.SyncInvoker;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvoker;
 import org.jboss.resteasy.reactor.i18n.Messages;
 
 public class MonoRxInvokerProvider implements RxInvokerProvider<MonoRxInvoker>

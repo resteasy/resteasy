@@ -9,16 +9,15 @@ import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
 
 public class MonoRxInvokerImpl extends PublisherRxInvokerImpl implements MonoRxInvoker {
 
-    public MonoRxInvokerImpl(ClientInvocationBuilder builder) {
+    public MonoRxInvokerImpl(final ClientInvocationBuilder builder) {
         super(builder);
     }
 
     @Override
-    protected <T> Mono<T> toPublisher(CompletionStage<T> completable) {
+    protected <T> Mono<T> toPublisher(final CompletionStage<T> completable) {
         return Mono.fromCompletionStage(completable);
     }
 
