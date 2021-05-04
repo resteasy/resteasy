@@ -1,10 +1,12 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.util.Types;
@@ -220,25 +222,27 @@ public class ContextParameterInjector implements ValueInjector
 
    protected Class<?>[] computeInterfaces(Object delegate, Class<?> cls)
    {
-      Set<Class<?>> set = new HashSet<>();
-      set.add(cls);
-      if (delegate != null)
+      ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
+      if (deployment != null
+         && Boolean.TRUE.equals(deployment.getProperty(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES)))
       {
-         Class<?> delegateClass = delegate.getClass();
-         while (delegateClass != null)
-         {
-            for (Class<?> intf : delegateClass.getInterfaces())
-            {
-               set.add(intf);
-               for (Class<?> superIntf : intf.getInterfaces())
-               {
-                  set.add(superIntf);
+         Set<Class<?>> set = new HashSet<>();
+         set.add(cls);
+         if (delegate != null) {
+            Class<?> delegateClass = delegate.getClass();
+            while (delegateClass != null) {
+               for (Class<?> intf : delegateClass.getInterfaces()) {
+                  set.add(intf);
+                  for (Class<?> superIntf : intf.getInterfaces()) {
+                     set.add(superIntf);
+                  }
                }
+               delegateClass = delegateClass.getSuperclass();
             }
-            delegateClass = delegateClass.getSuperclass();
          }
+         return set.toArray(new Class<?>[]{});
       }
-      return set.toArray(new Class<?>[]{});
+      return new Class<?>[]{cls};
    }
 
    private final class ContextOutputStream extends ServletOutputStream

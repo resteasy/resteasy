@@ -251,6 +251,19 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       {
          deployment.setStatisticsEnabled(Boolean.valueOf(statisticsEnabled));
       }
+
+      String proxiesImplAllInterfaces = getParameter(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES);
+      if (proxiesImplAllInterfaces != null)
+      {
+         boolean b = parseBooleanParam(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES,
+               proxiesImplAllInterfaces);
+         deployment.setProperty(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES, b);
+      }
+      else
+      {
+         deployment.setProperty(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES, false);
+      }
+
       return deployment;
    }
 
@@ -262,7 +275,6 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
          return false;
       } else {
          throw new RuntimeException(Messages.MESSAGES.keyCouldNotBeParsed(key));
-
       }
    }
 

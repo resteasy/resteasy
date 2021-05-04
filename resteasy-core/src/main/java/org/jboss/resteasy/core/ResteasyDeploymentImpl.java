@@ -86,6 +86,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    protected String paramMapping;
    protected Map<String, Object> properties;
    protected boolean statisticsEnabled;
+   protected boolean contextProxyToImplementAllInterfaces;
 
    @SuppressWarnings("rawtypes")
    public ResteasyDeploymentImpl() {
