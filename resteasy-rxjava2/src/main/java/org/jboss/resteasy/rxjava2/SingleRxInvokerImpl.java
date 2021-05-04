@@ -19,14 +19,14 @@ public class SingleRxInvokerImpl implements SingleRxInvoker
 
    private final SinglePublisherInvoker publisherInvoker;
 
-   public SingleRxInvokerImpl(ClientInvocationBuilder builder)
+   public SingleRxInvokerImpl(final ClientInvocationBuilder builder)
    {
       publisherInvoker = new SinglePublisherInvoker(Objects.requireNonNull(builder));
    }
 
    static class SinglePublisherInvoker extends PublisherRxInvokerImpl
    {
-      public SinglePublisherInvoker(final ClientInvocationBuilder builder)
+      SinglePublisherInvoker(final ClientInvocationBuilder builder)
       {
          super(builder);
       }

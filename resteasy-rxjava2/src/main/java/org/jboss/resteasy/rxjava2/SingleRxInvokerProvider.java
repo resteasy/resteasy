@@ -3,7 +3,6 @@ package org.jboss.resteasy.rxjava2;
 import java.util.concurrent.ExecutorService;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.client.SyncInvoker;
 
