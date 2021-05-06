@@ -29,15 +29,24 @@
       </plugin>
     </plugins>
   </build>
-       
-  <dependencies>
-    <dependency>
-       <groupId>org.jboss.arquillian.container</groupId>
-       <artifactId>arquillian-jetty-embedded-9</artifactId>
-       <version>1.0.0.CR3</version>
-       <scope>test</scope>
-    </dependency>
 
+  <dependencies>
+      <dependency>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.spec.javax.ws.rs</groupId>
+          <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      </dependency>
+
+      <!-- Test dependencies -->
+      <dependency>
+          <groupId>org.jboss.arquillian.container</groupId>
+          <artifactId>arquillian-jetty-embedded-9</artifactId>
+          <version>${version.org.jboss.arquillian.container.jetty}</version>
+          <scope>test</scope>
+      </dependency>
       <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-deploy</artifactId>
@@ -64,42 +73,27 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.jboss.spec.javax.ws.rs</groupId>
-        <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-    </dependency>
-    <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-core-spi</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <!--scope>test</scope-->
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.arquillian.junit</groupId>
       <artifactId>arquillian-junit-container</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-simple</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.jboss.spec.javax.servlet</groupId>
-          <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-      </dependency>
   </dependencies>
 
 </project>

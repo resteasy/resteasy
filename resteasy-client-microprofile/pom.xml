@@ -25,6 +25,7 @@
             <!-- resteasy-client-microprofile-base has it in scope `provided`, hence it needs to be here too -->
         </dependency>
 
+        <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -19,6 +19,13 @@
     
     <artifactId>resteasy-misc-arquillian-tests</artifactId>
 
+    <properties>
+        <!-- Version properties -->
+        <version.org.jboss.arquillian.container.jetty>1.0.0.CR3</version.org.jboss.arquillian.container.jetty>
+        <!-- Test properties -->
+        <additionalJvmArgs/>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

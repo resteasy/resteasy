@@ -16,10 +16,24 @@
   </properties>
 
   <dependencies>
+      <dependency>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.spec.javax.ws.rs</groupId>
+          <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      </dependency>
+
+    <!-- Test dependencies -->
     <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-jetty-embedded-9</artifactId>
-        <version>1.0.0.CR3</version>
+        <version>${version.org.jboss.arquillian.container.jetty}</version>
         <scope>test</scope>
     </dependency>
 
@@ -49,30 +63,21 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.jboss.spec.javax.ws.rs</groupId>
-        <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.spec.javax.xml.bind</groupId>
-        <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-    </dependency>
-    <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-core-spi</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.arquillian.junit</groupId>
@@ -80,22 +85,10 @@
       <scope>test</scope>
     </dependency>
       <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-simple</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
-      </dependency>
-      <dependency>
-      	  <groupId>org.jboss.resteasy</groupId>
-      	  <artifactId>resteasy-validator-provider</artifactId>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-validator-provider</artifactId>
           <version>${project.version}</version>
+          <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.hibernate.validator</groupId>

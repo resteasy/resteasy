@@ -15,8 +15,6 @@
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.11.4</version.com.fasterxml.jackson>
         <version.com.google.guava>30.1-jre</version.com.google.guava>
@@ -106,16 +104,6 @@
 
         <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>jboss-releases-repository</id>
-            <name>JBoss Releases Repository</name>
-            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-    <repositories>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -333,8 +321,8 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.activation</groupId>
-                <artifactId>jakarta.activation</artifactId>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
                 <version>${version.jakarta.activation}</version>
             </dependency>
             <dependency>
