@@ -17,11 +17,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest ]
+        os: [ubuntu-latest]
         java: ['8', '11']
-        wildfly-version: ['20.0.1.Final', '21.0.1.Final']
+        wildfly-version: ['21.0.1.Final']
 
     steps:
       - uses: actions/checkout@v2
@@ -48,27 +48,4 @@ jobs:
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/server.log'
-
-  build-java-docs:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        java: ['1.8', '11']
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-javadoc
-      - name: Set up JDK ${{ matrix.java }}
-        uses: AdoptOpenJDK/install-jdk@v1
-        with:
-          version: ${{ matrix.java }}
-          impl: hotspot
-      - name: Build Java Docs with Java ${{ matrix.java }}
-        run: mvn clean install -U -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc
 
