@@ -12,24 +12,8 @@
 
     <artifactId>security-pom</artifactId>
     <packaging>pom</packaging>
-
-    <profiles>
-        <profile>
-            <id>travis-ci</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>resteasy-crypto</module>
-                <module>jose-jwt</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>all</id>
-            <modules>
-                <module>resteasy-crypto</module>
-                <module>jose-jwt</module>
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>resteasy-crypto</module>
+        <module>jose-jwt</module>
+    </modules>
 </project>

@@ -106,7 +106,6 @@
       <dependency>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>arquillian-utils</artifactId>
-          <version>${project.version}</version>
           <scope>test</scope>
       </dependency>
       <dependency>

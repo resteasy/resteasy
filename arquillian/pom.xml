@@ -19,6 +19,13 @@
     
     <artifactId>resteasy-misc-arquillian-tests</artifactId>
 
+    <properties>
+        <!-- Version properties -->
+        <version.arquillian.jetty>1.0.0.CR3</version.arquillian.jetty>
+        <!-- Test properties -->
+        <additionalJvmArgs/>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -27,6 +34,11 @@
                 <version>${dep.arquillian-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-jetty-embedded-9</artifactId>
+                <version>${version.arquillian.jetty}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

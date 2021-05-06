@@ -15,12 +15,12 @@
 
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
-        <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
+        <additional.surefire.excluded.groups/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
-        <jacoco.agent></jacoco.agent>
-        <additionalJvmArgs></additionalJvmArgs>
-        <ipv6ArquillianSettings></ipv6ArquillianSettings>
+        <jacoco.agent/>
+        <additionalJvmArgs/>
+        <ipv6ArquillianSettings/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
         <security.provider>picketbox</security.provider>
     </properties>
@@ -38,6 +38,12 @@
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-weld-embedded</artifactId>
                 <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
+            </dependency>
+            <!-- Placed here to be resolved for other sub-modules -->
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>arquillian-utils</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
