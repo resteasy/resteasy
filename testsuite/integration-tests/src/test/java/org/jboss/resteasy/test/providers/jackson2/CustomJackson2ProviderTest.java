@@ -56,7 +56,7 @@ public class CustomJackson2ProviderTest {
       ), "permissions.xml");
       MavenUtil mavenUtil;
       mavenUtil = MavenUtil.create(true);
-      String version = System.getProperty("project.version");
+      String version = System.getProperty("resteasy.version");
       try {
          war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-servlet-initializer:" + version).toArray(new File[]{}));
          war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core:" + version).toArray(new File[]{}));

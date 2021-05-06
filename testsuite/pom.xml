@@ -103,7 +103,7 @@
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
                         <node>127.0.0.1</node>
                         <jboss.home>${jboss.home}</jboss.home>
-                        <project.version>${project.version}</project.version>
+                        <resteasy.version>${project.version}</resteasy.version>
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                         <security.provider>${security.provider}</security.provider>

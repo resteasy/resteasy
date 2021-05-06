@@ -198,9 +198,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
                     <configuration>
-                        <forkMode>once</forkMode>
                         <runOrder>alphabetical</runOrder>
                         <argLine>${surefire.system.args}</argLine>
                     </configuration>

@@ -90,7 +90,7 @@ public class HeadersInViewResponseTest {
       }
 
       // If not found in target, try repository
-      String version = System.getProperty("project.version");
+      String version = System.getProperty("resteasy.version");
       return ReasteasyTestUtil.resolveDependency("org.jboss.resteasy:resteasy-html:" + version);
    }
 }
