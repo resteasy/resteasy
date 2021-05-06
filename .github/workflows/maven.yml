@@ -42,6 +42,10 @@ jobs:
           cat /etc/hosts
           sudo bash -c "echo '127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4' > /etc/hosts"
           sudo bash -c "echo '::1         localhost localhost.localdomain localhost6 localhost6.localdomain6' >> /etc/hosts"
+      - name: list m2 surefire directory 1
+        run: ls -la ~/.m2/repository/org/apache/maven/surefire/surefire-junit47/2.22.2/ | true
+      - name: Download surefire
+        run: curl -v -o ~/.m2/repository/org/apache/maven/surefire/surefire-junit47/surefire-junit47-2.22.2.pom --create-dirs https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit47/2.22.2/surefire-junit47-2.22.2.pom
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
         run: mvn clean install -B -U '-Dserver.version=${{ matrix.wildfly-version }}' '-Dorg.slf4j.simpleLogger.log.org.apache.maven.plugin.surefire=trace'
       - uses: actions/upload-artifact@v2
@@ -54,4 +58,7 @@ jobs:
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/server.log'
+      - name: list m2 surefire directory 2
+        if: failure()
+        run: ls -la ~/.m2/repository/org/apache/maven/surefire/surefire-junit47/2.22.2/ | true
 
