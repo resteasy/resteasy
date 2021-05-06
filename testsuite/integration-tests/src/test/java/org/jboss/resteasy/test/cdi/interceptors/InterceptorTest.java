@@ -38,7 +38,7 @@ import org.jboss.resteasy.test.cdi.interceptors.resource.InterceptorWriterBindin
 import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -69,7 +69,7 @@ public class InterceptorTest {
    @Deployment
    public static Archive<?> createTestArchive() {
 
-      WebArchive war = TestUtil.prepareArchive(InterceptorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InterceptorTest.class.getSimpleName());
       war.addClasses(Constants.class, UtilityProducer.class, Utilities.class, InterceptorVisitList.class)
             .addClasses(InterceptorResource.class, InterceptorOne.class, InterceptorTwo.class)
             .addClasses(InterceptorClassBinding.class, InterceptorMethodBinding.class, InterceptorThree.class, InterceptorFour.class)

@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResourceWithJacksonAnnotation;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResourceWithJAXB;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -75,34 +75,34 @@ public class Jackson2Test {
 
    @Deployment(name = "default")
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Jackson2Test.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(Jackson2Test.class.getSimpleName());
       war.addClass(Jackson2Test.class);
       war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
    }
 
    @Deployment(name = "JSONPenabled")
    public static Archive<?> deployJSONPenabled() {
-      WebArchive war = TestUtil.prepareArchive(JSONP_ENABLED);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JSONP_ENABLED);
       war.addClass(Jackson2Test.class);
       war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.jsonp.enable", "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
    }
 
    @Deployment(name = "JSONPdisabled")
    public static Archive<?> deployJSONPdisabled() {
-      WebArchive war = TestUtil.prepareArchive(JSONP_DISABLED);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JSONP_DISABLED);
       war.addClass(Jackson2Test.class);
       war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.jsonp.enable", "false");
-      return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
    }

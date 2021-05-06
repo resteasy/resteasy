@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -58,7 +58,7 @@ public class CDIResourceTest {
 
    static {
       toStr = new StringBuilder()
-            .append(TestUtil.getStandaloneDir(ContainerConstants.DEFAULT_CONTAINER_QUALIFIER)).append(File.separator)
+            .append(ReasteasyTestUtil.getStandaloneDir(ContainerConstants.DEFAULT_CONTAINER_QUALIFIER)).append(File.separator)
             .append("deployments").append(File.separator)
             .append(WAR_NAME).toString();
       exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);

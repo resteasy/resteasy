@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyGet
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyPutFileRequest;
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -43,11 +43,11 @@ public class XOPMultipartProxyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName());
       war.addClass(XOPMultipartProxyGetFileResponse.class);
       war.addClass(XOPMultipartProxyPutFileRequest.class);
       war.addClass(XOPMultipartProxy.class);
-      return TestUtil.finishContainerPrepare(war, null, XOPMultipartProxyResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, XOPMultipartProxyResource.class);
    }
 
    @BeforeClass

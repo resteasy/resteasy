@@ -6,7 +6,7 @@ import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class LocalTest {
    protected static final LogMessages logger = Logger.getMessageLogger(LogMessages.class, LocalTest.class.getName());
    public static KeyPair keys;
    public static DosetaKeyRepository repository;
-   static final String filePath = TestUtil.getResourcePath(LocalTest.class, "LocalTest.jks");
+   static final String filePath = ReasteasyTestUtil.getResourcePath(LocalTest.class, "LocalTest.jks");
    private static final String ERROR_MSG = "DosetaKeyRepository works incorrectly";
 
    @BeforeClass

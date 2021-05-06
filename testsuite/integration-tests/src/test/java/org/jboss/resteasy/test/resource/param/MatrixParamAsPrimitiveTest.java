@@ -24,7 +24,7 @@ import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveWra
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -49,9 +49,9 @@ public class MatrixParamAsPrimitiveTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MatrixParamAsPrimitiveTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MatrixParamAsPrimitiveTest.class.getSimpleName());
       war.addClass(MatrixParamAsPrimitiveTest.class);
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             MatrixParamAsPrimitivePrimitives.class,
             MatrixParamAsPrimitiveDefault.class,
             MatrixParamAsPrimitiveDefaultOverride.class,

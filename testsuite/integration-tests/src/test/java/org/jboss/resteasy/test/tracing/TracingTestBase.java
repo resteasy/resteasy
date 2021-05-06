@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -95,12 +95,12 @@ public abstract class TracingTestBase {
    @Deployment(name = WAR_BASIC_TRACING_FILE, managed = false, testable = false)
    @TargetsContainer(TRACING_CONTAINER_QUALIFIER)
    public static Archive<?> createDeployment() {
-      war = TestUtil.prepareArchive(WAR_BASIC_TRACING_FILE);
+      war = ReasteasyTestUtil.prepareArchive(WAR_BASIC_TRACING_FILE);
       Map<String, String> params = new HashMap<>();
       params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ALL);
       params.put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE);
 
-      return TestUtil.finishContainerPrepare(war, params, TracingApp.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, TracingApp.class,
             TracingConfigResource.class, HttpMethodOverride.class, FooLocator.class, Foo.class);
 
    }
@@ -109,11 +109,11 @@ public abstract class TracingTestBase {
    @Deployment(name = WAR_ON_DEMAND_TRACING_FILE, managed = false, testable = false)
    @TargetsContainer(TRACING_CONTAINER_QUALIFIER)
    public static Archive<?> createDeployment2() {
-      war = TestUtil.prepareArchive(WAR_ON_DEMAND_TRACING_FILE);
+      war = ReasteasyTestUtil.prepareArchive(WAR_ON_DEMAND_TRACING_FILE);
 
       Map<String, String> params = new HashMap<>();
       params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ON_DEMAND);
-      return TestUtil.finishContainerPrepare(war, params, TracingApp.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, TracingApp.class,
             TracingConfigResource.class, HttpMethodOverride.class, FooLocator.class, Foo.class);
    }
 

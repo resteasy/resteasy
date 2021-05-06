@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -70,7 +70,7 @@ public class ClientBuilderTest {
       try {
          client.property(property, null);
       } catch (NullPointerException e) {
-         Assert.fail(TestUtil.getErrorMessageForKnownIssue("JBEAP-324", "Couldn't remove property"));
+         Assert.fail(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-324", "Couldn't remove property"));
       }
       p = client.getConfiguration().getProperty(property);
       Assert.assertEquals(null, p);

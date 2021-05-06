@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCaptur
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCapturingGroupSubResourceWithPath;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexNonCapturingGroup;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -41,11 +41,11 @@ public class ResourceLocatorRegexNonCapturingGroupTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResourceLocatorRegexNonCapturingGroupTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceLocatorRegexNonCapturingGroupTest.class.getSimpleName());
       war.addClasses(ResourceLocatorRegexCapturingGroupSubResourceNoPath.class,
          ResourceLocatorRegexCapturingGroupSubResourceWithPath.class);
       war.addAsWebInfResource(ResourceLocatorRegexNonCapturingGroupTest.class.getPackage(), "web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, ResourceLocatorRegexNonCapturingGroup.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceLocatorRegexNonCapturingGroup.class);
    }
 
    private String generateURL(String path) {

@@ -21,7 +21,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.response.resource.TestResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -38,8 +38,8 @@ public class ResponseStreamPrematurelyClosedTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(ResponseStreamPrematurelyClosedTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, TestResourceImpl.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseStreamPrematurelyClosedTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TestResourceImpl.class);
    }
 
    @BeforeClass
@@ -62,7 +62,7 @@ public class ResponseStreamPrematurelyClosedTest {
 
       try (MyByteArrayOutputStream baos = new MyByteArrayOutputStream()) {
 
-         if (! TestUtil.isIbmJdk()) {
+         if (! ReasteasyTestUtil.isIbmJdk()) {
             //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
             //to let the JVM try finalizing the ClientResponse object
             InputStream ins = builder.get().readEntity(InputStream.class);

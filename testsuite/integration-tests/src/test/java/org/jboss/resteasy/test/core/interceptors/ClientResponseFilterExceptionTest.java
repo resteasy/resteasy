@@ -23,7 +23,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.ClientResponseFilterEx
 import org.jboss.resteasy.test.core.interceptors.resource.ClientResponseFilterExceptionResource;
 import org.jboss.resteasy.test.core.interceptors.resource.ClientResponseFilterExceptionResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -53,11 +53,11 @@ public class ClientResponseFilterExceptionTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ClientResponseFilterExceptionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientResponseFilterExceptionTest.class.getSimpleName());
       war.addClass(ClientResponseFilterExceptionResource.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
-      return TestUtil.finishContainerPrepare(war, null, ClientResponseFilterExceptionFilter.class, ClientResponseFilterExceptionResourceImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientResponseFilterExceptionFilter.class, ClientResponseFilterExceptionResourceImpl.class);
    }
 
    private static String generateURL(String path) {

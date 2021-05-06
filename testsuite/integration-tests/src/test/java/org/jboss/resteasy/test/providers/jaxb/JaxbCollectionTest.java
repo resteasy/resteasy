@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCollectionNamespacedR
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCollectionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,9 +38,9 @@ public class JaxbCollectionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JaxbCollectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JaxbCollectionTest.class.getSimpleName());
       war.addClass(JaxbCollectionTest.class);
-      return TestUtil.finishContainerPrepare(war, null, JaxbCollectionResource.class, JaxbCollectionNamespacedResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JaxbCollectionResource.class, JaxbCollectionNamespacedResource.class,
             JaxbCollectionFoo.class, JaxbCollectionNamespacedFoo.class);
    }
 

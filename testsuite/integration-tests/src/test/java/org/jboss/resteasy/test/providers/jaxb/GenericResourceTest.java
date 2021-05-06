@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.GenericResourceOtherAbstr
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericResourceAbstractResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -44,8 +44,8 @@ public class GenericResourceTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, GenericResourceResource.class, GenericResourceResource2.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GenericResourceResource.class, GenericResourceResource2.class,
             GenericResourceModel.class, GenericResourceOtherAbstractResource.class, GenericResourceAbstractResource.class);
    }
 

@@ -22,7 +22,7 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPo
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPointEJB;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -84,12 +84,12 @@ public class ResourceClassProcessorBasicTest {
    }
 
    public static Archive<?> deploy(String name, Class<?> basicEndPoint, Class<?> pureEndPoint) {
-      WebArchive war = TestUtil.prepareArchive(name);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(name);
       war.addClass(ResourceClassProcessorClass.class);
       war.addClass(ResourceClassProcessorMethod.class);
       war.addClass(ResourceClassProcessorProxy.class);
 
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             basicEndPoint, pureEndPoint,
             ResourceClassProcessorImplementation.class,
             ResourceClassProcessorProxyEndPoint.class

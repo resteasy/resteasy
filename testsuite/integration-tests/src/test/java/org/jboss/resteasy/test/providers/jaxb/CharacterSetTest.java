@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.CharacterSetResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.CharacterSetData;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,8 +38,8 @@ public class CharacterSetTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CharacterSetTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, CharacterSetData.class, CharacterSetResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CharacterSetTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CharacterSetData.class, CharacterSetResource.class);
    }
 
    @Before

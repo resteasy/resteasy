@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingWeightReso
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingYetAnotherSubresource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -65,9 +65,9 @@ public class ResourceMatchingTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResourceMatchingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceMatchingTest.class.getSimpleName());
       war.addClasses(ResourceMatchingStringBean.class, ResourceMatchingAnotherResourceLocator.class);
-      return TestUtil.finishContainerPrepare(war, null, ResourceMatchingYetAnotherSubresource.class, ResourceMatchingMainSubResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceMatchingYetAnotherSubresource.class, ResourceMatchingMainSubResource.class,
             ResourceMatchingAnotherSubResource.class, ResourceMatchingWeightResource.class, ResourceMatchingErrorResource.class,
             ResourceMatchingNoMediaResource.class, ResourceMatchingStringBeanEntityProvider.class, ResourceMatchingMediaWriter.class);
    }

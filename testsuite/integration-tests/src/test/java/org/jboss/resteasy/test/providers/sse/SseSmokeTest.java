@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.providers.sse.resource.SseSmokeMessageBodyWriter;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeUser;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -35,8 +35,8 @@ public class SseSmokeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SseSmokeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SseSmokeMessageBodyWriter.class, SseSmokeUser.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseSmokeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SseSmokeMessageBodyWriter.class, SseSmokeUser.class,
                SseSmokeResource.class);
    }
 

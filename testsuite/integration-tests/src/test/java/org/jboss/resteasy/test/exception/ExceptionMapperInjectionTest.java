@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.exception.resource.ExceptionMapperInjectionNotFou
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperInjectionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -39,10 +39,10 @@ public class ExceptionMapperInjectionTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ExceptionMapperInjectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ExceptionMapperInjectionTest.class.getSimpleName());
       war.addClass(ExceptionMapperCustomRuntimeException.class);
       war.addClass(ExceptionMapperInjectionException.class);
-      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperInjectionCustomMapper.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExceptionMapperInjectionCustomMapper.class,
             ExceptionMapperInjectionCustomSimpleMapper.class, ExceptionMapperInjectionNotFoundMapper.class,
             ExceptionMapperInjectionResource.class);
    }

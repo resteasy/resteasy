@@ -20,7 +20,7 @@ import org.jboss.resteasy.microprofile.client.BuilderResolver;
 import org.jboss.resteasy.test.microprofile.restclient.resource.MPSseResource;
 import org.jboss.resteasy.test.providers.sse.ExecutorServletContextListener;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -38,8 +38,8 @@ public class SsePublisherClientTest {
     @Deployment
     public static Archive<?> deploy()
     {
-        WebArchive war = TestUtil.prepareArchive(SsePublisherClientTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, MPSseResource.class, ExecutorServletContextListener.class);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(SsePublisherClientTest.class.getSimpleName());
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, MPSseResource.class, ExecutorServletContextListener.class);
     }
 
     private String generateURL(String path)

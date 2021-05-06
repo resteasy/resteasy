@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousStateless;
 import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousStatelessLocal;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -47,7 +47,7 @@ public class AsynchronousCdiTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(AsynchronousCdiTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsynchronousCdiTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class)
             .addClasses(AsynchronousStatelessLocal.class, AsynchronousStateless.class)
             .addClasses(AsynchronousResource.class, AsynchronousCdiTest.class)

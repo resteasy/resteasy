@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.AfterClass;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
@@ -11,15 +11,15 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 public class AbstractInjectionTestBase {
 
    public static void initQueue() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
 
       // disable security and create queue
-      if (TestUtil.isWildFly9x()) {
-         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=false)");
-         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+      if (ReasteasyTestUtil.isWildFly9x()) {
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=false)");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
       } else {
-         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=false)");
-         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=false)");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
       }
 
       // reload server
@@ -31,15 +31,15 @@ public class AbstractInjectionTestBase {
 
    @AfterClass
    public static void destroyQueue() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
 
       // remove queue and enable security
-      if (TestUtil.isWildFly9x()) {
-         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=true)");
-         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:remove");
+      if (ReasteasyTestUtil.isWildFly9x()) {
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=true)");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:remove");
       } else {
-         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=true)");
-         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:remove");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=true)");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:remove");
       }
 
       // reload server

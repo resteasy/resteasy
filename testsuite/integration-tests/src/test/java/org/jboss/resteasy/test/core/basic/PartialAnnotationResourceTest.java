@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.PartialAnnotationResource;
 import org.jboss.resteasy.test.core.basic.resource.PartialAnnotationResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -32,9 +32,9 @@ public class PartialAnnotationResourceTest
    @Deployment
    public static Archive<?> deploySimpleResource()
    {
-      WebArchive war = TestUtil.prepareArchive(PartialAnnotationResourceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PartialAnnotationResourceTest.class.getSimpleName());
       war.addClasses(PartialAnnotationResource.class, PartialAnnotationResourceImpl.class);
-      return TestUtil.finishContainerPrepare(war, null, PartialAnnotationResourceImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PartialAnnotationResourceImpl.class);
    }
 
    @Before

@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.resource.param.resource.FormParamEntityWithFromSt
 import org.jboss.resteasy.test.resource.param.resource.FormParamResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -45,12 +45,12 @@ public class FormParamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(FormParamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FormParamTest.class.getSimpleName());
       war.addClass(FormParamEntityPrototype.class);
       war.addClass(FormParamEntityThrowsIllegaArgumentException.class);
       war.addClass(FormParamEntityWithConstructor.class);
       war.addClass(FormParamEntityWithFromString.class);
-      return TestUtil.finishContainerPrepare(war, null, FormParamResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FormParamResource.class,
             FormParamBasicResource.class);
    }
 

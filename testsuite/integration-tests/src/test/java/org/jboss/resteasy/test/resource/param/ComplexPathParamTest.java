@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.resource.param.resource.ComplexPathParamTrickyRes
 import org.jboss.resteasy.test.resource.param.resource.ComplexPathParamUnlimitedResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -36,13 +36,13 @@ public class ComplexPathParamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ComplexPathParamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ComplexPathParamTest.class.getSimpleName());
       war.addClass(ComplexPathParamTest.class);
       war.addClass(PortProviderUtil.class);
-      war.addClass(TestUtil.class);
+      war.addClass(ReasteasyTestUtil.class);
       war.addClass(ComplexPathParamSubRes.class);
       war.addClass(ComplexPathParamSubResSecond.class);
-      return TestUtil.finishContainerPrepare(war, null, ComplexPathParamExtensionResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ComplexPathParamExtensionResource.class,
             ComplexPathParamRegressionResteasy145.class, ComplexPathParamTrickyResource.class,
             ComplexPathParamUnlimitedResource.class);
    }

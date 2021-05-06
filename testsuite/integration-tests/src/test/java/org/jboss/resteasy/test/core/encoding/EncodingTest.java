@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.core.encoding.resource.EncodingTestResource;
 import org.jboss.resteasy.test.core.encoding.resource.EncodingTestClient;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -75,10 +75,10 @@ public class EncodingTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EncodingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EncodingTest.class.getSimpleName());
       war.addClasses(EncodingTestClient.class);
 
-      return TestUtil.finishContainerPrepare(war, null, EncodingTestResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EncodingTestResource.class);
    }
 
    /**

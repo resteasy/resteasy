@@ -40,7 +40,7 @@ public class LogCounter {
       this.onServer = onServer;
       this.containerQualifier = containerQualifier;
       this.useRegexp = useRegexp;
-      this.initCount = TestUtil.getWarningCount(message, onServer, containerQualifier, useRegexp);
+      this.initCount = ReasteasyTestUtil.getWarningCount(message, onServer, containerQualifier, useRegexp);
    }
 
    public LogCounter(final String message, final boolean onServer) {
@@ -51,6 +51,6 @@ public class LogCounter {
     * Get count of examined log message, logged after creation of this LogCounter
     */
    public int count() {
-      return TestUtil.getWarningCount(message, onServer, containerQualifier, useRegexp) - initCount;
+      return ReasteasyTestUtil.getWarningCount(message, onServer, containerQualifier, useRegexp) - initCount;
    }
 }

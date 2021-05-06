@@ -36,7 +36,7 @@ import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultPa
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterQueryResourceIntf;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterValueOfClass;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -99,7 +99,7 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultiValuedParamDefaultParamConverterProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MultiValuedParamDefaultParamConverterProxyTest.class.getSimpleName());
       war.addClass(MultiValuedParamDefaultParamConverterConstructorClass.class);
       war.addClass(MultiValuedParamDefaultParamConverterFromStringClass.class);
       war.addClass(MultiValuedParamDefaultParamConverterParamConverterClass.class);
@@ -113,7 +113,7 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
       war.addClass(MultiValuedParamDefaultParamConverterQueryResourceIntf.class);
       war.addClass(MultiValuedParamDefaultParamConverterHeaderDelegateClass.class);
       war.addClass(MultiValuedParamDefaultParamConverterHeaderDelegate.class);
-      return TestUtil.finishContainerPrepare(war, null, MultiValuedParamDefaultParamConverterParamConverterProvider.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MultiValuedParamDefaultParamConverterParamConverterProvider.class,
          MultiValuedParamDefaultParamConverterCookieResource.class, MultiValuedParamDefaultParamConverterHeaderResource.class,
          MultiValuedParamDefaultParamConverterMatrixResource.class, MultiValuedParamDefaultParamConverterMiscResource.class,
          MultiValuedParamDefaultParamConverterPathResource.class, MultiValuedParamDefaultParamConverterQueryResource.class);

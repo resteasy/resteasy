@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.client.resource.ClientCacheProxy;
 import org.jboss.resteasy.test.client.resource.ClientCacheService;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -47,8 +47,8 @@ public class ClientCacheTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientCacheTest.class.getSimpleName());
-      war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, TestUtil.class, PortProviderUtil.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientCacheTest.class.getSimpleName());
+      war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, ReasteasyTestUtil.class, PortProviderUtil.class);
       // Arquillian in the deployment and use of PortProviderUtil and Test util in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new LoggingPermission("control", ""),
@@ -60,8 +60,8 @@ public class ClientCacheTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientCacheService.class);
+      war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientCacheService.class);
    }
 
    private String generateBaseUrl() {

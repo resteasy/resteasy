@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.TestResource1;
 import org.jboss.resteasy.test.core.interceptors.resource.TestResource2;
 import org.jboss.resteasy.test.core.interceptors.resource.TestSubResource;
 import org.jboss.resteasy.test.warning.resource.SubResourceWarningResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -30,26 +30,26 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
 public class SubResourceWarningTest {
 
    // check server.log msg count before app is deployed.  Deploying causes messages to be logged.
-   private static int preTestCnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
+   private static int preTestCnt = ReasteasyTestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(SubResourceWarningTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SubResourceWarningResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SubResourceWarningTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SubResourceWarningResource.class,
               TestResource1.class, TestResource2.class, TestSubResource.class);
    }
 
    @BeforeClass
    public static void initLogging() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
-      TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=WARN)");
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=WARN)");
       client.close();
    }
 
    @AfterClass
    public static void removeLogging() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
-      TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
       client.close();
    }
 
@@ -61,7 +61,7 @@ public class SubResourceWarningTest {
     */
    @Test
    public void testWarningMsg () throws Exception {
-      int cnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
+      int cnt = ReasteasyTestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
       Assert.assertEquals( "Improper log WARNING count", preTestCnt+2, cnt);
    }
 }

@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectHateoasObject
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -40,8 +40,8 @@ public class ResponseObjectTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResponseObjectTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ResponseObjectResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseObjectTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseObjectResource.class);
    }
 
    @Before
@@ -73,7 +73,7 @@ public class ResponseObjectTest {
          Assert.assertEquals("The response object doesn't contain the expected header",
                "text/plain;charset=UTF-8", obj.response().getHeaders().getFirst("Content-Type"));
       } catch (ClassCastException ex) {
-         Assert.fail(TestUtil.getErrorMessageForKnownIssue("JBEAP-2446"));
+         Assert.fail(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-2446"));
       }
       Assert.assertEquals("The response object doesn't contain the expected header", "text/plain;charset=UTF-8", obj.contentType());
    }
@@ -92,7 +92,7 @@ public class ResponseObjectTest {
       try {
          Assert.assertEquals("The resource was not forwarded", "forwarded", obj.followNextLink());
       } catch (ProcessingException ex) {
-         Assert.fail(TestUtil.getErrorMessageForKnownIssue("JBEAP-2446"));
+         Assert.fail(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-2446"));
       }
    }
 }

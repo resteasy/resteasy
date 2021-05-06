@@ -8,7 +8,7 @@ import org.jboss.resteasy.microprofile.client.RestClientBuilderImpl;
 import org.jboss.resteasy.test.microprofile.restclient.resource.FollowRedirectsService;
 import org.jboss.resteasy.test.microprofile.restclient.resource.FollowRedirectsServiceIntf;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,10 +32,10 @@ public class FollowRedirectMPConfigPropertyTest {
 
     @Deployment(name=WAR_SERVICE)
     public static Archive<?> serviceDeploy() {
-        WebArchive war = TestUtil.prepareArchive(WAR_SERVICE);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(WAR_SERVICE);
         war.addClasses(FollowRedirectsService.class,
                 PortProviderUtil.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, null);
     }
 
     private static String generateURL(String path, String deployName) {

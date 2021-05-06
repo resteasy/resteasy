@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.resource.basic.resource.GenericEntityResource;
 import org.jboss.resteasy.test.resource.basic.resource.GenericEntitytFloatWriter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -35,8 +35,8 @@ public class GenericEntityTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GenericEntityTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, GenericEntityResource.class, GenericEntityDoubleWriter.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GenericEntityTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GenericEntityResource.class, GenericEntityDoubleWriter.class,
             GenericEntitytFloatWriter.class);
    }
 

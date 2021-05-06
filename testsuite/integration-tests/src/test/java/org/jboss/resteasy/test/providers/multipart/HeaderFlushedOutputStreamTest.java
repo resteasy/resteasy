@@ -8,7 +8,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.HeaderFlushedOutputStreamBean;
 import org.jboss.resteasy.test.providers.multipart.resource.HeaderFlushedOutputStreamService;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -54,15 +54,15 @@ public class HeaderFlushedOutputStreamTest {
    static final String testFilePath;
 
    static {
-      testFilePath = TestUtil.getResourcePath(HeaderFlushedOutputStreamTest.class,
+      testFilePath = ReasteasyTestUtil.getResourcePath(HeaderFlushedOutputStreamTest.class,
             "HeaderFlushedOutputStreamTestData.txt");
    }
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(HeaderFlushedOutputStreamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HeaderFlushedOutputStreamTest.class.getSimpleName());
       war.addClass(HeaderFlushedOutputStreamBean.class);
-      return TestUtil.finishContainerPrepare(war, null, HeaderFlushedOutputStreamService.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HeaderFlushedOutputStreamService.class);
    }
 
    private static String generateURL(String path) {

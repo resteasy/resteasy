@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -41,8 +41,8 @@ public class AsyncPostProcessingTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war =  TestUtil.prepareArchive(AsyncPostProcessingTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      WebArchive war =  ReasteasyTestUtil.prepareArchive(AsyncPostProcessingTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -56,7 +56,7 @@ public class AsyncPostProcessingTest {
             new SecurityPermission("insertProvider"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
             AsyncPostProcessingMsgBodyWriterInterceptor.class, AsyncPostProcessingInterceptor.class);
    }
 

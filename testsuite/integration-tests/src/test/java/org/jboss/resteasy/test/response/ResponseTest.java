@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.response.resource.ResponseDateReaderWriter;
 import org.jboss.resteasy.test.response.resource.ResponseResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -59,8 +59,8 @@ public class ResponseTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResponseTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ResponseResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseResource.class);
    }
 
    @AfterClass

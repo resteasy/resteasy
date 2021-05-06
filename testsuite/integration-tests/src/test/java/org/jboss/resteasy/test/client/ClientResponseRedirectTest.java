@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.client.resource.ClientResponseRedirectResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -43,7 +43,7 @@ public class ClientResponseRedirectTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
       war.addClass(ClientTestBase.class);
       // Use of PortProviderutil in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -52,7 +52,7 @@ public class ClientResponseRedirectTest extends ClientTestBase{
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new PropertyPermission("org.jboss.resteasy.port", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ClientResponseRedirectResource.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientResponseRedirectResource.class, PortProviderUtil.class);
    }
 
    @Before

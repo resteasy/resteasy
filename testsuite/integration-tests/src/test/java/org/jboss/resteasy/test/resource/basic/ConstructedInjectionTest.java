@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.resource.basic.resource.ConstructedInjectionResou
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -35,7 +35,7 @@ public class ConstructedInjectionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ConstructedInjectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ConstructedInjectionTest.class.getSimpleName());
       war.addClass(TestPortProvider.class);
 
       // Use of PortProviderUtil in the deployment
@@ -46,7 +46,7 @@ public class ConstructedInjectionTest {
             new RuntimePermission("getenv.RESTEASY_HOST"),
             new PropertyPermission("org.jboss.resteasy.port", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ConstructedInjectionResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ConstructedInjectionResource.class);
    }
 
    @BeforeClass

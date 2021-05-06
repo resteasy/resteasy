@@ -10,7 +10,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.context.resource.HttpServletResponseContextResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class HttpServletResponseContextTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(HttpServletResponseContextTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, HttpServletResponseContextResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HttpServletResponseContextTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HttpServletResponseContextResource.class);
    }
 
    private String generateURL(String path) {

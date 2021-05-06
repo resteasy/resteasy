@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2Provide
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -43,7 +43,7 @@ public class CustomJackson2ProviderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CustomJackson2ProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomJackson2ProviderTest.class.getSimpleName());
       war.addClasses(CustomJackson2ProviderApplication.class, CustomJackson2ProviderResource.class);
       war.addAsWebInfResource(CustomJackson2ProviderTest.class.getPackage(), "jboss-deployment-structure-exclude-jaxrs.xml","jboss-deployment-structure.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(

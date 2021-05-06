@@ -9,7 +9,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.InputStreamResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -50,9 +50,9 @@ public class InputStreamTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InputStreamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputStreamTest.class.getSimpleName());
       war.addClass(InputStreamTest.class);
-      return TestUtil.finishContainerPrepare(war, null, InputStreamResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputStreamResource.class);
    }
 
    @Before

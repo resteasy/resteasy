@@ -15,7 +15,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.test.client.resource.EntityBufferingInFileResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -56,7 +56,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
 
    @BeforeClass
    public static void setMaxPostSize() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
       Administration admin = new Administration(client);
       Operations ops = new Operations(client);
 
@@ -71,7 +71,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
 
    @AfterClass
    public static void resetToDefault() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
       Administration admin = new Administration(client);
       Operations ops = new Operations(client);
 
@@ -84,14 +84,14 @@ public class EntityBufferingInFileTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
       war.addClass(EntityBufferingInFileTest.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new FilePermission("/tmp/*", "read")
             ), "permissions.xml");
       // DataSource provider creates tmp file in the filesystem
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
    }
 
    /**

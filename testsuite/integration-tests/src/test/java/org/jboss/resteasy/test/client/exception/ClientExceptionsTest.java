@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsCustomE
 import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsCustomExceptionResponseFilter;
 import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsCustomException;
 import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -56,9 +56,9 @@ public class ClientExceptionsTest extends ClientTestBase {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientExceptionsTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientExceptionsTest.class.getSimpleName());
       war.addClass(ClientExceptionsData.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientExceptionsResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientExceptionsResource.class);
    }
 
    @Before

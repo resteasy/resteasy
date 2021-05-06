@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.AsyncServletResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -44,8 +44,8 @@ public class AsyncServletTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war =  TestUtil.prepareArchive(AsyncServletTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AsyncServletResource.class);
+      WebArchive war =  ReasteasyTestUtil.prepareArchive(AsyncServletTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AsyncServletResource.class);
    }
 
    private String generateURL(String path) {

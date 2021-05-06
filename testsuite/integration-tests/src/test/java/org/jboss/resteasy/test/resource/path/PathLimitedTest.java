@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.resource.path.resource.PathLimitedUnlimitedOnPath
 import org.jboss.resteasy.test.resource.path.resource.PathLimitedUnlimitedResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -37,8 +37,8 @@ public class PathLimitedTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PathLimitedTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, PathLimitedUnlimitedOnPathResource.class, PathLimitedUnlimitedResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PathLimitedTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PathLimitedUnlimitedOnPathResource.class, PathLimitedUnlimitedResource.class,
             PathLimitedLocatorResource.class, PathLimitedLocatorUriResource.class, PathLimitedBasicResource.class);
    }
 

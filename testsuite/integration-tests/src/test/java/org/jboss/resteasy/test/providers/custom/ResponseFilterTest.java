@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ResponseFilter;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -39,9 +39,9 @@ public class ResponseFilterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResponseFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseFilterTest.class.getSimpleName());
       war.addClasses(CollectionProviderTest.class);
-      return TestUtil.finishContainerPrepare(war, null, ResponseFilterResource.class, ResponseFilter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseFilterResource.class, ResponseFilter.class);
    }
 
    private String generateURL(String path) {

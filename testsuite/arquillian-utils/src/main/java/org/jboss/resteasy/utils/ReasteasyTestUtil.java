@@ -39,7 +39,7 @@ import java.util.Set;
 /**
  * Base util class for RESTEasy testing.
  */
-public class TestUtil {
+public class ReasteasyTestUtil {
 
    protected static Logger logger;
 
@@ -53,7 +53,7 @@ public class TestUtil {
     */
    static {
       try {
-         logger = LogManager.getLogger(TestUtil.class.getName());
+         logger = LogManager.getLogger(ReasteasyTestUtil.class.getName());
       } catch (NoClassDefFoundError e) {
          // unable to initialize logger, finishContainerPrepare method could not be used
       }
@@ -341,7 +341,7 @@ public class TestUtil {
    }
 
    public static List<String> readServerLogLines(boolean onServer, String containerQualifier) {
-      String standaloneDir = TestUtil.getStandaloneDir(onServer, containerQualifier);
+      String standaloneDir = ReasteasyTestUtil.getStandaloneDir(onServer, containerQualifier);
       String logPath = String.format("%s%slog%sserver.log", standaloneDir,
             (standaloneDir.endsWith(File.separator) || standaloneDir.endsWith("/")) ? "" : File.separator,
             File.separator);
@@ -380,7 +380,7 @@ public class TestUtil {
     */
    public static int getWarningCount(String findedString, boolean onServer, String containerQualifier, boolean useRegexp) {
       int count = 0;
-      List<String> lines = TestUtil.readServerLogLines(onServer, containerQualifier);
+      List<String> lines = ReasteasyTestUtil.readServerLogLines(onServer, containerQualifier);
       for (String line : lines) {
          if ((!useRegexp && line.contains(findedString)) || (useRegexp && line.matches(findedString))) {
             count++;

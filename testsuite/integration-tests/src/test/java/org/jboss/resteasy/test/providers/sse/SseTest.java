@@ -35,7 +35,7 @@ import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl.SourceBuilder;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -55,7 +55,7 @@ public class SseTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(SseTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseTest.class.getSimpleName());
       war.addClass(SseTest.class);
       war.addAsResource("org/jboss/resteasy/test/providers/sse/bigmsg.json", "org/jboss/resteasy/test/providers/sse/bigmsg.json");
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml", "web.xml");
@@ -63,7 +63,7 @@ public class SseTest
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, SseApplication.class, SseResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SseApplication.class, SseResource.class,
               AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
 
    }

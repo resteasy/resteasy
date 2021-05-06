@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,8 +23,8 @@ import java.util.Base64;
  * @tpSince RESTEasy 3.0.16
  */
 public class ExampleSignTest {
-   static final String publicFileS = TestUtil.getResourcePath(ExampleSignTest.class, "ExampleSignPublicDkimKey.pem");
-   static final String privateFileS = TestUtil.getResourcePath(ExampleSignTest.class, "ExampleSignPrivateDkimKey.der");
+   static final String publicFileS = ReasteasyTestUtil.getResourcePath(ExampleSignTest.class, "ExampleSignPublicDkimKey.pem");
+   static final String privateFileS = ReasteasyTestUtil.getResourcePath(ExampleSignTest.class, "ExampleSignPrivateDkimKey.der");
 
    public static PrivateKey getPrivate(InputStream is) throws Exception {
       DataInputStream dis = new DataInputStream(is);

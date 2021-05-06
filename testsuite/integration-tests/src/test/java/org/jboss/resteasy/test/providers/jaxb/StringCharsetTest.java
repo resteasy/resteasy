@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.StringCharsetResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.StringCharsetRespond;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -33,9 +33,9 @@ public class StringCharsetTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(StringCharsetTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(StringCharsetTest.class.getSimpleName());
       war.addClass(StreamResetTest.class);
-      return TestUtil.finishContainerPrepare(war, null, StringCharsetResource.class, StringCharsetRespond.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, StringCharsetResource.class, StringCharsetRespond.class);
    }
 
    @Before

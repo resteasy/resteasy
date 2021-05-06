@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.response.resource.WriterMatchingBoolWriter;
 import org.jboss.resteasy.test.response.resource.WriterMatchingResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,8 +38,8 @@ public class WriterMatchingTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(WriterMatchingTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, WriterMatchingResource.class, WriterMatchingBoolWriter.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WriterMatchingTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, WriterMatchingResource.class, WriterMatchingBoolWriter.class);
    }
 
    @Before

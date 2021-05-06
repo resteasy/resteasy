@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.LinkHeaderService;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -37,8 +37,8 @@ public class LinkHeaderTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(LinkHeaderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, LinkHeaderService.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(LinkHeaderTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, LinkHeaderService.class);
    }
 
    @After

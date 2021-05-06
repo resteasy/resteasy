@@ -31,7 +31,7 @@ import org.jboss.resteasy.test.form.resteasy1405.MyResource;
 import org.jboss.resteasy.test.form.resteasy1405.OutputData;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -53,7 +53,7 @@ public class Resteasy1405Test
    @Deployment(testable = false)
    public static Archive<?> createTestArchive()
    {
-      WebArchive war = TestUtil.prepareArchive(Resteasy1405Test.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(Resteasy1405Test.class.getSimpleName());
       war.addClasses(ByFieldForm.class, BySetterForm.class, InputData.class, OutputData.class);
 
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -62,7 +62,7 @@ public class Resteasy1405Test
          new RuntimePermission("getClassLoader")),
          "permissions.xml");
 
-      return TestUtil.finishContainerPrepare(war, null, MyResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MyResource.class);
    }
 
    private JAXBContext jaxbc;

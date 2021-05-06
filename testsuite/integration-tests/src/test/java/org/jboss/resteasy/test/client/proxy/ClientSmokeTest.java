@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.ClientSmokeResource;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceSimpleClient;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -27,8 +27,8 @@ public class ClientSmokeTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ClientSmokeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientSmokeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class);
    }
 
    /**

@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationOnGetterStringBean;
 import org.jboss.resteasy.test.validation.resource.ValidationOnGetterValidateExecutableResource;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -36,9 +36,9 @@ public class ValidationOnGetterTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ValidationOnGetterTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationOnGetterTest.class.getSimpleName())
             .addClasses(ValidationOnGetterNotNullOrOne.class, ValidationOnGetterNotNullOrOneStringBeanValidator.class, ValidationOnGetterStringBean.class);
-      return TestUtil.finishContainerPrepare(war, null, ValidationOnGetterValidateExecutableResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ValidationOnGetterValidateExecutableResource.class);
    }
 
    @Before
@@ -63,7 +63,7 @@ public class ValidationOnGetterTest {
    public void testGetter() throws Exception {
       Response response = client.target(generateURL("/resource/executable/getter")).request().accept(MediaType.APPLICATION_XML).get();
       ViolationReport report = response.readEntity(ViolationReport.class);
-      TestUtil.countViolations(report, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(report, 1, 0, 0, 0);
       response.close();
    }
 }

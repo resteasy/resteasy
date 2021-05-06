@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigFi
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -36,14 +36,14 @@ public class MicroProfileConfigServletTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MicroProfileConfigServletTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MicroProfileConfigServletTest.class.getSimpleName())
             .addClass(MicroProfileConfigFilter.class)
             .setWebXML(MicroProfileConfigServletTest.class.getPackage(), "web_servlet.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new PropertyPermission("system", "write")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, MicroProfileConfigResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MicroProfileConfigResource.class);
    }
 
    @BeforeClass

@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.request.resource.DateFormatPathResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -42,8 +42,8 @@ public class DateFormatPathTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(DateFormatPathTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, DateFormatPathResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DateFormatPathTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DateFormatPathResource.class);
    }
 
    private String generateURL(String path) {

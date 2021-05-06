@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.MyServiceProxy;
 import org.jboss.resteasy.test.providers.multipart.resource.NullPartBean;
 import org.jboss.resteasy.test.providers.multipart.resource.NullPartService;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -29,9 +29,9 @@ import org.junit.runner.RunWith;
 public class NullPartTest {
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(NullPartTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NullPartTest.class.getSimpleName());
       war.addClasses(NullPartBean.class, MyServiceProxy.class);
-      return TestUtil.finishContainerPrepare(war, null, NullPartService.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, NullPartService.class);
    }
 
    private static ResteasyClient client;

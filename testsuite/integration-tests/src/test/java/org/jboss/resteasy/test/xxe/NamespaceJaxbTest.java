@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.xxe.resource.xxeNamespace.MovieResource;
 import org.jboss.resteasy.test.xxe.resource.xxeNamespace.ObjectFactory;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -40,11 +40,11 @@ public class NamespaceJaxbTest {
    protected static final String WRONG_RESPONSE_ERROR_MSG = "Response has wrong content";
    @Deployment
    public static Archive<?> deployDefault() {
-      WebArchive war = TestUtil.prepareArchive(NamespaceJaxbTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NamespaceJaxbTest.class.getSimpleName());
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.document.expand.entity.references", "false");
       war.addClasses(FavoriteMovie.class, FavoriteMovieXmlRootElement.class, FavoriteMovieXmlType.class, ObjectFactory.class);
-      return TestUtil.finishContainerPrepare(war, contextParam, MovieResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, MovieResource.class);
    }
 
    @Before

@@ -10,7 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.contextProxyInterfaces.resource.CastableConfigurationResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -34,9 +34,9 @@ public class ContextProxyInterfacesTest {
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(ContextProxyInterfacesTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, CastableConfigurationResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ContextProxyInterfacesTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CastableConfigurationResource.class);
    }
 
    private String generateURL(String path)

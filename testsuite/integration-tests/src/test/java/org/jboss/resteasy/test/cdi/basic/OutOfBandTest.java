@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.cdi.basic.resource.OutOfBandResource;
 import org.jboss.resteasy.test.cdi.basic.resource.OutOfBandResourceIntf;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -33,7 +33,7 @@ public class OutOfBandTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive("RESTEASY-1008")
+      WebArchive war = ReasteasyTestUtil.prepareArchive("RESTEASY-1008")
             .addClasses(OutOfBandResourceIntf.class, OutOfBandResource.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       return war;

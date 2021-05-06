@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.path.resource.LocatorSubResourceReturningThisParamEntityPrototype;
 import org.jboss.resteasy.test.resource.path.resource.LocatorSubResourceReturningThisParamEntityWithConstructor;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -57,10 +57,10 @@ public class LocatorSubResourceReturningThisTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(LocatorSubResourceReturningThisTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(LocatorSubResourceReturningThisTest.class.getSimpleName());
       war.addClasses(LocatorSubResourceReturningThisPathParamTest.class, LocatorSubResourceReturningThisParamEntityPrototype.class,
             LocatorSubResourceReturningThisParamEntityWithConstructor.class);
-      return TestUtil.finishContainerPrepare(war, null, LocatorSubResourceReturningThisSubResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, LocatorSubResourceReturningThisSubResource.class);
    }
 
    static Client client;

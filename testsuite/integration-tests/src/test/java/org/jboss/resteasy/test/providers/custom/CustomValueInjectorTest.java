@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.providers.custom.resource.CustomValueInjectorHell
 import org.jboss.resteasy.test.providers.custom.resource.CustomValueInjectorHelloResource;
 import org.jboss.resteasy.test.providers.custom.resource.CustomValueInjectorInjectorFactoryImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -32,9 +32,9 @@ public class CustomValueInjectorTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CustomValueInjectorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomValueInjectorTest.class.getSimpleName());
       war.addClass(CustomValueInjectorHello.class);
-      return TestUtil.finishContainerPrepare(war, null, CustomValueInjectorHelloResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CustomValueInjectorHelloResource.class,
             CustomValueInjectorInjectorFactoryImpl.class);
    }
 

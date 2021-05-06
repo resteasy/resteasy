@@ -28,7 +28,7 @@ import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -66,11 +66,11 @@ public class RxCompletionStageAsyncClientAsyncTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(RxCompletionStageAsyncClientAsyncTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RxCompletionStageAsyncClientAsyncTest.class.getSimpleName());
       war.addClass(Thing.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
-      return TestUtil.finishContainerPrepare(war, null, SimpleResourceImpl.class, TestExceptionMapper.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SimpleResourceImpl.class, TestExceptionMapper.class);
    }
 
    private static String generateURL(String path) {

@@ -26,7 +26,7 @@ import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -51,7 +51,7 @@ public class BeanExtensionTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(BeanExtensionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BeanExtensionTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class, Utilities.class)
             .addClasses(CDIExtensionsBostonBeanExtension.class, CDIExtensionsBoston.class, CDIExtensionsBostonBean.class)
             .addClasses(CDIExtensionsResource.class, CDIExtensionsTestReader.class)
@@ -61,7 +61,7 @@ public class BeanExtensionTest {
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClasses(CDIExtensionsBostonHolder.class, CDIExtensionsBostonlLeaf.class);
       war.addAsLibrary(jar);
 
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    /**

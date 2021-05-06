@@ -13,7 +13,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieContainerRequestFilter;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -35,8 +35,8 @@ public class FilteredCookieTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
    }
 
    private String generateURL(String path) {

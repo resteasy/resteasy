@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.cdi.injection.resource.UserRepository;
 import org.jboss.resteasy.test.cdi.injection.resource.UserResource;
 import org.jboss.resteasy.test.cdi.injection.resource.UserType;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -36,13 +36,13 @@ public class InjectionJpaEnumTypeTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(InjectionJpaEnumTypeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InjectionJpaEnumTypeTest.class.getSimpleName());
       war.addClasses(UserManager.class, UserRepository.class, UserResource.class,
             UserType.class, ApplicationUser.class);
       war.addAsResource(InjectionJpaEnumTypeTest.class.getPackage(), "injectionJpaEnumType/persistence.xml", "META-INF/persistence.xml");
       war.addAsResource(InjectionJpaEnumTypeTest.class.getPackage(), "injectionJpaEnumType/create.sql", "META-INF/create.sql");
       war.addAsResource(InjectionJpaEnumTypeTest.class.getPackage(), "injectionJpaEnumType/load.sql", "META-INF/load.sql");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    private String generateURL(String path) {

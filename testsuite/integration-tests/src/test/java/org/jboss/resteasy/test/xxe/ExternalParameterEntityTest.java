@@ -17,7 +17,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.ExternalParameterEntityResource;
 import org.jboss.resteasy.test.xxe.resource.ExternalParameterEntityWrapper;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -47,8 +47,8 @@ public class ExternalParameterEntityTest {
    private static final String EXPAND = "war_expand";
    private static final String NO_EXPAND = "war_no_expand";
 
-   private String passwdFile = new File(TestUtil.getResourcePath(ExternalParameterEntityTest.class, "ExternalParameterEntityPasswd")).getAbsolutePath();
-   private String dtdFile = new File(TestUtil.getResourcePath(ExternalParameterEntityTest.class, "ExternalParameterEntity.dtd")).getAbsolutePath();
+   private String passwdFile = new File(ReasteasyTestUtil.getResourcePath(ExternalParameterEntityTest.class, "ExternalParameterEntityPasswd")).getAbsolutePath();
+   private String dtdFile = new File(ReasteasyTestUtil.getResourcePath(ExternalParameterEntityTest.class, "ExternalParameterEntity.dtd")).getAbsolutePath();
 
    private String request =
          "<!DOCTYPE foo [\r" +
@@ -62,18 +62,18 @@ public class ExternalParameterEntityTest {
 
    @Deployment(name = EXPAND, order = 1)
    public static Archive<?> createTestArchive1() {
-      WebArchive war = TestUtil.prepareArchive(EXPAND);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EXPAND);
       war.addClass(ExternalParameterEntityWrapper.class);
       war.addAsWebInfResource(ExternalParameterEntityTest.class.getPackage(), "ExternalParameterEntityExpandWeb.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, ExternalParameterEntityResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExternalParameterEntityResource.class);
    }
 
    @Deployment(name = NO_EXPAND, order = 2)
    public static Archive<?> createTestArchive2() {
-      WebArchive war = TestUtil.prepareArchive(NO_EXPAND);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NO_EXPAND);
       war.addClass(ExternalParameterEntityWrapper.class);
       war.addAsWebInfResource(ExternalParameterEntityTest.class.getPackage(), "ExternalParameterEntityNoExpandWeb.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, ExternalParameterEntityResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExternalParameterEntityResource.class);
    }
 
    @Before

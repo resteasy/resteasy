@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionResource;
 import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionSingletonResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,8 +32,8 @@ public class LazyInitUriInfoInjectionTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(LazyInitUriInfoInjectionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, LazyInitUriInfoInjectionSingletonResource.class, LazyInitUriInfoInjectionResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(LazyInitUriInfoInjectionTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, LazyInitUriInfoInjectionSingletonResource.class, LazyInitUriInfoInjectionResource.class);
    }
    @ArquillianResource
    URI baseUri;

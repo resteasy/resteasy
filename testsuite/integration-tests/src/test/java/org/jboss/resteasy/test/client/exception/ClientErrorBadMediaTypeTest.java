@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.client.exception.resource.ClientErrorBadMediaType
 import org.jboss.resteasy.test.client.exception.resource.ClientErrorBadMediaTypeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,11 +34,11 @@ public class ClientErrorBadMediaTypeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientErrorBadMediaTypeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientErrorBadMediaTypeTest.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      war.addClass(TestUtil.class);
+      war.addClass(ReasteasyTestUtil.class);
       war.addClass(ClientErrorBadMediaTypeHeaderDelegate.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientErrorBadMediaTypeResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientErrorBadMediaTypeResource.class);
    }
 
    private String generateURL(String path) {

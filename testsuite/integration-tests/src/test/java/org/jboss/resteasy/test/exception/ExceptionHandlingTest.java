@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.exception.resource.ExceptionHandlingProvider;
 import org.jboss.resteasy.test.exception.resource.ExceptionHandlingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -35,9 +35,9 @@ public class ExceptionHandlingTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ExceptionHandlingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ExceptionHandlingTest.class.getSimpleName());
       war.addClass(ExceptionHandlingTest.class);
-      return TestUtil.finishContainerPrepare(war, null, ExceptionHandlingResource.class, ExceptionHandlingProvider.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExceptionHandlingResource.class, ExceptionHandlingProvider.class);
    }
 
    @Before

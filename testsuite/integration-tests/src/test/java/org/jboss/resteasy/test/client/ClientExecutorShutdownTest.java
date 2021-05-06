@@ -14,7 +14,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.test.client.resource.ClientExecutorShutdownTestResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -46,10 +46,10 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientExecutorShutdownTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientExecutorShutdownTest.class.getSimpleName());
       war.addClass(ClientExecutorShutdownTest.class);
       war.addClass(ClientTestBase.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientExecutorShutdownTestResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientExecutorShutdownTestResource.class);
    }
 
    /**

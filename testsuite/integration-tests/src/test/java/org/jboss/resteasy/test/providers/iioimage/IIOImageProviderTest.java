@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.iioimage.resource.ImageResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -57,8 +57,8 @@ public class IIOImageProviderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(IIOImageProviderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ImageResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(IIOImageProviderTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ImageResource.class);
    }
 
    private static String generateURL(String path) {
@@ -73,7 +73,7 @@ public class IIOImageProviderTest {
    @Test
    public void testPostPNGImage() throws Exception {
       final String testPngResource = System.getProperty("java.version").startsWith("1.") ? testPngResource1 : testPngResource2;
-      File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
+      File file = new File(ReasteasyTestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
       Assert.assertTrue(file.exists());
       Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/png"));
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -84,7 +84,7 @@ public class IIOImageProviderTest {
       ByteArrayOutputStream fromServer = new ByteArrayOutputStream();
       writeTo(in, fromServer);
       response.close();
-      File savedPng = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
+      File savedPng = new File(ReasteasyTestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
       FileInputStream fis = new FileInputStream(savedPng);
       ByteArrayOutputStream fromTestData = new ByteArrayOutputStream();
       writeTo(fis, fromTestData);
@@ -101,7 +101,7 @@ public class IIOImageProviderTest {
     */
    @Test
    public void testPostUnsupportedImage() throws Exception {
-      File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testWdpResource));
+      File file = new File(ReasteasyTestUtil.getResourcePath(IIOImageProviderTest.class, testWdpResource));
       Assert.assertTrue(file.exists());
       Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/vnd.ms-photo"));
       Assert.assertEquals("Unsupported image is accepted by server", HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());

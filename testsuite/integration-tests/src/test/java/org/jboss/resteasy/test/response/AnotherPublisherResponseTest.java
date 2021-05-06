@@ -23,7 +23,7 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -42,7 +42,7 @@ public class AnotherPublisherResponseTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AnotherPublisherResponseTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AnotherPublisherResponseTest.class.getSimpleName());
       war.addClass(AnotherPublisherResponseTest.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
@@ -57,7 +57,7 @@ public class AnotherPublisherResponseTest {
               new PropertyPermission("ipv6", "read"),
               new PropertyPermission("node", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class, PortProviderUtil.class);
    }
 

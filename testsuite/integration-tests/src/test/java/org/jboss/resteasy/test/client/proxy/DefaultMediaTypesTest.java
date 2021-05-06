@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.DefaultMediaTypesResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -44,9 +44,9 @@ public class DefaultMediaTypesTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(DefaultMediaTypesTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DefaultMediaTypesTest.class.getSimpleName());
       war.addClass(DefaultMediaTypesTest.class);
-      return TestUtil.finishContainerPrepare(war, null, DefaultMediaTypesResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DefaultMediaTypesResource.class);
    }
 
    static ResteasyClient client;

@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.GenericReturnTypeInterface;
 import org.jboss.resteasy.test.client.resource.GenericReturnTypeReader;
 import org.jboss.resteasy.test.client.resource.GenericReturnTypeResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,9 +30,9 @@ public class GenericReturnTypeTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GenericReturnTypeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GenericReturnTypeTest.class.getSimpleName());
       war.addClasses(GenericReturnTypeInterface.class);
-      return TestUtil.finishContainerPrepare(war, null, GenericReturnTypeResource.class, GenericReturnTypeReader.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GenericReturnTypeResource.class, GenericReturnTypeReader.class);
    }
 
    /**

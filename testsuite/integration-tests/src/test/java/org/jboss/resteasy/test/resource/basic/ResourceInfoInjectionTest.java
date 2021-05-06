@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.basic.resource.ResourceInfoInjectionFilt
 import org.jboss.resteasy.test.resource.basic.resource.ResourceInfoInjectionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -49,8 +49,8 @@ public class ResourceInfoInjectionTest {
 
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ResourceInfoInjectionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ResourceInfoInjectionFilter.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceInfoInjectionTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceInfoInjectionFilter.class,
             ResourceInfoInjectionResource.class);
    }
 

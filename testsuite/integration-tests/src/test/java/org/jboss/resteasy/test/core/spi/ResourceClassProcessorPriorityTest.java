@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPo
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -52,7 +52,7 @@ public class ResourceClassProcessorPriorityTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ResourceClassProcessorPriorityTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceClassProcessorPriorityTest.class.getSimpleName());
       war.addClass(ResourceClassProcessorPriorityTest.class);
       war.addClass(PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -65,7 +65,7 @@ public class ResourceClassProcessorPriorityTest {
             new RuntimePermission("accessDeclaredMembers"),
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             ResourceClassProcessorPureEndPoint.class,
             ResourceClassProcessorPriiorityAImplementation.class,
             ResourceClassProcessorPriiorityBImplementation.class,

@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAll
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -47,13 +47,13 @@ public class ExecutableValidationDisabledTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ExecutableValidationDisabledTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ExecutableValidationDisabledTest.class.getSimpleName())
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
             .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
             .addAsResource(ExecutableValidationDisabledTest.class.getPackage(), "ExecutableValidationDisabledValidationDisabled.xml", "META-INF/validation.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    @Before
@@ -151,11 +151,11 @@ public class ExecutableValidationDisabledTest {
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
-      TestUtil.countViolations(e, 3, 2, 1, 0, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(e, 3, 2, 1, 0, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "a", violation.getValue());
-      violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 3 and 5");
+      violation = ReasteasyTestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
       violation = e.getClassViolations().iterator().next();

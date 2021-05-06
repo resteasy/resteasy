@@ -11,7 +11,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -41,7 +41,7 @@ public class CorsFiltersTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(CorsFiltersTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CorsFiltersTest.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new LoggingPermission("control", ""),
@@ -66,7 +66,7 @@ public class CorsFiltersTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, singletons, CorsFiltersResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, CorsFiltersResource.class);
    }
 
    private String generateURL(String path) {

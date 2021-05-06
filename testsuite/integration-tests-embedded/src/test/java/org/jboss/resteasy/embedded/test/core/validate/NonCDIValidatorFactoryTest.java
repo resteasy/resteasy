@@ -17,7 +17,7 @@ import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -84,7 +84,7 @@ public class NonCDIValidatorFactoryTest
       Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
       client.close();
    }
 }

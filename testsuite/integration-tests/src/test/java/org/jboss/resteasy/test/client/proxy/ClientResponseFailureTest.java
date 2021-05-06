@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.ClientResponseFailureResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -47,9 +47,9 @@ public class ClientResponseFailureTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientResponseFailureTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientResponseFailureTest.class.getSimpleName());
       war.addClass(ClientResponseFailureTest.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientResponseFailureResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientResponseFailureResource.class);
    }
 
    @Before

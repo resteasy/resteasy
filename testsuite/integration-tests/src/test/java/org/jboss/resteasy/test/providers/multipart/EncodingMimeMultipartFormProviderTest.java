@@ -15,7 +15,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.multipart.resource.EncodingMimeMultipartFormProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -33,12 +33,12 @@ public class EncodingMimeMultipartFormProviderTest {
 
    private static final String TEST_URI = generateURL("/encoding-mime");
    // file with non ASCII character
-   private static final String testFilePath = TestUtil.getResourcePath(EncodingMimeMultipartFormProviderTest.class, "EncodingMimeMultipartFormProviderTestData.txt");
+   private static final String testFilePath = ReasteasyTestUtil.getResourcePath(EncodingMimeMultipartFormProviderTest.class, "EncodingMimeMultipartFormProviderTestData.txt");
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EncodingMimeMultipartFormProviderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, EncodingMimeMultipartFormProviderResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EncodingMimeMultipartFormProviderTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EncodingMimeMultipartFormProviderResource.class);
    }
 
    private static String generateURL(String path) {

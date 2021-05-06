@@ -8,7 +8,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.jackson2.resource.MyEntity;
 import org.jboss.resteasy.test.providers.jackson2.resource.PreferJacksonOverJsonBClientResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -64,13 +64,13 @@ public class PreferJacksonOverJsonBClientTest {
     * Prepare deployment with specific archive name and specific resteasy.preferJacksonOverJsonB value
     */
    public static Archive<?> deploy(String archiveName, Boolean useJackson) {
-      WebArchive war = TestUtil.prepareArchive(archiveName);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(archiveName);
       war.addClass(MyEntity.class);
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, useJackson.toString());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
             + "Dependencies: org.jboss.resteasy.resteasy-json-binding-provider services\n"));
-      return TestUtil.finishContainerPrepare(war, contextParams, PreferJacksonOverJsonBClientResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, PreferJacksonOverJsonBClientResource.class);
    }
 
    @BeforeClass

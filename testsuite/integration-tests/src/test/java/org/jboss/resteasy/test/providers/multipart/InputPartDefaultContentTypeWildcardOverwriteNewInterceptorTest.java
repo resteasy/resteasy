@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCont
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteService;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteXmlBean;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,10 +40,10 @@ public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class.getSimpleName());
       war.addClasses(InputPartDefaultContentTypeWildcardOverwriteContainerBean.class);
       war.addClasses(InputPartDefaultContentTypeWildcardOverwriteXmlBean.class, InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeWildcardOverwriteNewInterceptor.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeWildcardOverwriteNewInterceptor.class,
             InputPartDefaultContentTypeWildcardOverwriteService.class);
    }
 

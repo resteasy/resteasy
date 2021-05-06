@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.core.servlet.resource.FilterForwardServlet;
 import org.jboss.resteasy.test.core.servlet.resource.FilterResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -31,10 +31,10 @@ import static org.junit.Assert.assertEquals;
 public class FilterTest {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(FilterTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FilterTest.class.getSimpleName())
             .addClasses(FilterForwardServlet.class)
             .addAsWebInfResource(ServletConfigTest.class.getPackage(), "FilterWeb.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, FilterResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FilterResource.class);
    }
 
    private String generateURL(String path) {

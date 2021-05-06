@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.ContentLanguageInterface;
 import org.jboss.resteasy.test.client.proxy.resource.ContentLanguageResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,9 +40,9 @@ public class ContentLanguageProxyTest
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource()
    {
-      WebArchive war = TestUtil.prepareArchive(ContentLanguageProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ContentLanguageProxyTest.class.getSimpleName());
       war.addClasses(ContentLanguageInterface.class);
-      return TestUtil.finishContainerPrepare(war, null, ContentLanguageResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ContentLanguageResource.class);
    }
 
    private static String generateBaseUrl()

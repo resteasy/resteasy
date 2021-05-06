@@ -24,7 +24,7 @@ import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBasicProxyRe
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBasicResource;
 import org.jboss.resteasy.test.providers.jsonb.basic.JsonBindingTest;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -52,9 +52,9 @@ public class RESTEasyParamBasicTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(RESTEasyParamBasicTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RESTEasyParamBasicTest.class.getSimpleName());
       war.addClass(RESTEasyParamBasicProxy.class);
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             RESTEasyParamBasicResource.class,
             ProxyBeanParamResource.class,
             Params.class,

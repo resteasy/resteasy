@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateAsProviderH
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateAsProviderHeaderDelegate;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateAsProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -35,13 +35,13 @@ public class HeaderDelegateAsProviderTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(HeaderDelegateAsProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HeaderDelegateAsProviderTest.class.getSimpleName());
       war.addClass(HeaderDelegateAsProviderHeader.class);
       war.addClass(HeaderDelegateAsProviderHeaderDelegate.class);
       war.addAsResource(HeaderDelegateAsProviderTest.class.getPackage(),
          "javax.ws.rs.ext.Providers_HeaderDelegateAsProvider",
          "META-INF/services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, HeaderDelegateAsProviderResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HeaderDelegateAsProviderResource.class);
    }
 
    @BeforeClass

@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherClient;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -46,9 +46,9 @@ public class InternalDispatcherTest {
    @Deployment
    public static Archive<?> deploy() {
 
-      WebArchive war = TestUtil.prepareArchive(InternalDispatcherTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InternalDispatcherTest.class.getSimpleName());
       war.addClasses(InternalDispatcherClient.class, InternalDispatcherForwardingResource.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new RuntimePermission("accessDeclaredMembers"),
             new ReflectPermission("suppressAccessChecks")
@@ -66,7 +66,7 @@ public class InternalDispatcherTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
    }
 
    private String generateBaseUrl() {

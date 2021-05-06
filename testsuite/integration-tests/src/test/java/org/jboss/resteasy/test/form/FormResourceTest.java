@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.form.resource.FormResourceClientProxy;
 import org.jboss.resteasy.test.form.resource.FormResourceProxy;
 import org.jboss.resteasy.test.form.resource.FormResourceValueHolder;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -61,10 +61,10 @@ public class FormResourceTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(FormResourceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FormResourceTest.class.getSimpleName());
       war.addClasses(FormResourceClientForm.class, FormResourceClientFormSecond.class,
             FormResourceClientProxy.class, FormResourceProxy.class, FormResourceValueHolder.class);
-      return TestUtil.finishContainerPrepare(war, null, FormResourceSecond.class, FormResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FormResourceSecond.class, FormResource.class);
    }
 
    private static String generateURL(String path) {
@@ -180,7 +180,7 @@ public class FormResourceTest {
          Assert.assertEquals("application/x-www-form-urlencoded", contentType);
          InputStream responseStream = response.readEntity(InputStream.class);
          in = new BufferedInputStream(responseStream);
-         String formData = TestUtil.readString(in);
+         String formData = ReasteasyTestUtil.readString(in);
          String[] keys = formData.split("&");
          Map<String, String> values = new HashMap<String, String>();
          for (String pair : keys) {

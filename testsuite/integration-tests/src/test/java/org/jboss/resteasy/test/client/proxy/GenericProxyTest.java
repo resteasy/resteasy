@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.client.proxy.resource.GenericProxySpecificProxy;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxyResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -57,10 +57,10 @@ public class GenericProxyTest {
 
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(GenericProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GenericProxyTest.class.getSimpleName());
       war.addClasses(GenericProxyBase.class, GenericProxySpecificProxy.class);
       war.addPackage(MultipleGenericEntities.class.getPackage());
-      return TestUtil.finishContainerPrepare(war, null, GenericProxyResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GenericProxyResource.class,
               GenericEntityExtendingBaseEntityResource.class,
               MultipleGenericEntitiesResource.class);
    }

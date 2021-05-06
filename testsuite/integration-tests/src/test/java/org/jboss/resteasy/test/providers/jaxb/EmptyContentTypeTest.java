@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.EmptyContentTypeFoo;
 import org.jboss.resteasy.test.providers.jaxb.resource.EmptyContentTypeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,8 +34,8 @@ public class EmptyContentTypeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EmptyContentTypeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, EmptyContentTypeResource.class, EmptyContentTypeFoo.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EmptyContentTypeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EmptyContentTypeResource.class, EmptyContentTypeFoo.class);
    }
 
    @Before

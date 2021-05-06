@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.NullEntityResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class NullEntityTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(NullEntityTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, NullEntityResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NullEntityTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, NullEntityResource.class);
    }
 
    /**

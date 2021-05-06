@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProvide
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -69,15 +69,15 @@ public class MimeMultipartProviderTest {
       client.close();
    }
 
-   static final String testFilePath = TestUtil.getResourcePath(MimeMultipartProviderTest.class, "HeaderFlushedOutputStreamTestData.txt");
+   static final String testFilePath = ReasteasyTestUtil.getResourcePath(MimeMultipartProviderTest.class, "HeaderFlushedOutputStreamTestData.txt");
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MimeMultipartProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MimeMultipartProviderTest.class.getSimpleName());
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, MimeMultipartProviderResource.class, MimeMultipartProviderCustomer.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MimeMultipartProviderResource.class, MimeMultipartProviderCustomer.class);
    }
 
    private static String generateURL(String path) {

@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.CustomOverrideWriter;
 import org.jboss.resteasy.test.providers.jaxb.resource.CustomOverrideResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.CustomOverrideFoo;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,8 +34,8 @@ public class CustomOverrideTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CustomOverrideTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, CustomOverrideResource.class, CustomOverrideWriter.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomOverrideTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CustomOverrideResource.class, CustomOverrideWriter.class,
             CustomOverrideFoo.class);
    }
 

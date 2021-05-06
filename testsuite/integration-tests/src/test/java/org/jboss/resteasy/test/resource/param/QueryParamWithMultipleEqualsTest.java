@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.QueryParamWithMultipleEqualsResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -28,8 +28,8 @@ public class QueryParamWithMultipleEqualsTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(QueryParamWithMultipleEqualsTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, QueryParamWithMultipleEqualsResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(QueryParamWithMultipleEqualsTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, QueryParamWithMultipleEqualsResource.class);
    }
 
    private String generateURL(String path) {

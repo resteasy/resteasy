@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingCustomR
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingResource;
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -56,21 +56,21 @@ public class JsonBindingAnnotationsJacksonTest {
    }
 
    public static Archive<?> deploy(String archiveName, boolean useJsonB) {
-      WebArchive war = TestUtil.prepareArchive(archiveName);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(archiveName);
       war.addClass(JsonBindingTest.class);
       if (useJsonB) {
          war.addAsManifestResource("jboss-deployment-structure-json-b.xml", "jboss-deployment-structure.xml");
       } else {
          war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
       }
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
    }
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonBindingAnnotationsJacksonTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonBindingAnnotationsJacksonTest.class.getSimpleName());
       war.addClass(JsonBindingAnnotationsJacksonTest.class);
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
    }
 
    @Before

@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapSimpleResour
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapSimpleResourceBean;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -51,10 +51,10 @@ public class EjbExceptionUnwrapTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EjbExceptionUnwrapTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EjbExceptionUnwrapTest.class.getSimpleName());
       war.addClasses(EjbExceptionUnwrapFooException.class, EjbExceptionUnwrapFooResource.class,
             EjbExceptionUnwrapLocatingResource.class, EjbExceptionUnwrapSimpleResource.class);
-      return TestUtil.finishContainerPrepare(war, null, EjbExceptionUnwrapFooExceptionMapper.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EjbExceptionUnwrapFooExceptionMapper.class,
             EjbExceptionUnwrapSimpleResourceBean.class,
             EjbExceptionUnwrapLocatingResourceBean.class, EjbExceptionUnwrapFooResourceBean.class);
    }

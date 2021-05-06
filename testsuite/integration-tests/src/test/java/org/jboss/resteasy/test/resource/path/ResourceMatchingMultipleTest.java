@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingMultipleUs
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingMultipleUserMembershipResource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingMultipleUserResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -34,8 +34,8 @@ public class ResourceMatchingMultipleTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResourceMatchingMultipleTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ResourceMatchingMultipleUserResource.class, ResourceMatchingMultipleUserCertResource.class, ResourceMatchingMultipleUserMembershipResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceMatchingMultipleTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceMatchingMultipleUserResource.class, ResourceMatchingMultipleUserCertResource.class, ResourceMatchingMultipleUserMembershipResource.class);
    }
 
    static Client client;

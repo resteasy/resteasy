@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.validation.resource.ViolationExceptionReaderWrite
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithFiveViolations;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithReturnValues;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -53,14 +53,14 @@ public class ResteasyViolationExceptionRepresentationTest {
    private static final String TEST_RETURN_VALUES = "return_value";
 
    public static Archive<?> deploy(Class<?> resourceClass, String name) throws Exception {
-      WebArchive war = TestUtil.prepareArchive(name);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(name);
       war.addClass(ResteasyViolationExceptionRepresentationTest.class);
       war.addClass(ViolationExceptionConstraint.class);
       war.addClass(ViolationExceptionLengthConstraint.class);
       war.addClass(ViolationExceptionLengthValidator.class);
       war.addClass(ViolationExceptionMinMaxValidator.class);
       war.addClass(ViolationExceptionObject.class);
-      return TestUtil.finishContainerPrepare(war, null, resourceClass, ViolationExceptionReaderWriter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, resourceClass, ViolationExceptionReaderWriter.class);
    }
 
    @Deployment(name = TEST_RETURN_VALUES)
@@ -124,7 +124,7 @@ public class ResteasyViolationExceptionRepresentationTest {
       logger.info("Entity from response: " + entity);
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
       logger.info("Received exception: " + e.toString());
-      TestUtil.countViolations(e, 1, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(e, 1, 0, 0, 0, 1);
       ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
       Assert.assertEquals("Exception has wrong message", cv.getMessage(), "s must have length: 1 <= length <= 3");
       Assert.assertEquals("Exception has wrong value", "Foo[abcdef]", cv.getValue());
@@ -139,7 +139,7 @@ public class ResteasyViolationExceptionRepresentationTest {
       entity = response.readEntity(String.class);
       logger.info("Entity from response: " + entity);
       e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
-      TestUtil.countViolations(e, 1, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(e, 1, 0, 0, 0, 1);
       cv = e.getReturnValueViolations().iterator().next();
       Assert.assertEquals("Exception has wrong message", cv.getMessage(), "s must have length: 3 <= length <= 5");
       Assert.assertEquals("Exception has wrong value", "Foo[abcdef]", cv.getValue());
@@ -154,7 +154,7 @@ public class ResteasyViolationExceptionRepresentationTest {
       entity = response.readEntity(String.class);
       logger.info("Entity from response: " + entity);
       e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
-      TestUtil.countViolations(e, 2, 0, 0, 0, 2);
+      ReasteasyTestUtil.countViolations(e, 2, 0, 0, 0, 2);
       Iterator<ResteasyConstraintViolation> it = e.getReturnValueViolations().iterator();
       ResteasyConstraintViolation cv1 = it.next();
       ResteasyConstraintViolation cv2 = it.next();
@@ -198,11 +198,11 @@ public class ResteasyViolationExceptionRepresentationTest {
       Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
       logger.info("exception: " + e.toString());
-      TestUtil.countViolations(e, 4, 2, 1, 1, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(e, 4, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull("Exception has wrong message", violation);
       Assert.assertEquals("Exception has wrong value", "a", violation.getValue());
-      violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 3 and 5");
+      violation = ReasteasyTestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull("Exception has wrong message", violation);
       Assert.assertEquals("Exception has wrong value", "z", violation.getValue());
       ResteasyConstraintViolation cv = e.getClassViolations().iterator().next();

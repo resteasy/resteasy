@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.response.resource.InheritedContextNewService;
 import org.jboss.resteasy.test.response.resource.InheritedContextNewSubService;
 import org.jboss.resteasy.test.response.resource.InheritedContextService;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,8 +34,8 @@ public class InheritedContextTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(InheritedContextTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, InheritedContextService.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InheritedContextTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InheritedContextService.class,
             InheritedContextNewService.class, InheritedContextNewSubService.class);
    }
 

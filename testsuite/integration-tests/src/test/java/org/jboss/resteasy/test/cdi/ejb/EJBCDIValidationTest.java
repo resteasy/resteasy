@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationStatefulResource
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationStatelessResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -43,7 +43,7 @@ public class EJBCDIValidationTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EJBCDIValidationTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EJBCDIValidationTest.class.getSimpleName());
       war.addClasses(EJBCDIValidationApplication.class)
       .addClasses(EJBCDIValidationStatelessResource.class)
       .addClasses(EJBCDIValidationStatefulResource.class)
@@ -52,7 +52,7 @@ public class EJBCDIValidationTest {
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null);
    }
 
    private String generateURL(String path) {
@@ -82,7 +82,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 1, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -96,7 +96,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
    }
 
    /**
@@ -112,7 +112,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 1, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -126,7 +126,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 1, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 1, 0);
    }
 
    /**
@@ -147,7 +147,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, propertyViolations, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, propertyViolations, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -161,6 +161,6 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
    }
 }

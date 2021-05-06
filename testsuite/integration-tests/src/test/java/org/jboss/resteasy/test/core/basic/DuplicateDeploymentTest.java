@@ -9,7 +9,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.basic.resource.DuplicateDeploymentReader;
 import org.jboss.resteasy.test.core.basic.resource.DuplicateDeploymentResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -31,19 +31,19 @@ public class DuplicateDeploymentTest {
    private static int initWarningCount = 0;
 
    private static int getWarningCount() {
-      return TestUtil.getWarningCount("RESTEASY002172", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002172", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    @Deployment
    public static Archive<?> deploy() {
       initWarningCount = getWarningCount();
-      WebArchive war = TestUtil.prepareArchive(DuplicateDeploymentTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DuplicateDeploymentTest.class.getSimpleName());
 
       List<Class<?>> singletons = new ArrayList<>();
       singletons.add(DuplicateDeploymentResource.class);
       singletons.add(DuplicateDeploymentReader.class);
 
-      return TestUtil.finishContainerPrepare(war, null, singletons, DuplicateDeploymentResource.class, DuplicateDeploymentReader.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, DuplicateDeploymentResource.class, DuplicateDeploymentReader.class);
    }
 
    /**

@@ -10,7 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.basic.resource.FileExtensionMappingApplication;
 import org.jboss.resteasy.test.core.basic.resource.FileExtensionMappingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -43,10 +43,10 @@ public class FileExtensionMappingTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(FileExtensionMappingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FileExtensionMappingTest.class.getSimpleName());
       war.addClass(FileExtensionMappingApplication.class);
       war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
-      Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
+      Archive<?> archive = ReasteasyTestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
       return archive;
    }
 

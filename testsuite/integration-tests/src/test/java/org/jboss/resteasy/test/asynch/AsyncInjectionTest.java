@@ -32,7 +32,7 @@ import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource2;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionShortInjector;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -53,8 +53,8 @@ public class AsyncInjectionTest {
    @Deployment
    public static Archive<?> createTestArchive() {
 
-      WebArchive war = TestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class,
               AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
               AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
               AsyncInjectionContextAsyncSpecifier.class, AsyncInjectionContextErrorSpecifier.class,

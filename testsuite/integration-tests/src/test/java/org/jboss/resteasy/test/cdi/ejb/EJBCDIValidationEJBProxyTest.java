@@ -16,7 +16,7 @@ import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeterR
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeting;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -48,14 +48,14 @@ public class EJBCDIValidationEJBProxyTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EJBCDIValidationEJBProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EJBCDIValidationEJBProxyTest.class.getSimpleName());
       war.addClass(EJBCDIValidationEJBProxyGreeting.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.setWebXML(EJBCDIValidationEJBProxyTest.class.getPackage(), "web.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new HibernateValidatorPermission("accessPrivateMembers")
             ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             EJBCDIValidationEJBProxyGreeterResource.class);
    }
 
@@ -80,7 +80,7 @@ public class EJBCDIValidationEJBProxyTest {
       Response response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
 
       response = greeterTarget.request().post(Entity.entity(VALID_REQUEST, MediaType.APPLICATION_JSON));
       final String helloHugo = response.readEntity(String.class);
@@ -89,11 +89,11 @@ public class EJBCDIValidationEJBProxyTest {
       response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
 
       response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
    }
 }

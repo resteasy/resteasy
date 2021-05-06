@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.core.basic.resource.AppConfigApplication;
 import org.jboss.resteasy.test.core.basic.resource.AppConfigResources;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -71,7 +71,7 @@ public class AppConfigTest {
 
       try {
          Assert.assertEquals(HttpResponseCodes.SC_OK, response1.getStatusLine().getStatusCode());
-         Assert.assertEquals("\"hello\"", TestUtil.readString(response1.getEntity().getContent()));
+         Assert.assertEquals("\"hello\"", ReasteasyTestUtil.readString(response1.getEntity().getContent()));
       } finally {
          response1.close();
       }

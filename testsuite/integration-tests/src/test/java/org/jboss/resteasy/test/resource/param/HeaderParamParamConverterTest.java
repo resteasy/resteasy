@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.resource.param.resource.HeaderParamParamConverter
 import org.jboss.resteasy.test.resource.param.resource.HeaderParamParamConverterTestService;
 import org.jboss.resteasy.test.resource.param.resource.HeaderParamParamConverterTestServiceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -26,12 +26,12 @@ public class HeaderParamParamConverterTest {
     private static String testSimpleName = HeaderParamParamConverterTest.class.getSimpleName();
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(testSimpleName);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(testSimpleName);
         war.addClasses(HeaderParamMyClass.class,
                 HeaderParamParamConverterProvider.class,
                 HeaderParamParamConverterTestServiceImpl.class,
                 HeaderParamParamConverterTestService.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, null);
     }
 
     private String generateURL(String path) {

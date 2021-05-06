@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.basic.resource.NullHeaderFilter;
 import org.jboss.resteasy.test.core.basic.resource.NullHeaderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -29,9 +29,9 @@ public class NullHeaderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(NullHeaderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NullHeaderTest.class.getSimpleName());
       war.addClass(NullHeaderFilter.class);
-      return TestUtil.finishContainerPrepare(war, null, NullHeaderResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, NullHeaderResource.class);
    }
 
    @Test

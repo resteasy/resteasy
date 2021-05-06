@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.CustomForbiddenMessageExceptionMapper;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -55,7 +55,7 @@ public class CustomForbiddenMessageTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CustomForbiddenMessageTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomForbiddenMessageTest.class.getSimpleName());
 
       Hashtable<String, String> contextParams = new Hashtable<String, String>();
       contextParams.put("resteasy.role.based.security", "true");
@@ -63,7 +63,7 @@ public class CustomForbiddenMessageTest {
       war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
             .addAsWebInfResource(BasicAuthTest.class.getPackage(), "web.xml", "/web.xml");
 
-      return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class, CustomForbiddenMessageExceptionMapper.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class, CustomForbiddenMessageExceptionMapper.class);
    }
 
    @BeforeClass

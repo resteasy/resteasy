@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.sourceProvider.resource.BookResource;
 import org.jboss.resteasy.test.sourceProvider.resource.SourceProviderApp;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -36,8 +36,8 @@ public class SourceProviderTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(SourceProviderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SourceProviderApp.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SourceProviderTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SourceProviderApp.class,
             BookResource.class, Book.class);
    }
 

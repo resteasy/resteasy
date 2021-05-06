@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.resource.basic.resource.MultipleGetResource;
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -45,12 +45,12 @@ public class MultipleGetResourceTest {
 
     @Deployment
     public static Archive<?> testReturnValuesDeploy() throws Exception {
-        WebArchive war = TestUtil.prepareArchive(MultipleGetResourceTest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(MultipleGetResourceTest.class.getSimpleName());
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put(ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, "true");
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks"),
-                new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
+                new FilePermission(ReasteasyTestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
                         File.separator + "server.log", "read"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
@@ -58,7 +58,7 @@ public class MultipleGetResourceTest {
                 new PropertyPermission("jboss.server.base.dir", "read"),
                 new RuntimePermission("accessDeclaredMembers")
         ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, contextParam, MultipleGetResource.class);
+        return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, MultipleGetResource.class);
     }
 
     @BeforeClass

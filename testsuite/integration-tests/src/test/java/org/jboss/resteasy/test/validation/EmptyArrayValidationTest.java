@@ -18,7 +18,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.validation.resource.EmptyArrayValidationFoo;
 import org.jboss.resteasy.test.validation.resource.EmptyArrayValidationResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -37,9 +37,9 @@ public class EmptyArrayValidationTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EmptyArrayValidationTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EmptyArrayValidationTest.class.getSimpleName());
       war.addClass(EmptyArrayValidationFoo.class);
-      return TestUtil.finishContainerPrepare(war, null, EmptyArrayValidationResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EmptyArrayValidationResource.class);
    }
 
    private String generateURL(String path) {
@@ -61,6 +61,6 @@ public class EmptyArrayValidationTest {
       String answer = response.readEntity(String.class);
       assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
-      TestUtil.countViolations(e, 1, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(e, 1, 0, 0, 1, 0);
    }
 }

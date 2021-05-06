@@ -9,7 +9,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.AsynchBasicResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -50,9 +50,9 @@ public class AsynchBasicTest {
 
 
    public static Archive<?> deploy(String deploymentName, String maxSize) {
-      WebArchive war = TestUtil.prepareArchive(deploymentName);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(deploymentName);
       war.addClass(PortProviderUtil.class);
-      war.addClass(TestUtil.class);
+      war.addClass(ReasteasyTestUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
@@ -73,7 +73,7 @@ public class AsynchBasicTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, contextParam, AsynchBasicResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, AsynchBasicResource.class);
    }
 
    @Deployment(name = DEFAULT_DEPLOYMENT)

@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLo
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -54,11 +54,11 @@ public class JsonBindingDebugLoggingTest {
 
    @Deployment
    public static Archive<?> createTestArchive1() {
-      WebArchive war = TestUtil.prepareArchive(JsonBindingDebugLoggingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonBindingDebugLoggingTest.class.getSimpleName());
       war.addClass(JsonBindingDebugLoggingItem.class);
       war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
       war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
-      war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
+      war.addClasses(LogCounter.class, PortProviderUtil.class, ReasteasyTestUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new ReflectPermission("suppressAccessChecks"),
               new RuntimePermission("accessDeclaredMembers"),
@@ -71,7 +71,7 @@ public class JsonBindingDebugLoggingTest {
               new PropertyPermission("org.jboss.resteasy.port", "read"),
               new PropertyPermission("jboss.server.base.dir", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
    }
 
    @Before

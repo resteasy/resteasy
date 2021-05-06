@@ -22,7 +22,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.JaxbJsonElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbJunkXmlOrderClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbXmlRootElementProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -61,12 +61,12 @@ public class JaxbXmlRootElementProviderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JaxbXmlRootElementProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JaxbXmlRootElementProviderTest.class.getSimpleName());
       war.addClass(Parent.class);
       war.addClass(Child.class);
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParams, JaxbXmlRootElementProviderResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, JaxbXmlRootElementProviderResource.class);
    }
 
    @Before

@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.request.resource.PreconditionRfc7232Prec
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -49,11 +49,11 @@ public class PreconditionRfc7232Test {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PreconditionRfc7232Test.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PreconditionRfc7232Test.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       Map<String, String> initParams = new HashMap<>();
       initParams.put("resteasy.rfc7232preconditions", "true");
-      return TestUtil.finishContainerPrepare(war, initParams, PreconditionRfc7232PrecedenceResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, initParams, PreconditionRfc7232PrecedenceResource.class);
    }
 
    private String generateURL(String path) {
@@ -131,7 +131,7 @@ public class PreconditionRfc7232Test {
             .header(HttpHeaderNames.IF_NONE_MATCH, "2")  // false
             .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT")  // true
             .get();
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-4705"), HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-4705"), HttpResponseCodes.SC_OK, response.getStatus());
 
       response.close();
    }

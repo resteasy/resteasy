@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.SeeAlsoAnnotationResource
 import org.jboss.resteasy.test.providers.jaxb.resource.SeeAlsoAnnotationBaseFoo;
 import org.jboss.resteasy.test.providers.jaxb.resource.SeeAlsoAnnotationFooIntf;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,8 +38,8 @@ public class SeeAlsoAnnotationTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SeeAlsoAnnotationTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SeeAlsoAnnotationResource.class, SeeAlsoAnnotationRealFoo.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SeeAlsoAnnotationTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SeeAlsoAnnotationResource.class, SeeAlsoAnnotationRealFoo.class,
             SeeAlsoAnnotationBaseFoo.class, SeeAlsoAnnotationFooIntf.class);
    }
 

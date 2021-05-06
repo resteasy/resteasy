@@ -22,7 +22,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -68,8 +68,8 @@ public class MediaTypeNegotiationClientQualityTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(DEP);
-      return TestUtil.finishContainerPrepare(war, null, CustomMessageBodyWriter1.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEP);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CustomMessageBodyWriter1.class,
             NotFoundExceptionMapper.class);
    }
 

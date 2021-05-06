@@ -21,7 +21,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
 import org.jboss.resteasy.test.client.resource.TestResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -51,13 +51,13 @@ public class RxInvokerTest extends ClientTestBase
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(RxInvokerTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, TestResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RxInvokerTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TestResource.class);
    }
 
    @BeforeClass
    public static void setup() throws Exception {
-      OnlineManagementClient mgmtClient = TestUtil.clientInit();
+      OnlineManagementClient mgmtClient = ReasteasyTestUtil.clientInit();
       Administration admin = new Administration(mgmtClient);
       Operations ops = new Operations(mgmtClient);
 
@@ -73,7 +73,7 @@ public class RxInvokerTest extends ClientTestBase
 
    @AfterClass
    public static void cleanup() throws Exception {
-      OnlineManagementClient mgmtClient = TestUtil.clientInit();
+      OnlineManagementClient mgmtClient = ReasteasyTestUtil.clientInit();
       Administration admin = new Administration(mgmtClient);
       Operations ops = new Operations(mgmtClient);
 

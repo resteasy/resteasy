@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.form.resource.CollectionsFormResource;
 import org.jboss.resteasy.test.form.resource.CollectionsFormTelephoneNumber;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -35,10 +35,10 @@ public class CollectionsFormTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
       war.addClasses(CollectionsFormPerson.class, CollectionsFormTelephoneNumber.class,
             CollectionsFormAddress.class);
-      return TestUtil.finishContainerPrepare(war, null, CollectionsFormResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CollectionsFormResource.class);
    }
 
    /**

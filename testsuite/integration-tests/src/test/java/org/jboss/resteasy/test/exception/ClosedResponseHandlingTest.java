@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingPleaseMa
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -42,7 +42,7 @@ public class ClosedResponseHandlingTest {
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(ClosedResponseHandlingTest.class.getSimpleName());
+       WebArchive war = ReasteasyTestUtil.prepareArchive(ClosedResponseHandlingTest.class.getSimpleName());
        war.addClass(ClosedResponseHandlingTest.class);
        war.addPackage(ClosedResponseHandlingResource.class.getPackage());
        war.addClass(PortProviderUtil.class);
@@ -54,7 +54,7 @@ public class ClosedResponseHandlingTest {
        params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ALL);
        params.put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE);
 
-       return TestUtil.finishContainerPrepare(war, params, ClosedResponseHandlingResource.class,
+       return ReasteasyTestUtil.finishContainerPrepare(war, params, ClosedResponseHandlingResource.class,
              ClosedResponseHandlingPleaseMapExceptionMapper.class,
              ClosedResponseHandlingEnableTracingRequestFilter.class);
     }

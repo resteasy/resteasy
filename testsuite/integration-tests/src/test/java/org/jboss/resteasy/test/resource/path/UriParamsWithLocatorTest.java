@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.resource.path.resource.UriParamsWithLocatorLocato
 import org.jboss.resteasy.test.resource.path.resource.UriParamsWithLocatorResource;
 import org.jboss.resteasy.test.resource.path.resource.UriParamsWithLocatorResource2;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,16 +40,16 @@ public class UriParamsWithLocatorTest {
 
    @Deployment(name = "one")
    public static Archive<?> deploy1() {
-      WebArchive war = TestUtil.prepareArchive("one");
+      WebArchive war = ReasteasyTestUtil.prepareArchive("one");
       war.addClass(UriParamsWithLocatorResource.class);
-      return TestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator.class);
    }
 
    @Deployment(name = "two")
    public static Archive<?> deploy2() {
-      WebArchive war = TestUtil.prepareArchive("two");
+      WebArchive war = ReasteasyTestUtil.prepareArchive("two");
       war.addClass(UriParamsWithLocatorResource2.class);
-      return TestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator2.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator2.class);
    }
 
    @AfterClass

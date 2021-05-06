@@ -7,7 +7,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Dog;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.SetMethodWithMoreArgumentsResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -39,9 +39,9 @@ public class SetMethodWithMoreArgumentsTest {
 
    @Deployment(name = DEFAULT)
    public static Archive<?> deployDefault() {
-      WebArchive war = TestUtil.prepareArchive(DEFAULT);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEFAULT);
       war.addClass(Dog.class);
-      return TestUtil.finishContainerPrepare(war, null, SetMethodWithMoreArgumentsResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SetMethodWithMoreArgumentsResource.class);
    }
 
 

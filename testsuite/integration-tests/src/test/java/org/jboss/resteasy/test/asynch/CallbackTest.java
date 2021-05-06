@@ -16,7 +16,7 @@ import org.jboss.resteasy.test.asynch.resource.CallbackSettingCompletionCallback
 import org.jboss.resteasy.test.asynch.resource.CallbackStringBeanEntityProvider;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -53,7 +53,7 @@ public class CallbackTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CallbackTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CallbackTest.class.getSimpleName());
       war.addClasses(CallbackResource.class,
             CallbackExceptionThrowingStringBean.class,
             CallbackTimeoutHandler.class,
@@ -64,7 +64,7 @@ public class CallbackTest {
             CallbackStringBeanEntityProvider.class,
             JaxrsAsyncServletAsyncResponseBlockingQueue.class);
       war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "CallbackTestWeb.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, CallbackResource.class, CallbackStringBeanEntityProvider.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CallbackResource.class, CallbackStringBeanEntityProvider.class);
    }
 
    private String generateURL(String path) {

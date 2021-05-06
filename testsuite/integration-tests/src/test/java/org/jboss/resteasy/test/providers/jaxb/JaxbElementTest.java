@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementReadableWritableEntity;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,9 +38,9 @@ public class JaxbElementTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JaxbElementTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JaxbElementTest.class.getSimpleName());
       war.addClass(JaxbCollectionTest.class);
-      return TestUtil.finishContainerPrepare(war, null, JaxbElementEntityMessageReader.class, JaxbElementEntityMessageWriter.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JaxbElementEntityMessageReader.class, JaxbElementEntityMessageWriter.class,
             JaxbElementResource.class, JaxbElementReadableWritableEntity.class);
    }
 

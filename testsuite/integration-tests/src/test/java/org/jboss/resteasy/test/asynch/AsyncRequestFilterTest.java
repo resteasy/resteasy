@@ -27,7 +27,7 @@ import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter1;
 import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter2;
 import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter3;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class AsyncRequestFilterTest {
    @Deployment
    public static Archive<?> createTestArchive() {
 
-      WebArchive war = TestUtil.prepareArchive(AsyncRequestFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsyncRequestFilterTest.class.getSimpleName());
       war.addClasses(AsyncRequestFilterResource.class, AsyncRequestFilter.class, AsyncResponseFilter.class,
               AsyncRequestFilter1.class, AsyncRequestFilter2.class, AsyncRequestFilter3.class,
               AsyncPreMatchRequestFilter1.class, AsyncPreMatchRequestFilter2.class, AsyncPreMatchRequestFilter3.class,

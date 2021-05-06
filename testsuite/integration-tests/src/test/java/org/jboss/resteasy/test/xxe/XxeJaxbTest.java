@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbMovieResource;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.ObjectFactory;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -43,7 +43,7 @@ public class XxeJaxbTest {
    static ResteasyClient client;
    private Logger logger = Logger.getLogger(XxeJaxbTest.class);
    private static final String URL_PREFIX = "RESTEASY-1103-";
-   private String passwdFile = new File(TestUtil.getResourcePath(XxeJaxbTest.class, "XxeJaxbPasswd")).getAbsolutePath();
+   private String passwdFile = new File(ReasteasyTestUtil.getResourcePath(XxeJaxbTest.class, "XxeJaxbPasswd")).getAbsolutePath();
 
    String strMovie = "<?xml version=\"1.0\"?>\r" +
             "<!DOCTYPE foo\r" +
@@ -127,24 +127,24 @@ public class XxeJaxbTest {
    }
 
    static Archive<?> createTestArchiveEnableSecurityFeature(String warExt, String enable) {
-      WebArchive war = TestUtil.prepareArchive(URL_PREFIX + warExt);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(URL_PREFIX + warExt);
       war.addClasses(XxeJaxbFavoriteMovie.class, XxeJaxbFavoriteMovieXmlRootElement.class, XxeJaxbFavoriteMovieXmlType.class,
             ObjectFactory.class);
       Hashtable<String, String> contextParams = new Hashtable<String, String>();
       contextParams.put("resteasy.document.secure.processing.feature", enable);
       contextParams.put("resteasy.document.secure.disableDTDs", "false");
-      return TestUtil.finishContainerPrepare(war, contextParams, XxeJaxbMovieResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, XxeJaxbMovieResource.class);
    }
 
    static Archive<?> createTestArchiveExpandEntityReferencesEnableSecurityFeature(String warExt, String expand, String enable) {
-      WebArchive war = TestUtil.prepareArchive(URL_PREFIX + warExt);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(URL_PREFIX + warExt);
       war.addClasses(XxeJaxbFavoriteMovie.class, XxeJaxbFavoriteMovieXmlRootElement.class, XxeJaxbFavoriteMovieXmlType.class,
             ObjectFactory.class);
       Hashtable<String, String> contextParams = new Hashtable<String, String>();
       contextParams.put("resteasy.document.secure.processing.feature", enable);
       contextParams.put("resteasy.document.secure.disableDTDs", "false");
       contextParams.put("resteasy.document.expand.entity.references", expand);
-      return TestUtil.finishContainerPrepare(war, contextParams, XxeJaxbMovieResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, XxeJaxbMovieResource.class);
    }
 
    /**

@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.core.basic.resource.ApplicationFilterCustomer;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationFilterCustomerResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.UrlAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -43,13 +43,13 @@ public class ApplicationFilterTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ApplicationFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ApplicationFilterTest.class.getSimpleName());
       war.addAsWebInfResource(ApplicationFilterTest.class.getPackage(), "ApplicationFilterWeb.xml", "web.xml");
       war.addClasses(ApplicationFilterCustomer.class, ApplicationFilterCustomerResource.class);
       war.add(new UrlAsset(ApplicationFilterTest.class.getResource("ApplicationFilter.html")), "foo.html");
       List<Class<?>> singletons = new ArrayList<>();
       singletons.add(ApplicationFilterCustomerResource.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
    }
 
    private String generateURL(String path) {

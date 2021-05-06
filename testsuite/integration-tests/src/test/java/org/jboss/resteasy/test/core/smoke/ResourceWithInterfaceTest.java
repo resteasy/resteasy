@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceResourceWithInterface;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceSimpleClient;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -26,9 +26,9 @@ import org.junit.runner.RunWith;
 public class ResourceWithInterfaceTest {
    @Deployment(name = "LocatingResource")
    public static Archive<?> deployLocatingResource() {
-      WebArchive war = TestUtil.prepareArchive(ResourceWithInterfaceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceWithInterfaceTest.class.getSimpleName());
       war.addClass(ResourceWithInterfaceSimpleClient.class);
-      return TestUtil.finishContainerPrepare(war, null, ResourceWithInterfaceResourceWithInterface.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceWithInterfaceResourceWithInterface.class);
    }
 
    /**

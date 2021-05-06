@@ -16,7 +16,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.AsyncInvokeResource;
 import org.jboss.resteasy.test.client.resource.InContainerClientResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -46,10 +46,10 @@ public class InContainerClientBenchTest extends ClientTestBase
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(InContainerClientBenchTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InContainerClientBenchTest.class.getSimpleName());
       war.addClass(InContainerClientBenchTest.class);
       war.addClass(ClientTestBase.class);
-      return TestUtil.finishContainerPrepare(war, null, AsyncInvokeResource.class, InContainerClientResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AsyncInvokeResource.class, InContainerClientResource.class);
    }
 
    @After

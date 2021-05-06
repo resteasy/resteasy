@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.interceptor.resource.AddHeaderContainerResponseFilter;
 import org.jboss.resteasy.test.interceptor.resource.ApplicationConfigWithInterceptorResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -33,9 +33,9 @@ public class ApplicationConfigWithInterceptorTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ApplicationConfigWithInterceptorTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ApplicationConfigWithInterceptorResource.class, AddHeaderContainerResponseFilter.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ApplicationConfigWithInterceptorTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ApplicationConfigWithInterceptorResource.class, AddHeaderContainerResponseFilter.class);
    }
 
    private String generateURL(String path) {

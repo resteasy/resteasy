@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesDualFeature2
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesServerFeature1;
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesServerFeature2;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -41,7 +41,7 @@ public class ClientDynamicFeaturesTest {
     */
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientDynamicFeaturesTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientDynamicFeaturesTest.class.getSimpleName());
       war.addClasses(ClientDynamicFeaturesClientFeature1.class,
             ClientDynamicFeaturesClientFeature2.class,
             ClientDynamicFeaturesDualFeature2.class,
@@ -53,7 +53,7 @@ public class ClientDynamicFeaturesTest {
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new PropertyPermission("arquillian.*", "read")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    /**

@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationSessionBeanP
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationSessionBeanResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -37,10 +37,10 @@ import static org.junit.Assert.assertEquals;
 public class CDIValidationSessionBeanTest {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CDIValidationSessionBeanTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CDIValidationSessionBeanTest.class.getSimpleName())
             .addClass(CDIValidationSessionBeanProxy.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, CDIValidationSessionBeanResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CDIValidationSessionBeanResource.class);
    }
 
    private String generateURL(String path) {
@@ -59,7 +59,7 @@ public class CDIValidationSessionBeanTest {
       String answer = response.readEntity(String.class);
       assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
-      TestUtil.countViolations(e, 1, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(e, 1, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 7"));
       client.close();

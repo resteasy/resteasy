@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.validation.resource.GetterReturnValueValidatedRes
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,12 +38,12 @@ public class GetterReturnValueValidatedTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(GetterReturnValueValidatedTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GetterReturnValueValidatedTest.class.getSimpleName())
             .addClasses(GetterReturnValueValidatedResourceWithGetterViolation.class)
             .addClasses(GetterReturnValueValidatedResourceResetCount.class)
             .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
             .addAsResource(GetterReturnValueValidatedTest.class.getPackage(), "GetterReturnValueValidatedValidation.xml", "META-INF/validation.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    private static String generateURL(String path) {
@@ -81,7 +81,7 @@ public class GetterReturnValueValidatedTest {
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
-      TestUtil.countViolations(e, 1, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(e, 1, 0, 0, 0, 1);
       response.close();
    }
 }

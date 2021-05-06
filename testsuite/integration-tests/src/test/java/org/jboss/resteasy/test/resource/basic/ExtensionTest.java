@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.basic.resource.ExtensionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -35,12 +35,12 @@ public class ExtensionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ExtensionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ExtensionTest.class.getSimpleName());
 
       Map<String, String> params = new HashMap<>();
       params.put("resteasy.media.type.mappings", "xml : application/xml, html : text/html, txt : text/plain");
       params.put("resteasy.language.mappings", "en : en-US");
-      return TestUtil.finishContainerPrepare(war, params, ExtensionResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, ExtensionResource.class);
    }
 
    @BeforeClass

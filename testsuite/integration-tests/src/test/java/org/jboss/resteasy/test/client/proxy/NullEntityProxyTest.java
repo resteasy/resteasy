@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyGreeter;
 import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyGreeting;
 import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -45,9 +45,9 @@ public class NullEntityProxyTest {
 
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(NullEntityProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NullEntityProxyTest.class.getSimpleName());
       war.addClasses(NullEntityProxy.class, NullEntityProxyGreeting.class, NullEntityProxyGreeter.class);
-      return TestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
    }
 
    private static String generateBaseUrl() {

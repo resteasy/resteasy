@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.crypto.resource.SigningProxy;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -69,7 +69,7 @@ public class SigningTest {
    static final String testJksPath;
 
    static {
-      testJksPath = TestUtil.getResourcePath(SigningTest.class, "SigningTest.jks");
+      testJksPath = ReasteasyTestUtil.getResourcePath(SigningTest.class, "SigningTest.jks");
    }
 
    @Before
@@ -84,7 +84,7 @@ public class SigningTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SigningTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SigningTest.class.getSimpleName());
       war.addClass(SigningProxy.class);
       war.addAsResource(SigningTest.class.getPackage(), "SigningTest.jks", "test.jks");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -95,7 +95,7 @@ public class SigningTest {
       contextParams.put("resteasy.doseta.keystore.password", "password");
       contextParams.put("resteasy.context.objects", "org.jboss.resteasy.security.doseta.KeyRepository : org.jboss.resteasy.security.doseta.ConfiguredDosetaKeyRepository");
       contextParams.put("resteasy.doseta.use.dns", "false");
-      return TestUtil.finishContainerPrepare(war, contextParams, SigningResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, SigningResource.class);
    }
 
    private String generateURL(String path) {

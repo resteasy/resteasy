@@ -18,7 +18,7 @@ import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCod
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.TestResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -54,14 +54,14 @@ public class SpringMvcHttpResponseCodesTest {
 
    @Deployment
    private static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SpringMvcHttpResponseCodesTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SpringMvcHttpResponseCodesTest.class.getSimpleName());
       war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/web-secure.xml", "web.xml");
       war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/jboss-web.xml", "jboss-web.xml");
       war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/mvc-dispatcher-servlet.xml", "mvc-dispatcher-servlet.xml");
       war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/applicationContext.xml", "applicationContext.xml");
       war.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
       war.addClass(SpringMvcHttpResponseCodesPerson.class);
-      return TestUtil.finishContainerPrepare(war, null, SpringMvcHttpResponseCodesResource.class, TestResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SpringMvcHttpResponseCodesResource.class, TestResource.class);
    }
 
    @Before

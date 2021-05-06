@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultChar
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -79,66 +79,66 @@ public class InputPartDefaultCharsetOverwriteTest {
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteTest")
    public static Archive<?> createTestArchiveBasic() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteTest.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteService.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteService.class);
    }
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8")
    public static Archive<?> createTestArchiveContentTypeCharsetUTF8() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8.class,
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8.class,
             InputPartDefaultCharsetOverwriteService.class);
    }
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16")
    public static Archive<?> createTestArchiveContentTypeCharsetUTF8ContentTypeCharsetUTF16() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16.class,
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16.class,
             InputPartDefaultCharsetOverwriteService.class);
    }
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8")
    public static Archive<?> createTestArchiveContentTypeNoCharsetUTF8() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8.class,
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8.class,
             InputPartDefaultCharsetOverwriteService.class);
    }
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16")
    public static Archive<?> createTestArchiveContentTypeNoCharsetUTF16() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16.class,
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16.class,
             InputPartDefaultCharsetOverwriteService.class);
    }
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8")
    public static Archive<?> createTestArchiveNoContentTypeCharsetUTF8() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8.class,
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8.class,
             InputPartDefaultCharsetOverwriteService.class);
    }
 
    @Deployment(name = "InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16")
    public static Archive<?> createTestArchiveNoContentTypeCharsetUTF16() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16.class.getSimpleName());
       war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16.class,
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16.class,
             InputPartDefaultCharsetOverwriteService.class);
    }
 

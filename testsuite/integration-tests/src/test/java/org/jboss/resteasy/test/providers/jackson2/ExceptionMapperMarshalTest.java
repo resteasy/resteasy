@@ -18,7 +18,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public class ExceptionMapperMarshalTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
       war.addClass(Jackson2Test.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new RuntimePermission("getProtectionDomain"),
@@ -61,7 +61,7 @@ public class ExceptionMapperMarshalTest {
       ), "permissions.xml");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
             MyEntity.class, ExceptionMapperIOExceptionMapper.class,
             ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapperMarshalName.class, ExceptionMapperMarshalResource.class);
    }

@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapper;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapperRuntimeException;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -35,9 +35,9 @@ public class ResponseHeaderTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ResponseHeaderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseHeaderTest.class.getSimpleName());
       war.addClass(ResponseHeaderExceptionMapperRuntimeException.class);
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
               ResponseHeaderExceptionMapper.class,
               ResponseHeaderResource.class);
    }

@@ -18,7 +18,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -61,8 +61,8 @@ public class RetrieveRegisteredClassesTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(RetrieveRegisteredClassesTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, TestResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RetrieveRegisteredClassesTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TestResource.class);
    }
 
    @Test

@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.validation.resource.PathSuppressionClassValidator
 import org.jboss.resteasy.test.validation.resource.PathSuppressionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -45,14 +45,14 @@ public class PathSuppressionTest {
    static ResteasyClient client;
 
    public static Archive<?> generateArchive(String deploymentName, String suppressPath) {
-      WebArchive war = TestUtil.prepareArchive(deploymentName)
+      WebArchive war = ReasteasyTestUtil.prepareArchive(deploymentName)
             .addClasses(PathSuppressionResource.class)
             .addClasses(PathSuppressionClassConstraint.class, PathSuppressionClassValidator.class);
       Map<String, String> contextParam = new HashMap<>();
       if (suppressPath != null) {
          contextParam.put("resteasy.validation.suppress.path", suppressPath);
       }
-      return TestUtil.finishContainerPrepare(war, contextParam, PathSuppressionResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, PathSuppressionResource.class);
    }
 
    @BeforeClass
@@ -142,10 +142,10 @@ public class PathSuppressionTest {
       String answer = response.readEntity(String.class);
       assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       ViolationReport report = new ViolationReport(new ResteasyViolationExceptionImpl(String.class.cast(answer)));
-      TestUtil.countViolations(report, 2, 1, 1, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByPath(report.getPropertyViolations(), fieldPath);
+      ReasteasyTestUtil.countViolations(report, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByPath(report.getPropertyViolations(), fieldPath);
       Assert.assertNotNull("Expected validation error is not in response", violation);
-      violation = TestUtil.getViolationByPath(report.getPropertyViolations(), propertyPath);
+      violation = ReasteasyTestUtil.getViolationByPath(report.getPropertyViolations(), propertyPath);
       Assert.assertNotNull("Expected validation error is not in response", violation);
       violation = report.getClassViolations().iterator().next();
       Assert.assertEquals("Expected validation error is not in response", classPath, violation.getPath());
@@ -163,7 +163,7 @@ public class PathSuppressionTest {
       String answer = response.readEntity(String.class);
       assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       ViolationReport report = new ViolationReport(new ResteasyViolationExceptionImpl(String.class.cast(answer)));
-      TestUtil.countViolations(report, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(report, 0, 0, 0, 1);
       ResteasyConstraintViolation violation = report.getReturnValueViolations().iterator().next();
       Assert.assertEquals("Expected validation error is not in response", returnValuePath, violation.getPath());
       response.close();

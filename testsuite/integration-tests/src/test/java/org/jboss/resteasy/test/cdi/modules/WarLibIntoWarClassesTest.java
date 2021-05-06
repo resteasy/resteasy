@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesModulesResourceInt
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -45,7 +45,7 @@ public class WarLibIntoWarClassesTest {
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar")
             .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
             .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
-      WebArchive war = TestUtil.prepareArchive(WarLibIntoWarClassesTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WarLibIntoWarClassesTest.class.getSimpleName())
             .addClasses(UtilityProducer.class)
             .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
             .addAsLibrary(jar)

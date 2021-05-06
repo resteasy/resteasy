@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.response.resource.RangeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -50,11 +50,11 @@ public class RangeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(RangeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RangeTest.class.getSimpleName());
       // Deployment creates file in the filesystem
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new FilePermission(File.separator + "tmp" + File.separator + "-", "read,write,delete")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, RangeResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, RangeResource.class);
    }
 
    @AfterClass

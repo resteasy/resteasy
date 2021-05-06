@@ -12,7 +12,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.path.resource.PathParamMissingDefaultValueBeanParamEntity;
 import org.jboss.resteasy.test.resource.path.resource.PathParamMissingDefaultValueResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -30,9 +30,9 @@ public class PathParamMissingDefaultValueTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PathParamMissingDefaultValueTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PathParamMissingDefaultValueTest.class.getSimpleName());
       war.addClass(PathParamMissingDefaultValueBeanParamEntity.class);
-      return TestUtil.finishContainerPrepare(war, null, PathParamMissingDefaultValueResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PathParamMissingDefaultValueResource.class);
    }
 
    private String generateURL(String path) {

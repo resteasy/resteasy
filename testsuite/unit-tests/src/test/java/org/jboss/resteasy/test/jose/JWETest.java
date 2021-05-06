@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.resteasy.jose.jwe.JWEBuilder;
 import org.jboss.resteasy.jose.jwe.JWEInput;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.FixMethodOrder;
@@ -34,7 +34,7 @@ public class JWETest {
     */
    @Test
    public void testRSA() throws Exception {
-      Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
+      Assume.assumeTrue(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), ReasteasyTestUtil.isOpenJDK());
       KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
       String content = "Live long and prosper.";
@@ -75,7 +75,7 @@ public class JWETest {
     */
    @Test
    public void testDirect() throws Exception {
-      Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
+      Assume.assumeTrue(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), ReasteasyTestUtil.isOpenJDK());
       String content = "Live long and prosper.";
       String encoded = new JWEBuilder().contentBytes(content.getBytes()).dir("geheim");
       logger.info("encoded: " + encoded);

@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.resource.basic.resource.CovariantReturnSubresourc
 import org.jboss.resteasy.test.resource.basic.resource.CovariantReturnSubresourceLocatorsSubProxySubImpl;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,9 +32,9 @@ public class CovariantReturnSubresourceLocatorsTest {
 
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(CovariantReturnSubresourceLocatorsTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CovariantReturnSubresourceLocatorsTest.class.getSimpleName());
       war.addClasses(CovariantReturnSubresourceLocatorsRootProxy.class, CovariantReturnSubresourceLocatorsSubProxy.class);
-      return TestUtil.finishContainerPrepare(war, null, CovariantReturnSubresourceLocatorsSubProxyRootImpl.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CovariantReturnSubresourceLocatorsSubProxyRootImpl.class,
             CovariantReturnSubresourceLocatorsSubProxySubImpl.class);
    }
 

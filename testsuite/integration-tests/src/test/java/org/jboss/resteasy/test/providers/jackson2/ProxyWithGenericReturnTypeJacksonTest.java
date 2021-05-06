@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.ProxyWithGenericRetur
 import org.jboss.resteasy.test.providers.jackson2.resource.ProxyWithGenericReturnTypeJacksonType2;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -39,9 +39,9 @@ public class ProxyWithGenericReturnTypeJacksonTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
       war.addClass(Jackson2Test.class);
-      return TestUtil.finishContainerPrepare(war, null, ProxyWithGenericReturnTypeJacksonAbstractParent.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProxyWithGenericReturnTypeJacksonAbstractParent.class,
             ProxyWithGenericReturnTypeJacksonResource.class, ProxyWithGenericReturnTypeJacksonSubResourceIntf.class,
             ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class, ProxyWithGenericReturnTypeJacksonType1.class,
             ProxyWithGenericReturnTypeJacksonType2.class);

@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.ReaderContextResource;
 import org.jboss.resteasy.test.core.interceptors.resource.ReaderContextSecondReaderInterceptor;
 import org.jboss.resteasy.test.core.interceptors.resource.ReaderContextSecondWriterInterceptor;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -52,8 +52,8 @@ public class ReaderContextTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ReaderContextTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ReaderContextResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReaderContextTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReaderContextResource.class,
             ReaderContextArrayListEntityProvider.class,
             ReaderContextLinkedListEntityProvider.class,
             ReaderContextFirstReaderInterceptor.class,

@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.basic.resource.ClassLevelMediaTypeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -28,8 +28,8 @@ public class ClassLevelMediaTypeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClassLevelMediaTypeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ClassLevelMediaTypeResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClassLevelMediaTypeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClassLevelMediaTypeResource.class);
    }
 
    @BeforeClass

@@ -16,7 +16,7 @@ import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilt
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectWriterModifierFilter;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.PersonType;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -37,12 +37,12 @@ public class JsonFilterSuperClassTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonFilterSuperClassTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonFilterSuperClassTest.class.getSimpleName());
       war.addClasses(JsonFilterParent.class, JsonFilterChild.class, PersonType.class, ObjectFilterModifier.class,
             ObjectWriterModifierFilter.class);
       war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
       war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
    }
 
    private String generateURL(String path) {

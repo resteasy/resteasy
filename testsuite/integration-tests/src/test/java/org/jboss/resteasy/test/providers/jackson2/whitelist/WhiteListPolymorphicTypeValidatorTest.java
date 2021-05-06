@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jackson2.whitelist.model.TestPolymorphi
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.air.Aircraft;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.land.Automobile;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -51,12 +51,12 @@ public class WhiteListPolymorphicTypeValidatorTest {
 
     @Deployment(name = "default")
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorTest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorTest.class.getSimpleName());
         war.addClass(WhiteListPolymorphicTypeValidatorTest.class);
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", Automobile.class.getPackage().getName());
         contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", Automobile.class.getPackage().getName());
-        return TestUtil.finishContainerPrepare(war, contextParam, JaxRsActivator.class, TestRESTService.class,
+        return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, JaxRsActivator.class, TestRESTService.class,
                 TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Aircraft.class);
     }
 

@@ -27,7 +27,7 @@ import org.jboss.resteasy.test.cdi.validation.resource.SubResourceImpl;
 import org.jboss.resteasy.test.cdi.validation.resource.TestApplication;
 import org.jboss.resteasy.test.cdi.validation.resource.ValidResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -51,7 +51,7 @@ public class ValidationWithCDITest
    @Deployment(testable = false)
    public static Archive<?> createTestArchive()
    {
-      WebArchive war = TestUtil.prepareArchive(ValidationWithCDITest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationWithCDITest.class.getSimpleName());
       war.addClasses(TestApplication.class)
          .addClasses(QueryBeanParam.class, QueryBeanParamImpl.class)
          .addClasses(RootResource.class, RootResourceImpl.class, ValidResource.class)
@@ -62,7 +62,7 @@ public class ValidationWithCDITest
          .addClasses(AsyncValidResource.class)
               .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .addAsWebInfResource(ValidationWithCDITest.class.getPackage(), "web.xml", "/web.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    protected Client client;

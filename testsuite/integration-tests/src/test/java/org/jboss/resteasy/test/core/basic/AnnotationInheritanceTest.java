@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceSomeOthe
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceSuperInt;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceSuperIntAbstract;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -33,10 +33,10 @@ public class AnnotationInheritanceTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(AnnotationInheritanceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AnnotationInheritanceTest.class.getSimpleName());
       war.addClasses(AnnotationInheritanceSuperInt.class, AnnotationInheritanceSuperIntAbstract.class,
             AnnotationInheritanceNotAResource.class, AnnotationInheritanceSomeOtherInterface.class);
-      return TestUtil.finishContainerPrepare(war, null, AnnotationInheritanceSomeOtherResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AnnotationInheritanceSomeOtherResource.class);
    }
 
    @Before

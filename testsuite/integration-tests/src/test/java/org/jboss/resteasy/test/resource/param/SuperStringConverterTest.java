@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterPerso
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterResource;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterSuperPersonConverter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 public class SuperStringConverterTest {
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SuperStringConverterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SuperStringConverterTest.class.getSimpleName());
       war.addClass(SuperStringConverterPerson.class);
       war.addClass(SuperStringConverterObjectConverter.class);
       war.addClass(SuperStringConverterSuperPersonConverter.class);
@@ -46,7 +46,7 @@ public class SuperStringConverterTest {
       war.addClass(SuperStringConverterMyClient.class);
       war.addClass(SuperStringConverterCompany.class);
       war.addClass(SuperStringConverterCompanyConverterProvider.class);
-      return TestUtil.finishContainerPrepare(war, null, SuperStringConverterPersonConverter.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SuperStringConverterPersonConverter.class,
             SuperStringConverterCompanyConverter.class, SuperStringConverterCompanyConverterProvider.class,
             SuperStringConverterResource.class);
    }

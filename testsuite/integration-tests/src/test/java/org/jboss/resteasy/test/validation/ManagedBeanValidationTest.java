@@ -10,7 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.validation.resource.ManagedBeanValidationApplication;
 import org.jboss.resteasy.test.validation.resource.ManagedBeanValidationResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -34,9 +34,9 @@ public class ManagedBeanValidationTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchiveWithApplication(ManagedBeanValidationTest.class.getSimpleName(), ManagedBeanValidationApplication.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchiveWithApplication(ManagedBeanValidationTest.class.getSimpleName(), ManagedBeanValidationApplication.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, ManagedBeanValidationResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ManagedBeanValidationResource.class);
    }
 
    private static String generateURL(String path) {

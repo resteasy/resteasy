@@ -19,7 +19,7 @@ import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -57,7 +57,7 @@ public class TwoSecurityDomainsTest {
 
    @Deployment(name= "SECURITY_DOMAIN_DEPLOYMENT_1")
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1);
 
       Hashtable<String, String> contextParams = new Hashtable<String, String>();
       contextParams.put("resteasy.role.based.security", "true");
@@ -65,12 +65,12 @@ public class TwoSecurityDomainsTest {
       war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
             .addAsWebInfResource(TwoSecurityDomainsTest.class.getPackage(), "web.xml", "/web.xml");
 
-      return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
    }
 
    @Deployment(name= "SECURITY_DOMAIN_DEPLOYMENT_2")
    public static Archive<?> deploy2() {
-      WebArchive war = TestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2);
 
       Hashtable<String, String> contextParams = new Hashtable<String, String>();
       contextParams.put("resteasy.role.based.security", "true");
@@ -78,7 +78,7 @@ public class TwoSecurityDomainsTest {
       war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web2.xml", "/jboss-web.xml")
             .addAsWebInfResource(TwoSecurityDomainsTest.class.getPackage(), "web.xml", "/web.xml");
 
-      return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
    }
 
    @BeforeClass

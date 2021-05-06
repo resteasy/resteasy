@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.providers.map.resource.MapProvider;
 import org.jboss.resteasy.test.providers.map.resource.MapProviderAbstractProvider;
 import org.jboss.resteasy.test.providers.map.resource.MapProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,9 +40,9 @@ public class MapProviderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MapProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MapProviderTest.class.getSimpleName());
       war.addClasses(MapProviderAbstractProvider.class);
-      return TestUtil.finishContainerPrepare(war, null, MapProviderResource.class, MapProvider.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MapProviderResource.class, MapProvider.class);
    }
 
    private String generateURL(String path) {

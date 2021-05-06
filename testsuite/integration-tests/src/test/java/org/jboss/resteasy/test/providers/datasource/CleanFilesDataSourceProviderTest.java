@@ -16,7 +16,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.CleanFilesDataSourceProviderResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -51,13 +51,13 @@ public class CleanFilesDataSourceProviderTest {
 
    @Deployment()
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
       // DataSource provider creates tmp file in the filesystem
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new PropertyPermission("java.io.tmpdir", "read"),
             new FilePermission("/tmp/-", "read"),
             new FilePermission("/tmp", "read")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
    }
 
    @Before
@@ -130,7 +130,7 @@ public class CleanFilesDataSourceProviderTest {
       // check http request results
       int postStatus = response.getStatusLine().getStatusCode();
       String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."), HttpStatus.SC_OK, postStatus);
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."), HttpStatus.SC_OK, postStatus);
       Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
 
       // count temporary files after

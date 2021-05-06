@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.SubResourceLocatorProxyBookResource;
 import org.jboss.resteasy.test.client.proxy.resource.SubResourceLocatorProxyChapterResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -56,9 +56,9 @@ public class SubResourceLocatorProxyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SubResourceLocatorProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SubResourceLocatorProxyTest.class.getSimpleName());
       war.addClass(SubResourceLocatorProxyTest.class);
-      return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorProxyBookResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SubResourceLocatorProxyBookResource.class,
             SubResourceLocatorProxyChapterResource.class);
    }
 

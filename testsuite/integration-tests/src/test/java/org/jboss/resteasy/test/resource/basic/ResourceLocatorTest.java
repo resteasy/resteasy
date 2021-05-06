@@ -26,7 +26,7 @@ import org.jboss.resteasy.test.resource.basic.resource.ResourceLocatorSubresourc
 import org.jboss.resteasy.test.resource.basic.resource.ResourceLocatorSubresource3;
 import org.jboss.resteasy.test.resource.basic.resource.ResourceLocatorSubresource3Interface;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -59,14 +59,14 @@ public class ResourceLocatorTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResourceLocatorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceLocatorTest.class.getSimpleName());
       war.addClass(ResourceLocatorQueueReceiver.class)
          .addClass(ResourceLocatorReceiver.class)
          .addClass(ResourceLocatorRootInterface.class)
          .addClass(ResourceLocatorSubInterface.class)
          .addClass(ResourceLocatorSubresource3Interface.class)
          ;
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             ResourceLocatorAbstractAnnotationFreeResouce.class,
             ResourceLocatorAnnotationFreeSubResource.class,
             ResourceLocatorBaseResource.class,

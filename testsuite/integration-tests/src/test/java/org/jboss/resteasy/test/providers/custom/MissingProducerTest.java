@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.providers.custom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -27,21 +27,21 @@ public class MissingProducerTest {
    private static int initLogMsg3Count = parseLog3();
 
    private static int parseLog1() {
-      return TestUtil.getWarningCount("RESTEASY002120: ClassNotFoundException: ", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002120: ClassNotFoundException: ", false, DEFAULT_CONTAINER_QUALIFIER);
    }
    private static int parseLog2() {
-      return TestUtil.getWarningCount("Unable to load builtin provider org.jboss.resteasy.Missing from ", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("Unable to load builtin provider org.jboss.resteasy.Missing from ", false, DEFAULT_CONTAINER_QUALIFIER);
    }
    private static int parseLog3() {
-      return TestUtil.getWarningCount("classes/META-INF/services/javax.ws.rs.ext.Providers", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("classes/META-INF/services/javax.ws.rs.ext.Providers", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(MissingProducerTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MissingProducerTest.class.getSimpleName());
       war.addAsResource(MissingProducerTest.class.getPackage(), "MissingProducer.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    /**

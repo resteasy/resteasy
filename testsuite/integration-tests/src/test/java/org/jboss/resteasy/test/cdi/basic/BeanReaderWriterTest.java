@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.cdi.basic.resource.BeanReaderWriterService;
 import org.jboss.resteasy.test.cdi.basic.resource.BeanReaderWriterXFormat;
 import org.jboss.resteasy.test.cdi.basic.resource.BeanReaderWriterXFormatProvider;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 public class BeanReaderWriterTest {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(BeanReaderWriterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BeanReaderWriterTest.class.getSimpleName());
       war.addClasses(BeanReaderWriterConfigBean.class,
             BeanReaderWriterService.class, BeanReaderWriterXFormat.class, BeanReaderWriterXFormatProvider.class);
 

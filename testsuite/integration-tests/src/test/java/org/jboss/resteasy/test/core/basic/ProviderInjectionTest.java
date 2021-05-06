@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.core.basic.resource.ProviderInjectionSimpleMessag
 import org.jboss.resteasy.test.core.basic.resource.ProviderInjectionSimpleResource;
 import org.jboss.resteasy.test.core.basic.resource.ProviderInjectionSimpleResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,10 +34,10 @@ public class ProviderInjectionTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ProviderInjectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProviderInjectionTest.class.getSimpleName());
       war.addClass(ProviderInjectionSimpleResource.class);
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ProviderInjectionSimpleMessageBodyWriter.class, ProviderInjectionSimpleResourceImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProviderInjectionSimpleMessageBodyWriter.class, ProviderInjectionSimpleResourceImpl.class);
    }
 
    @Before

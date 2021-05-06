@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.form.resource.NestedCollectionsFormResource;
 import org.jboss.resteasy.test.form.resource.NestedCollectionsFormTelephoneNumber;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -40,12 +40,12 @@ public class NestedCollectionsFormTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(NestedCollectionsFormTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NestedCollectionsFormTest.class.getSimpleName());
       war.addClass(NestedCollectionsFormTelephoneNumber.class);
       war.addClass(NestedCollectionsFormPerson.class);
       war.addClass(NestedCollectionsFormCountry.class);
       war.addClass(NestedCollectionsFormAddress.class);
-      return TestUtil.finishContainerPrepare(war, null, NestedCollectionsFormResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, NestedCollectionsFormResource.class);
    }
 
    private String generateURL(String path) {

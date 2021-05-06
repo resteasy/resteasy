@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerFr
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerService;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerSport;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -39,12 +39,12 @@ public class StringParamUnmarshallerTest {
    }
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(StringParamUnmarshallerTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(StringParamUnmarshallerTest.class.getSimpleName());
       war.addClass(StringParamUnmarshallerDateFormatter.class);
       war.addClass(StringParamUnmarshallerFruit.class);
       war.addClass(StringParamUnmarshallerSport.class);
       war.addClass(StringParamUnmarshallerDateFormat.class);
-      return TestUtil.finishContainerPrepare(war, null, StringParamUnmarshallerService.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, StringParamUnmarshallerService.class);
    }
 
    private String generateURL(String path) {

@@ -9,7 +9,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationNullErrorValueResourceWithNullFieldAndProperty;
 import org.jboss.resteasy.test.validation.resource.ValidationNullErrorValueResourceWithNullParameterAndReturnValue;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -34,8 +34,8 @@ public class ValidationNullErrorValueTest {
    static ResteasyClient client;
 
    public static Archive<?> generateArchive(Class<?> clazz) {
-      WebArchive war = TestUtil.prepareArchive(clazz.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, clazz);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(clazz.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, clazz);
    }
 
    @BeforeClass
@@ -67,7 +67,7 @@ public class ValidationNullErrorValueTest {
       Response response = client.target(PortProviderUtil.generateURL("/get",
             ValidationNullErrorValueResourceWithNullFieldAndProperty.class.getSimpleName())).request().accept(MediaType.APPLICATION_XML).get();
       ViolationReport report = response.readEntity(ViolationReport.class);
-      TestUtil.countViolations(report, 2, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(report, 2, 0, 0, 0);
       response.close();
    }
 
@@ -83,7 +83,7 @@ public class ValidationNullErrorValueTest {
                ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
                .accept(MediaType.APPLICATION_XML).post(Entity.text(new String()));
          ViolationReport report = response.readEntity(ViolationReport.class);
-         TestUtil.countViolations(report, 0, 0, 1, 0);
+         ReasteasyTestUtil.countViolations(report, 0, 0, 1, 0);
          response.close();
       }
 
@@ -93,7 +93,7 @@ public class ValidationNullErrorValueTest {
                ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
                .accept(MediaType.APPLICATION_XML).get();
          ViolationReport report = response.readEntity(ViolationReport.class);
-         TestUtil.countViolations(report, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(report, 0, 0, 0, 1);
          response.close();
       }
    }

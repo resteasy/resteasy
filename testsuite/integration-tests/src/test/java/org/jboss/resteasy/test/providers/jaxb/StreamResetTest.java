@@ -16,7 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 
 import javax.ws.rs.client.WebTarget;
@@ -37,9 +37,9 @@ public class StreamResetTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(StreamResetTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(StreamResetTest.class.getSimpleName());
       war.addClass(StreamResetTest.class);
-      return TestUtil.finishContainerPrepare(war, null, StreamResetPlace.class, StreamResetPerson.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, StreamResetPlace.class, StreamResetPerson.class,
             StreamResetResource.class);
    }
 

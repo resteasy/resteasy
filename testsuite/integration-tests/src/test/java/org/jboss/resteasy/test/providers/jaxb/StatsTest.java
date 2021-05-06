@@ -23,7 +23,7 @@ import org.jboss.resteasy.plugins.stats.GetResourceMethod;
 import org.jboss.resteasy.test.providers.jaxb.resource.StatsProxy;
 import org.jboss.resteasy.test.providers.jaxb.resource.StatsResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -45,9 +45,9 @@ public class StatsTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(StatsTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(StatsTest.class.getSimpleName());
       war.addClass(StatsTest.class);
-      return TestUtil.finishContainerPrepare(war, null, StatsResource.class, RegistryStatsResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, StatsResource.class, RegistryStatsResource.class,
             ResourceMethodEntry.class, GetResourceMethod.class, PutResourceMethod.class, DeleteResourceMethod.class,
             PostResourceMethod.class, OptionsResourceMethod.class, HeadResourceMethod.class, TraceResourceMethod.class,
             RegistryData.class, RegistryEntry.class, SubresourceLocator.class);

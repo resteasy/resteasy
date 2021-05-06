@@ -16,7 +16,7 @@ import javax.ws.rs.core.FeatureContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,11 +34,11 @@ public class ClientBuilderTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
-      war.addClass(TestUtil.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
+      war.addClass(ReasteasyTestUtil.class);
       // Arquillian in the deployment and use of TestUtil
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-            new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
+            new FilePermission(ReasteasyTestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
                   File.separator + "server.log", "read"),
             new LoggingPermission("control", ""),
             new PropertyPermission("arquillian.*", "read"),
@@ -46,7 +46,7 @@ public class ClientBuilderTest {
             new PropertyPermission("jboss.server.base.dir", "read"),
             new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
 
@@ -59,7 +59,7 @@ public class ClientBuilderTest {
    }
 
    private int getWarningCount() {
-      return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    /**
@@ -86,16 +86,16 @@ public class ClientBuilderTest {
     */
    @Test
    public void testDoubleRegistration() {
-      int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
-      int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+      int countRESTEASY002160 = ReasteasyTestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
+      int countRESTEASY002155 = ReasteasyTestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
       Client client = ClientBuilder.newClient();
       int count = client.getConfiguration().getInstances().size();
       Object reg = new FeatureReturningFalse();
 
       client.register(reg).register(reg);
       client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
-      Assert.assertEquals("Expect 1 warnining messages of Provider instance is already registered", 1, TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002160);
-      Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2, TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155);
+      Assert.assertEquals("Expect 1 warnining messages of Provider instance is already registered", 1, ReasteasyTestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002160);
+      Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2, ReasteasyTestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155);
       Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
 
       client.close();

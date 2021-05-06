@@ -25,7 +25,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;
 import org.jboss.resteasy.test.core.interceptors.resource.Pair;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -51,13 +51,13 @@ public class GzipSizeTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(GzipSizeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GzipSizeTest.class.getSimpleName());
       war.addClasses(GzipIGZIP.class, Pair.class);
       // Activate gzip compression on server:
       war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT, "16");
-      return TestUtil.finishContainerPrepare(war, contextParam, GzipResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, GzipResource.class);
    }
 
    private String generateURL(String path) {

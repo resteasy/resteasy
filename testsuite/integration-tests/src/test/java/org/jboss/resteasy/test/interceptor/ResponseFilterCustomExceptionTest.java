@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.interceptor.resource.CustomException;
 import org.jboss.resteasy.test.interceptor.resource.ThrowCustomExceptionResponseFilter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -31,10 +31,10 @@ import org.junit.runner.RunWith;
 public class ResponseFilterCustomExceptionTest {
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResponseFilterCustomExceptionTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseFilterCustomExceptionTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       war.addClasses(CustomException.class);
-      return TestUtil.finishContainerPrepare(war, null, ThrowCustomExceptionResponseFilter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ThrowCustomExceptionResponseFilter.class);
    }
 
    static Client client;

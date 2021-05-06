@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Re
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifierConditional;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectWriterModifierConditionalFilter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -39,11 +39,11 @@ public class JsonFilterWithServletConditionalFilterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
       war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class, ObjectWriterModifierConditionalFilter.class);
       war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
       war.addAsWebInfResource(JsonFilterWithServletConditionalFilterTest.class.getPackage(), "web-filter-conditional.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Jackson2Resource.class);
    }
 
    private String generateURL(String path) {

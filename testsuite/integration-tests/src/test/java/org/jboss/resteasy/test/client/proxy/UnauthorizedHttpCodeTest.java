@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.client.proxy.resource.UnauthorizedHttpCodeProxy;
 import org.jboss.resteasy.test.client.proxy.resource.UnauthorizedHttpCodeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class UnauthorizedHttpCodeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(UnauthorizedHttpCodeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, UnauthorizedHttpCodeResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UnauthorizedHttpCodeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UnauthorizedHttpCodeResource.class);
    }
 
    /**

@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.exception.resource.ExceptionMapperCustomRuntimeEx
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperCustomRuntimeMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperCustomRuntimeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,9 +32,9 @@ public class ExceptionMapperCustomRuntimeExceptionTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ExceptionMapperCustomRuntimeExceptionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ExceptionMapperCustomRuntimeExceptionTest.class.getSimpleName());
       war.addClass(ExceptionMapperCustomRuntimeException.class);
-      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperCustomRuntimeCustomMapper.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExceptionMapperCustomRuntimeCustomMapper.class,
             ExceptionMapperCustomRuntimeResource.class, ExceptionMapperCustomRuntimeMapper.class);
    }
 

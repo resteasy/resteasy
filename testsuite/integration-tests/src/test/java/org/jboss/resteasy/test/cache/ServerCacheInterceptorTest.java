@@ -18,7 +18,7 @@ import org.jboss.resteasy.plugins.cache.server.ServerCacheInterceptor;
 import org.jboss.resteasy.test.cache.resource.ServerCacheInterceptorResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -48,12 +48,12 @@ public class ServerCacheInterceptorTest {
    public static Archive<?> deploySimpleResource() {
       List<Class<?>> singletons = new ArrayList<>();
       singletons.add(ServerCacheFeature.class);
-      WebArchive war = TestUtil.prepareArchive(ServerCacheInterceptorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ServerCacheInterceptorTest.class.getSimpleName());
       // This test is not supposed to run with security manager
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new AllPermission()), "permissions.xml");
       war.addClasses(ServerCache.class, InfinispanCache.class, ServerCacheHitFilter.class, ServerCacheInterceptor.class);
       war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.infinispan\n"), "MANIFEST.MF");
-      return TestUtil.finishContainerPrepare(war, null, singletons, ServerCacheInterceptorResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, ServerCacheInterceptorResource.class);
    }
 
    private String generateURL(String path) {

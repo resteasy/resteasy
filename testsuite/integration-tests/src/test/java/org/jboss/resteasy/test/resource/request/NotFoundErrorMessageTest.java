@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.basic.resource.DuplicateDeploymentResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -44,14 +44,14 @@ public class NotFoundErrorMessageTest {
    }
 
    private static int getWarningCount() {
-      return TestUtil.getWarningCount("RESTEASY002010", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002010", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    @Deployment
    public static Archive<?> deploy() {
 
-      WebArchive war = TestUtil.prepareArchive(NotFoundErrorMessageTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, DuplicateDeploymentResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NotFoundErrorMessageTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DuplicateDeploymentResource.class);
    }
 
    private String generateURL(String path) {

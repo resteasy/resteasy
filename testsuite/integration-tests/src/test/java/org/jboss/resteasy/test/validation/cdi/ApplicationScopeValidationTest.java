@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeMyDto;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeRestServiceAppScoped;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeRestServiceReqScoped;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -43,13 +43,13 @@ public class ApplicationScopeValidationTest {
 
    @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ApplicationScopeValidationTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ApplicationScopeValidationTest.class.getSimpleName())
                .addClasses(ApplicationScopeIRestServiceAppScoped.class, ApplicationScopeIRestServiceReqScoped.class)
                .addClasses(ApplicationScopeMyDto.class)
                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
    }
 
    private String generateURL(String path) {

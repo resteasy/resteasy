@@ -17,7 +17,7 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -39,17 +39,17 @@ public class SsePostResourceMethodInvokerTest {
 
    @Deployment(name = WITH_EXCEPTION_REQUEST_FILTER)
    public static Archive<?> deployWithoutExceptionRequestFilter() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(WITH_EXCEPTION_REQUEST_FILTER);
-      return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SsePostResourceMethodInvokerTestResource.class),
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WITH_EXCEPTION_REQUEST_FILTER);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Arrays.asList(SsePostResourceMethodInvokerTestResource.class),
             SsePostResourceMethodInvokerTestResource.ExceptionRequestFilter.class);
    }
 
    @Deployment(name = WITHOUT_EXCEPTION_REQUEST_FILTER)
    public static Archive<?> deployWithExceptionRequestFilter() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(WITHOUT_EXCEPTION_REQUEST_FILTER);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WITHOUT_EXCEPTION_REQUEST_FILTER);
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/synch-web.xml", "web.xml");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, SsePostResourceMethodInvokerTestResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SsePostResourceMethodInvokerTestResource.class,
             SsePostResourceMethodInvokerApplication.class);
    }
 

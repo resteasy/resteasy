@@ -18,7 +18,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.ReadFromSocketDataSourceProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.resteasy.plugins.providers.DataSourceProvider;
@@ -43,8 +43,8 @@ public class ReadFromSocketDataSourceProviderTest {
 
    @Deployment()
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ReadFromSocketDataSourceProviderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ReadFromSocketDataSourceProviderResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReadFromSocketDataSourceProviderTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReadFromSocketDataSourceProviderResource.class);
    }
 
    @Before

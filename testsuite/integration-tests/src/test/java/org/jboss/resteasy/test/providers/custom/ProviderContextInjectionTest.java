@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ProviderContextInjectio
 import org.jboss.resteasy.test.providers.custom.resource.ProviderContextInjectionResource;
 import org.jboss.resteasy.test.providers.custom.resource.ProviderContextInjectionTextPlainEnumContextResolver;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -41,9 +41,9 @@ public class ProviderContextInjectionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProviderContextInjectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProviderContextInjectionTest.class.getSimpleName());
       war.addClasses(ProviderContextInjectionEnumProvider.class);
-      return TestUtil.finishContainerPrepare(war, null, ProviderContextInjectionResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProviderContextInjectionResource.class,
             ProviderContextInjectionAnyExceptionExceptionMapper.class, ProviderContextInjectionIOExceptionExceptionMapper.class,
             ProviderContextInjectionEnumContextResolver.class, ProviderContextInjectionTextPlainEnumContextResolver.class);
    }

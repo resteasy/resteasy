@@ -14,7 +14,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.asynch.resource.AsynchCounterResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -47,11 +47,11 @@ public class AsynchCounterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AsynchCounterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsynchCounterTest.class.getSimpleName());
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.async.job.service.enabled", "true");
       contextParam.put("resteasy.secure.random.max.use", "2");
-      return TestUtil.finishContainerPrepare(war, contextParam, AsynchCounterResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, AsynchCounterResource.class);
    }
 
    private String generateURL(String path) {

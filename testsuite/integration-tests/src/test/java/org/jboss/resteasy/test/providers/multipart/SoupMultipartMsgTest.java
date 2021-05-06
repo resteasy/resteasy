@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.Soup;
 import org.jboss.resteasy.test.providers.multipart.resource.SoupVendorResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -42,13 +42,13 @@ public class SoupMultipartMsgTest {
 
     @Deployment
     public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(SoupMultipartMsgTest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(SoupMultipartMsgTest.class.getSimpleName());
         war.addClasses(Soup.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks")
         ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, SoupVendorResource.class);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, SoupVendorResource.class);
     }
 
     @BeforeClass

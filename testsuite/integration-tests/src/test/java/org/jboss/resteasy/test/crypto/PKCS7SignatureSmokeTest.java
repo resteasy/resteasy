@@ -8,7 +8,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.test.crypto.resource.PKCS7SignatureSmokeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -48,10 +48,10 @@ public class PKCS7SignatureSmokeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PKCS7SignatureSmokeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PKCS7SignatureSmokeTest.class.getSimpleName());
       List<Class<?>> singletons = new ArrayList<>(1);
       singletons.add(PKCS7SignatureSmokeResource.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
    }
 
    private String generateURL() {

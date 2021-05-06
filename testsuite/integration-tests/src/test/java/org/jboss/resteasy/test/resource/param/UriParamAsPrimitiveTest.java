@@ -30,7 +30,7 @@ import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResour
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriShortWrapper;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -63,11 +63,11 @@ public class UriParamAsPrimitiveTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(UriParamAsPrimitiveTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriParamAsPrimitiveTest.class.getSimpleName());
       war.addClass(UriParamAsPrimitiveResourceUriBooleanInterface.class);
       war.addClass(UriParamAsPrimitiveResourceUriByteInterface.class);
       war.addClass(UriParamAsPrimitiveTest.class);
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             UriParamAsPrimitiveResourceUriBoolean.class,
             UriParamAsPrimitiveResourceUriByte.class,
             UriParamAsPrimitiveResourceUriShort.class,

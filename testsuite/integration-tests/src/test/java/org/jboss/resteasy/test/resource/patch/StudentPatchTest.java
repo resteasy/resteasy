@@ -21,7 +21,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -50,16 +50,16 @@ public class StudentPatchTest {
 
    @Deployment(name=PATCH_DEPLOYMENT, order = 1)
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(StudentPatchTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, StudentResource.class, Student.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(StudentPatchTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, StudentResource.class, Student.class);
    }
 
    @Deployment(name=DISABLED_PATCH_DEPLOYMENT, order = 2)
    public static Archive<?> createDisablePatchFilterDeployment() {
-       WebArchive war = TestUtil.prepareArchive(DISABLED_PATCH_DEPLOYMENT);
+       WebArchive war = ReasteasyTestUtil.prepareArchive(DISABLED_PATCH_DEPLOYMENT);
        Map<String, String> contextParam = new HashMap<>();
        contextParam.put(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED, "true");
-       return TestUtil.finishContainerPrepare(war, contextParam, StudentResource.class, Student.class);
+       return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, StudentResource.class, Student.class);
    }
 
    private String generateURL(String path) {

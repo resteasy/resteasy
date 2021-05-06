@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.SyncInvokeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -42,9 +42,9 @@ public class SyncInvokeTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SyncInvokeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SyncInvokeTest.class.getSimpleName());
       war.addClass(SyncInvokeTest.class);
-      return TestUtil.finishContainerPrepare(war, null, SyncInvokeResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SyncInvokeResource.class);
    }
 
    @Before

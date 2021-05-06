@@ -21,7 +21,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -40,12 +40,12 @@ public class SseEventSinkTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(SseEventSinkTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseEventSinkTest.class.getSimpleName());
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class),ExecutorServletContextListener.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class),ExecutorServletContextListener.class);
    }
 
    private String generateURL(String path)

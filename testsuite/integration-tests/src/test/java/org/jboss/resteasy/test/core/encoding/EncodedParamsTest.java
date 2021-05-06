@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.core.encoding.resource.EncodedParamsComplexResour
 import org.jboss.resteasy.test.core.encoding.resource.EncodedParamsSimpleResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,9 +32,9 @@ public class EncodedParamsTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EncodedParamsTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EncodedParamsTest.class.getSimpleName());
       war.addClass(EncodedParamsTest.class);
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             EncodedParamsComplexResource.class, EncodedParamsSimpleResource.class);
    }
 

@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceStereotype
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -42,12 +42,12 @@ public class AlternativeSelectedInheritanceTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(AlternativeSelectedInheritanceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AlternativeSelectedInheritanceTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class)
             .addClasses(CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class)
             .addClasses(CDIInheritenceBook.class, CDIInheritenceBookVanillaAlternative.class, CDIInheritenceBookSelectedAlternative.class, CDIInheritenceInheritanceResource.class)
             .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "alternativeSelectedBeans.xml", "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    /**

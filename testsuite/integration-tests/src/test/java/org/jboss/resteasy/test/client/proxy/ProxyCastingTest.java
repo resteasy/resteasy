@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ProxyCastingInterfaceA;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyCastingInterfaceB;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyCastingNothing;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -38,10 +38,10 @@ public class ProxyCastingTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProxyCastingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyCastingTest.class.getSimpleName());
       war.addClasses(ProxyCastingNothing.class,
             ProxyCastingInterfaceA.class, ProxyCastingInterfaceB.class);
-      return TestUtil.finishContainerPrepare(war, null, ProxyCastingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProxyCastingResource.class);
    }
 
    private static String generateURL(String path) {

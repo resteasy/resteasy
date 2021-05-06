@@ -6,7 +6,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.spring.deployment.resource.ContextRefreshResource;
 import org.jboss.resteasy.test.spring.deployment.resource.ContextRefreshTrigger;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtilSpring;
+import org.jboss.resteasy.utils.ResteasyTestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -53,7 +53,7 @@ public class ContextRefreshDependenciesInDeploymentTest {
             new LoggingPermission("control", "")
       ), "permissions.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
       return archive;
    }
 

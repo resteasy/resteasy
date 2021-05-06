@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.basic.resource.ReponseInfoResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -45,7 +45,7 @@ public class ReponseInfoTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ReponseInfoTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReponseInfoTest.class.getSimpleName());
       war.addClasses(PortProviderUtil.class, ReponseInfoTest.class);
 
       // Use of PortProviderUtil in the deployment
@@ -55,7 +55,7 @@ public class ReponseInfoTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new PropertyPermission("org.jboss.resteasy.port", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
    }
 
    private void basicTest(String path) {

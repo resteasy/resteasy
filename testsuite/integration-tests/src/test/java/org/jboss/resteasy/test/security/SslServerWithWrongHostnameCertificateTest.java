@@ -7,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.security.resource.SslResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -53,8 +53,8 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
    @TargetsContainer(SSL_CONTAINER_QUALIFIER_WRONG)
    @Deployment(managed=false, name=DEPLOYMENT_NAME)
    public static Archive<?> createDeployment() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
-      return TestUtil.finishContainerPrepare(war, null, SslResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEPLOYMENT_NAME);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SslResource.class);
    }
 
    @BeforeClass

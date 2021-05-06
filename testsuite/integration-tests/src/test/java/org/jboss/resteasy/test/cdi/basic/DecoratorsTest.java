@@ -31,7 +31,7 @@ import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -61,7 +61,7 @@ public class DecoratorsTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(DecoratorsTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DecoratorsTest.class.getSimpleName())
          .addClasses(Constants.class, UtilityProducer.class, Utilities.class, DecoratorsVisitList.class, PortProviderUtil.class)
          .addClasses(DecoratorsResourceIntf.class, DecoratorsResource.class, EJBBook.class)
          .addClasses(DecoratorsBookReaderInterceptorDecorator.class, DecoratorsBookReaderInterceptor.class)

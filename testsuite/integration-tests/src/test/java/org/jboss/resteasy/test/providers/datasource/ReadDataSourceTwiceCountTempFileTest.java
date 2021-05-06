@@ -24,7 +24,7 @@ import org.jboss.resteasy.test.providers.datasource.resource.ReadDataSourceTwice
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -49,12 +49,12 @@ public class ReadDataSourceTwiceCountTempFileTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ReadDataSourceTwiceCountTempFileResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReadDataSourceTwiceCountTempFileResource.class.getSimpleName());
       // DataSource provider creates tmp file in the filesystem
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read"),
             new PropertyPermission("java.io.tmpdir", "read"),
             new FilePermission("/tmp", "read")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ReadDataSourceTwiceCountTempFileResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReadDataSourceTwiceCountTempFileResource.class);
    }
 
    @Before
@@ -90,7 +90,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
       }
       Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
       logger.info("The status of the response is " + response.getStatus());
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
       int counter = response.readEntity(int.class);
       int updated = countTempFiles();
       logger.info("counter from beginning (before request): " + beginning);
@@ -116,7 +116,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
       }
       Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
       logger.info("The status of the response is " + response.getStatus());
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
       int counter = response.readEntity(int.class);
 
       response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));

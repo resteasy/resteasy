@@ -17,7 +17,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.GenericTypeResource;
 import org.jboss.resteasy.test.providers.multipart.resource.GenericTypeStringListReaderWriter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -39,9 +39,9 @@ public class GenericTypeMultipartTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GenericTypeMultipartTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, GenericTypeResource.class, GenericTypeStringListReaderWriter.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GenericTypeMultipartTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GenericTypeResource.class, GenericTypeStringListReaderWriter.class);
    }
 
    private String generateURL(String path) {

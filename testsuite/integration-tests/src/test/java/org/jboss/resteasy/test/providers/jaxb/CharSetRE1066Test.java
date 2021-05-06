@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.CharSetFavoriteMovieXmlRo
 import org.jboss.resteasy.test.providers.jaxb.resource.CharSetMovieResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -51,9 +51,9 @@ public class CharSetRE1066Test
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CharSetRE1066Test.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CharSetRE1066Test.class.getSimpleName());
       war.addClass(CharSetRE1066Test.class);
-      return TestUtil.finishContainerPrepare(war, null, CharSetMovieResource.class, CharSetFavoriteMovieXmlRootElement.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CharSetMovieResource.class, CharSetFavoriteMovieXmlRootElement.class);
    }
 
    @Before

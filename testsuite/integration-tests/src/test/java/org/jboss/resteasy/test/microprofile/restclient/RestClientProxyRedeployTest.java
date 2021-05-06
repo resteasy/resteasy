@@ -10,7 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.microprofile.restclient.resource.RestClientProxyRedeployRemoteService;
 import org.jboss.resteasy.test.microprofile.restclient.resource.RestClientProxyRedeployResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -25,20 +25,20 @@ public class RestClientProxyRedeployTest
 {
    @Deployment(name="deployment1", order = 1)
    public static Archive<?> deploy1() {
-      WebArchive war = TestUtil.prepareArchive(RestClientProxyRedeployTest.class.getSimpleName() + "1");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RestClientProxyRedeployTest.class.getSimpleName() + "1");
       war.addClass(RestClientProxyRedeployRemoteService.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient"), "MANIFEST.MF");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, RestClientProxyRedeployResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, RestClientProxyRedeployResource.class);
    }
 
    @Deployment(name="deployment2", order = 2)
    public static Archive<?> deploy2() {
-      WebArchive war = TestUtil.prepareArchive(RestClientProxyRedeployTest.class.getSimpleName() + "2");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RestClientProxyRedeployTest.class.getSimpleName() + "2");
       war.addClass(RestClientProxyRedeployRemoteService.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient"), "MANIFEST.MF");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, RestClientProxyRedeployResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, RestClientProxyRedeployResource.class);
    }
 
    private String generateURL(String path, String suffix) {

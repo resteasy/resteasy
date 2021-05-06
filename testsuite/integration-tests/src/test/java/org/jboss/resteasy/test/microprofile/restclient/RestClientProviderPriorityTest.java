@@ -8,7 +8,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -39,12 +39,12 @@ public class RestClientProviderPriorityTest
     @Deployment
     public static Archive<?> deploy()
     {
-        WebArchive war = TestUtil.prepareArchive(RestClientProviderPriorityTest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(RestClientProviderPriorityTest.class.getSimpleName());
         war.addClass(HelloResource.class);
         war.addClass(HelloClient.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient,org.jboss.resteasy.resteasy-rxjava2 services\n"), "MANIFEST.MF");
-        return TestUtil.finishContainerPrepare(war, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null);
     }
 
     private String generateURL(String path)

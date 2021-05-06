@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4Resource;
 import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4ResourceImpl;
 import org.jboss.resteasy.test.client.other.resource.CustomHttpClientEngineBuilder;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -31,9 +31,9 @@ public class CustomHttpClientEngineTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(CustomHttpClientEngineTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomHttpClientEngineTest.class.getSimpleName());
       war.addClass(ApacheHttpClient4Resource.class);
-      return TestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
    }
 
    private String generateURL(String path) {

@@ -22,7 +22,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.validation.resource.ValidationThroughRestResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -42,12 +42,12 @@ public class ValidationThroughRestTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ValidationThroughRestTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationThroughRestTest.class.getSimpleName())
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new HibernateValidatorPermission("accessPrivateMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ValidationThroughRestResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ValidationThroughRestResource.class);
    }
 
    private static String generateURL(String path) {

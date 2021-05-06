@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.response.resource.ProduceConsumeResource;
 import org.jboss.resteasy.test.response.resource.ProduceConsumeTextData;
 import org.jboss.resteasy.test.response.resource.ProduceConsumeWildData;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -51,9 +51,9 @@ public class ProduceConsumeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProduceConsumeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProduceConsumeTest.class.getSimpleName());
       war.addClass(ProduceConsumeData.class);
-      return TestUtil.finishContainerPrepare(war, null, ProduceConsumeResource.class, ProduceConsumeWildData.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProduceConsumeResource.class, ProduceConsumeWildData.class,
             ProduceConsumeTextData.class);
    }
 

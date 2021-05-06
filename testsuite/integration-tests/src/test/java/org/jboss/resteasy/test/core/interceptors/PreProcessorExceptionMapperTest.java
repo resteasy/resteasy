@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.PreProcessorExceptionM
 import org.jboss.resteasy.test.core.interceptors.resource.PreProcessorExceptionMapperResource;
 import org.jboss.resteasy.test.core.interceptors.resource.PreProcessorExceptionMapperRuntimeExceptionMapper;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,10 +34,10 @@ public class PreProcessorExceptionMapperTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GzipTest.class.getSimpleName());
       war.addClass(PreProcessorExceptionMapperCandlepinException.class);
       war.addClass(PreProcessorExceptionMapperCandlepinUnauthorizedException.class);
-      return TestUtil.finishContainerPrepare(war, null, PreProcessorExceptionMapperPreProcessSecurityInterceptor.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PreProcessorExceptionMapperPreProcessSecurityInterceptor.class,
                                                 PreProcessorExceptionMapperRuntimeExceptionMapper.class,
                                                 PreProcessorExceptionMapperResource.class);
    }

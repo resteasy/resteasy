@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.KeepCharsetFavoriteMovieX
 import org.jboss.resteasy.test.providers.jaxb.resource.KeepCharsetMovieResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -56,19 +56,19 @@ public class KeepCharsetTest {
    @Deployment(name = NO_EXPAND)
    public static Archive<?> deployExpandFalse() {
       Map<String, String> params = new HashMap<String, String>();
-      WebArchive war = TestUtil.prepareArchive(NO_EXPAND);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NO_EXPAND);
       params.put("charset", "UTF-16");
       params.put("resteasy.document.expand.entity.references", "false");
-      return TestUtil.finishContainerPrepare(war, params, KeepCharsetMovieResource.class, KeepCharsetFavoriteMovieXmlRootElement.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, KeepCharsetMovieResource.class, KeepCharsetFavoriteMovieXmlRootElement.class);
    }
 
    @Deployment(name = EXPAND)
    public static Archive<?> deployExpandTrue() {
       Map<String, String> params = new HashMap<String, String>();
-      WebArchive war = TestUtil.prepareArchive(EXPAND);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EXPAND);
       params.put("charset", "UTF-16");
       params.put("resteasy.document.expand.entity.references", "true");
-      return TestUtil.finishContainerPrepare(war, params, KeepCharsetMovieResource.class, KeepCharsetFavoriteMovieXmlRootElement.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, KeepCharsetMovieResource.class, KeepCharsetFavoriteMovieXmlRootElement.class);
    }
 
    @Before

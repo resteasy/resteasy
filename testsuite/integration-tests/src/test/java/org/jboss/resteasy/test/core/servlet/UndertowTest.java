@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.core.servlet.resource.UndertowServlet;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -33,7 +33,7 @@ public class UndertowTest {
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-903.war")
-            .addClasses(UndertowServlet.class, FilterForwardServlet.class, UndertowTest.class, TestUtil.class, PortProviderUtil.class)
+            .addClasses(UndertowServlet.class, FilterForwardServlet.class, UndertowTest.class, ReasteasyTestUtil.class, PortProviderUtil.class)
             .addAsWebInfResource(ServletConfigTest.class.getPackage(), "UndertowWeb.xml", "web.xml");
       // Arquillian in the deployment and use of PortProviderUtil
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),

@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.resource.basic.resource.LogHandler;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleEndpointsWarningResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -37,14 +37,14 @@ public class MultipleEndpointsWarningTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
       war.addClass(LogHandler.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new LoggingPermission("control", "")
       ), "permissions.xml");
       // Test registers it's own LogHandler
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new LoggingPermission("control", "")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
    }
 
    private static String generateURL(String path) {

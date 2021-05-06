@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.resource.basic.resource.InheritenceParentResource
 import org.jboss.resteasy.test.resource.basic.resource.InheritenceParentResourceImpl;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -35,9 +35,9 @@ public class InheritanceTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
       war.addClass(InheritenceParentResource.class);
-      return TestUtil.finishContainerPrepare(war, null, InheritenceParentResourceImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InheritenceParentResourceImpl.class);
    }
 
    private String generateURL(String path) {

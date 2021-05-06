@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.core.encoding.resource.MatrixParamEncodingResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -49,8 +49,8 @@ public class MatrixParamEncodingTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(MatrixParamEncodingTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, MatrixParamEncodingResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MatrixParamEncodingTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MatrixParamEncodingResource.class);
    }
 
    @After

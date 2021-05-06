@@ -26,7 +26,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.test.providers.datasource.resource.DataSourceProviderInputStreamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -48,8 +48,8 @@ public class DataSourceProviderInputStreamTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(DataSourceProviderInputStreamTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, DataSourceProviderInputStreamResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DataSourceProviderInputStreamTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DataSourceProviderInputStreamResource.class);
    }
 
    private String generateURL(String path) {
@@ -70,7 +70,7 @@ public class DataSourceProviderInputStreamTest {
       // as DataSource
       Response response = target.request().get();
       DataSource dataSource = response.readEntity(DataSource.class);
-      int length = TestUtil.readString(dataSource.getInputStream()).length();
+      int length = ReasteasyTestUtil.readString(dataSource.getInputStream()).length();
       logger.info(String.format("Length as DataSource: %d", length));
       Assert.assertEquals("Wrong length of response", expectedLength, length);
 
@@ -85,7 +85,7 @@ public class DataSourceProviderInputStreamTest {
       response = target.request().get();
       InputStream inputStream = response.readEntity(InputStream.class);
       dataSource = DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
-      length = TestUtil.readString(dataSource.getInputStream()).length();
+      length = ReasteasyTestUtil.readString(dataSource.getInputStream()).length();
       logger.info(String.format("Length as InputStream: %d", length));
       Assert.assertEquals("Wrong length of response", expectedLength, length);
 

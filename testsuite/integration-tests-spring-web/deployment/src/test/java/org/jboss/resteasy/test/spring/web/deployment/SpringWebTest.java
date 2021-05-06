@@ -11,8 +11,8 @@ import org.jboss.resteasy.test.spring.web.deployment.resource.ResponseStatusCont
 import org.jboss.resteasy.test.spring.web.deployment.resource.SomeClass;
 import org.jboss.resteasy.test.spring.web.deployment.resource.TestController;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.resteasy.utils.TestUtilSpring;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
+import org.jboss.resteasy.utils.ResteasyTestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -269,9 +269,9 @@ public class SpringWebTest {
         archive.addAsManifestResource("jboss-deployment-structure.xml", "jboss-deployment-structure.xml");
 
 
-        TestUtilSpring.addSpringLibraries(archive);
+        ResteasyTestUtilSpring.addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", DEPLOYMENT_NAME + ".war"), true);
-        return TestUtil.finishContainerPrepare(archive, null,
+        return ReasteasyTestUtil.finishContainerPrepare(archive, null,
                 SomeClass.class, Greeting.class, TestController.class, ResponseEntityController.class, ResponseStatusController.class, GreetingControllerWithNoRequestMapping.class);
     }
 

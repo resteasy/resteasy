@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoi
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeJacksonProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -64,7 +64,7 @@ public class JacksonDatatypeTest {
       WebArchive war = ShrinkWrap.create(WebArchive.class, DEFAULT_DEPLOYMENT + ".war");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, ApplicationTestScannedApplication.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, ApplicationTestScannedApplication.class,
               JacksonDatatypeEndPoint.class);
    }
 
@@ -73,7 +73,7 @@ public class JacksonDatatypeTest {
       WebArchive war = ShrinkWrap.create(WebArchive.class, DEPLOYMENT_WITH_DATATYPE + ".war");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, JacksonDatatypeEndPoint.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, JacksonDatatypeEndPoint.class,
             JacksonDatatypeJacksonProducer.class, ApplicationTestScannedApplication.class);
    }
 

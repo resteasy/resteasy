@@ -2,7 +2,7 @@ package org.jboss.resteasy.setup;
 
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.wildfly.extras.creaper.commands.security.AddLoginModule;
 import org.wildfly.extras.creaper.commands.security.AddSecurityDomain;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
@@ -99,7 +99,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
       setConfigurationPath();
 
       // Create and initialize management client
-      managementClient = TestUtil.clientInit();
+      managementClient = ReasteasyTestUtil.clientInit();
       administration = new Administration(managementClient);
       ops = new Operations(managementClient);
 

@@ -5,7 +5,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringWebappContextResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtilSpring;
+import org.jboss.resteasy.utils.ResteasyTestUtilSpring;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -60,7 +60,7 @@ public class SpringWebappContextDependenciesInDeploymentTest {
          new LoggingPermission("control", "")
       ), "permissions.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
       return archive;
    }
 

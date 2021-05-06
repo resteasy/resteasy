@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigUs
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigUseGlobalApplication2;
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigUseGlobalResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -35,12 +35,12 @@ public class MicroProfileConfigUseGlobalTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MicroProfileConfigUseGlobalTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MicroProfileConfigUseGlobalTest.class.getSimpleName())
             .addClass(MicroProfileConfigUseGlobalApplication1.class)
             .addClass(MicroProfileConfigUseGlobalApplication2.class)
             .setWebXML(MicroProfileConfigUseGlobalTest.class.getPackage(), "web_use_global.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, MicroProfileConfigUseGlobalResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MicroProfileConfigUseGlobalResource.class);
    }
 
    @BeforeClass

@@ -59,7 +59,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationComplexSubResourceW
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -148,7 +148,7 @@ public class ValidationComplexTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       return war;
    }
 
@@ -161,25 +161,25 @@ public class ValidationComplexTest {
    }
 
    public static Archive<?> basicDeployment(Class<?>... clazz) {
-      WebArchive war = TestUtil.prepareArchive(BASIC_DEPLOYMENT + clazz[0].getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BASIC_DEPLOYMENT + clazz[0].getSimpleName());
       war = addBasicClasses(war);
-      return TestUtil.finishContainerPrepare(war, null, clazz);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, clazz);
    }
 
    public static Archive<?> customObjectDeployment(Class<?> clazz) {
-      WebArchive war = TestUtil.prepareArchive(CUSTOM_OBJECT_DEPLOYMENT + clazz.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CUSTOM_OBJECT_DEPLOYMENT + clazz.getSimpleName());
       war = addBasicClasses(war);
       war = addCustomObjectClasses(war);
-      return TestUtil.finishContainerPrepare(war, null, clazz, ValidationComplexFooReaderWriter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, clazz, ValidationComplexFooReaderWriter.class);
    }
 
    public static Archive<?> asyncCustomObjectDeployment(Class<?> clazz) {
-      WebArchive war = TestUtil.prepareArchive(ASYNC_CUSTOM_OBJECT_DEPLOYMENT + clazz.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ASYNC_CUSTOM_OBJECT_DEPLOYMENT + clazz.getSimpleName());
       war = addBasicClasses(war);
       war = addCustomObjectClasses(war);
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put("resteasy.async.job.service.enabled", "true");
-      return TestUtil.finishContainerPrepare(war, contextParams, clazz, ValidationComplexFooReaderWriter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, clazz, ValidationComplexFooReaderWriter.class);
    }
 
    @Deployment(name = "basicDeploymentTestResourceWithValidField")
@@ -301,7 +301,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       logger.info("cv: " + cv);
       Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
@@ -332,7 +332,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals(WRONG_ERROR_MSG, "abcdef", cv.getValue());
@@ -357,11 +357,11 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 2, 0, 0, 0);
-      ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(r, 2, 0, 0, 0);
+      ResteasyConstraintViolation cv = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(WRONG_ERROR_MSG, cv);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "a", cv.getValue());
-      cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      cv = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(WRONG_ERROR_MSG, cv);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "uvwxyz", cv.getValue());
       response.close();
@@ -385,7 +385,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 0, 1, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 1, 0, 0);
       ResteasyConstraintViolation cv = r.getClassViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
       Assert.assertEquals(WRONG_ERROR_MSG, "ValidationComplexResourceWithClassConstraint(\"a\", \"b\")", cv.getValue());
@@ -411,7 +411,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 2, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 2, 0, 0, 0);
 
       Iterator<ResteasyConstraintViolation> it = r.getPropertyViolations().iterator();
       ResteasyConstraintViolation cv1 = it.next();
@@ -446,7 +446,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
@@ -471,7 +471,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
@@ -496,7 +496,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
@@ -522,7 +522,7 @@ public class ValidationComplexTest {
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
       logger.info("exception: " + r);
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
@@ -560,7 +560,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 1 <= length <= 3"));
       Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
@@ -572,7 +572,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
       cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 3 <= length <= 5"));
       Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
@@ -584,7 +584,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 0, 0, 2, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 2, 0);
       Iterator<ResteasyConstraintViolation> it = r.getParameterViolations().iterator();
       ResteasyConstraintViolation cv1 = it.next();
       ResteasyConstraintViolation cv2 = it.next();
@@ -617,7 +617,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 6, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 6, 0);
       List<String> list = getMessages(r);
       Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; pppp"));
       Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; mmmm"));
@@ -664,7 +664,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
       ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 1 <= length <= 3"));
       Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
@@ -676,7 +676,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
       cv = r.getReturnValueViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 3 <= length <= 5"));
       Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
@@ -688,7 +688,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 0, 2);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 0, 2);
       Iterator<ResteasyConstraintViolation> it = r.getReturnValueViolations().iterator();
       ResteasyConstraintViolation cv1 = it.next();
       ResteasyConstraintViolation cv2 = it.next();
@@ -726,11 +726,11 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 2, 1, 1, 0);
-      ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation cv = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(WRONG_ERROR_MSG, cv);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "a", cv.getValue());
-      cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      cv = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(WRONG_ERROR_MSG, cv);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "z", cv.getValue());
       cv = r.getClassViolations().iterator().next();
@@ -781,7 +781,7 @@ public class ValidationComplexTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          Object entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(String.class.cast(entity));
-         TestUtil.countViolations(r, 0, 2, 1, 0);
+         ReasteasyTestUtil.countViolations(r, 0, 2, 1, 0);
          response.close();
       }
 
@@ -795,7 +795,7 @@ public class ValidationComplexTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          Object entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(String.class.cast(entity));
-         TestUtil.countViolations(r, 0, 2, 1, 0);
+         ReasteasyTestUtil.countViolations(r, 0, 2, 1, 0);
          response.close();
       }
 
@@ -809,7 +809,7 @@ public class ValidationComplexTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          Object entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(String.class.cast(entity));
-         TestUtil.countViolations(r, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
          response.close();
       }
 
@@ -823,7 +823,7 @@ public class ValidationComplexTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          Object entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(String.class.cast(entity));
-         TestUtil.countViolations(r, 0, 0, 0, 2);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 2);
          response.close();
       }
    }
@@ -846,7 +846,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals(RESPONSE_ERROR_MSG, "abcde", cv.getValue());
@@ -866,7 +866,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals(RESPONSE_ERROR_MSG, "abcdef", cv.getValue());
@@ -889,11 +889,11 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 2, 1, 1, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "a", violation.getValue());
-      violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      violation = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
       cv = r.getClassViolations().iterator().next();
@@ -913,7 +913,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 1, 0, 0, 0);
+      ReasteasyTestUtil.countViolations(r, 1, 0, 0, 0);
       cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 3", cv.getMessage());
       Assert.assertEquals(RESPONSE_ERROR_MSG, "abcdef", cv.getValue());
@@ -949,11 +949,11 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       Object entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 2, 1, 1, 0);
-      ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation cv = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(WRONG_ERROR_MSG, cv);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "a", cv.getValue());
-      cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      cv = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(WRONG_ERROR_MSG, cv);
       Assert.assertEquals(RESPONSE_ERROR_MSG, "z", cv.getValue());
       cv = r.getClassViolations().iterator().next();
@@ -992,7 +992,7 @@ public class ValidationComplexTest {
       Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
       cv = r.getReturnValueViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
       Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[pqr]", cv.getValue());
@@ -1026,7 +1026,7 @@ public class ValidationComplexTest {
       Object entity = response.readEntity(String.class);
       logger.info("entity: " + entity);
       ViolationReport r = new ViolationReport(String.class.cast(entity));
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 1, 0);
       ResteasyConstraintViolation violation = r.getParameterViolations().iterator().next();
       logger.info("violation: " + violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "Parameters must total <= 7", violation.getMessage());
@@ -1061,7 +1061,7 @@ public class ValidationComplexTest {
          Object entity = response.readEntity(String.class);
          logger.info("entity: " + entity);
          ViolationReport r = new ViolationReport(String.class.cast(entity));
-         TestUtil.countViolations(r, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
          ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          logger.info("violation: " + violation);
          Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", violation.getMessage());

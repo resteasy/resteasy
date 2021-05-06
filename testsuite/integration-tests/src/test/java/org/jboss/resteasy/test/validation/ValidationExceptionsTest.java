@@ -35,7 +35,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationExceptionSuperResou
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionTestGroup1;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionTestGroup2;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -73,7 +73,7 @@ public class ValidationExceptionsTest {
    private static final String ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE = "validation-expcetion header was expected to be true";
 
    public static Archive<?> deploy(String name, Class<?>... resourceClasses) throws Exception {
-      WebArchive war = TestUtil.prepareArchive(name);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(name);
       war.addClass(ValidationExceptionClassValidator.class);
       war.addClass(ValidationExceptionCrazyConstraint.class);
       war.addClass(ValidationExceptionCrazyValidator.class);
@@ -86,7 +86,7 @@ public class ValidationExceptionsTest {
       war.addClass(ValidationExceptionTestGroup1.class);
       war.addClass(ValidationExceptionTestGroup2.class);
       war.addClass(ValidationExceptionMapper.class);
-      return TestUtil.finishContainerPrepare(war, null, resourceClasses);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, resourceClasses);
    }
 
    @Before
@@ -183,7 +183,7 @@ public class ValidationExceptionsTest {
    @OperateOnDeployment(DECL_EXCEPTION)
    public void testConstraintDeclarationException() throws Exception {
       Response response = client.target(generateURL("/", DECL_EXCEPTION)).request().post(null);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"), HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-3459"), HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
       Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
@@ -196,7 +196,7 @@ public class ValidationExceptionsTest {
    @OperateOnDeployment(CUSTOM_DECL_EXCEPTION)
    public void testCustomConstraintDeclarationException() throws Exception {
       Response response = client.target(generateURL("/", CUSTOM_DECL_EXCEPTION)).request().post(null);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"),
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-3459"),
                      HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
       String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);

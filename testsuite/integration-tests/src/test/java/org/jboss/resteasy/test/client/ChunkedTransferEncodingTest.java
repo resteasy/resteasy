@@ -18,7 +18,7 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.test.client.resource.ChunkedTransferEncodingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -44,13 +44,13 @@ public class ChunkedTransferEncodingTest {
    static File file;
 
    static {
-      testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingTest.class, "ChunkedTransferEncodingTestFile");
+      testFilePath = ReasteasyTestUtil.getResourcePath(ChunkedTransferEncodingTest.class, "ChunkedTransferEncodingTestFile");
    }
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ChunkedTransferEncodingTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ChunkedTransferEncodingResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ChunkedTransferEncodingTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ChunkedTransferEncodingResource.class);
    }
 
    @Before

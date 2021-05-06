@@ -13,7 +13,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -27,10 +27,10 @@ public class SseEventSinkClosingTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SseEventSinkClosingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseEventSinkClosingTest.class.getSimpleName());
       war.addClass(SseEventSinkClosingTestResource.class);
       war.addClass(SseEventSinkClosingTestResource.ContainerFilter.class);
-      return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SseEventSinkClosingTestResource.class),
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Arrays.asList(SseEventSinkClosingTestResource.class),
             SseEventSinkClosingTestResource.ContainerFilter.class);
    }
 

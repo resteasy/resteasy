@@ -10,7 +10,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.XxeSecureProcessingFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.XxeSecureProcessingMovieResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -60,14 +60,14 @@ public class XxeSecureProcessingTest {
 
 
    public static Archive<?> deploy(String expandEntityReferences) {
-      WebArchive war = TestUtil.prepareArchive(expandEntityReferences);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(expandEntityReferences);
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.document.secure.disableDTDs", "false");
       if (expandEntityReferences != null) {
          contextParam.put("resteasy.document.expand.entity.references", expandEntityReferences);
       }
       war.addClass(XxeSecureProcessingFavoriteMovieXmlRootElement.class);
-      return TestUtil.finishContainerPrepare(war, contextParam, XxeSecureProcessingMovieResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, XxeSecureProcessingMovieResource.class);
    }
 
    @Before

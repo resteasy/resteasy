@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -54,8 +54,8 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AsyncTimeoutExceptionsTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AsyncTimeoutExceptionsResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsyncTimeoutExceptionsTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AsyncTimeoutExceptionsResource.class,
             AsyncTimeoutExceptionsSticker.class, StickerCallback.class, ResponseCallback.class);
    }
 

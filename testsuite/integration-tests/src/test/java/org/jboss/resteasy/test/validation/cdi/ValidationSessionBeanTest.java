@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceParent;
 import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceRemote;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -41,11 +41,11 @@ public class ValidationSessionBeanTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ValidationSessionBeanTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationSessionBeanTest.class.getSimpleName())
             .addClasses(SessionResourceParent.class)
             .addClasses(SessionResourceLocal.class, SessionResourceRemote.class, SessionResourceImpl.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    private String generateURL(String path) {
@@ -61,7 +61,7 @@ public class ValidationSessionBeanTest {
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
       int c = e.getViolations().size();
       Assert.assertTrue(c == 1 || c == 2);
-      TestUtil.countViolations(e, c, 0, 0, c, 0);
+      ReasteasyTestUtil.countViolations(e, c, 0, 0, c, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue("Expected validation error is not in response", cv.getMessage().startsWith("size must be between 4 and"));
       Assert.assertTrue("Expected validation error is not in response", answer.contains("size must be between 4 and"));

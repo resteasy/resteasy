@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.core.smoke.resource.ResourceWithMultipleInterface
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithMultipleInterfacesIntA;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithMultipleInterfacesRootResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -32,10 +32,10 @@ public class ResourceWithMultipleInterfacesTest {
 
    @Deployment(name = "LocatingResource")
    public static Archive<?> deployLocatingResource() {
-      WebArchive war = TestUtil.prepareArchive(ResourceWithMultipleInterfacesTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceWithMultipleInterfacesTest.class.getSimpleName());
       war.addClass(ResourceWithMultipleInterfacesIntA.class);
       war.addClass(ResourceWithMultipleInterfacesEmpty.class);
-      return TestUtil.finishContainerPrepare(war, null, ResourceWithMultipleInterfacesRootResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceWithMultipleInterfacesRootResource.class);
    }
 
    private String generateURL(String path) {

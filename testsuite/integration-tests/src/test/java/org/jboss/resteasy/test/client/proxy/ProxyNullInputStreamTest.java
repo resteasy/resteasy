@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyNullInputStreamClientResponseFilter;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyNullInputStreamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,10 +32,10 @@ public class ProxyNullInputStreamTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ProxyNullInputStreamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyNullInputStreamTest.class.getSimpleName());
       war.addClasses(ProxyNullInputStreamResource.class,
               ProxyNullInputStreamClientResponseFilter.class);
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    private String generateURL(String path) {

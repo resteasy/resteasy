@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ProxyInputStreamProxy;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyInputStreamResource;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,9 +34,9 @@ public class ProxyInputStreamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProxyInputStreamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyInputStreamTest.class.getSimpleName());
       war.addClass(ProxyInputStreamProxy.class);
-      return TestUtil.finishContainerPrepare(war, null, ProxyInputStreamResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProxyInputStreamResource.class);
    }
 
    private String generateURL(String path) {

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.core.interceptors.resource;
 
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -60,7 +60,7 @@ public class ReaderContextArrayListEntityProvider implements
                                       Type genericType, Annotation[] annotations, MediaType mediaType,
                                       MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
          throws IOException, WebApplicationException {
-      String text = TestUtil.readString(entityStream);
+      String text = ReasteasyTestUtil.readString(entityStream);
       entityStream.close();
       String ann = "";
       if (annotations.length > 0) {

@@ -15,7 +15,7 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.test.client.exception.resource.ClientErrorResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -38,10 +38,10 @@ public class ClientErrorTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      war.addClass(TestUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+      war.addClass(ReasteasyTestUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
 
    private String generateURL(String path) {

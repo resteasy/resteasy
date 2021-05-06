@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.microprofile.restclient.resource.MPCollectionActi
 import org.jboss.resteasy.test.microprofile.restclient.resource.MPCollectionService;
 import org.jboss.resteasy.test.microprofile.restclient.resource.MPCollectionServiceIntf;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -33,10 +33,10 @@ public class MPCollectionTest {
 
     @Deployment(name=WAR_SERVICE)
     public static Archive<?> serviceDeploy() {
-        WebArchive war = TestUtil.prepareArchive(WAR_SERVICE);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(WAR_SERVICE);
         war.addClasses(MPCollectionService.class,
                 MPCollectionActivator.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, null);
     }
 
     private String generateURL(String path) {

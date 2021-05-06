@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAll
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -49,12 +49,12 @@ public class ValidationCoreTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ValidationCoreTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationCoreTest.class.getSimpleName())
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
             .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    @Before
@@ -123,7 +123,7 @@ public class ValidationCoreTest {
          Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
          String entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(entity);
-         TestUtil.countViolations(r, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
          ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          Assert.assertTrue(WRONG_ERROR_MSG, violation.getMessage().equals("s must have length: 3 <= length <= 5"));
          Assert.assertEquals(WRONG_ERROR_MSG, "ValidationCoreFoo[abcdef]", violation.getValue());
@@ -139,7 +139,7 @@ public class ValidationCoreTest {
          Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
          String entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(entity);
-         TestUtil.countViolations(r, 0, 0, 0, 2);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 2);
          Iterator<ResteasyConstraintViolation> it = r.getReturnValueViolations().iterator();
          ResteasyConstraintViolation cv1 = it.next();
          ResteasyConstraintViolation cv2 = it.next();
@@ -178,11 +178,11 @@ public class ValidationCoreTest {
       Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 2, 1, 1, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "a", violation.getValue());
-      violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      violation = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
       violation = r.getClassViolations().iterator().next();

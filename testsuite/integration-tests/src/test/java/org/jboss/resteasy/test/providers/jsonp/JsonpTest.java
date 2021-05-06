@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.jsonp.resource.JsonpResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -42,9 +42,9 @@ public class JsonpTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonpTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonpTest.class.getSimpleName());
       war.addClass(JsonpTest.class);
-      return TestUtil.finishContainerPrepare(war, null, JsonpResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonpResource.class);
    }
 
    @Before

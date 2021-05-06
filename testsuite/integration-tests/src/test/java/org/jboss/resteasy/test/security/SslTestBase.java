@@ -7,7 +7,7 @@ import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
@@ -77,14 +77,14 @@ public abstract class SslTestBase {
       File file = new File(serverKeystorePath);
       serverKeystorePath = file.getAbsolutePath();
 
-      if (TestUtil.isWindows()) {
+      if (ReasteasyTestUtil.isWindows()) {
          serverKeystorePath = serverKeystorePath.replace("\\","\\\\");
       }
 
-      OnlineManagementClient client = TestUtil.clientInit(portOffset);
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit(portOffset);
 
-      TestUtil.runCmd(client,"/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:remove(keystore-path, keystore-password, alias)");
-      TestUtil.runCmd(client, String.format("/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:add(keystore-path=%s, keystore-password=%s)", serverKeystorePath, PASSWORD));
+      ReasteasyTestUtil.runCmd(client,"/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:remove(keystore-path, keystore-password, alias)");
+      ReasteasyTestUtil.runCmd(client, String.format("/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:add(keystore-path=%s, keystore-password=%s)", serverKeystorePath, PASSWORD));
 
       // above changes request reload to take effect
       Administration admin = new Administration(client, 240);

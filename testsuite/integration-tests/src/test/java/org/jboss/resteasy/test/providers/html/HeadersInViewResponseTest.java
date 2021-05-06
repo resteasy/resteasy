@@ -16,7 +16,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.html.resource.HeadersInViewResponseResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,9 +38,9 @@ public class HeadersInViewResponseTest {
 
    @Deployment()
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(HeadersInViewResponseTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HeadersInViewResponseTest.class.getSimpleName());
       war.addAsLibrary(getResteasyHtmlJar());
-      return TestUtil.finishContainerPrepare(war, null, HeadersInViewResponseResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HeadersInViewResponseResource.class);
    }
 
    @Before
@@ -91,6 +91,6 @@ public class HeadersInViewResponseTest {
 
       // If not found in target, try repository
       String version = System.getProperty("project.version");
-      return TestUtil.resolveDependency("org.jboss.resteasy:resteasy-html:" + version);
+      return ReasteasyTestUtil.resolveDependency("org.jboss.resteasy:resteasy-html:" + version);
    }
 }

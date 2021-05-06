@@ -31,7 +31,7 @@ import org.jboss.resteasy.test.resource.param.resource.QueryParamAsPrimitiveReso
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -71,13 +71,13 @@ public class QueryParamAsPrimitiveTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(QueryParamAsPrimitiveTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(QueryParamAsPrimitiveTest.class.getSimpleName());
       war.addClass(QueryParamAsPrimitiveResourceQueryPrimitivesInterface.class);
       war.addClass(QueryParamAsPrimitiveResourceResourceArray.class);
       war.addClass(QueryParamAsPrimitiveResourceResourceListInterface.class);
       war.addClass(QueryParamAsPrimitiveResourceResourceWrappersInterface.class);
       war.addClass(QueryParamAsPrimitiveTest.class);
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             QueryParamAsPrimitiveResource.class,
             QueryParamAsPrimitiveResourceDefault.class,
             QueryParamAsPrimitiveResourceDefaultOverride.class,

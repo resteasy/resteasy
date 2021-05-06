@@ -11,7 +11,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -25,8 +25,8 @@ public class MatrixPathParamTest
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(MatrixPathParamTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, TestResourceServer.class, TestSubResourceServer.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MatrixPathParamTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TestResourceServer.class, TestSubResourceServer.class);
    }
 
    private String generateBaseUrl() {

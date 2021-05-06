@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.atom.resource.JAXBContextFinderAtomServ
 import org.jboss.resteasy.test.providers.atom.resource.JAXBContextFinderCustomerAtom;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,9 +38,9 @@ public class JAXBContextFinderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JAXBContextFinderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JAXBContextFinderTest.class.getSimpleName());
       war.addClass(JAXBContextFinderCustomerAtom.class);
-      return TestUtil.finishContainerPrepare(war, null, JAXBContextFinderAtomServer.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JAXBContextFinderAtomServer.class);
    }
 
    @Before

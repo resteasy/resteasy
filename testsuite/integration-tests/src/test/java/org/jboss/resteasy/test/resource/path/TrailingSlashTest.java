@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.resource.path.resource.TrailingSlashResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -33,8 +33,8 @@ public class TrailingSlashTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResteasyTrailingSlashTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, TrailingSlashResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResteasyTrailingSlashTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TrailingSlashResource.class);
    }
 
    private String generateURL(String path) {

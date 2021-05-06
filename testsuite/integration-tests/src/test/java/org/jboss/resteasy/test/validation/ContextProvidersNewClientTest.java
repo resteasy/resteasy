@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.validation.resource.ContextProvidersXop;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -41,7 +41,7 @@ import java.lang.reflect.Type;
 public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ContextProvidersNewClientTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ContextProvidersNewClientTest.class.getSimpleName())
             .addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class,
                   ContextProvidersName.class, ContextProvidersXop.class)
             .addClass(ContextProvidersTestBase.class)
@@ -49,7 +49,7 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
    }
 
    private static String generateURL(String path) {

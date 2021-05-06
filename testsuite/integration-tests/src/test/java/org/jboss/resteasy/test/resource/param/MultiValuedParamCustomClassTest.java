@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonSet
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonSortedSetConverter;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonWithConverter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,13 +34,13 @@ public class MultiValuedParamCustomClassTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultiValuedParamCustomClassTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MultiValuedParamCustomClassTest.class.getSimpleName());
       war.addClass(MultiValuedParamPersonWithConverter.class);
       war.addClass(MultiValuedParamPersonListConverter.class);
       war.addClass(MultiValuedParamPersonSetConverter.class);
       war.addClass(MultiValuedParamPersonSortedSetConverter.class);
       war.addClass(MultiValuedParamPersonArrayConverter.class);
-      return TestUtil.finishContainerPrepare(war, null, MultiValuedParamPersonConverterProvider.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MultiValuedParamPersonConverterProvider.class,
             MultiValuedParamPersonResource.class,  MultiValuedParamPersonResource.QueryParamResource.class,
             MultiValuedParamPersonResource.HeaderParamResource.class, MultiValuedParamPersonResource.MatrixParamResource.class,
             MultiValuedParamPersonResource.CookieParamResource.class, MultiValuedParamPersonResource.PathParamResource.class);

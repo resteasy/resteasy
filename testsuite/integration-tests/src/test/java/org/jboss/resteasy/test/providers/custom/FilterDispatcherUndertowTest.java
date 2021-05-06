@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.providers.custom.resource.FilterDispatcherForward
 import org.jboss.resteasy.test.providers.custom.resource.FilterDispatcherServlet;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,12 +32,12 @@ public class FilterDispatcherUndertowTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(FilterDispatcherUndertowTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FilterDispatcherUndertowTest.class.getSimpleName());
       war.addClass(FilterDispatcherForwardServlet.class);
       war.addClass(FilterDispatcherServlet.class);
       war.addAsWebInfResource(FilterDispatcherUndertowTest.class.getPackage(), "FilterDispatcherManifestWeb.xml", "web.xml");
       war.addAsWebInfResource(FilterDispatcherUndertowTest.class.getPackage(), "FilterDispatcherManifest.MF", "MANIFEST.MF");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    /**

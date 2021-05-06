@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassCompanyC
 import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassPrivatCustomer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -38,8 +38,8 @@ public class AbstractJaxbClassTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AbstractJaxbClassTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AbstractJaxbClassCompanyCustomer.class, AbstractJaxbClassCustomer.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AbstractJaxbClassTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AbstractJaxbClassCompanyCustomer.class, AbstractJaxbClassCustomer.class,
             AbstractJaxbClassPerson.class, AbstractJaxbClassPrivatCustomer.class, AbstractJaxbClassResource.class);
    }
 

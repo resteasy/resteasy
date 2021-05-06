@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseNoE
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseNoExpressionSubresource3;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseNoExpressionSubresource3Interface;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -42,12 +42,12 @@ public class ResourceLocatorWithBaseNoExpressionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
       war.addClasses(ResourceLocatorWithBaseNoExpressionSubresource.class,
             ResourceLocatorWithBaseNoExpressionSubresource2.class,
             ResourceLocatorWithBaseNoExpressionSubresource3.class,
             ResourceLocatorWithBaseNoExpressionSubresource3Interface.class);
-      return TestUtil.finishContainerPrepare(war, null, ResourceLocatorWithBaseNoExpressionResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResourceLocatorWithBaseNoExpressionResource.class);
    }
 
    private String generateURL(String path) {

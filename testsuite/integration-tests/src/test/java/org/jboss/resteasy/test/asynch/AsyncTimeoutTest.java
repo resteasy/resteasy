@@ -10,7 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.asynch.resource.AsyncTimeoutResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -24,8 +24,8 @@ public class AsyncTimeoutTest {
     static ResteasyClient client;
     @Deployment
     public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(AsyncTimeoutTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, AsyncTimeoutResource.class);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(AsyncTimeoutTest.class.getSimpleName());
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, AsyncTimeoutResource.class);
     }
 
     @BeforeClass

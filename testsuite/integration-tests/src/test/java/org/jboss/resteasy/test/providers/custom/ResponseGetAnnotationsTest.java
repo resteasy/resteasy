@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ResponseGetAnnotationsD
 import org.jboss.resteasy.test.providers.custom.resource.ResponseGetAnnotationsDateContainerReaderWriter;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseGetAnnotationsResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -43,9 +43,9 @@ public class ResponseGetAnnotationsTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResponseGetAnnotationsTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseGetAnnotationsTest.class.getSimpleName());
       war.addClasses(ResponseGetAnnotationsAnnotatedClass.class);
-      return TestUtil.finishContainerPrepare(war, null, ResponseGetAnnotationsResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseGetAnnotationsResource.class,
             ResponseGetAnnotationsDateContainerReaderWriter.class);
    }
 

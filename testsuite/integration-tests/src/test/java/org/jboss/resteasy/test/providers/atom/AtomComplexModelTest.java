@@ -25,7 +25,7 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelVersionNu
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -68,7 +68,7 @@ public class AtomComplexModelTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AtomComplexModelTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AtomComplexModelTest.class.getSimpleName());
       war.addClasses(AtomComplexModelArchived.class,
             AtomAssetMetadata.class,
             AtomComplexModelAtomAssetMetadataDecorators.class,
@@ -90,7 +90,7 @@ public class AtomComplexModelTest {
          new RuntimePermission("accessDeclaredMembers")),
          "permissions.xml");
 
-      return TestUtil.finishContainerPrepare(war, null, AtomComplexModelEntryResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AtomComplexModelEntryResource.class);
    }
 
    @Before

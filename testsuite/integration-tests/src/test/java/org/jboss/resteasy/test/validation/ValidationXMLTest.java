@@ -24,7 +24,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllF
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -56,12 +56,12 @@ public class ValidationXMLTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ValidationXMLTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationXMLTest.class.getSimpleName())
             .addClasses(ValidationXMLFoo.class, ValidationXMLFooValidator.class, ValidationXMLFooConstraint.class,
                   ValidationXMLClassValidator.class, ValidationXMLClassConstraint.class);
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParams, ValidationXMLFooReaderWriter.class, ValidationXMLResourceWithAllFivePotentialViolations.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, ValidationXMLFooReaderWriter.class, ValidationXMLResourceWithAllFivePotentialViolations.class);
    }
 
    @Before
@@ -201,12 +201,12 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 3, 1, 1, 0);
-         ResteasyConstraintViolation cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "a");
+         ReasteasyTestUtil.countViolations(report, 3, 1, 1, 0);
+         ResteasyConstraintViolation cv = ReasteasyTestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "a");
          Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-         cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
+         cv = ReasteasyTestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
          Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-         cv = TestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
+         cv = ReasteasyTestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
          Assert.assertNotNull(WRONG_ERROR_MSG, cv);
          Assert.assertEquals(WRONG_ERROR_MSG, "c", cv.getValue());
          cv = report.getClassViolations().iterator().next();
@@ -240,7 +240,7 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(report, 0, 0, 0, 1);
          ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
          Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
          Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
@@ -282,12 +282,12 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 3, 1, 1, 0);
-         ResteasyConstraintViolation cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "a");
+         ReasteasyTestUtil.countViolations(report, 3, 1, 1, 0);
+         ResteasyConstraintViolation cv = ReasteasyTestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "a");
          Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-         cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
+         cv = ReasteasyTestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
          Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-         cv = TestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
+         cv = ReasteasyTestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
          Assert.assertNotNull(WRONG_ERROR_MSG, cv);
          Assert.assertEquals(WRONG_ERROR_MSG, "c", cv.getValue());
          cv = report.getClassViolations().iterator().next();
@@ -329,7 +329,7 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(report, 0, 0, 0, 1);
          ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
          Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
          Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());

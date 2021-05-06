@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.providers.inputstream.resource.InputStreamCloseIn
 import org.jboss.resteasy.test.providers.inputstream.resource.InputStreamCloseResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,9 +34,9 @@ public class InputStreamCloseTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InputStreamCloseTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputStreamCloseTest.class.getSimpleName());
       war.addClass(InputStreamCloseInputStream.class);
-      return TestUtil.finishContainerPrepare(war, null, InputStreamCloseResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputStreamCloseResource.class);
    }
 
    private String generateURL(String path) {

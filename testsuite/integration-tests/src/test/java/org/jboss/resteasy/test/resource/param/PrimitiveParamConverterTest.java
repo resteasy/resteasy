@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.resource.param.resource.ParamConverterIntegerConv
 import org.jboss.resteasy.test.resource.param.resource.ParamConverterIntegerConverterProvider;
 import org.jboss.resteasy.test.resource.param.resource.ParamConverterIntegerResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -30,11 +30,11 @@ public class PrimitiveParamConverterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PrimitiveParamConverterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PrimitiveParamConverterTest.class.getSimpleName());
       war.addClass(ParamConverterIntegerConverter.class);
       war.addClass(ParamConverterDefaultClient.class);
       war.addClass(ParamConverterClient.class);
-      return TestUtil.finishContainerPrepare(war, null, ParamConverterIntegerConverterProvider.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ParamConverterIntegerConverterProvider.class,
             ParamConverterIntegerResource.class, ParamConverterDefaultIntegerResource.class);
    }
 

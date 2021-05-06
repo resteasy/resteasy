@@ -8,7 +8,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.test.client.resource.TraceResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class TraceTest extends ClientTestBase{
 
    @BeforeClass
    public static void setMaxPostSize() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
       Administration admin = new Administration(client);
       Operations ops = new Operations(client);
 
@@ -70,7 +70,7 @@ public class TraceTest extends ClientTestBase{
 
    @AfterClass
    public static void resetToDefault() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
       Administration admin = new Administration(client);
       Operations ops = new Operations(client);
 
@@ -84,9 +84,9 @@ public class TraceTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(TraceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(TraceTest.class.getSimpleName());
       war.addClass(TraceTest.class);
-      return TestUtil.finishContainerPrepare(war, null, TraceResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TraceResource.class);
    }
 
    @Before

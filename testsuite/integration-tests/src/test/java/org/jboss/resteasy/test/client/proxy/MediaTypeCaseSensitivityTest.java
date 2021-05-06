@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStu
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuffResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -37,10 +37,10 @@ public class MediaTypeCaseSensitivityTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(MediaTypeCaseSensitivityTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MediaTypeCaseSensitivityTest.class.getSimpleName());
       war.addClass(MediaTypeCaseSensitivityStuff.class);
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, MediaTypeCaseSensitivityStuffResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MediaTypeCaseSensitivityStuffResource.class,
             MediaTypeCaseSensitivityStuffProvider.class);
    }
 

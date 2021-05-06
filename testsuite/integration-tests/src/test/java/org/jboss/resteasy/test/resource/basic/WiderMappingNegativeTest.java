@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.basic.resource.WiderMappingDefaultOption
 import org.jboss.resteasy.test.resource.basic.resource.WiderMappingResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,12 +40,12 @@ public class WiderMappingNegativeTest {
 
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(WiderMappingNegativeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WiderMappingNegativeTest.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
 
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.wider.request.matching", "false");
-      return TestUtil.finishContainerPrepare(war, contextParam, WiderMappingResource.class, WiderMappingDefaultOptions.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, WiderMappingResource.class, WiderMappingDefaultOptions.class);
    }
 
 

@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -52,7 +52,7 @@ public class ScopeExtensionTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ScopeExtensionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ScopeExtensionTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class, Utilities.class, PortProviderUtil.class)
             .addClasses(ScopeExtensionPlannedObsolescenceExtension.class, ScopeExtensionPlannedObsolescenceScope.class)
             .addClasses(ScopeExtensionPlannedObsolescenceContext.class, ScopeExtensionResource.class)

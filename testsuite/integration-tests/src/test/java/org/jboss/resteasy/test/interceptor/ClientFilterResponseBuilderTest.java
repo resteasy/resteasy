@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.interceptor.resource.ResponseBuilderCustomRespons
 //import org.jboss.resteasy.test.interceptor.resource.ResponseBuilderCustomRequestFilter;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -31,11 +31,11 @@ public class ClientFilterResponseBuilderTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(
+        WebArchive war = ReasteasyTestUtil.prepareArchive(
                 ClientFilterResponseBuilderTest.class.getSimpleName());
         war.addClasses(ResponseBuilderCustomResponseFilter.class,
                 PriorityExecutionResource.class);
-        return TestUtil.finishContainerPrepare(war, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null);
     }
 
     static Client client;

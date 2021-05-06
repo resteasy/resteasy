@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.FormParameterResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,9 +38,9 @@ public class FormParameterTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(FormParameterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FormParameterTest.class.getSimpleName());
       war.addClasses(FormParameterTest.class);
-      return TestUtil.finishContainerPrepare(war, null, FormParameterResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FormParameterResource.class);
    }
 
    private String generateURL(String path) {

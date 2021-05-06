@@ -22,7 +22,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -43,14 +43,14 @@ public class XmlJAXBContextFinderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XmlJAXBContextFinderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(XmlJAXBContextFinderTest.class.getSimpleName());
 
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
          new FilePermission("<<ALL FILES>>", "read"),
          new ReflectPermission("suppressAccessChecks"),
          new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
 
-      return TestUtil.finishContainerPrepare(war, null, BeanWrapper.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, BeanWrapper.class,
             FirstBean.class, SecondBean.class,
             FirstTestResource.class, SecondTestResource.class,
             MyJAXBContextResolver.class);

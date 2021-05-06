@@ -18,7 +18,7 @@ import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceDeleteReso
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceStreamResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -47,8 +47,8 @@ public class SpecialResourceTest {
 
    @Deployment
    public static Archive<?> testReturnValuesDeploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(SpecialResourceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SpecialResourceStreamResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SpecialResourceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SpecialResourceStreamResource.class,
             SpecialResourceApiResource.class, SpecialResourceDeleteResource.class);
    }
 

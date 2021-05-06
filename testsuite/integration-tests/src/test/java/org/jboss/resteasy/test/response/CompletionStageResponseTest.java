@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.response.resource.CompletionStageResponseMessageB
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseResource;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseTestClass;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -41,12 +41,12 @@ public class CompletionStageResponseTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
       war.addClass(CompletionStageProxy.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
               + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
-      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class,
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
    }

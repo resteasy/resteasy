@@ -33,7 +33,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAll
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -90,7 +90,7 @@ public class ValidationJaxbTest {
     * Prepare deployment with specific archive name and specific resteasy.preferJacksonOverJsonB value
     */
    public static Archive<?> deploy(String archiveName, Boolean useJackson) {
-      WebArchive war = TestUtil.prepareArchive(archiveName)
+      WebArchive war = ReasteasyTestUtil.prepareArchive(archiveName)
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
@@ -100,7 +100,7 @@ public class ValidationJaxbTest {
       ), "permissions.xml");
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, useJackson.toString());
-      return TestUtil.finishContainerPrepare(war, contextParams, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, (Class<?>[]) null);
    }
 
    private static String generateURL(String path) {
@@ -172,10 +172,10 @@ public class ValidationJaxbTest {
       Assert.assertNotNull("Validation header is missing", header);
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       ViolationReport r = response.readEntity(ViolationReport.class);
-      TestUtil.countViolations(r, 2, 1, 1, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByPath(r.getPropertyViolations(), "s");
+      ReasteasyTestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByPath(r.getPropertyViolations(), "s");
       Assert.assertNotNull(UNEXPECTED_VALIDATION_ERROR_MSG, violation);
-      violation = TestUtil.getViolationByPath(r.getPropertyViolations(), "t");
+      violation = ReasteasyTestUtil.getViolationByPath(r.getPropertyViolations(), "t");
       Assert.assertNotNull(UNEXPECTED_VALIDATION_ERROR_MSG, violation);
       violation = r.getClassViolations().iterator().next();
       Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "", violation.getPath());

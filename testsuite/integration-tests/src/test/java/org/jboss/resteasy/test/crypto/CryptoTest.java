@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.crypto.resource.CryptoPkcs7SignedResource;
 import org.jboss.resteasy.test.crypto.resource.CryptoSignedResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -78,7 +78,7 @@ public class CryptoTest {
 
    @Deployment
    public static Archive<?> deploy() throws IOException {
-      WebArchive war = TestUtil.prepareArchive(CryptoTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CryptoTest.class.getSimpleName());
       try {
          BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
          Security.addProvider(bouncyCastleProvider);
@@ -93,7 +93,7 @@ public class CryptoTest {
          throw new RuntimeException(e);
       }
       war.addAsManifestResource("jboss-deployment-structure-bouncycastle.xml", "jboss-deployment-structure.xml");
-      return TestUtil.finishContainerPrepare(war, null, CryptoEncryptedResource.class, CryptoSignedResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CryptoEncryptedResource.class, CryptoSignedResource.class,
             CryptoEncryptedSignedResource.class, CryptoPkcs7SignedResource.class, CryptoCertResource.class);
    }
 

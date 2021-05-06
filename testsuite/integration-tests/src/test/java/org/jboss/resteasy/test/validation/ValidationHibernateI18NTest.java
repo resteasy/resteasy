@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter
 import org.jboss.resteasy.test.validation.resource.ValidationHibernateI18NResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,8 +38,8 @@ public class ValidationHibernateI18NTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ValidationHibernateI18NTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ValidationHibernateI18NResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationHibernateI18NTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ValidationHibernateI18NResource.class);
    }
 
    @Before
@@ -72,7 +72,7 @@ public class ValidationHibernateI18NTest {
 
       ViolationReport report = response.readEntity(ViolationReport.class);
       String message = report.getReturnValueViolations().iterator().next().getMessage();
-      TestUtil.countViolations(report, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(report, 0, 0, 0, 1);
       Assert.assertThat(WRONG_ERROR_MSG, message, startsWith(expectedMessage));
       response.close();
    }

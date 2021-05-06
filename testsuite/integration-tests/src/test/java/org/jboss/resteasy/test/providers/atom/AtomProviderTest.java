@@ -16,7 +16,7 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomProviderDataCollectio
 import org.jboss.resteasy.test.providers.atom.resource.ObjectFactory;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -66,9 +66,9 @@ public class AtomProviderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AtomProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AtomProviderTest.class.getSimpleName());
       war.addClass(AtomProviderTest.class);
-      return TestUtil.finishContainerPrepare(war, null, AtomProviderResource.class, AtomProviderCustomer.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AtomProviderResource.class, AtomProviderCustomer.class,
             AtomProviderDataCollectionRecord.class, ObjectFactory.class);
    }
 

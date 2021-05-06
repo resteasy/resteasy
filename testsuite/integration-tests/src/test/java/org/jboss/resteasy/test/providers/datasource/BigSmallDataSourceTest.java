@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.BigSmallDataSourceResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -40,13 +40,13 @@ public class BigSmallDataSourceTest {
    static final String testFilePath;
 
    static {
-      testFilePath = TestUtil.getResourcePath(BigSmallDataSourceTest.class, "test.jpg");
+      testFilePath = ReasteasyTestUtil.getResourcePath(BigSmallDataSourceTest.class, "test.jpg");
    }
 
    @Deployment()
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(BigSmallDataSourceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, BigSmallDataSourceResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BigSmallDataSourceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, BigSmallDataSourceResource.class);
    }
 
    @Before

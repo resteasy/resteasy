@@ -48,7 +48,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersReso
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersXop;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -92,7 +92,7 @@ public class ContextProvidersTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ContextProvidersTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ContextProvidersTest.class.getSimpleName());
       war.addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class,
             ContextProvidersCustomerFormNewAnnotationOnField.class,
             ContextProvidersCustomerFormNewAnnotationOnSetter.class,
@@ -101,7 +101,7 @@ public class ContextProvidersTest {
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
    }
 
    /**
@@ -138,7 +138,7 @@ public class ContextProvidersTest {
             }
          }
       } catch (Exception e) {
-         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+         throw new RuntimeException(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
    }
 
@@ -169,7 +169,7 @@ public class ContextProvidersTest {
             }
          }
       } catch (Exception e) {
-         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+         throw new RuntimeException(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
    }
 
@@ -198,7 +198,7 @@ public class ContextProvidersTest {
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
       } catch (Exception e) {
-         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+         throw new RuntimeException(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
    }
 
@@ -233,7 +233,7 @@ public class ContextProvidersTest {
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
       } catch (Exception e) {
-         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+         throw new RuntimeException(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
    }
 
@@ -267,7 +267,7 @@ public class ContextProvidersTest {
          Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
          Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
       } catch (Exception e) {
-         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+         throw new RuntimeException(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
    }
 
@@ -498,7 +498,7 @@ public class ContextProvidersTest {
          client.close();
          return entity;
       } catch (Exception e) {
-         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+         throw new RuntimeException(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
    }
 

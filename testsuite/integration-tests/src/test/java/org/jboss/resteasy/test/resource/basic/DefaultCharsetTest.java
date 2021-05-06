@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.DefaultCharsetResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -36,23 +36,23 @@ public class DefaultCharsetTest {
 
    @Deployment(name = "true") // "resteasy.add.charset" set to true
    public static Archive<?> deploy_charset() {
-      WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_true");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_true");
       war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_true.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
    }
 
    @Deployment(name = "false") // "resteasy.add.charset" set to false
    public static Archive<?> deploy_nocharset() {
-      WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_false");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_false");
       war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_false.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
    }
 
    @Deployment(name = "default") // "resteasy.add.charset" not set
    public static Archive<?> deploy_default() {
-      WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_default");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_default");
       war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_default.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
    }
 
    @Before

@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.TimeoutResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -42,10 +42,10 @@ public class TimeoutTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(TimeoutTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(TimeoutTest.class.getSimpleName());
       war.addClass(TimeoutTest.class);
       war.addClass(ClientTestBase.class);
-      return TestUtil.finishContainerPrepare(war, null, TimeoutResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, TimeoutResource.class);
    }
 
    /**

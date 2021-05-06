@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultPa
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterPathResource;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterQueryResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -50,7 +50,7 @@ public class MultiValuedParamDefaultParamConverterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultiValuedParamDefaultParamConverterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MultiValuedParamDefaultParamConverterTest.class.getSimpleName());
       war.addClass(MultiValuedParamDefaultParamConverterConstructorClass.class);
       war.addClass(MultiValuedParamDefaultParamConverterFromStringClass.class);
       war.addClass(MultiValuedParamDefaultParamConverterHeaderDelegateClass.class);
@@ -58,7 +58,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       war.addClass(MultiValuedParamDefaultParamConverterParamConverterClass.class);
       war.addClass(MultiValuedParamDefaultParamConverterParamConverter.class);
       war.addClass(MultiValuedParamDefaultParamConverterValueOfClass.class);
-      return TestUtil.finishContainerPrepare(war, null, MultiValuedParamDefaultParamConverterParamConverterProvider.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MultiValuedParamDefaultParamConverterParamConverterProvider.class,
          MultiValuedParamDefaultParamConverterHeaderDelegate.class,
          MultiValuedParamDefaultParamConverterCookieResource.class, MultiValuedParamDefaultParamConverterHeaderResource.class,
          MultiValuedParamDefaultParamConverterMatrixResource.class, MultiValuedParamDefaultParamConverterMiscResource.class,

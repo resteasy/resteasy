@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.resource.path.resource.LocatorWithClassHierarchyP
 import org.jboss.resteasy.test.resource.path.resource.LocatorWithClassHierarchyPathParamResource;
 import org.jboss.resteasy.test.resource.path.resource.LocatorWithClassHierarchyPathSegmentImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -46,11 +46,11 @@ public class LocatorWithClassHierarchyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(LocatorWithClassHierarchyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(LocatorWithClassHierarchyTest.class.getSimpleName());
       war.addClasses(LocatorWithClassHierarchyPathSegmentImpl.class, LocatorWithClassHierarchyMiddleResource.class,
             LocatorWithClassHierarchyPathParamResource.class, LocatorWithClassHierarchyParamEntityWithConstructor.class,
             LocatorWithClassHierarchyParamEntityPrototype.class);
-      return TestUtil.finishContainerPrepare(war, null, LocatorWithClassHierarchyLocatorResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, LocatorWithClassHierarchyLocatorResource.class);
    }
 
    /**

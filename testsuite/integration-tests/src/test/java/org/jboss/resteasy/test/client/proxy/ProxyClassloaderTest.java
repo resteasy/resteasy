@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ClientSmokeResource;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceSimpleClient;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -27,14 +27,14 @@ public class ProxyClassloaderTest
    @Deployment
    public static Archive<?> deploySimpleResource()
    {
-      WebArchive war = TestUtil.prepareArchive(ProxyClassloaderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyClassloaderTest.class.getSimpleName());
       war.addClass(ResourceWithInterfaceSimpleClient.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new RuntimePermission("setContextClassLoader"),
               new RuntimePermission("createClassLoader"),
               new RuntimePermission("getClassLoader")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class, ClassloaderResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class, ClassloaderResource.class);
    }
 
    @Test

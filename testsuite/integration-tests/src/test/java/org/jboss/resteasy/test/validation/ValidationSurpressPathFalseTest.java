@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreClassConstraint
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class ValidationSurpressPathFalseTest extends ValidationSuppressPathTestB
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive("Validation-test")
+      WebArchive war = ReasteasyTestUtil.prepareArchive("Validation-test")
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
@@ -40,7 +40,7 @@ public class ValidationSurpressPathFalseTest extends ValidationSuppressPathTestB
             .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put("resteasy.validation.suppress.path", "false");
-      return TestUtil.finishContainerPrepare(war, contextParams, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, (Class<?>[]) null);
    }
 
    /**

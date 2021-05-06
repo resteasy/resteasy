@@ -7,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.ClientTestBase;
 import org.jboss.resteasy.test.interceptor.resource.PreMatchingClientRequestFilterImpl;
 import org.jboss.resteasy.test.interceptor.resource.PreMatchingClientResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -40,9 +40,9 @@ public class PreMatchingClientRequestFilterTest extends ClientTestBase {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PreMatchingClientRequestFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PreMatchingClientRequestFilterTest.class.getSimpleName());
       //rls //war.addClass(ClientExceptionsData.class);
-      return TestUtil.finishContainerPrepare(war, null, PreMatchingClientResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PreMatchingClientResource.class);
    }
 
    @Before

@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.providers.plain.resource.DefaultNumberWriterResou
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -39,8 +39,8 @@ public class DefaultNumberWriterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(DefaultNumberWriterTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DefaultNumberWriterTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
@@ -52,7 +52,7 @@ public class DefaultNumberWriterTest {
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new PropertyPermission("arquillian.*", "read")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, DefaultNumberWriterResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DefaultNumberWriterResource.class,
             DefaultNumberWriterCustom.class);
    }
 

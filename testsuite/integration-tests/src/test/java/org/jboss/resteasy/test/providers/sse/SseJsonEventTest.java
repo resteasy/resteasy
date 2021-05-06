@@ -26,7 +26,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeUser;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -43,10 +43,10 @@ public class SseJsonEventTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(SseJsonEventTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseJsonEventTest.class.getSimpleName());
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, SseSmokeUser.class, SseSmokeResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, SseSmokeUser.class, SseSmokeResource.class);
    }
 
    private String generateURL(String path)

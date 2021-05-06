@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceStereotype
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -40,11 +40,11 @@ public class AlternativeVanillaInheritanceTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(AlternativeVanillaInheritanceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AlternativeVanillaInheritanceTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class)
             .addClasses(CDIInheritenceBook.class, CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class, CDIInheritenceBookVanillaAlternative.class, CDIInheritenceInheritanceResource.class)
             .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "alternativeVanillaBeans.xml", "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    /**

@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.client.resource.HeaderEmptyHostResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -31,8 +31,8 @@ public class HeaderEmptyHostTest extends ClientTestBase {
 
     @Deployment
     public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(HeaderEmptyHostTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, HeaderEmptyHostResource.class);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(HeaderEmptyHostTest.class.getSimpleName());
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, HeaderEmptyHostResource.class);
     }
 
     @ArquillianResource

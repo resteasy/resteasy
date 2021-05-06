@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jackson2.whitelist.model.air.Aircraft;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.land.Automobile;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.land.Automobile2;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -49,9 +49,9 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
 
     @Deployment(name = "default")
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorManualOverrideTest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorManualOverrideTest.class.getSimpleName());
         war.addClass(WhiteListPolymorphicTypeValidatorManualOverrideTest.class);
-        return TestUtil.finishContainerPrepare(war, null, JaxRsActivator.class, TestRESTService.class,
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, JaxRsActivator.class, TestRESTService.class,
                 TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Automobile2.class, Aircraft.class, JacksonConfig.class);
     }
 

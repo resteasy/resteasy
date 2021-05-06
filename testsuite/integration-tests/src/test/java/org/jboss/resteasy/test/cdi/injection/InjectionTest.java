@@ -48,7 +48,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -113,7 +113,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
    @Deployment
    public static Archive<?> createTestArchive() throws Exception {
       initQueue();
-      WebArchive war = TestUtil.prepareArchive(InjectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InjectionTest.class.getSimpleName());
       war.addClass(AbstractInjectionTestBase.class)
             .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class, BookCollectionType.getClass())
             .addClasses(Counter.class, CDIInjectionBookCollection.class, CDIInjectionBookReader.class, CDIInjectionBookWriter.class)
@@ -131,7 +131,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
             new SocketPermission(PortProviderUtil.getHost(), "resolve")),
          "permissions.xml");
 
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    private String generateURL(String path) {

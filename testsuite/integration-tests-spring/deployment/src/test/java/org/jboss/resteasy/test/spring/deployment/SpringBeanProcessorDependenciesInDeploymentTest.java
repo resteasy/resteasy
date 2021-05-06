@@ -33,8 +33,8 @@ import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorSca
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorSpringBeanProcessorMyInnerBeanImpl;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.resteasy.utils.TestUtilSpring;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
+import org.jboss.resteasy.utils.ResteasyTestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -112,8 +112,8 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
             new LoggingPermission("control", "")
       ), "permissions.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
-      TestUtil.addOtherLibrary(archive, "aopalliance:aopalliance:" + System.getProperty("version.aopalliance", "1.0"));
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
+      ReasteasyTestUtil.addOtherLibrary(archive, "aopalliance:aopalliance:" + System.getProperty("version.aopalliance", "1.0"));
       return archive;
    }
 

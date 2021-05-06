@@ -23,7 +23,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.test.client.exception.resource.ExceptionBufferingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -52,25 +52,25 @@ public class ExceptionBufferingTest {
 
    @Deployment(name = DEPLOYMENT_TRUE)
    public static Archive<?> deployTrue() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_TRUE);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEPLOYMENT_TRUE);
       Map<String, String> params = new HashMap<>();
       params.put("resteasy.buffer.exception.entity", "true");
-      return TestUtil.finishContainerPrepare(war, params, ExceptionBufferingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, ExceptionBufferingResource.class);
    }
 
    @Deployment(name = DEPLOYMENT_FALSE)
    public static Archive<?> deployFalse() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_FALSE);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEPLOYMENT_FALSE);
       Map<String, String> params = new HashMap<>();
       params.put("resteasy.buffer.exception.entity", "false");
-      return TestUtil.finishContainerPrepare(war, params, ExceptionBufferingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, ExceptionBufferingResource.class);
    }
 
    @Deployment(name = DEPLOYMENT_DEFAULT)
    public static Archive<?> deployDefault() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_DEFAULT);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEPLOYMENT_DEFAULT);
       client = (ResteasyClient)ClientBuilder.newClient();
-      return TestUtil.finishContainerPrepare(war, null, ExceptionBufferingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExceptionBufferingResource.class);
    }
 
    @AfterClass

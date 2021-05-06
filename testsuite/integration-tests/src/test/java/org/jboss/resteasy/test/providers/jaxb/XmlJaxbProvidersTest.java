@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.XmlStreamFactory;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -55,7 +55,7 @@ public class XmlJaxbProvidersTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XmlJaxbProvidersTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(XmlJaxbProvidersTest.class.getSimpleName());
       war.addClass(XmlJaxbProvidersTest.class);
       war.addAsResource(XmlJaxbProvidersTest.class.getPackage(), "orders/order_123.xml");
       war.as(ZipExporter.class).exportTo(new File("target", XmlJaxbProvidersTest.class.getSimpleName() + ".war"), true);
@@ -67,7 +67,7 @@ public class XmlJaxbProvidersTest {
             new RuntimePermission("getClassLoader")),
             "permissions.xml");
 
-      return TestUtil.finishContainerPrepare(war, null, XmlJaxbProvidersOrderResource.class, Order.class, Ordertype.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, XmlJaxbProvidersOrderResource.class, Order.class, Ordertype.class,
             ShipTo.class, Shiptotype.class, Item.class, Itemtype.class, JAXBCache.class, XmlJaxbProvidersHelper.class, XmlStreamFactory.class);
    }
 

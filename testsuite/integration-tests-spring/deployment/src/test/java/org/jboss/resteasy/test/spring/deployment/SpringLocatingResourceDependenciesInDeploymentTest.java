@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.spring.deployment.resource.SpringLocatingSimpleRe
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtilSpring;
+import org.jboss.resteasy.utils.ResteasyTestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -59,7 +59,7 @@ public class SpringLocatingResourceDependenciesInDeploymentTest {
          new LoggingPermission("control", "")
       ), "permissions.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
       return archive;
    }
 

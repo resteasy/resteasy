@@ -16,7 +16,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.multipart.resource.ComplexMultipartOutputResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -48,12 +48,12 @@ public class ComplexMultipartOutputTest {
 
     @Deployment
     public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ComplexMultipartOutputTest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(ComplexMultipartOutputTest.class.getSimpleName());
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks")
         ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null,
+        return ReasteasyTestUtil.finishContainerPrepare(war, null,
                 ComplexMultipartOutputResource.class);
     }
 

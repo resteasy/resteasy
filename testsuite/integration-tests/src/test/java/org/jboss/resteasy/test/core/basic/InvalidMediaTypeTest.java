@@ -10,7 +10,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.InvalidMediaTypeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,8 +34,8 @@ public class InvalidMediaTypeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InvalidMediaTypeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, InvalidMediaTypeResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InvalidMediaTypeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InvalidMediaTypeResource.class);
    }
 
    private String generateURL(String path) {

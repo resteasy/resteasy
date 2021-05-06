@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyW
 import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyWriterResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -74,8 +74,8 @@ public class MediaTypeFromMessageBodyWriterTest {
 
    @Deployment(name = "multiple")
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
               MediaTypeFromMessageBodyWriterListAsText.class,
               MediaTypeFromMessageBodyWriterListAsXML.class,
               MediaTypeFromMessageBodyWriterResource.class);
@@ -83,8 +83,8 @@ public class MediaTypeFromMessageBodyWriterTest {
 
    @Deployment(name = "single")
    public static Archive<?> deploy2() {
-      WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName() + "_single");
-      return TestUtil.finishContainerPrepare(war, null,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName() + "_single");
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             CustomProviderPreferenceUser.class,
             MediaTypeFromMessageBodyWriterTextJson.class,
             MediaTypeFromMessageBodyWriterResource2.class);

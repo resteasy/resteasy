@@ -15,7 +15,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.AbortMessageResourceFilter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -47,12 +47,12 @@ public class AbortMessageTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                new LoggingPermission("control", ""),
                new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
    }
 
    private String generateURL(String path) {

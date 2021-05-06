@@ -41,7 +41,7 @@ import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionApplication;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -165,13 +165,13 @@ public class ClientWebApplicationExceptionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientWebApplicationExceptionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientWebApplicationExceptionTest.class.getSimpleName());
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionApplication.class);
       war.addClass(ClientWebApplicationExceptionResource.class);
       war.addClass(PortProviderUtil.class);
-      war.addClass(TestUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientWebApplicationExceptionResource.class);
+      war.addClass(ReasteasyTestUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientWebApplicationExceptionResource.class);
    }
 
    public static String generateURL(String path) {

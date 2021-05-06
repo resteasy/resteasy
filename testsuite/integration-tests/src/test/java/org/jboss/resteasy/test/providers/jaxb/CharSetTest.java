@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 
 import java.nio.charset.StandardCharsets;
@@ -40,9 +40,9 @@ public class CharSetTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CharSetTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CharSetTest.class.getSimpleName());
       war.addClass(CharSetTest.class);
-      return TestUtil.finishContainerPrepare(war, null, CharSetCustomer.class, CharSetResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CharSetCustomer.class, CharSetResource.class);
    }
 
    @Before

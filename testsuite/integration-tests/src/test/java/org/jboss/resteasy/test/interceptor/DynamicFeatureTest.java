@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.interceptor.resource.DynamicFeatureResource;
 import org.jboss.resteasy.test.interceptor.resource.GreetingInterceptor;
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -50,9 +50,9 @@ public class DynamicFeatureTest {
       // LogCounter needs to be created before deployment because it can only count logs written after its creation
       logCounter = new LogCounter("This should be happening exactly once", false, DEFAULT_CONTAINER_QUALIFIER);
 
-      WebArchive war = TestUtil.prepareArchive(DynamicFeatureTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DynamicFeatureTest.class.getSimpleName());
       war.addClasses(GreetingInterceptor.class, DoNothingGlobalRequestFilter.class, DoNothingMethodScopedRequestFilter.class);
-      return TestUtil.finishContainerPrepare(war, null, DynamicFeatureResource.class, AddDynamicFeature.class, AddFeature.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DynamicFeatureResource.class, AddDynamicFeature.class, AddFeature.class);
    }
 
    @BeforeClass

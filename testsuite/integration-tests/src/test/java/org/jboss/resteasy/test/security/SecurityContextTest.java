@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.security.resource.SecurityContextResource;
 import org.jboss.resteasy.test.security.resource.SecurityContextContainerRequestFilter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -71,18 +71,18 @@ public class SecurityContextTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SecurityContextTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SecurityContextTest.class.getSimpleName());
       war.addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
             .addAsWebInfResource(SecurityContextTest.class.getPackage(), "securityContext/web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, SecurityContextResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SecurityContextResource.class);
    }
 
    @Deployment(name="containerRequestFilter")
    public static Archive<?> deploy2() {
-      WebArchive war = TestUtil.prepareArchive(SecurityContextTest.class.getSimpleName() + "Filter");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SecurityContextTest.class.getSimpleName() + "Filter");
       war.addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
             .addAsWebInfResource(SecurityContextTest.class.getPackage(), "securityContext/web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, SecurityContextResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SecurityContextResource.class,
             SecurityContextContainerRequestFilter.class);
    }
 

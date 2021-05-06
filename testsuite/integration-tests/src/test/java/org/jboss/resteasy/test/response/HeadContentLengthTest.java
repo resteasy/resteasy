@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.response.resource.SimpleResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -36,8 +36,8 @@ public class HeadContentLengthTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(HeadContentLengthTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SimpleResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HeadContentLengthTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SimpleResource.class);
    }
 
    @BeforeClass

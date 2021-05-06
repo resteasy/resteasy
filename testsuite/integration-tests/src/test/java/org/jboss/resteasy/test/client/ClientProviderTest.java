@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.ClientProviderStringEntityProviderReader;
 import org.jboss.resteasy.test.client.resource.ClientProviderStringEntityProviderWriter;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -52,9 +52,9 @@ public class ClientProviderTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientProviderTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientProviderTest.class.getSimpleName());
       war.addClass(ClientTestBase.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientProviderResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientProviderResource.class);
    }
 
    @After

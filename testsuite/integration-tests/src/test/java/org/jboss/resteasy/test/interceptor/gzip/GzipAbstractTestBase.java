@@ -10,7 +10,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -57,7 +57,7 @@ public abstract class GzipAbstractTestBase {
     * Prepare archive for the tests
     */
    protected static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors) {
-      WebArchive war = TestUtil.prepareArchive(name);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(name);
       war = war.addClass(GzipInterface.class);
       war = war.addAsWebInfResource(EmptyAsset.INSTANCE, "WEB-INF/beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -66,7 +66,7 @@ public abstract class GzipAbstractTestBase {
       if (addProvidersFileWithGzipInterceptors) {
          war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
       }
-      return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GzipResource.class);
    }
 
    private ResteasyClient client;

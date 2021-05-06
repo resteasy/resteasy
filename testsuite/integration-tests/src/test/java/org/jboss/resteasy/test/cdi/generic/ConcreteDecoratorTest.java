@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.cdi.generic.resource.VisitList;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertEquals;
 public class ConcreteDecoratorTest {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive("resteasy-cdi-ejb-test");
+      WebArchive war = ReasteasyTestUtil.prepareArchive("resteasy-cdi-ejb-test");
       war.addClasses(UtilityProducer.class, VisitList.class);
       war.addClasses(ObjectHolder.class, ConcreteResourceIntf.class);
       war.addClasses(HolderBinding.class, HierarchyHolder.class);

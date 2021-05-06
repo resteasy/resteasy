@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -36,9 +36,9 @@ public class JSAPIGetBasicJsapiHandlingScriptTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JSAPIGetBasicJsapiHandlingScriptTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JSAPIGetBasicJsapiHandlingScriptTest.class.getSimpleName());
       war.addAsWebInfResource(JSAPIGetBasicJsapiHandlingScriptTest.class.getPackage(), "web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    @Before

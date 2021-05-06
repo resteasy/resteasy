@@ -18,7 +18,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCacheChild;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCacheParent;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ public class JaxbCacheTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
       war.addClass(JaxbCacheTest.class);
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -47,7 +47,7 @@ public class JaxbCacheTest {
          new PropertyPermission("*", "read")),
          "permissions.xml");
 
-      return TestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
    }
 
    /**

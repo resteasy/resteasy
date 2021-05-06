@@ -34,7 +34,7 @@ import org.jboss.resteasy.test.resource.param.resource.ParamWrapperArrayConverte
 import org.jboss.resteasy.test.resource.param.resource.PathParamWrapper;
 import org.jboss.resteasy.test.resource.param.resource.PathParamWrapperArrayConverter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -55,7 +55,7 @@ public class MultiValuedParamDateProxyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultiValuedParamDateProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MultiValuedParamDateProxyTest.class.getSimpleName());
       war.addClass(MultiValuedParam.class);
       war.addClass(ParamWrapper.class);
       war.addClass(MultiValuedCookieParam.class);
@@ -70,7 +70,7 @@ public class MultiValuedParamDateProxyTest {
       war.addClass(MultiValuedPathParamConverter.class);
       war.addClass(PathParamWrapperArrayConverter.class);
       war.addClass(MultiValuedParamResourceClient.class);
-      return TestUtil.finishContainerPrepare(war, null, MultiValuedParamConverterProvider.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MultiValuedParamConverterProvider.class,
          MultiValuedParamResource.class,  MultiValuedParamResource.QueryParamResource.class, MultiValuedParamResource.HeaderParamResource.class,
          MultiValuedParamResource.PathParamResource.class, MultiValuedParamResource.CookieParamResource.class,
          MultiValuedParamResource.MatrixParamResource.class, MultiValuedParamResource.FormParamResource.class);

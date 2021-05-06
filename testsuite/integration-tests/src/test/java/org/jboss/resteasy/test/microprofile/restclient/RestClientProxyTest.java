@@ -28,7 +28,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.microprofile.client.BuilderResolver;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -52,7 +52,7 @@ public class RestClientProxyTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(RestClientProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RestClientProxyTest.class.getSimpleName());
       war.addClass(RestClientProxyTest.class);
       war.addClass(HelloResource.class);
       war.addClass(HeaderPropagator.class);
@@ -62,7 +62,7 @@ public class RestClientProxyTest
       war.addClass(Category.class);
       war.addClasses(TestParamConverter.class, TestParamConverterProvider.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient,org.jboss.resteasy.resteasy-rxjava2 services\n"), "MANIFEST.MF");
-      return TestUtil.finishContainerPrepare(war, null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null);
    }
 
    private String generateURL(String path)

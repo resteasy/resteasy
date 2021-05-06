@@ -9,7 +9,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.microprofile.config.resource.OptionalConfigPropertyInjectionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -35,9 +35,9 @@ public class OptionalConfigPropertyInjectionTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(OptionalConfigPropertyInjectionTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(OptionalConfigPropertyInjectionTest.class.getSimpleName())
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, OptionalConfigPropertyInjectionResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, OptionalConfigPropertyInjectionResource.class);
    }
 
    @BeforeClass

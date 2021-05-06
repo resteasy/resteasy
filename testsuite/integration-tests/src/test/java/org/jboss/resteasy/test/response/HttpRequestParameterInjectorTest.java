@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.response.resource.HttpRequestParameterInjectorCla
 import org.jboss.resteasy.test.response.resource.HttpRequestParameterInjectorParamFactoryImpl;
 import org.jboss.resteasy.test.response.resource.HttpRequestParameterInjectorResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,9 +34,9 @@ public class HttpRequestParameterInjectorTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEPLOYMENT_NAME);
       war.addClass(HttpRequestParameterInjectorClassicParam.class);
-      return TestUtil.finishContainerPrepare(war, null, HttpRequestParameterInjectorResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HttpRequestParameterInjectorResource.class,
             HttpRequestParameterInjectorParamFactoryImpl.class);
    }
 

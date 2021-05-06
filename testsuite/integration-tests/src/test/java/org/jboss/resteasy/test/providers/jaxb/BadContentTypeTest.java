@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.BadContentTypeTestBean;
 import org.jboss.resteasy.test.providers.jaxb.resource.BadContenTypeTestResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -40,8 +40,8 @@ public class BadContentTypeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(BadContentTypeTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, BadContenTypeTestResource.class, BadContentTypeTestBean.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BadContentTypeTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, BadContenTypeTestResource.class, BadContentTypeTestBean.class);
    }
 
    @Before

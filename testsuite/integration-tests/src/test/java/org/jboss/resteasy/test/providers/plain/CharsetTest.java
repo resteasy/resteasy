@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.providers.plain.resource.CharsetFoo;
 import org.jboss.resteasy.test.providers.plain.resource.CharsetResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -55,8 +55,8 @@ public class CharsetTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CharSetTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, params, CharsetResource.class, CharsetFoo.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CharSetTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, params, CharsetResource.class, CharsetFoo.class);
    }
 
    @Before

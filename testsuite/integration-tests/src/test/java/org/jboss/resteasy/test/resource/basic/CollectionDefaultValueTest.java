@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.CollectionDefaultValueResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -32,8 +32,8 @@ public class CollectionDefaultValueTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CollectionDefaultValueTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, CollectionDefaultValueResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CollectionDefaultValueTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CollectionDefaultValueResource.class);
    }
 
    @Before

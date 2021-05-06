@@ -27,7 +27,7 @@ import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -60,8 +60,8 @@ public class PriorityExecutionTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PriorityExecutionTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PriorityExecutionTest.class.getSimpleName());
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       war.addClasses(PriorityExecutionClientResponseFilterMin.class,
             PriorityExecutionClientResponseFilter1.class,
             PriorityExecutionClientRequestFilter2.class,
@@ -85,7 +85,7 @@ public class PriorityExecutionTest {
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
       // finish preparation of war container, define end-point and filters
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             // end-point
             PriorityExecutionResource.class,
             // server filters

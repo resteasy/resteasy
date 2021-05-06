@@ -14,7 +14,7 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.test.client.resource.InputStreamResourceClient;
 import org.jboss.resteasy.test.client.resource.InputStreamResourceService;
 import org.jboss.resteasy.util.ReadFromStream;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -47,8 +47,8 @@ public class InputStreamResourceTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InputStreamResourceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, InputStreamResourceService.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputStreamResourceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputStreamResourceService.class);
    }
 
    /**

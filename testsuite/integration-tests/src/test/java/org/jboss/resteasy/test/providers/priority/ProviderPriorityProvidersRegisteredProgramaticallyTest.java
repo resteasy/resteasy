@@ -26,7 +26,7 @@ import org.jboss.resteasy.test.providers.priority.resource.ProviderPriorityFooPa
 import org.jboss.resteasy.test.providers.priority.resource.ProviderPriorityResource;
 import org.jboss.resteasy.test.providers.priority.resource.ProviderPriorityTestException;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -47,7 +47,7 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
       war.addClasses(ProviderPriorityFoo.class,
             ProviderPriorityFooParamConverter.class,
             ProviderPriorityTestException.class,
@@ -57,7 +57,7 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
       List<Class<?>> singletons = new ArrayList<Class<?>>();
       singletons.add(ProviderPriorityExceptionMapperCCC.class);
       singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons,
             ProviderPriorityResource.class,
             ProviderPriorityExceptionMapperAAA.class,
             ProviderPriorityExceptionMapperBBB.class,

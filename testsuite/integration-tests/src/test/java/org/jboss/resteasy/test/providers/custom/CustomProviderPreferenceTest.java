@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.providers.custom.resource.CustomProviderPreferenc
 import org.jboss.resteasy.test.providers.custom.resource.CustomProviderPreferenceUserResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -35,9 +35,9 @@ public class CustomProviderPreferenceTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CustomProviderPreferenceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomProviderPreferenceTest.class.getSimpleName());
       war.addClass(CustomProviderPreferenceUser.class);
-      return TestUtil.finishContainerPrepare(war, null, CustomProviderPreferenceUserResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CustomProviderPreferenceUserResource.class,
             CustomProviderPreferenceUserBodyWriter.class);
    }
 

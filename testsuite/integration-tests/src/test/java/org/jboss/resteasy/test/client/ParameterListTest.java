@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.client.resource.ParameterListInterface;
 import org.jboss.resteasy.test.client.resource.ParameterListResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -53,9 +53,9 @@ public class ParameterListTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ParameterListTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ParameterListTest.class.getSimpleName());
       war.addClass(ParameterListInterface.class);
-      return TestUtil.finishContainerPrepare(war, null, ParameterListResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ParameterListResource.class);
    }
 
    private String generateBaseUrl() {

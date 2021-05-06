@@ -10,7 +10,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBeanCdi;
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamCdiResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -42,8 +42,8 @@ public class RESTEasyParamCdiTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(RESTEasyParamCdiTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, RESTEasyParamCdiResource.class, RESTEasyParamBeanCdi.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(RESTEasyParamCdiTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, RESTEasyParamCdiResource.class, RESTEasyParamBeanCdi.class);
    }
 
    @Before

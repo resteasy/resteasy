@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.RoleType;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.UserType;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -47,7 +47,7 @@ public class HomecontrolCustomJAXBContextTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(HomecontrolCustomJAXBContextTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HomecontrolCustomJAXBContextTest.class.getSimpleName());
       war.addClasses(HomecontrolCustomJAXBContext.class,
               HomecontrolApplication.class,
               HomecontrolService.class,
@@ -67,7 +67,7 @@ public class HomecontrolCustomJAXBContextTest {
               new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
       war.addAsWebInfResource(HomecontrolCustomJAXBContextTest.class.getPackage(), "homecontrol/web.xml");
-      return TestUtil.finishContainerPrepare(war, null, HomecontrolCustomJAXBContextTest.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HomecontrolCustomJAXBContextTest.class);
    }
 
    @Before

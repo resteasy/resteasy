@@ -18,7 +18,7 @@ import org.jboss.resteasy.test.providers.custom.resource.CustomClientConstrained
 import org.jboss.resteasy.test.providers.custom.resource.CustomConstrainedFeatureResource;
 import org.jboss.resteasy.test.providers.custom.resource.CustomServerConstrainedFeature;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -40,9 +40,9 @@ public class CustomConstrainedFeatureTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CustomConstrainedFeatureTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomConstrainedFeatureTest.class.getSimpleName());
       war.addAsResource(CustomConstrainedFeatureTest.class.getPackage(), CUSTOM_PROVIDERS_FILENAME, "META-INF/services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, CustomConstrainedFeatureResource.class, CustomServerConstrainedFeature.class, CustomClientConstrainedFeature.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CustomConstrainedFeatureResource.class, CustomServerConstrainedFeature.class, CustomClientConstrainedFeature.class);
    }
 
    private static String generateURL(String path) {

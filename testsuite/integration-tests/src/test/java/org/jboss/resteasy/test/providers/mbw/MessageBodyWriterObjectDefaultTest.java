@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.mbw.resource.MessageBodyWriterObjectMes
 import org.jboss.resteasy.test.providers.mbw.resource.MessageBodyWriterObjectMessageBodyWriter;
 import org.jboss.resteasy.test.providers.mbw.resource.MessageBodyWriterObjectResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,9 +40,9 @@ public class MessageBodyWriterObjectDefaultTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MessageBodyWriterObjectDefaultTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MessageBodyWriterObjectDefaultTest.class.getSimpleName());
       war.addClasses(MessageBodyWriterObjectMessage.class);
-      return TestUtil.finishContainerPrepare(war, null, MessageBodyWriterObjectResource.class, MessageBodyWriterObjectMessageBodyWriter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MessageBodyWriterObjectResource.class, MessageBodyWriterObjectMessageBodyWriter.class);
    }
 
    private String generateURL(String path) {

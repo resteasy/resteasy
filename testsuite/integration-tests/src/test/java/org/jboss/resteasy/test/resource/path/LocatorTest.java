@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.resource.path.resource.LocatorResource;
 import org.jboss.resteasy.test.resource.path.resource.LocatorTestLocator;
 import org.jboss.resteasy.test.resource.path.resource.LocatorTestLocator2;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -43,8 +43,8 @@ public class LocatorTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(LocatorTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, LocatorResource.class, LocatorTestLocator.class, LocatorTestLocator2.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(LocatorTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, LocatorResource.class, LocatorTestLocator.class, LocatorTestLocator2.class);
    }
 
    private String generateURL(String path) {

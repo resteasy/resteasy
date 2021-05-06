@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.resource.basic.resource.GenericResourceStudentInt
 import org.jboss.resteasy.test.resource.basic.resource.GenericResourceStudentReader;
 import org.jboss.resteasy.test.resource.basic.resource.GenericResourceStudentWriter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -41,11 +41,11 @@ public class GenericResourceTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
       war.addClass(GenericResourceStudent.class);
       war.addClass(GenericResourceStudentInterface.class);
       war.addClass(GenericResourceCrudResource.class);
-      return TestUtil.finishContainerPrepare(war, null, GenericResourceStudentCrudResource.class, GenericResourceStudentReader.class, GenericResourceStudentWriter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GenericResourceStudentCrudResource.class, GenericResourceStudentReader.class, GenericResourceStudentWriter.class);
    }
 
    private static String generateURL(String path) {

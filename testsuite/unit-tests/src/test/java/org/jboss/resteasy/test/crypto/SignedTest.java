@@ -12,7 +12,7 @@ import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.jboss.resteasy.security.DerUtils;
 import org.jboss.resteasy.security.PemUtils;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class SignedTest {
    static final String pythonPath;
 
    static {
-      String base = TestUtil.getResourcePath(SignedTest.class, "");
+      String base = ReasteasyTestUtil.getResourcePath(SignedTest.class, "");
       certPemPath = new StringBuilder().append(base).append("SignedMycert.pem").toString();
       certPrivatePemPath = new StringBuilder().append(base).append("MycertPrivate.pem").toString();
       certPrivateKeyDerPath = new StringBuilder().append(base).append("SignedPrivateDkimKeyDer.der").toString();

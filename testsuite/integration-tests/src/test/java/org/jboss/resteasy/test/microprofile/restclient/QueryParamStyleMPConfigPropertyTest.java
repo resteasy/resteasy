@@ -8,7 +8,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.microprofile.restclient.resource.QueryParamStyleService;
 import org.jboss.resteasy.test.microprofile.restclient.resource.QueryParamStyleServiceIntf;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,9 +34,9 @@ public class QueryParamStyleMPConfigPropertyTest {
 
     @Deployment(name=WAR_SERVICE)
     public static Archive<?> serviceDeploy() {
-        WebArchive war = TestUtil.prepareArchive(WAR_SERVICE);
+        WebArchive war = ReasteasyTestUtil.prepareArchive(WAR_SERVICE);
         war.addClasses(QueryParamStyleService.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, null);
     }
 
     static RestClientBuilder builder;

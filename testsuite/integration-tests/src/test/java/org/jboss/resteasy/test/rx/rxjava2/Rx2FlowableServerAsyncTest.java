@@ -25,7 +25,7 @@ import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableResourceNoStreamImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -86,7 +86,7 @@ public class Rx2FlowableServerAsyncTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Rx2FlowableServerAsyncTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(Rx2FlowableServerAsyncTest.class.getSimpleName());
       war.addClass(Thing.class);
       war.addClass(Bytes.class);
       war.addClass(TRACE.class);
@@ -94,7 +94,7 @@ public class Rx2FlowableServerAsyncTest {
       war.addClass(TestException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));
-      return TestUtil.finishContainerPrepare(war, null, Rx2FlowableResourceNoStreamImpl.class, TestExceptionMapper.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Rx2FlowableResourceNoStreamImpl.class, TestExceptionMapper.class);
    }
 
    private static String generateURL(String path) {

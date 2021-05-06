@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.custom.resource.CustomContextProviderPr
 import org.jboss.resteasy.test.providers.custom.resource.CustomContextProviderPreferenceResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,8 +34,8 @@ public class CustomContextProviderPreferenceTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CustomContextProviderPreferenceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, CustomContextProviderPreferenceResolver.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CustomContextProviderPreferenceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, CustomContextProviderPreferenceResolver.class,
               CustomContextProviderPreferenceResource.class);
    }
 

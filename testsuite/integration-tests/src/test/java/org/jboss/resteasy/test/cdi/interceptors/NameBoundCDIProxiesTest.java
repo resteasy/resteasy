@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.cdi.interceptors.resource.NameBoundCDIProxiesInte
 import org.jboss.resteasy.test.cdi.interceptors.resource.NameBoundCDIProxiesResource;
 import org.jboss.resteasy.test.cdi.interceptors.resource.NameBoundProxiesAnnotation;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -35,7 +35,7 @@ public class NameBoundCDIProxiesTest {
       WebArchive war = prepareArchive(NameBoundCDIProxiesTest.class.getSimpleName());
       war.addClass(NameBoundProxiesAnnotation.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, NameBoundCDIProxiesResource.class, NameBoundCDIProxiesInterceptor.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, NameBoundCDIProxiesResource.class, NameBoundCDIProxiesInterceptor.class);
    }
 
    // Use specific Application subclass

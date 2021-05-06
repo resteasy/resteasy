@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.interceptor.resource.TestInterceptor;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -36,7 +36,7 @@ public class StreamCloseTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(StreamCloseTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(StreamCloseTest.class.getSimpleName());
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
               new PropertyPermission("arquillian.*", "read"),
@@ -47,7 +47,7 @@ public class StreamCloseTest
               new PropertyPermission("ipv6", "read"),
               new PropertyPermission("node", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, TestInterceptor.class, PortProviderUtil.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, TestInterceptor.class, PortProviderUtil.class);
    }
 
    static Client client;

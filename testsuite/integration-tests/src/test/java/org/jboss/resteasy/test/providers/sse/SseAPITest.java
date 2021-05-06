@@ -18,7 +18,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,13 +31,13 @@ import org.junit.runner.RunWith;
 public class SseAPITest {
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(SseAPITest.class.getSimpleName());
+        WebArchive war = ReasteasyTestUtil.prepareArchive(SseAPITest.class.getSimpleName());
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new RuntimePermission("modifyThread")),
                 "permissions.xml");
         List<Class<?>> singletons = new ArrayList<Class<?>>();
         singletons.add(SseAPIImpl.class);
-        return TestUtil.finishContainerPrepare(war, null, singletons, SseAPI.class);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, SseAPI.class);
     }
 
     private String generateURL(String path) {

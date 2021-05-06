@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Re
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilterModifierConditionalWriterInterceptor;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifierConditional;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -39,10 +39,10 @@ public class JsonFilterWithInterceptorConditionalFilterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
       war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class);
       war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterModifierConditionalWriterInterceptor.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterModifierConditionalWriterInterceptor.class);
    }
 
    private String generateURL(String path) {

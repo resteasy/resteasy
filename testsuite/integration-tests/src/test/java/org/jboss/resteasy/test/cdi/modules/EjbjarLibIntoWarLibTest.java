@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesModulesResourceInt
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -53,7 +53,7 @@ public class EjbjarLibIntoWarLibTest {
             .addClasses(EjbjarLibIntoWarLibTest.class, UtilityProducer.class)
             .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
             .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
-      WebArchive war = TestUtil.prepareArchive(EjbjarLibIntoWarLibTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EjbjarLibIntoWarLibTest.class.getSimpleName())
             .addAsLibrary(toJar)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 

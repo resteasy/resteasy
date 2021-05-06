@@ -32,7 +32,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;
 import org.jboss.resteasy.test.core.interceptors.resource.Pair;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -56,11 +56,11 @@ public class GzipTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GzipTest.class.getSimpleName());
       war.addClasses(GzipIGZIP.class, Pair.class);
       // Activate gzip compression:
       war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GzipResource.class);
    }
 
    private String generateURL(String path) {

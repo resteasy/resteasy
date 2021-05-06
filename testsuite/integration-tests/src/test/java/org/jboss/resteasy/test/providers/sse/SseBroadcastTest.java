@@ -7,7 +7,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.sse.resource.SseBroadcastResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,8 +34,8 @@ public class SseBroadcastTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SseBroadcastTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SseBroadcastResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseBroadcastTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SseBroadcastResource.class);
    }
 
    private String generateURL(String path) {

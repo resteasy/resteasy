@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.response.resource.DuplicitePathMethodResource;
 import org.jboss.resteasy.test.response.resource.DuplicitePathNoDupliciteApplication;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -51,7 +51,7 @@ public class DuplicitePathTest {
     * Get RESTEasy warning count
     */
    private static int getWarningCount() {
-      return TestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    /**
@@ -60,7 +60,7 @@ public class DuplicitePathTest {
     * Example: WFLYUT0101: Duplicate servlet mapping /a/* found
     */
    private static int getServletMappingWarningCount() {
-      return TestUtil.getWarningCount("WFLYUT0101", false, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("WFLYUT0101", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    @Deployment
@@ -110,7 +110,7 @@ public class DuplicitePathTest {
       } finally {
          response.close();
       }
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1445", "Wrong count of warnings in server log"),
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("RESTEASY-1445", "Wrong count of warnings in server log"),
                      1, getServletMappingWarningCount() - initServletWarningsCount);
    }
 
@@ -133,7 +133,7 @@ public class DuplicitePathTest {
       } finally {
          response.close();
       }
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
                      0, getWarningCount() - initWarningsCount);
    }
 
@@ -156,7 +156,7 @@ public class DuplicitePathTest {
       } finally {
          response.close();
       }
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
+      Assert.assertEquals(ReasteasyTestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
                      0, getWarningCount() - initWarningsCount);
    }
 

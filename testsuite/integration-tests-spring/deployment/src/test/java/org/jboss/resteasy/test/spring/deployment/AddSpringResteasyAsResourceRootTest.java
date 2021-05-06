@@ -26,8 +26,8 @@ import org.jboss.resteasy.plugins.spring.SpringContextLoaderListener;
 import org.jboss.resteasy.test.spring.deployment.resource.TestResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.resteasy.utils.TestUtilSpring;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
+import org.jboss.resteasy.utils.ResteasyTestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -102,7 +102,7 @@ public class AddSpringResteasyAsResourceRootTest {
          new LoggingPermission("control", "")
       ), "permissions.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
       archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithSpringMvcDispatcherSpringIncluded + ".war"), true);
       return archive;
    }
@@ -136,7 +136,7 @@ public class AddSpringResteasyAsResourceRootTest {
          new LoggingPermission("control", "")
       ), "permissions.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
       archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithSpringContextLoaderListenerSpringIncluded + ".war"), true);
       return archive;
    }
@@ -160,13 +160,13 @@ public class AddSpringResteasyAsResourceRootTest {
 
    @Deployment(name = "dep1")
    private static Archive<?> createDeploymentWithoutSpringMvcDispatcherOrListener() {
-      WebArchive archive = TestUtil.prepareArchive(deploymentWithoutSpringMvcDispatcherOrListenerSpringIncluded);
+      WebArchive archive = ReasteasyTestUtil.prepareArchive(deploymentWithoutSpringMvcDispatcherOrListenerSpringIncluded);
       archive.addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "web-no-mvc-no-listener.xml", "web.xml")
             .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "applicationContext.xml", "applicationContext.xml");
 
-      TestUtilSpring.addSpringLibraries(archive);
+      ResteasyTestUtilSpring.addSpringLibraries(archive);
       archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithoutSpringMvcDispatcherOrListenerSpringIncluded + ".war"), true);
-      return TestUtil.finishContainerPrepare(archive, null, TestResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(archive, null, TestResource.class);
    }
 
    private boolean resteasySpringClassesAreAvailableToDeployment(String deploymentName) throws IOException, HttpException {

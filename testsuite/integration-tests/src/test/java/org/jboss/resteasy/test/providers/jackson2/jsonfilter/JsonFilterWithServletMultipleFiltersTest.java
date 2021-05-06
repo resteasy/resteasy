@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilt
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectWriterModifierMultipleFilter;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.PersonType;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -35,11 +35,11 @@ import org.junit.runner.RunWith;
 public class JsonFilterWithServletMultipleFiltersTest {
    @Deployment(name = "default")
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonFilterWithServletMultipleFiltersTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JsonFilterWithServletMultipleFiltersTest.class.getSimpleName());
       war.addClasses(Jackson2Person.class, PersonType.class, ObjectFilterModifierMultiple.class, ObjectWriterModifierMultipleFilter.class);
       war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
       war.addAsWebInfResource(JsonFilterWithServletMultipleFiltersTest.class.getPackage(), "web-filter-multiple.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, Jackson2PersonResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Jackson2PersonResource.class);
    }
 
    private String generateURL(String path) {

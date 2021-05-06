@@ -9,7 +9,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.LinkJaxbCustomer;
 import org.jboss.resteasy.test.providers.jaxb.resource.LinkJaxbResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -33,8 +33,8 @@ public class LinkJaxbTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(LinkJaxbTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, LinkJaxbCustomer.class, LinkJaxbResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(LinkJaxbTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, LinkJaxbCustomer.class, LinkJaxbResource.class);
    }
 
    @Before

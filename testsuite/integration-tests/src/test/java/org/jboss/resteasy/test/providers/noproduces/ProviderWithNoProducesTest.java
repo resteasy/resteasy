@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.noproduces.resource.Foo;
 import org.jboss.resteasy.test.providers.noproduces.resource.ProviderWithNoProducesMessageBodyWriter;
 import org.jboss.resteasy.test.providers.noproduces.resource.ProviderWithNoProducesResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -31,10 +31,10 @@ public class ProviderWithNoProducesTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProviderWithNoProducesTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProviderWithNoProducesTest.class.getSimpleName());
       war.addClass(Foo.class);
       war.addAsWebInfResource(ProviderWithNoProducesTest.class.getPackage(), "ProviderWithNoProduces_web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, ProviderWithNoProducesResource.class, ProviderWithNoProducesMessageBodyWriter.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProviderWithNoProducesResource.class, ProviderWithNoProducesMessageBodyWriter.class);
    }
 
    private String generateURL(String path) {

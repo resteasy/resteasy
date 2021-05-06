@@ -13,7 +13,7 @@ import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.test.crypto.resource.VerifyDecryptResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -50,8 +50,8 @@ public class VerifyDecryptTest {
    static final String certPrivatePemPath;
 
    static {
-      certPemPath = TestUtil.getResourcePath(VerifyDecryptTest.class, "VerifyDecryptMycert.pem");
-      certPrivatePemPath = TestUtil.getResourcePath(VerifyDecryptTest.class, "VerifyDecryptMycertPrivate.pem");
+      certPemPath = ReasteasyTestUtil.getResourcePath(VerifyDecryptTest.class, "VerifyDecryptMycert.pem");
+      certPrivatePemPath = ReasteasyTestUtil.getResourcePath(VerifyDecryptTest.class, "VerifyDecryptMycertPrivate.pem");
    }
 
    @Before
@@ -70,7 +70,7 @@ public class VerifyDecryptTest {
       cert = PemUtils.decodeCertificate(new FileInputStream(certPemPath));
       privateKey = PemUtils.decodePrivateKey(new FileInputStream(certPrivatePemPath));
 
-      WebArchive war = TestUtil.prepareArchive(VerifyDecryptTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(VerifyDecryptTest.class.getSimpleName());
       war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycert.pem", "mycert.pem");
       war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycertPrivate.pem", "mycert-private.pem");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -78,7 +78,7 @@ public class VerifyDecryptTest {
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, VerifyDecryptResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, VerifyDecryptResource.class);
    }
 
    private String generateURL(String path) {

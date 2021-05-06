@@ -8,7 +8,7 @@ import org.jboss.resteasy.test.resource.basic.resource.ScanResource;
 import org.jboss.resteasy.test.resource.basic.resource.ScanSubresource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -46,11 +46,11 @@ public class ScanTest {
 
    @Deployment
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ScanTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ScanTest.class.getSimpleName());
       war.addClass(ScanProxy.class);
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put("resteasy.scan", "true");
-      return TestUtil.finishContainerPrepare(war, contextParams, ScanResource.class, ScanSubresource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, ScanResource.class, ScanSubresource.class);
    }
 
    /**

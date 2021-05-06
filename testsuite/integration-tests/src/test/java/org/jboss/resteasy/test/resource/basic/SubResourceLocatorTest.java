@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorPlatfor
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorPlatformServiceResource;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorUserResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -38,11 +38,11 @@ public class SubResourceLocatorTest {
 
    @Deployment
    public static Archive<?> testReturnValuesDeploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(SubResourceLocatorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SubResourceLocatorTest.class.getSimpleName());
       war.addClasses(SubResourceLocatorBaseCrudService.class, SubResourceLocatorBaseService.class,
             SubResourceLocatorFoo.class, SubResourceLocatorOhaUserModel.class,
             SubResourceLocatorPlatformServiceResource.class, SubResourceLocatorUserResource.class);
-      return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorImpFoo.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SubResourceLocatorImpFoo.class,
             SubResourceLocatorPlatformServiceImpl.class);
    }
 

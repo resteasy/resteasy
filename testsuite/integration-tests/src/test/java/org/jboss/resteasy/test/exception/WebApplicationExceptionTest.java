@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.exception.resource.WebApplicationExceptionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class WebApplicationExceptionTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(WebApplicationExceptionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, WebApplicationExceptionResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WebApplicationExceptionTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, WebApplicationExceptionResource.class);
    }
 
    private String generateURL(String path) {

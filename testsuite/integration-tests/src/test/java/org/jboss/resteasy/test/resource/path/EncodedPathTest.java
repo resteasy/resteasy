@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.path.resource.EncodedPathResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -44,8 +44,8 @@ public class EncodedPathTest
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EncodedPathTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, EncodedPathResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EncodedPathTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, EncodedPathResource.class);
    }
 
    private String generateURL(String path) {

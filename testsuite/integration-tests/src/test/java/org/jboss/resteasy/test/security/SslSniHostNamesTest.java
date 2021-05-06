@@ -7,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.security.resource.SslResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -58,8 +58,8 @@ public class SslSniHostNamesTest extends SslTestBase {
    @TargetsContainer(SSL_CONTAINER_QUALIFIER_SNI)
    @Deployment(managed=false, name=DEPLOYMENT_NAME)
    public static Archive<?> createDeployment() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
-      return TestUtil.finishContainerPrepare(war, null, SslResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEPLOYMENT_NAME);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SslResource.class);
    }
 
    @BeforeClass
@@ -126,39 +126,39 @@ public class SslSniHostNamesTest extends SslTestBase {
       file = new File(BATCH);
       BATCH = file.getAbsolutePath();
 
-      if (TestUtil.isWindows()) {
+      if (ReasteasyTestUtil.isWindows()) {
          SERVER_WRONG_KEYSTORE_PATH = SERVER_WRONG_KEYSTORE_PATH.replace("\\","\\\\");
          SERVER_TRUSTED_KEYSTORE_PATH = SERVER_TRUSTED_KEYSTORE_PATH.replace("\\","\\\\");
          BATCH = BATCH.replace("\\","\\\\");
       }
 
-      OnlineManagementClient client = TestUtil.clientInit(SSL_CONTAINER_PORT_OFFSET_SNI);
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit(SSL_CONTAINER_PORT_OFFSET_SNI);
 
       // create SSLContext with untrusted certificate (hostname is wrong)
-      TestUtil.runCmd(client, String.format("/subsystem=elytron/key-store=httpsKS:add(path=%s,credential-reference={clear-text=%s},type=JKS)", SERVER_WRONG_KEYSTORE_PATH, PASSWORD));
-      TestUtil.runCmd(client, String.format("/subsystem=elytron/key-manager=httpsKM:add(key-store=httpsKS,credential-reference={clear-text=%s})", PASSWORD));
-      if (TestUtil.isIbmJdk()) { // on ibm java, client doesn't use TLSv1.2
-         TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC:add(key-manager=httpsKM,protocols=[\"TLSv1\"])");
+      ReasteasyTestUtil.runCmd(client, String.format("/subsystem=elytron/key-store=httpsKS:add(path=%s,credential-reference={clear-text=%s},type=JKS)", SERVER_WRONG_KEYSTORE_PATH, PASSWORD));
+      ReasteasyTestUtil.runCmd(client, String.format("/subsystem=elytron/key-manager=httpsKM:add(key-store=httpsKS,credential-reference={clear-text=%s})", PASSWORD));
+      if (ReasteasyTestUtil.isIbmJdk()) { // on ibm java, client doesn't use TLSv1.2
+         ReasteasyTestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC:add(key-manager=httpsKM,protocols=[\"TLSv1\"])");
       } else {
-         TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC:add(key-manager=httpsKM,protocols=[\"TLSv1.2\"])");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC:add(key-manager=httpsKM,protocols=[\"TLSv1.2\"])");
       }
 
 
       // create SSLContext with trusted certificate
-      TestUtil.runCmd(client, String.format("/subsystem=elytron/key-store=httpsKS1:add(path=%s,credential-reference={clear-text=%s},type=JKS)", SERVER_TRUSTED_KEYSTORE_PATH, PASSWORD));
-      TestUtil.runCmd(client, String.format("/subsystem=elytron/key-manager=httpsKM1:add(key-store=httpsKS1,credential-reference={clear-text=%s})", PASSWORD));
-      if (TestUtil.isIbmJdk()) {
-         TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1\"])");
+      ReasteasyTestUtil.runCmd(client, String.format("/subsystem=elytron/key-store=httpsKS1:add(path=%s,credential-reference={clear-text=%s},type=JKS)", SERVER_TRUSTED_KEYSTORE_PATH, PASSWORD));
+      ReasteasyTestUtil.runCmd(client, String.format("/subsystem=elytron/key-manager=httpsKM1:add(key-store=httpsKS1,credential-reference={clear-text=%s})", PASSWORD));
+      if (ReasteasyTestUtil.isIbmJdk()) {
+         ReasteasyTestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1\"])");
       } else {
-         TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1.2\"])");
+         ReasteasyTestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1.2\"])");
       }
 
 
       // set untrusted SSLContext as default and trusted SSLContext to be activated with sniHostNames("localhost")
-      TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-sni-context=test-sni:add(default-ssl-context=httpsSSC,host-context-map={localhost=httpsSSC1})");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=elytron/server-ssl-sni-context=test-sni:add(default-ssl-context=httpsSSC,host-context-map={localhost=httpsSSC1})");
 
       // remove the reference to the legacy security realm and use configuration above instead
-      TestUtil.runCmd(client, String.format("run-batch --file=%s", BATCH));
+      ReasteasyTestUtil.runCmd(client, String.format("run-batch --file=%s", BATCH));
 
       Administration admin = new Administration(client, 240);
       admin.reload();

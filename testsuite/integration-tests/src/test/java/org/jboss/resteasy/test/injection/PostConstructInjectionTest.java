@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBResou
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -46,13 +46,13 @@ public class PostConstructInjectionTest {
     */
    @Deployment(name = WAR_CDI_ON)
    public static Archive<?> deployCdiOn() {
-      WebArchive war = TestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_ON");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_ON");
       war.addClass(PostConstructInjectionEJBInterceptor.class);
       war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_on.xml", "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class, PostConstructInjectionEJBResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class, PostConstructInjectionEJBResource.class);
    }
 
    /**
@@ -60,13 +60,13 @@ public class PostConstructInjectionTest {
     */
    @Deployment(name = WAR_CDI_OFF)
    public static Archive<?> deployCdiOff() {
-      WebArchive war = TestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_OFF");
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_OFF");
       war.addClass(PostConstructInjectionEJBInterceptor.class);
       war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_off.xml", "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class);
    }
 
    @BeforeClass

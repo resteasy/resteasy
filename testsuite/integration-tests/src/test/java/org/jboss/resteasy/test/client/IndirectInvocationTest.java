@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.IndirectInvocationTestResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -45,8 +45,8 @@ public class IndirectInvocationTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(IndirectInvocationTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, IndirectInvocationTestResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(IndirectInvocationTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, IndirectInvocationTestResource.class);
    }
 
    @After

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Util class for RESTEasy rxjava (1) related testing.
  */
-public class TestUtilRxJava {
+public class ResteasyTestUtilRxJava {
 
    private static String defaultRxJavaVersion = "1.3.2";
    private static String defaultRxJavaReactiveStreamsVersion = "1.2.1";

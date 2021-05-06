@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.XmlHeaderJunk2Intf;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlHeaderJunkIntf;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlHeaderThing;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -37,8 +37,8 @@ public class XmlHeaderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XmlHeaderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, XmlHeaderResource.class, XmlHeaderDecorator.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(XmlHeaderTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, XmlHeaderResource.class, XmlHeaderDecorator.class,
             XmlHeaderDecorator2.class, XmlHeaderJunk2Intf.class, XmlHeaderJunkIntf.class, XmlHeaderThing.class);
    }
 

@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeS
 import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeInvocationHandler;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -36,7 +36,7 @@ public class ProxyWithGenericReturnTypeTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyWithGenericReturnTypeTest.class.getSimpleName());
 
       war.addClass(ProxyWithGenericReturnTypeInvocationHandler.class);
       war.addClass(ProxyWithGenericReturnTypeSubResourceIntf.class);
@@ -44,7 +44,7 @@ public class ProxyWithGenericReturnTypeTest {
 
       List<Class<?>> singletons = new ArrayList<>();
       singletons.add(ProxyWithGenericReturnTypeMessageBodyWriter.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons, ProxyWithGenericReturnTypeResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, ProxyWithGenericReturnTypeResource.class);
    }
 
    /**

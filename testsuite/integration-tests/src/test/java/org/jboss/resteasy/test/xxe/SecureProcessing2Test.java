@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlType
 import org.jboss.resteasy.test.xxe.resource.ObjectFactory;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -208,12 +208,12 @@ public class SecureProcessing2Test {
    }
 
    static Archive<?> createTestArchive(String warExt, String webXmlExt) {
-      WebArchive war = TestUtil.prepareArchive(URL_PREFIX + warExt);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(URL_PREFIX + warExt);
       war.addClasses(SecureProcessingBar.class, SecureProcessingFavoriteMovie.class, SecureProcessingFavoriteMovieXmlRootElement.class);
       war.addClasses(SecureProcessingFavoriteMovieXmlType.class, ObjectFactory.class);
       war.addAsWebInfResource(SecureProcessing2Test.class.getPackage(), "SecureProcessing_external.dtd", "external.dtd");
       war.addAsWebInfResource(SecureProcessing2Test.class.getPackage(), "SecureProcessing_web_" + webXmlExt + ".xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, SecureProcessingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SecureProcessingResource.class);
    }
 
    @Before

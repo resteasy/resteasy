@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.asynch.resource.AsyncGenericEntityMessageBodyWriter;
 import org.jboss.resteasy.test.asynch.resource.AsyncGenericEntityResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class AsyncGenericEntityTest {
 
    @Deployment()
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AsyncGenericEntityTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsyncGenericEntityTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             AsyncGenericEntityMessageBodyWriter.class,
             AsyncGenericEntityResource.class);
    }

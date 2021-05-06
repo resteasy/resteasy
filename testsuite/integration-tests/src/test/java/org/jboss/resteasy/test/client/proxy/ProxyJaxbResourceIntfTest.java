@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ProxyJaxbResource;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyJaxbResourceIntf;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -34,10 +34,10 @@ public class ProxyJaxbResourceIntfTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProxyJaxbResourceIntfTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ProxyJaxbResourceIntfTest.class.getSimpleName());
       war.addClass(ProxyJaxbResourceIntfTest.class);
       war.addClass(ProxyJaxbResourceIntf.class);
-      return TestUtil.finishContainerPrepare(war, null, ProxyJaxbResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ProxyJaxbResource.class,
             ProxyJaxbCredit.class);
    }
 

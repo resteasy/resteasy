@@ -20,7 +20,7 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.jboss.resteasy.security.PemUtils;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,8 +62,8 @@ public class EnvelopedTest {
          "zAUGo6VoZZMmyLVeYEZoXqEjY6fN+rpSWoUVtNQM";
    private static X509Certificate cert;
    private static PrivateKey privateKey;
-   static final String certPemPath = TestUtil.getResourcePath(EnvelopedTest.class, "SignedMycert.pem");
-   static final String certPrivatePemPath = TestUtil.getResourcePath(EnvelopedTest.class, "MycertPrivate.pem");
+   static final String certPemPath = ReasteasyTestUtil.getResourcePath(EnvelopedTest.class, "SignedMycert.pem");
+   static final String certPrivatePemPath = ReasteasyTestUtil.getResourcePath(EnvelopedTest.class, "MycertPrivate.pem");
 
    @BeforeClass
    public static void setup() throws Exception {

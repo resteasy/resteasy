@@ -13,7 +13,7 @@ import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 import org.jboss.resteasy.test.interceptor.resource.GZIPAnnotationInterface;
 import org.jboss.resteasy.test.interceptor.resource.GZIPAnnotationResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -49,10 +49,10 @@ public class GZIPAnnotationTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GZIPAnnotationTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(GZIPAnnotationTest.class.getSimpleName());
       war.addClass(GZIPAnnotationInterface.class);
       war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, GZIPAnnotationResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, GZIPAnnotationResource.class);
    }
 
    private String generateURL(String path) {

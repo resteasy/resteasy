@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterChangeSta
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterChangeStatusResponseFilter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -49,8 +49,8 @@ public class ResponseFilterChangeStatusTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResponseFilterChangeStatusTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ResponseFilterChangeStatusResource.class, ResponseFilterChangeStatusResponseFilter.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResponseFilterChangeStatusTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseFilterChangeStatusResource.class, ResponseFilterChangeStatusResponseFilter.class);
    }
 
    private String generateURL(String path) {

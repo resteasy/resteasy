@@ -12,7 +12,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -42,13 +42,13 @@ public class AbstractExceptionMapperTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(AbstractExceptionMapperTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AbstractExceptionMapperTest.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
       war.addClasses(AbstractMapper.class, AbstractMapperException.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, AbstractMapperDefault.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AbstractMapperDefault.class,
             AbstractMapperMyCustom.class, AbstractMapperResource.class);
    }
 

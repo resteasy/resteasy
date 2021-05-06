@@ -11,7 +11,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.form.resource.FormEntityResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -33,8 +33,8 @@ public class FormEntityTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(FormEntityTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, FormEntityResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FormEntityTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FormEntityResource.class);
    }
 
    private String generateURL(String path) {

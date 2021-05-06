@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.response.resource.ResponseTrimmingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -40,8 +40,8 @@ public class ResponseTrimmingTest {
     */
    @Deployment(name = DEFAULT)
    public static Archive<?> deployDefault() {
-      WebArchive war = TestUtil.prepareArchive(DEFAULT);
-      return TestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DEFAULT);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
    }
 
    /**
@@ -49,9 +49,9 @@ public class ResponseTrimmingTest {
     */
    @Deployment(name = NO_JSON_B)
    public static Archive<?> deployNoJsonB() {
-      WebArchive war = TestUtil.prepareArchive(NO_JSON_B);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(NO_JSON_B);
       war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
-      return TestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
    }
 
    /**

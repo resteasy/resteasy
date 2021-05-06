@@ -28,7 +28,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterHuman;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterFoo;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class XmlJavaTypeAdapterTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XmlJavaTypeAdapterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(XmlJavaTypeAdapterTest.class.getSimpleName());
       war.addClass(XmlJavaTypeAdapterTest.class);
       // Arquillian in the deployment and use of PortProviderUtil in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -64,7 +64,7 @@ public class XmlJavaTypeAdapterTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, XmlJavaTypeAdapterAlien.class, XmlJavaTypeAdapterAlienAdapter.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, XmlJavaTypeAdapterAlien.class, XmlJavaTypeAdapterAlienAdapter.class,
             XmlJavaTypeAdapterFoo.class, XmlJavaTypeAdapterHuman.class, XmlJavaTypeAdapterResource.class, PortProviderUtil.class);
    }
 

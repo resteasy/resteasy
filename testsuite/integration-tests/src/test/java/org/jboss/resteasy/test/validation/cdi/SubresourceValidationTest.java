@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationReso
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationSubResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -37,10 +37,10 @@ import static org.junit.Assert.assertEquals;
 public class SubresourceValidationTest {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(SubresourceValidationTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SubresourceValidationTest.class.getSimpleName())
             .addClasses(SubresourceValidationResource.class, SubresourceValidationSubResource.class, SubresourceValidationQueryBeanParam.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, SubresourceValidationResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SubresourceValidationResource.class);
    }
 
    protected Client client;
@@ -71,7 +71,7 @@ public class SubresourceValidationTest {
       Invocation.Builder request = client.target(generateURL("/sub/17?limit=abcdef")).request();
       ClientResponse response = (ClientResponse) request.get();
       ViolationReport r = new ViolationReport(response.readEntity(String.class));
-      TestUtil.countViolations(r, 0, 0, 2, 0);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 2, 0);
       assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
    }
 
@@ -84,7 +84,7 @@ public class SubresourceValidationTest {
       Invocation.Builder request = client.target(generateURL("/sub/return/abcd")).request();
       ClientResponse response = (ClientResponse) request.get();
       ViolationReport r = new ViolationReport(response.readEntity(String.class));
-      TestUtil.countViolations(r, 0, 0, 0, 1);
+      ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
       assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
    }
 }

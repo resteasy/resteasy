@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.form.resource.FormBodyResourceClient;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceForm;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -26,10 +26,10 @@ import org.junit.runner.RunWith;
 public class FormBodyResourceTest {
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(FormParameterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(FormParameterTest.class.getSimpleName());
       war.addClasses(FormBodyResourceClient.class);
       war.addClasses(FormBodyResourceForm.class);
-      return TestUtil.finishContainerPrepare(war, null, FormBodyResourceResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, FormBodyResourceResource.class);
    }
 
    /**

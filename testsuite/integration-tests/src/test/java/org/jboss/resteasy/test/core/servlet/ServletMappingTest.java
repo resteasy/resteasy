@@ -16,7 +16,7 @@ import org.jboss.resteasy.test.core.servlet.resource.ServletMappingResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -44,14 +44,14 @@ public class ServletMappingTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ServletMappingTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ServletMappingTest.class.getSimpleName());
       war.addAsWebInfResource(ServletMappingTest.class.getPackage(), "ServletMappingWeb.xml", "web.xml");
       war.addAsWebInfResource(ServletMappingTest.class.getPackage(), "ServletMappingJbossWeb.xml", "jboss-web.xml");
       war.addClass(MyFilter.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, ServletMappingResource.class, ServletMappingProxy.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ServletMappingResource.class, ServletMappingProxy.class);
    }
 
    private String generateURL(String path) {
@@ -93,7 +93,7 @@ public class ServletMappingTest {
 
       try {
          Assert.assertEquals(HttpResponseCodes.SC_OK, response1.getStatusLine().getStatusCode());
-         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "basic", TestUtil.readString(response1.getEntity().getContent()));
+         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "basic", ReasteasyTestUtil.readString(response1.getEntity().getContent()));
       } finally {
          response1.close();
       }

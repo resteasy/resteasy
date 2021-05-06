@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenerics
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsImpl;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsInterface;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -43,14 +43,14 @@ public class AnnotationInheritanceGenericsTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(TEST_NAME);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(TEST_NAME);
       war.addClasses(
             AnnotationInheritanceGenericsEntity.class,
             AnnotationInheritanceGenericsInterface.class,
             AnnotationInheritanceGenericsAbstract.class
       );
 
-      return TestUtil.finishContainerPrepare(war, null, AnnotationInheritanceGenericsImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AnnotationInheritanceGenericsImpl.class);
    }
 
    protected Client client;

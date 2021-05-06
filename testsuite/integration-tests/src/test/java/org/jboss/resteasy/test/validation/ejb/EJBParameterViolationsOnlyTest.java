@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.validation.ejb.resource.EJBParameterViolationsOnl
 import org.jboss.resteasy.test.validation.ejb.resource.EJBParameterViolationsOnlyStatelessResource;
 import org.jboss.resteasy.test.validation.ejb.resource.EJBParameterViolationsOnlyTestApplication;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -48,14 +48,14 @@ public class EJBParameterViolationsOnlyTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EJBParameterViolationsOnlyTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EJBParameterViolationsOnlyTest.class.getSimpleName())
             .addClasses(
                   EJBParameterViolationsOnlyTestApplication.class,
                   EJBParameterViolationsOnlyDataObject.class,
                   EJBParameterViolationsOnlyAbstractDataObject.class,
                   EJBParameterViolationsOnlyResourceIntf.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             EJBParameterViolationsOnlyStatelessResource.class,
             EJBParameterViolationsOnlyStatefulResource.class,
             EJBParameterViolationsOnlySingletonResource.class
@@ -129,7 +129,7 @@ public class EJBParameterViolationsOnlyTest {
       Assert.assertEquals(400, response2.getStatus());
       Assert.assertEquals("true", response2.getHeaderString(Validation.VALIDATION_HEADER));
       ViolationReport report = response2.readEntity(ViolationReport.class);
-      TestUtil.countViolations(report, 0, 0, 1, 0);
+      ReasteasyTestUtil.countViolations(report, 0, 0, 1, 0);
       used = target.path("used").request().get(boolean.class);
       Assert.assertFalse(used);
    }

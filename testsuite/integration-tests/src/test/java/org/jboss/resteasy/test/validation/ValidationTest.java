@@ -25,7 +25,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationClassConstraint;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -68,8 +68,8 @@ public class ValidationTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ValidationTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ValidationResourceWithAllViolationTypes.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ValidationTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ValidationResourceWithAllViolationTypes.class,
             ValidationResourceWithReturnValues.class, ValidationFooReaderWriter.class, ValidationFooValidator.class,
             ValidationFooConstraint.class, ValidationFoo.class, ValidationClassValidator.class, ValidationClassConstraint.class);
    }
@@ -130,7 +130,7 @@ public class ValidationTest {
          Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
          ViolationReport r = response.readEntity(ViolationReport.class);
          logger.info("entity: " + r);
-         TestUtil.countViolations(r, 0, 0, 0, 1);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 1);
          ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          logger.info("violation: " + violation);
          Assert.assertTrue(ERR_CONSTRAINT_MESSAGE, violation.getMessage().equals("s must have length: 3 <= length <= 5"));
@@ -148,7 +148,7 @@ public class ValidationTest {
          Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
          ViolationReport r = response.readEntity(ViolationReport.class);
          logger.info("entity: " + r);
-         TestUtil.countViolations(r, 0, 0, 0, 2);
+         ReasteasyTestUtil.countViolations(r, 0, 0, 0, 2);
          Iterator<ResteasyConstraintViolation> it = r.getReturnValueViolations().iterator();
          ResteasyConstraintViolation cv1 = it.next();
          ResteasyConstraintViolation cv2 = it.next();
@@ -191,11 +191,11 @@ public class ValidationTest {
       ViolationReport r = response.readEntity(ViolationReport.class);
       logger.info("report: " + r);
       logger.info("testViolationsBeforeReturnValue(): exception:");
-      TestUtil.countViolations(r, 2, 1, 1, 0);
-      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      ReasteasyTestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
       Assert.assertNotNull(ERR_CONSTRAINT_MESSAGE, violation);
       Assert.assertEquals(ERR_ENTITY_MESSAGE, "a", violation.getValue());
-      violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      violation = ReasteasyTestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
       Assert.assertNotNull(ERR_CONSTRAINT_MESSAGE, violation);
       Assert.assertEquals(ERR_ENTITY_MESSAGE, "z", violation.getValue());
       violation = r.getClassViolations().iterator().next();

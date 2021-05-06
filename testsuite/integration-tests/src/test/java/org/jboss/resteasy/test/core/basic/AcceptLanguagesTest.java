@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.basic.resource.AcceptLanguagesResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -29,8 +29,8 @@ public class AcceptLanguagesTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AcceptLanguagesTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AcceptLanguagesResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AcceptLanguagesTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, AcceptLanguagesResource.class);
    }
 
    /**

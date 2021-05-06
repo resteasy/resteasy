@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.resource.basic.resource.UriInfoSimpleSingletonRes
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -62,7 +62,7 @@ public class UriInfoTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment(name = "UriInfoSimpleResource")
    public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoSimpleResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoSimpleResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
 
       // Use of PortProviderUtil in the deployment
@@ -72,7 +72,7 @@ public class UriInfoTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new PropertyPermission("org.jboss.resteasy.port", "read")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
    }
 
    /**
@@ -87,7 +87,7 @@ public class UriInfoTest {
 
    @Deployment(name = "UriInfoSimpleSingletonResource")
    public static Archive<?> deployUriInfoSimpleResourceAsSingleton() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoSimpleSingletonResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoSimpleSingletonResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
             new PropertyPermission("ipv6", "read"),
@@ -95,7 +95,7 @@ public class UriInfoTest {
             new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
       List<Class<?>> singletons = new ArrayList<>();
       singletons.add(UriInfoSimpleSingletonResource.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
    }
 
    /**
@@ -109,9 +109,9 @@ public class UriInfoTest {
 
    @Deployment(name = "UriInfoEscapedMatrParamResource")
    public static Archive<?> deployUriInfoEscapedMatrParamResource() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoEscapedMatrParamResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoEscapedMatrParamResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, UriInfoEscapedMatrParamResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriInfoEscapedMatrParamResource.class);
    }
 
    /**
@@ -125,9 +125,9 @@ public class UriInfoTest {
 
    @Deployment(name = "UriInfoEncodedTemplateResource")
    public static Archive<?> deployUriInfoEncodedTemplateResource() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoEncodedTemplateResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoEncodedTemplateResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, UriInfoEncodedTemplateResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriInfoEncodedTemplateResource.class);
    }
 
    /**
@@ -142,9 +142,9 @@ public class UriInfoTest {
 
    @Deployment(name = "UriInfoEncodedQueryResource")
    public static Archive<?> deployUriInfoEncodedQueryResource() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoEncodedQueryResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoEncodedQueryResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, UriInfoEncodedQueryResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriInfoEncodedQueryResource.class);
    }
 
    /**
@@ -158,9 +158,9 @@ public class UriInfoTest {
 
    @Deployment(name = "UriInfoRelativizeResource")
    public static Archive<?> deployUriInfoRelativizeResource() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoRelativizeResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoRelativizeResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, UriInfoRelativizeResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriInfoRelativizeResource.class);
    }
 
    /**
@@ -204,9 +204,9 @@ public class UriInfoTest {
 
    @Deployment(name = "UriInfoQueryParamsResource")
    public static Archive<?> deployUriInfoQueryParamsResource() {
-      WebArchive war = TestUtil.prepareArchive(UriInfoQueryParamsResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(UriInfoQueryParamsResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, UriInfoQueryParamsResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, UriInfoQueryParamsResource.class);
    }
 
    /**

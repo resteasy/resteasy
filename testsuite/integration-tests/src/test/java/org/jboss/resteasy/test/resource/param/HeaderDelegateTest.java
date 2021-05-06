@@ -21,7 +21,7 @@ import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -52,7 +52,7 @@ public class HeaderDelegateTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(HeaderDelegateTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HeaderDelegateTest.class.getSimpleName());
       war.addClass(HeaderDelegateDate.class);
       war.addClass(HeaderDelegateDelegate.class);
       war.addClass(HeaderDelegateInterface1.class);
@@ -74,7 +74,7 @@ public class HeaderDelegateTest {
             new RuntimePermission("accessDeclaredMembers"),
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, HeaderDelegateResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HeaderDelegateResource.class);
    }
 
 

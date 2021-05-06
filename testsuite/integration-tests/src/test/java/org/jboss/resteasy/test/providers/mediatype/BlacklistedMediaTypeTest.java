@@ -26,7 +26,7 @@ import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.test.crypto.resource.CryptoCertResource;
 import org.jboss.resteasy.test.providers.mediatype.resource.BlacklistedMediaTypeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -67,7 +67,7 @@ public class BlacklistedMediaTypeTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(BlacklistedMediaTypeTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BlacklistedMediaTypeTest.class.getSimpleName());
       try {
          // Code borrowed from org.jboss.resteasy.test.crypto.CryptoTest
          BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
@@ -85,7 +85,7 @@ public class BlacklistedMediaTypeTest {
       war.addAsManifestResource("jboss-deployment-structure-bouncycastle.xml", "jboss-deployment-structure.xml");
       war.addAsWebInfResource(BlacklistedMediaTypeTest.class.getPackage(), "BlacklistedMediaTypeFile1", "classes/BlacklistedMediaTypeFile1");
       war.addAsWebInfResource(BlacklistedMediaTypeTest.class.getPackage(), "BlacklistedMediaTypeFile2", "classes/BlacklistedMediaTypeFile2");
-      return TestUtil.finishContainerPrepare(war, null, BlacklistedMediaTypeResource.class, CryptoCertResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, BlacklistedMediaTypeResource.class, CryptoCertResource.class);
    }
 
    private String generateURL(String path) {

@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.resource.param.resource.ParamInterfaceResource;
 import org.jboss.resteasy.test.resource.param.resource.ParamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -31,9 +31,9 @@ public class ParamTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(ParamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ParamTest.class.getSimpleName());
       war.addClass(ParamInterfaceResource.class);
-      return TestUtil.finishContainerPrepare(war, null, ParamResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ParamResource.class);
    }
 
    private String generateBaseUrl() {

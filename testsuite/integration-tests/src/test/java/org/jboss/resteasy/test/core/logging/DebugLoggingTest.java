@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAnd
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -53,39 +53,39 @@ public class DebugLoggingTest {
 
    @Deployment(name = BUILD_IN, order = 1)
    public static Archive<?> createTestArchive1() {
-      WebArchive war = TestUtil.prepareArchive(BUILD_IN);
-      return TestUtil.finishContainerPrepare(war, null, DebugLoggingEndPoint.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(BUILD_IN);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DebugLoggingEndPoint.class);
    }
 
    @Deployment(name = CUSTOM, order = 2)
    public static Archive<?> createTestArchive2() {
-      WebArchive war = TestUtil.prepareArchive(CUSTOM);
-      return TestUtil.finishContainerPrepare(war, null, DebugLoggingEndPoint.class, DebugLoggingReaderInterceptorCustom.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CUSTOM);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, DebugLoggingEndPoint.class, DebugLoggingReaderInterceptorCustom.class,
             DebugLoggingWriterInterceptorCustom.class, DebugLoggingCustomReaderAndWriter.class);
    }
 
    @BeforeClass
    public static void initLogging() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
 
       // enable RESTEasy debug logging
-      TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=ALL)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:add(level=ALL)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:add(level=ALL)");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=ALL)");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:add(level=ALL)");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:add(level=ALL)");
 
       client.close();
    }
 
    @AfterClass
    public static void removeLogging() throws Exception {
-      OnlineManagementClient client = TestUtil.clientInit();
+      OnlineManagementClient client = ReasteasyTestUtil.clientInit();
 
       // enable RESTEasy debug logging
-      TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=INFO)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:remove()");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:remove()");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=INFO)");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:remove()");
+      ReasteasyTestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:remove()");
 
       client.close();
    }
@@ -141,8 +141,8 @@ public class DebugLoggingTest {
       LogCounter bodyWriterCustomLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter", false, DEFAULT_CONTAINER_QUALIFIER);
 
       // perform request
-      TestUtil.getWarningCount("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
-      TestUtil.getWarningCount("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+      ReasteasyTestUtil.getWarningCount("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+      ReasteasyTestUtil.getWarningCount("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
       WebTarget base = client.target(PortProviderUtil.generateURL("/custom", CUSTOM));
       Response response = base.request().post(Entity.entity("data", "aaa/bbb"));
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

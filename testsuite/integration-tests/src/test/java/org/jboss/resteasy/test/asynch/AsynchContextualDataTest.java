@@ -19,7 +19,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataProduct;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -42,13 +42,13 @@ public class AsynchContextualDataTest {
 
    @Deployment()
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AsynchContextualDataTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(AsynchContextualDataTest.class.getSimpleName());
       war.addClass(AsynchContextualDataProduct.class);
       List<Class<?>> singletons = new ArrayList<Class<?>>();
       singletons.add(AsynchContextualDataResource.class);
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParam, singletons);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, singletons);
    }
 
    private String generateURL(String path) {

@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.response.resource.SlowString;
 import org.jboss.resteasy.test.response.resource.SlowStringWriter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -44,7 +44,7 @@ public class PublisherResponseRawStreamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PublisherResponseRawStreamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PublisherResponseRawStreamTest.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
               + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -52,7 +52,7 @@ public class PublisherResponseRawStreamTest {
               new PropertyPermission("*", "write"),
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, PublisherResponseRawStreamResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PublisherResponseRawStreamResource.class,
             SlowStringWriter.class, SlowString.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);
    }

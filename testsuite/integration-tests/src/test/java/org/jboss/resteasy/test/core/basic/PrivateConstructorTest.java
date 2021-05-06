@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.PrivateConstructorServiceResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -30,8 +30,8 @@ public class PrivateConstructorTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(PrivateConstructorTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, PrivateConstructorServiceResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PrivateConstructorTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, PrivateConstructorServiceResource.class);
    }
 
    /**

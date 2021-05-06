@@ -13,7 +13,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -28,12 +28,12 @@ public class SseCORSFilterTest
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(SseCORSFilterTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseCORSFilterTest.class.getSimpleName());
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class,
             CORSFilter.class), ExecutorServletContextListener.class);
    }
 

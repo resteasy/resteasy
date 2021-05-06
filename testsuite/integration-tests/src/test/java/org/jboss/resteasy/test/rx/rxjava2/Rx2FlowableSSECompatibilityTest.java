@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableableSSECompatibilityResource;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableableSSECompatibilityResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -59,12 +59,12 @@ public class Rx2FlowableSSECompatibilityTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Rx2FlowableSSECompatibilityTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(Rx2FlowableSSECompatibilityTest.class.getSimpleName());
       war.addClass(Thing.class);
       war.addClass(Rx2FlowableableSSECompatibilityResource.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
-      return TestUtil.finishContainerPrepare(war, null, Rx2FlowableableSSECompatibilityResourceImpl.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Rx2FlowableableSSECompatibilityResourceImpl.class);
    }
 
    private static String generateURL(String path) {

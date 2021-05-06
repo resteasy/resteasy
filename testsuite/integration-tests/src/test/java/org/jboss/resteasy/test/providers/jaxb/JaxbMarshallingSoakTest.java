@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakItem;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -75,8 +75,8 @@ public class JaxbMarshallingSoakTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war =  TestUtil.prepareArchive(JaxbMarshallingSoakTest.class.getSimpleName());
-      war.addClasses(JaxbMarshallingSoakItem.class, TestUtil.class, PortProviderUtil.class, TimeoutUtil.class);
+      WebArchive war =  ReasteasyTestUtil.prepareArchive(JaxbMarshallingSoakTest.class.getSimpleName());
+      war.addClasses(JaxbMarshallingSoakItem.class, ReasteasyTestUtil.class, PortProviderUtil.class, TimeoutUtil.class);
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.async.job.service.enabled", "true");
       // Arquillian in the deployment use if TimeoutUtil in the deployment
@@ -94,7 +94,7 @@ public class JaxbMarshallingSoakTest {
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, contextParam, JaxbMarshallingSoakAsyncService.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, JaxbMarshallingSoakAsyncService.class);
    }
 
    private String generateURL(String path) {

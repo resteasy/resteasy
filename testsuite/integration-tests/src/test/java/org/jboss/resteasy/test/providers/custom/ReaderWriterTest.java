@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterSpaces;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterSub;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -47,40 +47,40 @@ public class ReaderWriterTest {
    static final String PriorityDeploymenetName = "ReaderWriterCustomerWriterWithPriority";
    @Deployment(name = "ReaderWriterCustomerWriter")
    public static Archive<?> deployCustomWriter() {
-      WebArchive war = TestUtil.prepareArchive(ReaderWriterCustomerWriter.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReaderWriterCustomerWriter.class.getSimpleName());
       war.addClass(ReaderWriterCustomer.class);
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ReaderWriterCustomerWriter.class, ReaderWriterResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReaderWriterCustomerWriter.class, ReaderWriterResource.class);
    }
 
    @Deployment(name = "ReaderWriterResource")
    public static Archive<?> deployReaderWriterClass() {
-      WebArchive war = TestUtil.prepareArchive(ReaderWriterResource.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReaderWriterResource.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ReaderWriterResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReaderWriterResource.class);
    }
 
    @Deployment(name = "ReaderWriterSpaces")
    public static Archive<?> deployReaderWriterSpaces() {
-      WebArchive war = TestUtil.prepareArchive(ReaderWriterSpaces.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReaderWriterSpaces.class.getSimpleName());
       war.addClass(ReaderWriterSub.class);
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ReaderWriterSpaces.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReaderWriterSpaces.class);
    }
 
    @Deployment(name = "ReaderWriterCurlyBraces")
    public static Archive<?> deployReaderWriterCurlyBraces() {
-      WebArchive war = TestUtil.prepareArchive(ReaderWriterCurlyBraces.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ReaderWriterCurlyBraces.class.getSimpleName());
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ReaderWriterCurlyBraces.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReaderWriterCurlyBraces.class);
    }
 
    @Deployment(name = PriorityDeploymenetName)
    public static Archive<?> deployCustomWriterWithPriority() {
-      WebArchive war = TestUtil.prepareArchive(PriorityDeploymenetName);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(PriorityDeploymenetName);
       war.addClass(ReaderWriterCustomer.class);
       war.addClass(PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, ReaderWriterLowPriorityCustomerWriter.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ReaderWriterLowPriorityCustomerWriter.class,
          ReaderWriterCustomerWriter.class, ReaderWriterHignPriorityCustomerWriter.class, ReaderWriterResource.class);
    }
 

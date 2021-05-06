@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.response.resource.VariantEncodingResource;
 import org.jboss.resteasy.test.response.resource.VariantLanguageResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -44,9 +44,9 @@ public class VariantsTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(VariantsTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(VariantsTest.class.getSimpleName());
       war.addClass(VariantsTest.class);
-      return TestUtil.finishContainerPrepare(war, null, VariantLanguageResource.class, VariantComplexResource.class, VariantEncodingResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, VariantLanguageResource.class, VariantComplexResource.class, VariantEncodingResource.class);
    }
 
    @Before

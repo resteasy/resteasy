@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.interceptor.resource.InterceptorStreamCustom;
 import org.jboss.resteasy.test.interceptor.resource.InterceptorStreamResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -32,8 +32,8 @@ import javax.ws.rs.core.Response;
 public class InterceptorStreamTest {
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InterceptorStreamTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, InterceptorStreamCustom.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InterceptorStreamTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, InterceptorStreamCustom.class);
    }
 
    static Client client;

@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.runner.RunWith;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 
 /**
@@ -31,9 +31,9 @@ public class XmlEnumParamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XmlEnumParamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(XmlEnumParamTest.class.getSimpleName());
       war.addClass(XmlEnumParamTest.class);
-      return TestUtil.finishContainerPrepare(war, null, XmlEnumParamResource.class, XmlEnumParamLocation.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, XmlEnumParamResource.class, XmlEnumParamLocation.class);
    }
 
    @Before

@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassPerson;
 import org.jboss.resteasy.test.providers.jaxb.resource.ExceptionMapperJaxbMapper;
 import org.jboss.resteasy.test.providers.jaxb.resource.ExceptionMapperJaxbResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -37,8 +37,8 @@ public class ExceptionMapperJaxbTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ExceptionMapperJaxbTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperJaxbMapper.class, ExceptionMapperJaxbResource.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ExceptionMapperJaxbTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ExceptionMapperJaxbMapper.class, ExceptionMapperJaxbResource.class,
             AbstractJaxbClassPerson.class);
    }
 

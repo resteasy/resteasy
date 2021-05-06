@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCont
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -38,13 +38,13 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
       war.addClasses(InputPartDefaultContentTypeEncodingOverwriteTest.class);
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      war.addClasses(ReasteasyTestUtil.class, PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter.class,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter.class,
             InputPartDefaultContentTypeEncodingOverwriteService.class);
    }
 

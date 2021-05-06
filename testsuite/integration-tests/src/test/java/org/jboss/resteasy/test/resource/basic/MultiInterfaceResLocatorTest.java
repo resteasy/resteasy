@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorR
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorSubresource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -31,10 +31,10 @@ public class MultiInterfaceResLocatorTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultiInterfaceResLocatorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MultiInterfaceResLocatorTest.class.getSimpleName());
       war.addClass(MultiInterfaceResLocatorIntf1.class);
       war.addClass(MultiInterfaceResLocatorIntf2.class);
-      return TestUtil.finishContainerPrepare(war, null, MultiInterfaceResLocatorResource.class, MultiInterfaceResLocatorSubresource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MultiInterfaceResLocatorResource.class, MultiInterfaceResLocatorSubresource.class);
    }
 
    private String generateURL(String path) {

@@ -40,7 +40,7 @@ import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -69,7 +69,7 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
    @Deployment
    public static Archive<?> createTestArchive() throws Exception {
       initQueue();
-      WebArchive war = TestUtil.prepareArchive(MDBInjectionTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MDBInjectionTest.class.getSimpleName());
       war.addClass(AbstractInjectionTestBase.class)
             .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class)
             .addClasses(Counter.class, CDIInjectionBookCollection.class, CDIInjectionBookReader.class, CDIInjectionBookWriter.class)
@@ -90,7 +90,7 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
             new HibernateValidatorPermission("accessPrivateMembers"),
             new SocketPermission(host, "resolve")),
             "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    @ArquillianResource

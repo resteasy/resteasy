@@ -11,7 +11,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.xxe.resource.XXEBasicResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -38,7 +38,7 @@ public class XXEBasicTest {
 
    static String request;
    static {
-      String filename = TestUtil.getResourcePath(XXEBasicTest.class, "testpasswd.txt");
+      String filename = ReasteasyTestUtil.getResourcePath(XXEBasicTest.class, "testpasswd.txt");
       request = new StringBuilder()
             .append("<?xml version=\"1.0\"?>\r")
             .append("<!DOCTYPE foo\r")
@@ -51,11 +51,11 @@ public class XXEBasicTest {
    protected final Logger logger = LogManager.getLogger(XXEBasicTest.class.getName());
 
    public static Archive<?> deploy(String expandEntityReferences) {
-      WebArchive war = TestUtil.prepareArchive(expandEntityReferences);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(expandEntityReferences);
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES, expandEntityReferences);
       contextParam.put(ResteasyContextParameters.RESTEASY_DISABLE_DTDS, "false");
-      return TestUtil.finishContainerPrepare(war, contextParam, XXEBasicResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParam, XXEBasicResource.class);
    }
 
    @Deployment(name = "true")

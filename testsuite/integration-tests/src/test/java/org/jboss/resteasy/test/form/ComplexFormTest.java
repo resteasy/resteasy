@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.form.resource.ComplexFormPerson;
 import org.jboss.resteasy.test.form.resource.ComplexFormResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -34,9 +34,9 @@ public class ComplexFormTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
       war.addClasses(ComplexFormPerson.class, ComplexFormAddress.class);
-      return TestUtil.finishContainerPrepare(war, null, ComplexFormResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ComplexFormResource.class);
    }
 
    /**

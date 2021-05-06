@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.Something;
 import org.jboss.resteasy.test.providers.jackson2.resource.TestJsonView;
 import org.jboss.resteasy.test.providers.jackson2.resource.TestJsonView2;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -74,9 +74,9 @@ public class JacksonJsonViewTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JacksonJsonViewTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(JacksonJsonViewTest.class.getSimpleName());
       war.addClass(JacksonJsonViewTest.class);
-      return TestUtil.finishContainerPrepare(war, null, Something.class, TestJsonView.class, TestJsonView2.class, JacksonViewService.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, Something.class, TestJsonView.class, TestJsonView2.class, JacksonViewService.class);
    }
 
 

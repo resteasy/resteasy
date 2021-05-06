@@ -8,7 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.MatchedResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -38,8 +38,8 @@ public class MatchedResourceTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(MatchedResourceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, MatchedResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(MatchedResourceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, MatchedResource.class);
    }
 
    @BeforeClass

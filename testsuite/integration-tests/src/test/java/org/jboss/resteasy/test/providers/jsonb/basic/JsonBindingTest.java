@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingCustomRepeaterProvider;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -75,14 +75,14 @@ public class JsonBindingTest {
    }
 
    public static Archive<?> deploy(String archiveName, boolean useJsonB) {
-      WebArchive war = TestUtil.prepareArchive(archiveName);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(archiveName);
       war.addClass(JsonBindingTest.class);
       war.addClass(Cat.class);
       if (useJsonB) {
          war.addAsManifestResource("jboss-deployment-structure-json-b.xml", "jboss-deployment-structure.xml");
-         return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class);
+         return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonBindingResource.class);
       }
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, JsonBindingCustomRepeaterProvider.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, JsonBindingCustomRepeaterProvider.class);
    }
 
    @BeforeClass

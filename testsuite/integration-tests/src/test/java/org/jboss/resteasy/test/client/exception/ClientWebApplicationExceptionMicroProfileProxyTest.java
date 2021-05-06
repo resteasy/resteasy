@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExc
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionMicroProfileProxyResource;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionProxyResourceInterface;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -53,15 +53,15 @@ public class ClientWebApplicationExceptionMicroProfileProxyTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientWebApplicationExceptionMicroProfileProxyTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientWebApplicationExceptionMicroProfileProxyTest.class.getSimpleName());
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionMicroProfileProxyApplication.class);
       war.addClass(ClientWebApplicationExceptionMicroProfileProxyResource.class);
       war.addClass(ClientWebApplicationExceptionProxyResourceInterface.class);
       war.addClass(PortProviderUtil.class);
-      war.addClass(TestUtil.class);
+      war.addClass(ReasteasyTestUtil.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, ClientWebApplicationExceptionMicroProfileProxyResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientWebApplicationExceptionMicroProfileProxyResource.class);
    }
 
    public static String generateURL(String path) {

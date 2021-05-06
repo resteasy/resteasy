@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -51,7 +51,7 @@ public class EventsTest {
 
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EventsTest.class.getSimpleName())
+      WebArchive war = ReasteasyTestUtil.prepareArchive(EventsTest.class.getSimpleName())
             .addClass(PortProviderUtil.class)
             .addClasses(Constants.class, UtilityProducer.class, Utilities.class)
             .addClasses(EJBBook.class, EventsBookReader.class, EventsBookWriter.class)

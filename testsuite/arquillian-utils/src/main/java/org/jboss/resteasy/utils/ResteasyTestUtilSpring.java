@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Base util class for RESTEasy spring related testing.
  */
-public class TestUtilSpring {
+public class ResteasyTestUtilSpring {
 
    private static String defaultSpringVersion = "5.2.0.RELEASE";
    //protected static Logger logger;

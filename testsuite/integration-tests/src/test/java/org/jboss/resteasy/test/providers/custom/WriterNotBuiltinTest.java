@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ public class WriterNotBuiltinTest {
 
    @Deployment
    public static Archive<?> deployDefaultTestPlain() {
-      WebArchive war = TestUtil.prepareArchive(WriterNotBuiltinTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(WriterNotBuiltinTest.class.getSimpleName());
       war.addClass(ReaderWriterCustomer.class);
       war.addClass(PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
@@ -61,7 +61,7 @@ public class WriterNotBuiltinTest {
             new SecurityPermission("insertProvider"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, contextParams, WriterNotBuiltinTestWriter.class, ReaderWriterResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, contextParams, WriterNotBuiltinTestWriter.class, ReaderWriterResource.class);
    }
 
    /**

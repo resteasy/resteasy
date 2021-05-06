@@ -25,7 +25,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.plugins.spring.SpringContextLoaderListener;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -140,12 +140,12 @@ public class AddSpringResteasyAsResourceRootInModuleTest {
 
    @Deployment(name = "dep1")
    private static Archive<?> createDeploymentWithoutSpringMvcDispatcherOrListener() {
-      WebArchive archive = TestUtil.prepareArchive(deploymentWithoutSpringMvcDispatcherOrListenerSpringInModule);
+      WebArchive archive = ReasteasyTestUtil.prepareArchive(deploymentWithoutSpringMvcDispatcherOrListenerSpringInModule);
       archive.addAsWebInfResource(AddSpringResteasyAsResourceRootInModuleTest.class.getPackage(), "web-no-mvc-no-listener.xml", "web.xml")
             .addAsWebInfResource(AddSpringResteasyAsResourceRootInModuleTest.class.getPackage(), "applicationContext.xml", "applicationContext.xml");
       addSpringLibraries(archive);
       archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithoutSpringMvcDispatcherOrListenerSpringInModule + ".war"), true);
-      return TestUtil.finishContainerPrepare(archive, null, TestResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(archive, null, TestResource.class);
    }
 
    private boolean resteasySpringClassesAreAvailableToDeployment(String deploymentName) throws IOException, HttpException {

@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.InheritanceDog;
 import org.jboss.resteasy.test.providers.jaxb.resource.InheritanceResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -37,8 +37,8 @@ public class InheritanceTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, InheritanceAnimal.class, InheritanceCat.class, InheritanceDog.class,
+      WebArchive war = ReasteasyTestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, InheritanceAnimal.class, InheritanceCat.class, InheritanceDog.class,
             InheritanceZoo.class, InheritanceResource.class);
    }
 

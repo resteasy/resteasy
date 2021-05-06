@@ -16,7 +16,7 @@ import org.jboss.resteasy.test.resource.constructor.resource.Item2;
 import org.jboss.resteasy.test.resource.constructor.resource.Item2ParamConverterProvider;
 import org.jboss.resteasy.test.resource.constructor.resource.ItemParamConverterProvider;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -39,7 +39,7 @@ public class ResourceConstructorParamsTest {
 
     @Deployment
     public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(
+        WebArchive war = ReasteasyTestUtil.prepareArchive(
                 ResourceConstructorParamsTest.class.getSimpleName());
         war.addClass(ConstructorParamsMixedResource.class);
         war.addClass(ConstructorNoParamsResource.class);
@@ -51,7 +51,7 @@ public class ResourceConstructorParamsTest {
         war.addClass(ConstructorParams400Resource.class);
         war.addClass(ConstructorCookieParamWAEResource.class);
         war.addClass(ConstructorQueryParamWAEResource.class);
-        return TestUtil.finishContainerPrepare(war, null);
+        return ReasteasyTestUtil.finishContainerPrepare(war, null);
     }
 
     @Before

@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -33,9 +33,9 @@ public class Jackson2MultipartFormTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Jackson2MultipartFormTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(Jackson2MultipartFormTest.class.getSimpleName());
       war.addClass(Jackson2MultipartFormTest.class);
-      return TestUtil.finishContainerPrepare(war, null, JsonFormResource.class, JsonUser.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, JsonFormResource.class, JsonUser.class);
    }
 
    private String generateURL(String path) {

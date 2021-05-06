@@ -9,7 +9,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.html.resource.HtmlSanitizerOptionalResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -40,23 +40,23 @@ public class HtmlSanitizerOptionalTest {
 
    @Deployment(name = ENABLED, order = 1)
    public static Archive<?> createTestArchive1() {
-      WebArchive war = TestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + ENABLED);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + ENABLED);
       war.addAsWebInfResource(HtmlSanitizerOptionalTest.class.getPackage(), "HtmlSanitizerOptional_Enabled_web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
    }
 
    @Deployment(name = DISABLED, order = 2)
    public static Archive<?> createTestArchive2() {
-      WebArchive war = TestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + DISABLED);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + DISABLED);
       war.addAsWebInfResource(HtmlSanitizerOptionalTest.class.getPackage(), "HtmlSanitizerOptional_Disabled_web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
    }
 
    @Deployment(name = DEFAULT, order = 3)
    public static Archive<?> createTestArchive3() {
-      WebArchive war = TestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + DEFAULT);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + DEFAULT);
       war.addAsWebInfResource(HtmlSanitizerOptionalTest.class.getPackage(), "HtmlSanitizerOptional_Default_web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
    }
 
    private String generateURL(String path, String version) {

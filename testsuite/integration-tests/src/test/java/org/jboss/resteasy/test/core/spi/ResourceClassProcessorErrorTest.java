@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorErrorImpl
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -39,11 +39,11 @@ public class ResourceClassProcessorErrorTest {
 
    @Deployment(name = DEPLOYMENT_NAME, managed = false)
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ResourceClassProcessorErrorTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ResourceClassProcessorErrorTest.class.getSimpleName());
       war.addClass(ResourceClassProcessorErrorTest.class);
       war.addClass(PortProviderUtil.class);
 
-      return TestUtil.finishContainerPrepare(war, null,
+      return ReasteasyTestUtil.finishContainerPrepare(war, null,
             ResourceClassProcessorPureEndPoint.class,
             ResourceClassProcessorErrorImplementation.class);
    }

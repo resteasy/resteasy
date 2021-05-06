@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegist
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationInterceptor;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -42,13 +42,13 @@ public class DuplicateProviderRegistrationTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
       war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
-            TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
+            ReasteasyTestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
       // Arquillian in the deployment, test reads the server.log
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks"),
-            new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
+            new FilePermission(ReasteasyTestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
                   File.separator + "server.log", "read"),
             new LoggingPermission("control", ""),
             new PropertyPermission("arquillian.*", "read"),
@@ -56,15 +56,15 @@ public class DuplicateProviderRegistrationTest {
               new PropertyPermission("jboss.server.base.dir", "read"),
             new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
    private static int getRESTEASY002155WarningCount() {
-      return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    private static int getRESTEASY002160WarningCount() {
-      return TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
+      return ReasteasyTestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
    }
 
    /**

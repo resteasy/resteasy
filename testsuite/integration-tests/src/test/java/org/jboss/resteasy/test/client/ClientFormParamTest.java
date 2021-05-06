@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.ClientFormResource;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -50,10 +50,10 @@ public class ClientFormParamTest extends ClientTestBase{
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ClientFormParamTest.class.getSimpleName());
+      WebArchive war = ReasteasyTestUtil.prepareArchive(ClientFormParamTest.class.getSimpleName());
       war.addClass(ClientFormParamTest.class);
       war.addClass(ClientTestBase.class);
-      return TestUtil.finishContainerPrepare(war, null, ClientFormResource.class);
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, ClientFormResource.class);
    }
 
    @Before

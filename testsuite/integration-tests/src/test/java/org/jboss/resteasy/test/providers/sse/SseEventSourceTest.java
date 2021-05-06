@@ -7,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.ReasteasyTestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,8 +32,8 @@ public class SseEventSourceTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(SseEventSourceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, SseSmokeResource.class);
+      WebArchive war = ReasteasyTestUtil.prepareArchive(SseEventSourceTest.class.getSimpleName());
+      return ReasteasyTestUtil.finishContainerPrepare(war, null, SseSmokeResource.class);
    }
 
    private String generateURL(String path) {
