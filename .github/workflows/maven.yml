@@ -36,10 +36,14 @@ jobs:
         with:
           version: ${{ matrix.java }}
           impl: hotspot
-      - name: check settings
-        run: cat ~/.m2/settings.xml | true
+      - name: Update hosts - linux
+        if: contains(matrix.os, 'ubuntu')
+        run: |
+          cat /etc/hosts
+          sudo bash -c "echo '127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4' > /etc/hosts"
+          sudo bash -c "echo '::1         localhost localhost.localdomain localhost6 localhost6.localdomain6' >> /etc/hosts"
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
-        run: mvn clean install -B -U '-Dserver.version=${{ matrix.wildfly-version }}' `-Dorg.slf4j.simpleLogger.log.org.apache.maven.plugin.surefire=trace`
+        run: mvn clean install -B -U '-Dserver.version=${{ matrix.wildfly-version }}' '-Dorg.slf4j.simpleLogger.log.org.apache.maven.plugin.surefire=trace'
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
