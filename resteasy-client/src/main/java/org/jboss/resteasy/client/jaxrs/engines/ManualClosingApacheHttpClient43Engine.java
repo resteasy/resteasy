@@ -41,10 +41,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
@@ -117,7 +119,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = new File(ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
+   protected File fileUploadTempFileDir = getTempDir();
 
    public ManualClosingApacheHttpClient43Engine()
    {
@@ -754,6 +756,17 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
          }
       }
       closed = true;
+   }
+
+   private static File getTempDir() {
+      if (System.getSecurityManager() == null) {
+         final Optional<String> value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class);
+         return value.map(File::new).orElseGet(() -> new File(System.getProperty("java.io.tmpdir")));
+      }
+      return AccessController.doPrivileged((PrivilegedAction<File>) () -> {
+         final Optional<String> value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class);
+         return value.map(File::new).orElseGet(() -> new File(System.getProperty("java.io.tmpdir")));
+      });
    }
 
 }
