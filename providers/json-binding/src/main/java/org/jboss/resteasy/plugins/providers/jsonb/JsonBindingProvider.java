@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import javax.json.bind.Jsonb;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Priorities;

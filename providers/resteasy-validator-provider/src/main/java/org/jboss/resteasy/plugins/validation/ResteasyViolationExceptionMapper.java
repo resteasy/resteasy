@@ -3,10 +3,10 @@ package org.jboss.resteasy.plugins.validation;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.ConstraintDeclarationException;
-import javax.validation.ConstraintDefinitionException;
-import javax.validation.GroupDefinitionException;
-import javax.validation.ValidationException;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintDefinitionException;
+import jakarta.validation.GroupDefinitionException;
+import jakarta.validation.ValidationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
