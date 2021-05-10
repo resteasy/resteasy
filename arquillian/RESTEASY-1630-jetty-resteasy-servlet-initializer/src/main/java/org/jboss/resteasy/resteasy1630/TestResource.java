@@ -2,7 +2,7 @@ package org.jboss.resteasy.resteasy1630;
 
 import org.jboss.logging.Logger;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
