@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-testsuite</artifactId>
-    <version>4.5.12.Beta1</version>
+    <version>4.5.12.Final</version>
     <relativePath>../</relativePath>
   </parent>
 
