@@ -7,7 +7,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
 
-import javax.validation.ElementKind;
+import jakarta.validation.ElementKind;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
