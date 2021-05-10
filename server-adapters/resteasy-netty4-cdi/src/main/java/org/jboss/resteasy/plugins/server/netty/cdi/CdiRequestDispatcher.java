@@ -10,9 +10,9 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.weld.context.bound.BoundRequestContext;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.io.IOException;
 import java.util.HashMap;
