@@ -9,7 +9,7 @@ public class FilterConfigSource extends BaseServletConfigSource implements Confi
    private static Class<?> clazz = null;
    static {
       try {
-         clazz = Class.forName("javax.servlet.FilterConfig");
+         clazz = Class.forName("jakarta.servlet.FilterConfig");
          clazz = Class.forName("org.jboss.resteasy.microprofile.config.FilterConfigSourceImpl");
       }
       catch (Throwable e)

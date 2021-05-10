@@ -134,13 +134,19 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+
+
         <dependency>
             <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config</artifactId>
             <exclusions>
                <exclusion>
+                   <!-- rls test
                   <groupId>javax.annotation</groupId>
                   <artifactId>javax.annotation-api</artifactId>
+                   -->
+                   <groupId>org.jboss.spec.javax.annotation</groupId>
+                   <artifactId>jboss-annotations-api_1.3_spec</artifactId>
                </exclusion>
             </exclusions>
         </dependency>

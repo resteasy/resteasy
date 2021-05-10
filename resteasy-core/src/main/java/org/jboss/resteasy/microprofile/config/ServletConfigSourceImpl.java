@@ -2,8 +2,8 @@ package org.jboss.resteasy.microprofile.config;
 
 import org.jboss.resteasy.core.ResteasyContext;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;

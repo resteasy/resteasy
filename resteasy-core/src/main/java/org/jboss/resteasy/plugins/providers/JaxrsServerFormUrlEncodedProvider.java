@@ -4,7 +4,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Encoded;
 import jakarta.ws.rs.Priorities;

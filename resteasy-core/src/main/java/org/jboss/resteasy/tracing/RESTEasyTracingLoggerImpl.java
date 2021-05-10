@@ -10,7 +10,7 @@ import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingMessage;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;

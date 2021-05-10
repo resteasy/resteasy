@@ -6,7 +6,7 @@ import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -91,7 +91,7 @@ public class ServletUtil
       Map<String, Cookie> cookies = new HashMap<String, Cookie>();
       if (request.getCookies() != null)
       {
-         for (javax.servlet.http.Cookie cookie : request.getCookies())
+         for (jakarta.servlet.http.Cookie cookie : request.getCookies())
          {
             cookies.put(cookie.getName(), new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
                   cookie.getDomain(), cookie.getVersion()));
