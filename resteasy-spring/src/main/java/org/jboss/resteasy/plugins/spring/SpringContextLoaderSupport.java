@@ -4,7 +4,7 @@ import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * Provides access to RESTEasy's SpringContextLoader implementation without having

@@ -3,9 +3,9 @@ package org.jboss.resteasy.springmvc;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class ResteasySpringDispatcherServlet extends DispatcherServlet {
