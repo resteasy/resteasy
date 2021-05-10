@@ -64,6 +64,12 @@
            <groupId>org.bouncycastle</groupId>
            <artifactId>bcmail-jdk15on</artifactId>
         </dependency>
+        <!-- rls tmp addition start -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+        </dependency>
+        <!-- rls tmp addition end -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>

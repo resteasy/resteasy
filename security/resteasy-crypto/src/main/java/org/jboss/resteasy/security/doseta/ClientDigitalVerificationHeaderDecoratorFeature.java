@@ -3,7 +3,7 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.annotations.security.doseta.Verifications;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.ConstrainedTo;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.RuntimeType;

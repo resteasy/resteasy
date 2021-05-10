@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.ConstrainedTo;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.FormParam;
