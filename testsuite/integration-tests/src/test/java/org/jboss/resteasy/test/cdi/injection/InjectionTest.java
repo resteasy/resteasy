@@ -9,7 +9,7 @@ import java.net.SocketPermission;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;

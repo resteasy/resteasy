@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.QueryParam;
 
 public class SubresourceValidationQueryBeanParam {

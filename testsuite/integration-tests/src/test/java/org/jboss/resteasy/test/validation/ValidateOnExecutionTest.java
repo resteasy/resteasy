@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -288,8 +288,8 @@ public class ValidateOnExecutionTest {
       } catch (ValidationException ve) {
          // OK
       } catch (Exception e) {
-         if (e.getMessage().contains("Caused by: javax.validation.ValidationException") ||
-               (e.getCause() != null && e.getCause().getMessage().contains("Caused by: javax.validation.ValidationException"))) {
+         if (e.getMessage().contains("Caused by: jakarta.validation.ValidationException") ||
+               (e.getCause() != null && e.getCause().getMessage().contains("Caused by: jakarta.validation.ValidationException"))) {
             // OK
             return;
          }

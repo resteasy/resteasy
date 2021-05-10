@@ -5,7 +5,7 @@ import org.jboss.resteasy.test.cdi.util.Counter;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;

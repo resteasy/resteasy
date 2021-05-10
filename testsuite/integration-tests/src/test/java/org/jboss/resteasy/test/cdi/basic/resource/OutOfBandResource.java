@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cdi.basic.resource;
 
 import java.util.concurrent.CountDownLatch;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;

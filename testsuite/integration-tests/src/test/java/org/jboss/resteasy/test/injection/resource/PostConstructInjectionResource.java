@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.annotation.PostConstruct;
-import javax.validation.constraints.Size;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 

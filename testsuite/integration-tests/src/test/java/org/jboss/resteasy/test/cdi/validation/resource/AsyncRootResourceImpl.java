@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.validation.resource;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AsyncRootResourceImpl extends AbstractAsyncRootResource

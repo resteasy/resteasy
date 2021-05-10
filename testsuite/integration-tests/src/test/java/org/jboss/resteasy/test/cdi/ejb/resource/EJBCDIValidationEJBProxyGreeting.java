@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.ejb.resource;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 public class EJBCDIValidationEJBProxyGreeting {
 

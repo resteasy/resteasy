@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.GroupDefinitionException;
-import javax.validation.GroupSequence;
+import jakarta.validation.GroupDefinitionException;
+import jakarta.validation.GroupSequence;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.ext.Provider;

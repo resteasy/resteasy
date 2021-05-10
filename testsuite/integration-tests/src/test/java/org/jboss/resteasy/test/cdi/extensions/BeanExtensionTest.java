@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.cdi.extensions;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.Extension;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;

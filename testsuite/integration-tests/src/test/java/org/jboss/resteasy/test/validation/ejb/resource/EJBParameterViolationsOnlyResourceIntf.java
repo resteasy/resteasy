@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.ejb.resource;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;

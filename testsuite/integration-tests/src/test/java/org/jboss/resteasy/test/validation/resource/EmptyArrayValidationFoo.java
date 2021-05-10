@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 public class EmptyArrayValidationFoo {
 

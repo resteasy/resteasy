@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;

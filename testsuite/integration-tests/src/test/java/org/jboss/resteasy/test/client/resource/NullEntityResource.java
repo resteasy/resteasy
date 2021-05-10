@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.resource;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;

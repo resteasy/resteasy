@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cdi.basic.resource;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.container.AsyncResponse;

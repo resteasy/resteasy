@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * The UserRepository

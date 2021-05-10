@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.inheritence.resource;
 
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.Specializes;
 
 /**
  * If this class is enabled, it will be injected into the Book injection point in InheritanceResource.

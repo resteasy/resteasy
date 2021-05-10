@@ -4,7 +4,7 @@ import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.TypeConverter;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.Produces;

@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.core.basic.resource;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Assert;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

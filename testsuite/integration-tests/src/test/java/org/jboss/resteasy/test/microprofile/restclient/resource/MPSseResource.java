@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.microprofile.restclient.resource;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

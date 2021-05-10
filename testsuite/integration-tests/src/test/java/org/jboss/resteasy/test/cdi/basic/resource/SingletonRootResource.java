@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Singleton;

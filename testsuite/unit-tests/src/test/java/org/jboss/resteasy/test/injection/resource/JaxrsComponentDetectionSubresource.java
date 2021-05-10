@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class JaxrsComponentDetectionSubresource implements JaxrsComponentDetectionSubresourceLocal {

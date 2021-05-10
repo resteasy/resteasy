@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.sse;
 
 import java.io.IOException;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
