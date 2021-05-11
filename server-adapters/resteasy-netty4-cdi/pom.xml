@@ -98,12 +98,10 @@
        <dependency>
           <groupId>jakarta.el</groupId>
           <artifactId>jakarta.el-api</artifactId>
-          <version>4.0.0</version>
        </dependency>
        <dependency>
           <groupId>jakarta.interceptor</groupId>
           <artifactId>jakarta.interceptor-api</artifactId>
-          <version>2.0.0</version>
        </dependency>
        <!-- rls test end -->
         <dependency>

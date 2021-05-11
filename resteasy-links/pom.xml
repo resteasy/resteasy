@@ -90,7 +90,13 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
-        </dependency> 
+        </dependency>
+        <!-- rls test start -->
+        <dependency>
+            <groupId>jakarta.el</groupId>
+            <artifactId>jakarta.el-api</artifactId>
+        </dependency>
+        <!-- rls test end -->
     </dependencies>
     <profiles>
         <profile>

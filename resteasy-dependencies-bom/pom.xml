@@ -21,7 +21,7 @@
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.11.4-$$jakarta9$$</version.com.fasterxml.jackson>
         <version.com.google.guava>30.1-jre</version.com.google.guava>
-        <version.com.google.inject.guice>4.2.2</version.com.google.inject.guice>
+        <version.com.google.inject.guice>4.2.2-$$jakarta9$$</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.0.1</version.jakarta.mail>
         <version.org.glassfish.jaxb.jaxb>3.0.0-M4</version.org.glassfish.jaxb.jaxb>
@@ -33,12 +33,13 @@
         <version.io.netty.netty4>4.1.60.Final</version.io.netty.netty4>
         <version.io.vertx>4.0.3</version.io.vertx>
         <version.io.undertow>2.0.23.Final</version.io.undertow>
+        <version.io.undertow-jakarta9>2.0.23.Final-$$jakarta9$$</version.io.undertow-jakarta9>
         <version.jakarta.activation>2.0.1</version.jakarta.activation>
-        <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
-        <version.jakarta.inject.jakarta.inject-api>1.0</version.jakarta.inject.jakarta.inject-api>
+        <version.jakarta.enterprise.cdi-api>3.0.0</version.jakarta.enterprise.cdi-api>
+        <version.jakarta.inject.jakarta.inject-api>2.0.0</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>1.1.6</version.jakarta.json-api>
         <version.jakarta.json.bind-api>1.0.2</version.jakarta.json.bind-api>
-        <version.jakarta.validation-api>2.0.2</version.jakarta.validation-api>
+        <version.jakarta.validation-api>3.0.0</version.jakarta.validation-api>
         <version.javax.ws.rs-api>3.0.0.Final-SNAPSHOT</version.javax.ws.rs-api>
         <version.junit>4.13.1</version.junit>
         <version.log4j>2.13.3</version.log4j>
@@ -48,7 +49,10 @@
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.8.3</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
-        <version.org.bouncycastle>1.68-$$jakarta9$$</version.org.bouncycastle>
+
+        <version.org.bouncycastle-jakarta9>1.68-$$jakarta9$$</version.org.bouncycastle-jakarta9>
+        <version.org.bouncycastle>1.68</version.org.bouncycastle>
+
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.39.v20210325</version.org.eclipse.jetty>
         <version.org.eclipse.yasson>1.0.5</version.org.eclipse.yasson>
@@ -65,13 +69,14 @@
         <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
         <version.org.jboss.resteasy.tracing.api>1.0.0.Final</version.org.jboss.resteasy.tracing.api>
         <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
-        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>2.0.1.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>
+        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>2.0.1.Final-$$jakarta9$$</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>
         <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>2.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
         <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
         <version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>2.0.0.Final</version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>
         <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>2.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
         <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final-$$jakarta9$$</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
-        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
+        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final-$$jakarta9$$</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
+        <version.jakarta.servlet.jakarta-servlet-api>5.0.0</version.jakarta.servlet.jakarta-servlet-api>
         <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
         <version.org.slf4j>1.7.29</version.org.slf4j>
@@ -79,8 +84,8 @@
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
-        <version.weld.api>3.1.SP3</version.weld.api>
-        <version.weld>3.1.5.Final</version.weld>
+        <version.weld.api>4.0.SP1-$$jakarta9$$</version.weld.api>
+        <version.weld>3.1.5.Final-$$jakarta9$$</version.weld>
         <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
@@ -98,14 +103,16 @@
 
         <!-- SmallRye versions -->
         <version.io.smallrye.context-propagation>1.0.1</version.io.smallrye.context-propagation>
+        <version.io.smallrye.context-propagation-jakarta9>1.0.1-$$jakarta9$$</version.io.smallrye.context-propagation-jakarta9>
         <version.io.smallrye.smallrye-config>2.0.1</version.io.smallrye.smallrye-config>
+        <version.io.smallrye.smallrye-config-jakarta9>2.0.1-$$jakarta9$$</version.io.smallrye.smallrye-config-jakarta9>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.19</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
         <version.org.hibernate.validator>6.0.18.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
-        <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
+        <version.org.springframework>5.2.0.RELEASE-$$jakarta9$$</version.org.springframework>
         <version.io.projectreactor>2020.0.5</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
@@ -373,7 +380,11 @@
             <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-servlet</artifactId>
-                <version>${version.io.undertow}</version>
+                <version>${version.io.undertow-jakarta9}</version>
+                <!-- rls start change to be removed
+                <scope>system</scope>
+                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/undertow-servlet-2.2.6.Final-ee9.jar</systemPath>
+                rls end change to be removed -->
                 <exclusions>
                     <exclusion>
                         <groupId>org.jboss.spec.javax.annotation</groupId>
@@ -445,8 +456,17 @@
                 <groupId>org.jboss.spec.javax.servlet</groupId>
                 <artifactId>jboss-servlet-api_4.0_spec</artifactId>
                 <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec}</version>
+            </dependency>
+            <!-- rls jboss-servlet-api_4.0_spec and jakarta.servlet-api
+                may need to pick one or the other
+            -->
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${version.jakarta.servlet.jakarta-servlet-api}</version>
                 <scope>provided</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.james</groupId>
                 <artifactId>apache-mime4j-core</artifactId>
@@ -585,7 +605,13 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcmail-jdk15on</artifactId>
-                <version>${version.org.bouncycastle}</version>
+                <!-- rls tmp
+                 <version>${version.org.bouncycastle-jakarta9}</version>
+                -->
+                <version>1.68-ee9</version>
+                <scope>system</scope>
+                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcmail-jdk15on-1.68-ee9.jar</systemPath>
+
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -645,15 +671,15 @@
             <dependency>
                 <groupId>io.smallrye.config</groupId>
                 <artifactId>smallrye-config</artifactId>
-                <version>${version.io.smallrye.smallrye-config}</version>
+                <version>${version.io.smallrye.smallrye-config-jakarta9}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>javax.annotation</groupId>
-                        <artifactId>javax.annotation-api</artifactId>
+                        <groupId>org.jboss.spec.javax.annotation</groupId>
+                        <artifactId>jboss-annotations-api_1.3_spec</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
+                        <groupId>jakarta.enterprise</groupId>
+                        <artifactId>jakarta.enterprise.cdi-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -920,22 +946,22 @@
             <dependency>
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-context-propagation</artifactId>
-                <version>${version.io.smallrye.context-propagation}</version>
+                <version>${version.io.smallrye.context-propagation-jakarta9}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
+                        <groupId>jakarta.inject</groupId>
+                        <artifactId>jakarta.inject-api</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
+                        <groupId>jakarta.enterprise</groupId>
+                        <artifactId>jakarta.enterprise.cdi-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-context-propagation-api</artifactId>
-                <version>${version.io.smallrye.context-propagation}</version>
+                <version>${version.io.smallrye.context-propagation-jakarta9}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.inject</groupId>
