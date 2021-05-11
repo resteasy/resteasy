@@ -1,7 +1,13 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashSet;
 
+import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
@@ -22,13 +28,6 @@ import jakarta.ws.rs.ext.Providers;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
