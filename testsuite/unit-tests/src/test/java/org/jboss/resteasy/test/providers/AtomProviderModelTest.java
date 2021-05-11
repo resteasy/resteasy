@@ -119,7 +119,7 @@ public class AtomProviderModelTest {
 
       Marshaller marshaller = ctx.createMarshaller();
 
-      marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
+      marshaller.setProperty("org.glassfish.jaxb.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       StringWriter writer = new StringWriter();
 
@@ -133,7 +133,7 @@ public class AtomProviderModelTest {
          }
       };
 
-      marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+      marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
       marshaller.marshal(content, writer);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       PrintStream ps = new PrintStream(baos);
@@ -194,8 +194,8 @@ public class AtomProviderModelTest {
          }
       };
 
-      marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
-      marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
+      marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
+      marshaller.setProperty("org.glassfish.jaxb.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter writer = new StringWriter();
@@ -231,8 +231,8 @@ public class AtomProviderModelTest {
          }
       };
 
-      //marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
-      marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
+      //marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
+      marshaller.setProperty("org.glassfish.jaxb.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
