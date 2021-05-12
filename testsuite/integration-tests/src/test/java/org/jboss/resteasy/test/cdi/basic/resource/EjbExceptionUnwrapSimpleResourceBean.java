@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cdi.basic.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 
 @Stateless
 public class EjbExceptionUnwrapSimpleResourceBean implements EjbExceptionUnwrapSimpleResource {

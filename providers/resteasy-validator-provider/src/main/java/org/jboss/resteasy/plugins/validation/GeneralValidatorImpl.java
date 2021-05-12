@@ -789,7 +789,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
 
    private static boolean hasEJBScope(Class<?> clazz)
    {
-      return classHasAnnotations(clazz, new String[] {"javax.ejb.Stateless", "javax.ejb.Stateful", "javax.ejb.Singleton"});
+      return classHasAnnotations(clazz, new String[] {"jakarta.ejb.Stateless", "jakarta.ejb.Stateful", "jakarta.ejb.Singleton"});
    }
 
    private static boolean classHasAnnotations(Class<?> clazz, String[] names)

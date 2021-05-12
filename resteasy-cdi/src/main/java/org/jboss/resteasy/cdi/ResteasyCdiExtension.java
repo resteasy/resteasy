@@ -49,8 +49,8 @@ public class ResteasyCdiExtension implements Extension
    private static boolean active;
 
    private BeanManager beanManager;
-   private static final String JAVAX_EJB_STATELESS = "javax.ejb.Stateless";
-   private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
+   private static final String JAVAX_EJB_STATELESS = "jakarta.ejb.Stateless";
+   private static final String JAVAX_EJB_SINGLETON = "jakarta.ejb.Singleton";
 
    private final List<Class> providers = new ArrayList<Class>();
    private final List<Class> resources = new ArrayList<Class>();

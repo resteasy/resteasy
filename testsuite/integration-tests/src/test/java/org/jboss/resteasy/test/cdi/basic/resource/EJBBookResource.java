@@ -5,8 +5,8 @@ import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.CounterBinding;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;

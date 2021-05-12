@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.PathParam;

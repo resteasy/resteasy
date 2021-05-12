@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.ejb.resource;
 
-import javax.ejb.Stateful;
+import jakarta.ejb.Stateful;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.Consumes;

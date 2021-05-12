@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 
 import org.jboss.resteasy.test.cdi.util.Counter;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
 import jakarta.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;

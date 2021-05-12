@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Local;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
+import jakarta.ejb.Local;
+import jakarta.ejb.Timeout;
+import jakarta.ejb.Timer;
 import jakarta.ws.rs.core.Response;
 
 @Local

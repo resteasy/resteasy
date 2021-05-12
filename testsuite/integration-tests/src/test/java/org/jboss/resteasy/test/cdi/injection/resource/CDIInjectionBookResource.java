@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.cdi.util.CounterBinding;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import javax.ejb.EJB;
+import jakarta.ejb.EJB;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;

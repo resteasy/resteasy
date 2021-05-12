@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Singleton;
+import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Application;
 import java.util.HashSet;

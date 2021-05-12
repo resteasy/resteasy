@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.AsyncResult;
-import javax.ejb.Stateless;
+import jakarta.ejb.AsyncResult;
+import jakarta.ejb.Stateless;
 import jakarta.enterprise.context.Dependent;
 import java.util.concurrent.Future;
 

@@ -4,8 +4,8 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 
 import jakarta.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Stateful;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateful;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import java.util.HashMap;

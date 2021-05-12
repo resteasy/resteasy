@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.sse.resource;
 
 import org.junit.Assert;
 
-import javax.ejb.Singleton;
+import jakarta.ejb.Singleton;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;

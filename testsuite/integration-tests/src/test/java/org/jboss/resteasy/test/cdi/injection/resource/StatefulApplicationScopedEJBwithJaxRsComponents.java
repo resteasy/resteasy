@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import javax.ejb.Stateful;
+import jakarta.ejb.Stateful;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.HashMap;

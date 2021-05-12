@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.ejb.Local;
+import jakarta.ejb.Local;
 import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

@@ -4,7 +4,7 @@ import org.jboss.logging.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ejb.Singleton;
+import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @Singleton

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
-import javax.ejb.Singleton;
+import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import javax.persistence.EntityManager;

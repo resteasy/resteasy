@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;

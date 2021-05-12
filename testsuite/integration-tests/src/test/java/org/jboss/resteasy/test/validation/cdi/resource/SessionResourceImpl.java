@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 
 @Stateless
 public class SessionResourceImpl implements SessionResourceLocal, SessionResourceRemote {
