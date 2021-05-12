@@ -50,6 +50,7 @@
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
         <version.org.bouncycastle>1.68</version.org.bouncycastle>
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
+        <version.arquillian.jetty>1.0.0.CR3</version.arquillian.jetty>
         <version.org.eclipse.jetty>9.4.39.v20210325</version.org.eclipse.jetty>
         <version.org.eclipse.yasson>1.0.5</version.org.eclipse.yasson>
         <version.com.github.tomakehurst.wiremock>2.20.0</version.com.github.tomakehurst.wiremock>
@@ -799,6 +800,11 @@
                 <groupId>org.eclipse.aether</groupId>
                 <artifactId>aether-transport-http</artifactId>
                 <version>${version.org.eclipse.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-jetty-embedded-9</artifactId>
+                <version>${version.arquillian.jetty}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
