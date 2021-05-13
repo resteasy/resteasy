@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class ServletBootstrap extends ListenerBootstrap
 {
-   private ServletConfig config;
+   private final ServletConfig config;
 
    public ServletBootstrap(final ServletConfig config)
    {
@@ -34,7 +34,11 @@ public class ServletBootstrap extends ListenerBootstrap
    @Override
    public String getInitParameter(String name)
    {
-      return config.getInitParameter(name);
+      String value = config.getInitParameter(name);
+      if (value == null) {
+         value = super.getInitParameter(name);
+      }
+      return value;
    }
 
    @Override
