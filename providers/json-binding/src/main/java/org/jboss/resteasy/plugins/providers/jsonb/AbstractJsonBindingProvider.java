@@ -4,7 +4,7 @@ import org.eclipse.yasson.JsonBindingProvider;
 import org.eclipse.yasson.internal.JsonBindingBuilder;
 import org.glassfish.json.JsonProviderImpl;
 
-import javax.json.bind.Jsonb;
+import jakarta.json.bind.Jsonb;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.ContextResolver;
@@ -41,6 +41,7 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
                   JsonProviderImpl jProviderImpl = new JsonProviderImpl();
                   JsonBindingBuilder jbBuilder = new JsonBindingBuilder();
                   currentJsonbObj = jbBuilder.withProvider(jProviderImpl).build();
+                  // jakarta.json.spi.JsonProvider       rls remove
                   this.jsonbObj = currentJsonbObj;
                }
             }

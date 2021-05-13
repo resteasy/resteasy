@@ -103,7 +103,7 @@ public class JsonBindingDebugLoggingTest {
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
       LogCounter yassonExceptionLog = new LogCounter(
-              "Caused by: javax.json.bind.JsonbException",
+              "Caused by: jakarta.json.bind.JsonbException",
               true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter yassonStacktraceLog = new LogCounter(
               "at org.eclipse.yasson", true,
@@ -124,7 +124,7 @@ public class JsonBindingDebugLoggingTest {
             containsString("org.eclipse.yasson.internal"),
             containsString("java.lang.RuntimeException: "
                               + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
-            containsString("javax.json.bind.JsonbException: Error getting value on"),
+            containsString("jakarta.json.bind.JsonbException: Error getting value on"),
             containsString("RESTEASY008205")
       ));
 
@@ -154,7 +154,7 @@ public class JsonBindingDebugLoggingTest {
 
       LogCounter resteasyExceptionLog = new LogCounter(".*DEBUG .* RESTEASY002305.*", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter yassonExceptionLog = new LogCounter("Caused by: javax.json.bind.JsonbException", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+      LogCounter yassonExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter applicationExcpetionLog = new LogCounter(
               "Caused by: java.lang.RuntimeException: "
@@ -172,7 +172,7 @@ public class JsonBindingDebugLoggingTest {
               response.readEntity(String.class), allOf(
                       containsString("RESTEASY008200: JSON Binding deserialization error"),
                       containsString(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
-                      containsString("javax.json.bind.JsonbException: ")
+                      containsString("jakarta.json.bind.JsonbException: ")
               ));
 
       // assert log messages after request
@@ -209,7 +209,7 @@ public class JsonBindingDebugLoggingTest {
 
 
       LogCounter yassonExceptionLog = new LogCounter(
-              "Caused by: javax.json.bind.JsonbException",
+              "Caused by: jakarta.json.bind.JsonbException",
               true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
               true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
@@ -228,8 +228,8 @@ public class JsonBindingDebugLoggingTest {
          e.printStackTrace(new PrintWriter(errors));
          String stackTrace = errors.toString();
 
-         Assert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
-               containsString("javax.json.bind.JsonbException"));
+         Assert.assertThat("Stracktrace doesn't contain jakarta.json.bind.JsonbException", stackTrace,
+               containsString("jakarta.json.bind.JsonbException"));
          Assert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
                containsString("org.eclipse.yasson.internal"));
          Assert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
@@ -266,7 +266,7 @@ public class JsonBindingDebugLoggingTest {
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
       LogCounter yassonExceptionLog = new LogCounter(
-              "Caused by: javax.json.bind.JsonbException", true,
+              "Caused by: jakarta.json.bind.JsonbException", true,
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
               true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
@@ -286,8 +286,8 @@ public class JsonBindingDebugLoggingTest {
          e.printStackTrace(new PrintWriter(errors));
          String stackTrace = errors.toString();
 
-         Assert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
-               containsString("javax.json.bind.JsonbException"));
+         Assert.assertThat("Stracktrace doesn't contain jakarta.json.bind.JsonbException", stackTrace,
+               containsString("jakarta.json.bind.JsonbException"));
          Assert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
                containsString("org.eclipse.yasson.internal"));
          Assert.assertThat("Stracktrace doesn't contain application exception", stackTrace,

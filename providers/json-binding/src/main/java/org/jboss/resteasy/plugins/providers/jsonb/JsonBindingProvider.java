@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import jakarta.annotation.Priority;
-import javax.json.bind.Jsonb;
+import jakarta.json.bind.Jsonb;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.ProcessingException;
