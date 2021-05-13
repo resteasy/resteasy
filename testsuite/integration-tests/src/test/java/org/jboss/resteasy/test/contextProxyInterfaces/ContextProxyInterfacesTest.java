@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.contextProxyInterfaces;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Response;
@@ -23,7 +26,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter @Context injection
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression tests for RESTEASY-2866
- * @tpSince RESTEasy 3.7
+ * @tpSince RESTEasy 4.6.1
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -36,7 +39,8 @@ public class ContextProxyInterfacesTest {
    {
       WebArchive war = TestUtil.prepareArchive(ContextProxyInterfacesTest.class.getSimpleName());
       war.addClasses(TestUtil.class, PortProviderUtil.class);
-      return TestUtil.finishContainerPrepare(war, null, CastableConfigurationResource.class);
+      Map<String, String> contextParams = Collections.singletonMap("resteasy.proxy.implement.all.interfaces", "true");
+      return TestUtil.finishContainerPrepare(war, contextParams, CastableConfigurationResource.class);
    }
 
    private String generateURL(String path)
