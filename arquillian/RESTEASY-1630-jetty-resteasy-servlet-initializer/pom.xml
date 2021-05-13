@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs-all</artifactId>
+    <artifactId>resteasy-misc-arquillian-tests</artifactId>
     <version>4.7.0-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-1630-jetty-resteasy-servlet-initializer</artifactId>
   <packaging>jar</packaging>
@@ -25,6 +25,14 @@
       <scope>test</scope>
       <type>pom</type>
       <exclusions>
+          <exclusion>
+              <groupId>javax.inject</groupId>
+              <artifactId>javax.inject</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>javax.enterprise</groupId>
+              <artifactId>cdi-api</artifactId>
+          </exclusion>
           <exclusion>
               <groupId>org.apache.maven</groupId>
               <artifactId>maven-model</artifactId>

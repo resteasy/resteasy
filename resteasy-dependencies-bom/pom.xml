@@ -16,7 +16,6 @@
     <description>RESTEasy dependencies BOM</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.11.4</version.com.fasterxml.jackson>
@@ -60,7 +59,6 @@
         <version.org.infinispan>11.0.3.Final</version.org.infinispan>
         <version.org.jacoco>0.8.3</version.org.jacoco>
         <version.org.javassist>3.23.2-GA</version.org.javassist>
-        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.logging.jboss-logging>3.4.1.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
@@ -78,8 +76,6 @@
         <version.org.slf4j>1.7.29</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
-        <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
-        <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
         <version.weld.api>3.1.SP3</version.weld.api>
         <version.weld>3.1.5.Final</version.weld>
         <version.json.patch>1.13</version.json.patch>
@@ -691,18 +687,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${dep.arquillian-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-embedded</artifactId>
-                <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.spec.javax.jms</groupId>
                 <artifactId>jboss-jms-api_2.0_spec</artifactId>
                 <version>${version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec}</version>
@@ -890,28 +874,6 @@
                 <groupId>org.wildfly.core</groupId>
                 <artifactId>wildfly-cli</artifactId>
                 <version>${version.org.wildfly.core.wildfly-cli}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.arquillian</groupId>
-                <artifactId>wildfly-arquillian-container-managed</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-managed}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.arquillian</groupId>
-                <artifactId>wildfly-arquillian-container-remote</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-remote}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.github.java-json-tools</groupId>
