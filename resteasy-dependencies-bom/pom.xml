@@ -16,7 +16,6 @@
     <description>RESTEasy dependencies BOM</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dep.arquillian-bom.version>1.6.0.Final</dep.arquillian-bom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.classmate>1.4.0</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.10.3</version.com.fasterxml.jackson>
@@ -61,7 +60,6 @@
         <version.org.infinispan>8.2.11.Final</version.org.infinispan>
         <version.org.jacoco>0.7.9</version.org.jacoco>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
-        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.logging.jboss-logging>3.3.2.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.1.0.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
@@ -79,9 +77,6 @@
         <version.org.slf4j>1.7.29</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
-        <version.org.wildfly.wildfly-arquillian-container-managed>2.1.1.Final</version.org.wildfly.wildfly-arquillian-container-managed>
-        <version.org.wildfly.wildfly-arquillian-container-remote>2.1.1.Final</version.org.wildfly.wildfly-arquillian-container-remote>
-        <version.org.wildfly.wildfly-arquillian-container-bootable>3.0.1.Final</version.org.wildfly.wildfly-arquillian-container-bootable>
         <version.org.wildfly.security.wildfly-elytron>1.7.0.Final</version.org.wildfly.security.wildfly-elytron>
         <version.org.yaml.snakeyaml>1.26</version.org.yaml.snakeyaml>
         <version.weld.api>3.0.SP4</version.weld.api>
@@ -687,18 +682,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${dep.arquillian-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-embedded</artifactId>
-                <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.spec.javax.jms</groupId>
                 <artifactId>jboss-jms-api_2.0_spec</artifactId>
                 <version>${version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec}</version>
@@ -886,45 +869,6 @@
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron</artifactId>
                 <version>${version.org.wildfly.security.wildfly-elytron}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.arquillian</groupId>
-                <artifactId>wildfly-arquillian-container-managed</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-managed}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.arquillian</groupId>
-                <artifactId>wildfly-arquillian-container-remote</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-remote}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.arquillian</groupId>
-                <artifactId>wildfly-arquillian-container-bootable</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-bootable}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.sasl</groupId>
-                        <artifactId>jboss-sasl</artifactId>
-                    </exclusion>
-                    <!-- TODO remove this exclusion once this depends on Jakarta Inject -->
-                    <!-- superseded by jakarta.inject:jakarta.inject-api -->
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.github.fge</groupId>

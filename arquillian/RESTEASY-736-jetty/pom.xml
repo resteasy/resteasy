@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs-all</artifactId>
+    <artifactId>resteasy-misc-arquillian-tests</artifactId>
     <version>3.11.5-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-736-jetty</artifactId>
   <packaging>jar</packaging>
