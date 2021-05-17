@@ -185,6 +185,148 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>ee9</id>
+            <properties>
+                <jboss.home>${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}</jboss.home>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-preview-dist</artifactId>
+                                            <version>${ee9.server.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/test-server</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-resteasy</id>
+                                <phase>generate-test-resources</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
+                                             so adding jars without removing old ones basically messes up the classloader -->
+                                        <delete>
+                                            <fileset
+                                                    dir="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main"
+                                                    includes="**/*.jar"/>
+                                        </delete>
+                                        <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
+                                               dest="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base"
+                                               overwrite="true"/>
+                                        <delete dir="target/dependency-maven-plugin-markers"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>initialize-basedirs</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Initialize basedir for tested container by copying
+                                             the original into new place.
+                                             This helps to isolate the multiple running instances.
+                                             One copy per each container in arquillian.xml -->
+
+                                        <delete quiet="true" dir="${container.base.dir.managed}" />
+                                        <copy todir="${container.base.dir.managed}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+
+                                        <delete quiet="true" dir="${container.base.dir.manual.gzip}" />
+                                        <copy todir="${container.base.dir.manual.gzip}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+                                        <delete quiet="true" dir="${container.base.dir.managed.encoding}" />
+                                        <copy todir="${container.base.dir.managed.encoding}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+
+                                        <delete quiet="true" dir="${container.base.dir.manual.tracing}" />
+                                        <copy todir="${container.base.dir.manual.tracing}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+
+                                        <delete quiet="true" dir="${container.base.dir.manual.ssl}" />
+                                        <copy todir="${container.base.dir.manual.ssl}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+
+                                        <delete quiet="true" dir="${container.base.dir.manual.ssl.wrong}" />
+                                        <copy todir="${container.base.dir.manual.ssl.wrong}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+
+                                        <delete quiet="true" dir="${container.base.dir.manual.ssl.wildcard}" />
+                                        <copy todir="${container.base.dir.manual.ssl.wildcard}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+
+                                        <delete quiet="true" dir="${container.base.dir.manual.ssl.sni}" />
+                                        <copy todir="${container.base.dir.manual.ssl.sni}" overwrite="true" failonerror="true">
+                                            <fileset dir="${jboss.home}/standalone"/>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>prepare-tracing-configuration</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Prepare configuration with more verbose logging for tracing tests -->
+                                        <copy file="${container.base.dir.manual.tracing}/configuration/standalone-full.xml"
+                                              tofile="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml"/>
+                                        <replace
+                                                file="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml">
+                                            <replacetoken><![CDATA[="INFO"]]></replacetoken>
+                                            <replacevalue><![CDATA[="DEBUG"]]></replacevalue>
+                                        </replace>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
 
     </profiles>
 
