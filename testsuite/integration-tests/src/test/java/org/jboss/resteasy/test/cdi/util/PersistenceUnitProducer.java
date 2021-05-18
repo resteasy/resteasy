@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.cdi.util;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionResourceBinding;
 
 import jakarta.enterprise.inject.Produces;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 public class PersistenceUnitProducer {
    @Produces

@@ -32,13 +32,19 @@
         <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
         <version.io.netty.netty4>4.1.60.Final</version.io.netty.netty4>
         <version.io.vertx>4.0.3</version.io.vertx>
+        <!--
         <version.io.undertow>2.0.23.Final</version.io.undertow>
         <version.io.undertow-jakarta9>2.0.23.Final-$$jakarta9$$</version.io.undertow-jakarta9>
+        -->
+        <!-- rls wlfy preview current -->
+        <version.io.undertow>2.2.6.Final</version.io.undertow>
+        <version.io.undertow-jakarta9>2.2.6.Final-$$jakarta9$$</version.io.undertow-jakarta9>
+
         <version.jakarta.activation>2.0.1</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>3.0.0</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.0</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>1.1.6</version.jakarta.json-api>
-        <version.jakarta.json.bind-api>1.0.2</version.jakarta.json.bind-api>
+        <version.jakarta.json.bind-api>2.0.0</version.jakarta.json.bind-api>
         <version.jakarta.validation-api>3.0.0</version.jakarta.validation-api>
         <version.javax.ws.rs-api>3.0.0.Final-SNAPSHOT</version.javax.ws.rs-api>
         <version.junit>4.13.1</version.junit>
@@ -55,11 +61,14 @@
 
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.39.v20210325</version.org.eclipse.jetty>
-        <version.org.eclipse.yasson>1.0.5</version.org.eclipse.yasson>
+        <version.org.eclipse.yasson>2.0.1</version.org.eclipse.yasson>
         <version.com.github.tomakehurst.wiremock>2.20.0</version.com.github.tomakehurst.wiremock>
-        <version.org.glassfish.jakarta.el>3.0.2</version.org.glassfish.jakarta.el>
-        <version.org.glassfish.jakarta.json>1.1.6</version.org.glassfish.jakarta.json>
+        <version.org.glassfish.jakarta.el>4.0.0</version.org.glassfish.jakarta.el>
+        <version.org.glassfish.jakarta.json>2.0.0</version.org.glassfish.jakarta.json>
+    <!--
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+    -->
+        <version.jakarta.persistence-api>3.0.0</version.jakarta.persistence-api>
         <version.org.infinispan>11.0.3.Final</version.org.infinispan>
         <version.org.jacoco>0.8.3</version.org.jacoco>
         <version.org.javassist>3.23.2-GA</version.org.javassist>
@@ -71,9 +80,12 @@
         <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
         <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>2.0.1.Final-$$jakarta9$$</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>
         <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>2.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
-        <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
+        <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final-$$jakarta9$$</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
         <version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>2.0.0.Final</version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>
+        <!-- rls replacing
         <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>2.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
+        -->
+        <version.jakarta.jms-api>3.0.0</version.jakarta.jms-api>
         <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final-$$jakarta9$$</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final-$$jakarta9$$</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
         <version.jakarta.servlet.jakarta-servlet-api>5.0.0</version.jakarta.servlet.jakarta-servlet-api>
@@ -84,9 +96,16 @@
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
+        <!-- rls use version in wfly instead
         <version.weld.api>4.0.SP1-$$jakarta9$$</version.weld.api>
         <version.weld>3.1.5.Final-$$jakarta9$$</version.weld>
+        -->
+        <version.weld.api>4.0.SP1</version.weld.api>
+        <version.weld>4.0.1.SP1</version.weld>
+
         <version.json.patch>1.13</version.json.patch>
+        <version.jakarta.interceptor-api>2.0.0</version.jakarta.interceptor-api>
+        <version.jakarta.el-api>4.0.0</version.jakarta.el-api>
 
         <!-- MicroProfile versions -->
         <!-- todo replace this version when Final is released
@@ -109,7 +128,7 @@
 
         <version.io.reactivex.rxjava2-rxjava>2.2.19</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
-        <version.org.hibernate.validator>6.0.18.Final</version.org.hibernate.validator>
+        <version.org.hibernate.validator>7.0.1.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>5.2.0.RELEASE-$$jakarta9$$</version.org.springframework>
@@ -286,11 +305,17 @@
                 <artifactId>commons-io</artifactId>
                 <version>${version.commons-io.commons-io}</version>
             </dependency>
-
+        <!--
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>
                 <artifactId>hibernate-jpa-2.1-api</artifactId>
                 <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
+            </dependency>
+            -->
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${version.jakarta.persistence-api}</version>
             </dependency>
 
             <dependency>
@@ -381,10 +406,6 @@
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-servlet</artifactId>
                 <version>${version.io.undertow-jakarta9}</version>
-                <!-- rls start change to be removed
-                <scope>system</scope>
-                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/undertow-servlet-2.2.6.Final-ee9.jar</systemPath>
-                rls end change to be removed -->
                 <exclusions>
                     <exclusion>
                         <groupId>org.jboss.spec.javax.annotation</groupId>
@@ -727,10 +748,17 @@
                 <artifactId>arquillian-weld-embedded</artifactId>
                 <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
             </dependency>
+            <!-- rls java.jms.* being replaced with jakarta.jms-api
             <dependency>
                 <groupId>org.jboss.spec.javax.jms</groupId>
                 <artifactId>jboss-jms-api_2.0_spec</artifactId>
                 <version>${version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec}</version>
+            </dependency>
+            -->
+            <dependency>
+                <groupId>jakarta.jms</groupId>
+                <artifactId>jakarta.jms-api</artifactId>
+                <version>${version.jakarta.jms-api}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -1024,6 +1052,16 @@
                 <groupId>com.ibm.async</groupId>
                 <artifactId>asyncutil</artifactId>
                 <version>${version.asyncutil}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.interceptor</groupId>
+                <artifactId>jakarta.interceptor-api</artifactId>
+                <version>${version.jakarta.interceptor-api}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.el</groupId>
+                <artifactId>jakarta.el-api</artifactId>
+                <version>${version.jakarta.el-api}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

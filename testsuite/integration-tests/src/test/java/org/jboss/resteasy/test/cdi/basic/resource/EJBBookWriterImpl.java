@@ -6,7 +6,7 @@ import org.jboss.resteasy.test.cdi.util.Constants;
 
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateful;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;

@@ -5,7 +5,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.cdi.util.Constants;
 
 import jakarta.ejb.Stateful;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;

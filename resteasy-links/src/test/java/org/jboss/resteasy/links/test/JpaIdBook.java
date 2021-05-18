@@ -1,6 +1,6 @@
 package org.jboss.resteasy.links.test;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
