@@ -62,6 +62,7 @@
               <name>!server.home</name>
             </property>
           </activation>
+
           <build>
             <plugins>
               <plugin>
@@ -232,13 +233,41 @@
                                                     includes="**/*.jar"/>
                                         </delete>
                                         <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
-                                               dest="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base"
+                                               dest="${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}"
                                                overwrite="true"/>
                                         <delete dir="target/dependency-maven-plugin-markers"/>
                                     </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>transform-ee9</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <includeProjectDependencies>true</includeProjectDependencies>
+                                    <executableDependency>
+                                        <groupId>org.wildfly.galleon-plugins</groupId>
+                                        <artifactId>transformer</artifactId>
+                                    </executableDependency>
+                                    <mainClass>org.wildfly.galleon.plugin.transformer.JakartaTransformer</mainClass>
+                                    <arguments>
+                                        <argument>${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}</argument>
+                                        <argument>${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}</argument>
+                                    </arguments>
+
+                                </configuration>
+
+                                <goals>
+                                    <goal>java</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -252,6 +281,10 @@
                                 <phase>process-test-classes</phase>
                                 <configuration>
                                     <target>
+                                        <!--copy transformed resteasy-jboss-modules-->
+                                        <copy todir="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base" overwrite="true" failonerror="true">
+                                            <fileset dir="${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}"/>
+                                        </copy>
                                         <!-- Initialize basedir for tested container by copying
                                              the original into new place.
                                              This helps to isolate the multiple running instances.
@@ -616,6 +649,14 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>json-path</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.galleon-plugins</groupId>
+            <artifactId>transformer</artifactId>
+            <version>5.2.0.Alpha1</version>
+            <type>jar</type>
+        </dependency>
+
     </dependencies>
 
     <build>
