@@ -12,21 +12,8 @@ import java.util.List;
  */
 public class TestUtilSpring {
 
-   private static String defaultSpringVersion = "5.2.0.RELEASE";
+   private static final String defaultSpringVersion = "5.3.7";
    //protected static Logger logger;
-
-
-   /**
-    * Read system proprty
-    *
-    * @param name         of the property
-    * @param defaultValue which will be used if system property name is not defined
-    * @return property value
-    */
-   private static String readSystemProperty(String name, String defaultValue) {
-      String value = System.getProperty(name);
-      return (value == null) ? defaultValue : value;
-   }
 
    /**
     * Get spring version
@@ -34,7 +21,7 @@ public class TestUtilSpring {
     * @return Spring version.
     */
    private static String getSpringVersion() {
-      return readSystemProperty("version.org.springframework", defaultSpringVersion);
+      return System.getProperty("version.org.springframework", defaultSpringVersion);
    }
 
    /**
