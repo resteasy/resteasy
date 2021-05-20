@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Hashtable;
 
 import javax.ws.rs.NotAuthorizedException;
@@ -320,12 +316,9 @@ public class BasicAuthTest {
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
 
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(BasicAuthTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
-      }
+        SecurityDomainSetup() {
+            super(BasicAuthTest.class.getResource("users.properties"), BasicAuthTest.class.getResource("roles.properties"));
+        }
 
    }
 }

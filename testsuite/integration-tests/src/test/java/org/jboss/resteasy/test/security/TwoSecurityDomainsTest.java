@@ -30,11 +30,9 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @tpSubChapter Security
@@ -44,7 +42,7 @@ import java.util.Hashtable;
  * in the Elytron subsystem.
  * @tpSince RESTEasy 3.0.21
  */
-@ServerSetup({TwoSecurityDomainsTest.SecurityDomainSetup1.class, TwoSecurityDomainsTest.SecurityDomainSetup2.class})
+@ServerSetup(TwoSecurityDomainsTest.SecurityDomainSetup.class)
 @RunWith(Arquillian.class)
 @RunAsClient
 @Category({ExpectedFailingOnWildFly18.class}) //WFLY-12655
@@ -114,26 +112,18 @@ public class TwoSecurityDomainsTest {
       Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
    }
 
-   static class SecurityDomainSetup1 extends AbstractUsersRolesSecurityDomainSetup {
+   static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
 
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(TwoSecurityDomainsTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
-         setSecurityDomainName(SECURITY_DOMAIN_DEPLOYMENT_1);
-         setSubsystem("picketBox");
+      SecurityDomainSetup() {
+         super(TwoSecurityDomainsTest.class.getResource("users.properties"),
+                 TwoSecurityDomainsTest.class.getResource("roles.properties"));
       }
-   }
 
-   static class SecurityDomainSetup2 extends AbstractUsersRolesSecurityDomainSetup {
-
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(TwoSecurityDomainsTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
-         setSecurityDomainName(SECURITY_DOMAIN_DEPLOYMENT_2);
+      public Map<String, String> getSecurityDomainConfig() {
+         final Map<String, String> config = new HashMap<>();
+         config.put(SECURITY_DOMAIN_DEPLOYMENT_1, "realm1");
+         config.put(SECURITY_DOMAIN_DEPLOYMENT_2, "realm2");
+         return config;
       }
    }
 }
