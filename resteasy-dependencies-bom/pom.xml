@@ -29,7 +29,7 @@
         <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
         <version.io.netty.netty4>4.1.60.Final</version.io.netty.netty4>
         <version.io.vertx>4.0.3</version.io.vertx>
-        <version.io.undertow>2.0.23.Final</version.io.undertow>
+        <version.io.undertow>2.2.7.Final</version.io.undertow>
         <version.jakarta.activation>1.2.1</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>1.0</version.jakarta.inject.jakarta.inject-api>
