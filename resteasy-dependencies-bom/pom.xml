@@ -75,12 +75,13 @@
         <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
         <version.org.slf4j>1.7.29</version.org.slf4j>
+        <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
-        <version.weld.api>3.1.SP3</version.weld.api>
-        <version.weld>3.1.5.Final</version.weld>
+        <version.weld.api>3.1.SP4</version.weld.api>
+        <version.weld>3.1.7.SP1</version.weld>
         <version.json.patch>1.13</version.json.patch>
 
         <!-- MicroProfile versions -->
@@ -385,6 +386,17 @@
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-core</artifactId>
                 <version>${version.io.undertow}</version>
+            </dependency>
+            <!-- Used by Under and some of it's dependencies, defining it here unifies the version -->
+            <dependency>
+                <groupId>org.wildfly.common</groupId>
+                <artifactId>wildfly-common</artifactId>
+                <version>${version.org.wildfly.common}</version>
+                <!-- Using provided and optional here because RESTEasy itself does not use this dependency. It's defined
+                     here to stop dependency convergences.
+                 -->
+                <scope>provided</scope>
+                <optional>true</optional>
             </dependency>
             <dependency>
                 <groupId>jakarta.enterprise</groupId>
