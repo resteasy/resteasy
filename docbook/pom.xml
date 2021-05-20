@@ -20,23 +20,12 @@
             <id>jboss</id>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
-        <!--
-       <repository>
-           <id>repo1.maven.org</id>
-           <url>https://repo1.maven.org/maven2</url>
-       </repository> -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>jboss</id>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </pluginRepository>
-        <!--
-        <pluginRepository>
-            <id>plugin repo1.maven.org</id>
-            <url>https://repo1.maven.org/maven2</url>
-        </pluginRepository>
-        -->
     </pluginRepositories>
 
     <build>

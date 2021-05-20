@@ -11,11 +11,6 @@
     <description/>
     <packaging>jar</packaging>
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -42,9 +37,11 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
+        <!-- This is optional and will work at runtime with or without EJB being present -->
         <dependency>
-        	<groupId>org.jboss.spec.javax.ejb</groupId>
-        	<artifactId>jboss-ejb-api_3.2_spec</artifactId>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -66,15 +63,28 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
+            <!-- This is a compile time only requirement -->
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
+            <!-- This is a compile time only requirement -->
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-api</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

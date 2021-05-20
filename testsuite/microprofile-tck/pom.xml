@@ -7,7 +7,7 @@
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-testsuite</artifactId>
     <version>4.7.0-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>microprofile-tck-runner</artifactId>
