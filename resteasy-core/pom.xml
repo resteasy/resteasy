@@ -96,9 +96,15 @@
         </dependency>
 
         <!-- javax.activation.DataSource provider is required by spec -->
+        <!--
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->

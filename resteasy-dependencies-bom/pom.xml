@@ -40,7 +40,7 @@
         <version.io.undertow>2.2.6.Final</version.io.undertow>
         <version.io.undertow-jakarta9>2.2.6.Final-$$jakarta9$$</version.io.undertow-jakarta9>
 
-        <version.jakarta.activation>2.0.1</version.jakarta.activation>
+        <version.jakarta.activation>2.0.0</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>3.0.0</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.0</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>1.1.6</version.jakarta.json-api>
@@ -367,12 +367,19 @@
                 <artifactId>jcip-annotations</artifactId>
                 <version>${version.stephenc.jcip.jcip-annotations}</version>
             </dependency>
-
+            <!-- rls test
             <dependency>
                 <groupId>com.sun.activation</groupId>
                 <artifactId>jakarta.activation</artifactId>
                 <version>${version.jakarta.activation}</version>
             </dependency>
+            -->
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${version.jakarta.activation}</version>
+            </dependency>
+
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
@@ -588,6 +595,15 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${version.com.fasterxml.jackson}</version>
+                <!-- rls this exclusion is temporary while debuggin an issue
+                    REMOVE when done
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.activation</groupId>
+                        <artifactId>jakarta.activation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+                -->
             </dependency>
             <dependency>
                 <groupId>org.infinispan</groupId>
@@ -623,22 +639,25 @@
                 <artifactId>bcprov-jdk15on</artifactId>
                 <version>${version.org.bouncycastle}</version>
             </dependency>
+            <!-- signed jar using jakarta API
+                NOTE: this jar MUST also be put in wfly-preview module
+                org/bouncycastle/bcmail/main AND the module.xml file
+                must be updated to reference this JAR file
+            -->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcmail-jdk15on</artifactId>
-                <!-- rls tmp
-                 <version>${version.org.bouncycastle-jakarta9}</version>
-                -->
-                <version>1.68-ee9</version>
+                <artifactId>bcjmail-jdk15on</artifactId>
+                <version>169b08</version>
+                <!-- rls remove this when done testing -->
                 <scope>system</scope>
-                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcmail-jdk15on-1.68-ee9.jar</systemPath>
-
+                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcjmail-jdk15on-169b08.jar</systemPath>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
                 <version>${version.org.bouncycastle}</version>
             </dependency>
+
             <dependency>
                 <groupId>net.oauth.core</groupId>
                 <artifactId>oauth-provider</artifactId>

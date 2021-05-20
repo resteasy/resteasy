@@ -125,10 +125,17 @@
         </dependency>
 
         <!-- rls test start -->
+        <!--
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
         </dependency>
+        -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.interceptor</groupId>
             <artifactId>jakarta.interceptor-api</artifactId>
