@@ -23,11 +23,7 @@ import org.wildfly.extras.creaper.core.CommandFailedException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @tpSubChapter Security
@@ -138,11 +134,9 @@ public class SecurityContextTest {
 
    static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
 
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(SecurityContextTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
+      SecurityDomainSetup() {
+         super(SecurityContextTest.class.getResource("users.properties"),
+                 SecurityContextTest.class.getResource("roles.properties"));
       }
    }
 }

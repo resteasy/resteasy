@@ -22,7 +22,6 @@
         <additionalJvmArgs/>
         <ipv6ArquillianSettings/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
-        <security.provider>picketbox</security.provider>
     </properties>
 
     <dependencyManagement>
@@ -106,7 +105,6 @@
                         <project.version>${project.version}</project.version>
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
-                        <security.provider>${security.provider}</security.provider>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
