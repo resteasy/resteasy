@@ -27,7 +27,7 @@ Issues are kept in [JIRA](https://issues.redhat.com/projects/RESTEASY/issues).
 
 ## Build
 
-Currently RESTEasy can be built with JDK 1.8 and 11.
+Currently RESTEasy can be built with JDK 11+.
 
 If you want to purely build the project without running the tests, you need to pull down a clone of the RESTEasy repository and run:
 

@@ -23,6 +23,10 @@
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
+
+        <!-- Skip the default Java 8 testing. This will have to be done in CI or locally by setting the test.java.home -->
+        <skip.java8.tests>true</skip.java8.tests>
+        <test.java.home>${java.home}</test.java.home>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +99,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <jvm>${test.java.home}/bin/java</jvm>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <securityManagerArg>${securityManagerArg}</securityManagerArg>
@@ -233,6 +238,34 @@
             <properties>
                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
             </properties>
+        </profile>
+
+        <profile>
+            <id>java8-integration-tests</id>
+            <activation>
+                <property>
+                    <name>test.java8.home</name>
+                </property>
+            </activation>
+            <properties>
+                <test.java.home>${test.java8.home}</test.java.home>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${test.java.home}/lib/tools.jar</additionalClasspathElement>
+                            </additionalClasspathElements>
+                            <environmentVariables>
+                                <JAVA_HOME>${test.java.home}</JAVA_HOME>
+                            </environmentVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
@@ -451,9 +484,8 @@
         </profile>
 
         <profile>
-            <id>debug-java-11</id>
+            <id>debug</id>
             <activation>
-                <jdk>11</jdk>
                 <property>
                     <name>debug</name>
                 </property>
@@ -467,9 +499,8 @@
         <profile>
             <id>debug-java-8</id>
             <activation>
-                <jdk>1.8</jdk>
                 <property>
-                    <name>debug</name>
+                    <name>debug.java.8</name>
                 </property>
             </activation>
             <properties>
