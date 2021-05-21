@@ -5,9 +5,9 @@ script:
 
 language: java
 jdk:
-  - openjdk8
+  - openjdk11
 env:
-  - SERVER_VERSION=21.0.1.Final ELYTRON=true
+  - SERVER_VERSION=23.0.2.Final ELYTRON=true
 jobs:
 addons:
   hosts:

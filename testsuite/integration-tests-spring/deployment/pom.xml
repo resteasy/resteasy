@@ -118,27 +118,21 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <inherited>false</inherited>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>enable-elytron-full-cli</id>
                                 <phase>process-test-resources</phase>
                                 <goals>
-                                    <goal>exec</goal>
+                                    <goal>execute-commands</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>${java.home}/bin/java</executable>
-                                    <commandlineArgs>
-                                        ${modular.jdk.args} -jar ${jboss.home}/jboss-modules.jar
-                                        -mp ${jboss.home}/modules
-                                        org.jboss.as.cli
-                                        --file=${basedir}/../../config/enable-elytron-full.cli
-                                    </commandlineArgs>
-                                    <environmentVariables>
-                                        <JBOSS_HOME>${jboss.home}</JBOSS_HOME>
-                                    </environmentVariables>
+                                    <jboss-home>${jboss.home}</jboss-home>
+                                    <offline>true</offline>
+                                    <scripts>
+                                        <script>${basedir}/../../config/enable-elytron-full.cli</script>
+                                    </scripts>
                                 </configuration>
                             </execution>
                         </executions>
