@@ -637,7 +637,13 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
+                <version>169b08</version>
+                <!--
                 <version>${version.org.bouncycastle}</version>
+                -->
+                <!-- rls remove this when done testing -->
+                <scope>system</scope>
+                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcprov-jdk15on-169b08.jar</systemPath>
             </dependency>
             <!-- signed jar using jakarta API
                 NOTE: this jar MUST also be put in wfly-preview module
@@ -655,7 +661,24 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
+                <version>169b08</version>
+                <!--
                 <version>${version.org.bouncycastle}</version>
+                -->
+                <!-- rls remove this when done testing -->
+                <scope>system</scope>
+                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcpkix-jdk15on-169b08.jar</systemPath>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk15on</artifactId>
+                <version>169b08</version>
+                <!--
+                <version>${version.org.bouncycastle}</version>
+                -->
+                <!-- rls remove this when done testing -->
+                <scope>system</scope>
+                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcutil-jdk15on-169b08.jar</systemPath>
             </dependency>
 
             <dependency>
