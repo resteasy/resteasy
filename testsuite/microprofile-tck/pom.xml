@@ -16,8 +16,9 @@
 
   <properties>
     <skip.mp.tck>false</skip.mp.tck>
-    <jetty9.version>9.2.28.v20190418</jetty9.version>
+    <jetty9.version>9.2.30.v20200428</jetty9.version>
     <jetty.version>${jetty9.version}</jetty.version>
+    <tck.timeout.offset>30</tck.timeout.offset>
   </properties>
 
   <dependencies>
@@ -210,7 +211,7 @@
         <configuration>
           <skip>${skip.mp.tck}</skip>
           <systemPropertyVariables>
-               <org.eclipse.microprofile.rest.client.tck.timeoutCushion>30</org.eclipse.microprofile.rest.client.tck.timeoutCushion>
+               <org.eclipse.microprofile.rest.client.tck.timeoutCushion>${tck.timeout.offset}</org.eclipse.microprofile.rest.client.tck.timeoutCushion>
           </systemPropertyVariables>
         </configuration>
         <executions>
@@ -245,6 +246,22 @@
       </activation>
       <properties>
         <skip.mp.tck>true</skip.mp.tck>
+      </properties>
+    </profile>
+    <profile>
+      <id>skip-mp-tck.modular.jvm</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <modular.jdk.args>
+          --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+          --add-modules=java.se
+          --add-opens=java.base/java.util=ALL-UNNAMED
+          --add-opens=java.base/java.security=ALL-UNNAMED
+          --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+        </modular.jdk.args>
+        <tck.timeout.offset>90</tck.timeout.offset>
       </properties>
     </profile>
   </profiles>
