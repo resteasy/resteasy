@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 
 @Path("/")

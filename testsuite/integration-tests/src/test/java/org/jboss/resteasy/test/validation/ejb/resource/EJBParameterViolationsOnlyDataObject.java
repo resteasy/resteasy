@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.ejb.resource;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class EJBParameterViolationsOnlyDataObject extends EJBParameterViolationsOnlyAbstractDataObject
 {

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.validation.resource;
 
 import org.jboss.logging.Logger;
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.core.Response;
 
 @RequestScoped

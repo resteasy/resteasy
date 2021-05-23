@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 public class ValidationComplexB {
    @Valid

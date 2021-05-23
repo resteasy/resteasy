@@ -56,7 +56,7 @@ public class SetMethodWithMoreArgumentsTest {
    }
 
    /**
-    * @tpTestDetails Entity class Dog has setNameAndSort method with two arguments which causes 'javax.json.bind.JsonbException: Invalid count of arguments for setter' with yasson-1.0.1.
+    * @tpTestDetails Entity class Dog has setNameAndSort method with two arguments which causes 'jakarta.json.bind.JsonbException: Invalid count of arguments for setter' with yasson-1.0.1.
     * This test checks that this behavior is no longer present in newer versions of yasson.
     * @tpSince RESTEasy 3.6.2.Final
     */

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.security.resource;
 
 import org.jboss.logging.Logger;
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;

@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.resource.patch;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -84,7 +84,7 @@ public class StudentPatchTest {
 
       //patch a student, after patch we can get a male student named John Taylor and school is null.
       WebTarget patchTarget = client.target(generateURL("/students/1"));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
             .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
             .add(Json.createObjectBuilder().add("op", "replace").add("path", "/firstName").add("value", "John").build())
             .add(Json.createObjectBuilder().add("op", "remove").add("path", "/school").build())
@@ -143,7 +143,7 @@ public class StudentPatchTest {
       Assert.assertNull("Gender is not null", s.getGender());
 
       WebTarget patchTarget = client.target(PortProviderUtil.generateURL("/students/1", DISABLED_PATCH_DEPLOYMENT));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
             .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
             .add(Json.createObjectBuilder().add("op", "replace").add("path", "/firstName").add("value", "John").build())
             .build();

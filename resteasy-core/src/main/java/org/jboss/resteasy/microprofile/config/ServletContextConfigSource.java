@@ -9,7 +9,7 @@ public class ServletContextConfigSource extends BaseServletConfigSource implemen
    private static Class<?> clazz = null;
    static {
       try {
-         clazz = Class.forName("javax.servlet.ServletContext");
+         clazz = Class.forName("jakarta.servlet.ServletContext");
          clazz = Class.forName("org.jboss.resteasy.microprofile.config.ServletContextConfigSourceImpl");
       }
       catch (Throwable e)

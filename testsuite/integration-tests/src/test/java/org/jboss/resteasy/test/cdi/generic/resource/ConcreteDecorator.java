@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.cdi.generic.resource;
 
 import java.util.logging.Logger;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 @Decorator

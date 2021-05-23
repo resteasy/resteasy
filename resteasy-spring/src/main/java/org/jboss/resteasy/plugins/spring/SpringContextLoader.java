@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.spring;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoader;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

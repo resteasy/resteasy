@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 

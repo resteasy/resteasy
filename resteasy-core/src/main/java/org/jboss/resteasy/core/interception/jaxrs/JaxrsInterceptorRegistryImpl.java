@@ -6,7 +6,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.NameBinding;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.PreMatching;

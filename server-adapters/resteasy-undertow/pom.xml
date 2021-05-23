@@ -36,6 +36,12 @@
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.wildfly.client</groupId>
+                    <artifactId>wildfly-client-config</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>

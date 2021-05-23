@@ -2,7 +2,7 @@ package org.jboss.resteasy.links.test;
 
 import org.jboss.logging.Logger;
 
-import javax.el.FunctionMapper;
+import jakarta.el.FunctionMapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;

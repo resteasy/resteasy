@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.cdi.interceptors.resource;
 
 import org.jboss.resteasy.test.cdi.util.Constants;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import javax.interceptor.Interceptors;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -40,7 +40,7 @@ public class InterceptorResource {
       log.info("executing InterceptorResource.postConstruct()");
    }
 
-   @javax.annotation.PreDestroy
+   @jakarta.annotation.PreDestroy
    public void PreDestroy() {
       log.info("executing InterceptorResource.PreDestroy()");
    }

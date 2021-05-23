@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 import jakarta.ws.rs.Path;
 
 @Remote

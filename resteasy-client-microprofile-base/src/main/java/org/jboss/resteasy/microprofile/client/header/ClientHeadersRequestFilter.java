@@ -5,7 +5,7 @@ import org.eclipse.microprofile.rest.client.ext.DefaultClientHeadersFactoryImpl;
 import org.jboss.resteasy.microprofile.client.impl.MpClientInvocation;
 import org.jboss.resteasy.microprofile.client.utils.ClientRequestContextUtils;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.MultivaluedHashMap;

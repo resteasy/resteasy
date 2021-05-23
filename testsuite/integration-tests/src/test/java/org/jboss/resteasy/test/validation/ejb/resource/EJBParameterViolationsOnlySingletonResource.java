@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.ejb.resource;
 
-import javax.ejb.Singleton;
+import jakarta.ejb.Singleton;
 import jakarta.ws.rs.Path;
 
 @Singleton

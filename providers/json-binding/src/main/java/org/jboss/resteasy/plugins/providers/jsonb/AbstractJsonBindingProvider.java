@@ -4,10 +4,11 @@ import org.eclipse.yasson.JsonBindingProvider;
 import org.eclipse.yasson.internal.JsonBindingBuilder;
 import org.glassfish.json.JsonProviderImpl;
 
-import javax.json.bind.Jsonb;
+import jakarta.json.bind.Jsonb;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.ContextResolver;
+
 import java.nio.charset.Charset;
 
 

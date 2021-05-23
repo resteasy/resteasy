@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.validation;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.jboss.resteasy.api.validation.ConstraintType;
 

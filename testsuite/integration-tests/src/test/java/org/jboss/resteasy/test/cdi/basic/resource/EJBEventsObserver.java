@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Local;
-import javax.enterprise.event.Observes;
+import jakarta.ejb.Local;
+import jakarta.enterprise.event.Observes;
 import java.util.ArrayList;
 
 @Local

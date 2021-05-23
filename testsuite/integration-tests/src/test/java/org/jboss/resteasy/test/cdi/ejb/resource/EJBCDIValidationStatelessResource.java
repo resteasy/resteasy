@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.cdi.ejb.resource;
 
-import javax.ejb.Stateless;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
+import jakarta.ejb.Stateless;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;

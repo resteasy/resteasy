@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cdi.basic.resource;
 
 import org.jboss.resteasy.test.cdi.util.Constants;
 
-import javax.ejb.Local;
+import jakarta.ejb.Local;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.ext.MessageBodyReader;
 import jakarta.ws.rs.ext.Provider;

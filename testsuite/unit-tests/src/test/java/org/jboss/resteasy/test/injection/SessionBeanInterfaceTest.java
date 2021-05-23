@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.injection.resource.SessionBeanInterfaceMockProces
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;

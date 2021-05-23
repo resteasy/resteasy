@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import javax.interceptor.Interceptors;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 

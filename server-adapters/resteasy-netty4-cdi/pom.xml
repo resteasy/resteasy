@@ -13,7 +13,7 @@
     <name>RESTEasy Netty 4 Integration w/ CDI Support</name>
     <description/>
     <properties>
-        <dep.arq.weld.se>2.0.0.Final</dep.arq.weld.se>
+        <dep.arq.weld.se>2.0.0.Final-$$jakarta9$$</dep.arq.weld.se>
     </properties>
     <dependencies>
         <dependency>
@@ -89,9 +89,24 @@
             <version>${dep.arq.weld.se}</version>
             <scope>test</scope>
         </dependency>
+       <!-- rls test start  SUCCESS ... KEEP -->
+       <dependency>
+          <groupId>org.jboss.arquillian.testenricher</groupId>
+          <artifactId>arquillian-testenricher-cdi</artifactId>
+          <version>1.4.1.Final-$$jakarta9$$</version>
+       </dependency>
+       <dependency>
+          <groupId>jakarta.el</groupId>
+          <artifactId>jakarta.el-api</artifactId>
+       </dependency>
+       <dependency>
+          <groupId>jakarta.interceptor</groupId>
+          <artifactId>jakarta.interceptor-api</artifactId>
+       </dependency>
+       <!-- rls test end -->
         <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+           <groupId>org.jboss.spec.javax.servlet</groupId>
+           <artifactId>jboss-servlet-api_4.0_spec</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

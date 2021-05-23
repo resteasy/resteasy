@@ -3,18 +3,18 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 
 import org.jboss.resteasy.test.cdi.util.Counter;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.inject.Inject;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.TextMessage;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 @MessageDriven(name = "BookMDB",
-      activationConfig = {@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+      activationConfig = {@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue"),
                      @ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/test")}
 )
 public class CDIInjectionBookMDB implements MessageListener {

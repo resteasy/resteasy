@@ -9,7 +9,7 @@ public class ServletConfigSource extends BaseServletConfigSource implements Conf
    private static Class<?> clazz = null;
    static {
       try {
-         clazz = Class.forName("javax.servlet.ServletConfig");
+         clazz = Class.forName("jakarta.servlet.ServletConfig");
          clazz = Class.forName("org.jboss.resteasy.microprofile.config.ServletConfigSourceImpl");
       }
       catch (Throwable e)

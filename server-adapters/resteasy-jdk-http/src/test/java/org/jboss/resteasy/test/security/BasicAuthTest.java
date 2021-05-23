@@ -7,8 +7,8 @@ import static org.jboss.resteasy.test.TestPortProvider.getPort;
 
 import java.util.List;
 
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.Path;

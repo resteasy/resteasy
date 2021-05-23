@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.HashMap;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;

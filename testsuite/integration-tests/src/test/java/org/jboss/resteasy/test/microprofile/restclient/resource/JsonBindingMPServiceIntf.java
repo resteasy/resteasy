@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.microprofile.restclient.resource;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Dog;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 
 @Remote
 public interface ReverseInjectionEJBInterface {

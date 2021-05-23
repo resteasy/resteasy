@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.guice.ext;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.HttpHeaders;

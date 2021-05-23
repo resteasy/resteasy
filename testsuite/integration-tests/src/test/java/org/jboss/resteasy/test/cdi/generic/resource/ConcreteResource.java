@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.cdi.generic.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
