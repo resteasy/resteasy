@@ -83,6 +83,28 @@
             <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!--
+           Needed for javax.annotation.security.*
+           should this dependency be <scope>provided</scope> and only used if
+           detected runtime?
+        -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- javax.activation.DataSource provider is required by spec -->
+        <!--
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+        </dependency>
 
         <!-- Required by Hibernate Validator 5.x for testing -->
         <dependency>

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Stereotype;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Stereotype;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

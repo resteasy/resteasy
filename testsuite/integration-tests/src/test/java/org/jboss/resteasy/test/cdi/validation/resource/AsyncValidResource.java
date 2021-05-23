@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.validation.resource;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.container.AsyncResponse;
 
 public interface AsyncValidResource

@@ -3,8 +3,8 @@ package org.jboss.resteasy.cdi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Application;

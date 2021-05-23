@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 

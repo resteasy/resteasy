@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.validation.cdi.resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateful;
+import jakarta.ejb.Stateful;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.modules.resource;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 
 @Stateless
 @CDIModulesInjectableBinder

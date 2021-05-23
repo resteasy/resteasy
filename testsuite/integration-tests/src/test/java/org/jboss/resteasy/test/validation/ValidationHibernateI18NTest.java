@@ -63,7 +63,7 @@ public class ValidationHibernateI18NTest {
    @Test
    public void testI18NSetAcceptLanguage() throws Exception {
       doTestI18NSetAcceptLanguage("fr", "la taille doit être");
-      doTestI18NSetAcceptLanguage("es", "el tama\u00F1o tiene que estar entre");
+      doTestI18NSetAcceptLanguage("es", "el tama\u00F1o debe estar entre");
    }
 
    protected void doTestI18NSetAcceptLanguage(String locale, String expectedMessage) throws Exception {

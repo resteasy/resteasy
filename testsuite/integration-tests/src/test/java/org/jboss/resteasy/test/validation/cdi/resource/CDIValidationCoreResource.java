@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.validation.constraints.Min;
-import javax.validation.executable.ExecutableType;
-import javax.validation.executable.ValidateOnExecution;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.executable.ExecutableType;
+import jakarta.validation.executable.ValidateOnExecution;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

@@ -3,8 +3,7 @@ package org.jboss.resteasy.plugins.providers.jackson;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import javax.annotation.Priority;
-
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.ProcessingException;

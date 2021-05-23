@@ -124,7 +124,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, AsyncBufferedM
             }
          };
 
-         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
 
          marshaller.marshal(feed, entityStream);
       }

@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.validation;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.api.validation.ResteasyViolationException;

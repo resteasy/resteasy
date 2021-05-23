@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.providers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.ParamConverter;

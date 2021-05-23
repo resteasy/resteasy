@@ -64,7 +64,7 @@ public abstract class GzipAbstractTestBase {
             new PropertyPermission("resteasy.allowGzip", "read")
       ), "permissions.xml");
       if (addProvidersFileWithGzipInterceptors) {
-         war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-jakarta.ws.rs.ext.Providers", "services/jakarta.ws.rs.ext.Providers");
+         war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-javax.ws.rs.ext.Providers", "services/jakarta.ws.rs.ext.Providers");
       }
       return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
    }

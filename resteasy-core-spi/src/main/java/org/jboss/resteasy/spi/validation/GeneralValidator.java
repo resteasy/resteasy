@@ -9,7 +9,7 @@ import org.jboss.resteasy.spi.HttpRequest;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
- * Javadoc adapted from javax.validation.Validator and javax.validation.executable.ExecutableValidator:
+ * Javadoc adapted from jakarta.validation.Validator and jakarta.validation.executable.ExecutableValidator:
  *
  * @author Emmanuel Bernard
  * @author Hardy Ferentschik
@@ -23,10 +23,10 @@ public interface GeneralValidator
     * @param request http request
     * @param object object to validate
     * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link javax.validation.groups.Default})
+    *        {@link jakarta.validation.groups.Default})
     * @throws IllegalArgumentException if object is {@code null}
     *         or if {@code null} is passed to the varargs groups
-    * @throws javax.validation.ValidationException if a non recoverable error happens
+    * @throws jakarta.validation.ValidationException if a non recoverable error happens
     *         during the validation process
     */
    void validate(HttpRequest request, Object object, Class<?>... groups);
@@ -40,10 +40,10 @@ public interface GeneralValidator
     * @param parameterValues the values provided by the caller for the given method's
     *        parameters
     * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link javax.validation.groups.Default})
+    *        {@link jakarta.validation.groups.Default})
     * @throws IllegalArgumentException if {@code null} is passed for any of the parameters
     *         or if parameters don't match with each other
-    * @throws javax.validation.ValidationException if a non recoverable error happens during the
+    * @throws jakarta.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
    void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues,
@@ -57,10 +57,10 @@ public interface GeneralValidator
     * @param method the method for which the return value constraints is validated
     * @param returnValue the value returned by the given method
     * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link javax.validation.groups.Default})
+    *        {@link jakarta.validation.groups.Default})
     * @throws IllegalArgumentException if {@code null} is passed for any of the object,
     *         method or groups parameters or if parameters don't match with each other
-    * @throws javax.validation.ValidationException if a non recoverable error happens during the
+    * @throws jakarta.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
    void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);

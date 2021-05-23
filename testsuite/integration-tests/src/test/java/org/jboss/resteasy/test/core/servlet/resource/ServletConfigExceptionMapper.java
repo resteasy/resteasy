@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.core.servlet.resource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Assert;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;

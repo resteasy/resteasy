@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.annotation.ManagedBean;
-import javax.validation.constraints.Min;
+import jakarta.annotation.ManagedBean;
+import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

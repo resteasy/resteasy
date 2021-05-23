@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Local;
+import jakarta.ejb.Local;
 import java.util.concurrent.Future;
 
 @Local

@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.guice;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Scope;
+import jakarta.inject.Scope;
 
 /**
  * Provides an instance-per-request.

@@ -100,8 +100,8 @@
                 <module>resteasy-core</module>
                 <module>resteasy-client-api</module>
                 <module>resteasy-client</module>
-                <!--module>resteasy-client-microprofile-base</module>
-                <module>resteasy-client-microprofile</module-->
+                <module>resteasy-client-microprofile-base</module>
+                <module>resteasy-client-microprofile</module>
                 <module>resteasy-client-jetty</module>
                 <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
@@ -399,6 +399,7 @@
                             </rules>
                         </configuration>
                     </execution>
+        <!-- ####### rls tmp disable.  waiting from optimus fix
                     <execution>
                         <id>dep-convergence</id>
                         <goals>
@@ -410,6 +411,7 @@
                             </rules>
                         </configuration>
                     </execution>
+        ####### -->
                     <execution>
                         <id>use-java-8-for-release</id>
                         <phase>deploy</phase>

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.ejb.resource;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import jakarta.ws.rs.Path;
 
 @Stateless

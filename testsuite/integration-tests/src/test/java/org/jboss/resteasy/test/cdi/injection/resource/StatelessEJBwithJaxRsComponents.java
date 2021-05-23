@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.logging.Logger;
 

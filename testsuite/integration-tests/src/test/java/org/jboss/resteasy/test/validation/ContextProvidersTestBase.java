@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.validation.resource.ContextProvidersXop;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

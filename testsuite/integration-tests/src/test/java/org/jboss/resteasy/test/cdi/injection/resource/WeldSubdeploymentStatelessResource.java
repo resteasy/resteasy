@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 import org.jboss.resteasy.test.cdi.injection.WeldSubdeploymentTest;
 import org.junit.Assert;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

@@ -87,7 +87,7 @@ public @interface LinkResource {
     * <p>
     * EL expression that should return a boolean indicating whether or not this service link should be used.
     * This is useful for security constraints limiting access to resources. Defaults to using the
-    * {@link javax.annotation.security.RolesAllowed @RolesAllowed} annotation using the current
+    * {@link jakarta.annotation.security.RolesAllowed @RolesAllowed} annotation using the current
     * {@link jakarta.ws.rs.core.SecurityContext SecurityContext} to check the current user's permissions.
     * </p>
     * <p>

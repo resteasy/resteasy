@@ -3,7 +3,7 @@ package org.jboss.resteasy.embedded.test.core.validate;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

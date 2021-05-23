@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.sse.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ejb.Singleton;
+import jakarta.ejb.Singleton;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;

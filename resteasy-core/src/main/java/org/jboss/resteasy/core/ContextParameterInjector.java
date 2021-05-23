@@ -11,9 +11,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.util.Types;
 
-
 import java.io.OutputStream;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
 
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Application;
@@ -158,7 +159,7 @@ public class ContextParameterInjector implements ValueInjector
                throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
             }
             // Fix for RESTEASY-1721
-            if ("javax.servlet.http.HttpServletResponse".equals(rawType.getName()))
+            if ("jakarta.servlet.http.HttpServletResponse".equals(rawType.getName()))
             {
                if ("getOutputStream".equals(method.getName()))
                {

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cdi.injection;
 
 import java.net.SocketPermission;
 import java.net.URI;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;

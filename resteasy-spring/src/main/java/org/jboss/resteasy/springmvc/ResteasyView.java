@@ -12,8 +12,8 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.View;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;

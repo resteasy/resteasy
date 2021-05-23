@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import java.util.logging.Logger;

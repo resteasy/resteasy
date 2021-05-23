@@ -5,7 +5,7 @@ import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.AcceptParser;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.ConstrainedTo;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.RuntimeType;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;

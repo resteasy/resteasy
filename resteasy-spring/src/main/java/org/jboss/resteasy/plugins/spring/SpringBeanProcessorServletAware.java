@@ -6,7 +6,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.web.context.ServletContextAware;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * Use this subclass of SpringBeanProcessor if you are manually applying the SpringBeanProcessor for Resteasy.  This assumes that the

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.core.encoding.resource;
 
 import org.junit.Assert;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
