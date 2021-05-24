@@ -22,7 +22,9 @@ public class SingleRxInvokerProvider implements RxInvokerProvider<SingleRxInvoke
    {
       if (syncInvoker instanceof ClientInvocationBuilder)
       {
-         return new SingleRxInvokerImpl((ClientInvocationBuilder)syncInvoker);
+         ClientInvocationBuilder builder = (ClientInvocationBuilder) syncInvoker;
+         CompletionStageRxInvoker completionStageRxInvoker = builder.rx();
+         return new SingleRxInvokerImpl(completionStageRxInvoker);
       }
       else
       {
