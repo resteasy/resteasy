@@ -32,9 +32,13 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 /**
- * A default configuration which first attempts to use the Eclipse MicroProfile Config API. If not present on the class
- * path the {@linkplain ResteasyConfiguration configuration} is used to resolve the value, followed by system properties
- * and then environment variables if not found in the previous search.
+ * A default configuration which first attempts to use the Eclipse MicroProfile Config API. If the MicroProfile Config
+ * API is not available value is searched in the following order:
+ * <ol>
+ *     <li>System properties</li>
+ *     <li>Environment variables</li>
+ *     <li>{@link ResteasyConfiguration}</li>
+ * </ol>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
