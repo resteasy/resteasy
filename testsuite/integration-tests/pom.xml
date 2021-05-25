@@ -785,6 +785,9 @@
                                     <exclude>**/ReverseInjectionTest.java</exclude>
                                     <exclude>**/AtomProviderTest.java</exclude>
                                     <exclude>**/BasicAuthTest.java</exclude>
+                                    <exclude>**/SecurityContextTest.java</exclude>
+                                    <exclude>**/JAXBContextFinderTest.java</exclude>
+                                    <exclude>**/AtomComplexModelTest.java</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
