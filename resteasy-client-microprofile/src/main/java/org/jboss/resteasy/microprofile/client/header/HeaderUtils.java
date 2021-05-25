@@ -3,9 +3,6 @@ package org.jboss.resteasy.microprofile.client.header;
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,18 +22,7 @@ public class HeaderUtils {
      * @return method handle
      */
     public static MethodHandle createMethodHandle(final Method method, final Object clientProxy) {
-        try {
-            Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class
-                    .getDeclaredConstructor(Class.class);
-            constructor.setAccessible(true);
-            MethodHandles.Lookup lookup = constructor.newInstance(method.getDeclaringClass());
-            return lookup
-                    .in(method.getDeclaringClass())
-                    .unreflectSpecial(method, method.getDeclaringClass())
-                    .bindTo(clientProxy);
-        } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
-            throw new RestClientDefinitionException("Failed to generate method handle for " + method, e);
-        }
+        return JdkSpecific.createMethodHandle(method, clientProxy);
     }
 
     /**
