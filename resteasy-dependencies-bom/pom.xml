@@ -74,9 +74,7 @@
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.8.3</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
-
-        <version.org.bouncycastle-jakarta9>1.68-$$jakarta9$$</version.org.bouncycastle-jakarta9>
-        <version.org.bouncycastle>1.68</version.org.bouncycastle>
+        <version.org.bouncycastle>169b08</version.org.bouncycastle>
 
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.39.v20210325</version.org.eclipse.jetty>
@@ -162,6 +160,23 @@
         <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>jboss-releases-repository</id>
+            <name>JBoss Releases Repository</name>
+            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    <repositories>
+        <!-- rls this local repo should be removed once the new
+            version of bouncycastle is available on a public maven repo
+            some time in June 2021.
+        -->
+        <repository>
+            <id>local-repo</id>
+            <url>file://${basedir}/xtmp-bouncycastle</url>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -663,13 +678,7 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>169b08</version>
-                <!--
                 <version>${version.org.bouncycastle}</version>
-                -->
-                <!-- rls remove this when done testing -->
-                <scope>system</scope>
-                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcprov-jdk15on-169b08.jar</systemPath>
             </dependency>
             <!-- signed jar using jakarta API
                 NOTE: this jar MUST also be put in wfly-preview module
@@ -679,32 +688,17 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcjmail-jdk15on</artifactId>
-                <version>169b08</version>
-                <!-- rls remove this when done testing -->
-                <scope>system</scope>
-                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcjmail-jdk15on-169b08.jar</systemPath>
+                <version>${version.org.bouncycastle}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
-                <version>169b08</version>
-                <!--
                 <version>${version.org.bouncycastle}</version>
-                -->
-                <!-- rls remove this when done testing -->
-                <scope>system</scope>
-                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcpkix-jdk15on-169b08.jar</systemPath>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcutil-jdk15on</artifactId>
-                <version>169b08</version>
-                <!--
                 <version>${version.org.bouncycastle}</version>
-                -->
-                <!-- rls remove this when done testing -->
-                <scope>system</scope>
-                <systemPath>/home/rsearls/j1/Resteasy/xtmp-bouncycastle/bcutil-jdk15on-169b08.jar</systemPath>
             </dependency>
 
             <dependency>
