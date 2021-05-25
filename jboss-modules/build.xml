@@ -170,6 +170,19 @@
         <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
         </module-def>
 
+        <!-- rls these bouncycastle modules should be removed once wfly-preview
+            updates to the new version of this
+        -->
+        <module-def name="org.bouncycastle.bcmail">
+            <maven-resource group="org.bouncycastle" artifact="bcjmail-jdk15on"/>
+        </module-def>
+        <module-def name="org.bouncycastle.bcpkix">
+            <maven-resource group="org.bouncycastle" artifact="bcpkix-jdk15on"/>
+            <maven-resource group="org.bouncycastle" artifact="bcutil-jdk15on"/>
+        </module-def>
+        <module-def name="org.bouncycastle.bcprov">
+            <maven-resource group="org.bouncycastle" artifact="bcprov-jdk15on"/>
+        </module-def>
         <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->
         <!--
         <zip destfile="${output.dir}/zz-resteasy-jboss-modules-${project.version}.zip">
