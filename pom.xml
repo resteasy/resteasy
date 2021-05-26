@@ -125,6 +125,7 @@
                 <module>resteasy-servlet-initializer</module>
                 <module>resteasy-rxjava</module>
                 <module>resteasy-rxjava2</module>
+                <module>resteasy-reactive-streams-operators</module>
                 <module>server-adapters</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
