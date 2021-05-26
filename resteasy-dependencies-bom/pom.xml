@@ -160,16 +160,6 @@
             <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-    <repositories>
-        <!-- rls this local repo should be removed once the new
-            version of bouncycastle is available on a public maven repo
-            some time in June 2021.
-        -->
-        <repository>
-            <id>local-repo</id>
-            <url>file://${basedir}/xtmp-bouncycastle</url>
-        </repository>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>

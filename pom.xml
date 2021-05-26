@@ -95,6 +95,7 @@
                 </property>
             </activation>
             <modules>
+                <module>xtmp-bouncycastle</module>
                 <module>resteasy-dependencies-bom</module>
                 <module>resteasy-core-spi</module>
                 <module>resteasy-core</module>
