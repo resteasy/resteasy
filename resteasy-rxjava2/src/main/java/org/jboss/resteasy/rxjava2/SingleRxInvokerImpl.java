@@ -1,189 +1,171 @@
 package org.jboss.resteasy.rxjava2;
 
+import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
-import org.reactivestreams.Publisher;
-
-import java.util.Objects;
-import java.util.concurrent.CompletionStage;
 
 @SuppressWarnings("unchecked")
 public class SingleRxInvokerImpl implements SingleRxInvoker
 {
+   private final CompletionStageRxInvoker completionStageRxInvoker;
+   private final SingleProvider singleProvider;
 
-   private final SinglePublisherInvoker publisherInvoker;
-
-   public SingleRxInvokerImpl(final ClientInvocationBuilder builder)
+   public SingleRxInvokerImpl(final CompletionStageRxInvoker completionStageRxInvoker)
    {
-      publisherInvoker = new SinglePublisherInvoker(Objects.requireNonNull(builder));
-   }
-
-   static class SinglePublisherInvoker extends PublisherRxInvokerImpl
-   {
-      SinglePublisherInvoker(final ClientInvocationBuilder builder)
-      {
-         super(builder);
-      }
-
-      @Override
-      protected <T> Publisher<T> toPublisher(CompletionStage<T> completable) {
-         return Flowable.fromFuture(completable.toCompletableFuture());
-      }
+      this.completionStageRxInvoker = completionStageRxInvoker;
+      this.singleProvider = new SingleProvider();
    }
 
    @Override
    public Single<Response> get()
    {
-      return Single.fromPublisher(publisherInvoker.get());
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.get());
    }
 
    @Override
    public <T> Single<T> get(Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.get(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.get(responseType));
    }
 
    @Override
    public <T> Single<T> get(GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.get(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.get(responseType));
    }
 
    @Override
    public Single<Response> put(Entity<?> entity)
    {
-      return Single.fromPublisher(publisherInvoker.put(entity));
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.put(entity));
    }
 
    @Override
-   public <T> Single<T> put(Entity<?> entity, Class<T> clazz)
+   public <T> Single<T> put(Entity<?> entity, Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.put(entity, clazz));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.put(entity, responseType));
    }
 
    @Override
-   public <T> Single<T> put(Entity<?> entity, GenericType<T> type)
+   public <T> Single<T> put(Entity<?> entity, GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.put(entity, type));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.put(entity, responseType));
    }
 
    @Override
    public Single<Response> post(Entity<?> entity)
    {
-      return Single.fromPublisher(publisherInvoker.post(entity));
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.post(entity));
    }
 
    @Override
-   public <T> Single<T> post(Entity<?> entity, Class<T> clazz)
+   public <T> Single<T> post(Entity<?> entity, Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.post(entity, clazz));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.post(entity, responseType));
    }
 
    @Override
-   public <T> Single<T> post(Entity<?> entity, GenericType<T> type)
+   public <T> Single<T> post(Entity<?> entity, GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.post(entity, type));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.post(entity, responseType));
    }
 
    @Override
    public Single<Response> delete()
    {
-      return Single.fromPublisher(publisherInvoker.delete());
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.delete());
    }
 
    @Override
    public <T> Single<T> delete(Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.delete(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.delete(responseType));
    }
 
    @Override
    public <T> Single<T> delete(GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.delete(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.delete(responseType));
    }
 
    @Override
    public Single<Response> head()
    {
-      return Single.fromPublisher(publisherInvoker.head());
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.head());
    }
 
    @Override
    public Single<Response> options()
    {
-      return Single.fromPublisher(publisherInvoker.options());
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.options());
    }
 
    @Override
    public <T> Single<T> options(Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.options(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.options(responseType));
    }
 
    @Override
    public <T> Single<T> options(GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.options(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.options(responseType));
    }
 
    @Override
    public Single<Response> trace()
    {
-      return Single.fromPublisher(publisherInvoker.trace());
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.trace());
    }
 
    @Override
    public <T> Single<T> trace(Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.trace(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.trace(responseType));
    }
 
    @Override
    public <T> Single<T> trace(GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.trace(responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.trace(responseType));
    }
 
    @Override
    public Single<Response> method(String name)
    {
-      return Single.fromPublisher(publisherInvoker.method(name));
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.method(name));
    }
 
    @Override
    public <T> Single<T> method(String name, Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.method(name, responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.method(name, responseType));
    }
 
    @Override
    public <T> Single<T> method(String name, GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.method(name, responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.method(name, responseType));
    }
 
    @Override
    public Single<Response> method(String name, Entity<?> entity)
    {
-      return Single.fromPublisher(publisherInvoker.method(name, entity));
+      return (Single<Response>) singleProvider.fromCompletionStage(completionStageRxInvoker.method(name, entity));
    }
 
    @Override
    public <T> Single<T> method(String name, Entity<?> entity, Class<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.method(name, entity, responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.method(name, entity, responseType));
    }
 
    @Override
    public <T> Single<T> method(String name, Entity<?> entity, GenericType<T> responseType)
    {
-      return Single.fromPublisher(publisherInvoker.method(name, entity, responseType));
+      return (Single<T>) singleProvider.fromCompletionStage(completionStageRxInvoker.method(name, entity, responseType));
    }
 }

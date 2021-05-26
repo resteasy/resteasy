@@ -4,145 +4,163 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.engines.ReactiveClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
+import org.jboss.resteasy.client.jaxrs.internal.UnitRxInvoker;
+import org.jboss.resteasy.client.jaxrs.internal.UnitRxInvokerImpl;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
-public class MonoRxInvokerImpl extends PublisherRxInvokerImpl implements MonoRxInvoker {
+public class MonoRxInvokerImpl implements MonoRxInvoker {
 
-    public MonoRxInvokerImpl(final ClientInvocationBuilder builder) {
-        super(builder);
+    private final UnitRxInvoker unitRxInvoker;
+
+    public MonoRxInvokerImpl(final UnitRxInvoker unitRxInvoker) {
+        this.unitRxInvoker = unitRxInvoker;
     }
 
-    @Override
-    protected <T> Mono<T> toPublisher(final CompletionStage<T> completable) {
-        return Mono.fromCompletionStage(completable);
+    class MMono<T> extends Mono<T> {
+        private final ReactiveClientHttpEngine.Unit<T, Mono<T>> delegate;
+
+        public MMono(ReactiveClientHttpEngine.Unit<T, Mono<T>> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void subscribe(CoreSubscriber coreSubscriber) {
+            delegate.subscribe(
+                coreSubscriber::onNext,
+                coreSubscriber::onError,
+                coreSubscriber::onComplete
+            );
+        }
     }
 
     @Override
     public Mono<Response> get() {
-        return Mono.from(super.get());
+        return new MMono(unitRxInvoker.get());
     }
 
     @Override
     public <T> Mono<T> get(Class<T> responseType) {
-        return Mono.from(super.get(responseType));
+        return new MMono(unitRxInvoker.get(responseType));
     }
 
     @Override
     public <T> Mono<T> get(GenericType<T> responseType) {
-        return Mono.from(super.get(responseType));
+        return new MMono(unitRxInvoker.get(responseType));
     }
 
     @Override
     public Mono<Response> put(Entity<?> entity) {
-        return Mono.from(super.put(entity));
+        return new MMono(unitRxInvoker.put(entity));
     }
 
     @Override
     public <T> Mono<T> put(Entity<?> entity, Class<T> clazz) {
-        return Mono.from(super.put(entity, clazz));
+        return new MMono(unitRxInvoker.put(entity, clazz));
     }
 
     @Override
     public <T> Mono<T> put(Entity<?> entity, GenericType<T> type) {
-        return Mono.from(super.put(entity, type));
+        return new MMono(unitRxInvoker.put(entity, type));
     }
 
     @Override
     public Mono<Response> post(Entity<?> entity) {
-        return Mono.from(super.post(entity));
+        return new MMono(unitRxInvoker.post(entity));
     }
 
     @Override
     public <T> Mono<T> post(Entity<?> entity, Class<T> clazz) {
-        return Mono.from(super.post(entity, clazz));
+        return new MMono(unitRxInvoker.post(entity, clazz));
     }
 
     @Override
     public <T> Mono<T> post(Entity<?> entity, GenericType<T> type) {
-        return Mono.from(super.post(entity, type));
+        return new MMono(unitRxInvoker.post(entity, type));
     }
 
     @Override
     public Mono<Response> delete() {
-        return Mono.from(super.delete());
+        return new MMono(unitRxInvoker.delete());
     }
 
     @Override
     public <T> Mono<T> delete(Class<T> responseType) {
-        return Mono.from(super.delete(responseType));
+        return new MMono(unitRxInvoker.delete(responseType));
     }
 
     @Override
     public <T> Mono<T> delete(GenericType<T> responseType) {
-        return Mono.from(super.delete(responseType));
+        return new MMono(unitRxInvoker.delete(responseType));
     }
 
     @Override
     public Mono<Response> head() {
-        return Mono.from(super.head());
+        return new MMono(unitRxInvoker.head());
     }
 
     @Override
     public Mono<Response> options() {
-        return Mono.from(super.options());
+        return new MMono(unitRxInvoker.options());
     }
 
     @Override
     public <T> Mono<T> options(Class<T> responseType) {
-        return Mono.from(super.options(responseType));
+        return new MMono(unitRxInvoker.options(responseType));
     }
 
     @Override
     public <T> Mono<T> options(GenericType<T> responseType) {
-        return Mono.from(super.options(responseType));
+        return new MMono(unitRxInvoker.options(responseType));
     }
 
     @Override
     public Mono<Response> trace() {
-        return Mono.from(super.trace());
+        return new MMono(unitRxInvoker.trace());
     }
 
     @Override
     public <T> Mono<T> trace(Class<T> responseType) {
-        return Mono.from(super.trace(responseType));
+        return new MMono(unitRxInvoker.trace(responseType));
     }
 
     @Override
     public <T> Mono<T> trace(GenericType<T> responseType) {
-        return Mono.from(super.trace(responseType));
+        return new MMono(unitRxInvoker.trace(responseType));
     }
 
     @Override
     public Mono<Response> method(String name) {
-        return Mono.from(super.method(name));
+        return new MMono(unitRxInvoker.method(name));
     }
 
     @Override
     public <T> Mono<T> method(String name, Class<T> responseType) {
-        return Mono.from(super.method(name, responseType));
+        return new MMono(unitRxInvoker.method(name, responseType));
     }
 
     @Override
     public <T> Mono<T> method(String name, GenericType<T> responseType) {
-        return Mono.from(super.method(name, responseType));
+        return new MMono(unitRxInvoker.method(name, responseType));
     }
 
     @Override
     public Mono<Response> method(String name, Entity<?> entity) {
-        return Mono.from(super.method(name, entity));
+        return new MMono(unitRxInvoker.method(name, entity));
     }
 
     @Override
     public <T> Mono<T> method(String name, Entity<?> entity, Class<T> responseType) {
-        return Mono.from(super.method(name, entity, responseType));
+        return new MMono(unitRxInvoker.method(name, entity, responseType));
     }
 
     @Override
     public <T> Mono<T> method(String name, Entity<?> entity, GenericType<T> responseType) {
-        return Mono.from(super.method(name, entity, responseType));
+        return new MMono(unitRxInvoker.method(name, entity, responseType));
     }
 }

@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
@@ -46,6 +48,50 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
     private final ConnectionProvider connectionProvider;
     private final Optional<Duration> requestTimeout;
     private final BiFunction<ClientConfiguration, InputStream, ClientResponse> fnClientResponse;
+
+    interface MonoUnitMaker {
+        default <T> MonoUnit<T> make(Mono<T> mono) {
+            return new MonoUnit<>(mono);
+        }
+    }
+
+    private final MonoUnitMaker monoUnitMaker = new MonoUnitMaker() {
+    };
+
+    public static class MonoUnit<T> implements ReactiveClientHttpEngine.Unit<T, Mono<T>> {
+        private final Mono<T> delegate;
+
+        public MonoUnit(Mono<T> delegate) {
+            this.delegate = delegate;
+        }
+
+        public Mono<T> get() {
+            return delegate;
+        }
+
+        @Override
+        public void subscribe(Consumer<T> onSuccess, Consumer<Throwable> onError, Runnable onComplete) {
+            delegate.subscribe(onSuccess, onError, onComplete);
+        }
+    }
+
+    public static class PublisherMonoUnit<T> implements ReactiveClientHttpEngine.PublisherUnit<T> {
+        private final Mono<T> delegate;
+
+        public PublisherMonoUnit(Mono<T> delegate) {
+            this.delegate = delegate;
+        }
+
+        public Mono<T> get() {
+            return delegate;
+        }
+
+        @Override
+        public void subscribe(Consumer<T> onSuccess, Consumer<Throwable> onError, Runnable onComplete) {
+            delegate.subscribe(onSuccess, onError, onComplete);
+        }
+    }
+
 
     /**
      * Constructor for ReactorNettyClientHttpEngine
@@ -107,70 +153,70 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout), useResponseFinalize);
     }
 
-    @Override
-    public <T> Mono<T> submitRx(final ClientInvocation request,
-                                 final boolean buffered,
-                                 final ResultExtractor<T> extractor) {
+    private <T> Mono<T> theRealSubmitRx(
+        final ClientInvocation request,
+        final boolean buffered,
+        final ResultExtractor<T> extractor) {
         final Optional<byte[]> payload =
             Optional.ofNullable(request.getEntity()).map(entity -> requestContent(request));
 
         final HttpClient.RequestSender requestSender =
-                httpClient
-                        .headers(headerBuilder -> {
-                            final ClientRequestHeaders resteasyHeaders = request.getHeaders();
-                            resteasyHeaders.getHeaders().entrySet().forEach(entry -> {
-                                final String key = entry.getKey();
-                                final List<Object> valueList = entry.getValue();
-                                valueList.forEach(value -> headerBuilder.add(key, value != null ? value : ""));
-                            });
+            httpClient
+                .headers(headerBuilder -> {
+                    final ClientRequestHeaders resteasyHeaders = request.getHeaders();
+                    resteasyHeaders.getHeaders().entrySet().forEach(entry -> {
+                        final String key = entry.getKey();
+                        final List<Object> valueList = entry.getValue();
+                        valueList.forEach(value -> headerBuilder.add(key, value != null ? value : ""));
+                    });
 
-                            payload.ifPresent(bytes -> {
+                    payload.ifPresent(bytes -> {
 
-                                headerBuilder.set(CONTENT_LENGTH, bytes.length);
+                        headerBuilder.set(CONTENT_LENGTH, bytes.length);
 
-                                if (log.isDebugEnabled() &&
-                                    isContentLengthInvalid(resteasyHeaders.getHeader(CONTENT_LENGTH), bytes)) {
-                                    log.debug("The request's Content-Length header is replaced " +
-                                            " by the size of the byte array computed from the request entity.");
-                                }
-                            });
-                        })
-                        .request(HttpMethod.valueOf(request.getMethod()))
-                        .uri(request.getUri().toString());
+                        if (log.isDebugEnabled() &&
+                            isContentLengthInvalid(resteasyHeaders.getHeader(CONTENT_LENGTH), bytes)) {
+                            log.debug("The request's Content-Length header is replaced " +
+                                " by the size of the byte array computed from the request entity.");
+                        }
+                    });
+                })
+                .request(HttpMethod.valueOf(request.getMethod()))
+                .uri(request.getUri().toString());
 
         // Please see https://github.com/reactor/reactor-netty/issues/585 to see why
         // we do not use outbound.sendObject(object) API.
         final HttpClient.ResponseReceiver<?> responseReceiver =
             payload.<HttpClient.ResponseReceiver<?>>map(bytes -> requestSender.send(
                 (httpClientRequest, outbound) ->
-                        outbound.sendByteArray(Mono.just(bytes)))
+                    outbound.sendByteArray(Mono.just(bytes)))
             ).orElse(requestSender);
 
         final Mono<ClientResponse> responseMono = responseReceiver
-                .responseSingle((response, bytes) -> bytes
-                        .asInputStream()
-                        .map(is -> toRestEasyResponse(request.getClientConfiguration(), response, is))
-                        .switchIfEmpty(
-                                Mono.defer(
-                                        () -> Mono.just(
-                                                toRestEasyResponse(
-                                                        request.getClientConfiguration(),
-                                                        response,
-                                                        null)))
-                        )
-                        // If RestEasyClientResponse or InputStream is in buffer of an operator when
-                        // the stream is closed with an error or cancellation, make sure
-                        // to close it so that underlying resources (InputStream, Netty ByteBuf, etc)
-                        // are released.
-                        .doOnDiscard(InputStream.class, is -> {
-                            try {
-                                is.close();
-                            } catch (IOException e) {
-                                log.warn("Not able to close InputStream.  This may lead to direct memory leaks", e);
-                            }
-                        })
-                        .doOnDiscard(RestEasyClientResponse.class, RestEasyClientResponse::close)
-                );
+            .responseSingle((response, bytes) -> bytes
+                .asInputStream()
+                .map(is -> toRestEasyResponse(request.getClientConfiguration(), response, is))
+                .switchIfEmpty(
+                    Mono.defer(
+                        () -> Mono.just(
+                            toRestEasyResponse(
+                                request.getClientConfiguration(),
+                                response,
+                                null)))
+                )
+                // If RestEasyClientResponse or InputStream is in buffer of an operator when
+                // the stream is closed with an error or cancellation, make sure
+                // to close it so that underlying resources (InputStream, Netty ByteBuf, etc)
+                // are released.
+                .doOnDiscard(InputStream.class, is -> {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        log.warn("Not able to close InputStream.  This may lead to direct memory leaks", e);
+                    }
+                })
+                .doOnDiscard(RestEasyClientResponse.class, RestEasyClientResponse::close)
+            );
 
         return requestTimeout
                 .map(duration -> responseMono.timeout(duration))
@@ -196,19 +242,37 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                 });
     }
 
+    /*
     @Override
-    public <T> Mono<T> fromCompletionStage(final CompletionStage<T> cs) {
-        return Mono.fromCompletionStage(() -> cs);
+    public <T, U> Unit<T, U> submitRx(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
+        return null;
+    }
+
+     */
+
+    @Override
+    public <T> MonoUnit<T> submitRx(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
+        return new MonoUnit<>(theRealSubmitRx(request, buffered, extractor));
     }
 
     @Override
-    public <T> Mono<T> just(final T t) {
-        return Mono.just(t);
+    public <T> PublisherMonoUnit<T> submitRxMaybeGood(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
+        return new PublisherMonoUnit<>(theRealSubmitRx(request, buffered, extractor));
     }
 
     @Override
-    public Mono error(final Exception e) {
-        return Mono.error(e);
+    public <T, U> MonoUnit<T> fromCompletionStage(final CompletionStage<T> cs) {
+        return new MonoUnit<>(Mono.fromCompletionStage(() -> cs));
+    }
+
+    @Override
+    public <T> MonoUnit<T> just(final T t) {
+        return new MonoUnit<>(Mono.just(t));
+    }
+
+    @Override
+    public <Throwable> MonoUnit<Throwable> error(final Exception e) {
+        return new MonoUnit<>(Mono.error(e));
     }
 
     @Override
@@ -232,7 +296,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         final ResultExtractor<K> extractor,
         final ExecutorService executorService
     ) {
-        return submitRx(request, buffered, extractor).toFuture();
+        return theRealSubmitRx(request, buffered, extractor).toFuture();
     }
 
     private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {

@@ -6,6 +6,7 @@ import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.client.SyncInvoker;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.UnitRxInvokerImpl;
 import org.jboss.resteasy.reactor.i18n.Messages;
 
 public class MonoRxInvokerProvider implements RxInvokerProvider<MonoRxInvoker>
@@ -21,7 +22,7 @@ public class MonoRxInvokerProvider implements RxInvokerProvider<MonoRxInvoker>
    {
       if (syncInvoker instanceof ClientInvocationBuilder)
       {
-         return new MonoRxInvokerImpl((ClientInvocationBuilder) syncInvoker);
+         return new MonoRxInvokerImpl(new UnitRxInvokerImpl((ClientInvocationBuilder)syncInvoker));
       }
       else
       {

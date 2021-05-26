@@ -586,7 +586,7 @@ public class ClientInvocation implements Invocation
             ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, callback, ext) : null;
    }
 
-   private <T> Function<ResultExtractor<T>, Publisher<T>> getPublisherExtractorFunction(boolean buffered) {
+   private <T, U> Function<ResultExtractor<T>, ReactiveClientHttpEngine.Unit<T, U>> getUnitExtractorFunction(boolean buffered) {
       final ClientHttpEngine httpEngine = client.httpEngine();
       return (httpEngine instanceof ReactiveClientHttpEngine)
           ? ext -> ((ReactiveClientHttpEngine) httpEngine).submitRx(this, buffered, ext) : null;
@@ -659,39 +659,36 @@ public class ClientInvocation implements Invocation
       }
    }
 
-   class ReactiveInvocation {
+   class ReactiveInvocation<U> {
       private final ReactiveClientHttpEngine reactiveEngine;
 
       ReactiveInvocation(final ReactiveClientHttpEngine reactiveEngine) {
          this.reactiveEngine = reactiveEngine;
       }
 
-      public Publisher<Response> submit()
+      public ReactiveClientHttpEngine.Unit<Response, U> submit()
       {
          return doSubmitRx(response -> response, false);
       }
 
-      public <T> Publisher<T> submit(final Class<T> responseType)
+      public <T> ReactiveClientHttpEngine.Unit<T, U> submit(final Class<T> responseType)
       {
          return doSubmitRx(getResponseTypeExtractor(responseType), true);
       }
 
-      public <T> Publisher<T> submit(final GenericType<T> responseType)
+      public <T> ReactiveClientHttpEngine.Unit<T, U> submit(final GenericType<T> responseType)
       {
          return doSubmitRx(getGenericTypeExtractor(responseType), true);
       }
 
-      private <T> Publisher<T> doSubmitRx(ResultExtractor<T> extractor, boolean buffered) {
-         return rxSubmit(
-             reactiveEngine,
-             getPublisherExtractorFunction(buffered),
-             extractor
-         );
+      private <T> ReactiveClientHttpEngine.Unit<T, U> doSubmitRx(ResultExtractor<T> extractor, boolean buffered)
+      {
+         return rxSubmit(reactiveEngine, getUnitExtractorFunction(buffered), extractor);
       }
 
-      private <T> Publisher<T> rxSubmit(
+      private <T> ReactiveClientHttpEngine.Unit<T, U> rxSubmit(
           final ReactiveClientHttpEngine reactiveEngine,
-          final Function<ResultExtractor<T>, Publisher<T>> asyncHttpEngineSubmitFn,
+          final Function<ResultExtractor<T>, ReactiveClientHttpEngine.Unit<T, U>> asyncHttpEngineSubmitFn,
           final ResultExtractor<T> extractor
       ) {
          final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(ClientInvocation.this);
@@ -722,11 +719,11 @@ public class ClientInvocation implements Invocation
 
    /**
     * If the client's HTTP engine implements {@link ReactiveClientHttpEngine} then you can access
-    * the latter's {@link Publisher} via this method.
+    * the latter's {@link ReactiveClientHttpEngine.Unit} via this method.
     */
-   public Optional<ReactiveInvocation> reactive() {
+   public <T> Optional<ReactiveInvocation<T>> reactive() {
       if (client.httpEngine() instanceof ReactiveClientHttpEngine) {
-         return Optional.of(new ReactiveInvocation((ReactiveClientHttpEngine)client.httpEngine()));
+         return Optional.of(new ReactiveInvocation<>((ReactiveClientHttpEngine)client.httpEngine()));
       }
       return Optional.empty();
    }
