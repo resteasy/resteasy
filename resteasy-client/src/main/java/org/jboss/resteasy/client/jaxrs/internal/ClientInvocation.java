@@ -586,7 +586,7 @@ public class ClientInvocation implements Invocation
             ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, callback, ext) : null;
    }
 
-   private <T, U> Function<ResultExtractor<T>, ReactiveClientHttpEngine.Unit<T, U>> getUnitExtractorFunction(boolean buffered) {
+   private <T> Function<ResultExtractor<T>, ReactiveClientHttpEngine.Unit<T>> getUnitExtractorFunction(boolean buffered) {
       final ClientHttpEngine httpEngine = client.httpEngine();
       return (httpEngine instanceof ReactiveClientHttpEngine)
           ? ext -> ((ReactiveClientHttpEngine) httpEngine).submitRx(this, buffered, ext) : null;
@@ -666,29 +666,29 @@ public class ClientInvocation implements Invocation
          this.reactiveEngine = reactiveEngine;
       }
 
-      public ReactiveClientHttpEngine.Unit<Response, U> submit()
+      public ReactiveClientHttpEngine.Unit<Response> submit()
       {
          return doSubmitRx(response -> response, false);
       }
 
-      public <T> ReactiveClientHttpEngine.Unit<T, U> submit(final Class<T> responseType)
+      public <T> ReactiveClientHttpEngine.Unit<T> submit(final Class<T> responseType)
       {
          return doSubmitRx(getResponseTypeExtractor(responseType), true);
       }
 
-      public <T> ReactiveClientHttpEngine.Unit<T, U> submit(final GenericType<T> responseType)
+      public <T> ReactiveClientHttpEngine.Unit<T> submit(final GenericType<T> responseType)
       {
          return doSubmitRx(getGenericTypeExtractor(responseType), true);
       }
 
-      private <T> ReactiveClientHttpEngine.Unit<T, U> doSubmitRx(ResultExtractor<T> extractor, boolean buffered)
+      private <T> ReactiveClientHttpEngine.Unit<T> doSubmitRx(ResultExtractor<T> extractor, boolean buffered)
       {
          return rxSubmit(reactiveEngine, getUnitExtractorFunction(buffered), extractor);
       }
 
-      private <T> ReactiveClientHttpEngine.Unit<T, U> rxSubmit(
+      private <T> ReactiveClientHttpEngine.Unit<T> rxSubmit(
           final ReactiveClientHttpEngine reactiveEngine,
-          final Function<ResultExtractor<T>, ReactiveClientHttpEngine.Unit<T, U>> asyncHttpEngineSubmitFn,
+          final Function<ResultExtractor<T>, ReactiveClientHttpEngine.Unit<T>> asyncHttpEngineSubmitFn,
           final ResultExtractor<T> extractor
       ) {
          final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(ClientInvocation.this);

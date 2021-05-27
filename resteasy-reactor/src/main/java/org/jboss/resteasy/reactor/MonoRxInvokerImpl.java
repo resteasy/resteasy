@@ -23,9 +23,9 @@ public class MonoRxInvokerImpl implements MonoRxInvoker {
     }
 
     class MMono<T> extends Mono<T> {
-        private final ReactiveClientHttpEngine.Unit<T, Mono<T>> delegate;
+        private final ReactiveClientHttpEngine.Unit<T> delegate;
 
-        public MMono(ReactiveClientHttpEngine.Unit<T, Mono<T>> delegate) {
+        public MMono(ReactiveClientHttpEngine.Unit<T> delegate) {
             this.delegate = delegate;
         }
 

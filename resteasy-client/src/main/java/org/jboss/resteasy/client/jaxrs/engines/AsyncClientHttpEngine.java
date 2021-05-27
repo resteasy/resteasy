@@ -44,7 +44,15 @@ public interface AsyncClientHttpEngine extends ClientHttpEngine
     * @param extractor ResultExtractor for extracting a result out of a ClientResponse. Is run inside the io-thread
     * @return Future with the result or Exception
     */
-   <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor);
+   default <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
+      final CompletableFuture<T> cf = submit(request, buffered, extractor);
+
+      cf.whenComplete((t, err) -> {
+         if (err != null) callback.failed(err);
+         else callback.completed(t);
+      });
+      return cf;
+   }
 
    /**
     * Submits an asynchronous request.

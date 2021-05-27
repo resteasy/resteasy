@@ -66,8 +66,8 @@ public class ReactorNettyClientHttpEngineTest {
 
     private static Client setupClient(HttpClient httpClient, Duration timeout) {
 
-        final ReactorNettyClientHttpEngine engine =
-                new ReactorNettyClientHttpEngine(
+        final ReactorNettyClientHttpEngineImpl engine =
+                new ReactorNettyClientHttpEngineImpl(
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get(),
@@ -80,8 +80,8 @@ public class ReactorNettyClientHttpEngineTest {
     }
 
     private static Client setupClient(HttpClient httpClient) {
-        final ReactorNettyClientHttpEngine engine =
-                new ReactorNettyClientHttpEngine(
+        final ReactorNettyClientHttpEngineImpl engine =
+                new ReactorNettyClientHttpEngineImpl(
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get());
@@ -398,7 +398,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testClientExceptionWithNullPointerException() {
         RuntimeException runtimeException =
-                ReactorNettyClientHttpEngine.clientException(null, Response.ok().build());
+                ReactorNettyClientHttpEngineImpl.clientException(null, Response.ok().build());
 
         assertEquals(ProcessingException.class, runtimeException.getClass());
         assertEquals(NullPointerException.class, runtimeException.getCause().getClass());
@@ -407,7 +407,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testClientExceptionWithWebApplicationException() {
         RuntimeException runtimeException =
-                ReactorNettyClientHttpEngine.clientException(new WebApplicationException(), Response.ok().build());
+                ReactorNettyClientHttpEngineImpl.clientException(new WebApplicationException(), Response.ok().build());
 
         assertEquals(WebApplicationException.class, runtimeException.getClass());
     }
@@ -415,7 +415,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testClientExceptionWithProcessingException() {
         RuntimeException runtimeException =
-                ReactorNettyClientHttpEngine.clientException(
+                ReactorNettyClientHttpEngineImpl.clientException(
                         new ProcessingException(new IllegalStateException()), Response.ok().build());
 
         assertEquals(ProcessingException.class, runtimeException.getClass());
@@ -425,7 +425,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testClientExceptionWithResponseNotNull() {
         RuntimeException runtimeException =
-                ReactorNettyClientHttpEngine.clientException(new IllegalStateException(), Response.ok().build());
+                ReactorNettyClientHttpEngineImpl.clientException(new IllegalStateException(), Response.ok().build());
 
         assertEquals(ResponseProcessingException.class, runtimeException.getClass());
         assertEquals(IllegalStateException.class, runtimeException.getCause().getClass());
@@ -434,7 +434,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testClientExceptionWithResponseNull() {
         RuntimeException runtimeException =
-                ReactorNettyClientHttpEngine.clientException(new IllegalStateException(), null);
+                ReactorNettyClientHttpEngineImpl.clientException(new IllegalStateException(), null);
 
         assertEquals(ProcessingException.class, runtimeException.getClass());
         assertEquals(IllegalStateException.class, runtimeException.getCause().getClass());
@@ -450,8 +450,8 @@ public class ReactorNettyClientHttpEngineTest {
                 HttpClient.create()
                         .baseUrl("http://localhost:" + mockServer.port())
                         .tcpConfiguration(tcpClient -> tcpClient.doOnConnected(c -> channelGroup.add(c.channel())));
-        final ReactorNettyClientHttpEngine engine =
-                new ReactorNettyClientHttpEngine(
+        final ReactorNettyClientHttpEngineImpl engine =
+                new ReactorNettyClientHttpEngineImpl(
                         httpClient,
                         channelGroup,
                         connectionProvider);

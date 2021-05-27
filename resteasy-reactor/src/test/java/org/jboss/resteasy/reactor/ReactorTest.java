@@ -2,39 +2,26 @@ package org.jboss.resteasy.reactor;
 
 import java.util.Set;
 import java.util.TreeSet;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.Response;
 
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.DefaultEventExecutor;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ReactiveClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.engines.ReactorNettyClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.engines.ReactorNettyClientHttpEngineImpl;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -88,8 +75,8 @@ public class ReactorTest
    @Before
    public void before()
    {
-      final ReactorNettyClientHttpEngine reactorEngine =
-          new ReactorNettyClientHttpEngine(
+      final ReactorNettyClientHttpEngineImpl reactorEngine =
+          new ReactorNettyClientHttpEngineImpl(
               HttpClient.create(),
               new DefaultChannelGroup(new DefaultEventExecutor()),
               ConnectionProvider.newConnection()
@@ -150,8 +137,8 @@ public class ReactorTest
               req.currentContext().<Integer>getOrEmpty(ctxKey).ifPresent(secrets::add)
           );
 
-      final ReactorNettyClientHttpEngine reactorEngine =
-          new ReactorNettyClientHttpEngine(
+      final ReactorNettyClientHttpEngineImpl reactorEngine =
+          new ReactorNettyClientHttpEngineImpl(
               reactorClient,
               new DefaultChannelGroup(new DefaultEventExecutor()),
               ConnectionProvider.newConnection()

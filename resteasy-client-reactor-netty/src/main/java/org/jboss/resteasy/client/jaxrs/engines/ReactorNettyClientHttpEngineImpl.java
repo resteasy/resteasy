@@ -7,13 +7,11 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
@@ -40,58 +38,14 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
 import reactor.netty.resources.ConnectionProvider;
 
-public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
-    private static final Logger log = LoggerFactory.getLogger(ReactorNettyClientHttpEngine.class);
+public class ReactorNettyClientHttpEngineImpl implements MonoClientHttpEngine {
+    private static final Logger log = LoggerFactory.getLogger(ReactorNettyClientHttpEngineImpl.class);
 
     private final HttpClient httpClient;
     private final ChannelGroup channelGroup;
     private final ConnectionProvider connectionProvider;
     private final Optional<Duration> requestTimeout;
     private final BiFunction<ClientConfiguration, InputStream, ClientResponse> fnClientResponse;
-
-    interface MonoUnitMaker {
-        default <T> MonoUnit<T> make(Mono<T> mono) {
-            return new MonoUnit<>(mono);
-        }
-    }
-
-    private final MonoUnitMaker monoUnitMaker = new MonoUnitMaker() {
-    };
-
-    public static class MonoUnit<T> implements ReactiveClientHttpEngine.Unit<T, Mono<T>> {
-        private final Mono<T> delegate;
-
-        public MonoUnit(Mono<T> delegate) {
-            this.delegate = delegate;
-        }
-
-        public Mono<T> get() {
-            return delegate;
-        }
-
-        @Override
-        public void subscribe(Consumer<T> onSuccess, Consumer<Throwable> onError, Runnable onComplete) {
-            delegate.subscribe(onSuccess, onError, onComplete);
-        }
-    }
-
-    public static class PublisherMonoUnit<T> implements ReactiveClientHttpEngine.PublisherUnit<T> {
-        private final Mono<T> delegate;
-
-        public PublisherMonoUnit(Mono<T> delegate) {
-            this.delegate = delegate;
-        }
-
-        public Mono<T> get() {
-            return delegate;
-        }
-
-        @Override
-        public void subscribe(Consumer<T> onSuccess, Consumer<Throwable> onError, Runnable onComplete) {
-            delegate.subscribe(onSuccess, onError, onComplete);
-        }
-    }
-
 
     /**
      * Constructor for ReactorNettyClientHttpEngine
@@ -102,11 +56,11 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
      * @param requestTimeout     The {@link Optional<Duration>} instance used to configure requestTimeout on response
      * @param useFinalizedResponse Used to configure for using {@link RestEasyClientResponse} with `finalize` method
      */
-    private ReactorNettyClientHttpEngine(final HttpClient httpClient,
-                                         final ChannelGroup channelGroup,
-                                         final ConnectionProvider connectionProvider,
-                                         final Optional<Duration> requestTimeout,
-                                         final Boolean useFinalizedResponse) {
+    private ReactorNettyClientHttpEngineImpl(final HttpClient httpClient,
+                                             final ChannelGroup channelGroup,
+                                             final ConnectionProvider connectionProvider,
+                                             final Optional<Duration> requestTimeout,
+                                             final Boolean useFinalizedResponse) {
         this.httpClient = requireNonNull(httpClient);
         this.channelGroup = requireNonNull(channelGroup);
         this.connectionProvider = requireNonNull(connectionProvider);
@@ -125,35 +79,36 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                 : RestEasyClientResponse::new;
     }
 
-    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
-                                        final ChannelGroup channelGroup,
-                                        final ConnectionProvider connectionProvider) {
+    public ReactorNettyClientHttpEngineImpl(final HttpClient httpClient,
+                                            final ChannelGroup channelGroup,
+                                            final ConnectionProvider connectionProvider) {
         this(httpClient, channelGroup, connectionProvider, Optional.empty(), false);
     }
 
-    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
-                                        final ChannelGroup channelGroup,
-                                        final ConnectionProvider connectionProvider,
-                                        final Duration requestTimeout) {
+    public ReactorNettyClientHttpEngineImpl(final HttpClient httpClient,
+                                            final ChannelGroup channelGroup,
+                                            final ConnectionProvider connectionProvider,
+                                            final Duration requestTimeout) {
         this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout), false);
     }
 
-    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
-                                        final ChannelGroup channelGroup,
-                                        final ConnectionProvider connectionProvider,
-                                        final Boolean useResponseFinalize) {
+    public ReactorNettyClientHttpEngineImpl(final HttpClient httpClient,
+                                            final ChannelGroup channelGroup,
+                                            final ConnectionProvider connectionProvider,
+                                            final Boolean useResponseFinalize) {
         this(httpClient, channelGroup, connectionProvider, Optional.empty(), useResponseFinalize);
     }
 
-    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
-                                        final ChannelGroup channelGroup,
-                                        final ConnectionProvider connectionProvider,
-                                        final Duration requestTimeout,
-                                        final Boolean useResponseFinalize) {
+    public ReactorNettyClientHttpEngineImpl(final HttpClient httpClient,
+                                            final ChannelGroup channelGroup,
+                                            final ConnectionProvider connectionProvider,
+                                            final Duration requestTimeout,
+                                            final Boolean useResponseFinalize) {
         this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout), useResponseFinalize);
     }
 
-    private <T> Mono<T> theRealSubmitRx(
+    @Override
+    public <T> Mono<T> theRealSubmitRx(
         final ClientInvocation request,
         final boolean buffered,
         final ResultExtractor<T> extractor) {
@@ -242,63 +197,6 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                 });
     }
 
-    /*
-    @Override
-    public <T, U> Unit<T, U> submitRx(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
-        return null;
-    }
-
-     */
-
-    @Override
-    public <T> MonoUnit<T> submitRx(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
-        return new MonoUnit<>(theRealSubmitRx(request, buffered, extractor));
-    }
-
-    @Override
-    public <T> PublisherMonoUnit<T> submitRxMaybeGood(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
-        return new PublisherMonoUnit<>(theRealSubmitRx(request, buffered, extractor));
-    }
-
-    @Override
-    public <T, U> MonoUnit<T> fromCompletionStage(final CompletionStage<T> cs) {
-        return new MonoUnit<>(Mono.fromCompletionStage(() -> cs));
-    }
-
-    @Override
-    public <T> MonoUnit<T> just(final T t) {
-        return new MonoUnit<>(Mono.just(t));
-    }
-
-    @Override
-    public <Throwable> MonoUnit<Throwable> error(final Exception e) {
-        return new MonoUnit<>(Mono.error(e));
-    }
-
-    @Override
-    public <T> Future<T> submit(final ClientInvocation request,
-        final boolean buffered,
-        final InvocationCallback<T> callback,
-        final ResultExtractor<T> extractor) {
-
-        return submit(request, buffered, extractor, null)
-            .whenComplete((response, throwable) -> {
-                if(callback != null) {
-                    if (throwable != null) callback.failed(throwable);
-                    else callback.completed(response);
-                }
-            });
-    }
-
-    @Override
-    public <K> CompletableFuture<K> submit(final ClientInvocation request,
-        final boolean buffered,
-        final ResultExtractor<K> extractor,
-        final ExecutorService executorService
-    ) {
-        return theRealSubmitRx(request, buffered, extractor).toFuture();
-    }
-
     private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {
 
         try {
@@ -319,20 +217,6 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
     public HostnameVerifier getHostnameVerifier() {
         // reactor-netty does not support HostnameVerifier API.
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Response invoke(Invocation request) {
-        final Future<ClientResponse> future = submit((ClientInvocation) request, false, null, response -> response);
-
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            future.cancel(true);
-            throw clientException(e, null);
-        } catch (ExecutionException e) {
-            throw clientException(e.getCause(), null);
-        }
     }
 
     @Override
@@ -453,6 +337,5 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                 log.warn("Exception while close() during finalize()", e);
             }
         }
-
     }
 }

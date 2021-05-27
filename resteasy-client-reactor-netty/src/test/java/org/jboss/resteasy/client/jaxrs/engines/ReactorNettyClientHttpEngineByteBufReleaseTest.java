@@ -262,8 +262,8 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                                                 con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
                                         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000));
 
-        final ReactorNettyClientHttpEngine engine =
-                new ReactorNettyClientHttpEngine(
+        final ReactorNettyClientHttpEngineImpl engine =
+                new ReactorNettyClientHttpEngineImpl(
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get(),
