@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.MicroProfileDependent;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigFilter;
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigResource;
@@ -19,6 +20,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.util.PropertyPermission;
@@ -31,6 +33,7 @@ import java.util.PropertyPermission;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(MicroProfileDependent.class)
 public class MicroProfileConfigFilterTest {
 
    static ResteasyClient client;
@@ -39,6 +42,7 @@ public class MicroProfileConfigFilterTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(MicroProfileConfigFilterTest.class.getSimpleName())
             .addClass(MicroProfileConfigFilter.class)
+            .addClass(MicroProfileDependent.class)
             .setWebXML(MicroProfileConfigFilterTest.class.getPackage(), "web_filter.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
