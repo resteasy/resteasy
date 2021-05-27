@@ -1,5 +1,24 @@
 package org.jboss.resteasy.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.ws.rs.core.Application;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
@@ -19,23 +38,6 @@ import org.wildfly.extras.creaper.core.online.ModelNodeResult;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
 
-import javax.ws.rs.core.Application;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.MalformedInputException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Base util class for RESTEasy testing.
  */
@@ -47,6 +49,9 @@ public class TestUtil {
          .append("src").append(File.separator)
          .append("test").append(File.separator)
          .append("resources").append(File.separator).toString();
+
+   private static final boolean MODULAR_JVM;
+
    /**
     * Try to initialize logger. This is unsuccessful on EAP deployment, because EAP do not contain log4j.
     * Logger is not necessary for this class. Some methods could be used without it.
@@ -57,6 +62,17 @@ public class TestUtil {
       } catch (NoClassDefFoundError e) {
          // unable to initialize logger, finishContainerPrepare method could not be used
       }
+
+      // Shouldn't happen, but we'll assume we're not a modular environment
+      final String javaSpecVersion = System.getProperty("java.specification.version");
+      boolean modularJvm = false;
+      if (javaSpecVersion != null) {
+         final Matcher matcher = Pattern.compile("^(?:1\\.)?(\\d+)$").matcher(javaSpecVersion);
+         if (matcher.find()) {
+            modularJvm = Integer.parseInt(matcher.group(1)) >= 9;
+         }
+      }
+      MODULAR_JVM = modularJvm;
    }
    /**
     * Initialize deployment.
@@ -315,6 +331,15 @@ public class TestUtil {
 
    public static boolean isIbmJdk() {
       return System.getProperty("java.vendor").toLowerCase().contains("ibm");
+   }
+
+   /**
+    * Indicates whether or not the current JVM is a modular (Java 9+) JVM.
+    *
+    * @return {@code true} if this is a modular JVM, otherwise {@code false}
+    */
+   public static boolean isModularJvm() {
+      return MODULAR_JVM;
    }
 
    /**

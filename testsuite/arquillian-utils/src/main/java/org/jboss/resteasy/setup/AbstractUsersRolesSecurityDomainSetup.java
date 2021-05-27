@@ -1,226 +1,171 @@
 package org.jboss.resteasy.setup;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.utils.TestUtil;
-import org.wildfly.extras.creaper.commands.security.AddLoginModule;
-import org.wildfly.extras.creaper.commands.security.AddSecurityDomain;
+import org.wildfly.extras.creaper.core.online.ModelNodeResult;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.Address;
+import org.wildfly.extras.creaper.core.online.operations.Batch;
 import org.wildfly.extras.creaper.core.online.operations.Operations;
 import org.wildfly.extras.creaper.core.online.operations.Values;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertTrue;
-
 /**
- * This abstract class implements steps needed to create PicketBox or Elytron security domain.
- *
+ * This abstract class implements steps needed to create Elytron security domain.
  */
 public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSetupTask {
-
-   // Creaper fields
-   private static OnlineManagementClient managementClient;
-   private Operations ops;
-   private Administration administration;
 
    // Properties file path
    private static final String USERS_FILENAME = "users.properties";
    private static final String ROLES_FILENAME = "roles.properties";
-   private File USERS_FILE;
-   private File ROLES_FILE;
 
-   // This property decides under which security subsystem will be used for the tests
-   private String subsystem = "elytron".equals(System.getProperty("security.provider")) ? "elytron" : "picketbox";
+   private final URL userFile;
+   private final URL rolesFile;
+   private final Deque<Address> toRemove;
+   private final Queue<Path> filesToRemove;
 
-   // Security domain name shared by elytron and picketBox configuration
-   private String securityDomainName = "jaxrsSecDomain";
-
-   // PicketBox related settings
-   private Address PICKETBOX_SECURITY_DOMAIN_ADDRESS
-         = Address.subsystem("security").and("security-domain", securityDomainName);
-   private Address PICKETBOX_AUTHN_CLASSIC_ADDRESS = PICKETBOX_SECURITY_DOMAIN_ADDRESS
-         .and("authentication", "classic");
-   private static final String PICKETBOX_LOGIN_MODULE_NAME = "UsersRoles";
-   private Address PICKETBOX_LOGIN_MODULE_ADDRESS = PICKETBOX_AUTHN_CLASSIC_ADDRESS
-         .and("login-module", PICKETBOX_LOGIN_MODULE_NAME);
-
-   // Elytron related settings
-   private static final String ELYTRON_PROPERTIES_REALM_NAME = "propRealm";
-   private static final Address ELYTRON_PROPERTIES_REALM_ADDRESS
-         = Address.subsystem("elytron").and("properties-realm", ELYTRON_PROPERTIES_REALM_NAME);
-   private static final String ELYTRON_SECURITY_DOMAIN_NAME = "propertyElytronSecDomain";
-   private static final Address ELYTRON_SECURITY_DOMAIN_ADDRESS
-         = Address.subsystem("elytron").and("security-domain", ELYTRON_SECURITY_DOMAIN_NAME);
-   private static final String ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME = "prop-http-authentication-factory";
-   private static final Address ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_ADDRESS
-         = Address.subsystem("elytron").and("http-authentication-factory", ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME);
-   private String UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME = securityDomainName;
-   private Address UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS
-         = Address.subsystem("undertow").and("application-security-domain", UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME);
-
-   /**
-    * Set security subsystem
-    * @param subsystem
-    */
-   public void setSubsystem(String subsystem) {
-      this.subsystem = subsystem;
-   }
-
-   /**
-    * Set security domain name related configuration
-    * @param securityDomainName
-    */
-   public void setSecurityDomainName(String securityDomainName) {
-      this.securityDomainName = securityDomainName;
-      this.PICKETBOX_SECURITY_DOMAIN_ADDRESS=Address.subsystem("security").and("security-domain", securityDomainName);
-      this.UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME=securityDomainName;
-      this.UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS
-            = Address.subsystem("undertow").and("application-security-domain", UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME);
-   }
-
-   /**
-    * Creates Files pointing to users.properties and roles.properties for the current test.
-    * @param folder
-    */
-   public void createPropertiesFiles(File folder) {
-      this.USERS_FILE = new File(folder, USERS_FILENAME);
-      this.ROLES_FILE = new File(folder, ROLES_FILENAME);
+   protected AbstractUsersRolesSecurityDomainSetup(final URL userFile, final URL rolesFile) {
+      this.userFile = userFile;
+      this.rolesFile = rolesFile;
+      toRemove = new LinkedList<>();
+      filesToRemove = new ArrayDeque<>();
    }
 
    @Override
-   public void setup(ManagementClient fakemanagementClient, String s) throws Exception {
-
-      // Set path for users.properties and roles.properties
-      setConfigurationPath();
+   public void setup(ManagementClient client, String s) throws Exception {
 
       // Create and initialize management client
-      managementClient = TestUtil.clientInit();
-      administration = new Administration(managementClient);
-      ops = new Operations(managementClient);
+      final Operations ops = new Operations(TestUtil.clientInit());
 
-      if (subsystem.equals("elytron")) {
-         configureElytron();
-      } else {
-         configurePicketBox();
+      // Generate the user and role files
+      final ModelNodeResult result = ops.invoke("path-info", Address.of("path", "jboss.server.config.dir"));
+      result.assertSuccess("Failed to resolve the jboss.server.config.dir");
+      final Path configDir = Paths.get(result.value().get("path", "resolved-path").asString());
+      filesToRemove.add(createPropertiesFile(userFile, configDir.resolve(USERS_FILENAME)));
+      filesToRemove.add(createPropertiesFile(rolesFile, configDir.resolve(ROLES_FILENAME)));
+
+      // Use a batch to for the config
+      final Batch batch = new Batch();
+
+      for (Map.Entry<String, String> entry : getSecurityDomainConfig().entrySet()) {
+         final String domainName = entry.getKey();
+         final String realmName = entry.getValue();
+
+         // Create Elytron properties-realm
+         final Address propertiesRealmAddress
+                 = Address.subsystem("elytron").and("properties-realm", realmName);
+         batch.add(propertiesRealmAddress, Values.empty()
+                 .andObject("users-properties", Values.empty()
+                         .and("path", USERS_FILENAME)
+                         .and("relative-to", "jboss.server.config.dir")
+                         .and("plain-text", true))
+                 .andObjectOptional("groups-properties", Values.empty()
+                         .and("path", ROLES_FILENAME)
+                         .and("relative-to", "jboss.server.config.dir")));
+         toRemove.addLast(propertiesRealmAddress);
+
+         // Create Elytron security-domain
+         final Address securityDomainAddress = Address.subsystem("elytron")
+                 .and("security-domain", domainName);
+         final ModelNode realms = new ModelNode().setEmptyObject();
+         realms.get("realm").set(realmName);
+         realms.get("role-decoder").set("groups-to-roles");
+         batch.add(securityDomainAddress, Values.ofList("realms", realms)
+                 .and("default-realm", realmName)
+                 .and("permission-mapper", "default-permission-mapper")
+         );
+         toRemove.addFirst(securityDomainAddress);
+
+         // Create Elytron http-authentication-factory with previous security-domain
+         final Address httpAuthAddress = Address.subsystem("elytron")
+                 .and("http-authentication-factory", "http-auth-" + domainName);
+
+         // Create the value for the mechanism-configurations
+         final ModelNode mechanismConfigs = new ModelNode().setEmptyObject();
+         mechanismConfigs.get("mechanism-name").set("BASIC");
+         final ModelNode mechanisms = mechanismConfigs.get("mechanism-realm-configurations").setEmptyList();
+         final ModelNode mechanismsValue = new ModelNode().setEmptyObject();
+         mechanismsValue.get("realm-name").set("\"Property Elytron\"");
+         mechanisms.add(mechanismsValue);
+
+         // Add the http-authentication-factory
+         batch.add(httpAuthAddress, Values.empty()
+                 .and("http-server-mechanism-factory", "global")
+                 .and("security-domain", domainName)
+                 .andList("mechanism-configurations", mechanismConfigs)
+         );
+         toRemove.addFirst(httpAuthAddress);
+
+         // Set undertow application-security-domain to the custom http-authentication-factory
+         final Address undertowAppSecDomainAddress = Address.subsystem("undertow")
+                 .and("application-security-domain", domainName);
+         batch.add(undertowAppSecDomainAddress, Values.of("http-authentication-factory", httpAuthAddress.getLastPairValue()));
+         toRemove.addFirst(undertowAppSecDomainAddress);
       }
+
+      ops.batch(batch).assertSuccess("Failed to configure Elytron");
    }
 
    @Override
-   public void tearDown(ManagementClient fakemanagementClient, String s) throws Exception {
+   public void tearDown(ManagementClient client, String s) throws Exception {
+      final OnlineManagementClient managementClient = TestUtil.clientInit();
+      final Administration administration = new Administration(managementClient);
+      final Operations ops = new Operations(managementClient);
+      final Batch batch = new Batch();
+      Address address;
+      while ((address = toRemove.pollFirst()) != null) {
+         batch.remove(address);
+      }
+      ops.batch(batch).assertSuccess("Failed to remove the Elytron config");
 
-      if (subsystem.equals("elytron")) {
-         cleanUpElytron();
+      // Clear any files that need to be
+      Path file;
+      while ((file = filesToRemove.poll()) != null) {
+         Files.deleteIfExists(file);
+      }
+
+      administration.reloadIfRequired();
+   }
+
+   /**
+    * A map of the security domain configuration. The key is the security domain name and the value is the realm name.
+    *
+    * <p>
+    * Override this method to configure more than one security domain.
+    * </p>
+    *
+    * @return the security domain configuration
+    */
+   public Map<String, String> getSecurityDomainConfig() {
+      return Collections.singletonMap("jaxrsSecDomain", "propRealm");
+   }
+
+   private Path createPropertiesFile(final URL url, final Path file) throws IOException {
+      if (url != null) {
+         try (InputStream in = url.openStream()) {
+            Files.copy(in, file, StandardCopyOption.REPLACE_EXISTING);
+         }
       } else {
-         cleanUpPicketBox();
+         if (Files.notExists(file)) {
+            Files.createFile(file);
+         }
       }
-   }
-
-   /**
-    * Set necessary test related paths
-    */
-   public abstract void setConfigurationPath() throws URISyntaxException, MalformedURLException;
-
-   /**
-    * Creates Elytron security domain
-    * @throws Exception
-    */
-   private void configureElytron() throws Exception {
-
-      // Note: This complicated setting may be simplified once WFLY-7949 is resolved
-
-      // Create Elytron properties-realm
-      ops.add(ELYTRON_PROPERTIES_REALM_ADDRESS, Values.empty()
-            .andObject("users-properties", Values.empty()
-                  .and("path", USERS_FILE.getAbsolutePath())
-                  .andOptional("plain-text", true))
-            .andObjectOptional("groups-properties", Values.empty()
-               .and("path", ROLES_FILE.getAbsolutePath())));
-
-      administration.reloadIfRequired();
-
-      // Create Elytron security-domain
-      managementClient.executeCli("/subsystem=elytron/security-domain="
-            + ELYTRON_SECURITY_DOMAIN_NAME
-            + ":add(realms=[{realm="
-            + ELYTRON_PROPERTIES_REALM_NAME + ",role-decoder=groups-to-roles}],default-realm=propRealm,permission-mapper=default-permission-mapper)");
-
-      // Create Elytron http-authentication-factory with previous security-domain
-      managementClient.executeCli("/subsystem=elytron/http-authentication-factory="
-            + ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME + ":add(http-server-mechanism-factory=global,security-domain="
-            + ELYTRON_SECURITY_DOMAIN_NAME
-            + ",mechanism-configurations=[{mechanism-name=BASIC,mechanism-realm-configurations=[{realm-name=\"Property Elytron\"}]}])");
-
-      // Set undertow application-security-domain to the custom http-authentication-factory
-      managementClient.executeCli("/subsystem=undertow/application-security-domain="
-            + securityDomainName + ":add(http-authentication-factory="
-            +  ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME + ")");
-
-      administration.reloadIfRequired();
-
-      assertTrue("The elytron/properties-realm should be created", ops.exists(ELYTRON_PROPERTIES_REALM_ADDRESS));
-      assertTrue("The elytron/security-domain should be created", ops.exists(ELYTRON_SECURITY_DOMAIN_ADDRESS));
-      assertTrue("The elytron/http-authentication-factory should be created", ops.exists(ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_ADDRESS));
-      assertTrue("The undertow/application-security-domain should be created", ops.exists(UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS));
-   }
-
-   /**
-    * Creates PicketBox security domain
-    * @throws Exception
-    */
-   private void configurePicketBox() throws Exception {
-
-      // Create security domain
-      AddSecurityDomain addSecurityDomain = new AddSecurityDomain.Builder(securityDomainName).build();
-      managementClient.apply(addSecurityDomain);
-
-      // Create login module
-      AddLoginModule addLoginModule = new AddLoginModule.Builder("org.jboss.security.auth.spi.UsersRolesLoginModule",
-            PICKETBOX_LOGIN_MODULE_NAME)
-            .securityDomainName(securityDomainName)
-            .flag("required")
-            .module("org.picketbox")
-            .addModuleOption("usersProperties", USERS_FILE.getAbsolutePath())
-            .addModuleOption("rolesProperties", ROLES_FILE.getAbsolutePath())
-            .build();
-
-      managementClient.apply(addLoginModule);
-
-      administration.reloadIfRequired();
-
-      assertTrue("The login module should be created", ops.exists(PICKETBOX_LOGIN_MODULE_ADDRESS));
-   }
-
-   /**
-    * Reverts all configuration done for Elytron
-    * @throws Exception
-    */
-   private void cleanUpElytron() throws Exception {
-      try {
-         ops.removeIfExists(UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS);
-         ops.removeIfExists(ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_ADDRESS);
-         ops.removeIfExists(ELYTRON_SECURITY_DOMAIN_ADDRESS);
-         ops.removeIfExists(ELYTRON_PROPERTIES_REALM_ADDRESS);
-         administration.reloadIfRequired();
-      } finally {
-         managementClient.close();
-      }
-   }
-
-   /**
-    * Reverts all configuration done for PicketBox
-    * @throws Exception
-    */
-   private void cleanUpPicketBox() throws Exception {
-      try {
-         ops.removeIfExists(PICKETBOX_SECURITY_DOMAIN_ADDRESS);
-         administration.reloadIfRequired();
-      } finally {
-         managementClient.close();
-      }
+      return file;
    }
 }

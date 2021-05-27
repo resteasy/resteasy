@@ -31,10 +31,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Hashtable;
 
 /**
@@ -103,11 +99,9 @@ public class CustomForbiddenMessageTest {
 
    static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
 
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(CustomForbiddenMessageTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
+      SecurityDomainSetup() {
+         super(CustomForbiddenMessageTest.class.getResource("users.properties"),
+                 CustomForbiddenMessageTest.class.getResource("roles.properties"));
       }
    }
 }

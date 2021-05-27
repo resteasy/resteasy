@@ -22,7 +22,6 @@
         <additionalJvmArgs/>
         <ipv6ArquillianSettings/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
-        <security.provider>picketbox</security.provider>
     </properties>
 
     <dependencyManagement>
@@ -106,7 +105,6 @@
                         <project.version>${project.version}</project.version>
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
-                        <security.provider>${security.provider}</security.provider>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
@@ -186,7 +184,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>21.0.1.Final</server.version>
+                <server.version>23.0.2.Final</server.version>
             </properties>
         </profile>
         <profile>
@@ -247,20 +245,6 @@
             </activation>
             <properties>
                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
-            </properties>
-        </profile>
-
-        <!-- https://issues.jboss.org/browse/MODULES-372 - JDK 11 - module not found java.se -->
-        <profile>
-            <id>modular-jdk</id>
-            <activation>
-                <jdk>[9,)</jdk>
-            </activation>
-            <properties>
-                <modular.jdk.args>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED
-                    --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
-                    --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED
-                    --add-modules=java.se</modular.jdk.args>
             </properties>
         </profile>
 

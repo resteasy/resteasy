@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +93,7 @@ public class EJBParameterViolationsOnlyTest {
     */
    @Test
    public void testStateless() throws Exception {
+      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       doValidationTest(client.target(generateURL("/app/stateless")));
    }
 
@@ -110,6 +112,7 @@ public class EJBParameterViolationsOnlyTest {
     */
    @Test
    public void testSingleton() throws Exception {
+      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       doValidationTest(client.target(generateURL("/app/singleton")));
    }
 
