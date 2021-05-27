@@ -64,6 +64,19 @@
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-base"/>
             <maven-resource group="com.fasterxml.jackson.module" artifact="jackson-module-jaxb-annotations" />
         </module-def>
+        <module-def name="com.sun.xml.bind">
+            <maven-resource group="com.sun.istack" artifact="istack-commons-runtime"/>
+            <maven-resource group="com.sun.istack" artifact="istack-commons-tools"/>
+            <maven-resource group="com.sun.xml.bind.external" artifact="rngom"/>
+            <maven-resource group="com.sun.xml.bind.external" artifact="relaxng-datatype"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="codemodel"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="jaxb-jxc"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="jaxb-runtime"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="jaxb-xjc"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="xsom"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="txw2"/>
+            <maven-resource group="org.glassfish.jaxb" artifact="jaxb-core"/>
+        </module-def>
 
         <!-- todo this is temporary and should be removed when wildfly makes the needed update
              -->
