@@ -5,12 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
-import javax.ws.rs.ProcessingException;
-
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.common.DispatcherResponseUtils;
 import org.junit.Before;
@@ -23,8 +21,7 @@ public class DispatcherResponseJsonBTest {
     @Before
     public void before() {
         ResteasyProviderFactory.getInstance()
-                .getExceptionMappers()
-                .put(ProcessingException.class, new DispatcherResponseUtils.JsonSerializationExceptionMapper());
+                .registerProviderInstance(new DispatcherResponseUtils.JsonSerializationExceptionMapper());
         
         dispatcher = new SynchronousDispatcher(ResteasyProviderFactory.getInstance());
     }

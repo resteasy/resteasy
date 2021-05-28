@@ -5,17 +5,15 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.common.DispatcherResponseUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class DispatcherResponseJackson2Test {
     
@@ -26,8 +24,7 @@ public class DispatcherResponseJackson2Test {
         System.setProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
         
         ResteasyProviderFactory.getInstance()
-                .getExceptionMappers()
-                .put(JsonMappingException.class, new DispatcherResponseUtils.JsonSerializationExceptionMapper());
+                .registerProviderInstance(new DispatcherResponseUtils.JsonSerializationExceptionMapper());
         
         dispatcher = new SynchronousDispatcher(ResteasyProviderFactory.getInstance());
     }
