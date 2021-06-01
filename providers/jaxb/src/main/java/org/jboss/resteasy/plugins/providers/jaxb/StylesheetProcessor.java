@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import java.lang.annotation.Annotation;
+
 import org.jboss.resteasy.annotations.DecorateTypes;
 import org.jboss.resteasy.annotations.providers.jaxb.Stylesheet;
 import org.jboss.resteasy.spi.DecoratorProcessor;
@@ -8,7 +10,6 @@ import org.jboss.resteasy.util.StringContextReplacement;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.PropertyException;
-import java.lang.annotation.Annotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,7 +25,7 @@ public class StylesheetProcessor implements DecoratorProcessor<Marshaller, Style
       String h = "<?xml-stylesheet type='" + doctype + "' href='" + href + "' ?>";
       try
       {
-         target.setProperty("com.sun.xml.bind.xmlHeaders", h);
+         target.setProperty("org.glassfish.jaxb.xmlHeaders", h);
       }
       catch (PropertyException e)
       {
