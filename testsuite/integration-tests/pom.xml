@@ -779,12 +779,32 @@
                                     <exclude>**/SseJsonEventTest</exclude>
 
                                     <!-- exclude these test until ee9 wfly-preview issues are resolved -->
+                                    <!--picketbox is removed and we need to move to elytron-->
+                                    <!--
+                                    org.wildfly.extras.creaper.core.CommandFailedException: Operation {"operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed: {"outcome" => "failed","failure-description" => "WFLYCTL0030: No resource definition is registered for address [
+                                       (\"subsystem\" => \"security\"),
+                                         (\"security-domain\" => \"jaxrsSecDomain\")
+                                    ]","rolled-back" => true}
+                                    -->
                                     <exclude>**/TwoSecurityDomainsTest.java</exclude>
+                                    <exclude>**/BasicAuthTest.java</exclude>
+                                    <exclude>**/SecurityContextTest.java</exclude>
+                                    <!-- we need to change the server setup cli for wildfly-preview-->
+                                    <!--
+                                    15:24:05.342 INFO  [org.jboss.resteasy.utils.TestUtil] (main) CLI command: /subsystem=messaging-activemq/server=default/jms-queue=test:remove
+                                    15:24:05.343 INFO  [org.jboss.resteasy.utils.TestUtil] (main) Result: {
+                                                  "outcome" => "failed",
+                                                  "failure-description" => "WFLYCTL0216: Management resource '[
+                                                   (\"subsystem\" => \"messaging-activemq\"),
+                                                   (\"server\" => \"default\")
+                                                    ]' not found",
+                                                        "rolled-back" => true
+                                                   }
+                                     -->
                                     <exclude>**/InjectionTest.java</exclude>
                                     <exclude>**/MDBInjectionTest.java</exclude>
                                     <exclude>**/ReverseInjectionTest.java</exclude>
-                                    <exclude>**/BasicAuthTest.java</exclude>
-                                    <exclude>**/SecurityContextTest.java</exclude>
+
                                 </excludes>
                             </configuration>
                         </execution>
