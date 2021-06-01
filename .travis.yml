@@ -2,13 +2,12 @@ install:
  - mvn -B clean; java -version
 script:
  - travis_wait 60 travis-script/prebuild.sh
- - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} install
-
+ - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Pee9 install
 language: java
 jdk:
-  - openjdk8
-env:
-  - SERVER_VERSION=21.0.1.Final ELYTRON=true
+  - openjdk11
+#env:
+#  - SERVER_VERSION=21.0.1.Final ELYTRON=true
 jobs:
 addons:
   hosts:
