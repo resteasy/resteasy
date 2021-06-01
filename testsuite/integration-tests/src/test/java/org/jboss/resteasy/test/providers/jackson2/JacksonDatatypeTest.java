@@ -109,16 +109,6 @@ public class JacksonDatatypeTest {
    }
 
    /**
-    * @tpTestDetails Check duration type without datatype supported
-    * @tpSince RESTEasy 3.1.0.CR3
-    */
-   @Test
-   public void testDatatypeNotSupportedDuration() throws Exception {
-      String strResponse = requestHelper("duration", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Duration", strResponse, not(containsString("PT5.000000006S")));
-   }
-
-   /**
     * @tpTestDetails Check null optional type without datatype supported
     * @tpSince RESTEasy 3.1.0.CR3
     */
