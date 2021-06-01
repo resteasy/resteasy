@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -207,14 +208,16 @@ public class ResteasyViolationException extends ConstraintViolationException
    {
       convertViolations();
       StringBuffer sb = new StringBuffer();
-      for (Iterator<List<ResteasyConstraintViolation>> it = violationLists.iterator(); it.hasNext(); )
-      {
-         List<ResteasyConstraintViolation> violations = it.next();
-         for (Iterator<ResteasyConstraintViolation> it2 = violations.iterator(); it2.hasNext(); )
-         {
-            sb.append(it2.next().toString()).append('\r');
+
+      CopyOnWriteArrayList<List<ResteasyConstraintViolation>> imutableViolations =
+              new CopyOnWriteArrayList<>(violationLists);
+
+      for (List<ResteasyConstraintViolation> violations : imutableViolations) {
+         for (ResteasyConstraintViolation violation: violations ) {
+            sb.append(violation.toString()).append('\r');
          }
       }
+
       return sb.toString();
    }
 
@@ -231,11 +234,13 @@ public class ResteasyViolationException extends ConstraintViolationException
       parameterViolations = container.getParameterViolations();
       returnValueViolations = container.getReturnValueViolations();
 
+
       violationLists.add(fieldViolations);
       violationLists.add(propertyViolations);
       violationLists.add(classViolations);
       violationLists.add(parameterViolations);
       violationLists.add(returnValueViolations);
+
    }
 
    protected void convertFromString(String stringRep)
@@ -298,6 +303,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       violationLists.add(classViolations);
       violationLists.add(parameterViolations);
       violationLists.add(returnValueViolations);
+
    }
 
    protected int getField(int start, String line)
@@ -397,6 +403,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       violationLists.add(classViolations);
       violationLists.add(parameterViolations);
       violationLists.add(returnValueViolations);
+
    }
 
    protected ResteasyConstraintViolation convertViolation(ConstraintViolation<?> violation)
