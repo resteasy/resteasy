@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${version.org.springframework.jakarta9}</version>
+            <version>${version.org.springframework}</version>
         </dependency>
     </dependencies>
 </project>
