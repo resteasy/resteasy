@@ -32,8 +32,8 @@ import java.net.URI;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class JsonpMPtest {
-    protected static final Logger LOG = Logger.getLogger(JsonpMPtest.class.getName());
+public class JsonpMPTest {
+    protected static final Logger LOG = Logger.getLogger(JsonpMPTest.class.getName());
     private static final String WAR_SERVICE = "jsonP_service";
 
     @Deployment(name=WAR_SERVICE)
