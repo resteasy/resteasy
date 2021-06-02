@@ -1,18 +1,17 @@
 package org.jboss.resteasy.utils;
 
-import org.jboss.resteasy.utils.maven.MavenUtil;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jboss.resteasy.utils.maven.MavenUtil;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
  * Base util class for RESTEasy spring related testing.
  */
 public class TestUtilSpring {
-
-   private static final String defaultSpringVersion = "5.3.7";
+   private static final String defaultSpringVersion = "5.3.7-$$jakarta9$$";
    //protected static Logger logger;
 
    /**
