@@ -13,13 +13,25 @@
 
     <artifactId>resteasy-integration-tests-spring-deployment</artifactId>
     <name>RESTEasy Main testsuite: Spring integration tests - Deployment</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${version.org.springframework.ee9}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${version.org.springframework.ee9}</version>
+        </dependency>
+    </dependencies>
     <profiles>
         <!--
         Name:  download
         Descr: Download WildFly
         -->
-        <profile>
+        <!--profile>
           <id>download</id>
           <activation>
             <property>
@@ -61,9 +73,7 @@
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <target>
-                                <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
-                                     so adding jars without removing old ones basically messes up the classloader -->
-                                <delete>
+                                 <delete>
                                     <fileset dir="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main" includes="**/*.jar"/>
                                 </delete>
                                 <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
@@ -83,7 +93,7 @@
           <properties>
             <jboss.home>${project.build.directory}/test-server/wildfly-${server.version}</jboss.home>
           </properties>
-        </profile>
+        </profile-->
         <!-- This profile creates custom server configuration file with configured Elytron subsystem -->
         <profile>
             <id>elytron</id>
@@ -147,7 +157,124 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>ee9</id>
+            <properties>
+                <jboss.home>${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}</jboss.home>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-wildfly</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-preview-dist</artifactId>
+                                            <version>${ee9.server.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/test-server</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-jbossmodules</id>
+                                <phase>generate-test-resources</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
+                                             so adding jars without removing old ones basically messes up the classloader -->
+                                        <delete>
+                                            <fileset
+                                                    dir="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main"
+                                                    includes="**/*.jar"/>
+                                        </delete>
+                                        <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
+                                               dest="${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}"
+                                               overwrite="true"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>initialize-basedirs</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <!--copy transformed resteasy-jboss-modules-->
+                                        <copy todir="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base"
+                                              overwrite="true" failonerror="true">
+                                            <fileset
+                                                    dir="${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}"/>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>transform-ee9</id>
+                                <phase>generate-test-resources</phase>
+                                <configuration>
+                                    <includeProjectDependencies>true</includeProjectDependencies>
+                                    <executableDependency>
+                                        <groupId>org.wildfly.galleon-plugins</groupId>
+                                        <artifactId>transformer</artifactId>
+                                    </executableDependency>
+                                    <mainClass>org.wildfly.galleon.plugin.transformer.JakartaTransformer</mainClass>
+                                    <arguments>
+                                        <argument>
+                                            ${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}
+                                        </argument>
+                                        <argument>
+                                            ${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}
+                                        </argument>
+                                    </arguments>
 
+                                </configuration>
+
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+
+                        </executions>
+                    </plugin-->
+
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -167,5 +294,4 @@
             </testResource>
         </testResources>
     </build>
-
 </project>
