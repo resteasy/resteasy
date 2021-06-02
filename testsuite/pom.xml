@@ -21,6 +21,7 @@
         <jacoco.agent/>
         <additionalJvmArgs/>
         <ipv6ArquillianSettings/>
+        <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
     </properties>
 
@@ -460,6 +461,34 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>debug-java-11</id>
+            <activation>
+                <jdk>11</jdk>
+                <property>
+                    <name>debug</name>
+                </property>
+            </activation>
+            <properties>
+                <debug.port>8787</debug.port>
+                <debugJvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${debug.port}</debugJvmArgs>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>debug-java-8</id>
+            <activation>
+                <jdk>1.8</jdk>
+                <property>
+                    <name>debug</name>
+                </property>
+            </activation>
+            <properties>
+                <debug.port>8787</debug.port>
+                <debugJvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${debug.port}</debugJvmArgs>
+            </properties>
         </profile>
     </profiles>
 
