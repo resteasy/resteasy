@@ -80,10 +80,10 @@
       <artifactId>weld-se-core</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.jboss.arquillian.container</groupId>
       <artifactId>arquillian-weld-embedded</artifactId>
+      <version>2.0.0.Final-$$jakarta9$$</version>
       <scope>test</scope>
     </dependency>
 
@@ -112,13 +112,10 @@
       <artifactId>jakarta.json</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>javax.json.bind</groupId>
-      <artifactId>javax.json.bind-api</artifactId>
-      <version>1.0</version>
+      <groupId>org.jboss.spec.jakarta.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
