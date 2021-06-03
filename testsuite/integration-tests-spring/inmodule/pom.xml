@@ -407,7 +407,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${jboss.home}/modules/system/add-ons/spring</directory>
+                                    <directory>${jboss.home}/modules/org/springframework</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
@@ -443,11 +443,6 @@
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

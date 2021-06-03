@@ -108,7 +108,12 @@
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.wildfly.galleon-plugins</groupId>
+            <artifactId>transformer</artifactId>
+            <version>5.2.0.Alpha1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

@@ -13,12 +13,22 @@
 
     <artifactId>resteasy-integration-tests-spring-unit</artifactId>
     <name>RESTEasy Main testsuite: Spring integration tests - Unit tests</name>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${version.org.springframework.ee9}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${version.org.springframework.ee9}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${version.org.springframework}</version>
+            <version>${version.org.springframework.ee9}</version>
         </dependency>
     </dependencies>
 </project>

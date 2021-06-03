@@ -16,15 +16,147 @@
 
     <properties>
         <module.spring.slot>main</module.spring.slot><!-- beware jbossws spring integration preinstalled in default distribution expects main slot -->
-        <module.spring.path>${jboss.home}/modules/system/add-ons/spring/org/springframework/spring/${module.spring.slot}</module.spring.path>
+        <module.spring.path>${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}/org/springframework/spring/${module.spring.slot}</module.spring.path>
     </properties>
 
     <profiles>
+        <profile>
+            <id>ee9</id>
+            <properties>
+                <jboss.home>${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}</jboss.home>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-wildfly</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-preview-dist</artifactId>
+                                            <version>${ee9.server.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/test-server</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-jbossmodules</id>
+                                <phase>generate-test-resources</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
+                                             so adding jars without removing old ones basically messes up the classloader -->
+                                        <delete>
+                                            <fileset
+                                                    dir="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main"
+                                                    includes="**/*.jar"/>
+                                        </delete>
+                                        <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
+                                               dest="${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}"
+                                               overwrite="true"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>initialize-basedirs</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <!--copy transformed resteasy-jboss-modules-->
+                                        <copy todir="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base"
+                                              overwrite="true" failonerror="true">
+                                            <fileset
+                                                    dir="${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}"/>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>add-spring-module</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <replace file="${project.build.directory}/test-server/wildfly-preview-${ee9.server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring-web/main/module.xml">
+                                            <replacefilter token="&lt;!-- Insert spring module --&gt;" value="&lt;module name=&quot;org.springframework.spring&quot;/&gt;"/>
+                                        </replace>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>transform-ee9</id>
+                                <phase>process-test-resources</phase>
+                                <configuration>
+                                    <includeProjectDependencies>true</includeProjectDependencies>
+                                    <executableDependency>
+                                        <groupId>org.wildfly.galleon-plugins</groupId>
+                                        <artifactId>transformer</artifactId>
+                                    </executableDependency>
+                                    <mainClass>org.wildfly.galleon.plugin.transformer.JakartaTransformer</mainClass>
+                                    <arguments>
+                                        <argument>
+                                            ${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}
+                                        </argument>
+                                        <argument>
+                                            ${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}
+                                        </argument>
+                                    </arguments>
+
+                                </configuration>
+
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+
+                        </executions>
+                    </plugin-->
+
+                </plugins>
+            </build>
+        </profile>
         <!--
         Name:  download
         Descr: Download WildFly
         -->
-        <profile>
+        <!--profile>
             <id>download</id>
             <activation>
                 <property>
@@ -66,8 +198,6 @@
                                 <phase>generate-test-resources</phase>
                                 <configuration>
                                     <target>
-                                        <!-- Explicitly remove resteasy-spring-web contents as the module.xml does not reference resource jars in this case
-                                             so adding jars without removing old ones basically messes up the classloader -->
                                         <delete failonerror="false">
                                             <fileset dir="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring-web/main" includes="**/*.jar"/>
                                         </delete>
@@ -87,7 +217,7 @@
                                 <configuration>
                                     <target>
                                         <replace file="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring-web/main/module.xml">
-                                            <replacefilter token="&lt;!-- Insert spring module --&gt;" value="&lt;module name=&quot;org.springframework.spring&quot;/&gt;"/>
+                                            <replacefilter token="&lt;!- - Insert spring module - - &gt;" value="&lt;module name=&quot;org.springframework.spring&quot;/&gt;"/>
                                         </replace>
                                     </target>
                                 </configuration>
@@ -102,7 +232,7 @@
             <properties>
                 <jboss.home>${project.build.directory}/test-server/wildfly-${server.version}</jboss.home>
             </properties>
-        </profile>
+        </profile-->
     </profiles>
 
     <build>
@@ -121,113 +251,138 @@
                 </excludes>
             </testResource>
         </testResources>
-        <plugins>
-            <!-- module resources copying -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <executions>
-                    <execution>
-                        <id>install-as-module-spring-resources</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${module.spring.path}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/test/resources/org/jboss/resteasy/test/spring/web/deployment/module</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                            <overwrite>true</overwrite>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- module dependencies copying -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>install-as-module-spring-dependencies</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
+            <plugins>
+                <!-- module resources copying -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.7</version>
+                    <executions>
+                        <execution>
+                            <id>install-as-module-spring-3.2.x-resources</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${module.spring.path}</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>src/test/resources/org/jboss/resteasy/test/spring/web/deployment/module</directory>
+                                        <filtering>true</filtering>
+                                    </resource>
+                                </resources>
+                                <overwrite>true</overwrite>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- module dependencies copying -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>install-as-module-spring-3.2.x-dependencies</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>copy</goal>
+                            </goals>
+                            <configuration>
+                                <artifactItems>
 
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-aop</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-beans</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-context</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-context-support</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-core</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-expression</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-web</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.springframework</groupId>
-                                    <artifactId>spring-webmvc</artifactId>
-                                    <version>${version.org.springframework}</version>
-                                </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-aop</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-beans</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-context</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-context-support</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-core</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-expression</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-web</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-webmvc</artifactId>
+                                        <version>${version.org.springframework}</version>
+                                    </artifactItem>
 
-                                <artifactItem>
-                                    <groupId>aopalliance</groupId>
-                                    <artifactId>aopalliance</artifactId>
-                                    <version>${version.aopalliance}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.aspectj</groupId>
-                                    <artifactId>aspectjrt</artifactId>
-                                    <version>${version.org.aspectj}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.aspectj</groupId>
-                                    <artifactId>aspectjweaver</artifactId>
-                                    <version>${version.org.aspectj}</version>
-                                </artifactItem>
+                                    <artifactItem>
+                                        <groupId>aopalliance</groupId>
+                                        <artifactId>aopalliance</artifactId>
+                                        <version>${version.aopalliance}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.aspectj</groupId>
+                                        <artifactId>aspectjrt</artifactId>
+                                        <version>${version.org.aspectj}</version>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.aspectj</groupId>
+                                        <artifactId>aspectjweaver</artifactId>
+                                        <version>${version.org.aspectj}</version>
+                                    </artifactItem>
 
-                            </artifactItems>
+                                </artifactItems>
 
-                            <outputDirectory>${module.spring.path}</outputDirectory>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <stripVersion>true</stripVersion>
-                            <overWriteReleases>true</overWriteReleases>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+                                <outputDirectory>${module.spring.path}</outputDirectory>
+                                <overWriteSnapshots>true</overWriteSnapshots>
+                                <stripVersion>true</stripVersion>
+                                <overWriteReleases>true</overWriteReleases>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.6</version>
+                    <executions>
+                        <execution>
+                            <id>Deleting spring module from eap after test</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                            <configuration>
+                                <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                <filesets>
+                                    <fileset>
+                                        <directory>${jboss.home}/modules/system/add-ons/spring</directory>
+                                        <includes>
+                                            <include>**/*</include>
+                                        </includes>
+                                        <followSymlinks>false</followSymlinks>
+                                    </fileset>
+                                </filesets>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.6</version>
