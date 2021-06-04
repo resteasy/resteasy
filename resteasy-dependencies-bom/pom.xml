@@ -89,6 +89,11 @@
         <version.org.infinispan>11.0.3.Final</version.org.infinispan>
         <version.org.jacoco>0.8.3</version.org.jacoco>
         <version.org.javassist>3.23.2-GA</version.org.javassist>
+<<<<<<< HEAD
+=======
+        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <version.arquillian-testenricher-cdi>1.4.1.Final-$$jakarta9$$</version.arquillian-testenricher-cdi>
+>>>>>>> dd4432a40b (resolved issue with @Inject)
         <version.org.jboss.logging.jboss-logging>3.4.1.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
@@ -112,20 +117,14 @@
         <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
         <version.org.wildfly.core.wildfly-cli>15.0.1.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
-<<<<<<< HEAD
-        <version.weld.api>3.1.SP4</version.weld.api>
-        <version.weld>3.1.7.SP1</version.weld>
-=======
+        <version.weld.api>4.0.SP1</version.weld.api>
+        <version.weld>4.0.1.SP1</version.weld>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
         <!-- rls use version in wfly instead
         <version.weld.api>4.0.SP1-$$jakarta9$$</version.weld.api>
         <version.weld>3.1.5.Final-$$jakarta9$$</version.weld>
         -->
-        <version.weld.api>4.0.SP1</version.weld.api>
-        <version.weld>4.0.1.SP1</version.weld>
-
->>>>>>> be8e04e1f5 (ee9 updates.  Compilable code; Large percentage of tests run)
         <version.json.patch>1.13</version.json.patch>
         <version.jakarta.interceptor-api>2.0.0</version.jakarta.interceptor-api>
         <version.jakarta.el-api>4.0.0</version.jakarta.el-api>
@@ -931,13 +930,11 @@
                 <artifactId>arquillian-weld-embedded</artifactId>
                 <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
             </dependency>
-            <!-- rls java.jms.* being replaced with jakarta.jms-api
             <dependency>
-                <groupId>org.jboss.spec.javax.jms</groupId>
-                <artifactId>jboss-jms-api_2.0_spec</artifactId>
-                <version>${version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec}</version>
+                <groupId>org.jboss.arquillian.testenricher</groupId>
+                <artifactId>arquillian-testenricher-cdi</artifactId>
+                <version>${version.arquillian-testenricher-cdi}</version>
             </dependency>
-            -->
             <dependency>
                 <groupId>jakarta.jms</groupId>
                 <artifactId>jakarta.jms-api</artifactId>

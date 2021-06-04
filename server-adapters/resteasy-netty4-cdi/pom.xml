@@ -95,11 +95,9 @@
             <version>${dep.arq.weld.se}</version>
             <scope>test</scope>
         </dependency>
-       <!-- rls test start  SUCCESS ... KEEP -->
        <dependency>
           <groupId>org.jboss.arquillian.testenricher</groupId>
           <artifactId>arquillian-testenricher-cdi</artifactId>
-          <version>1.4.1.Final-$$jakarta9$$</version>
        </dependency>
        <dependency>
           <groupId>jakarta.el</groupId>

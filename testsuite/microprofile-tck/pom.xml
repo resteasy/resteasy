@@ -55,6 +55,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.arquillian.testenricher</groupId>
+      <artifactId>arquillian-testenricher-cdi</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- TCK Support  -->
 
     <dependency>
