@@ -165,7 +165,9 @@
                 <module>integration-tests-spring</module>
                 <module>integration-tests-spring-web</module>
                 <module>integration-tests-embedded</module>
+                <!-- see https://issues.redhat.com/browse/RESTEASY-2916
                 <module>microprofile-tck</module>
+                -->
             </modules>
         </profile>
         <profile>

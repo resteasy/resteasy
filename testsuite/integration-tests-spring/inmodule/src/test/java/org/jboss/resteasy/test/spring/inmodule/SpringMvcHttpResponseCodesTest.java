@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Ignore;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -159,6 +160,7 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpTestDetails Test server http response code for NotAuthorizedException using client without credentials
     * @tpSince RESTEasy 3.1.0
     */
+   @Ignore
    @Test
    public void testNotAuthorizedException() {
       Response response = nonAutorizedClient.target(generateURL("/secured/json")).request()
@@ -178,6 +180,7 @@ public class SpringMvcHttpResponseCodesTest {
       Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
    }
 
+   @Ignore
    @Test
    public void testOK() {
       Response response = authorizedClient.target(generateURL("/secured/json")).request()
