@@ -6,6 +6,15 @@
  */
 package org.jboss.resteasy.core.providerfactory;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
@@ -20,6 +29,7 @@ import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.client.ClientResponseFilter;
 import jakarta.ws.rs.client.RxInvoker;
@@ -29,6 +39,7 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.container.DynamicFeature;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.Link.Builder;
 import jakarta.ws.rs.core.MediaType;
@@ -42,13 +53,6 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.ParamConverter;
 import jakarta.ws.rs.ext.ReaderInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  *
@@ -174,6 +178,10 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    public Object getProperty(String name)
    {
       return resteasyProviderFactoryDelegator.getProperty(name);
+   }
+
+   @Override public boolean hasProperty(String name) {
+      return super.hasProperty(name);
    }
 
    @Override
@@ -623,6 +631,25 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    public Builder createLinkBuilder()
    {
       return resteasyProviderFactoryDelegator.createLinkBuilder();
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      //TODO：3.1 implementation
+      return null;
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(Application application,
+           SeBootstrap.Configuration configuration) {
+      //TODO：3.1 implementation
+      return null;
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(String partName) throws IllegalArgumentException {
+      //TODO：3.1 implementation
+      return null;
    }
 
    @Override

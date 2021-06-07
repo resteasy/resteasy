@@ -1,6 +1,10 @@
 package org.jboss.resteasy.test.client.resource;
 
+import java.util.concurrent.CompletionStage;
+
+import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.Link.Builder;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.UriBuilder;
@@ -72,5 +76,24 @@ public class StringBeanRuntimeDelegate extends RuntimeDelegate {
    @Override
    public Builder createLinkBuilder() {
       return original.createLinkBuilder();
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      //TODO：3.1 implementation
+      return null;
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(Application application,
+           SeBootstrap.Configuration configuration) {
+      //TODO：3.1 implementation
+      return null;
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(String partName) throws IllegalArgumentException {
+      //TODO：3.1 implementation
+      return null;
    }
 }

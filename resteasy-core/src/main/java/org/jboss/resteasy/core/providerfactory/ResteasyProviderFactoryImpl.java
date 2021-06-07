@@ -1,5 +1,27 @@
 package org.jboss.resteasy.core.providerfactory;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
@@ -46,6 +68,7 @@ import jakarta.ws.rs.ConstrainedTo;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.client.ClientResponseFilter;
 import jakarta.ws.rs.client.RxInvoker;
@@ -58,6 +81,7 @@ import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Configurable;
 import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.EntityTag;
 import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.Link;
@@ -76,27 +100,6 @@ import jakarta.ws.rs.ext.Providers;
 import jakarta.ws.rs.ext.ReaderInterceptor;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.ext.WriterInterceptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -1675,6 +1678,25 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    public Link.Builder createLinkBuilder()
    {
       return Utils.createLinkBuilder();
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      //TODO：3.1 implementation
+      return null;
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(Application application,
+           SeBootstrap.Configuration configuration) {
+      //TODO：3.1 implementation
+      return null;
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(String partName) throws IllegalArgumentException {
+      //TODO：3.1 implementation
+      return null;
    }
 
    public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
