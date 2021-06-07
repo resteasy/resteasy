@@ -1,27 +1,6 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.plugins.providers.sse.SseImpl;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.ValueInjector;
-import org.jboss.resteasy.spi.util.Types;
-
 import java.io.OutputStream;
-
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.WriteListener;
-
-import jakarta.ws.rs.container.ResourceInfo;
-import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.ext.Providers;
-import jakarta.ws.rs.sse.Sse;
-import jakarta.ws.rs.sse.SseEventSink;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -35,6 +14,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+
+import org.jboss.resteasy.plugins.providers.sse.SseImpl;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ValueInjector;
+import org.jboss.resteasy.spi.util.Types;
+
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

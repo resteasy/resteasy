@@ -16,13 +16,8 @@
     <name>RESTEasy Main testsuite: Spring integration tests</name>
 
     <properties>
-<<<<<<< HEAD
         <version.org.springframework>5.3.7</version.org.springframework>
-        <version.org.springframework.jakarta9>5.3.7-$$jakarta9$$</version.org.springframework.jakarta9>
-=======
-        <version.org.springframework.ee9>5.2.0.RELEASE-$$jakarta9$$</version.org.springframework.ee9>
-        <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
->>>>>>> f28a224310 (Fix spring integration tests)
+        <version.org.springframework.ee9>5.3.7-$$jakarta9$$</version.org.springframework.ee9>
         <version.org.aspectj>1.7.3</version.org.aspectj>
         <version.aopalliance>1.0</version.aopalliance>
     </properties>
