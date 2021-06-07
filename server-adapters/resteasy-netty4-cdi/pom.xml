@@ -39,10 +39,6 @@
             <artifactId>netty-all</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -107,7 +103,6 @@
           <groupId>jakarta.interceptor</groupId>
           <artifactId>jakarta.interceptor-api</artifactId>
        </dependency>
-       <!-- rls test end -->
         <dependency>
            <groupId>org.jboss.spec.javax.servlet</groupId>
            <artifactId>jboss-servlet-api_4.0_spec</artifactId>

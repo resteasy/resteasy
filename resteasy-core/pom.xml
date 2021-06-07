@@ -37,15 +37,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <!--
-           Needed for javax.annotation.security.*
-           should this dependency be <scope>provided</scope> and only used if
-           detected runtime?
-        -->
-        <dependency>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.jboss.spec.jakarta.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
@@ -133,19 +125,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- javax.activation.DataSource provider is required by spec -->
-        <!--
-        <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
->>>>>>> be8e04e1f5 (ee9 updates.  Compilable code; Large percentage of tests run)
-        </dependency>
-        -->
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -157,40 +136,6 @@
             <groupId>org.jboss.spec.javax.el</groupId>
             <artifactId>jboss-el-api_3.0_spec</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-processor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.microprofile.config</groupId>
-            <artifactId>microprofile-config-api</artifactId>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
-
-        <dependency>
-            <groupId>io.smallrye.config</groupId>
-            <artifactId>smallrye-config</artifactId>
-            <exclusions>
-               <exclusion>
-                   <!-- rls test
-                  <groupId>javax.annotation</groupId>
-                  <artifactId>javax.annotation-api</artifactId>
-                   -->
-                   <groupId>org.jboss.spec.javax.annotation</groupId>
-                   <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-               </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 

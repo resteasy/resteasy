@@ -242,40 +242,7 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>transform-ee9</id>
-                                <phase>process-test-classes</phase>
-                                <configuration>
-                                    <includeProjectDependencies>true</includeProjectDependencies>
-                                    <executableDependency>
-                                        <groupId>org.wildfly.galleon-plugins</groupId>
-                                        <artifactId>transformer</artifactId>
-                                    </executableDependency>
-                                    <mainClass>org.wildfly.galleon.plugin.transformer.JakartaTransformer</mainClass>
-                                    <arguments>
-                                        <argument>${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}</argument>
-                                        <argument>${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}</argument>
-                                    </arguments>
-
-                                </configuration>
-
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
+                            <!-- rls test move of code START -->
                             <execution>
                                 <id>initialize-basedirs</id>
                                 <phase>process-test-classes</phase>
@@ -343,7 +310,7 @@
                                         <copy file="${container.base.dir.manual.tracing}/configuration/standalone-full.xml"
                                               tofile="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml"/>
                                         <replace
-                                                file="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml">
+                                              file="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml">
                                             <replacetoken><![CDATA[="INFO"]]></replacetoken>
                                             <replacevalue><![CDATA[="DEBUG"]]></replacevalue>
                                         </replace>
@@ -353,9 +320,37 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
+                            <!-- rls test move of code END -->
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>transform-ee9</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <includeProjectDependencies>true</includeProjectDependencies>
+                                    <executableDependency>
+                                        <groupId>org.wildfly.galleon-plugins</groupId>
+                                        <artifactId>transformer</artifactId>
+                                    </executableDependency>
+                                    <mainClass>org.wildfly.galleon.plugin.transformer.JakartaTransformer</mainClass>
+                                    <arguments>
+                                        <argument>${project.build.directory}/test-server/resteasy-jboss-modules-${project.version}</argument>
+                                        <argument>${project.build.directory}/test-server/resteasy-ee9-jboss-modules-${project.version}</argument>
+                                    </arguments>
 
+                                </configuration>
+
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
