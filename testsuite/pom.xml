@@ -414,6 +414,7 @@
                                 <goals><goal>run</goal></goals>
                                 <inherited>false</inherited>
                                 <configuration>
+                                    <skip>${skipTests}</skip>
                                     <target>
                                         <property name="result.report.dir" location="target/jacoco-report"/>
                                         <taskdef name="report" classname="org.jacoco.ant.ReportTask">

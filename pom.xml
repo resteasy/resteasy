@@ -36,10 +36,15 @@
         <jdk.min.version>${maven.compiler.source}</jdk.min.version>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args}</surefire.system.args>
+
+        <maven.test.skip>false</maven.test.skip>
+        <skipTests>${maven.test.skip}</skipTests>
+
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
         <version.compiler.plugin>3.8.0-jboss-2</version.compiler.plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Beta1</version.org.wildfly.plugins.wildfly-maven-plugin>
     </properties>
 
     <url>https://jboss.org/resteasy</url>
@@ -140,36 +145,6 @@
                 </dependencies>
             </dependencyManagement>
         </profile>
-        <profile>
-            <id>travis</id>
-            <activation>
-                <property>
-                    <name>travis</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <executions>
-                         <!-- default test execution -->
-                            <execution>
-                                <id>default-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                 <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                     <!--Temporarily exclude the tests only failed on Travis-->
-                                     <excludes combine.children="append">
-                                     </excludes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-      </profile>
       <profile>
           <id>modular.jvm</id>
           <activation>
@@ -286,6 +261,12 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${version.org.jacoco.plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
