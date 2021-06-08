@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
+import org.jboss.resteasy.client.jaxrs.internal.UniPublisherRxInvokerImpl;
 import org.reactivestreams.Publisher;
 
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class SingleRxInvokerImpl implements SingleRxInvoker
       publisherInvoker = new SinglePublisherInvoker(Objects.requireNonNull(builder));
    }
 
-   static class SinglePublisherInvoker extends PublisherRxInvokerImpl
+   static class SinglePublisherInvoker extends UniPublisherRxInvokerImpl
    {
       SinglePublisherInvoker(final ClientInvocationBuilder builder)
       {

@@ -11,11 +11,11 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
-public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
+public abstract class UniPublisherRxInvokerImpl implements UniPublisherRxInvoker {
 
     private final ClientInvocationBuilder builder;
 
-    public PublisherRxInvokerImpl(final ClientInvocationBuilder builder) {
+    public UniPublisherRxInvokerImpl(final ClientInvocationBuilder builder) {
         this.builder = builder;
     }
 
