@@ -29,17 +29,23 @@
         <jboss.home/>
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-        <!-- Modularized JDK support (various workarounds) - activated via profile -->
-        <modular.jdk.args/>
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.2.5</maven.min.version>
-        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+
+        <!-- Require at least Java 11 to compile, but compile down to Java 8 -->
+        <jdk.min.version>11</jdk.min.version>
+        <javadoc.additional.params>--release=8</javadoc.additional.params>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args}</surefire.system.args>
+        <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
+        <skip.java8.tests>false</skip.java8.tests>
+
+        <maven.test.skip>false</maven.test.skip>
+        <skipTests>${maven.test.skip}</skipTests>
+
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
-        <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
         <version.compiler.plugin>3.8.0-jboss-2</version.compiler.plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Beta1</version.org.wildfly.plugins.wildfly-maven-plugin>
     </properties>
 
     <url>https://jboss.org/resteasy</url>
@@ -140,49 +146,40 @@
                 </dependencies>
             </dependencyManagement>
         </profile>
-        <profile>
-            <id>travis</id>
-            <activation>
-                <property>
-                    <name>travis</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <executions>
-                         <!-- default test execution -->
-                            <execution>
-                                <id>default-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                 <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                     <!--Temporarily exclude the tests only failed on Travis-->
-                                     <excludes combine.children="append">
-                                     </excludes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-      </profile>
       <profile>
-          <id>modular.jvm</id>
+          <id>java8.tests</id>
           <activation>
-              <jdk>[9,)</jdk>
+              <property>
+                  <name>java8.home</name>
+              </property>
           </activation>
-          <properties>
-              <modular.jdk.args>
-                  --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
-                  --add-modules=java.se
-                  --add-opens=java.base/java.util=ALL-UNNAMED
-                  --add-opens=java.base/java.security=ALL-UNNAMED
-              </modular.jdk.args>
-          </properties>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-surefire-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <id>java8-test</id>
+                              <phase>test</phase>
+                              <goals>
+                                  <goal>test</goal>
+                              </goals>
+                              <configuration>
+                                  <skip>${skip.java8.tests}</skip>
+                                  <jvm>${java8.home}/bin/java</jvm>
+                                  <additionalClasspathElements>
+                                      <additionalClasspathElement>${java8.home}/lib/tools.jar</additionalClasspathElement>
+                                  </additionalClasspathElements>
+                                  <environmentVariables>
+                                      <JAVA_HOME>${java8.home}</JAVA_HOME>
+                                  </environmentVariables>
+                              </configuration>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
       </profile>
       <profile>
           <id>github-actions</id>
@@ -246,6 +243,22 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <configuration>
+                                <release>8</release>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${version.surefire.plugin}</version>
                     <configuration>
@@ -257,9 +270,8 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${version.javadoc.plugin}</version>
                     <configuration>
-                        <source>8</source>
+                        <doclint>none</doclint>
                         <minmemory>128m</minmemory>
                         <maxmemory>1024m</maxmemory>
                         <quiet>false</quiet>
@@ -286,6 +298,12 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${version.org.jacoco.plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -383,20 +401,6 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence></dependencyConvergence>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>use-java-8-for-release</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[1.8,9)</version>
-                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
