@@ -37,9 +37,7 @@ import java.util.Map;
 /**
  * @tpSubChapter Security
  * @tpChapter Integration tests
- * @tpTestCaseDetails Two different security domains in two deployments. Both domains are by default created in PicketBox
- * security subsystem. When running server and tests Elytron enabled, domain in the deployment 2 is created
- * in the Elytron subsystem.
+ * @tpTestCaseDetails Two different security domains in two deployments. Both domains are by default created in Elytron.
  * @tpSince RESTEasy 3.0.21
  */
 @ServerSetup(TwoSecurityDomainsTest.SecurityDomainSetup.class)
