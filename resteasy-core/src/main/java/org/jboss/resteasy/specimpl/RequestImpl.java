@@ -23,6 +23,7 @@ import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Variant;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -89,7 +90,9 @@ public class RequestImpl implements Request
          String[] split = tag.split(",");
          for (String etag : split)
          {
-            result.add(EntityTag.valueOf(etag.trim()));
+            result.add(RuntimeDelegate.getInstance()
+                    .createHeaderDelegate(EntityTag.class)
+                    .fromString(etag.trim()));
          }
       }
       return result;

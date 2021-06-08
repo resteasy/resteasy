@@ -178,9 +178,9 @@ public class ServletContainerDispatcher
             }
          }
       }
-      if (config.getSingletons() != null)
+      if (config.getClasses() != null)
       {
-         for (Object obj : config.getSingletons())
+         for (Object obj : config.getClasses())
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {

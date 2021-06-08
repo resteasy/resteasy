@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.providerfactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -950,8 +951,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
    }
 
-   public void addInjectorFactory(Class provider) throws InstantiationException, IllegalAccessException {
-      this.injectorFactory = (InjectorFactory) provider.newInstance();
+   public void addInjectorFactory(Class provider) throws InstantiationException, IllegalAccessException,
+           InvocationTargetException, NoSuchMethodException {
+      this.injectorFactory = (InjectorFactory) provider.getDeclaredConstructor().newInstance();
    }
 
    public void addContextInjector(Class provider) {

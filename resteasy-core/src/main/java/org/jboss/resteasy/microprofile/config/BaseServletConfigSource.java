@@ -22,7 +22,7 @@ public class BaseServletConfigSource implements ConfigSource {
         this.defaultOrdinal = defaultOrdinal;
         if (sourceClass != null) {
             try {
-                source = (ConfigSource)sourceClass.newInstance();
+                source = (ConfigSource)sourceClass.getDeclaredConstructor().newInstance();
                 name = source.getName();
                 available = true;
             } catch (Throwable e) {
