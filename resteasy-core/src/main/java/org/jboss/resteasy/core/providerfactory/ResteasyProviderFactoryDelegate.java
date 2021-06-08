@@ -635,7 +635,6 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
 
    @Override
    public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
-      //TODO：3.1 implementation
       return null;
    }
 
