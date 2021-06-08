@@ -39,6 +39,8 @@ import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BootstrapConfigurationBuilderImpl;
+import org.jboss.resteasy.specimpl.EntityPartBuilderImpl;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
@@ -1684,8 +1686,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    @Override
    public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
-      //TODO：3.1 implementation
-      return null;
+      return new BootstrapConfigurationBuilderImpl();
    }
 
    @Override
@@ -1697,8 +1698,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    @Override
    public EntityPart.Builder createEntityPartBuilder(String partName) throws IllegalArgumentException {
-      //TODO：3.1 implementation
-      return null;
+      return new EntityPartBuilderImpl(partName);
    }
 
    public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
