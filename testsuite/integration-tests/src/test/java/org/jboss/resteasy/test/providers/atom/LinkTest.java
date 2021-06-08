@@ -17,6 +17,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,8 +77,8 @@ public class LinkTest {
    public void testRelativeLinkStringOutput() throws Exception {
       Response response = client.target(generateURL("/products/333")).request().get();
       String stringResponse = response.readEntity(String.class);
-      Assert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products/333/self\""));
-      Assert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products\""));
+      assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products/333/self\""));
+      assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products\""));
       response.close();
    }
 }

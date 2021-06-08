@@ -14,7 +14,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,10 +95,10 @@ public class RESTEasyParamCdiTest {
                   .param("formParam2", defaultValue)
                   .param("formParam3", defaultValue)
             ));
-         Assert.assertThat("expected response code is 200, get: " + response.getStatus(),
+         assertThat("expected response code is 200, get: " + response.getStatus(),
             response.getStatus(), is(200));
          String message = response.readEntity(String.class);
-         Assert.assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
+         assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
       }
    }
 
@@ -136,10 +136,10 @@ public class RESTEasyParamCdiTest {
                          .param("formParam2", defaultValue)
                          .param("formParam3", defaultValue)
                  ));
-         Assert.assertThat("expected response code is 200, get: " + response.getStatus(),
+         assertThat("expected response code is 200, get: " + response.getStatus(),
                  response.getStatus(), is(200));
          String message = response.readEntity(String.class);
-         Assert.assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
+         assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
       }
    }
 }

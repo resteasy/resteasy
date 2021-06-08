@@ -18,6 +18,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,7 +89,7 @@ public class JAXRS21PatchTest extends ClientTestBase {
    @Test
    public void testOptionsContainsAllowPatch() throws Exception {
       Response res = client.target(generateURL("/test")).request().options();
-      Assert.assertThat(res.getHeaderString("Allow"), CoreMatchers.containsString("PATCH"));
+      assertThat(res.getHeaderString("Allow"), CoreMatchers.containsString("PATCH"));
       res.close();
    }
 

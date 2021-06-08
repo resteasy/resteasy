@@ -4,12 +4,12 @@ import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.hamcrest.CoreMatchers;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public class ClientHeaderFillingTest {
     @Test
     public void checkIfFillerFactoryWithHigherPrioritySelected() {
         List<String> result = container.select(ClientInvokingBean.class).get().getHeaders();
-        Assert.assertThat(result, CoreMatchers.hasItems("high", "prio"));
+        assertThat(result, CoreMatchers.hasItems("high", "prio"));
     }
 
     @AfterClass

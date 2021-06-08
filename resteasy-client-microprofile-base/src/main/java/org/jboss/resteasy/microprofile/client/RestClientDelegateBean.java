@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -145,7 +146,13 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
     private void registerHostnameVerifier(String verifier, RestClientBuilder builder) {
         try {
             Class<?> verifierClass = Class.forName(verifier, true, Thread.currentThread().getContextClassLoader());
-            builder.hostnameVerifier((HostnameVerifier) verifierClass.newInstance());
+            builder.hostnameVerifier((HostnameVerifier) verifierClass
+                    .getDeclaredConstructor()
+                    .newInstance());
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(verifier, e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Could not find no args class constructor" + verifier, e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Could not find hostname verifier class" + verifier, e);
         } catch (InstantiationException | IllegalAccessException e) {

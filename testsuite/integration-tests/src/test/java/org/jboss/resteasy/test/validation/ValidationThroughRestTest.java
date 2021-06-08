@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -65,7 +66,7 @@ public class ValidationThroughRestTest {
       builder.accept(MediaType.TEXT_PLAIN_TYPE);
       Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
       String responseBody = response.readEntity(String.class);
-      Assert.assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
+      assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
       Assert.assertTrue("Wrong validation error", responseBody.contains("may not be null") || responseBody.contains("must not be null"));
       client.close();
    }

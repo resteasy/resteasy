@@ -10,6 +10,7 @@ import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -58,13 +59,13 @@ public class JWSTest {
       JWSHeader header = new JWSHeader(Algorithm.HS256, null, null);
       String val = header.toString();
       logger.info(val);
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+      assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
+      assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
       header = mapper.readValue(val, JWSHeader.class);
       val = mapper.writeValueAsString(header);
       logger.info(val);
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+      assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
+      assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
    }
 
    /**
@@ -150,7 +151,7 @@ public class JWSTest {
               .rsa256(keyPair.getPrivate());
 
       logger.info(encoded);
-      Assert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
+      assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
 
       JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
       String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);

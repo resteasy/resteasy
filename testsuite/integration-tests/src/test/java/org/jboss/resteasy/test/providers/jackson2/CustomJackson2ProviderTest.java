@@ -25,6 +25,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,7 +97,7 @@ public class CustomJackson2ProviderTest {
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat("Jackson2Provider jar was loaded from unexpected source",
+      MatcherAssert.assertThat("Jackson2Provider jar was loaded from unexpected source",
             entity, containsString(CustomJackson2ProviderTest.class.getSimpleName() + ".war/WEB-INF/lib/resteasy-jackson2-provider"));
    }
 

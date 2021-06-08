@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,14 +65,14 @@ public class MatchedResourceTest {
    public void testEmpty() throws Exception {
       WebTarget base = client.target(generateURL("/start"));
       Response response = base.request().post(Entity.text(""));
-      Assert.assertThat(response.getStatus(), is(HttpResponseCodes.SC_OK));
+      assertThat(response.getStatus(), is(HttpResponseCodes.SC_OK));
       String rtn = response.readEntity(String.class);
       Assert.assertEquals("started", rtn);
       response.close();
 
       base = client.target(generateURL("/start"));
       response = base.request().post(Entity.entity("<xml/>", "application/xml"));
-      Assert.assertThat(response.getStatus(), is(HttpResponseCodes.SC_OK));
+      assertThat(response.getStatus(), is(HttpResponseCodes.SC_OK));
       rtn = response.readEntity(String.class);
       Assert.assertEquals("Wrong response content", rtn, "<xml/>");
       response.close();

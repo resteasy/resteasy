@@ -17,6 +17,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -98,10 +99,10 @@ public class ResourceClassProcessorPriorityTest {
       }
 
       // asserts
-      Assert.assertThat(visitedProcessors.size(), greaterThanOrEqualTo(3));
-      Assert.assertThat(visitedProcessors.get(0), is("A"));
-      Assert.assertThat(visitedProcessors.get(1), is("C"));
-      Assert.assertThat(visitedProcessors.get(2), is("B"));
+      assertThat(visitedProcessors.size(), greaterThanOrEqualTo(3));
+      assertThat(visitedProcessors.get(0), is("A"));
+      assertThat(visitedProcessors.get(1), is("C"));
+      assertThat(visitedProcessors.get(2), is("B"));
 
       // close client
       client.close();

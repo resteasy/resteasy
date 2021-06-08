@@ -18,6 +18,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,7 +96,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedString() throws Exception {
       String strResponse = requestHelper("string", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of String", strResponse, containsString("someString"));
+      assertThat("Wrong conversion of String", strResponse, containsString("someString"));
    }
 
    /**
@@ -105,7 +106,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedDate() throws Exception {
       String strResponse = requestHelper("date", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(true));
+      assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(true));
    }
 
    /**
@@ -115,7 +116,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedOptionalNull() throws Exception {
       String strResponse = requestHelper("optional/true", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Optional (null)", strResponse, not(containsString("null")));
+      assertThat("Wrong conversion of Optional (null)", strResponse, not(containsString("null")));
    }
 
    /**
@@ -125,7 +126,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedOptionalNotNull() throws Exception {
       String strResponse = requestHelper("optional/false", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Optional (not null)", strResponse, not(containsString("info@example.com")));
+      assertThat("Wrong conversion of Optional (not null)", strResponse, not(containsString("info@example.com")));
    }
 
    /**
@@ -135,7 +136,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedString() throws Exception {
       String strResponse = requestHelper("string", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of String", strResponse, containsString("someString"));
+      assertThat("Wrong conversion of String", strResponse, containsString("someString"));
    }
 
    /**
@@ -145,7 +146,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedDate() throws Exception {
       String strResponse = requestHelper("date", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(false));
+      assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(false));
    }
 
    /**
@@ -155,7 +156,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedDuration() throws Exception {
       String strResponse = requestHelper("duration", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Duration", strResponse, containsString("5.000000006"));
+      assertThat("Wrong conversion of Duration", strResponse, containsString("5.000000006"));
    }
 
    /**
@@ -165,7 +166,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedOptionalNull() throws Exception {
       String strResponse = requestHelper("optional/true", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Optional (null)", strResponse, containsString("null"));
+      assertThat("Wrong conversion of Optional (null)", strResponse, containsString("null"));
    }
 
    /**
@@ -175,6 +176,6 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedOptionalNotNull() throws Exception {
       String strResponse = requestHelper("optional/false", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Optional (not null)", strResponse, containsString("info@example.com"));
+      assertThat("Wrong conversion of Optional (not null)", strResponse, containsString("info@example.com"));
    }
 }

@@ -4,6 +4,7 @@ import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -69,7 +70,7 @@ public class HeadersLowerCasedTest
         Assert.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String value = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
-        Assert.assertThat(value, CoreMatchers.is("connection,dummy-key,host"));
+        assertThat(value, CoreMatchers.is("connection,dummy-key,host"));
     }
 
     @Test
@@ -79,7 +80,7 @@ public class HeadersLowerCasedTest
         Assert.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String headerValue = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
-        Assert.assertThat(headerValue, CoreMatchers.is("dummyValue"));
+        assertThat(headerValue, CoreMatchers.is("dummyValue"));
     }
 
     private Optional<String> mkCall(final String path) throws IOException {

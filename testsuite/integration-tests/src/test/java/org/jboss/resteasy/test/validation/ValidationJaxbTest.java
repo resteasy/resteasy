@@ -39,6 +39,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -193,14 +194,14 @@ public class ValidationJaxbTest {
       Assert.assertNotNull("Validation header is missing", header);
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       String report = response.readEntity(String.class);
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
       response.close();
    }
 
    private void assertValidationReport(Response response)  {
       JsonPath jsonPath = new JsonPath(response.readEntity(String.class));
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.constraintType"), Matchers.hasItem("PROPERTY"));
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("s"));
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.constraintType"), Matchers.hasItem("PROPERTY"));
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("s"));
    }
 }
 

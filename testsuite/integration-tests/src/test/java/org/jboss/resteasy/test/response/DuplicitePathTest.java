@@ -19,6 +19,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -104,7 +105,7 @@ public class DuplicitePathTest {
          response = base.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          String strResponse = response.readEntity(String.class);
-         Assert.assertThat("Wrong body of response", strResponse,
+         assertThat("Wrong body of response", strResponse,
                either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
                      .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
       } finally {
@@ -128,7 +129,7 @@ public class DuplicitePathTest {
          response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          String strResponse = response.readEntity(String.class);
-         Assert.assertThat("Wrong body of response", strResponse,
+         assertThat("Wrong body of response", strResponse,
                is(DuplicitePathMethodResource.NO_DUPLICITE_RESPONSE));
       } finally {
          response.close();
@@ -151,7 +152,7 @@ public class DuplicitePathTest {
          response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          String strResponse = response.readEntity(String.class);
-         Assert.assertThat("Wrong body of response", strResponse,
+         assertThat("Wrong body of response", strResponse,
                is(DuplicitePathMethodResource.DUPLICITE_TYPE_GET));
       } finally {
          response.close();
@@ -174,7 +175,7 @@ public class DuplicitePathTest {
          response = base.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          String strResponse = response.readEntity(String.class);
-         Assert.assertThat("Wrong body of response", strResponse,
+         assertThat("Wrong body of response", strResponse,
                either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
                      .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
       } finally {
@@ -195,7 +196,7 @@ public class DuplicitePathTest {
       try {
          response = base.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Wrong body of response", response.readEntity(String.class),
+         assertThat("Wrong body of response", response.readEntity(String.class),
                either(is(DuplicitePathMethodResource.DUPLICITE_RESPONSE_1))
                      .or(is(DuplicitePathMethodResource.DUPLICITE_RESPONSE_2)));
       } finally {

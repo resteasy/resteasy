@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.runner.RunWith;
 
 import jakarta.ws.rs.client.Entity;
@@ -435,7 +436,7 @@ public class SecureProcessing2Test {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         Assert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
@@ -443,7 +444,7 @@ public class SecureProcessing2Test {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         Assert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
@@ -451,7 +452,7 @@ public class SecureProcessing2Test {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         Assert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
@@ -459,7 +460,7 @@ public class SecureProcessing2Test {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         Assert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
@@ -467,7 +468,7 @@ public class SecureProcessing2Test {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         Assert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
    }
 
@@ -548,9 +549,9 @@ public class SecureProcessing2Test {
       String entity = response.readEntity(String.class);
       logger.info("doDTDFails(): result: " + entity);
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-      Assert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
-      Assert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
-      Assert.assertThat("Wrong content of response", entity, containsString("true"));
+      MatcherAssert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+      MatcherAssert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
+      MatcherAssert.assertThat("Wrong content of response", entity, containsString("true"));
    }
 
    void doDTDFailsWithApacheLinkMessage(String ext) throws Exception {
@@ -561,10 +562,10 @@ public class SecureProcessing2Test {
       String entity = response.readEntity(String.class);
       logger.info("doDTDFails(): result: " + entity);
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-      Assert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
-      Assert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
-      Assert.assertThat("Wrong content of response", entity, containsString("http:&#x2F;&#x2F;apache.org&#x2F;xml&#x2F;features&#x2F;disallow-doctype-decl"));
-      Assert.assertThat("Wrong content of response", entity, containsString("true"));
+      MatcherAssert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
+      MatcherAssert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
+      MatcherAssert.assertThat("Wrong content of response", entity, containsString("http:&#x2F;&#x2F;apache.org&#x2F;xml&#x2F;features&#x2F;disallow-doctype-decl"));
+      MatcherAssert.assertThat("Wrong content of response", entity, containsString("true"));
    }
 
    void doDTDPasses(String ext) throws Exception {
@@ -574,7 +575,7 @@ public class SecureProcessing2Test {
       String entity = response.readEntity(String.class);
       logger.info("doDTDPasses() result: " + entity);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat("Wrong content of response", entity, containsString("junk"));
+      MatcherAssert.assertThat("Wrong content of response", entity, containsString("junk"));
    }
 
    void doExternalEntityExpansionFails(String ext) throws Exception {
@@ -585,7 +586,7 @@ public class SecureProcessing2Test {
          String entity = response.readEntity(String.class);
          logger.info("doExternalEntityExpansionFails() result: " + entity);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Wrong content of response", entity, isEmptyString());
+         MatcherAssert.assertThat("Wrong content of response", entity, isEmptyString());
       }
       {
          Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
@@ -594,7 +595,7 @@ public class SecureProcessing2Test {
          String entity = response.readEntity(String.class);
          logger.info("doExternalEntityExpansionFails() result: " + entity);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Wrong content of response", entity, isEmptyString());
+         MatcherAssert.assertThat("Wrong content of response", entity, isEmptyString());
       }
       {
          Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
@@ -602,7 +603,7 @@ public class SecureProcessing2Test {
          String entity = response.readEntity(String.class);
          logger.info("doExternalEntityExpansionFails() result: " + entity);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Wrong content of response", entity, isEmptyString());
+         MatcherAssert.assertThat("Wrong content of response", entity, isEmptyString());
       }
       {
          Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
@@ -610,7 +611,7 @@ public class SecureProcessing2Test {
          String entity = response.readEntity(String.class);
          logger.info("doExternalEntityExpansionFails() result: " + entity);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Wrong content of response", entity, isEmptyString());
+         MatcherAssert.assertThat("Wrong content of response", entity, isEmptyString());
       }
       {
          Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
@@ -618,7 +619,7 @@ public class SecureProcessing2Test {
          String entity = response.readEntity(String.class);
          logger.info("doExternalEntityExpansionFails() result: " + entity);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Wrong content of response", entity, isEmptyString());
+         MatcherAssert.assertThat("Wrong content of response", entity, isEmptyString());
       }
    }
 
@@ -632,7 +633,7 @@ public class SecureProcessing2Test {
          int len = Math.min(entity.length(), 30);
          logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Content of response should contain password", entity, is("xx:xx:xx:xx:xx:xx:xx"));
+         MatcherAssert.assertThat("Content of response should contain password", entity, is("xx:xx:xx:xx:xx:xx:xx"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
@@ -641,7 +642,7 @@ public class SecureProcessing2Test {
          int len = Math.min(entity.length(), 30);
          logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Content of response should contain password", entity, is("xx:xx:xx:xx:xx:xx:xx"));
+         MatcherAssert.assertThat("Content of response should contain password", entity, is("xx:xx:xx:xx:xx:xx:xx"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
@@ -650,7 +651,7 @@ public class SecureProcessing2Test {
          int len = Math.min(entity.length(), 30);
          logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Content of response should contain password", entity, is("xx:xx:xx:xx:xx:xx:xx"));
+         MatcherAssert.assertThat("Content of response should contain password", entity, is("xx:xx:xx:xx:xx:xx:xx"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
@@ -659,7 +660,7 @@ public class SecureProcessing2Test {
          int len = Math.min(entity.length(), 30);
          logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Content of response should contain password twice", entity, is("xx:xx:xx:xx:xx:xx:xxxx:xx:xx:xx:xx:xx:xx"));
+         MatcherAssert.assertThat("Content of response should contain password twice", entity, is("xx:xx:xx:xx:xx:xx:xxxx:xx:xx:xx:xx:xx:xx"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
@@ -668,7 +669,7 @@ public class SecureProcessing2Test {
          int len = Math.min(entity.length(), 30);
          logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertThat("Content of response should contain password twice", entity, is("xx:xx:xx:xx:xx:xx:xxxx:xx:xx:xx:xx:xx:xx"));
+         MatcherAssert.assertThat("Content of response should contain password twice", entity, is("xx:xx:xx:xx:xx:xx:xxxx:xx:xx:xx:xx:xx:xx"));
       }
    }
 

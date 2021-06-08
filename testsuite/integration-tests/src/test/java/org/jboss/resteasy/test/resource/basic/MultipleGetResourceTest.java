@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
@@ -85,6 +86,6 @@ public class MultipleGetResourceTest {
         Response  response = base.request().get();
         Assert.assertEquals(500, response.getStatus());
         response.close();
-        Assert.assertThat(errorStringLog.count(), is(2));
+        assertThat(errorStringLog.count(), is(2));
     }
 }

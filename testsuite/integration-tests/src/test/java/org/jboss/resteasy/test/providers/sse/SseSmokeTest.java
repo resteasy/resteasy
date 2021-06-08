@@ -14,6 +14,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,7 +79,7 @@ public class SseSmokeTest {
          Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
       }
       Assert.assertEquals("One message was expected.", 1, results.size());
-      Assert.assertThat("The message doesn't have expected content.","Zeytin;zeytin@resteasy.org",
+      assertThat("The message doesn't have expected content.","Zeytin;zeytin@resteasy.org",
             CoreMatchers.is(CoreMatchers.equalTo(results.get(0))));
    }
 }

@@ -14,7 +14,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +73,7 @@ public class ValidationHibernateI18NTest {
       ViolationReport report = response.readEntity(ViolationReport.class);
       String message = report.getReturnValueViolations().iterator().next().getMessage();
       TestUtil.countViolations(report, 0, 0, 0, 1);
-      Assert.assertThat(WRONG_ERROR_MSG, message, startsWith(expectedMessage));
+      assertThat(WRONG_ERROR_MSG, message, startsWith(expectedMessage));
       response.close();
    }
 }

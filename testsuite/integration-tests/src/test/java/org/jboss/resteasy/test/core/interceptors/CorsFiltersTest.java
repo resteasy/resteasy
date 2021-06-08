@@ -18,6 +18,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
@@ -100,7 +101,7 @@ public class CorsFiltersTest {
       Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
       response.close();
 
-      Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+      assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
       CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
 
       corsFilter.getAllowedOrigins().add(testedURL);
@@ -129,7 +130,7 @@ public class CorsFiltersTest {
       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/test"));
 
-      Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+      assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
       CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
       corsFilter.getAllowedOrigins().add(testedURL);
 

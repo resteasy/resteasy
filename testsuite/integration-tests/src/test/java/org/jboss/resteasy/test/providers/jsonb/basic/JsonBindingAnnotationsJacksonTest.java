@@ -24,6 +24,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,7 +104,7 @@ public class JsonBindingAnnotationsJacksonTest {
               new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
       Cat json = target.request().post(entity, Cat.class);
       logger.info("Request entity: " + entity);
-      Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
+      assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
               json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
    }
    /**
@@ -122,7 +123,7 @@ public class JsonBindingAnnotationsJacksonTest {
               new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
       Cat json = target.request().post(entity, Cat.class);
       logger.info("Request entity: " + entity);
-      Assert.assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
+      assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
               json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
    }
 
@@ -147,10 +148,10 @@ public class JsonBindingAnnotationsJacksonTest {
          logger.info("Request entity: " + entity);
          Response response = target.request().post(entity);
          // check server logs
-         Assert.assertThat("Server prints some error messages during the request", errorLogCounter.count(), is(0));
+         assertThat("Server prints some error messages during the request", errorLogCounter.count(), is(0));
          // check response
          int responseCode = response.getStatus();
-         Assert.assertThat("Wrong response code", responseCode, is(400));
+         assertThat("Wrong response code", responseCode, is(400));
          String responseBody = response.readEntity(String.class);
          Assert.assertTrue("Wrong response error message: " + responseBody,
                  responseBody.startsWith("jakarta.ws.rs.ProcessingException: RESTEASY008200"));

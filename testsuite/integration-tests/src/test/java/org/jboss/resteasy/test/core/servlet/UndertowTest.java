@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -62,7 +63,7 @@ public class UndertowTest {
       conn.connect();
       byte[] b = new byte[16];
       conn.getInputStream().read(b);
-      Assert.assertThat("Wrong content of response", new String(b), CoreMatchers.startsWith("forward"));
+      assertThat("Wrong content of response", new String(b), CoreMatchers.startsWith("forward"));
       Assert.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
       conn.disconnect();
    }

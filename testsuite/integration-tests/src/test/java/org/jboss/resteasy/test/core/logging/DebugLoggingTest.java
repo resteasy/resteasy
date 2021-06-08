@@ -20,6 +20,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -120,10 +121,10 @@ public class DebugLoggingTest {
       Assert.assertEquals("Wrong response", "data", strResponse);
 
       // assert log messages after request
-      Assert.assertThat("Correct body reader was not used/logged", bodyReaderStringLog.count(), greaterThan(0));
-      Assert.assertThat("Correct body writer was not used/logged", bodyWriterStringLog.count(), greaterThan(0));
-      Assert.assertThat("Correct reader interceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
-      Assert.assertThat("Correct writer interceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
+      assertThat("Correct body reader was not used/logged", bodyReaderStringLog.count(), greaterThan(0));
+      assertThat("Correct body writer was not used/logged", bodyWriterStringLog.count(), greaterThan(0));
+      assertThat("Correct reader interceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
+      assertThat("Correct writer interceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
    }
 
    /**
@@ -150,12 +151,12 @@ public class DebugLoggingTest {
       Assert.assertEquals("Wrong response", "wi_datadata", strResponse);
 
       // assert log messages after request
-      Assert.assertThat("Incorrect body reader was used/logged", bodyReaderStringLog.count(), is(0));
-      Assert.assertThat("Incorrect body writer was used/logged", bodyWriterStringLog.count(), is(0));
-      Assert.assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
-      Assert.assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
-      Assert.assertThat("Correct body reader was not used/logged", bodyReaderCustomLog.count(), greaterThan(0));
-      Assert.assertThat("Correct body writer was not used/logged", bodyWriterCustomLog.count(), greaterThan(0));
+      assertThat("Incorrect body reader was used/logged", bodyReaderStringLog.count(), is(0));
+      assertThat("Incorrect body writer was used/logged", bodyWriterStringLog.count(), is(0));
+      assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
+      assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
+      assertThat("Correct body reader was not used/logged", bodyReaderCustomLog.count(), greaterThan(0));
+      assertThat("Correct body writer was not used/logged", bodyWriterCustomLog.count(), greaterThan(0));
    }
 
 }

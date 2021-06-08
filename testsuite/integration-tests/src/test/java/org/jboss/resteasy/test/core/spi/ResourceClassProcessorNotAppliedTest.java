@@ -14,6 +14,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -91,7 +92,7 @@ public class ResourceClassProcessorNotAppliedTest {
       }
 
       // asserts
-      Assert.assertThat("ResourceClassProcessor was used although it should not be used",
+      assertThat("ResourceClassProcessor was used although it should not be used",
             visitedProcessors.size(), greaterThanOrEqualTo(0));
 
       // close client

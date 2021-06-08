@@ -18,6 +18,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -124,7 +125,7 @@ public class CollectionCoreTest {
       response = request.put(Entity.entity(str, "application/xml"));
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
       response.close();
-      Assert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+      assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
    }
 
    /**
@@ -142,7 +143,7 @@ public class CollectionCoreTest {
       response = request.put(Entity.entity(str, "application/xml"));
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
       response.close();
-      Assert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+      assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
    }
 
    /**
@@ -157,7 +158,7 @@ public class CollectionCoreTest {
       String str = response.readEntity(String.class);
       logger.info(String.format("Response: %s", str));
       response.close();
-      Assert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+      assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
    }
 
 }

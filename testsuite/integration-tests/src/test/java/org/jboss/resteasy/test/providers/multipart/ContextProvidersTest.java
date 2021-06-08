@@ -53,6 +53,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -194,9 +195,9 @@ public class ContextProvidersTest {
             InputPart inputPart = it.next();
             customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
          }
-         Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
-         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+         assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
+         assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
+         assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
       } catch (Exception e) {
          throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
@@ -229,9 +230,9 @@ public class ContextProvidersTest {
                customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
             }
          }
-         Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
-         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+         assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
+         assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
+         assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
       } catch (Exception e) {
          throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
@@ -255,17 +256,17 @@ public class ContextProvidersTest {
          Map<String, InputPart> map = entity.getRelatedMap();
          Set<String> keys = map.keySet();
          Assert.assertEquals(2, keys.size());
-         Assert.assertThat("Wrong count of keys from response", new Integer(keys.size()), is(2));
+         assertThat("Wrong count of keys from response", new Integer(keys.size()), is(2));
          Assert.assertTrue(keys.contains("bill"));
          Assert.assertTrue(keys.contains("bob"));
-         Assert.assertThat("Missing key from response", keys, hasItems("bill"));
-         Assert.assertThat("Missing key from response", keys, hasItems("bob"));
+         assertThat("Missing key from response", keys, hasItems("bill"));
+         assertThat("Missing key from response", keys, hasItems("bob"));
          Set<String> parts = new HashSet<>();
          for (InputPart inputPart : map.values()) {
             parts.add(inputPart.getBody(String.class, null));
          }
-         Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
-         Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
+         assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
+         assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
       } catch (Exception e) {
          throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
       }
@@ -358,9 +359,9 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+      assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
    }
 
    /**
@@ -382,9 +383,9 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+      assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
    }
 
    /**
@@ -406,9 +407,9 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bill:Bill")));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bob:Bob")));
+      assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bill:Bill")));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bob:Bob")));
    }
 
    /**
@@ -431,9 +432,9 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
-      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+      assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
+      assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
    }
 
    /**

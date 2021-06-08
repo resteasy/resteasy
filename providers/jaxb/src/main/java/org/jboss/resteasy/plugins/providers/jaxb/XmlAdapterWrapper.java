@@ -76,7 +76,8 @@ class XmlAdapterWrapper extends XmlAdapter<Object, Object>
             try
             {
                Class<?> valueType = Types.getArgumentType(xmlAdapterType, 0);
-               return new XmlAdapterWrapper(adapterClass.newInstance(), valueType);
+               return new XmlAdapterWrapper(
+                       adapterClass.getDeclaredConstructor().newInstance(), valueType);
             }
             catch (Exception e)
             {

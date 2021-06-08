@@ -6,6 +6,7 @@ import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 import org.eclipse.microprofile.rest.client.ext.DefaultClientHeadersFactoryImpl;
 import org.jboss.resteasy.cdi.CdiConstructorInjector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
@@ -86,7 +87,8 @@ public class ClientHeaderProviders {
         Class<? extends ClientHeadersFactory> factoryClass = annotation.value();
         try {
             return Optional.of(construct(factoryClass, beanManager));
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException
+                | NoSuchMethodException | InvocationTargetException e) {
             throw new RestClientDefinitionException(
                     "Failed to instantiate " + factoryClass.getCanonicalName() + ", the client header factory for " + source.getCanonicalName(),
                     e
@@ -100,7 +102,8 @@ public class ClientHeaderProviders {
         );
     }
 
-    private static ClientHeadersFactory construct(final Class<? extends ClientHeadersFactory> factory, final BeanManager manager) throws IllegalAccessException, InstantiationException {
+    private static ClientHeadersFactory construct(final Class<? extends ClientHeadersFactory> factory, final BeanManager manager)
+            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         if (manager != null) {
             Set<Bean<?>> beans = manager.getBeans(factory);
             if (!beans.isEmpty()) {
@@ -109,7 +112,7 @@ public class ClientHeaderProviders {
                 return factory.cast(injector.construct(false));
             }
         }
-        return factory.newInstance();
+        return factory.getDeclaredConstructor().newInstance();
     }
 
     static {

@@ -14,6 +14,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -61,7 +62,7 @@ public class ResourceClassProcessorErrorTest {
          deployer.deploy(DEPLOYMENT_NAME);
          Assert.fail("Exception from ResourceClassProcessor was not thrown");
       } catch (Exception e) {
-         Assert.assertThat("Error message was not printed to server log",
+         assertThat("Error message was not printed to server log",
                errorLogCounter.count(), greaterThanOrEqualTo(1));
          return;
       }

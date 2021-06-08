@@ -14,6 +14,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +80,7 @@ public class AnnotationInheritanceGenericsTest {
       );
 
       Assert.assertNotNull("Response entity list must not be null", entityList);
-      Assert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
+      assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
 
       final AnnotationInheritanceGenericsEntity entity = entityList.iterator().next();
       Assert.assertEquals(

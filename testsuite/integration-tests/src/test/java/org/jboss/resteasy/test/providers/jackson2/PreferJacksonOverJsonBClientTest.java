@@ -13,7 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -116,9 +116,9 @@ public class PreferJacksonOverJsonBClientTest {
       LOG.info("Response: " + responseText);
 
       if (deployment.equals(WAR_WITH_JACKSON2)) {
-         Assert.assertThat("Jackson2 not used.", responseText.matches("^[0-9]*$"), is(true));
+         assertThat("Jackson2 not used.", responseText.matches("^[0-9]*$"), is(true));
       } else {
-         Assert.assertThat("Json-B not used.", responseText.matches("^[0-9]*$"), is(false));
+         assertThat("Json-B not used.", responseText.matches("^[0-9]*$"), is(false));
       }
    }
 }

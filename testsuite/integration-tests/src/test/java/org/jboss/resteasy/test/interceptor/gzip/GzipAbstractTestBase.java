@@ -14,7 +14,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.runner.RunWith;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -27,7 +26,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Abstract base class for gzip tests
@@ -109,9 +108,9 @@ public abstract class GzipAbstractTestBase {
          }
          LOG.info("responseEncoding: " + responseEncoding);
          if (assertServerReturnGzip) {
-            Assert.assertThat("wrong encoding of response", responseEncoding, containsString("gzip"));
+            assertThat("wrong encoding of response", responseEncoding, containsString("gzip"));
          } else {
-            Assert.assertThat("wrong encoding of response", responseEncoding, not(containsString("gzip")));
+            assertThat("wrong encoding of response", responseEncoding, not(containsString("gzip")));
          }
 
          // read data from response

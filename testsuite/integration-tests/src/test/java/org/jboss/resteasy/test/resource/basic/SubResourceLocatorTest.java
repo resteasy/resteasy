@@ -17,7 +17,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -58,7 +58,7 @@ public class SubResourceLocatorTest {
 
       Response response = base.request().get();
       String s = response.readEntity(String.class);
-      Assert.assertThat("Wrong response content", s, is("bill"));
+      assertThat("Wrong response content", s, is("bill"));
       response.close();
       client.close();
    }
