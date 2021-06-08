@@ -6,6 +6,7 @@ import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -303,7 +304,9 @@ public class ClientRequestHeaders
          else
          {
             String str = configuration.toHeaderString(obj);
-            Cookie cookie = Cookie.valueOf(str);
+            Cookie cookie = RuntimeDelegate.getInstance()
+                    .createHeaderDelegate(Cookie.class)
+                    .fromString(str);
             cookies.put(cookie.getName(), cookie);
          }
       }

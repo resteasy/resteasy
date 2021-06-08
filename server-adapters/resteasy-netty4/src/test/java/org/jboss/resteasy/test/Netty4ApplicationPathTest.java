@@ -33,16 +33,24 @@ public class Netty4ApplicationPathTest
    @ApplicationPath("/rest-test")
    public static class TestApplication extends Application
    {
-      private final Set<Object> singletons = new HashSet<>();
+      private final Set<Class<?>> singletons = new HashSet<>();
 
       public TestApplication()
       {
-         singletons.add(new EchoService());
+         singletons.add(EchoService.class);
       }
 
       @Override
-      public Set<Object> getSingletons()
-      {
+      public Set<Object> getSingletons() {
+         Set<Object> tmp = new HashSet<>();
+         for (Class<?> clazz : singletons) {
+            tmp.add(clazz);
+         }
+         return tmp;
+      }
+
+      @Override
+      public Set<Class<?>> getClasses() {
          return singletons;
       }
    }

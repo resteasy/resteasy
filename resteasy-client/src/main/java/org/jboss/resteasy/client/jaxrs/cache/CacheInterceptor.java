@@ -5,6 +5,7 @@ import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.client.ClientResponseContext;
@@ -132,7 +133,9 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
 
       if (cc != null)
       {
-         CacheControl cacheControl = CacheControl.valueOf(cc);
+         CacheControl cacheControl = RuntimeDelegate.getInstance()
+                 .createHeaderDelegate(CacheControl.class)
+                 .fromString(cc);
          if (cacheControl.isNoCache())
          {
             useCacheEntry(response, old);
@@ -188,7 +191,9 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
 
       if (cc != null)
       {
-         CacheControl cacheControl = CacheControl.valueOf(cc);
+         CacheControl cacheControl = RuntimeDelegate.getInstance()
+                 .createHeaderDelegate(CacheControl.class)
+                 .fromString(cc);
          if (cacheControl.isNoCache()) return;
          expires = cacheControl.getMaxAge();
       }
