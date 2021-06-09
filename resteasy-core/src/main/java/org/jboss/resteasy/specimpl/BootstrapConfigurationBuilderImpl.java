@@ -17,7 +17,7 @@ public class BootstrapConfigurationBuilderImpl implements SeBootstrap.Configurat
 
     @Override
     public SeBootstrap.Configuration build() {
-        return null;
+        return new BootstrapConfigurationBuilderImpl.ServerConfiguration();
     }
 
     @Override

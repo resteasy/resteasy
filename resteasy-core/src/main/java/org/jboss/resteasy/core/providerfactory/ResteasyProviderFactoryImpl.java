@@ -22,10 +22,12 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
@@ -37,6 +39,7 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BootstrapConfigurationBuilderImpl;
@@ -53,6 +56,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
@@ -1692,8 +1696,60 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    @Override
    public CompletionStage<SeBootstrap.Instance> bootstrap(Application application,
            SeBootstrap.Configuration configuration) {
-      //TODO：3.1 implementation
-      return null;
+      return CompletableFuture.supplyAsync(new Supplier<SeBootstrap.Instance>()
+      {
+
+         @Override
+         public SeBootstrap.Instance get()
+         {
+            SunHttpJaxrsServer server = new SunHttpJaxrsServer();
+            server.setPort(configuration.port());
+            server.setRootResourcePath(configuration.rootPath());
+            ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+            deployment.setApplication(application);
+            server.setDeployment(deployment);
+            server.start();
+            return new SeBootstrap.Instance()
+            {
+               @Override
+               public SeBootstrap.Configuration configuration()
+               {
+                  return configuration;
+               }
+
+               @Override
+               public CompletionStage<StopResult> stop()
+               {
+                  return CompletableFuture.supplyAsync(new Supplier<StopResult>() {
+                     @Override
+                     public StopResult get()
+                     {
+                        server.stop();
+                        return new StopResult() {
+
+                           @Override
+                           public <T> T unwrap(Class<T> nativeClass)
+                           {
+                              //TODO:implement this;
+                              return null;
+                           }
+
+                        };
+                     }
+
+                  });
+               }
+
+               @Override
+               public <T> T unwrap(Class<T> nativeClass)
+               {
+                  // TODO Auto-generated method stub
+                  return null;
+               }
+
+            };
+         }
+      });
    }
 
    @Override
