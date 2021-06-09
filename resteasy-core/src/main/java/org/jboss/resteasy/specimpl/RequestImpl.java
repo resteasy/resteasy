@@ -23,12 +23,12 @@ import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Variant;
 
-import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
 
 /**
@@ -90,7 +90,7 @@ public class RequestImpl implements Request
          String[] split = tag.split(",");
          for (String etag : split)
          {
-            result.add(RuntimeDelegate.getInstance()
+            result.add(ResteasyProviderFactory.getInstance()
                     .createHeaderDelegate(EntityTag.class)
                     .fromString(etag.trim()));
          }

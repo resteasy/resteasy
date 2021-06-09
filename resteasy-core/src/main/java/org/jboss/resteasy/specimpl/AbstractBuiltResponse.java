@@ -1,6 +1,5 @@
 package org.jboss.resteasy.specimpl;
 
-import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -359,7 +358,7 @@ public abstract class AbstractBuiltResponse extends Response
          else
          {
             String str = toHeaderString(obj);
-            NewCookie cookie = RuntimeDelegate.getInstance()
+            NewCookie cookie = ResteasyProviderFactory.getInstance()
                     .createHeaderDelegate(NewCookie.class)
                     .fromString(str);
             cookies.put(cookie.getName(), cookie);
@@ -374,7 +373,7 @@ public abstract class AbstractBuiltResponse extends Response
       Object d = metadata.getFirst(HttpHeaders.ETAG);
       if (d == null) return null;
       if (d instanceof EntityTag) return (EntityTag) d;
-      return RuntimeDelegate.getInstance()
+      return ResteasyProviderFactory.getInstance()
               .createHeaderDelegate(EntityTag.class)
               .fromString(toHeaderString(d));
    }

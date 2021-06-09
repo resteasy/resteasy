@@ -8,7 +8,7 @@ import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.ext.Provider;
-import jakarta.ws.rs.ext.RuntimeDelegate;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 @Provider
 @PreMatching
@@ -22,7 +22,7 @@ public class FilteredCookieContainerRequestFilter implements ContainerRequestFil
 
       final Cookie cookie = requestContext.getCookies().get(OLD_COOKIE_NAME);
       if (cookie != null) {
-         String value = RuntimeDelegate.getInstance()
+         String value = ResteasyProviderFactory.getInstance()
                  .createHeaderDelegate(Cookie.class)
                  .toString(new Cookie(NEW_COOKIE_NAME, cookie.getValue()));
          requestContext.getHeaders().add(HttpHeaders.COOKIE, value);

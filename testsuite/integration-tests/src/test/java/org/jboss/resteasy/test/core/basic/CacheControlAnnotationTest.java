@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.core.basic;
 
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -63,7 +64,9 @@ public class CacheControlAnnotationTest {
       Response response = base.request().get();
 
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      CacheControl cc = CacheControl.valueOf(response.getHeaderString("cache-control"));
+      CacheControl cc = RuntimeDelegate.getInstance()
+              .createHeaderDelegate(CacheControl.class)
+              .fromString(response.getHeaderString("cache-control"));
       Assert.assertFalse("Cache should not be private", cc.isPrivate());
       Assert.assertEquals("Wrong age of cache", 3600, cc.getMaxAge());
 
@@ -82,7 +85,9 @@ public class CacheControlAnnotationTest {
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
       String value = response.getHeaderString("cache-control");
       Assert.assertEquals("Wrong value of cache header", "no-cache", value);
-      CacheControl cc = CacheControl.valueOf(value);
+      CacheControl cc = RuntimeDelegate.getInstance()
+              .createHeaderDelegate(CacheControl.class)
+              .fromString(value);
       Assert.assertTrue("Wrong value of cache header", cc.isNoCache());
 
       response.close();
@@ -98,7 +103,9 @@ public class CacheControlAnnotationTest {
       Response response = base.request().get();
 
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-      CacheControl cc = CacheControl.valueOf(response.getHeaderString("cache-control"));
+      CacheControl cc = RuntimeDelegate.getInstance()
+              .createHeaderDelegate(CacheControl.class)
+              .fromString(response.getHeaderString("cache-control"));
       Assert.assertTrue("There must be no-store", cc.isNoStore());
       Assert.assertTrue("There must be must-revalidate", cc.isMustRevalidate());
       Assert.assertTrue("Cache must be private", cc.isPrivate());
