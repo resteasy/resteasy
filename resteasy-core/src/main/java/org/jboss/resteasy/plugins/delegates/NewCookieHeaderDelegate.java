@@ -10,6 +10,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
    public static final NewCookieHeaderDelegate INSTANCE = new NewCookieHeaderDelegate();
    private static final String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
+   @Override
    public NewCookie fromString(String newCookie) throws IllegalArgumentException {
       if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
       String cookieName = null;
@@ -35,12 +37,16 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
       Date expiry = null;
 
       ParameterParser parser = new ParameterParser();
-      Map<String, String> map = parser.parse(newCookie, ';');
+      LinkedHashMap<String, String> map = parser.parse(newCookie, ';');
 
       for (Map.Entry<String, String> entry : map.entrySet()) {
          String name = entry.getKey();
          String value = entry.getValue();
-         if (name.equalsIgnoreCase("Comment"))
+         // Cookie name is always the first attribute (https://datatracker.ietf.org/doc/html/rfc6265#section-4.1.1).
+         if (cookieName == null) {
+            cookieName = name;
+            cookieValue = value;
+         } else if (name.equalsIgnoreCase("Comment"))
             comment = value;
          else if (name.equalsIgnoreCase("Domain"))
             domain = value;
@@ -62,9 +68,6 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
             catch (ParseException e)
             {
             }
-         } else {
-            cookieName = name;
-            cookieValue = value;
          }
 
       }

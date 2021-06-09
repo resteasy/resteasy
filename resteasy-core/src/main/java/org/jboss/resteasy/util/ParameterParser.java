@@ -1,7 +1,6 @@
 package org.jboss.resteasy.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * A simple parser intended to parse sequences of name/value pairs.
@@ -223,11 +222,11 @@ public class ParameterParser
     * @param separator the name/value pairs separator
     * @return a map of name/value pairs
     */
-   public Map<String, String> parse(final String str, char separator)
+   public LinkedHashMap<String, String> parse(final String str, char separator)
    {
       if (str == null)
       {
-         return new HashMap<String, String>();
+         return new LinkedHashMap<>();
       }
       return parse(str.toCharArray(), separator);
    }
@@ -241,11 +240,11 @@ public class ParameterParser
     * @param separator the name/value pairs separator
     * @return a map of name/value pairs
     */
-   public Map<String, String> parse(final char[] chars, char separator)
+   public LinkedHashMap<String, String> parse(final char[] chars, char separator)
    {
       if (chars == null)
       {
-         return new HashMap<String, String>();
+         return new LinkedHashMap<>();
       }
       return parse(chars, 0, chars.length, separator);
    }
@@ -261,7 +260,7 @@ public class ParameterParser
     * @param separator the name/value pairs separator
     * @return a map of name/value pairs
     */
-   public Map<String, String> parse(
+   public LinkedHashMap<String, String> parse(
          final char[] chars,
          int offset,
          int length,
@@ -270,9 +269,9 @@ public class ParameterParser
 
       if (chars == null)
       {
-         return new HashMap<String, String>();
+         return new LinkedHashMap<>();
       }
-      HashMap<String, String> params = new HashMap<String, String>();
+      LinkedHashMap<String, String> params = new LinkedHashMap<>();
       this.chars = chars;
       this.pos = offset;
       this.len = length;
