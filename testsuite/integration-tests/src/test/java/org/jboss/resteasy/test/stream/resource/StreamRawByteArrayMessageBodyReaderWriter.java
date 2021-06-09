@@ -50,7 +50,7 @@ public class StreamRawByteArrayMessageBodyReaderWriter implements MessageBodyRea
       ArrayList<Byte> list = new ArrayList<Byte>();
       int b = entityStream.read();
       while (b != -1) {
-         list.add(new Byte((byte)b));
+         list.add(Byte.valueOf((byte)b));
          b = entityStream.read();
       }
       return list.toArray(new Byte[list.size()]);

@@ -8,6 +8,7 @@ import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 @Provider
 @PreMatching
@@ -21,7 +22,10 @@ public class FilteredCookieContainerRequestFilter implements ContainerRequestFil
 
       final Cookie cookie = requestContext.getCookies().get(OLD_COOKIE_NAME);
       if (cookie != null) {
-         requestContext.getHeaders().add(HttpHeaders.COOKIE, new Cookie(NEW_COOKIE_NAME, cookie.getValue()).toString());
+         String value = RuntimeDelegate.getInstance()
+                 .createHeaderDelegate(Cookie.class)
+                 .toString(new Cookie(NEW_COOKIE_NAME, cookie.getValue()));
+         requestContext.getHeaders().add(HttpHeaders.COOKIE, value);
       }
    }
 }

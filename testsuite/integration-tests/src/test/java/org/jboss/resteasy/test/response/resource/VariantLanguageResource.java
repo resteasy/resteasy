@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Variant;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -139,7 +140,7 @@ public  class VariantLanguageResource {
    private EntityTag createTag(String tag) {
       String xtag = new StringBuilder().append("\"").append(tag).append("\"")
             .toString();
-      return EntityTag.valueOf(xtag);
+      return RuntimeDelegate.getInstance().createHeaderDelegate(EntityTag.class).fromString(xtag);
    }
 
    private boolean evaluatePreconditionsEntityTag(Request req, String tag) {

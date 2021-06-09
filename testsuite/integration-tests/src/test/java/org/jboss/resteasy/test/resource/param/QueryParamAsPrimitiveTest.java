@@ -294,9 +294,9 @@ public class QueryParamAsPrimitiveTest {
       resourceQueryPrimitives.doGet((byte) 127);
       resourceQueryPrimitiveWrappers.doGet((byte) 127);
       List<Byte> list = new ArrayList<Byte>();
-      list.add(new Byte((byte) 127));
-      list.add(new Byte((byte) 127));
-      list.add(new Byte((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
       resourceQueryPrimitiveList.doGetByte(list);
       byte[] array = {(byte) 127, (byte) 127, (byte) 127};
       resourceQueryPrimitiveArray.doGetByte(array);

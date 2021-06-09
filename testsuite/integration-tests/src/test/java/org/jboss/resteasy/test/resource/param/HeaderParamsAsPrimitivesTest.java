@@ -398,11 +398,11 @@ public class HeaderParamsAsPrimitivesTest {
          e.printStackTrace(new PrintWriter(errors));
          fail("resourceHeaderPrimitives.doGet() failed:\n" + errors.toString());
       }
-      resourceHeaderPrimitiveWrappers.doGet(new Byte((byte) 127));
+      resourceHeaderPrimitiveWrappers.doGet(Byte.valueOf((byte) 127));
       ArrayList<Byte> list = new ArrayList<Byte>();
-      list.add(new Byte((byte) 127));
-      list.add(new Byte((byte) 127));
-      list.add(new Byte((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
       try {
          resourceHeaderPrimitiveList.doGetByte(list);
       } catch (Exception e) {
@@ -433,7 +433,7 @@ public class HeaderParamsAsPrimitivesTest {
       testWrappersDefault("byte", "127");
       resourceHeaderPrimitiveWrappersDefault.doGetByte();
       resourceHeaderPrimitiveWrappersDefaultNull.doGetByte();
-      resourceHeaderPrimitiveWrappersDefaultOverride.doGet(new Byte((byte) 127));
+      resourceHeaderPrimitiveWrappersDefaultOverride.doGet(Byte.valueOf((byte) 127));
    }
 
    /**
@@ -446,7 +446,7 @@ public class HeaderParamsAsPrimitivesTest {
       resourceHeaderPrimitiveListDefault.doGetByte();
       resourceHeaderPrimitiveListDefaultNull.doGetByte();
       List<Byte> list = new ArrayList<Byte>();
-      list.add(new Byte((byte) 127));
+      list.add(Byte.valueOf((byte) 127));
       resourceHeaderPrimitiveListDefaultOverride.doGetByte(list);
    }
 
@@ -458,11 +458,11 @@ public class HeaderParamsAsPrimitivesTest {
    public void testGetShort() {
       basicTest("short", "32767");
       resourceHeaderPrimitives.doGet((short) 32767);
-      resourceHeaderPrimitiveWrappers.doGet(new Short((short) 32767));
+      resourceHeaderPrimitiveWrappers.doGet(Short.valueOf((short) 32767));
       ArrayList<Short> list = new ArrayList<Short>();
-      list.add(new Short((short) 32767));
-      list.add(new Short((short) 32767));
-      list.add(new Short((short) 32767));
+      list.add(Short.valueOf((short) 32767));
+      list.add(Short.valueOf((short) 32767));
+      list.add(Short.valueOf((short) 32767));
       resourceHeaderPrimitiveList.doGetShort(list);
    }
 
