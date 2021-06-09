@@ -7,15 +7,15 @@ import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
 
-import jakarta.validation.ElementKind;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.api.validation.ConstraintType;
+
+import jakarta.validation.ElementKind;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  *
@@ -34,6 +34,8 @@ public interface Messages
    int BASE_ASYNC = 9500;
 
    int BASE_VALIDATOR_11 = 8500;
+
+   int SERVERBASE = 17500;
 
    @Message(id = BASE_VALIDATOR_11 + 0, value = "ResteasyViolationException has invalid format: %s")
    String exceptionHasInvalidFormat(String line);
@@ -850,4 +852,16 @@ public interface Messages
 
    @Message(id = BASE + 2044, value = "Property %s not found")
    NoSuchElementException propertyNotFound(String name);
+
+   @Message(id = SERVERBASE + 0, value = "[Embedded Container Start]")
+   String embeddedContainerStart();
+
+   @Message(id = SERVERBASE + 5, value = "[Embedded Container Stop]")
+   String embeddedContainerStop();
+
+   @Message(id = SERVERBASE + 10, value = "Error parsing request")
+   String errorParsingRequest();
+
+   @Message(id = SERVERBASE + 15, value = "WTF!")
+   String wtf();
 }
