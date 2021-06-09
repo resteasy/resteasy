@@ -10,7 +10,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
       Date expiry = null;
 
       ParameterParser parser = new ParameterParser();
-      LinkedHashMap<String, String> map = parser.parse(newCookie, ';');
+      Map<String, String> map = parser.parse(newCookie, ';');
 
       for (Map.Entry<String, String> entry : map.entrySet()) {
          String name = entry.getKey();

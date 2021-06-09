@@ -1,6 +1,7 @@
 package org.jboss.resteasy.util;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A simple parser intended to parse sequences of name/value pairs.
@@ -222,7 +223,7 @@ public class ParameterParser
     * @param separator the name/value pairs separator
     * @return a map of name/value pairs
     */
-   public LinkedHashMap<String, String> parse(final String str, char separator)
+   public Map<String, String> parse(final String str, char separator)
    {
       if (str == null)
       {
@@ -240,7 +241,7 @@ public class ParameterParser
     * @param separator the name/value pairs separator
     * @return a map of name/value pairs
     */
-   public LinkedHashMap<String, String> parse(final char[] chars, char separator)
+   public Map<String, String> parse(final char[] chars, char separator)
    {
       if (chars == null)
       {
@@ -260,7 +261,7 @@ public class ParameterParser
     * @param separator the name/value pairs separator
     * @return a map of name/value pairs
     */
-   public LinkedHashMap<String, String> parse(
+   public Map<String, String> parse(
          final char[] chars,
          int offset,
          int length,
@@ -271,7 +272,7 @@ public class ParameterParser
       {
          return new LinkedHashMap<>();
       }
-      LinkedHashMap<String, String> params = new LinkedHashMap<>();
+      Map<String, String> params = new LinkedHashMap<>();
       this.chars = chars;
       this.pos = offset;
       this.len = length;
