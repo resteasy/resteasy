@@ -71,7 +71,7 @@
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.8.3</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
-        <version.org.bouncycastle>169b08</version.org.bouncycastle>
+        <version.org.bouncycastle>1.69</version.org.bouncycastle>
 
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.39.v20210325</version.org.eclipse.jetty>
@@ -783,16 +783,6 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>${version.org.bouncycastle}</version>
-            </dependency>
-            <!-- signed jar using jakarta API
-                NOTE: this jar MUST also be put in wfly-preview module
-                org/bouncycastle/bcmail/main AND the module.xml file
-                must be updated to reference this JAR file
-            -->
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcmail-jdk15on</artifactId>
                 <version>${version.org.bouncycastle}</version>
             </dependency>
             <dependency>
