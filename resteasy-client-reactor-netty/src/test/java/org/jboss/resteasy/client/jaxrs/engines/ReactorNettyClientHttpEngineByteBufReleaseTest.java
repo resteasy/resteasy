@@ -255,12 +255,9 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                         .protocol(HttpProtocol.HTTP11)
                         .keepAlive(true)
                         .baseUrl("http://localhost:" + mockServer.port())
-                        // On purpose setting to a high number
-                        .tcpConfiguration(tcpClient ->
-                                tcpClient
-                                        .doOnConnected(con ->
-                                                con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
-                                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000));
+                        .doOnConnected(con ->
+                                con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
+                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000);
 
         final ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(
