@@ -450,7 +450,7 @@ public class ReactorNettyClientHttpEngineTest {
         final HttpClient httpClient =
                 HttpClient.create()
                         .baseUrl("http://localhost:" + mockServer.port())
-                        .tcpConfiguration(tcpClient -> tcpClient.doOnConnected(c -> channelGroup.add(c.channel())));
+                        .doOnConnected(c -> channelGroup.add(c.channel()));
         final ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(
                         httpClient,
