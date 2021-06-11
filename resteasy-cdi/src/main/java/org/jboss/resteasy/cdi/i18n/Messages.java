@@ -103,4 +103,7 @@ public interface Messages
 
    @Message(id = BASE + 130, value = "Using {0} for lookup of Session Bean {1}.", format=Format.MESSAGE_FORMAT)
    String usingInterfaceForLookup(Type type, Class<?> clazz);
+
+   @Message(id = BASE + 135, value = "Provider stereotype %s cannot be used as a method annotation")
+   String providerStereotypeOnMethod(String providerName);
 }

@@ -9,6 +9,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 import org.jboss.resteasy.spi.util.Types;
 
 import javax.ws.rs.ConstrainedTo;
@@ -40,6 +41,7 @@ public class ServerHelper extends CommonProviders
    protected Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
    protected boolean attachedExceptionMappers;
    protected Map<Class<?>, SortedKey<ExceptionMapper>> exceptionMappers;
+   protected AnnotationResolver annotationResolver = AnnotationResolver.getInstance();
 
    public ServerHelper() {
    }
@@ -120,7 +122,7 @@ public class ServerHelper extends CommonProviders
                                            Map<Class<?>, Integer> contracts,
                                            Map<Class<?>, Integer> newContracts)
    {
-      ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
+      ConstrainedTo constrainedTo = annotationResolver.getAnnotationFromClass(ConstrainedTo.class, provider);
       if (constrainedTo != null && constrainedTo.value() != RuntimeType.SERVER) return;
 
       super.processProviderContracts(provider, priorityOverride, isBuiltin, contracts, newContracts);
@@ -210,7 +212,7 @@ public class ServerHelper extends CommonProviders
    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
                                                    Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts)
    {
-      ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+      ConstrainedTo constrainedTo = annotationResolver.getAnnotationFromClass(ConstrainedTo.class, provider.getClass());
       if (constrainedTo != null && constrainedTo.value() != RuntimeType.SERVER) return;
 
       super.processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);

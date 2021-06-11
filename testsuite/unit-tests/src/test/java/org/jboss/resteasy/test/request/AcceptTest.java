@@ -12,7 +12,11 @@ import org.jboss.resteasy.test.request.resource.AcceptMultipleResource;
 import org.jboss.resteasy.test.request.resource.AcceptResource;
 import org.jboss.resteasy.test.request.resource.AcceptXmlResource;
 import org.jboss.resteasy.test.request.resource.AcceptXmlResourceSecond;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -28,6 +32,18 @@ import java.util.List;
  */
 public class AcceptTest {
    private static final String METHOD_ERROR_MESSAGE = "Unexpected method received";
+   private Weld weld;
+
+   @Before
+   public void before(){
+      weld = new Weld();
+      WeldContainer weldContainer = weld.initialize();
+   }
+
+   @After
+   public void after(){
+      weld.shutdown();
+   }
 
    private HttpRequest createRequest(String httpMethod, String path, MediaType contentType, List<MediaType> accepts) {
       MockHttpRequest request = null;

@@ -21,7 +21,7 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.util.AnnotationResolver;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -195,7 +195,7 @@ public class ResourceMethodRegistry implements Registry
    public void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String base)
    {
       Class<?> clazz = ref.getScannableClass();
-      Class restful = AnnotationResolver.getClassWithAnnotation(clazz, resourceBuilder.getCorrespondingRootAnnotation());
+      Class restful = AnnotationResolver.getInstance().getClassWithAnnotation(clazz, resourceBuilder.getCorrespondingRootAnnotation());
       if (restful == null)
       {
          String msg = Messages.MESSAGES.classIsNotRootResource(clazz.getName());
@@ -430,7 +430,7 @@ public class ResourceMethodRegistry implements Registry
    {
       for (Method method : clazz.getMethods())
       {
-         Path path = method.getAnnotation(Path.class);
+         Path path = AnnotationResolver.getInstance().getAnnotationFromMethod(Path.class, method);
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
          if (path == null && httpMethods == null) continue;
 

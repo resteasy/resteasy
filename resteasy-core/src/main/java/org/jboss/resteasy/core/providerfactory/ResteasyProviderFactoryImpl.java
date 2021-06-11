@@ -34,6 +34,7 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 import org.jboss.resteasy.spi.util.PickConstructor;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.statistics.StatisticsControllerImpl;
@@ -132,6 +133,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    protected boolean initialized = false;
    protected boolean lockSnapshots;
    protected StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
+   private AnnotationResolver annotationResolver = AnnotationResolver.getInstance();
 
    public ResteasyProviderFactoryImpl()
    {
@@ -893,7 +895,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
       if (Utils.isA(provider, Feature.class, contracts))
       {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
+         ConstrainedTo constrainedTo = annotationResolver.getAnnotationFromClass(ConstrainedTo.class, provider);
          int priority = Utils.getPriority(priorityOverride, contracts, Feature.class, provider);
          if (constrainedTo == null || constrainedTo.value() == getRuntimeType())
          {
@@ -1050,7 +1052,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          Feature feature = (Feature) provider;
          Utils.injectProperties(this, provider.getClass(), provider);
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+         ConstrainedTo constrainedTo = annotationResolver.getAnnotationFromClass(ConstrainedTo.class, provider.getClass());
          if (constrainedTo == null || constrainedTo.value() == getRuntimeType())
          {
             if (feature.configure(new FeatureContextDelegate(this)))

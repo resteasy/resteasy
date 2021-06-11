@@ -6,6 +6,9 @@ import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryStrParamUnmarshaller;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +44,18 @@ import static org.junit.Assert.assertNotNull;
 public class ProviderFactoryTest {
 
    private ResteasyProviderFactory factory;
+   private Weld weld;
 
    @Before
    public void createBean() {
       factory = ResteasyProviderFactory.newInstance();
+      weld = new Weld();
+      WeldContainer weldContainer = weld.initialize();
+   }
+
+   @After
+   public void after(){
+      weld.shutdown();
    }
 
    /**

@@ -6,7 +6,11 @@ import org.jboss.resteasy.test.util.resource.ObjectToURICustomURIableObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURIMappedByObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURITemplateObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURIableObject;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -17,6 +21,19 @@ import org.junit.Test;
  */
 public class ObjectToURITest {
    private static final String ERROR_MSG = "Wrong conversion to URI";
+
+    private Weld weld;
+
+    @Before
+    public void before(){
+        weld = new Weld();
+        WeldContainer weldContainer = weld.initialize();
+    }
+
+    @After
+    public void after(){
+        weld.shutdown();
+    }
 
    /**
     * @tpTestDetails Check default resolvers.

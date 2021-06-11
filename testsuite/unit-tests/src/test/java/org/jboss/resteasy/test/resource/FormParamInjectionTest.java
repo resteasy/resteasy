@@ -5,6 +5,9 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +23,18 @@ public class FormParamInjectionTest {
 
     ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
     MockHttpResponse resp = new MockHttpResponse();
+    private Weld weld;
 
     @Before
     public void setup() {
+        weld = new Weld();
+        WeldContainer weldContainer = weld.initialize();
         registry.addPerRequestResource(FormParamResource.class);
+    }
+
+    @After
+    public void after(){
+        weld.shutdown();
     }
 
     @Test

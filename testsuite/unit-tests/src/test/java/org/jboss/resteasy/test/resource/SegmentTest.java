@@ -11,7 +11,11 @@ import org.jboss.resteasy.test.resource.resource.SegmentLocatorComplex;
 import org.jboss.resteasy.test.resource.resource.SegmentNullResource;
 import org.jboss.resteasy.test.resource.resource.SegmentResource;
 import org.jboss.resteasy.test.resource.resource.SegmentResourceSwitch;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.NotAllowedException;
@@ -25,6 +29,19 @@ import java.net.URISyntaxException;
  * @tpSince RESTEasy 3.0.16
  */
 public class SegmentTest {
+
+   private Weld weld;
+
+   @Before
+   public void before(){
+      weld = new Weld();
+      WeldContainer weldContainer = weld.initialize();
+   }
+
+   @After
+   public void after(){
+      weld.shutdown();
+   }
 
    /**
     * @tpTestDetails Basic segment check

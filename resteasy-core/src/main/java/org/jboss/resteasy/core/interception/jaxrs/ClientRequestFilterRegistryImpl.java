@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -9,6 +10,7 @@ import javax.ws.rs.container.PreMatching;
 public class ClientRequestFilterRegistryImpl extends JaxrsInterceptorRegistryImpl<ClientRequestFilter> {
 
    //private static final Logger LOGGER = Logger.getLogger(ClientRequestFilterRegistry.class.getName());
+   private AnnotationResolver annotationResolver = AnnotationResolver.getInstance();
 
    public ClientRequestFilterRegistryImpl(final ResteasyProviderFactory providerFactory)
    {
@@ -50,7 +52,7 @@ public class ClientRequestFilterRegistryImpl extends JaxrsInterceptorRegistryImp
 
    @SuppressWarnings({"rawtypes", "unchecked"})
    private void checkPreMaching(Class declaring) {
-      if (declaring.isAnnotationPresent(PreMatching.class)) {
+      if (annotationResolver.isAnnotationPresent(PreMatching.class, declaring)) {
          LogMessages.LOGGER.warningPreMatchingSupport(declaring.getName());
       }
    }

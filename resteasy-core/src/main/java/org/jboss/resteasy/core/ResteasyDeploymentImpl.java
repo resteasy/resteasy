@@ -9,6 +9,7 @@ import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFa
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyDeploymentObserver;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -86,6 +87,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    protected String paramMapping;
    protected Map<String, Object> properties;
    protected boolean statisticsEnabled;
+   private static List<ResteasyDeploymentObserver> deploymentObservers = new ArrayList<>();
 
    @SuppressWarnings("rawtypes")
    public ResteasyDeploymentImpl() {
@@ -108,6 +110,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       defaultContextObjects = new HashMap<Class, Object>();
       constructedDefaultContextObjects = new HashMap<String, String>();
       properties = new TreeMap<String, Object>();
+      //deploymentObservers = new ArrayList<>();
    }
 
    public ResteasyDeploymentImpl(final boolean quarkus) {
@@ -205,6 +208,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
          }
          suffixNegotiationFilter.setLanguageMappings(languageExtensions);
+      }
+      for (ResteasyDeploymentObserver observer : deploymentObservers)
+      {
+         observer.start(this);
       }
    }
 
@@ -645,6 +652,11 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
 
       ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
       ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
+
+      for (ResteasyDeploymentObserver observer : deploymentObservers)
+      {
+         observer.stop(this);
+      }
    }
 
    /**
@@ -1126,4 +1138,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    public void setStatisticsEnabled(boolean statisticsEnabled) {
       this.statisticsEnabled = statisticsEnabled;
    }
+
+   public static void registerObserver(ResteasyDeploymentObserver observer)
+   {
+      deploymentObservers.add(observer);
+   }
+
 }

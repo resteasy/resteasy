@@ -24,6 +24,7 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
 import org.jboss.resteasy.microprofile.client.publisher.MpPublisherMessageBodyReader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
@@ -521,7 +522,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
         ResteasyUriBuilder template = null;
         for (Method method : methods) {
-            Path methodPathAnno = method.getAnnotation(Path.class);
+            Path methodPathAnno = AnnotationResolver.getInstance().getAnnotationFromMethod(Path.class, method);
             if (methodPathAnno != null) {
                 template = classPathAnno == null ? (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(methodPathAnno.value())
                         : (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(classPathAnno.value() + "/" + methodPathAnno.value());

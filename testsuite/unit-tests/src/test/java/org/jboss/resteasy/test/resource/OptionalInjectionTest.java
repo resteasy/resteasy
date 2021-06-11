@@ -8,6 +8,9 @@ import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.resource.NotSupportedOpitionalPathParamResource;
 import org.jboss.resteasy.test.resource.resource.OptionalResource;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,10 +26,18 @@ public class OptionalInjectionTest {
 
     ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
     MockHttpResponse resp = new MockHttpResponse();
+    private Weld weld;
 
     @Before
     public void setup() {
+        weld = new Weld();
+        WeldContainer weldContainer = weld.initialize();
         registry.addPerRequestResource(OptionalResource.class);
+    }
+
+    @After
+    public void after(){
+        weld.shutdown();
     }
 
     @Test

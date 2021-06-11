@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -21,8 +22,7 @@ public class GetRestful
     */
    public static Class<?> getRootResourceClass(Class<?> clazz)
    {
-      return AnnotationResolver.getClassWithAnnotation(clazz, Path.class);
-   }
+      return AnnotationResolver.getInstance().getClassWithAnnotation(clazz, Path.class);   }
 
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.

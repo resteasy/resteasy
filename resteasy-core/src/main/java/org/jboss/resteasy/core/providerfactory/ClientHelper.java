@@ -6,6 +6,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.util.AnnotationResolver;
 import org.jboss.resteasy.spi.util.Types;
 
 import javax.ws.rs.ConstrainedTo;
@@ -32,6 +33,7 @@ public class ClientHelper extends CommonProviders
    protected Map<Class<?>, AsyncClientResponseProvider> asyncClientResponseProviders;
    protected boolean attachedReactive;
    protected Map<Class<?>, Class<? extends RxInvokerProvider<?>>> reactiveClasses;
+   private AnnotationResolver annotationResolver = AnnotationResolver.getInstance();
 
    public ClientHelper() {
    }
@@ -98,7 +100,7 @@ public class ClientHelper extends CommonProviders
    protected void processProviderContracts(Class provider, Integer priorityOverride, boolean isBuiltin,
                                            Map<Class<?>, Integer> contracts, Map<Class<?>, Integer> newContracts)
    {
-      ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
+      ConstrainedTo constrainedTo = annotationResolver.getAnnotationFromClass(ConstrainedTo.class, provider);
       if (constrainedTo != null && constrainedTo.value() != RuntimeType.CLIENT) return;
 
       super.processProviderContracts(provider, priorityOverride, isBuiltin, contracts, newContracts);
@@ -177,7 +179,7 @@ public class ClientHelper extends CommonProviders
    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
                                                    Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts)
    {
-      ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+      ConstrainedTo constrainedTo = annotationResolver.getAnnotationFromClass(ConstrainedTo.class, provider.getClass());
       if (constrainedTo != null && constrainedTo.value() != RuntimeType.CLIENT) return;
 
       super.processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
