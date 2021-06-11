@@ -4,8 +4,8 @@ import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.IdentityCipherSuiteFilter;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
-import io.netty.util.DomainNameMapping;
-import io.netty.util.DomainNameMappingBuilder;
+import io.netty.util.DomainWildcardMappingBuilder;
+import io.netty.util.Mapping;
 
 import javax.net.ssl.SSLContext;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class SniConfiguration
 {
 
-   protected final DomainNameMappingBuilder<SslContext> mapping;
+   protected final DomainWildcardMappingBuilder<SslContext> mapping;
 
    /**
     * Constructs new {@link SniConfiguration}.
@@ -28,7 +28,7 @@ public class SniConfiguration
     */
    public SniConfiguration(final SSLContext defaultServerKeystore)
    {
-      mapping = new DomainNameMappingBuilder<>(createContext(defaultServerKeystore));
+      mapping = new DomainWildcardMappingBuilder<>(createContext(defaultServerKeystore));
    }
 
    /**
@@ -44,7 +44,7 @@ public class SniConfiguration
       return this;
    }
 
-   protected DomainNameMapping<SslContext> buildMapping()
+   protected Mapping<String, SslContext> buildMapping()
    {
       return mapping.build();
    }
