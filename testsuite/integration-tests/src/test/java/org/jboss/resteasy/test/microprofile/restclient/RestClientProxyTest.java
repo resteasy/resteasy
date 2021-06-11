@@ -26,6 +26,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.resteasy.category.MicroProfileDependent;
 import org.jboss.resteasy.microprofile.client.BuilderResolver;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -42,6 +43,7 @@ import io.reactivex.Single;
 
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(MicroProfileDependent.class)
 public class RestClientProxyTest
 {
 

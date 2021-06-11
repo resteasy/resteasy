@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.MicroProfileDependent;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.microprofile.restclient.resource.MPCollectionActivator;
 import org.jboss.resteasy.test.microprofile.restclient.resource.MPCollectionResource;
@@ -18,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -34,6 +36,7 @@ import java.util.List;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(MicroProfileDependent.class)
 public class MPClientCollectionTest {
     protected static final Logger LOG = Logger.getLogger(MPCollectionTest.class.getName());
     private static final String WAR_SERVICE = "war_service";
