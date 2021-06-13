@@ -45,7 +45,7 @@
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.8.3</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
-        <version.org.bouncycastle>1.68</version.org.bouncycastle>
+        <version.org.bouncycastle>1.69</version.org.bouncycastle>
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.39.v20210325</version.org.eclipse.jetty>
         <version.org.eclipse.yasson>1.0.5</version.org.eclipse.yasson>
@@ -66,12 +66,12 @@
         <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
         <version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>2.0.0.Final</version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>
         <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>2.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
-        <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
+        <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>2.0.0.Final</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
         <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
         <version.org.mockito>3.10.0</version.org.mockito>
-        <version.org.slf4j>1.7.29</version.org.slf4j>
+        <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
         <version.org.wildfly.core.wildfly-cli>15.0.1.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
@@ -90,15 +90,15 @@
         <version.microprofile.restclient.tck>2.0</version.microprofile.restclient.tck>
 
         <version.microprofile.config>2.0</version.microprofile.config>
-        <version.microprofile.context-propagation>1.0.1</version.microprofile.context-propagation>
+        <version.microprofile.context-propagation>1.2</version.microprofile.context-propagation>
 
         <!-- SmallRye versions -->
-        <version.io.smallrye.context-propagation>1.0.1</version.io.smallrye.context-propagation>
-        <version.io.smallrye.smallrye-config>2.0.1</version.io.smallrye.smallrye-config>
+        <version.io.smallrye.context-propagation>1.2.0</version.io.smallrye.context-propagation>
+        <version.io.smallrye.smallrye-config>2.3.0</version.io.smallrye.smallrye-config>
 
-        <version.io.reactivex.rxjava2-rxjava>2.2.19</version.io.reactivex.rxjava2-rxjava>
+        <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
-        <version.org.hibernate.validator>6.0.18.Final</version.org.hibernate.validator>
+        <version.org.hibernate.validator>6.2.0.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>5.3.7</version.org.springframework>
@@ -652,6 +652,10 @@
                         <groupId>javax.enterprise</groupId>
                         <artifactId>cdi-api</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
 
@@ -913,6 +917,11 @@
             <dependency>
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-context-propagation-propagators-rxjava2</artifactId>
+                <version>${version.io.smallrye.context-propagation}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.smallrye</groupId>
+                <artifactId>smallrye-context-propagation-storage</artifactId>
                 <version>${version.io.smallrye.context-propagation}</version>
             </dependency>
             <dependency>
