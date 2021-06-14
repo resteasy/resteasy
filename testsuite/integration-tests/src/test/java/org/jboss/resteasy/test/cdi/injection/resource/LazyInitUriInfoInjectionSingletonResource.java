@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletionStage;
 
 import org.jboss.resteasy.spi.HttpRequest;
@@ -23,10 +24,12 @@ public class LazyInitUriInfoInjectionSingletonResource implements ResourceFactor
    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory) {
       if (obj == null) {
          try {
-            obj = clazz.newInstance();
-         } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-         } catch (IllegalAccessException e) {
+            obj = clazz.getDeclaredConstructor().newInstance();
+         } catch (NoSuchMethodException |
+                  IllegalArgumentException |
+                  InstantiationException |
+                  IllegalAccessException |
+                  InvocationTargetException e) {
             throw new RuntimeException(e);
          }
          CompletionStage<Void> propertyStage = factory.getInjectorFactory().createPropertyInjector(clazz, factory).inject(obj, true);
