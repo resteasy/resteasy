@@ -7,8 +7,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
@@ -40,7 +39,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
 
 public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
 
-    private static final Logger log = LoggerFactory.getLogger(ReactorNettyClientHttpEngine.class);
+    private static final Logger log = Logger.getLogger(ReactorNettyClientHttpEngine.class);
 
     private final HttpClient httpClient;
     private final ChannelGroup channelGroup;
