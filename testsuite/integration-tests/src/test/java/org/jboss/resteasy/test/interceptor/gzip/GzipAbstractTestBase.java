@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.interceptor.gzip;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -26,8 +27,6 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * Abstract base class for gzip tests
@@ -109,23 +108,23 @@ public abstract class GzipAbstractTestBase {
          }
          LOG.info("responseEncoding: " + responseEncoding);
          if (assertServerReturnGzip) {
-            Assert.assertThat("wrong encoding of response", responseEncoding, containsString("gzip"));
+            MatcherAssert.assertThat("wrong encoding of response", responseEncoding, containsString("gzip"));
          } else {
-            Assert.assertThat("wrong encoding of response", responseEncoding, not(containsString("gzip")));
+            MatcherAssert.assertThat("wrong encoding of response", responseEncoding, not(containsString("gzip")));
          }
 
          // read data from response
          String echo = response.readEntity(String.class);
-         assertNotNull("Response doesn't have body", echo);
+         Assert.assertNotNull("Response doesn't have body", echo);
 
          // check resteasy.allowGzip property on server
-         assertThat("Server doesn't have correct value of resteasy.allowGzip property", echo, startsWith(message2echo + " ___ -Dresteasy.allowGzip=" + assertAllowGzipOnServer));
+         MatcherAssert.assertThat("Server doesn't have correct value of resteasy.allowGzip property", echo, startsWith(message2echo + " ___ -Dresteasy.allowGzip=" + assertAllowGzipOnServer));
 
          // check gzip request header
          if (assertAllowGzipOnClient) {
-            assertThat("Server should receive request with gzip header", echo, endsWith("gzip_in_request_header_yes"));
+            MatcherAssert.assertThat("Server should receive request with gzip header", echo, endsWith("gzip_in_request_header_yes"));
          } else {
-            assertThat("Server should not receive request with gzip header", echo, endsWith("gzip_in_request_header_no"));
+            MatcherAssert.assertThat("Server should not receive request with gzip header", echo, endsWith("gzip_in_request_header_no"));
          }
 
       } finally {

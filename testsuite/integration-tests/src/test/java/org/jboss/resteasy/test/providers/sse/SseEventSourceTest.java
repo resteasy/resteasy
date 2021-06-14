@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.sse;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -64,7 +65,7 @@ public class SseEventSourceTest {
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          }
          Assert.assertEquals("One message was expected.", 1, results.size());
-         Assert.assertThat("The message doesn't have expected content.", "data",
+         MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
       } finally {
          client.close();
@@ -100,7 +101,7 @@ public class SseEventSourceTest {
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          }
          Assert.assertEquals("One message was expected.", 1, results.size());
-         Assert.assertThat("The message doesn't have expected content.", "data",
+         MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
       } finally {
          client.close();
@@ -140,7 +141,7 @@ public class SseEventSourceTest {
          }
          Assert.assertEquals(0, errors.get());
          Assert.assertEquals("One message was expected.", 1, results.size());
-         Assert.assertThat("The message doesn't have expected content.", "data",
+         MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
          Assert.assertEquals("On complete callback should be called one time", 1, completed.get());
       } finally {
@@ -180,7 +181,7 @@ public class SseEventSourceTest {
          }
          Assert.assertEquals(0, errors.get());
          Assert.assertEquals("One message was expected.", 1, results.size());
-         Assert.assertThat("The message doesn't have expected content.", "data",
+         MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
          Assert.assertEquals("On complete callback should be called one time", 1, completed.get());
       } finally {

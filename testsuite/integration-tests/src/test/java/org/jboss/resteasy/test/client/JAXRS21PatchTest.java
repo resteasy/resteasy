@@ -8,6 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -88,7 +89,7 @@ public class JAXRS21PatchTest extends ClientTestBase {
    @Test
    public void testOptionsContainsAllowPatch() throws Exception {
       Response res = client.target(generateURL("/test")).request().options();
-      Assert.assertThat(res.getHeaderString("Allow"), CoreMatchers.containsString("PATCH"));
+      MatcherAssert.assertThat(res.getHeaderString("Allow"), CoreMatchers.containsString("PATCH"));
       res.close();
    }
 

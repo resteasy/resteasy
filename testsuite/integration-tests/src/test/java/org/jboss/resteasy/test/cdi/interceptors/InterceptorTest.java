@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.cdi.interceptors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -53,7 +54,6 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * @tpSubChapter CDI
@@ -104,7 +104,7 @@ public class InterceptorTest {
       Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
       assertEquals(200, response.getStatus());
       int id = response.readEntity(int.class);
-      assertThat("Id of stored book is wrong.", 0, is(id));
+      MatcherAssert.assertThat("Id of stored book is wrong.", 0, is(id));
 
       // Retrieve book.
       base = client.target(generateURL("/book/" + id));

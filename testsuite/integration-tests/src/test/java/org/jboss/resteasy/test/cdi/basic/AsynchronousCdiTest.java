@@ -24,8 +24,8 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 
 /**
  * @tpSubChapter CDI
@@ -67,8 +67,8 @@ public class AsynchronousCdiTest {
       long start = System.currentTimeMillis();
       Response response = base.request().get();
 
-      assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start, is(greaterThan(DELAY)));
-      assertEquals(200, response.getStatus());
+      MatcherAssert.assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start, is(greaterThan(DELAY)));
+      Assert.assertEquals(200, response.getStatus());
       client.close();
    }
 
@@ -84,8 +84,8 @@ public class AsynchronousCdiTest {
       long start = System.currentTimeMillis();
       Response response = base.request().get();
 
-      assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start, is(greaterThan(DELAY)));
-      assertEquals(200, response.getStatus());
+      MatcherAssert.assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start, is(greaterThan(DELAY)));
+      Assert.assertEquals(200, response.getStatus());
       client.close();
    }
 }
