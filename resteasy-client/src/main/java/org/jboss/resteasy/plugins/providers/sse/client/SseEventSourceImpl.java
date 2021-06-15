@@ -337,9 +337,13 @@ public class SseEventSourceImpl implements SseEventSource
                onConnection();
                eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                //if 200<= response code <300 and response contentType is null, fail the connection.
-               if (eventInput == null && !alwaysReconnect)
+               if (eventInput == null)
                {
-                  internalClose();
+                  if (!alwaysReconnect) {
+                     internalClose();
+                  } else {
+                     reconnect(this.reconnectDelay);
+                  }
                   return;
                }
             }
@@ -376,9 +380,7 @@ public class SseEventSourceImpl implements SseEventSource
          final Providers providers = (ClientConfiguration) target.getConfiguration();
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
-            if (eventInput == null || eventInput.isClosed())
-            {
-               internalClose();
+            if (eventInput != null && eventInput.isClosed()) {
                break;
             }
             try
@@ -466,6 +468,4 @@ public class SseEventSourceImpl implements SseEventSource
          sseEventSourceScheduler.schedule(processor, delay, TimeUnit.MILLISECONDS);
       }
    }
-
-
 }
