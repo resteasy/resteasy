@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.sse.resource;
 
-import org.junit.Assert;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.Singleton;
 import javax.ws.rs.DefaultValue;
@@ -16,7 +16,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-import java.util.concurrent.TimeUnit;
+
+import org.junit.Assert;
 
 @Singleton
 @Path("/reconnect")
@@ -93,6 +94,30 @@ public class SseReconnectResource {
                sendEvent(s, sse, "0", TimeUnit.SECONDS.toMillis(3));
             }
             break;
+      }
+   }
+
+   static int tryCount = 1;
+   @GET
+   @Path("sselost")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sseLost(@Context SseEventSink sink, @Context Sse sse) {
+         if (tryCount != 0) {
+            tryCount--;
+            sink.close();
+         } else {
+            try (SseEventSink s = sink) {
+               s.send(sse.newEvent("MESSAGE"));
+            }
+         }
+   }
+   @GET
+   @Path("data")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sendData(@Context SseEventSink sink, @Context Sse sse) {
+      try (SseEventSink s = sink) {
+         s.send(sse.newEventBuilder().data("sse message sample").mediaType(MediaType.TEXT_HTML_TYPE)
+                 .build());
       }
    }
 

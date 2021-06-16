@@ -167,6 +167,7 @@ public class SseReconnectTest {
                .build();
          sseEventSource.register(event -> {
             results.add(event);
+            latch.countDown();
          }, error -> {
             if (error instanceof WebApplicationException)
             {
@@ -176,8 +177,6 @@ public class SseReconnectTest {
                }
             }
             errorCount.incrementAndGet();
-         }, () -> {
-            latch.countDown();
          });
          try (SseEventSource eventSource = sseEventSource)
          {
@@ -188,6 +187,64 @@ public class SseReconnectTest {
             Assert.assertEquals(1, results.size());
             Assert.assertTrue(results.get(0).isReconnectDelaySet());
             Assert.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
+         }
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testReconnect() throws Exception
+   {
+      CountDownLatch latch = new CountDownLatch(1);
+      List<InboundSseEvent> results = new ArrayList<>();
+      Client client = ClientBuilder.newBuilder().build();
+      try
+      {
+         WebTarget target = client.target(generateURL("/reconnect/sselost"));
+         SseEventSource sseEventSource = SseEventSource.target(target).reconnectingEvery(2000, TimeUnit.MILLISECONDS)
+                 .build();
+         sseEventSource.register(event -> {
+            results.add(event);
+            latch.countDown();
+         });
+         try (SseEventSource eventSource = sseEventSource)
+         {
+            eventSource.open();
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            Assert.assertEquals(1, results.size());
+         }
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testEventSourceIsOpen() throws Exception
+   {
+      CountDownLatch latch = new CountDownLatch(1);
+      List<InboundSseEvent> results = new ArrayList<>();
+      Client client = ClientBuilder.newBuilder().build();
+      try
+      {
+         WebTarget target = client.target(generateURL("/reconnect/data"));
+         SseEventSource sseEventSource = SseEventSource.target(target).build();
+         sseEventSource.register(event -> {
+            results.add(event);
+            latch.countDown();
+         });
+         try (SseEventSource eventSource = sseEventSource)
+         {
+            eventSource.open();
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            Assert.assertEquals(1, results.size());
+            Assert.assertTrue("SseEventSource#isOpen returns false", eventSource.isOpen());
          }
       }
       finally
