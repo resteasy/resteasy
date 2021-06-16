@@ -28,6 +28,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import org.hamcrest.MatcherAssert;
 
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -58,13 +59,13 @@ public class JWSTest {
       JWSHeader header = new JWSHeader(Algorithm.HS256, null, null);
       String val = header.toString();
       logger.info(val);
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
       header = mapper.readValue(val, JWSHeader.class);
       val = mapper.writeValueAsString(header);
       logger.info(val);
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
    }
 
    /**
@@ -88,7 +89,7 @@ public class JWSTest {
 
    }
 
-   /**
+   /**SseSmokeTest
     * @tpTestDetails RSA with content type test
     * @tpSince RESTEasy 3.0.16
     */
@@ -150,7 +151,7 @@ public class JWSTest {
               .rsa256(keyPair.getPrivate());
 
       logger.info(encoded);
-      Assert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
+      MatcherAssert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
 
       JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
       String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);

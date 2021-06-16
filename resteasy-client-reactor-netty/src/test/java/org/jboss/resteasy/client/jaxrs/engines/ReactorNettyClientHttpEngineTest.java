@@ -7,6 +7,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import static org.hamcrest.CoreMatchers.containsString;
+
+import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.junit.AfterClass;
@@ -45,7 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ReactorNettyClientHttpEngineTest {
@@ -507,7 +508,7 @@ public class ReactorNettyClientHttpEngineTest {
             timeoutClient.target(url("/sleep/500")).request().get();
             Assert.fail("timeout exception expected");
         } catch(ProcessingException ex) {
-            assertThat(ex.getMessage(),
+            MatcherAssert.assertThat(ex.getMessage(),
                     containsString("java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 200ms"));
         }
     }
@@ -522,7 +523,7 @@ public class ReactorNettyClientHttpEngineTest {
             future.get();
             Assert.fail("timeout exception expected");
         } catch (ExecutionException ex) {
-            assertThat(ex.getMessage(),
+            MatcherAssert.assertThat(ex.getMessage(),
                     containsString("java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 200ms"));
         }
     }
@@ -537,7 +538,7 @@ public class ReactorNettyClientHttpEngineTest {
             completionStage.toCompletableFuture().get();
             Assert.fail("timeout exception expected");
         } catch (ExecutionException ex) {
-            assertThat(ex.getMessage(),
+            MatcherAssert.assertThat(ex.getMessage(),
                     containsString("java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 100ms"));
         }
     }

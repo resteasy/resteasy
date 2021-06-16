@@ -9,9 +9,9 @@ import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.hamcrest.MatcherAssert;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,7 +44,7 @@ public class ClientHeaderFillingTest {
     @Test
     public void checkIfFillerFactoryWithHigherPrioritySelected() {
         List<String> result = container.select(ClientInvokingBean.class).get().getHeaders();
-        Assert.assertThat(result, CoreMatchers.hasItems("high", "prio"));
+        MatcherAssert.assertThat(result, CoreMatchers.hasItems("high", "prio"));
     }
 
     @AfterClass

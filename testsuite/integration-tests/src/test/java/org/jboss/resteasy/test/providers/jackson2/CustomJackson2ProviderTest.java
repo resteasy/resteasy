@@ -11,6 +11,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -96,7 +97,7 @@ public class CustomJackson2ProviderTest {
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat("Jackson2Provider jar was loaded from unexpected source",
+      MatcherAssert.assertThat("Jackson2Provider jar was loaded from unexpected source",
             entity, containsString(CustomJackson2ProviderTest.class.getSimpleName() + ".war/WEB-INF/lib/resteasy-jackson2-provider"));
    }
 

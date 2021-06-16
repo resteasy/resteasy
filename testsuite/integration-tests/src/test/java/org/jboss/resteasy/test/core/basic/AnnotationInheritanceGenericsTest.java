@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.core.basic;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -79,7 +80,7 @@ public class AnnotationInheritanceGenericsTest {
       );
 
       Assert.assertNotNull("Response entity list must not be null", entityList);
-      Assert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
+      MatcherAssert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
 
       final AnnotationInheritanceGenericsEntity entity = entityList.iterator().next();
       Assert.assertEquals(

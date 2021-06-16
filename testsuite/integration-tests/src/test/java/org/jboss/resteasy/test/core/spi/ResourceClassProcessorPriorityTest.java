@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.core.spi;
 
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
@@ -98,10 +99,10 @@ public class ResourceClassProcessorPriorityTest {
       }
 
       // asserts
-      Assert.assertThat(visitedProcessors.size(), greaterThanOrEqualTo(3));
-      Assert.assertThat(visitedProcessors.get(0), is("A"));
-      Assert.assertThat(visitedProcessors.get(1), is("C"));
-      Assert.assertThat(visitedProcessors.get(2), is("B"));
+      MatcherAssert.assertThat(visitedProcessors.size(), greaterThanOrEqualTo(3));
+      MatcherAssert.assertThat(visitedProcessors.get(0), is("A"));
+      MatcherAssert.assertThat(visitedProcessors.get(1), is("C"));
+      MatcherAssert.assertThat(visitedProcessors.get(2), is("B"));
 
       // close client
       client.close();

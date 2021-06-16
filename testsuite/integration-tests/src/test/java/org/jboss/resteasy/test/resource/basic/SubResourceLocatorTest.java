@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -17,7 +18,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -58,7 +58,7 @@ public class SubResourceLocatorTest {
 
       Response response = base.request().get();
       String s = response.readEntity(String.class);
-      Assert.assertThat("Wrong response content", s, is("bill"));
+      MatcherAssert.assertThat("Wrong response content", s, is("bill"));
       response.close();
       client.close();
    }

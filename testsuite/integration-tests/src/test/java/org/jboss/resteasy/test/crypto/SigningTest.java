@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.hamcrest.MatcherAssert;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
@@ -321,8 +322,8 @@ public class SigningTest {
          Assert.fail("Validation error excepted.");
       } catch (ProcessingException pe) {
          UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
-         Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
-         Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature is stale"));
+         MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
+         MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature is stale"));
       }
       response.close();
    }
@@ -443,8 +444,8 @@ public class SigningTest {
          throw new Exception("Signing error excepted");
       } catch (ProcessingException pe) {
          UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
-         Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
-         Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature expired"));
+         MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
+         MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature expired"));
       }
       response.close();
    }
@@ -475,8 +476,8 @@ public class SigningTest {
       } catch (ProcessingException pe) {
          UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
          logger.info("UnauthorizedSignatureException message: " + e.getMessage());
-         Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
-         Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signature."));
+         MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
+         MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signature."));
       }
       response.close();
    }

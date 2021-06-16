@@ -6,6 +6,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.hamcrest.MatcherAssert;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -69,7 +70,7 @@ public class HeadersLowerCasedTest
         Assert.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String value = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
-        Assert.assertThat(value, CoreMatchers.is("connection,dummy-key,host"));
+        MatcherAssert.assertThat(value, CoreMatchers.is("connection,dummy-key,host"));
     }
 
     @Test
@@ -79,7 +80,7 @@ public class HeadersLowerCasedTest
         Assert.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String headerValue = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
-        Assert.assertThat(headerValue, CoreMatchers.is("dummyValue"));
+        MatcherAssert.assertThat(headerValue, CoreMatchers.is("dummyValue"));
     }
 
     private Optional<String> mkCall(final String path) throws IOException {

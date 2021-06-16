@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
@@ -118,8 +119,8 @@ public class JsonBindingDebugLoggingTest {
       WebTarget base = client.target(generateURL("/get/nok"));
       Response response = base.request().get();
       // check response
-      Assert.assertThat("Wrong response code", response.getStatus(), is(500));
-      Assert.assertThat("Response message doesn't contains full stacktrace",
+      MatcherAssert.assertThat("Wrong response code", response.getStatus(), is(500));
+      MatcherAssert.assertThat("Response message doesn't contains full stacktrace",
               response.readEntity(String.class), allOf(
             containsString("org.eclipse.yasson.internal"),
             containsString("java.lang.RuntimeException: "
@@ -128,16 +129,16 @@ public class JsonBindingDebugLoggingTest {
             containsString("RESTEASY008205")
       ));
 
-      Assert.assertThat("Application Exception should be logged",
+      MatcherAssert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
-      Assert.assertThat("RESTEasy exception should be logged",
+      MatcherAssert.assertThat("RESTEasy exception should be logged",
               resteasyExceptionLog.count(), is(0));
-      Assert.assertThat("Yasson exception should be logged",
+      MatcherAssert.assertThat("Yasson exception should be logged",
               yassonExceptionLog.count(), greaterThan(0));
-      Assert.assertThat("Yasson exception stacktrace should be logged",
+      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
 
-      Assert.assertThat("There are not only 1 error logs in server",
+      MatcherAssert.assertThat("There are not only 1 error logs in server",
               errorStringLog.count(), is(1));
    }
 
@@ -168,7 +169,7 @@ public class JsonBindingDebugLoggingTest {
               MediaType.APPLICATION_JSON));
 
       // check response
-      Assert.assertThat("Response message doesn't contains proper message",
+      MatcherAssert.assertThat("Response message doesn't contains proper message",
               response.readEntity(String.class), allOf(
                       containsString("RESTEASY008200: JSON Binding deserialization error"),
                       containsString(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
@@ -176,16 +177,16 @@ public class JsonBindingDebugLoggingTest {
               ));
 
       // assert log messages after request
-      Assert.assertThat("Application Exception should be logged",
+      MatcherAssert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
-      Assert.assertThat("RESTEasy exception should be logged",
+      MatcherAssert.assertThat("RESTEasy exception should be logged",
               resteasyExceptionLog.count(), is(1));
-      Assert.assertThat("Yasson exception should be logged",
+      MatcherAssert.assertThat("Yasson exception should be logged",
               yassonExceptionLog.count(), is(1));
-      Assert.assertThat("Yasson exception stacktrace should be logged",
+      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
 
-      Assert.assertThat("There shouldn't be any error logs in server",
+      MatcherAssert.assertThat("There shouldn't be any error logs in server",
               errorStringLog.count(), is(0));
    }
 
@@ -228,25 +229,25 @@ public class JsonBindingDebugLoggingTest {
          e.printStackTrace(new PrintWriter(errors));
          String stackTrace = errors.toString();
 
-         Assert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
+         MatcherAssert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
                containsString("javax.json.bind.JsonbException"));
-         Assert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
+         MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
                containsString("org.eclipse.yasson.internal"));
-         Assert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
+         MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
                containsString("Caused by: java.lang.RuntimeException: "
                        + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()));
       }
 
       // assert log messages after request
-      Assert.assertThat("Application Exception should be logged",
+      MatcherAssert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
-      Assert.assertThat("RESTEasy exception should be logged",
+      MatcherAssert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
-      Assert.assertThat("Yasson exception should be logged",
+      MatcherAssert.assertThat("Yasson exception should be logged",
               yassonExceptionLog.count(), is(1));
-      Assert.assertThat("Yasson exception stacktrace should be logged",
+      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
-      Assert.assertThat("There shouldn't be any error logs in client",
+      MatcherAssert.assertThat("There shouldn't be any error logs in client",
          errorStringLog.count(), is(0));
    }
 
@@ -286,25 +287,25 @@ public class JsonBindingDebugLoggingTest {
          e.printStackTrace(new PrintWriter(errors));
          String stackTrace = errors.toString();
 
-         Assert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
+         MatcherAssert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
                containsString("javax.json.bind.JsonbException"));
-         Assert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
+         MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
                containsString("org.eclipse.yasson.internal"));
-         Assert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
+         MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
                containsString("Caused by: java.lang.RuntimeException: "
                        + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()));
       }
 
       // assert log messages after request
-      Assert.assertThat("Application Exception should be logged",
+      MatcherAssert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
-      Assert.assertThat("Yasson exception should be logged",
+      MatcherAssert.assertThat("Yasson exception should be logged",
               yassonExceptionLog.count(), greaterThan(0));
-      Assert.assertThat("RESTEasy exception should be logged",
+      MatcherAssert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
-      Assert.assertThat("Yasson exception stacktrace should be logged",
+      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
-      Assert.assertThat("There shouldn't be any error logs in client",
+      MatcherAssert.assertThat("There shouldn't be any error logs in client",
          errorStringLog.count(), is(0));
    }
 }

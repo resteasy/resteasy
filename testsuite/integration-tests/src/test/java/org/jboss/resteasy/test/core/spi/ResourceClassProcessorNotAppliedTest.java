@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.core.spi;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
@@ -91,7 +92,7 @@ public class ResourceClassProcessorNotAppliedTest {
       }
 
       // asserts
-      Assert.assertThat("ResourceClassProcessor was used although it should not be used",
+      MatcherAssert.assertThat("ResourceClassProcessor was used although it should not be used",
             visitedProcessors.size(), greaterThanOrEqualTo(0));
 
       // close client
