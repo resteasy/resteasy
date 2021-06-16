@@ -1,23 +1,19 @@
 package org.jboss.resteasy.plugins.cache.server;
 
-import java.io.IOException;
-
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-
 import org.infinispan.Cache;
-import org.infinispan.configuration.cache.Configuration;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.configuration.global.GlobalConfiguration;
-import org.infinispan.configuration.global.GlobalConfigurationBuilder;
+import org.infinispan.configuration.cache.MemoryConfiguration;
+import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.eviction.EvictionStrategy;
-import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.cache.server.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
+
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -71,18 +67,20 @@ public class ServerCacheFeature implements Feature
 
    protected ServerCache getDefaultCache()
    {
-      GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
-         .defaultCacheName("resteasy-default-cache")
-         .jmx().enable()
-         .build();
-      Configuration configuration = new ConfigurationBuilder()
-         .memory()
-         .evictionType(EvictionType.COUNT)
-         .evictionStrategy(EvictionStrategy.REMOVE)
-         .size(100)
-         .build();
-      EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
-      Cache<Object, Object> c = manager.getCache("resteasy-default-cache");
+      String RESTEASY_DEFAULT_CACHE = "resteasy-default-cache";
+      ConfigurationBuilderHolder configBuilderHolder = new ConfigurationBuilderHolder();
+      configBuilderHolder.getGlobalConfigurationBuilder()
+              .defaultCacheName(RESTEASY_DEFAULT_CACHE)
+              .jmx().enable()
+              .build();
+      configBuilderHolder.newConfigurationBuilder(RESTEASY_DEFAULT_CACHE)
+              .memory()
+              .maxCount(MemoryConfiguration.MAX_COUNT.getDefaultValue())
+              .whenFull(EvictionStrategy.REMOVE)
+              .maxCount(100)
+              .build();
+      EmbeddedCacheManager manager = new DefaultCacheManager(configBuilderHolder, true);
+      Cache<Object, Object> c = manager.getCache(RESTEASY_DEFAULT_CACHE);
       return new InfinispanCache(c);
    }
 
