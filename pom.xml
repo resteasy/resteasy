@@ -38,7 +38,6 @@
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.org.wildfly.jar.plugin>2.0.0.Beta8</version.org.wildfly.jar.plugin>
-        <version.surefire.plugin>2.19.1</version.surefire.plugin>
         <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
     </properties>
 
@@ -146,35 +145,38 @@
             </dependencyManagement>
         </profile>
         <profile>
-            <id>travis</id>
+            <id>github-actions</id>
             <activation>
                 <property>
-                    <name>travis</name>
+                    <name>github.actions</name>
                 </property>
             </activation>
+
+            <dependencies>
+                <!-- Add explicit dependency to force download of the dependency -->
+                <dependency>
+                    <groupId>org.apache.maven.surefire</groupId>
+                    <artifactId>surefire-junit47</artifactId>
+                    <version>${version.surefire.plugin}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <executions>
-                         <!-- default test execution -->
-                            <execution>
-                                <id>default-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                 <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                     <!--Temporarily exclude the tests only failed on Travis-->
-                                     <excludes combine.children="append">
-                                     </excludes>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>${version.surefire.plugin}</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
-      </profile>
+        </profile>
     </profiles>
 
     <contributors>
@@ -204,7 +206,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
                         <runOrder>reversealphabetical</runOrder>
