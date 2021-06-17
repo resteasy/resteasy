@@ -1,6 +1,6 @@
 # RESTEasy
 
-[![Build Status](https://travis-ci.org/resteasy/Resteasy.svg?branch=master)](https://travis-ci.org/resteasy/Resteasy)
+[![Build Status](https://github.com/resteasy/resteasy/actions/workflows/maven.yml/badge.svg)](https://github.com/resteasy/resteasy/actions)
 
 RESTEasy is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.  It is mainly a JAX-RS implementation but you'll find some other experimental code in the repository.
 
@@ -42,9 +42,7 @@ $ export SERVER_VERSION=17.0.0.Final
 $ mvn -B -Pjboss-repository -fae -Dserver.version=$SERVER_VERSION install
 ```
 
-You may want to check our [Travis CI](https://github.com/resteasy/Resteasy/blob/master/.travis.yml) configuration to see our testing configuration matrix as build example.
-
-And the example of full build processes can be checked [here](https://travis-ci.org/resteasy/Resteasy).
+You may want to check our [GitHub Actions](https://github.com/resteasy/Resteasy/blob/master/.github/workflows/maven.yml) configuration to see our testing configuration matrix as build example.
 
 ## Contribute
 
