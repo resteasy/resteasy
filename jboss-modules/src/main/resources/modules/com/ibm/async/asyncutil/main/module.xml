@@ -22,7 +22,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.5" name="com.ibm.async.asyncutil">
+<module xmlns="urn:jboss:module:1.9" name="com.ibm.async.asyncutil">
 
     <properties>
         <property name="jboss.api" value="private"/>

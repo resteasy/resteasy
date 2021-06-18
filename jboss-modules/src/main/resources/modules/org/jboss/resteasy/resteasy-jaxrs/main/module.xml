@@ -22,7 +22,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.3" name="org.jboss.resteasy.resteasy-jaxrs">
+<module xmlns="urn:jboss:module:1.9" name="org.jboss.resteasy.resteasy-jaxrs">
     <properties>
         <property name="jboss.api" value="private"/>
     </properties>
@@ -32,7 +32,11 @@
     </resources>
 
     <dependencies>
-        <module name="javax.api"/>
+        <module name="java.desktop"/>
+        <module name="java.logging"/>
+        <module name="java.management"/>
+        <module name="java.naming"/>
+        <!--WFLY-14219 Remove deprecated <module name="javax.api"/> -->
         <module name="javax.annotation.api"/>
         <module name="javax.activation.api"/>
         <module name="javax.validation.api"/>
@@ -52,6 +56,7 @@
         <module name="com.ibm.async.asyncutil"/>
         <module name="org.eclipse.microprofile.restclient"/>
         <module name="org.eclipse.microprofile.config.api" export="true" optional="true"/> <!-- not really optional, just a workaround for WFLY12/13 missing MP Config API -->
+        <module name="java.xml"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs-public" export="true"/>
         <module name="org.jboss.resteasy.resteasy-cdi"/>
         <module name="org.jboss.weld.api"/>

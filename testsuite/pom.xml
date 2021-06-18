@@ -24,7 +24,7 @@
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
         <security.provider>picketbox</security.provider>
-        <ee9.server.version>24.0.0.Beta1-SNAPSHOT</ee9.server.version>
+        <ee9.server.version>24.0.0.Final</ee9.server.version>
     </properties>
 
     <dependencyManagement>
