@@ -25,14 +25,14 @@ import javax.ws.rs.core.Response;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.HttpMethod;
 import static java.util.Objects.requireNonNull;
+
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
