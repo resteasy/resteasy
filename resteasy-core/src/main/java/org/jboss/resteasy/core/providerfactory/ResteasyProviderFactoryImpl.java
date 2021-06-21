@@ -1704,7 +1704,25 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          {
             SunHttpJaxrsServer server = new SunHttpJaxrsServer();
             server.setPort(configuration.port());
+            server.setHost(configuration.host());
             server.setRootResourcePath(configuration.rootPath());
+            if (configuration.sslContext() != null)
+            {
+               if (configuration.sslClientAuthentication() == SeBootstrap.Configuration.SSLClientAuthentication.NONE)
+               {
+                  configuration.sslContext().getDefaultSSLParameters().setNeedClientAuth(false);
+               }
+               if (configuration.sslClientAuthentication() == SeBootstrap.Configuration.SSLClientAuthentication.OPTIONAL)
+               {
+                  configuration.sslContext().getDefaultSSLParameters().setWantClientAuth(true);
+               }
+               if (configuration.sslClientAuthentication() == SeBootstrap.Configuration.SSLClientAuthentication.MANDATORY)
+               {
+                  configuration.sslContext().getDefaultSSLParameters().setNeedClientAuth(true);
+               }
+               server.setSSLContext(configuration.sslContext());
+            }
+            server.setProtocol(configuration.protocol());
             ResteasyDeployment deployment = new ResteasyDeploymentImpl();
             deployment.setApplication(application);
             server.setDeployment(deployment);

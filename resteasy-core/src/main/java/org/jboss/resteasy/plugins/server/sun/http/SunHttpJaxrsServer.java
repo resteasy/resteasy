@@ -1,14 +1,19 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import javax.net.ssl.SSLContext;
+
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.EmbeddedServerHelper;
 import org.jboss.resteasy.util.PortProvider;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsServer;
 
 /**
  * com.sun.net.httpserver.HttpServer adapter for Resteasy.  You may instead want to create and manage your own HttpServer.
@@ -23,6 +28,9 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
    protected HttpServer httpServer;
    protected int configuredPort = PortProvider.getPort();
    protected int runtimePort = -1;
+   protected String host;
+   protected SSLContext sslContext;
+   protected String protocol;
    protected ResteasyDeployment deployment;
    private EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
 
@@ -31,7 +39,46 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
       // no-op
       return this;
    }
+   /**
+    * Value is ignored if HttpServer property is set. If host is not set, host
+    * will be any local address
+    *
+    * @param host
+    */
+   public void setHost(String host)
+   {
+      this.host = host;
+   }
 
+   /**
+    * Gets host of this HttpServer
+    *
+    * @return host
+    */
+   public String getHost()
+   {
+      return this.host;
+   }
+
+   public SSLContext getSSLContext()
+   {
+      return this.sslContext;
+   }
+
+   public void setSSLContext(SSLContext sslContext)
+   {
+      this.sslContext = sslContext;
+   }
+
+   public String getProtocol()
+   {
+      return protocol;
+   }
+
+   public void setProtocol(String protocol)
+   {
+      this.protocol = protocol;
+   }
    @Override
    public SunHttpJaxrsServer start()
    {
@@ -48,7 +95,19 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
       {
          try
          {
-            httpServer = HttpServer.create(new InetSocketAddress(configuredPort), 10);
+            InetSocketAddress address = null;
+            if (host == null) {
+               address = new InetSocketAddress(configuredPort);
+            } else {
+               address = new InetSocketAddress(host, configuredPort);
+            }
+            if ("HTTPS".equalsIgnoreCase(protocol) || this.sslContext != null) {
+               HttpsServer sslServer = HttpsServer.create(address, 10);
+               sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+               httpServer = sslServer;
+            } else {
+               httpServer = HttpServer.create(address, 10);
+            }
             runtimePort = httpServer.getAddress().getPort();
          }
          catch (IOException e)

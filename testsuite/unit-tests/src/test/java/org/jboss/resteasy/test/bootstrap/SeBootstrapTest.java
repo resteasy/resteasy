@@ -24,7 +24,8 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
 public class SeBootstrapTest {
-    @Test public void testJAXRS() throws Exception {
+    @Test
+    public void testJAXRS() throws Exception {
         SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder().host("localhost").port(8080)
                 .rootPath("bootstrap").build();
         CompletionStage<Instance> instance = SeBootstrap.start(new StandaloneApplication(), configuration);
@@ -45,7 +46,8 @@ public class SeBootstrapTest {
         }
     }
 
-    @Test public void testFailedStartJAXRS() throws Exception {
+    @Test
+    public void testFailedStartJAXRS() throws Exception {
         SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder().host("localhost").port(8081)
                 .rootPath("error").build();
         CompletionStage<Instance> instance = SeBootstrap.start(new ErrorApplication(), configuration);
@@ -55,9 +57,8 @@ public class SeBootstrapTest {
             Assert.assertTrue("Server failed is expected", e.getMessage().indexOf("Could not find constructor") > -1);
         }
     }
-    @org.junit.Ignore
-    //TODO:Fix this
-    @Test public void testSSLClientAuthNone() throws Exception {
+    @Test
+    public void testSSL() throws Exception {
         SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder().host("localhost").port(8443)
                 .rootPath("ssl").sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())
                 .sslClientAuthentication(SSLClientAuthentication.NONE).build();
@@ -98,7 +99,8 @@ public class SeBootstrapTest {
                 client.target("https://localhost:8445/wantclientauth/produces/string").request().get(String.class));
     }
 
-    @Test public void testPropertyProvider() throws Exception {
+    @Test
+    public void testPropertyProvider() throws Exception {
         TestPropertyProvider propertyProvider = new TestPropertyProvider();
         SeBootstrap.Configuration config = SeBootstrap.Configuration.builder().from((name, type) -> {
             return propertyProvider.getValue(name, type);
