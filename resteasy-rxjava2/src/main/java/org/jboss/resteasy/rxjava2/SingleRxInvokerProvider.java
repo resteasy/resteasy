@@ -22,8 +22,13 @@ public class SingleRxInvokerProvider implements RxInvokerProvider<SingleRxInvoke
    {
       if (syncInvoker instanceof ClientInvocationBuilder)
       {
-         return new SingleRxInvokerImpl((ClientInvocationBuilder)syncInvoker);
+         ClientInvocationBuilder builder = (ClientInvocationBuilder) syncInvoker;
+         CompletionStageRxInvoker completionStageRxInvoker = builder.rx();
+         return new SingleRxInvokerImpl(completionStageRxInvoker);
       }
-      throw new ProcessingException(Messages.MESSAGES.expectedClientInvocationBuilder(syncInvoker.getClass().getName()));
+      else
+      {
+         throw new ProcessingException(Messages.MESSAGES.expectedClientInvocationBuilder(syncInvoker.getClass().getName()));
+      }
    }
 }

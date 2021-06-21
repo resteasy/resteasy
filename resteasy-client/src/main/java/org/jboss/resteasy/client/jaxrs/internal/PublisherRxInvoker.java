@@ -7,12 +7,7 @@ import javax.ws.rs.core.Response;
 
 import org.reactivestreams.Publisher;
 
-/**
- * This {@link RxInvoker} produces a {@link Publisher} that will only produce
- * a single 'response' (e.g. {@link Response} via {@link #get()}, a deserialized
- * object via {@link #get(Class)}).
- */
-public interface UniPublisherRxInvoker extends RxInvoker<Publisher<?>>
+public interface PublisherRxInvoker extends RxInvoker<Publisher<?>>
 {
    @Override
    Publisher<Response> get();

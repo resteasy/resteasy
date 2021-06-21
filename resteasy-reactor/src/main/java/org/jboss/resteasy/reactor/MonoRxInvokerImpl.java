@@ -5,12 +5,12 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.UniPublisherRxInvokerImpl;
+import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletionStage;
 
-public class MonoRxInvokerImpl extends UniPublisherRxInvokerImpl implements MonoRxInvoker {
+public class MonoRxInvokerImpl extends PublisherRxInvokerImpl implements MonoRxInvoker {
 
     public MonoRxInvokerImpl(final ClientInvocationBuilder builder) {
         super(builder);

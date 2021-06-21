@@ -4,10 +4,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.client.jaxrs.internal.UniPublisherRxInvoker;
+import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvoker;
 import reactor.core.publisher.Mono;
 
-public interface MonoRxInvoker extends UniPublisherRxInvoker
+public interface MonoRxInvoker extends PublisherRxInvoker
 {
    @Override
    Mono<Response> get();
