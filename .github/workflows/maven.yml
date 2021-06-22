@@ -21,7 +21,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['1.8', '11']
-        wildfly-version: ['22.0.1.Final', '23.0.2.Final']
+        wildfly-version: ['23.0.2.Final']
+        profiles: ['', '-Delytron']
 
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +37,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
-        run: mvn clean install -fae '-Dserver.version=${{ matrix.wildfly-version }}'
+        run: mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -68,4 +69,4 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build Java Docs with Java ${{ matrix.java }}
-        run: mvn clean install -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc
+        run: mvn clean install -U -B -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc
