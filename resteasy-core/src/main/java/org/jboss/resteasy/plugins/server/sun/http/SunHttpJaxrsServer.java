@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -13,6 +14,7 @@ import org.jboss.resteasy.util.PortProvider;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 /**
@@ -30,6 +32,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
    protected int runtimePort = -1;
    protected String host;
    protected SSLContext sslContext;
+   protected SSLParameters sslParameters;
    protected String protocol;
    protected ResteasyDeployment deployment;
    private EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
@@ -79,6 +82,17 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
    {
       this.protocol = protocol;
    }
+
+   public SSLParameters getSslParameters()
+   {
+      return sslParameters;
+   }
+
+   public void setSslParameters(SSLParameters sslParameters)
+   {
+      this.sslParameters = sslParameters;
+   }
+
    @Override
    public SunHttpJaxrsServer start()
    {
@@ -103,7 +117,22 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
             }
             if ("HTTPS".equalsIgnoreCase(protocol) || this.sslContext != null) {
                HttpsServer sslServer = HttpsServer.create(address, 10);
-               sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+               sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext)
+               {
+                  @Override
+                  public void configure(HttpsParameters params)
+                  {
+                     if (sslParameters != null)
+                     {
+                        params.setSSLParameters(sslParameters);
+                     }
+                     else
+                     {
+                        super.configure(params);
+                     }
+
+                  }
+               });
                httpServer = sslServer;
             } else {
                httpServer = HttpServer.create(address, 10);

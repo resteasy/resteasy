@@ -58,7 +58,7 @@ public class SeBootstrapTest {
         }
     }
     @Test
-    public void testSSL() throws Exception {
+    public void testSSLClientAuthNone() throws Exception {
         SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder().host("localhost").port(8443)
                 .rootPath("ssl").sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())
                 .sslClientAuthentication(SSLClientAuthentication.NONE).build();
@@ -69,8 +69,7 @@ public class SeBootstrapTest {
                 client.target("https://localhost:8443/ssl/produces/string").request().get(String.class));
     }
 
-    @org.junit.Ignore
-    //TODO:Fix this
+    @Test
     public void testSSLClientAuthRequired() throws Exception {
         SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder().host("localhost").port(8444)
                 .rootPath("needclientauth").sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())
@@ -86,8 +85,7 @@ public class SeBootstrapTest {
         }
     }
 
-    @org.junit.Ignore
-    //TODO:Fix this
+    @Test
     public void testSSLClientAuthWant() throws Exception {
         SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder().host("localhost").port(8445)
                 .rootPath("wantclientauth").sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())

@@ -24,6 +24,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import javax.net.ssl.SSLParameters;
+
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
@@ -1708,17 +1710,18 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             server.setRootResourcePath(configuration.rootPath());
             if (configuration.sslContext() != null)
             {
+               SSLParameters sslParams = configuration.sslContext().getDefaultSSLParameters();
                if (configuration.sslClientAuthentication() == SeBootstrap.Configuration.SSLClientAuthentication.NONE)
                {
-                  configuration.sslContext().getDefaultSSLParameters().setNeedClientAuth(false);
+                  sslParams.setNeedClientAuth(false);
                }
                if (configuration.sslClientAuthentication() == SeBootstrap.Configuration.SSLClientAuthentication.OPTIONAL)
                {
-                  configuration.sslContext().getDefaultSSLParameters().setWantClientAuth(true);
+                  sslParams.setWantClientAuth(true);
                }
                if (configuration.sslClientAuthentication() == SeBootstrap.Configuration.SSLClientAuthentication.MANDATORY)
                {
-                  configuration.sslContext().getDefaultSSLParameters().setNeedClientAuth(true);
+                  sslParams.setNeedClientAuth(true);
                }
                server.setSSLContext(configuration.sslContext());
             }
