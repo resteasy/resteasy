@@ -58,7 +58,7 @@ public class WADLNettyContainerTest {
 
    @Test
    public void test() throws Exception {
-      WadlTests basicTest = new WadlTests();
+      TestWadlFunctions basicTest = new TestWadlFunctions();
       basicTest.setClient(client);
       basicTest.testBasicSet();
       basicTest.testResteasy1246();

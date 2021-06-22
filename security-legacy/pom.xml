@@ -12,38 +12,16 @@
 
     <artifactId>security-legacy-pom</artifactId>
     <packaging>pom</packaging>
-
-    <profiles>
-        <profile>
-            <id>travis-ci</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-				<module>resteasy-oauth</module>
-				<module>skeleton-key-idm</module>
-				<module>keystone/keystone-core</module>
-				<module>keystone/keystone-as7</module>
-				<module>keystone/keystone-as7-modules</module>
-                <module>login-module-authenticator</module>			
-            </modules>
-        </profile>
-        <profile>
-            <id>all</id>
-            <modules>
-			    <module>resteasy-oauth</module>
-			    <module>jose-jwt</module>
-			    <module>login-module-authenticator</module>
-			    <module>skeleton-key-idm</module>
-			    <module>keystone/keystone-core</module>
-			    <module>keystone/keystone-as7</module>
-			    <module>keystone/keystone-as7-modules</module>
-                <module>login-module-authenticator</module>				
-			    <!--
-			    <module>skeleton-keystone-idm/example/skeleton-key-server</module>
-			    <module>skeleton-keystone-idm/example/some-app</module>
-			    -->
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>resteasy-oauth</module>
+        <module>login-module-authenticator</module>
+        <module>skeleton-key-idm</module>
+        <module>keystone/keystone-core</module>
+        <module>keystone/keystone-as7</module>
+        <module>keystone/keystone-as7-modules</module>
+        <!--
+        <module>skeleton-keystone-idm/example/skeleton-key-server</module>
+        <module>skeleton-keystone-idm/example/some-app</module>
+        -->
+    </modules>
 </project>

@@ -12,26 +12,18 @@
 
     <artifactId>providers-pom</artifactId>
     <packaging>pom</packaging>
-    <profiles>
-        <profile>
-            <id>travis-ci</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>jaxb</module>
-                <module>jettison</module>
-                <module>fastinfoset</module>
-                <module>jackson</module>
-                <module>jackson2</module>
-                <module>json-p-ee7</module>
-                <module>json-binding</module>
-                <module>resteasy-atom</module>
-                <module>multipart</module>
-                <module>yaml</module>
-                <module>resteasy-html</module>
-                <module>resteasy-validator-provider</module>
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>jaxb</module>
+        <module>jettison</module>
+        <module>fastinfoset</module>
+        <module>jackson</module>
+        <module>jackson2</module>
+        <module>json-p-ee7</module>
+        <module>json-binding</module>
+        <module>resteasy-atom</module>
+        <module>multipart</module>
+        <module>yaml</module>
+        <module>resteasy-html</module>
+        <module>resteasy-validator-provider</module>
+    </modules>
 </project>

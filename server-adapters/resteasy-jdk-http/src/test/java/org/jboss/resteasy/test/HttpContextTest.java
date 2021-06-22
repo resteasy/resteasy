@@ -41,7 +41,7 @@ public class HttpContextTest
    public static void after() throws Exception
    {
       contextBuilder.cleanup();
-      httpServer.stop(0);
+      httpServer.stop(1);
    }
 
    @Test
