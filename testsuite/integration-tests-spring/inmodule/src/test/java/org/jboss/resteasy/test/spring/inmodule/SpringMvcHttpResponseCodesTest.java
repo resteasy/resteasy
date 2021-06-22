@@ -33,10 +33,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @tpSubChapter Spring
@@ -53,7 +49,7 @@ public class SpringMvcHttpResponseCodesTest {
    private static Client nonAutorizedClient;
 
    @Deployment
-   private static Archive<?> deploy() {
+   public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(SpringMvcHttpResponseCodesTest.class.getSimpleName());
       war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/web-secure.xml", "web.xml");
       war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/jboss-web.xml", "jboss-web.xml");
@@ -190,12 +186,9 @@ public class SpringMvcHttpResponseCodesTest {
    }
 
    static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
-
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(SpringMvcHttpResponseCodesTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
+      SecurityDomainSetup() {
+         super(SpringMvcHttpResponseCodesTest.class.getResource("users.properties"),
+                 SpringMvcHttpResponseCodesTest.class.getResource("roles.properties"));
       }
    }
 }
