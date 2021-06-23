@@ -1057,6 +1057,11 @@ ReactorNettyClientHttpEngine engine = new ReactorNettyClientHttpEngine(
 ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
    .clientEngine(engine).build();
         </programlisting>
+        <para>
+            When coupled with the MonoRxInvoker, this has several benefits.
+            Most notably, a Reactor-based timeout will eagerly stop in-flight
+            requests.
+        </para>
     </section>
 
    </section>
