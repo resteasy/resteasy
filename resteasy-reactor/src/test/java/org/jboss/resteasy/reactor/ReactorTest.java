@@ -200,93 +200,97 @@ public class ReactorTest
               .handle((req, resp) -> resp.sendString(Mono.just("I'm delayed!").delayElement(serverResponseDelay)))
               .bindNow();
 
-       final CountDownLatch latch = new CountDownLatch(1);
+       try {
+           final CountDownLatch latch = new CountDownLatch(1);
 
-       final HttpClient reactorClient = HttpClient.create();
+           final HttpClient reactorClient = HttpClient.create();
 
-       final ReactorNettyClientHttpEngine reactorEngine =
-          new ReactorNettyClientHttpEngine(
-              reactorClient,
-              new DefaultChannelGroup(new DefaultEventExecutor()),
-              ConnectionProvider.builder("clientconns").maxConnections(1).build()
-          );
+           final ReactorNettyClientHttpEngine reactorEngine =
+               new ReactorNettyClientHttpEngine(
+                   reactorClient,
+                   new DefaultChannelGroup(new DefaultEventExecutor()),
+                   ConnectionProvider.builder("clientconns").maxConnections(1).build()
+               );
 
-       final AtomicReference<Exception> innerTimeoutException = new AtomicReference<>();
+           final AtomicReference<Exception> innerTimeoutException = new AtomicReference<>();
 
-       final ReactiveClientHttpEngine wrappedEngine = new ReactiveClientHttpEngine() {
-          private <T> Mono<T> recordTimeout(final Mono<T> m) {
-             return m.doOnError(TimeoutException.class, innerTimeoutException::set);
-          }
+           final ReactiveClientHttpEngine wrappedEngine = new ReactiveClientHttpEngine() {
+               private <T> Mono<T> recordTimeout(final Mono<T> m) {
+                   return m.doOnError(TimeoutException.class, innerTimeoutException::set);
+               }
 
-          public <T> Mono<T> submitRx(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
-             return recordTimeout(reactorEngine.submitRx(request, buffered, extractor));
-          }
+               public <T> Mono<T> submitRx(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor) {
+                   return recordTimeout(reactorEngine.submitRx(request, buffered, extractor));
+               }
 
-          public <T> Mono<T> fromCompletionStage(CompletionStage<T> cs) {
-             return recordTimeout(reactorEngine.fromCompletionStage(cs));
-          }
+               public <T> Mono<T> fromCompletionStage(CompletionStage<T> cs) {
+                   return recordTimeout(reactorEngine.fromCompletionStage(cs));
+               }
 
-          public <T> Mono<T> just(T t) {
-             return recordTimeout(reactorEngine.just(t));
-          }
+               public <T> Mono<T> just(T t) {
+                   return recordTimeout(reactorEngine.just(t));
+               }
 
-          public Mono error(Exception e) {
-             return recordTimeout(reactorEngine.error(e));
-          }
+               public Mono error(Exception e) {
+                   return recordTimeout(reactorEngine.error(e));
+               }
 
-          public <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
-             return reactorEngine.submit(request, buffered, callback, extractor);
-          }
+               public <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
+                   return reactorEngine.submit(request, buffered, callback, extractor);
+               }
 
-          public <K> CompletableFuture<K> submit(ClientInvocation request, boolean buffered, ResultExtractor<K> extractor, ExecutorService executorService) {
-             return reactorEngine.submit(request, buffered, extractor, executorService);
-          }
+               public <K> CompletableFuture<K> submit(ClientInvocation request, boolean buffered, ResultExtractor<K> extractor, ExecutorService executorService) {
+                   return reactorEngine.submit(request, buffered, extractor, executorService);
+               }
 
-          public SSLContext getSslContext() {
-             return reactorEngine.getSslContext();
-          }
+               public SSLContext getSslContext() {
+                   return reactorEngine.getSslContext();
+               }
 
-          public HostnameVerifier getHostnameVerifier() {
-             return reactorEngine.getHostnameVerifier();
-          }
+               public HostnameVerifier getHostnameVerifier() {
+                   return reactorEngine.getHostnameVerifier();
+               }
 
-          public Response invoke(Invocation request) {
-             return reactorEngine.invoke(request);
-          }
+               public Response invoke(Invocation request) {
+                   return reactorEngine.invoke(request);
+               }
 
-          public void close() {
-             reactorEngine.close();
-          }
-       };
+               public void close() {
+                   reactorEngine.close();
+               }
+           };
 
-      final Duration innerTimeout = Duration.ofSeconds(5);
-      final ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
-           .httpEngine(wrappedEngine)
-           .readTimeout(innerTimeout.toMillis(), TimeUnit.MILLISECONDS)
-           .build();
+           final Duration innerTimeout = Duration.ofSeconds(5);
+           final ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder())
+               .httpEngine(wrappedEngine)
+               .readTimeout(innerTimeout.toMillis(), TimeUnit.MILLISECONDS)
+               .build();
 
-       client.target("http://localhost:" + server.port() + "/")
-           .request()
-           .rx(MonoRxInvoker.class)
-           .get(String.class)
-           .timeout(Duration.ofMillis(500))
-           .subscribe(
+           client.target("http://localhost:" + server.port() + "/")
+               .request()
+               .rx(MonoRxInvoker.class)
+               .get(String.class)
+               .timeout(Duration.ofMillis(500))
+               .subscribe(
                    ignore -> {
                        fail("Should have got timeout exception");
                    },
                    t -> {
                        if (!(t instanceof TimeoutException)) {
-                          assertThat(t.getMessage(), containsString("signal within 500ms")); // crappy assertion:(
+                           assertThat(t.getMessage(), containsString("signal within 500ms")); // crappy assertion:(
                        }
                        latch.countDown();
                    },
                    latch::countDown
-           );
+               );
 
-       assertNull("Inner timeout should not have occurred!", innerTimeoutException.get());
-       assertTrue("Test timed out", latch.await(innerTimeout.multipliedBy(2).toMillis(), TimeUnit.MILLISECONDS));
-       assertTrue("Server disconnect didn't happen.", serverConnDisconnectingEvent.await(
-           serverResponseDelay.dividedBy(2).toMillis(), TimeUnit.MILLISECONDS));
+           assertNull("Inner timeout should not have occurred!", innerTimeoutException.get());
+           assertTrue("Test timed out", latch.await(innerTimeout.multipliedBy(2).toMillis(), TimeUnit.MILLISECONDS));
+           assertTrue("Server disconnect didn't happen.", serverConnDisconnectingEvent.await(
+               serverResponseDelay.dividedBy(2).toMillis(), TimeUnit.MILLISECONDS));
+       } finally {
+           server.disposeNow();
+       }
    }
 
    @Test
