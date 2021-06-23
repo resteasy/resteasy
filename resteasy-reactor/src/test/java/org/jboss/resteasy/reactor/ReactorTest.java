@@ -51,7 +51,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.netty.ConnectionObserver;
+import reactor.netty.DisposableServer;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.server.HttpServer;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.util.context.Context;
 
@@ -183,6 +186,20 @@ public class ReactorTest
    @Test
    public void testTimeoutOverridePerRequest() throws Exception
    {
+      // This also tests that the client will eagerly close the connection
+      // in the case of a business logic timeout.
+      final Duration serverResponseDelay = Duration.ofSeconds(60);
+      final CountDownLatch serverConnDisconnectingEvent = new CountDownLatch(1);
+      final DisposableServer server =
+          HttpServer.create()
+              .childObserve((conn, state) -> {
+                 if (state == ConnectionObserver.State.DISCONNECTING) {
+                    serverConnDisconnectingEvent.countDown();
+                 }
+              })
+              .handle((req, resp) -> resp.sendString(Mono.just("I'm delayed!").delayElement(serverResponseDelay)))
+              .bindNow();
+
        final CountDownLatch latch = new CountDownLatch(1);
 
        final HttpClient reactorClient = HttpClient.create();
@@ -191,7 +208,7 @@ public class ReactorTest
           new ReactorNettyClientHttpEngine(
               reactorClient,
               new DefaultChannelGroup(new DefaultEventExecutor()),
-              ConnectionProvider.newConnection()
+              ConnectionProvider.builder("clientconns").maxConnections(1).build()
           );
 
        final AtomicReference<Exception> innerTimeoutException = new AtomicReference<>();
@@ -248,7 +265,7 @@ public class ReactorTest
            .readTimeout(innerTimeout.toMillis(), TimeUnit.MILLISECONDS)
            .build();
 
-       client.target(generateURL("/delay/10"))
+       client.target("http://localhost:" + server.port() + "/")
            .request()
            .rx(MonoRxInvoker.class)
            .get(String.class)
@@ -268,6 +285,8 @@ public class ReactorTest
 
        assertNull("Inner timeout should not have occurred!", innerTimeoutException.get());
        assertTrue("Test timed out", latch.await(innerTimeout.multipliedBy(2).toMillis(), TimeUnit.MILLISECONDS));
+       assertTrue("Server disconnect didn't happen.", serverConnDisconnectingEvent.await(
+           serverResponseDelay.dividedBy(2).toMillis(), TimeUnit.MILLISECONDS));
    }
 
    @Test
