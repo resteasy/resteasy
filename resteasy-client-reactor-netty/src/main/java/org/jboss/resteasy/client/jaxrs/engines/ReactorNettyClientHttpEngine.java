@@ -1,18 +1,17 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import io.netty.channel.group.ChannelGroup;
-import io.netty.handler.codec.http.HttpMethod;
-import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
-import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.logging.Logger;
-import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.http.client.HttpClientResponse;
-import reactor.netty.resources.ConnectionProvider;
-
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.function.BiFunction;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
@@ -22,23 +21,24 @@ import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.function.BiFunction;
 
+import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.HttpMethod;
 import static java.util.Objects.requireNonNull;
+
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
+import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.client.HttpClientResponse;
+import reactor.netty.resources.ConnectionProvider;
 
-public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
-
+public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
     private static final Logger log = Logger.getLogger(ReactorNettyClientHttpEngine.class);
 
     private final HttpClient httpClient;
@@ -108,26 +108,9 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
     }
 
     @Override
-    public <T> Future<T> submit(final ClientInvocation request,
-                                final boolean buffered,
-                                final InvocationCallback<T> callback,
-                                final ResultExtractor<T> extractor) {
-
-        return submit(request, buffered, extractor, null)
-                .whenComplete((response, throwable) -> {
-                    if(callback != null) {
-                        if (throwable != null) callback.failed(throwable);
-                        else callback.completed(response);
-                    }
-                });
-    }
-
-    @Override
-    public <T> CompletableFuture<T> submit(final ClientInvocation request,
-                                           final boolean buffered,
-                                           final ResultExtractor<T> extractor,
-                                           final ExecutorService executorService) {
-
+    public <T> Mono<T> submitRx(final ClientInvocation request,
+                                 final boolean buffered,
+                                 final ResultExtractor<T> extractor) {
         final Optional<byte[]> payload =
             Optional.ofNullable(request.getEntity()).map(entity -> requestContent(request));
 
@@ -192,7 +175,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
         return requestTimeout
                 .map(duration -> responseMono.timeout(duration))
                 .orElse(responseMono)
-                .<T>handle((response, sink) -> {
+                .handle((response, sink) -> {
                     try {
                         sink.next(extractor.extractResult(response));
                     } catch (final Exception e) {
@@ -210,8 +193,46 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                         }
                         sink.error(e);
                     }
-                })
-                .toFuture();
+                });
+    }
+
+    @Override
+    public <T> Mono<T> fromCompletionStage(final CompletionStage<T> cs) {
+        return Mono.fromCompletionStage(() -> cs);
+    }
+
+    @Override
+    public <T> Mono<T> just(final T t) {
+        return Mono.just(t);
+    }
+
+    @Override
+    public Mono error(final Exception e) {
+        return Mono.error(e);
+    }
+
+    @Override
+    public <T> Future<T> submit(final ClientInvocation request,
+        final boolean buffered,
+        final InvocationCallback<T> callback,
+        final ResultExtractor<T> extractor) {
+
+        return submit(request, buffered, extractor, null)
+            .whenComplete((response, throwable) -> {
+                if(callback != null) {
+                    if (throwable != null) callback.failed(throwable);
+                    else callback.completed(response);
+                }
+            });
+    }
+
+    @Override
+    public <K> CompletableFuture<K> submit(final ClientInvocation request,
+        final boolean buffered,
+        final ResultExtractor<K> extractor,
+        final ExecutorService executorService
+    ) {
+        return submitRx(request, buffered, extractor).toFuture();
     }
 
     private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {
@@ -292,15 +313,15 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
     }
 
     private ClientResponse toRestEasyResponse(final ClientConfiguration clientConfiguration,
-                                              final HttpClientResponse reactorNettyResponse,
-                                              final InputStream inputStream) {
+        final HttpClientResponse reactorNettyResponse,
+        final InputStream inputStream) {
 
         final ClientResponse restEasyClientResponse = fnClientResponse.apply(clientConfiguration, inputStream);
         restEasyClientResponse.setStatus(reactorNettyResponse.status().code());
 
         final MultivaluedMap<String, Object> resteasyHeaders =  restEasyClientResponse.getHeaders();
         reactorNettyResponse.responseHeaders()
-                .forEach(header -> resteasyHeaders.add(header.getKey(), header.getValue()));
+            .forEach(header -> resteasyHeaders.add(header.getKey(), header.getValue()));
 
         return restEasyClientResponse;
     }

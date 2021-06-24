@@ -1,13 +1,13 @@
 package org.jboss.resteasy.reactor;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.RxInvoker;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.PublisherRxInvoker;
 import reactor.core.publisher.Mono;
 
-public interface MonoRxInvoker extends RxInvoker<Mono<?>>
+public interface MonoRxInvoker extends PublisherRxInvoker
 {
    @Override
    Mono<Response> get();
