@@ -5,6 +5,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.PublisherRxInvoker;
 import org.reactivestreams.Publisher;
 
 import java.util.concurrent.CompletionStage;

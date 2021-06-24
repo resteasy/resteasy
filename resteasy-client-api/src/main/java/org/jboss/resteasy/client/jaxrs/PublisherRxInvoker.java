@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.jaxrs.internal;
+package org.jboss.resteasy.client.jaxrs;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.RxInvoker;
