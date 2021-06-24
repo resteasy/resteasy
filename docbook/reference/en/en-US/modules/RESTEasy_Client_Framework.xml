@@ -1059,8 +1059,25 @@ ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
         </programlisting>
         <para>
             When coupled with the MonoRxInvoker, this has several benefits.
-            Most notably, a Reactor-based timeout will eagerly stop in-flight
-            requests.
+            It supports things like this:
+<programlisting>
+webTarget.path("/foo").get().rx(MonoRxInvoker.class).map(...).subscribe()
+</programlisting>
+
+        <para>
+            in order to achieve non-blocking HTTP client calls. This allows leveraging
+            some reactor features:
+        </para>
+<itemizedlist>
+    <listitem>the ability for a <code>Mono#timeout</code> set on the response to aggressively terminate the HTTP request;</listitem>
+    <listitem>the ability to pass a (reactor) context from client calls into <classname>ReactorNettyClientHttpEngine</classname>.</listitem>
+</itemizedlist>
+        </para>
+        
+        <para>
+        For some sample code, see 
+        <classname>org.jboss.resteasy.reactor.ReactorTest</classname> in the
+        RESTEasy module resteasy-reactor.
         </para>
     </section>
 
