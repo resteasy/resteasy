@@ -1,5 +1,6 @@
 package org.jboss.resteasy.microprofile.client;
 
+import org.jboss.logging.Logger;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponseContextImpl;
@@ -22,6 +23,7 @@ import java.util.Set;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ExceptionMapping implements ClientResponseFilter {
     public static class HandlerException extends ResponseProcessingException {
+        private static final Logger LOGGER = Logger.getLogger(ExceptionMapping.HandlerException.class);
         protected ClientResponse handled;
         protected List<ResponseExceptionMapper> candidates;
 
@@ -40,9 +42,16 @@ public class ExceptionMapping implements ClientResponseFilter {
                 if (exception instanceof RuntimeException) throw (RuntimeException) exception;
                 if (exception instanceof Error) throw (Error) exception;
                 for (Class exc : method.getExceptionTypes()) {
-                    if (exc.isAssignableFrom(exception.getClass())) throw (Exception) exception;
+                    if (exception != null && exc.isAssignableFrom(exception.getClass())) {
+                        throw (Exception) exception;
+                    }
                 }
             }
+            // falling through to here means no applicable exception mapper found
+            // or applicable mapper returned null
+            LOGGER.warnf("No default ResponseExceptionMapper found or user's ResponseExceptionMapper returned null."
+                + "  Response status: %s  messge: %s", handled.getStatus(), handled.getReasonPhrase());
+
         }
     }
 
