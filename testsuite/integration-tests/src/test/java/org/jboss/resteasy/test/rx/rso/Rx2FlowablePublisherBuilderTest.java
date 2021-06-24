@@ -8,7 +8,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
@@ -19,9 +18,6 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.as.test.shared.CLIServerSetupTask;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly22;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
@@ -32,10 +28,13 @@ import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
-import org.jboss.resteasy.test.rx.rso.resource.RSOPublisherResourceImpl;
+import org.jboss.resteasy.test.rx.rso.resource.RSONoStreamPublisherResource;
+import org.jboss.resteasy.test.rx.rso.resource.RSOPublisherBuilderResourceImpl;
+import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -44,29 +43,25 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+
+import io.reactivex.Flowable;
 
 /**
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.6
  *
- * In these tests, the server uses Publishers to create results asynchronously and streams the elements
- * of the Publishers as they are created.
+ * In these tests, the server uses Flowables to create results asynchronously and streams the elements
+ * of the Flowables as they are created.
  *
  * The client makes invocations on an FlowableRxInvoker.
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@ServerSetup(EnableReactiveExtensionsSetupTask.class)
-@Category({ExpectedFailingOnWildFly22.class})
-public class RSOPublisherBuilderTest {
+public class Rx2FlowablePublisherBuilderTest {
 
    private static ResteasyClient client;
    private static CountDownLatch latch;
@@ -99,19 +94,19 @@ public class RSOPublisherBuilderTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(RSOPublisherBuilderTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(Rx2FlowablePublisherBuilderTest.class.getSimpleName());
       war.addClass(Thing.class);
       war.addClass(TRACE.class);
       war.addClass(Bytes.class);
+      war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
-      war.addPackage("org.jboss.resteasy.rso");
-      war.addClasses(EnableReactiveExtensionsSetupTask.class, CLIServerSetupTask.class);
-      return TestUtil.finishContainerPrepare(war, null, RSOPublisherResourceImpl.class, TestExceptionMapper.class);
-
+      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.jboss.resteasy.resteasy-reactive-streams-operators services, org.reactivestreams\n"));
+      return TestUtil.finishContainerPrepare(war, null, RSOPublisherBuilderResourceImpl.class, TestExceptionMapper.class);
    }
 
    private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, RSOPublisherBuilderTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, Rx2FlowablePublisherBuilderTest.class.getSimpleName());
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -139,45 +134,29 @@ public class RSOPublisherBuilderTest {
    //////////////////////////////////////////////////////////////////////////////
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testGet() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.get();
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()
-            ));
-      boolean waitResult = latch.await(5, TimeUnit.SECONDS);
+      Flowable<String> flowable = (Flowable<String>) invoker.get();
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
       Assert.assertEquals(xStringList, stringList);
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
-   public void testGetRx() throws Exception {
-      FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.get();
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
-      boolean waitResult = latch.await(5, TimeUnit.SECONDS);
-      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-      Assert.assertEquals(0, errors.get());
-      Assert.assertEquals(xStringList, stringList);
-   }
-
-   @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testGetThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.get(Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.get(Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -185,14 +164,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testGetThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.get(LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.get(LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -200,14 +179,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testGetBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.get(byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.get(byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -218,14 +197,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPut() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/put/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.put(aEntity);
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.put(aEntity);
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -233,14 +212,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPutThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/put/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.put(aEntity, Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.put(aEntity, Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -248,14 +227,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPutThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/put/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.put(aEntity, LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.put(aEntity, LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -263,14 +242,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPutBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/put/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.put(threeEntity, byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.put(threeEntity, byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -281,14 +260,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPost() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.post(aEntity);
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.post(aEntity);
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -296,14 +275,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPostThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.post(aEntity, Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.post(aEntity, Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -311,14 +290,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPostThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.post(aEntity, LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.post(aEntity, LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -326,14 +305,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPostBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.post(threeEntity, byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.post(threeEntity, byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -344,14 +323,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testDelete() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/delete/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.delete();
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.delete();
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -359,14 +338,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testDeleteThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/delete/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.delete(Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.delete(Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -374,14 +353,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testDeleteThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/delete/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.delete(LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.delete(LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -389,14 +368,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testDeleteBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/delete/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.delete(byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.delete(byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -407,26 +386,25 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testHead() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.head();
-      publisher.subscribe(new TestSubscriber<String>(
+      Flowable<String> flowable = (Flowable<String>) invoker.head();
+      flowable.subscribe(
             (String s) -> value.set(s), // HEAD - no body
-            (Throwable t) -> throwableContains(t, "Input stream was empty"),
-            null));
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testOptions() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/options/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.options();
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.options();
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -434,14 +412,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testOptionsThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/options/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.options(Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.options(Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -449,14 +427,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testOptionsThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/options/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.options(LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.options(LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -464,14 +442,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testOptionsBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/options/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.options(byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.options(byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -486,11 +464,11 @@ public class RSOPublisherBuilderTest {
    @Ignore // TRACE turned off by default in Wildfly
    public void testTrace() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.trace();
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.trace();
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -502,11 +480,11 @@ public class RSOPublisherBuilderTest {
    @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.trace(Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.trace(Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -518,11 +496,11 @@ public class RSOPublisherBuilderTest {
    @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.trace(LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.trace(LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -534,11 +512,11 @@ public class RSOPublisherBuilderTest {
    @Ignore // TRACE turned off by default in Wildfly
    public void testTraceBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.get(byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.get(byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -549,14 +527,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodGet() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.method("GET");
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.method("GET");
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -564,14 +542,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodGetThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.method("GET", Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.method("GET", Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -579,14 +557,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodGetThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.method("GET", LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.method("GET", LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -594,14 +572,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodGetBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/get/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.method("GET", byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.method("GET", byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -612,14 +590,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodPost() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher = (Publisher<String>) invoker.method("POST", aEntity);
-      publisher.subscribe(new TestSubscriber<String>(
-            (String o) -> stringList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<String> flowable = (Flowable<String>) invoker.method("POST", aEntity);
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -627,14 +605,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodPostThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/thing")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.method("POST", aEntity, Thing.class);
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing o) -> thingList.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.method("POST", aEntity, Thing.class);
+      flowable.subscribe(
+         (Thing o) -> thingList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -642,14 +620,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodPostThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/thing/list")).request().rx(FlowableRxInvoker.class);
-      Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.method("POST", aEntity, LIST_OF_THING);
-      publisher.subscribe(new TestSubscriber<List<Thing>>(
-            (List<?> l) -> thingListList.add(l),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.method("POST", aEntity, LIST_OF_THING);
+      flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -657,14 +635,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testMethodPostBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.method("POST", threeEntity, byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.method("POST", threeEntity, byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -675,16 +653,16 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testScheduledExecutorService () throws Exception {
       {
          RxScheduledExecutorService.used = false;
          FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-         Publisher<String> publisher = (Publisher<String>) invoker.get();
-         publisher.subscribe(new TestSubscriber<String>(
-               (String o) -> stringList.add(o),
-               (Throwable t) -> errors.incrementAndGet(),
-               () -> latch.countDown()));
+         Flowable<String> flowable = (Flowable<String>) invoker.get();
+         flowable.subscribe(
+            (String o) -> stringList.add(o),
+            (Throwable t) -> errors.incrementAndGet(),
+            () -> latch.countDown());
          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          Assert.assertEquals(0, errors.get());
@@ -700,12 +678,12 @@ public class RSOPublisherBuilderTest {
          ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
          client.register(FlowableRxInvokerProvider.class);
          FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-         Publisher<String> publisher = (Publisher<String>) invoker.get();
+         Flowable<String> flowable = (Flowable<String>) invoker.get();
          stringList.clear();
-         publisher.subscribe(new TestSubscriber<String>(
-               (String o) -> stringList.add(o),
-               (Throwable t) -> errors.incrementAndGet(),
-               () -> latch.countDown()));
+         flowable.subscribe(
+            (String o) -> stringList.add(o),
+            (Throwable t) -> errors.incrementAndGet(),
+            () -> latch.countDown());
          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          Assert.assertEquals(0, errors.get());
@@ -715,15 +693,15 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testUnhandledException() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/exception/unhandled")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.get(Thing.class);
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.get(Thing.class);
       AtomicReference<Object> value = new AtomicReference<Object>();
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing t) -> thingList.add(t),
-            (Throwable t) -> {value.set(t); latch.countDown();},
-            () -> latch.countDown()));
+      flowable.subscribe(
+         (Thing t) -> thingList.add(t),
+         (Throwable t) -> {value.set(t); latch.countDown();},
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Throwable t = (Throwable) value.get();
@@ -732,15 +710,15 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testHandledException() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/exception/handled")).request().rx(FlowableRxInvoker.class);
-      Publisher<Thing> publisher = (Publisher<Thing>) invoker.get(Thing.class);
+      Flowable<Thing> flowable = (Flowable<Thing>) invoker.get(Thing.class);
       AtomicReference<Object> value = new AtomicReference<Object>();
-      publisher.subscribe(new TestSubscriber<Thing>(
-            (Thing t) -> thingList.add(t),
-            (Throwable t) -> {value.set(t); latch.countDown();},
-            () -> latch.countDown()));
+      flowable.subscribe(
+         (Thing t) -> thingList.add(t),
+         (Throwable t) -> {value.set(t); latch.countDown();},
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Throwable t = (Throwable) value.get();
@@ -749,7 +727,7 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testGetTwoClients() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
@@ -757,22 +735,22 @@ public class RSOPublisherBuilderTest {
       ResteasyClient client1 = new ResteasyClientBuilder().build();
       client1.register(FlowableRxInvokerProvider.class);
       FlowableRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher1 = (Publisher<String>) invoker1.get();
+      Flowable<String> flowable1 = (Flowable<String>) invoker1.get();
 
       ResteasyClient client2 = new ResteasyClientBuilder().build();
       client2.register(FlowableRxInvokerProvider.class);
       FlowableRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher2 = (Publisher<String>) invoker2.get();
+      Flowable<String> flowable2 = (Flowable<String>) invoker2.get();
 
-      publisher1.subscribe(new TestSubscriber<String>(
-            (String o) -> list.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> cdl.countDown()));
+      flowable1.subscribe(
+         (String o) -> list.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> cdl.countDown());
 
-      publisher2.subscribe(new TestSubscriber<String>(
-            (String o) -> list.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> cdl.countDown()));
+      flowable2.subscribe(
+         (String o) -> list.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> cdl.countDown());
 
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
@@ -784,26 +762,26 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testGetTwoInvokers() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       FlowableRxInvoker invoker1 = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher1 = (Publisher<String>) invoker1.get();
+      Flowable<String> flowable1 = (Flowable<String>) invoker1.get();
 
       FlowableRxInvoker invoker2 = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher2 = (Publisher<String>) invoker2.get();
+      Flowable<String> flowable2 = (Flowable<String>) invoker2.get();
 
-      publisher1.subscribe(new TestSubscriber<String>(
-            (String o) -> list.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> cdl.countDown()));
+      flowable1.subscribe(
+         (String o) -> list.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> cdl.countDown());
 
-      publisher2.subscribe(new TestSubscriber<String>(
-            (String o) -> list.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> cdl.countDown()));
+      flowable2.subscribe(
+         (String o) -> list.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> cdl.countDown());
 
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
@@ -815,24 +793,24 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
-   public void testGetTwoPublishers() throws Exception {
+   @Test
+   public void testGetTwoFlowables() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Publisher<String> publisher1 = (Publisher<String>) invoker.get();
-      Publisher<String> publisher2 = (Publisher<String>) invoker.get();
+      Flowable<String> flowable1 = (Flowable<String>) invoker.get();
+      Flowable<String> flowable2 = (Flowable<String>) invoker.get();
 
-      publisher1.subscribe(new TestSubscriber<String>(
-            (String o) -> list.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> cdl.countDown()));
+      flowable1.subscribe(
+         (String o) -> list.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> cdl.countDown());
 
-      publisher2.subscribe(new TestSubscriber<String>(
-            (String o) -> list.add(o),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> cdl.countDown()));
+      flowable2.subscribe(
+         (String o) -> list.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> cdl.countDown());
 
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
@@ -844,14 +822,14 @@ public class RSOPublisherBuilderTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
+   @Test
    public void testPostBytesLong() throws Exception {
-      org.jboss.resteasy.rxjava2.FlowableRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(FlowableRxInvoker.class);
-      Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.post(Entity.entity("1000", MediaType.TEXT_PLAIN_TYPE), byte[].class);
-      publisher.subscribe(new TestSubscriber<byte[]>(
-            (byte[] b) -> bytesList.add(b),
-            (Throwable t) -> errors.incrementAndGet(),
-            () -> latch.countDown()));
+      FlowableRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(FlowableRxInvoker.class);
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.post(Entity.entity("1000", MediaType.TEXT_PLAIN_TYPE), byte[].class);
+      flowable.subscribe(
+         (byte[] b) -> bytesList.add(b),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -870,53 +848,5 @@ public class RSOPublisherBuilderTest {
          t = t.getCause();
       }
       return false;
-   }
-
-   static class TestSubscriber<T> implements Subscriber<T> {
-      private Consumer<? super T> onNext;
-      private Consumer<? super Throwable> onError;
-      private Runnable onComplete;
-
-      TestSubscriber(final Consumer<? super T> onNext, final Consumer<? super Throwable> onError, final Runnable onComplete) {
-         this.onNext = onNext;
-         this.onError = onError;
-         this.onComplete = onComplete;
-      }
-
-      @Override
-      public void onSubscribe(Subscription s) {
-         //
-      }
-
-      @Override
-      public void onNext(T t) {
-         try {
-            onNext.accept(t);
-         } catch (Exception e) {
-            onError(e);
-         }
-      }
-
-      @Override
-      public void onError(Throwable t) {
-         try {
-            onError.accept(t);
-         } catch (Exception e) {
-            throw new RuntimeException(t);
-         }
-      }
-
-      @Override
-      public void onComplete() {
-         try {
-            onComplete.run();
-         } catch (Exception e) {
-            throw new RuntimeException(e);
-         }
-      }
-
-      public String toString() {
-         return super.toString();
-      }
    }
 }

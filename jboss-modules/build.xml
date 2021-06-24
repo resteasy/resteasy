@@ -112,6 +112,9 @@
 
         <module-def name="org.jboss.resteasy.resteasy-reactive-streams-operators">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-reactive-streams-operators"/>
+        	<maven-resource group="org.eclipse.microprofile.reactive-streams-operators" artifact="microprofile-reactive-streams-operators-api"/>
+        	<maven-resource group="org.eclipse.microprofile.reactive-streams-operators" artifact="microprofile-reactive-streams-operators-core"/>
+        	<maven-resource group="io.smallrye.reactive" artifact="smallrye-reactive-streams-operators"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-rxjava2">

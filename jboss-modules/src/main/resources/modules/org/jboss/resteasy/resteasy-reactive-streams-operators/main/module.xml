@@ -32,5 +32,7 @@
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
         <module name="org.reactivestreams"/>
         <module name="org.eclipse.microprofile.reactive-streams-operators.api"/>
+        <module name="org.eclipse.microprofile.reactive-streams-operators.core"/>
+        <module name="io.reactivex.rxjava2.rxjava"/>
     </dependencies>
 </module>

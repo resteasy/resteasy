@@ -35,7 +35,7 @@ public class RSONoStreamPublisherTest
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(RSONoStreamPublisherTest.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
+         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.jboss.resteasy.resteasy-reactive-streams-operators, org.reactivestreams\n"));
       return TestUtil.finishContainerPrepare(war, null, RSONoStreamPublisherResource.class);
    }
 

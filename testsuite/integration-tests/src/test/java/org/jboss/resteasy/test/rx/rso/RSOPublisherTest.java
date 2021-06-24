@@ -138,7 +138,7 @@ public class RSOPublisherTest {
    //////////////////////////////////////////////////////////////////////////////
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGet() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.get();
@@ -154,7 +154,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetRx() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.get();
@@ -169,7 +169,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.get(Thing.class);
@@ -184,7 +184,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.get(LIST_OF_THING);
@@ -199,7 +199,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.get(byte[].class);
@@ -217,7 +217,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPut() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/put/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.put(aEntity);
@@ -232,7 +232,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPutThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/put/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.put(aEntity, Thing.class);
@@ -247,7 +247,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPutThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/put/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.put(aEntity, LIST_OF_THING);
@@ -262,7 +262,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPutBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/put/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.put(threeEntity, byte[].class);
@@ -280,7 +280,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPost() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.post(aEntity);
@@ -295,7 +295,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPostThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.post(aEntity, Thing.class);
@@ -310,7 +310,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPostThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.post(aEntity, LIST_OF_THING);
@@ -325,7 +325,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPostBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.post(threeEntity, byte[].class);
@@ -343,7 +343,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testDelete() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/delete/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.delete();
@@ -358,7 +358,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testDeleteThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/delete/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.delete(Thing.class);
@@ -373,7 +373,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testDeleteThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/delete/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.delete(LIST_OF_THING);
@@ -388,7 +388,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testDeleteBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/delete/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.delete(byte[].class);
@@ -406,7 +406,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testHead() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.head();
@@ -418,7 +418,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testOptions() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/options/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.options();
@@ -433,7 +433,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testOptionsThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/options/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.options(Thing.class);
@@ -448,7 +448,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testOptionsThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/options/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.options(LIST_OF_THING);
@@ -463,7 +463,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testOptionsBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/options/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.options(byte[].class);
@@ -548,7 +548,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodGet() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.method("GET");
@@ -563,7 +563,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodGetThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.method("GET", Thing.class);
@@ -578,7 +578,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodGetThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.method("GET", LIST_OF_THING);
@@ -593,7 +593,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodGetBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/get/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.method("GET", byte[].class);
@@ -611,7 +611,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodPost() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/string")).request().rx(PublisherRxInvoker.class);
       Publisher<String> publisher = (Publisher<String>) invoker.method("POST", aEntity);
@@ -626,7 +626,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodPostThing() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/thing")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.method("POST", aEntity, Thing.class);
@@ -641,7 +641,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodPostThingList() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/thing/list")).request().rx(PublisherRxInvoker.class);
       Publisher<List<Thing>> publisher = (Publisher<List<Thing>>) invoker.method("POST", aEntity, LIST_OF_THING);
@@ -656,7 +656,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testMethodPostBytes() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.method("POST", threeEntity, byte[].class);
@@ -674,7 +674,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testScheduledExecutorService () throws Exception {
       {
          RxScheduledExecutorService.used = false;
@@ -714,7 +714,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testUnhandledException() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/exception/unhandled")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.get(Thing.class);
@@ -731,7 +731,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testHandledException() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/exception/handled")).request().rx(PublisherRxInvoker.class);
       Publisher<Thing> publisher = (Publisher<Thing>) invoker.get(Thing.class);
@@ -748,7 +748,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetTwoClients() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
@@ -783,7 +783,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetTwoInvokers() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
@@ -814,7 +814,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testGetTwoPublishers() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
@@ -843,7 +843,7 @@ public class RSOPublisherTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testPostBytesLong() throws Exception {
       PublisherRxInvoker invoker = client.target(generateURL("/post/bytes")).request().rx(PublisherRxInvoker.class);
       Publisher<byte[]> publisher = (Publisher<byte[]>) invoker.post(Entity.entity("1000", MediaType.TEXT_PLAIN_TYPE), byte[].class);

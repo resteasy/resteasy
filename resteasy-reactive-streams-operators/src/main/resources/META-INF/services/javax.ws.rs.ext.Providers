@@ -1,4 +1,2 @@
 org.jboss.resteasy.rso.PublisherBuilderProvider
 org.jboss.resteasy.rso.PublisherProvider
-org.jboss.resteasy.rso.PublisherRxInvokerImpl
-org.jboss.resteasy.rso.PublisherRxInvokerProvider

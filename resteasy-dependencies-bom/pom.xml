@@ -89,6 +89,7 @@
         <version.io.reactivex.rxjava-reactive-streams>1.2.1</version.io.reactivex.rxjava-reactive-streams>
         <version.io.reactivex.rxjava2-rxjava>2.2.19</version.io.reactivex.rxjava2-rxjava>
         <version.io.smallrye.smallrye-config>2.0.1</version.io.smallrye.smallrye-config>
+        <version.io.smallrye.context-propagation>1.2.0</version.io.smallrye.context-propagation>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
         <version.org.hibernate.validator>6.0.22.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
@@ -958,6 +959,21 @@
                 <groupId>io.smallrye.reactive</groupId>
                 <artifactId>smallrye-reactive-streams-operators</artifactId>
                 <version>${smallrye-reactive-streams-operators.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.smallrye</groupId>
+                <artifactId>smallrye-context-propagation-storage</artifactId>
+                <version>${version.io.smallrye.context-propagation}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jboss.marshalling</groupId>
