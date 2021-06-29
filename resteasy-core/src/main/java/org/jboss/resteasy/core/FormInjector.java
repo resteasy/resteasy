@@ -30,7 +30,8 @@ public class FormInjector implements ValueInjector
 
       try
       {
-         constructor = type.getConstructor();
+         constructor = type.getDeclaredConstructor();
+         constructor.setAccessible(true);
       }
       catch (NoSuchMethodException e)
       {

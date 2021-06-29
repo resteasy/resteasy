@@ -151,6 +151,8 @@ public class ProxyInvocationHandler implements InvocationHandler {
                 }
                 if (cause instanceof ExceptionMapping.HandlerException) {
                     ((ExceptionMapping.HandlerException)cause).mapException(method);
+                    // no applicable exception mapper found or applicable mapper returned null
+                    return null;
                 }
                 if (cause instanceof ResponseProcessingException) {
                     ResponseProcessingException rpe = (ResponseProcessingException) cause;

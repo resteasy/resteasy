@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.sse;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -78,7 +79,7 @@ public class SseSmokeTest {
          Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
       }
       Assert.assertEquals("One message was expected.", 1, results.size());
-      Assert.assertThat("The message doesn't have expected content.","Zeytin;zeytin@resteasy.org",
+      MatcherAssert.assertThat("The message doesn't have expected content.","Zeytin;zeytin@resteasy.org",
             CoreMatchers.is(CoreMatchers.equalTo(results.get(0))));
    }
 }

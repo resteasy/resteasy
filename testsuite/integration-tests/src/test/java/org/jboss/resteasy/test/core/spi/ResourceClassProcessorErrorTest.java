@@ -16,6 +16,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.hamcrest.MatcherAssert;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
@@ -61,7 +62,7 @@ public class ResourceClassProcessorErrorTest {
          deployer.deploy(DEPLOYMENT_NAME);
          Assert.fail("Exception from ResourceClassProcessor was not thrown");
       } catch (Exception e) {
-         Assert.assertThat("Error message was not printed to server log",
+         MatcherAssert.assertThat("Error message was not printed to server log",
                errorLogCounter.count(), greaterThanOrEqualTo(1));
          return;
       }

@@ -63,7 +63,7 @@ public class BasicSpringTest {
       Integer interceptorCount = br
             .getSpringInterceptorCount("afterCompletion");
 
-      Assert.assertEquals(new Integer(8), interceptorCount);
+      Assert.assertEquals(Integer.valueOf(8), interceptorCount);
       Assert.assertEquals("text/plain", br.getContentTypeHeader());
       Assert.assertEquals("springSomething", br.testSpringXml().getSomething());
    }

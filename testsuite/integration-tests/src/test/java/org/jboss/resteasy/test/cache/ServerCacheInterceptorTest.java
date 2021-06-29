@@ -52,7 +52,7 @@ public class ServerCacheInterceptorTest {
       // This test is not supposed to run with security manager
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new AllPermission()), "permissions.xml");
       war.addClasses(ServerCache.class, InfinispanCache.class, ServerCacheHitFilter.class, ServerCacheInterceptor.class);
-      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.infinispan\n"), "MANIFEST.MF");
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.infinispan,org.infinispan.commons\n"), "MANIFEST.MF");
       return TestUtil.finishContainerPrepare(war, null, singletons, ServerCacheInterceptorResource.class);
    }
 

@@ -15,6 +15,7 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -65,7 +66,7 @@ public class ValidationThroughRestTest {
       builder.accept(MediaType.TEXT_PLAIN_TYPE);
       Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
       String responseBody = response.readEntity(String.class);
-      Assert.assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
+      MatcherAssert.assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
       Assert.assertTrue("Wrong validation error", responseBody.contains("may not be null") || responseBody.contains("must not be null"));
       client.close();
    }

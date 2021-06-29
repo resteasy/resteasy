@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.validation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -257,21 +258,21 @@ public class ValidationXMLTest {
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
          JsonPath jsonPath = new JsonPath(entity);
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItems("s", "t"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItems("a", "b"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.message"), Matchers.hasItems("size must be between 2 and 4", "size must be between 2 and 4"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItems("s", "t"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItems("a", "b"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.message"), Matchers.hasItems("size must be between 2 and 4", "size must be between 2 and 4"));
 
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("u"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItem("c"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.message"), Matchers.hasItem("size must be between 3 and 5"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("u"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItem("c"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.message"), Matchers.hasItem("size must be between 3 and 5"));
 
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations.path"), Matchers.hasItem(""));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations.message"), Matchers.hasItem("Concatenation of s and u must have length > 5"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.path"), Matchers.hasSize(1));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.path", String.class).get(0), Matchers.startsWith("post."));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.message"), Matchers.hasItem("s must have length: 3 <= length <= 5"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.value"), Matchers.hasItem("ValidationXMLFoo[p]"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations"), Matchers.hasSize(0));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations.path"), Matchers.hasItem(""));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations.message"), Matchers.hasItem("Concatenation of s and u must have length > 5"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.path"), Matchers.hasSize(1));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.path", String.class).get(0), Matchers.startsWith("post."));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.message"), Matchers.hasItem("s must have length: 3 <= length <= 5"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.value"), Matchers.hasItem("ValidationXMLFoo[p]"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations"), Matchers.hasSize(0));
          response.close();
       }
 
@@ -311,14 +312,14 @@ public class ValidationXMLTest {
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
          JsonPath jsonPath = new JsonPath(entity);
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations"), Matchers.hasSize(0));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations"), Matchers.hasSize(0));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations"), Matchers.hasSize(0));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations"), Matchers.hasSize(0));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations"), Matchers.hasSize(0));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations"), Matchers.hasSize(0));
 
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.constraintType"), Matchers.hasItem("RETURN_VALUE"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.path"), Matchers.hasItem("post.<return value>"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.message"), Matchers.hasItem("s must have length: 4 <= length <= 5"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.value"), Matchers.hasItem("ValidationXMLFoo[123]"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.constraintType"), Matchers.hasItem("RETURN_VALUE"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.path"), Matchers.hasItem("post.<return value>"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.message"), Matchers.hasItem("s must have length: 4 <= length <= 5"));
+         MatcherAssert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.value"), Matchers.hasItem("ValidationXMLFoo[123]"));
          response.close();
       }
 

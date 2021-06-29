@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -76,8 +77,8 @@ public class LinkTest {
    public void testRelativeLinkStringOutput() throws Exception {
       Response response = client.target(generateURL("/products/333")).request().get();
       String stringResponse = response.readEntity(String.class);
-      Assert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products/333/self\""));
-      Assert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products\""));
+      MatcherAssert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products/333/self\""));
+      MatcherAssert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products\""));
       response.close();
    }
 }

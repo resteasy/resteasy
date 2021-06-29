@@ -3,7 +3,6 @@ package org.jboss.resteasy.rxjava2;
 import java.util.concurrent.ExecutorService;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.client.SyncInvoker;
 
@@ -23,13 +22,8 @@ public class SingleRxInvokerProvider implements RxInvokerProvider<SingleRxInvoke
    {
       if (syncInvoker instanceof ClientInvocationBuilder)
       {
-         ClientInvocationBuilder builder = (ClientInvocationBuilder) syncInvoker;
-         CompletionStageRxInvoker completionStageRxInvoker = builder.rx();
-         return new SingleRxInvokerImpl(completionStageRxInvoker);
+         return new SingleRxInvokerImpl((ClientInvocationBuilder) syncInvoker);
       }
-      else
-      {
-         throw new ProcessingException(Messages.MESSAGES.expectedClientInvocationBuilder(syncInvoker.getClass().getName()));
-      }
+      throw new ProcessingException(Messages.MESSAGES.expectedClientInvocationBuilder(syncInvoker.getClass().getName()));
    }
 }

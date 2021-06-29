@@ -451,6 +451,9 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 // ignore cast exception
             }
         }
+        if (disabled) {
+            LOGGER.warnf("The default ResponseExceptionMapper has been disabled");
+        }
         return disabled;
     }
 

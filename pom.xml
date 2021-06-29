@@ -23,6 +23,7 @@
         <!-- Dependency versions -->
         <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
 
@@ -340,13 +341,20 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${version.checkstyle.plugin}</version>
                 <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>resteasy-checkstyle/checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/*$logger.java,**/*$bundle.java</excludes>
                     <useFile/>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss.resteasy.checkstyle</groupId>
+                        <artifactId>resteasy-checkstyle-config</artifactId>
+                        <version>${version.org.jboss.resteasy.checkstyle}</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>check-style</id>

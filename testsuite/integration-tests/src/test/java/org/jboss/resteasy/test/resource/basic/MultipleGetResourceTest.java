@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -85,6 +86,6 @@ public class MultipleGetResourceTest {
         Response  response = base.request().get();
         Assert.assertEquals(500, response.getStatus());
         response.close();
-        Assert.assertThat(errorStringLog.count(), is(2));
+        MatcherAssert.assertThat(errorStringLog.count(), is(2));
     }
 }
