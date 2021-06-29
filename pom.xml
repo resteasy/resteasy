@@ -45,7 +45,6 @@
 
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
-        <version.compiler.plugin>3.8.0-jboss-2</version.compiler.plugin>
         <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Beta1</version.org.wildfly.plugins.wildfly-maven-plugin>
     </properties>
 
@@ -113,7 +112,6 @@
                 <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
                 <module>providers</module>
-                <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
                 <module>resteasy-guice</module>
                 <module>security</module>
@@ -134,6 +132,8 @@
                 <module>arquillian</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
+                <!-- Build this last -->
+                <module>resteasy-bom</module>
             </modules>
             <dependencyManagement>
                 <dependencies>
