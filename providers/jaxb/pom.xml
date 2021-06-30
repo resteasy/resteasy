@@ -28,20 +28,20 @@
         </dependency>
         <!-- javax.xml.bind.JAXBElement provider is required by spec -->
         <dependency>
-            <groupId>org.jboss.spec.javax.xml.bind</groupId>
-            <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.xml.bind</groupId>
+                    <groupId>jakarta.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>javax.activation-api</artifactId>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>jakarta.xml.bind</groupId>
@@ -75,8 +75,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
