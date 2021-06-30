@@ -42,10 +42,6 @@ $ export SERVER_VERSION=17.0.0.Final
 $ mvn -B -Pjboss-repository -fae -Dserver.version=$SERVER_VERSION install
 ```
 
-You may want to check our [Travis CI](https://github.com/resteasy/Resteasy/blob/master/.travis.yml) configuration to see our testing configuration matrix as build example.
-
-And the example of full build processes can be checked [here](https://travis-ci.org/resteasy/Resteasy).
-
 ## Contribute
 
 You are most welcome to contribute to RESTEasy!
