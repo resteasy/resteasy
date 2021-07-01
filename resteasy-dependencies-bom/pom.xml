@@ -65,6 +65,7 @@
         <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
         <version.org.jboss.resteasy.tracing.api>1.0.0.Final</version.org.jboss.resteasy.tracing.api>
         <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
+        <version.org.jboss.threads>2.3.3.Final</version.org.jboss.threads>
         <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>2.0.1.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>
         <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>2.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
         <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
@@ -191,6 +192,12 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-tracing-api</artifactId>
                 <version>${version.org.jboss.resteasy.tracing.api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.threads</groupId>
+                <artifactId>jboss-threads</artifactId>
+                <version>${version.org.jboss.threads}</version>
             </dependency>
 
             <dependency>
