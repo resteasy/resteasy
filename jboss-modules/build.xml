@@ -65,6 +65,14 @@
             <maven-resource group="com.fasterxml.jackson.module" artifact="jackson-module-jaxb-annotations" />
         </module-def>
 
+        <module-def name="com.google.guava.failureaccess">
+            <maven-resource group="com.google.guava" artifact="failureaccess"/>
+        </module-def>
+
+        <module-def name="com.google.guava">
+            <maven-resource group="com.google.guava" artifact="guava"/>
+        </module-def>
+
         <!-- todo this is temporary and should be removed when wildfly makes the needed update
              -->
         <module-def name="org.apache.james.mime4j">
@@ -109,10 +117,16 @@
             <maven-resource group="io.smallrye" artifact="smallrye-context-propagation-propagators-rxjava2"/>
         </module-def>
 
+        <module-def name="com.github.fge.btf">
+            <maven-resource group="com.github.java-json-tools" artifact="btf"/>
+        </module-def>
+
+        <module-def name="com.github.fge.msg-simple">
+            <maven-resource group="com.github.java-json-tools" artifact="msg-simple"/>
+        </module-def>
+
         <module-def name="com.github.fge.jackson-coreutils">
             <maven-resource group="com.github.java-json-tools" artifact="jackson-coreutils"/>
-            <maven-resource group="com.github.java-json-tools" artifact="msg-simple"/>
-            <maven-resource group="com.github.java-json-tools" artifact="btf"/>
         </module-def>
 
         <module-def name="com.github.fge.json-patch">
@@ -123,18 +137,29 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxb-provider"/>
         </module-def>
 
-        <module-def name="org.jboss.resteasy.resteasy-jaxrs-public">
+        <module-def name="org.jboss.resteasy.resteasy-core-spi">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-core-spi"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-tracing-api"/>
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-core">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-core"/>
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-client-api">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-api"/>
         </module-def>
 
-        <module-def name="org.jboss.resteasy.resteasy-jaxrs">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-core"/>
+        <module-def name="org.jboss.resteasy.resteasy-client">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-client-microprofile">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile-base"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-tracing-api"/>
         </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-jaxrs"/>
 
         <module-def name="org.jboss.resteasy.jose-jwt">
             <maven-resource group="org.jboss.resteasy" artifact="jose-jwt"/>
@@ -166,9 +191,6 @@
 
         <module-def name="org.jboss.resteasy.resteasy-validator-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider"/>
-        </module-def>
-
-        <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
         </module-def>
 
         <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->
