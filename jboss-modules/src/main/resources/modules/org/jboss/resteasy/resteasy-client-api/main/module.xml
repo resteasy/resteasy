@@ -18,16 +18,17 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<module xmlns="urn:jboss:module:1.9" name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider">
+
+<module xmlns="urn:jboss:module:1.9" name="org.jboss.resteasy.resteasy-client-api">
+
     <resources>
         <!-- Insert resources here -->
     </resources>
 
     <dependencies>
+        <module name="java.logging"/>
         <module name="javax.ws.rs.api"/>
-        <module name="javax.xml.bind.api"/>
-        <module name="com.fasterxml.jackson.core.jackson-annotations"/>
-        <module name="com.fasterxml.jackson.core.jackson-core"/>
-        <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="org.jboss.logging"/>
+        <module name="org.jboss.resteasy.resteasy-core-spi"/>
     </dependencies>
 </module>
