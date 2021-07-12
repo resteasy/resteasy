@@ -30,7 +30,7 @@ public class HttpServlet30Dispatcher extends HttpServletDispatcher
     * which impacts performance of applications using
     * {@link javax.ws.rs.container.AsyncResponse#setTimeout}.
     */
-   private final ScheduledExecutorService asyncCancelScheduler = Executors.newScheduledThreadPool(1);  // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+   private final ScheduledExecutorService asyncCancelScheduler = Executors.newScheduledThreadPool(1);
 
    @Override
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest httpServletRequest, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uriInfo, HttpResponse httpResponse, HttpServletResponse httpServletResponse)
