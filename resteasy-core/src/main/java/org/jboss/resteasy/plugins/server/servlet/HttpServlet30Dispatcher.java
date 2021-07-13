@@ -25,9 +25,9 @@ import java.util.concurrent.ScheduledExecutorService;
 public class HttpServlet30Dispatcher extends HttpServletDispatcher
 {
    /**
-    * Setting the corePoolSize to 1 to workaround the bug in openjdk 8
-    * <a href="https://bugs.openjdk.java.net/browse/JDK-8129861">bug</a>,
-    * which impacts performance of applications using
+    * Setting the corePoolSize to 1 to workaround the
+    * <a href="https://bugs.openjdk.java.net/browse/JDK-8129861">bug</a>
+    * in openjdk 8, which impacts performance of applications using
     * {@link javax.ws.rs.container.AsyncResponse#setTimeout}.
     */
    private final ScheduledExecutorService asyncCancelScheduler = Executors.newScheduledThreadPool(1);
