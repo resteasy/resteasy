@@ -182,11 +182,11 @@
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-spring">
-            <maven-resource-bundle group="org.jboss.resteasy" artifact="resteasy-spring" subdir="bundled/resteasy-spring-jar"/>
+            <maven-resource-bundle group="org.jboss.resteasy.spring" artifact="resteasy-spring" subdir="bundled/resteasy-spring-jar"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-spring-web">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-spring-web"/>
+            <maven-resource group="org.jboss.resteasy.spring" artifact="resteasy-spring-web"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-validator-provider">
