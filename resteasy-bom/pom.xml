@@ -77,16 +77,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.resteasy.spring</groupId>
-                <artifactId>resteasy-spring</artifactId>
-                <version>${version.org.jboss.resteasy.spring}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy.spring</groupId>
-                <artifactId>resteasy-spring-web</artifactId>
-                <version>${version.org.jboss.resteasy.spring}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-json-p-provider</artifactId>
                 <version>${project.version}</version>
