@@ -113,7 +113,6 @@
                 <module>resteasy-client-reactor-netty</module>
                 <module>providers</module>
                 <module>resteasy-cache</module>
-                <module>resteasy-guice</module>
                 <module>security</module>
                 <module>resteasy-links</module>
                 <module>resteasy-jsapi</module>

@@ -89,10 +89,6 @@
             <entry align="left">resteasy-cdi</entry>
          </row>
          <row>
-            <entry align="left">11000-11499</entry>
-            <entry align="left">resteasy-guice</entry>
-         </row>
-         <row>
             <entry align="left">11500-11999</entry>
             <entry align="left">resteasy-jsapi</entry>
          </row>

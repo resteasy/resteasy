@@ -19,7 +19,6 @@
         <version.com.fasterxml.jackson>2.12.3</version.com.fasterxml.jackson>
         <version.com.google.guava>30.1.1-jre</version.com.google.guava>
         <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
-        <version.com.google.inject.guice>5.0.1</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>1.6.5</version.jakarta.mail>
         <version.org.glassfish.jaxb.jaxb>2.3.3-b02</version.org.glassfish.jaxb.jaxb>
@@ -488,17 +487,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>failureaccess</artifactId>
                 <version>${version.com.google.guava.failureaccess}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${version.com.google.inject.guice}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>jakarta.inject</groupId>
