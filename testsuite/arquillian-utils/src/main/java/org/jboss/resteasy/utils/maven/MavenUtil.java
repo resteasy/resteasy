@@ -232,13 +232,6 @@ public class MavenUtil {
       }
       remoteRepositories.add(repository2.build());
 
-      // always add spring repository
-      RemoteRepository.Builder repository1 = new RemoteRepository.Builder("maven1", "default", "https://repo.spring.io/libs-milestone/");
-      if (httpProxy != null) {
-         repository1.setProxy(httpProxy);
-      }
-      remoteRepositories.add(repository1.build());
-
       return remoteRepositories;
    }
 
