@@ -1,14 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget;
 
-import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProcessor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Objects;
 
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.client.WebTarget;
 
 /**
@@ -35,7 +32,7 @@ public class PathParamProcessor implements WebTargetProcessor
    @Override
    public WebTarget build(WebTarget target, Object param)
    {
-      Object param2 = configuration.toString(Objects.requireNonNull(param, Messages.MESSAGES.nullParameter(PathParam.class.getSimpleName())), type, annotations);
+      Object param2 = configuration.toString(param, type, annotations);
       return target.resolveTemplate(paramName, param2, encodeSlashInPath);
    }
 }

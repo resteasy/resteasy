@@ -774,7 +774,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          return paramConverter.toString(object);
       }
-      return object.toString();
+      if (object != null){
+         return object.toString();
+      }
+      throw new IllegalArgumentException(Messages.MESSAGES.nullParameterConverter(clazz.getSimpleName()));
    }
 
    @Override

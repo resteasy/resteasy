@@ -143,7 +143,12 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
    public String toString(Object object, Type type, Annotation[] annotations)
    {
-      return providerFactory.toString(object, object.getClass(), type, annotations);
+      if (object == null) {
+         return providerFactory.toString(null, (Class) type, type, annotations);
+      }
+      else {
+         return providerFactory.toString(object, object.getClass(), type, annotations);
+      }
    }
 
 
