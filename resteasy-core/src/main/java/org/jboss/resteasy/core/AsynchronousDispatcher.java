@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.concurrent.ContextualExecutorService;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -32,7 +34,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -115,7 +116,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       }
    }
 
-   protected ExecutorService executor;
+   private ContextualExecutorService executor;
    private int threadPoolSize = 100;
    private Map<String, Future<MockHttpResponse>> jobs;
    private Cache cache;
@@ -185,20 +186,22 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
     */
    public void setExecutor(ExecutorService executor)
    {
-      this.executor = executor;
+      this.executor = ContextualExecutors.wrap(executor, true);
    }
 
    public void start()
    {
       cache = new Cache(maxCacheSize);
       jobs = Collections.synchronizedMap(cache);
-      if (executor == null) executor = Executors.newFixedThreadPool(threadPoolSize);
+      if (executor == null) executor = ContextualExecutors.threadPool(threadPoolSize);
       registry.addSingletonResource(this, basePath);
    }
 
    public void stop()
    {
-      executor.shutdown();
+      if (!executor.isManaged()) {
+         executor.shutdown();
+      }
    }
 
    @Path("{job-id}")

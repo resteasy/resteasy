@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+import org.jboss.resteasy.concurrent.ContextualScheduledExecutorService;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -27,7 +29,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,13 +40,14 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
-   protected ScheduledExecutorService asyncScheduler; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+   private final ContextualScheduledExecutorService asyncScheduler;
 
    public Servlet3AsyncHttpRequest(final HttpServletRequest httpServletRequest, final HttpServletResponse response, final ServletContext servletContext, final HttpResponse httpResponse, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uriInfo, final String s, final SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, response, servletContext, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;
       asynchronousContext = new Servlet3ExecutionContext((ServletRequest) httpServletRequest);
+      asyncScheduler = ContextualExecutors.scheduledThreadPool();
    }
 
    @Override

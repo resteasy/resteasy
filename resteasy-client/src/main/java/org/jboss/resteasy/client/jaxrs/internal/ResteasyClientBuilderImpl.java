@@ -10,6 +10,8 @@ import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+import org.jboss.resteasy.concurrent.ContextualExecutorService;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -33,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -398,14 +399,6 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          config.property(entry.getKey(), entry.getValue());
       }
 
-      ExecutorService executor = asyncExecutor;
-
-      if (executor == null)
-      {
-         cleanupExecutor = true;
-         executor = Executors.newCachedThreadPool();
-      }
-
       boolean resetProxy = false;
       if (this.defaultProxy == null) {
          resetProxy = true;
@@ -420,7 +413,8 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       if (serviceLoaderIterator.hasNext()) {
          config.register(new ClientConfigProviderFilter(serviceLoaderIterator.next()), Priorities.AUTHENTICATION);
       }
-      return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
+      final ContextualExecutorService executor = getExecutorService();
+      return createResteasyClient(engine, executor, !executor.isManaged(), ContextualExecutors.wrap(scheduledExecutorService, true), config);
 
    }
 
@@ -450,7 +444,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    }
 
    protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
-      return new ResteasyClientImpl(engine, executor, cleanupExecutor, scheduledExecutorService, config);
+      return new ResteasyClientImpl(engine, executor, cleanupExecutor, ContextualExecutors.wrap(scheduledExecutorService), config);
    }
 
    @Override
@@ -725,5 +719,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public boolean isFollowRedirects() {
       return followRedirects;
+   }
+
+   private ContextualExecutorService getExecutorService() {
+      if (asyncExecutor != null) {
+         return ContextualExecutors.wrap(asyncExecutor, cleanupExecutor);
+      }
+      return ContextualExecutors.threadPool();
    }
 }
