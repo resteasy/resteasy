@@ -1,26 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import java.util.ServiceLoader;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SNIServerName;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManager;
-
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -44,6 +23,25 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.concurrent.TimeUnit;
 
 public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
 
@@ -81,11 +79,11 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                break;
          }
       }
-      try
-      {
+      try {
          SSLConnectionSocketFactory sslsf = null;
          SSLContext theContext = that.getSSLContext();
-          Iterator clientConfigProviderIterator = ServiceLoader.load(ClientConfigProvider.class).iterator();
+         ClientConfigProvider clientConfigProviderIterator =
+                 findFirstService(ClientConfigProvider.class, this.getClass().getClassLoader());
 
          if (that.isTrustManagerDisabled())
          {
@@ -142,10 +140,10 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                   }
                }
             };
-         } else if (clientConfigProviderIterator.hasNext())
+         } else if (clientConfigProviderIterator != null)
          {
             // delegate creation of socket to ClientConfigProvider implementation
-            final ClientConfigProvider configProvider = ((ClientConfigProvider) clientConfigProviderIterator.next());
+            final ClientConfigProvider configProvider = ((ClientConfigProvider) clientConfigProviderIterator);
             sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), verifier) {
                @Override
                public Socket createSocket(HttpContext context) throws IOException {
@@ -213,6 +211,23 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       {
          throw new RuntimeException(e);
       }
+   }
+
+   private static <T> T findFirstService(final Class<T> service, ClassLoader cl) {
+      if (System.getSecurityManager() == null) {
+         final ServiceLoader<T> loader = ServiceLoader.load(service, cl);
+         if (loader.iterator().hasNext()) {
+            return loader.iterator().next();
+         }
+         return null;
+      }
+      return AccessController.doPrivileged((PrivilegedAction<T>) () -> {
+         final ServiceLoader<T> loader = ServiceLoader.load(service, cl);
+         if (loader.iterator().hasNext()) {
+            return loader.iterator().next();
+         }
+         return null;
+      });
    }
 
    private static HttpHost getDefaultProxy(ResteasyClientBuilder that) {
