@@ -74,26 +74,6 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>smallrye-context-propagation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>smallrye-context-propagation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>smallrye-context-propagation-propagators-rxjava2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>smallrye-context-propagation-storage</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.microprofile.context-propagation</groupId>
-            <artifactId>microprofile-context-propagation-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
         </dependency>
@@ -146,22 +126,6 @@
                     <artifactId>resteasy-core-spi</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client-microprofile</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-client</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client-microprofile-base</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -299,18 +263,6 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-context-propagation</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
   
         <dependency>

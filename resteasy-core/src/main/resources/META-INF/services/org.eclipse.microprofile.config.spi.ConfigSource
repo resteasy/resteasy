@@ -1,3 +1,0 @@
-org.jboss.resteasy.microprofile.config.ServletConfigSource
-org.jboss.resteasy.microprofile.config.FilterConfigSource
-org.jboss.resteasy.microprofile.config.ServletContextConfigSource 

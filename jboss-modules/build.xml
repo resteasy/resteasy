@@ -35,10 +35,6 @@
             <maven-resource group="com.ibm.async" artifact="asyncutil"/>
         </module-def>
 
-        <module-def name="org.eclipse.microprofile.restclient">
-            <maven-resource group="org.eclipse.microprofile.rest.client" artifact="microprofile-rest-client-api"/>
-        </module-def>
-
         <module-def name="com.fasterxml.jackson.core.jackson-core">
             <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-core"/>
         </module-def>
@@ -101,20 +97,10 @@
         <module-def name="org.jboss.resteasy.resteasy-jackson2-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson2-provider"/>
         </module-def>
-    	
-        <module-def name="org.jboss.resteasy.resteasy-context-propagation">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-context-propagation"/>
-            <maven-resource group="io.smallrye" artifact="smallrye-context-propagation"/>
-            <maven-resource group="io.smallrye" artifact="smallrye-context-propagation-api"/>
-            <maven-resource group="io.smallrye" artifact="smallrye-context-propagation-storage"/>
-            <maven-resource group="jakarta.enterprise" artifact="jakarta.enterprise.cdi-api"/>
-            <maven-resource group="org.eclipse.microprofile.context-propagation" artifact="microprofile-context-propagation-api"/>
-        </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-rxjava2">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-rxjava2"/>
-         	<maven-resource group="io.reactivex.rxjava2" artifact="rxjava"/>
-            <maven-resource group="io.smallrye" artifact="smallrye-context-propagation-propagators-rxjava2"/>
+            <maven-resource group="io.reactivex.rxjava2" artifact="rxjava"/>
         </module-def>
 
         <module-def name="com.github.fge.btf">
@@ -152,11 +138,6 @@
 
         <module-def name="org.jboss.resteasy.resteasy-client">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
-        </module-def>
-
-        <module-def name="org.jboss.resteasy.resteasy-client-microprofile">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile-base"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs"/>

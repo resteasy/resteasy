@@ -27,8 +27,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * A default configuration which first attempts to use the Eclipse MicroProfile Config API. If the MicroProfile Config
- * API is not available value is searched in the following order:
+ * A default configuration which searches for a property in the following order:
  * <ol>
  *     <li>System properties</li>
  *     <li>Environment variables</li>
@@ -43,16 +42,14 @@ public class DefaultConfiguration implements Configuration {
     private final Function<String, String> resolver;
 
     /**
-     * Creates a new configuration which uses system properties to resolve the values if the Eclipse MicroProfile Config
-     * is not on the class path.
+     * Creates a new configuration .
      */
     public DefaultConfiguration() {
         this(null);
     }
 
     /**
-     * Creates a new configuration which uses the {@linkplain ResteasyConfiguration configuration} to resolve the values
-     * if the Eclipse MicroProfile Config is not on the class path.
+     * Creates a new configuration which uses the {@linkplain ResteasyConfiguration configuration} to resolve the values.
      *
      * @param config the resolver
      */

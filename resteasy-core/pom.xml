@@ -14,12 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.microprofile.config</groupId>
-            <artifactId>microprofile-config-api</artifactId>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
         </dependency>
@@ -92,18 +86,6 @@
         <dependency>
             <groupId>com.ibm.async</groupId>
             <artifactId>asyncutil</artifactId>
-        </dependency>
-
-        <!-- TODO (jrp) Make the implementation optional https://issues.redhat.com/browse/RESTEASY-2890 -->
-        <dependency>
-            <groupId>io.smallrye.config</groupId>
-            <artifactId>smallrye-config</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.annotation</groupId>
-                    <artifactId>javax.annotation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Test dependencies -->
