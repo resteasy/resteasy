@@ -850,4 +850,7 @@ public interface Messages
 
    @Message(id = BASE + 2044, value = "Property %s not found")
    NoSuchElementException propertyNotFound(String name);
+
+   @Message(id = BASE + 2050, value = "The executor has been shutdown and is no longer available.")
+   IllegalStateException executorShutdown();
 }

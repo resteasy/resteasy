@@ -29,8 +29,8 @@ import java.util.concurrent.ScheduledExecutorService;
 public class ResteasyClientImpl implements ResteasyClient
 {
    protected final ClientHttpEngine httpEngine;
-   protected final ExecutorService asyncInvocationExecutor;
-   protected final ContextualScheduledExecutorService scheduledExecutorService;
+   private final ExecutorService asyncInvocationExecutor;
+   private final ContextualScheduledExecutorService scheduledExecutorService;
    protected ClientConfiguration configuration;
    protected boolean closed;
    protected boolean cleanupExecutor;
@@ -103,6 +103,18 @@ public class ResteasyClientImpl implements ResteasyClient
                   }
                });
             }
+         }
+         if (System.getSecurityManager() == null) {
+            if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
+               scheduledExecutorService.shutdown();
+            }
+         } else {
+            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+               if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
+                  scheduledExecutorService.shutdown();
+               }
+               return null;
+            });
          }
       }
       catch (Exception e)

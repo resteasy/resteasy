@@ -309,6 +309,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 350, value = "Failed to reset the context on thread: %s")
    void unableToResetThreadContext(@Cause Throwable cause, String threadName);
 
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 360, value = "Failed to look up JNDI resource \"%s\". Using a default ExecutorService.")
+   void failedToLookupManagedExecutorService(@Cause Throwable cause, String name);
+
 
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.spi.ContextInjector;
 
 import io.reactivex.Single;
@@ -26,7 +25,7 @@ public class RxInjector implements ContextInjector<Single<Integer>, Integer>{
       if(!async)
          return Single.just(42);
       return Single.create(emitter -> {
-         new Thread(ContextualExecutors.runnable(() -> {
+         new Thread(() -> {
             try
             {
                Thread.sleep(1000);
@@ -36,7 +35,7 @@ public class RxInjector implements ContextInjector<Single<Integer>, Integer>{
                return;
             }
             emitter.onSuccess(42);
-         })).start();
+         }).start();
       });
    }
 

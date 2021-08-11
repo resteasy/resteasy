@@ -414,7 +414,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          config.register(new ClientConfigProviderFilter(serviceLoaderIterator.next()), Priorities.AUTHENTICATION);
       }
       final ContextualExecutorService executor = getExecutorService();
-      return createResteasyClient(engine, executor, !executor.isManaged(), ContextualExecutors.wrap(scheduledExecutorService, true), config);
+      return createResteasyClient(engine, executor, !executor.isManaged(), ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
 
    }
 
@@ -444,7 +444,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    }
 
    protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
-      return new ResteasyClientImpl(engine, executor, cleanupExecutor, ContextualExecutors.wrap(scheduledExecutorService), config);
+      return new ResteasyClientImpl(engine, executor, cleanupExecutor, ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
    }
 
    @Override

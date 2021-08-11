@@ -19,6 +19,8 @@
 
 package org.jboss.resteasy.concurrent;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An {@linkplain ExecutorService executor} which wraps runnables and callables to capture the context of the current
@@ -53,35 +56,47 @@ import java.util.concurrent.TimeoutException;
  */
 public class ContextualExecutorService implements ExecutorService {
 
-    private final ExecutorService delegate;
     private final boolean managed;
+    private final AtomicBoolean shutdown;
+    private volatile ExecutorService delegate;
 
     ContextualExecutorService(final ExecutorService delegate, final boolean managed) {
         this.delegate = delegate;
         this.managed = managed;
+        shutdown = new AtomicBoolean(false);
     }
 
     @Override
     public void shutdown() {
-        if (!managed) {
-            delegate.shutdown();
+        if (shutdown.compareAndSet(false, true)) {
+            if (managed) {
+                // Clear the delegate as we're done with it
+                delegate = null;
+            } else {
+                getDelegate().shutdown();
+            }
         }
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        if (managed) {
-            return Collections.emptyList();
+        if (shutdown.compareAndSet(false, true)) {
+            if (managed) {
+                // Clear the delegate as we're done with it
+                delegate = null;
+            } else {
+                return getDelegate().shutdownNow();
+            }
         }
-        return delegate.shutdownNow();
+        return Collections.emptyList();
     }
 
     @Override
     public boolean isShutdown() {
         if (managed) {
-            return false;
+            return shutdown.get();
         }
-        return delegate.isShutdown();
+        return getDelegate().isShutdown();
     }
 
     @Override
@@ -89,7 +104,7 @@ public class ContextualExecutorService implements ExecutorService {
         if (managed) {
             return false;
         }
-        return delegate.isTerminated();
+        return getDelegate().isTerminated();
     }
 
     @Override
@@ -97,52 +112,52 @@ public class ContextualExecutorService implements ExecutorService {
         if (managed) {
             return false;
         }
-        return delegate.awaitTermination(timeout, unit);
+        return getDelegate().awaitTermination(timeout, unit);
     }
 
     @Override
     public <T> Future<T> submit(final Callable<T> task) {
-        return delegate.submit(ContextualExecutors.callable(task));
+        return getDelegate().submit(ContextualExecutors.callable(task));
     }
 
     @Override
     public <T> Future<T> submit(final Runnable task, final T result) {
-        return delegate.submit(ContextualExecutors.runnable(task), result);
+        return getDelegate().submit(ContextualExecutors.runnable(task), result);
     }
 
     @Override
     public Future<?> submit(final Runnable task) {
-        return delegate.submit(ContextualExecutors.runnable(task));
+        return getDelegate().submit(ContextualExecutors.runnable(task));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(
             final Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return delegate.invokeAll(ContextualExecutors.callable(tasks));
+        return getDelegate().invokeAll(ContextualExecutors.callable(tasks));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(
             final Collection<? extends Callable<T>> tasks, final long timeout,
             final TimeUnit unit) throws InterruptedException {
-        return delegate.invokeAll(ContextualExecutors.callable(tasks), timeout, unit);
+        return getDelegate().invokeAll(ContextualExecutors.callable(tasks), timeout, unit);
     }
 
     @Override
     public <T> T invokeAny(final Collection<? extends Callable<T>> tasks)
             throws InterruptedException, ExecutionException {
-        return delegate.invokeAny(ContextualExecutors.callable(tasks));
+        return getDelegate().invokeAny(ContextualExecutors.callable(tasks));
     }
 
     @Override
     public <T> T invokeAny(final Collection<? extends Callable<T>> tasks, final long timeout,
                            final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return delegate.invokeAny(ContextualExecutors.callable(tasks), timeout, unit);
+        return getDelegate().invokeAny(ContextualExecutors.callable(tasks), timeout, unit);
     }
 
     @Override
     public void execute(final Runnable command) {
-        delegate.execute(ContextualExecutors.runnable(command));
+        getDelegate().execute(ContextualExecutors.runnable(command));
     }
 
     /**
@@ -163,6 +178,10 @@ public class ContextualExecutorService implements ExecutorService {
     }
 
     ExecutorService getDelegate() {
+        final ExecutorService delegate = this.delegate;
+        if (delegate == null) {
+            throw Messages.MESSAGES.executorShutdown();
+        }
         return delegate;
     }
 

@@ -48,37 +48,34 @@ import java.util.concurrent.TimeUnit;
  */
 public class ContextualScheduledExecutorService extends ContextualExecutorService implements ScheduledExecutorService {
 
-    private final ScheduledExecutorService delegate;
-
     ContextualScheduledExecutorService(final ScheduledExecutorService delegate, final boolean managed) {
         super(delegate, managed);
-        this.delegate = delegate;
     }
 
     @Override
     public ScheduledFuture<?> schedule(final Runnable command, final long delay, final TimeUnit unit) {
-        return delegate.schedule(ContextualExecutors.runnable(command), delay, unit);
+        return getDelegate().schedule(ContextualExecutors.runnable(command), delay, unit);
     }
 
     @Override
     public <V> ScheduledFuture<V> schedule(final Callable<V> callable, final long delay, final TimeUnit unit) {
-        return delegate.schedule(ContextualExecutors.callable(callable), delay, unit);
+        return getDelegate().schedule(ContextualExecutors.callable(callable), delay, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(final Runnable command, final long initialDelay, final long period,
                                                   final TimeUnit unit) {
-        return delegate.scheduleAtFixedRate(ContextualExecutors.runnable(command), initialDelay, period, unit);
+        return getDelegate().scheduleAtFixedRate(ContextualExecutors.runnable(command), initialDelay, period, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(final Runnable command, final long initialDelay, final long delay,
                                                      final TimeUnit unit) {
-        return delegate.scheduleWithFixedDelay(ContextualExecutors.runnable(command), initialDelay, delay, unit);
+        return getDelegate().scheduleWithFixedDelay(ContextualExecutors.runnable(command), initialDelay, delay, unit);
     }
 
     @Override
     ScheduledExecutorService getDelegate() {
-        return delegate;
+        return (ScheduledExecutorService) super.getDelegate();
     }
 }

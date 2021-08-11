@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.concurrency;
+package org.jboss.resteasy.concurrent;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.concurrent.ThreadContext;

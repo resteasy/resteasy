@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.rx.rxjava2.resource;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,7 +14,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import org.jboss.resteasy.concurrent.ContextualExecutors;
 
 @Path("/")
 public class NoStreamRx2Resource
@@ -46,7 +46,7 @@ public class NoStreamRx2Resource
    public Single<String> contextSingle(@Context UriInfo uriInfo)
    {
       return Single.<String>create(foo -> {
-         ExecutorService executor = ContextualExecutors.threadPool(1);
+         ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(new Runnable()
          {
             public void run()
@@ -66,7 +66,7 @@ public class NoStreamRx2Resource
    public Observable<String> contextObservable(@Context UriInfo uriInfo)
    {
       return Observable.<String>create(foo -> {
-         ExecutorService executor = ContextualExecutors.threadPool(1);
+         ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(new Runnable()
          {
             public void run()
@@ -88,7 +88,7 @@ public class NoStreamRx2Resource
    public Flowable<String> contextFlowable(@Context UriInfo uriInfo)
    {
       return Flowable.<String>create(foo -> {
-         ExecutorService executor = ContextualExecutors.threadPool(1);
+         ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(new Runnable()
          {
             public void run()

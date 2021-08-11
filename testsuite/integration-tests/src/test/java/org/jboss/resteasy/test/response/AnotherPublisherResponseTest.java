@@ -103,8 +103,8 @@ public class AnotherPublisherResponseTest {
          future.get(5000, TimeUnit.SECONDS);
          Assert.assertEquals(30, collector.size());
          Assert.assertEquals(0, errors.size());
-         Assert.assertTrue(collector.contains("0-1"));
-         Assert.assertTrue(collector.contains("1-1"));
+         Assert.assertTrue(collector.contains("0-2"));
+         Assert.assertTrue(collector.contains("1-2"));
       }
       client.close();
    }

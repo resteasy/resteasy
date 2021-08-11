@@ -1,11 +1,10 @@
 package org.jboss.resteasy.test.rx.resource;
 
-import org.jboss.resteasy.concurrent.ContextualExecutors;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -38,7 +37,7 @@ public class RxScheduledExecutorService implements ScheduledExecutorService {
       }
    }
 
-   private final ScheduledExecutorService executor = ContextualExecutors.scheduledThreadPool(1, new DaemonThreadFactory());
+   private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
    public static boolean used;
 
    @Override
