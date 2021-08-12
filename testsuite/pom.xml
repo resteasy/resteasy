@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.7.1-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -117,13 +117,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>${version.enforcer.plugin}</version>
                 <executions>
@@ -151,8 +144,6 @@
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
                 <module>integration-tests</module>
-                <module>integration-tests-spring</module>
-                <module>integration-tests-spring-web</module>
                 <module>integration-tests-embedded</module>
                 <module>microprofile-tck</module>
             </modules>

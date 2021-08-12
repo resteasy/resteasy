@@ -59,11 +59,17 @@ public class SsePublisherClientTest {
 
        final Set<String> eventStrings = new HashSet<>();
        StringSubscriber subscriber = new StringSubscriber(eventStrings, resultsLatch);
+       //The resteasy.microprofile.sseclient.buffersize is set to 5. The head of the
+       //subscription queue element will be dropped when queue size exceeds 5.
+       //Subscriber requests 5 events when subscribe()
        publisher.subscribe(subscriber);
+       //wait 1 sec for emitting the left 7 event message and this will drop msg5 and msg6 events from the queue head
+       //when the queue size reaches limit size
        Thread.sleep(1000);
+       //This only get the last 5 events : msg7~msg11
        subscriber.request(5);
        assertTrue(resultsLatch.await(10, TimeUnit.SECONDS));
-       //sent 12 items, expects these 10 values [msg4, msg3, msg2, msg1, msg8, msg11, msg7, msg10, msg9, msg0]
+       //sent 12 items, expects these 10 values : msg0~msg4 and msg7~msg11
        assertTrue(eventStrings.size() == 10);
        //msg5 and msg6 are dropped
        assertFalse(eventStrings.contains("msg5") || eventStrings.contains("msg6"));

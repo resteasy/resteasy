@@ -51,7 +51,6 @@
                 <include>org.jboss.resteasy:resteasy-json-binding-provider</include>
                 <include>org.jboss.resteasy:resteasy-jackson2-provider</include>
                 <include>org.jboss.resteasy:resteasy-spring</include>
-                <include>org.jboss.resteasy:resteasy-guice</include>
                 <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>
                 <include>org.jboss.resteasy:resteasy-jsapi</include>

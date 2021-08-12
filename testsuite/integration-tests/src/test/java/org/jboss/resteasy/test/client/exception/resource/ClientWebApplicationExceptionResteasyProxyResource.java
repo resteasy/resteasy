@@ -10,28 +10,23 @@ import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionResteasyProxyTest;
 import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionTest;
+import org.jboss.resteasy.utils.PortProviderUtil;
 import org.junit.Assert;
 
 @Path("test")
 public class ClientWebApplicationExceptionResteasyProxyResource {
 
-   private static ClientWebApplicationExceptionProxyResourceInterface proxy;
+   private static ClientWebApplicationExceptionProxyResourceInterface oldBehaviorProxy;
+   private static ClientWebApplicationExceptionProxyResourceInterface newBehaviorProxy;
 
    static {
       ResteasyClient client = (ResteasyClient) ResteasyClientBuilder.newClient();
-      proxy = client.target(ClientWebApplicationExceptionTest.generateURL("/app/test/")).proxy(ClientWebApplicationExceptionProxyResourceInterface.class);
-   }
-
-   /**
-    * Sets the System property ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR
-    * @param value value property is set to
-    */
-   @GET
-   @Path("behavior/{value}")
-   public void setBehavior(@PathParam("value") String value) {
-      System.setProperty(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR, value);
+      oldBehaviorProxy = client.target(PortProviderUtil.generateURL("/app/test/", ClientWebApplicationExceptionResteasyProxyTest.oldBehaviorDeploymentName))
+              .proxy(ClientWebApplicationExceptionProxyResourceInterface.class);
+      newBehaviorProxy = client.target(PortProviderUtil.generateURL("/app/test/", ClientWebApplicationExceptionResteasyProxyTest.newBehaviorDeploymentName))
+              .proxy(ClientWebApplicationExceptionProxyResourceInterface.class);
    }
 
    /**
@@ -61,30 +56,58 @@ public class ClientWebApplicationExceptionResteasyProxyResource {
 
    /**
     * Uses a proxy to call oldException() to get an HTTP response derived from a WebApplicationException.
-    * Based on that response, the proxy will throw either a WebApplicationException or ResteasyWebApplicationException,
-    * depending on the value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR.
+    * The proxy will throw a WebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is true.
     *
     * @param i determines element of oldExceptions to be thrown by oldException()
     * @throws Exception
     */
    @GET
-   @Path("nocatch/old/{i}")
-   public String noCatchOld(@PathParam("i") int i) throws Exception {
-      return proxy.oldException(i);
+   @Path("nocatch/old/old/{i}")
+   public String noCatchOldOld(@PathParam("i") int i) throws Exception {
+      return oldBehaviorProxy.oldException(i);
+   }
+
+   /**
+    * Uses a proxy to call oldException() to get an HTTP response derived from a WebApplicationException.
+    * The proxy will throw a ResteasyWebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is false.
+    *
+    * @param i determines element of oldExceptions to be thrown by oldException()
+    * @throws Exception
+    */
+   @GET
+   @Path("nocatch/new/old/{i}")
+   public String noCatchNewOld(@PathParam("i") int i) throws Exception {
+      return newBehaviorProxy.oldException(i);
    }
 
    /**
     * Uses a proxy to call newException() to get an HTTP response derived from a ResteasyWebApplicationException.
-    * Based on that response, the proxy will throw either a WebApplicationException or ResteasyWebApplicationException,
-    * depending on the value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR.
+    * The proxy will throw a WebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is true.
     *
     * @param i determines element of newExceptions to be thrown by newException()
     * @throws Exception
     */
    @GET
-   @Path("nocatch/new/{i}")
-   public String noCatchNew(@PathParam("i") int i) throws Exception {
-      return proxy.newException(i);
+   @Path("nocatch/old/new/{i}")
+   public String noCatchOldNew(@PathParam("i") int i) throws Exception {
+      return oldBehaviorProxy.newException(i);
+   }
+
+   /**
+    * Uses a proxy to call newException() to get an HTTP response derived from a ResteasyWebApplicationException.
+    * The proxy will throw either a ResteasyWebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is false.
+    *
+    * @param i determines element of newExceptions to be thrown by newException()
+    * @throws Exception
+    */
+   @GET
+   @Path("nocatch/new/new/{i}")
+   public String noCatchNewNew(@PathParam("i") int i) throws Exception {
+      return newBehaviorProxy.newException(i);
    }
 
    /**
@@ -102,7 +125,7 @@ public class ClientWebApplicationExceptionResteasyProxyResource {
    @Path("catch/old/old/{i}")
    public String catchOldOld(@PathParam("i") int i) throws Exception {
       try {
-         proxy.oldException(i);
+         oldBehaviorProxy.oldException(i);
          throw new Exception("expected exception");
       } catch (ResteasyWebApplicationException e) {
          throw new Exception("didn't expect ResteasyWebApplicationException");
@@ -132,7 +155,7 @@ public class ClientWebApplicationExceptionResteasyProxyResource {
    @Path("catch/old/new/{i}")
    public String catchOldNew(@PathParam("i") int i) throws Exception {
       try {
-         return proxy.newException(i);
+         return oldBehaviorProxy.newException(i);
       } catch (ResteasyWebApplicationException e) {
          throw new Exception("didn't expect ResteasyWebApplicationException");
       } catch (WebApplicationException e) {
@@ -164,7 +187,7 @@ public class ClientWebApplicationExceptionResteasyProxyResource {
    @Path("catch/new/old/{i}")
    public String catchNewOld(@PathParam("i") int i) throws Exception {
       try {
-         return proxy.oldException(i);
+         return newBehaviorProxy.oldException(i);
       } catch (WebApplicationException e) {
          Response sanitizedResponse = e.getResponse();
          Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), sanitizedResponse.getStatus());
@@ -198,7 +221,7 @@ public class ClientWebApplicationExceptionResteasyProxyResource {
    @Path("catch/new/new/{i}")
    public String catchNewNew(@PathParam("i") int i) throws Exception {
       try {
-         return proxy.newException(i);
+         return newBehaviorProxy.newException(i);
       } catch (WebApplicationException e) {
          Response sanitizedResponse = e.getResponse();
          Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), sanitizedResponse.getStatus());
