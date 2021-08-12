@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
+import io.netty.buffer.Unpooled;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -61,14 +62,16 @@ class ChunkOutputStream extends AsyncOutputStream {
        this.completionSink = Objects.requireNonNull(completionSink);
        Objects.requireNonNull(reactorNettyResponse);
        this.byteSinkSupplier = () -> {
-           final Sinks.Many<Tuple2<byte[], CompletableFuture<Void>>> outSink = Sinks.many().multicast().onBackpressureBuffer();
-           final Flux<byte[]> byteFlux = outSink.asFlux().map(tup -> {
-                   tup.getT2().complete(null);
-                   return tup.getT1();
-               });
-
-           SinkSubscriber.subscribe(completionSink, Mono.from(reactorNettyResponse.sendByteArray(byteFlux)));
-
+           final Sinks.Many<Tuple2<byte[], CompletableFuture<Void>>> outSink =
+                   Sinks.many().unicast().onBackpressureBuffer();
+           final Flux<Void> flux = outSink.asFlux()
+                   .flatMap(tup ->
+                           Mono.from(reactorNettyResponse.send(
+                                   Mono.just(Unpooled.wrappedBuffer(tup.getT1())),
+                                   bb -> true
+                           )).doOnSuccess(v -> tup.getT2().complete(null))
+                   );
+           SinkSubscriber.subscribe(completionSink, Mono.from(flux));
            return outSink;
        };
    }
