@@ -1,25 +1,36 @@
 package org.jboss.resteasy.test;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
+import org.jboss.resteasy.spi.AsyncStreamingOutput;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -75,8 +86,26 @@ public class StreamingOutputTest
          };
       }
 
+      @POST
+      @Path("/largeContent")
+      @Produces(MediaType.TEXT_PLAIN)
+      public StreamingOutput largeContent(final InputStream in) {
+         return out -> IOUtils.copy(in, out);
+      }
 
-
+      @POST
+      @Path("/async/largeContent")
+      @Produces(MediaType.TEXT_PLAIN)
+      public AsyncStreamingOutput asyncLargeContent(final InputStream in) {
+         final BiConsumer<InputStream, OutputStream> writeFunction = (input, output) -> {
+            try {
+               IOUtils.copy(input, output);
+            } catch (IOException e) {
+               throw new RuntimeException(e);
+            }
+         };
+         return out -> CompletableFuture.runAsync(() -> writeFunction.accept(in, out));
+      }
    }
 
    @BeforeClass
@@ -137,5 +166,33 @@ public class StreamingOutputTest
               "\n9\n" +
               "\n"));
       Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+   }
+
+
+   @Test
+   public void testStreamingOutputForLargeContent()
+   {
+      testStreamingLargeContent("/org/jboss/resteasy/test/largeContent");
+   }
+
+   @Test
+   public void testAsyncStreamingOutputForLargeContent()
+   {
+      testStreamingLargeContent("/org/jboss/resteasy/test/async/largeContent");
+   }
+
+   private void testStreamingLargeContent(final String path) {
+      final Random random = new Random();
+      final Function<Integer, String> charFn = (index) -> random.nextInt() % 2 == 0 ? "a" : "b";
+      final String inputData = IntStream.range(0, 50_000)
+              .mapToObj(charFn::apply)
+              .collect(Collectors.joining(","));
+      final Response response = client
+              .target(BASE_URI)
+              .path(path)
+              .request()
+              .post(Entity.text(inputData));
+      Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+      Assert.assertEquals(inputData, response.readEntity(String.class));
    }
 }
