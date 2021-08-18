@@ -78,7 +78,10 @@
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.weld.api>3.1.SP4</version.weld.api>
         <version.weld>3.1.7.SP1</version.weld>
-        <version.json.patch>1.13</version.json.patch>
+        <version.com.github.java-json-tools.btf>1.3</version.com.github.java-json-tools.btf>
+        <version.com.github.java-json-tools.jackson-coreutils>2.0</version.com.github.java-json-tools.jackson-coreutils>
+        <version.com.github.java-json-tools.json-patch>1.13</version.com.github.java-json-tools.json-patch>
+        <version.com.github.java-json-tools.msg-simple>1.2</version.com.github.java-json-tools.msg-simple>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
@@ -461,11 +464,17 @@
                 <version>${version.rest-assured}</version>
                 <scope>test</scope>
             </dependency>
-	        <dependency>
-	            <groupId>com.google.guava</groupId>
-	            <artifactId>guava</artifactId>
-	            <version>${version.com.google.guava}</version>
-	        </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${version.com.google.guava}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>failureaccess</artifactId>
@@ -811,10 +820,50 @@
                 <artifactId>wildfly-cli</artifactId>
                 <version>${version.org.wildfly.core.wildfly-cli}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.github.java-json-tools</groupId>
+                <artifactId>btf</artifactId>
+                <version>${version.com.github.java-json-tools.btf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.java-json-tools</groupId>
+                <artifactId>jackson-coreutils</artifactId>
+                <version>${version.com.github.java-json-tools.jackson-coreutils}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>com.github.java-json-tools</groupId>
                 <artifactId>json-patch</artifactId>
-                <version>${version.json.patch}</version>
+                <version>${version.com.github.java-json-tools.json-patch}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.java-json-tools</groupId>
+                <artifactId>msg-simple</artifactId>
+                <version>${version.com.github.java-json-tools.msg-simple}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.reactivestreams</groupId>

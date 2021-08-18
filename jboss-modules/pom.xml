@@ -17,6 +17,23 @@
     <packaging>pom</packaging>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>btf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>jackson-coreutils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>json-patch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>msg-simple</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
