@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +54,9 @@ import java.util.stream.Collectors;
  */
 public class ContextualExecutors {
     private static final String EXECUTOR_SERVICE_JNDI = "java:comp/DefaultManagedExecutorService";
-    private static final String SCHEDULED_EXECUTOR_SERVICE_JNDI = "java:comp/DefaultManageScheduledExecutorService";
+    private static final String SCHEDULED_EXECUTOR_SERVICE_JNDI = "java:comp/DefaultManagedScheduledExecutorService";
+
+    private static final Map<String, Boolean> JNDI_LOOKUPS = new ConcurrentHashMap<>();
 
     /**
      * An executor which executes tasks in the current thread
@@ -81,17 +84,11 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualExecutorService threadPool() {
-        ExecutorService delegate = null;
-        boolean managed = false;
-        try {
-            delegate = InitialContext.doLookup(EXECUTOR_SERVICE_JNDI);
-            managed = true;
-        } catch (NamingException ignore) {
-        } catch (Exception e) {
-            LogMessages.LOGGER.failedToLookupManagedExecutorService(e, EXECUTOR_SERVICE_JNDI);
-        }
+        ExecutorService delegate = lookup(EXECUTOR_SERVICE_JNDI);
+        boolean managed = true;
         if (delegate == null) {
             delegate = Executors.newCachedThreadPool(new ContextualThreadFactory("contextual-pool"));
+            managed = false;
         }
         return wrap(delegate, managed);
     }
@@ -144,17 +141,11 @@ public class ContextualExecutors {
      */
     public static ContextualScheduledExecutorService scheduledThreadPool(final int poolSize,
                                                                          final ThreadFactory threadFactory) {
-        ScheduledExecutorService delegate = null;
-        boolean managed = false;
-        try {
-            delegate = InitialContext.doLookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
-            managed = true;
-        } catch (NamingException ignore) {
-        } catch (Exception e) {
-            LogMessages.LOGGER.failedToLookupManagedExecutorService(e, SCHEDULED_EXECUTOR_SERVICE_JNDI);
-        }
+        ScheduledExecutorService delegate = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
+        boolean managed = true;
         if (delegate == null) {
             delegate = Executors.newScheduledThreadPool(poolSize, threadFactory);
+            managed = false;
         }
         return wrap(delegate, managed);
     }
@@ -258,13 +249,7 @@ public class ContextualExecutors {
         if (delegate != null) {
             return wrap(delegate, true);
         }
-        ScheduledExecutorService found = null;
-        try {
-            found = InitialContext.doLookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
-        } catch (NamingException ignore) {
-        } catch (Exception e) {
-            LogMessages.LOGGER.failedToLookupManagedExecutorService(e, SCHEDULED_EXECUTOR_SERVICE_JNDI);
-        }
+        ScheduledExecutorService found = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
         return found == null ? null : wrap(found, true);
     }
 
@@ -363,6 +348,32 @@ public class ContextualExecutors {
         if (error != null) {
             LogMessages.LOGGER.unableToResetThreadContext(error, Thread.currentThread().getName());
         }
+    }
+
+    private static <T extends ExecutorService> T lookup(final String jndiName) {
+        final Boolean performLookup = JNDI_LOOKUPS.get(jndiName);
+        if (performLookup != null && performLookup) {
+            try {
+                // This could have some performance impact. However, we can't assume the context we're in, so we need
+                // to look it up each time.
+                return InitialContext.doLookup(jndiName);
+            } catch (NamingException ignore) {
+            } catch (Exception e) {
+                LogMessages.LOGGER.failedToLookupManagedExecutorService(e, jndiName);
+            }
+        } else if (performLookup == null) {
+            // Do one lookup and if not found assume it won't be in the future
+            try {
+                final T service = InitialContext.doLookup(jndiName);
+                JNDI_LOOKUPS.put(jndiName, Boolean.TRUE);
+                return service;
+            } catch (NamingException ignore) {
+            } catch (Exception e) {
+                LogMessages.LOGGER.failedToLookupManagedExecutorService(e, jndiName);
+            }
+            JNDI_LOOKUPS.put(jndiName, Boolean.FALSE);
+        }
+        return null;
     }
 
     private static class ContextualThreadFactory implements ThreadFactory {

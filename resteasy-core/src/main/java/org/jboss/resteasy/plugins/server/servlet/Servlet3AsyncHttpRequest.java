@@ -40,14 +40,12 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
-   private final ScheduledExecutorService asyncScheduler;
 
    public Servlet3AsyncHttpRequest(final HttpServletRequest httpServletRequest, final HttpServletResponse response, final ServletContext servletContext, final HttpResponse httpResponse, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uriInfo, final String s, final SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, response, servletContext, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;
       asynchronousContext = new Servlet3ExecutionContext((ServletRequest) httpServletRequest);
-      asyncScheduler = ContextualExecutors.scheduledThreadPool();
    }
 
    @Override
@@ -72,12 +70,14 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 
       private class Servlet3AsynchronousResponse extends AbstractAsynchronousResponse implements AsyncListener, AutoCloseable
       {
-         private Object responseLock = new Object();
+         private final ScheduledExecutorService asyncScheduler;
+         private final Object responseLock = new Object();
          protected ScheduledFuture<?> timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
          private Servlet3AsynchronousResponse()
          {
             super(Servlet3ExecutionContext.this.dispatcher, Servlet3ExecutionContext.this.request, Servlet3ExecutionContext.this.response);
+            asyncScheduler = ContextualExecutors.scheduledThreadPool();
          }
 
          @Override
