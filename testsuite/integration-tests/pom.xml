@@ -123,44 +123,6 @@
             <jboss.home>${project.build.directory}/test-server/wildfly-${server.version}</jboss.home>
           </properties>
         </profile>
-        <!--
-            By default, ${version.resteasy.testsuite} version for RESTEasy restclient is used.
-            But use.mp.from.project.profile allows to use ${project.version} version for RESTEasy restclient.
-                This is useful for test runs where we test resteasy version without RESTEasy restclient available.
-                In this case, tests with RESTEasy restclient are used for compatibility testing only.
-        -->
-        <profile>
-            <id>not.use.mp.from.project.profile</id>
-            <activation>
-                <property>
-                    <name>!ts.use.mp.from.project</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-client-microprofile</artifactId>
-                    <version>${version.resteasy.testsuite}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>use.mp.from.project.profile</id>
-            <activation>
-                <property>
-                    <name>ts.use.mp.from.project</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-client-microprofile</artifactId>
-                    <version>${project.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
     </profiles>
 
     <dependencies>
@@ -208,17 +170,6 @@
             <artifactId>resteasy-client</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.microprofile.config</groupId>
-            <artifactId>microprofile-config-api</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.config</groupId>
-            <artifactId>smallrye-config</artifactId>
         </dependency>
 
         <dependency>
@@ -579,9 +530,6 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <systemPropertyVariables>
-                                    <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
-                                </systemPropertyVariables>
                                 <excludes>
                                     <!-- Tests requires excluding JsonBindingProvider-->
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
@@ -599,9 +547,6 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <systemPropertyVariables>
-                                    <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
-                                </systemPropertyVariables>
                                 <includes>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                     <include>**/SseJsonEventTest.java</include>

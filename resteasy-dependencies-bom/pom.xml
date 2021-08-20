@@ -80,23 +80,6 @@
         <version.weld>3.1.7.SP1</version.weld>
         <version.json.patch>1.13</version.json.patch>
 
-        <!-- MicroProfile versions -->
-        <!-- todo replace this version when Final is released
-        -->
-        <version.microprofile.restclient>2.0</version.microprofile.restclient>
-
-        <!-- todo rls move this property when updating all versions for MP-rest-client 2.0
-        and return version to ${version.microprofile.restclient}
-        -->
-        <version.microprofile.restclient.tck>2.0</version.microprofile.restclient.tck>
-
-        <version.microprofile.config>2.0</version.microprofile.config>
-        <version.microprofile.context-propagation>1.2</version.microprofile.context-propagation>
-
-        <!-- SmallRye versions -->
-        <version.io.smallrye.context-propagation>1.2.0</version.io.smallrye.context-propagation>
-        <version.io.smallrye.smallrye-config>2.3.0</version.io.smallrye.smallrye-config>
-
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
         <version.org.hibernate.validator>6.2.0.Final</version.org.hibernate.validator>
@@ -614,52 +597,6 @@
                 <version>${version.org.glassfish.jakarta.el}</version>
             </dependency>
 
-            <!-- Microprofile related -->
-            <dependency>
-                <groupId>org.eclipse.microprofile.rest.client</groupId>
-                <artifactId>microprofile-rest-client-api</artifactId>
-                <version>${version.microprofile.restclient}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.microprofile.config</groupId>
-                <artifactId>microprofile-config-api</artifactId>
-                <version>${version.microprofile.config}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.microprofile.rest.client</groupId>
-                <artifactId>microprofile-rest-client-tck</artifactId>
-                <version>${version.microprofile.restclient.tck}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.smallrye.config</groupId>
-                <artifactId>smallrye-config</artifactId>
-                <version>${version.io.smallrye.smallrye-config}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.annotation</groupId>
-                        <artifactId>javax.annotation-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
             <!-- testsuite dependencies -->
             <dependency>
                 <groupId>com.github.tomakehurst</groupId>
@@ -795,7 +732,6 @@
                 <artifactId>jetty-server</artifactId>
                 <version>${version.org.eclipse.jetty}</version>
             </dependency>
-           <!-- required to align the Jetty Servlet version for MicroProfile Rest Client tests-->
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlets</artifactId>
@@ -879,51 +815,6 @@
                 <groupId>com.github.java-json-tools</groupId>
                 <artifactId>json-patch</artifactId>
                 <version>${version.json.patch}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.microprofile.context-propagation</groupId>
-                <artifactId>microprofile-context-propagation-api</artifactId>
-                <version>${version.microprofile.context-propagation}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye</groupId>
-                <artifactId>smallrye-context-propagation</artifactId>
-                <version>${version.io.smallrye.context-propagation}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye</groupId>
-                <artifactId>smallrye-context-propagation-api</artifactId>
-                <version>${version.io.smallrye.context-propagation}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye</groupId>
-                <artifactId>smallrye-context-propagation-propagators-rxjava2</artifactId>
-                <version>${version.io.smallrye.context-propagation}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye</groupId>
-                <artifactId>smallrye-context-propagation-storage</artifactId>
-                <version>${version.io.smallrye.context-propagation}</version>
             </dependency>
             <dependency>
                 <groupId>org.reactivestreams</groupId>

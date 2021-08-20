@@ -54,12 +54,6 @@
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-core-spi</artifactId>
          <version>${version.resteasy.testsuite}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.microprofile.config</groupId>
-               <artifactId>microprofile-config-api</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.jboss.resteasy</groupId>

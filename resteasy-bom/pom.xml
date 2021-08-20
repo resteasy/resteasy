@@ -143,16 +143,6 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-microprofile</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-microprofile-base</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-client-jetty</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -170,16 +160,6 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-reactor</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-reactive-context</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-rxjava2</artifactId>
-                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>

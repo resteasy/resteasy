@@ -145,7 +145,6 @@
                 <module>unit-tests</module>
                 <module>integration-tests</module>
                 <module>integration-tests-embedded</module>
-                <module>microprofile-tck</module>
             </modules>
         </profile>
         <profile>

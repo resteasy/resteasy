@@ -305,6 +305,15 @@ public interface LogMessages extends BasicLogger
    @Message("Unable to extract parameter from http request: %s value is '%s' for %s")
    void unableToExtractParameter(@Cause Throwable cause, String paramSignature, String strVal, AccessibleObject target);
 
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 350, value = "Failed to reset the context on thread: %s")
+   void unableToResetThreadContext(@Cause Throwable cause, String threadName);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 360, value = "Failed to look up JNDI resource \"%s\". Using a default ExecutorService.")
+   void failedToLookupManagedExecutorService(@Cause Throwable cause, String name);
+
+
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  TRACE                                                //

@@ -53,9 +53,6 @@ To run the testsuite with failing tests included for testing purposes:
 ### Single test
 > mvn surefire:test@default-test -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
 
-When running `microprofile-tck` tests, use the following in order to activate WireMock:
-> mvn wiremock:run -Dparams="--port=8765" -Ddir="target/classes" surefire:test@default-test -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
-
 ### Speciality single test JsonBindingTest and JsonBindingAnnotationsJacksonTest
 To run test JsonBindingTest requires the use of a speciality surefire syntax.
 > mvn surefire:test@jsonb-test  -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=JsonBindingTest -fn

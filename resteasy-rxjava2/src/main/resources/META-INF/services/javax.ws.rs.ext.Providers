@@ -7,3 +7,4 @@ org.jboss.resteasy.rxjava2.ObservableRxInvokerProvider
 org.jboss.resteasy.rxjava2.FlowableProvider
 org.jboss.resteasy.rxjava2.FlowableRxInvokerImpl
 org.jboss.resteasy.rxjava2.FlowableRxInvokerProvider
+org.jboss.resteasy.rxjava2.propagation.RxJava2ContextPropagator

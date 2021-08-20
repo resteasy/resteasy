@@ -205,8 +205,8 @@ public class PublisherResponseTest {
       source.close();
       Assert.assertEquals(30, collector.size());
       Assert.assertEquals(0, errors.size());
-      Assert.assertEquals("0-1", collector.get(0));
-      Assert.assertEquals("1-1", collector.get(1));
+      Assert.assertEquals("0-2", collector.get(0));
+      Assert.assertEquals("1-2", collector.get(1));
    }
 
    /**
