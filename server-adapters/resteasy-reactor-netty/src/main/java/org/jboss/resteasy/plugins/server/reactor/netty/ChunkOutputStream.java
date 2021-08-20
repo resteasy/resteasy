@@ -31,7 +31,7 @@ abstract class ChunkOutputStream extends AsyncOutputStream {
      */
     protected final Sinks.Empty<Void> completionSink;
 
-    public ChunkOutputStream(Sinks.Empty<Void> completionSink) {
+    public ChunkOutputStream(final Sinks.Empty<Void> completionSink) {
         this.completionSink = completionSink;
     }
 
