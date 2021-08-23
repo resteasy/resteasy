@@ -37,6 +37,13 @@ public class ResteasyClientImpl implements ResteasyClient
 
 
    protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor,
+                                final ScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration)
+   {
+      this(httpEngine, asyncInvocationExecutor, cleanupExecutor, ContextualExecutors.wrap(scheduledExecutorService), configuration);
+   }
+
+
+   protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor,
                                 final ContextualScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration)
    {
       this.cleanupExecutor = cleanupExecutor;
