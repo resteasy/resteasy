@@ -53,7 +53,7 @@
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-managed</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-managed}</version>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.inject</groupId>
@@ -64,7 +64,7 @@
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-bootable</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-bootable}</version>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.jboss.sasl</groupId>

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectable;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableBinder;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
@@ -29,6 +30,8 @@ import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.URL;
+
 /**
  * @tpSubChapter CDI
  * @tpChapter Integration tests
@@ -39,6 +42,9 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class EarLibIntoEarLibTest {
    protected static final org.apache.logging.log4j.Logger log = LogManager.getLogger(EarLibIntoEarLibTest.class.getName());
+
+   @ArquillianResource
+   private URL url;
 
    @Deployment
    public static Archive<?> createTestArchive() {
@@ -68,7 +74,7 @@ public class EarLibIntoEarLibTest {
       log.info("starting testModules()");
 
       Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(PortProviderUtil.generateURL("/modules/test/", "test"));
+      WebTarget base = client.target(url + "/modules/test/");
       Response response = base.request().get();
       log.info("Status: " + response.getStatus());
       assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
