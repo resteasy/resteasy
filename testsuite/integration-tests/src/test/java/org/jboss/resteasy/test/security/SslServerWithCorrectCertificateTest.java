@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -244,6 +245,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
    @Test
    public void testTrustedServerWithClientConfigProvider() throws IOException, InterruptedException {
+      Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
       String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithSSL();
       File clientTruststore = new File(CLIENT_TRUSTSTORE_PATH);
       Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(

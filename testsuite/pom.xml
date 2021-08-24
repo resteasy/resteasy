@@ -23,6 +23,7 @@
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
+        <server.version>${version.org.wildfly}</server.version>
 
         <!-- Skip the default Java 8 testing. This will have to be done in CI or locally by setting the test.java.home -->
         <skip.java8.tests>true</skip.java8.tests>
@@ -52,7 +53,7 @@
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-managed</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-managed}</version>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.inject</groupId>
@@ -63,7 +64,7 @@
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-bootable</artifactId>
-                <version>${version.org.wildfly.wildfly-arquillian-container-bootable}</version>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.jboss.sasl</groupId>
@@ -156,17 +157,6 @@
             </activation>
             <properties>
                 <jboss.home>${server.home}</jboss.home>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version</id>
-            <activation>
-              <property>
-                <name>!server.version</name>
-              </property>
-            </activation>
-            <properties>
-                <server.version>23.0.2.Final</server.version>
             </properties>
         </profile>
         <profile>

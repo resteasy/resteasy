@@ -39,7 +39,7 @@ If you want to build the project with testings run, you may need to specify a pr
 
 ```bash
 $ export SERVER_VERSION=17.0.0.Final
-$ mvn -B -Pjboss-repository -fae -Dserver.version=$SERVER_VERSION install
+$ mvn -fae -Dserver.version=$SERVER_VERSION install
 ```
 
 ## Contribute

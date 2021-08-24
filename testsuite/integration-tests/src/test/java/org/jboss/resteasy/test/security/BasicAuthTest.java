@@ -34,6 +34,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -323,6 +324,7 @@ public class BasicAuthTest {
      */
     @Test
     public void testClientConfigProviderCredentials() throws IOException {
+        Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
         String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithBASIC();
 
         Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(

@@ -62,66 +62,61 @@
               <name>!server.home</name>
             </property>
           </activation>
+          <properties>
+              <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
+          </properties>
           <build>
             <plugins>
-              <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${skipTests}</skip>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.wildfly</groupId>
-                                    <artifactId>wildfly-dist</artifactId>
-                                    <version>${server.version}</version>
-                                    <type>zip</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/test-server</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-              </plugin>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-resteasy</id>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-                            <target>
-                                <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
-                                     so adding jars without removing old ones basically messes up the classloader -->
-                                <delete>
-                                    <fileset
-                                            dir="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main"
-                                            includes="**/*.jar"/>
-                                </delete>
-                                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
-                                       dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
-                                       overwrite="true"/>
-                                <delete dir="target/dependency-maven-plugin-markers"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-              </plugin>
+                <plugin>
+                    <groupId>org.jboss.galleon</groupId>
+                    <artifactId>galleon-maven-plugin</artifactId>
+                    <configuration>
+                        <install-dir>${jboss.home}</install-dir>
+                        <skip>${skipTests}</skip>
+                        <record-state>false</record-state>
+                        <log-time>${galleon.log.time}</log-time>
+                        <offline>${galleon.offline}</offline>
+                        <plugin-options>
+                            <jboss-maven-dist/>
+                            <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
+                        </plugin-options>
+                        <feature-packs>
+                            <feature-pack>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>galleon-feature-pack</artifactId>
+                                <version>${project.version}</version>
+                                <inherit-configs>false</inherit-configs>
+                                <included-configs>
+                                    <config>
+                                        <model>standalone</model>
+                                        <name>standalone-full.xml</name>
+                                    </config>
+                                    <config>
+                                        <model>standalone</model>
+                                        <name>standalone.xml</name>
+                                    </config>
+                                </included-configs>
+                                <excluded-packages>
+                                    <name>product.conf</name>
+                                    <name>docs.schema</name>
+                                    <name>appclient</name>
+                                    <name>domain</name>
+                                </excluded-packages>
+                            </feature-pack>
+                        </feature-packs>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>server-provisioning</id>
+                            <phase>generate-test-resources</phase>
+                            <goals>
+                                <goal>provision</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
           </build>
-          <properties>
-            <jboss.home>${project.build.directory}/test-server/wildfly-${server.version}</jboss.home>
-          </properties>
         </profile>
     </profiles>
 
@@ -417,7 +412,7 @@
                 <executions>
                     <execution>
                         <id>initialize-basedirs</id>
-                        <phase>process-test-classes</phase>
+                        <phase>process-test-resources</phase>
                         <configuration>
                             <target>
                                 <!-- Initialize basedir for tested container by copying
@@ -475,7 +470,7 @@
                         <configuration>
                             <target>
                                 <!-- Prepare configuration with more verbose logging for tracing tests -->
-                                <copy file="${container.base.dir.manual.tracing}/configuration/standalone-full.xml"
+                                <copy file="${container.base.dir.manual.tracing}/configuration/standalone.xml"
                                       tofile="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml"/>
                                 <replace
                                         file="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml">
@@ -606,4 +601,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <!-- Required for PicketBox, once this is removed from WildFly this can be removed -->
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <id>jboss-enterprise-maven-repository</id>
+            <name>JBoss Enterprise Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 </project>
