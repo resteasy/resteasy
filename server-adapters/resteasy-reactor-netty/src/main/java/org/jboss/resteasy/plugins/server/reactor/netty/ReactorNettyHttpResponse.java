@@ -43,7 +43,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
         this.resp = resp;
         this.completionSink = completionSink;
         if (method == null || !method.equals(HttpMethod.HEAD)) {
-            this.out = new ChunkOutputStream(this, resp, completionSink);
+            this.out = ChunkOutputStream.create(this, resp, completionSink);
         } else {
             resp.responseHeaders().remove(HttpHeaderNames.TRANSFER_ENCODING);
         }
