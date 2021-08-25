@@ -66,13 +66,13 @@
          <version>${version.resteasy.testsuite}</version>
       </dependency>
       <dependency>
-         <groupId>org.jboss.spec.javax.servlet</groupId>
-         <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.jboss.spec.javax.annotation</groupId>
-         <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+          <groupId>jakarta.annotation</groupId>
+          <artifactId>jakarta.annotation-api</artifactId>
       </dependency>
       <dependency>
          <groupId>org.jboss.spec.javax.ws.rs</groupId>
