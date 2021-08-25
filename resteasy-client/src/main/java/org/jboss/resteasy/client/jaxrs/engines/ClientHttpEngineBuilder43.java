@@ -230,7 +230,8 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          HttpClientBuilder httpClientBuilder= HttpClientBuilder.create()
                  .setConnectionManager(cm)
                  .setDefaultRequestConfig(rcBuilder.build())
-                 .disableContentCompression();
+                 .disableContentCompression()
+                 .setRetryHandler(ResteasyDefaultHttpRequestRetryHandler.INSTANCE);
          if (!that.isCookieManagementEnabled())
          {
             httpClientBuilder.disableCookieManagement();
@@ -249,7 +250,8 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
                         .setConnectionManager(cm)
                         .setDefaultRequestConfig(rcBuilder.build())
-                        .disableContentCompression();
+                        .disableContentCompression()
+                       .setRetryHandler(ResteasyDefaultHttpRequestRetryHandler.INSTANCE);
                if (!that.isCookieManagementEnabled())
                {
                   httpClientBuilder.disableCookieManagement();

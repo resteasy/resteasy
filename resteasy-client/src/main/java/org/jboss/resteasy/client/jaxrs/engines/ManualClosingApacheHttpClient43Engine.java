@@ -705,7 +705,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    protected HttpClient createDefaultHttpClient()
    {
-      final HttpClientBuilder builder = HttpClientBuilder.create();
+      final HttpClientBuilder builder = HttpClientBuilder.create()
+              .setRetryHandler(ResteasyDefaultHttpRequestRetryHandler.INSTANCE);
       RequestConfig.Builder requestBuilder = RequestConfig.custom();
       if (defaultProxy != null)
       {
