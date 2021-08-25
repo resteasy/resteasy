@@ -277,6 +277,7 @@
                         <maxmemory>1024m</maxmemory>
                         <quiet>false</quiet>
                         <aggregate>true</aggregate>
+                        <additionalJOption>--no-module-directories</additionalJOption>
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
