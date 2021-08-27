@@ -36,14 +36,14 @@ public class ReactorNettyHttpResponse implements HttpResponse {
     private final Sinks.Empty<Void> completionSink;
 
     public ReactorNettyHttpResponse(
-        final HttpMethod method,
-        final HttpServerResponse resp,
-        final Sinks.Empty<Void> completionSink
+            final HttpMethod method,
+            final HttpServerResponse resp,
+            final Sinks.Empty<Void> completionSink
     ) {
         this.resp = resp;
         this.completionSink = completionSink;
         if (method == null || !method.equals(HttpMethod.HEAD)) {
-            this.out = ChunkOutputStream.create(this, resp, completionSink);
+            this.out = new ChunkOutputStream(this, resp, completionSink);
         } else {
             resp.responseHeaders().remove(HttpHeaderNames.TRANSFER_ENCODING);
         }
@@ -238,8 +238,8 @@ public class ReactorNettyHttpResponse implements HttpResponse {
     @Override
     public void sendError(int status) {
         final Mono<Void> respMono = resp.status(status)
-            .header(HttpHeaderNames.CONTENT_LENGTH, HttpHeaderValues.ZERO)
-            .then();
+                .header(HttpHeaderNames.CONTENT_LENGTH, HttpHeaderValues.ZERO)
+                .then();
 
         committed = true;
         SinkSubscriber.subscribe(completionSink, respMono);
@@ -250,10 +250,10 @@ public class ReactorNettyHttpResponse implements HttpResponse {
     @Override
     public void sendError(int status, String message) {
         final Mono<Void> respMono = resp.status(status)
-            .header(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(message.length()))
-            .header(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN)
-            .sendString(Mono.just(message))
-            .then();
+                .header(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(message.length()))
+                .header(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN)
+                .sendString(Mono.just(message))
+                .then();
 
         SinkSubscriber.subscribe(completionSink, respMono);
         committed();
