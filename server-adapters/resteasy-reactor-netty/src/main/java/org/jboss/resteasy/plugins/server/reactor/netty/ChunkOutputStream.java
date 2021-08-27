@@ -99,7 +99,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
     }
 
     static class ReactorNettySendException extends RuntimeException {
-        public ReactorNettySendException(Throwable cause) {
+        ReactorNettySendException(final Throwable cause) {
             super(cause);
         }
     }
