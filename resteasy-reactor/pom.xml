@@ -8,7 +8,7 @@
     <version>5.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>resteasy-reactor</artifactId>
-  <name>RESTEasy Spring Reactor integration</name>
+  <name>RESTEasy Reactor integration</name>
 
   <dependencies>
     <dependency>
