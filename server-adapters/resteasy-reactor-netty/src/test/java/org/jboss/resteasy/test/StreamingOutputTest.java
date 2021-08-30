@@ -168,7 +168,6 @@ public class StreamingOutputTest
       Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
    }
 
-
    @Test
    public void testStreamingOutputForLargeContent()
    {
