@@ -57,7 +57,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
             final HttpServerResponse reactorNettyResponse,
             final Sinks.Empty<Void> completionSink
     ) {
-        this.completionSink = completionSink;
+        this.completionSink = Objects.requireNonNull(completionSink);
         this.parentResponse = Objects.requireNonNull(parentResponse);
         this.nettyOutbound = Objects.requireNonNull(reactorNettyResponse);
     }
