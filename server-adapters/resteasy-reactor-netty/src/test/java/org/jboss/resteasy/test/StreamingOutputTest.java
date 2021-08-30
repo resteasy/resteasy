@@ -100,7 +100,7 @@ public class StreamingOutputTest
          final BiConsumer<InputStream, OutputStream> writeFunction = (input, output) -> {
             try {
                IOUtils.copy(input, output);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                throw new RuntimeException(e);
             }
          };
