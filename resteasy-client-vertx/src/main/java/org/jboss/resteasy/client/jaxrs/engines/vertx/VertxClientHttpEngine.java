@@ -163,14 +163,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         if(!headers.contains(HttpHeaders.USER_AGENT)) {
             options.addHeader(HttpHeaders.USER_AGENT.toString(), "Vertx");
         }
-        URI uri = request.getUri();
-        options.setHost(uri.getHost());
-        options.setPort(uri.getPort());
-        if(uri.getRawQuery() != null && !uri.getRawQuery().trim().isEmpty()) {
-            options.setURI(String.format("%s?%s", uri.getRawPath(), uri.getRawQuery()));
-        }else {
-            options.setURI(uri.getRawPath());
-        }
+        options.setAbsoluteURI(request.getUri().toString());
 
         Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
         if (timeout != null) {
