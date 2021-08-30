@@ -80,30 +80,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>use-releasing-output</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <reuseForks>false</reuseForks>
-                            <systemPropertyVariables>
-                                <resteasy.server.reactor-netty.use-flushing>false</resteasy.server.reactor-netty.use-flushing>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>i18n</id>
@@ -156,19 +132,6 @@
                                    <includes>
                                        <include>**/I18nTestMessages_*.java</include>
                                    </includes>
-                               </configuration>
-                           </execution>
-                           <execution>
-                               <id>use-releasing-output</id>
-                               <phase>test</phase>
-                               <goals>
-                                   <goal>test</goal>
-                               </goals>
-                               <configuration>
-                                   <reuseForks>false</reuseForks>
-                                   <systemProperties>
-                                       -Dresteasy.server.reactor-netty.use-flushing=false
-                                   </systemProperties>
                                </configuration>
                            </execution>
                        </executions>
