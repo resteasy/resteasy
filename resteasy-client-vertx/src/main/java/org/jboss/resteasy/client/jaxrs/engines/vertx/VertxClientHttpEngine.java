@@ -47,44 +47,60 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
     private final Vertx vertx;
     private final HttpClient httpClient;
 
+    /**
+     * Empty constructor that creates a new vertx and http client with defaults.
+     */
     public VertxClientHttpEngine() {
         this.vertx = Vertx.vertx();
         this.httpClient = vertx.createHttpClient();
     }
 
+
+    /**
+     * Constructor that creates a new http client from vertx with default options.
+     * @param vertx vertx instance.
+     */
+    public VertxClientHttpEngine(final Vertx vertx) {
+        this(vertx, new HttpClientOptions());
+    }
+
+    /**
+     * Constructor that creates a new http client from vertx with given options.
+     * @param vertx vertx instance.
+     * @param options http vertx options.
+     */
     public VertxClientHttpEngine(final Vertx vertx, final HttpClientOptions options) {
         this.vertx = vertx;
         this.httpClient = vertx.createHttpClient(options);
     }
 
-    public VertxClientHttpEngine(final Vertx vertx) {
-        this(vertx, new HttpClientOptions());
-    }
-
-    public VertxClientHttpEngine(final HttpClient client) {
-        this.vertx = null;
+    /**
+     * Constructor that creates uses a vertx loop and httpclient.
+     * @param vertx vertx instance.
+     * @param client configured http client.
+     */
+    public VertxClientHttpEngine(final Vertx vertx, final HttpClient client) {
+        this.vertx = vertx;
         this.httpClient = client;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> Future<T> submit(final ClientInvocation request,
                                 final boolean buffered,
                                 final InvocationCallback<T> callback,
                                 final ResultExtractor<T> extractor) {
-        CompletableFuture<T> future = submit(request).thenCompose(response -> {
-            CompletableFuture<T> tmp = new CompletableFuture<>();
-            vertx.executeBlocking(promise -> {
-                try {
-                    T result = extractor.extractResult(response);
-                    tmp.complete(result);
-                } catch (Exception e) {
-                    tmp.completeExceptionally(e);
-                }
-            }, ar -> {
-                //
-            });
-            return tmp;
-        });
+        CompletableFuture<T> future = submit(request)
+                .thenCompose(response -> vertx.<T>executeBlocking(promise -> {
+                    try {
+                        T result = extractor.extractResult(response);
+                        promise.complete(result);
+                    } catch (Exception e) {
+                        promise.fail(e);
+                    }
+                }).toCompletionStage().toCompletableFuture());
         if (callback != null) {
             future = future.whenComplete((response, throwable) -> {
                 if (throwable != null) {
@@ -97,25 +113,35 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         return future;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> CompletableFuture<T> submit(final ClientInvocation request,
                                            final boolean buffered,
                                            final ResultExtractor<T> extractor,
                                            final ExecutorService executorService) {
-        return submit(request).thenCompose(response -> {
-            CompletableFuture<T> tmp = new CompletableFuture<>();
-            executorService.execute(() -> {
+        CompletableFuture<ClientResponse> future = submit(request);
+        if(executorService != null) {
+            return future.thenCompose(response -> CompletableFuture
+                    .supplyAsync(() -> extractor.extractResult(response), executorService));
+        }else {
+            return future.thenCompose(response -> vertx.<T>executeBlocking(promise -> {
                 try {
                     T result = extractor.extractResult(response);
-                    tmp.complete(result);
+                    promise.complete(result);
                 } catch (Exception e) {
-                    tmp.completeExceptionally(e);
+                    promise.fail(e);
                 }
-            });
-            return tmp;
-        });
+            }).toCompletionStage().toCompletableFuture());
+        }
     }
 
+    /**
+     * Perform jax-rs request using vertx http client.
+     * @param request request.
+     * @return future response.
+     */
     private CompletableFuture<ClientResponse> submit(final ClientInvocation request) {
         HttpMethod method = HttpMethod.valueOf(request.getMethod());
         Object entity = request.getEntity();
@@ -134,12 +160,17 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         if (body != null) {
             headers.set(HttpHeaders.CONTENT_LENGTH, "" + body.length());
         }
-        options.addHeader(HttpHeaders.USER_AGENT.toString(), "Vertx");
-
+        if(!headers.contains(HttpHeaders.USER_AGENT)) {
+            options.addHeader(HttpHeaders.USER_AGENT.toString(), "Vertx");
+        }
         URI uri = request.getUri();
         options.setHost(uri.getHost());
         options.setPort(uri.getPort());
-        options.setURI(uri.getRawPath());
+        if(uri.getRawQuery() != null && !uri.getRawQuery().trim().isEmpty()) {
+            options.setURI(String.format("%s?%s", uri.getRawPath(), uri.getRawQuery()));
+        }else {
+            options.setURI(uri.getRawPath());
+        }
 
         Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
         if (timeout != null) {

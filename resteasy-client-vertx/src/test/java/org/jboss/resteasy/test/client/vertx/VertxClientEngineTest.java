@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import io.reactivex.Single;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
@@ -44,6 +45,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
+import org.jboss.resteasy.rxjava2.SingleRxInvoker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +67,7 @@ public class VertxClientEngineTest {
    public void stop() throws Exception {
       if (client != null) {
          client.close();
+         client = null;
       }
       CountDownLatch latch = new CountDownLatch(1);
       vertx.close(ar -> latch.countDown());
@@ -72,7 +75,7 @@ public class VertxClientEngineTest {
       executorService.shutdownNow();
    }
 
-   private Client client() throws Exception {
+   private Client client(ScheduledExecutorService executor) throws Exception {
       if (server.actualPort() == 0) {
          CompletableFuture<Void> fut = new CompletableFuture<>();
          server.listen(0, ar -> {
@@ -86,11 +89,16 @@ public class VertxClientEngineTest {
       }
       if (client == null) {
          client = ((ResteasyClientBuilder)ClientBuilder
-             .newBuilder()
-             .scheduledExecutorService(executorService))
-             .httpEngine(new VertxClientHttpEngine(vertx)).build();
+                 .newBuilder()
+                 .executorService(executor)
+                 .scheduledExecutorService(executor))
+                 .httpEngine(new VertxClientHttpEngine(vertx)).build();
       }
       return client;
+   }
+
+   private Client client() throws Exception {
+      return client(executorService);
    }
 
    @Test
@@ -115,10 +123,75 @@ public class VertxClientEngineTest {
    }
 
    @Test
-   public void testSimpleResponseRx() throws Exception {
+   public void testSimpleCustomUserAgent() throws Exception {
+      final String customUserAgent = "CUSTOM_USER_AGENT";
+      server.requestHandler(req -> {
+         HttpServerResponse response = req.response();
+         if(req.getHeader(HttpHeaders.USER_AGENT).equals(customUserAgent)){
+            response.setStatusCode(200).end("Success");
+         }else{
+            response.setStatusCode(503).end("fail");
+         }
+      });
+
+      final Response response = client().target(baseUri()).request()
+              .header(HttpHeaders.USER_AGENT.toString(), customUserAgent)
+              .get();
+
+      assertEquals(200, response.getStatus());
+      assertEquals("Success", response.readEntity(String.class));
+   }
+
+
+   @Test
+   public void testQueryParams() throws Exception {
+      final String queryParam = "testQueryParam";
+      final String queryParamValue = "testQueryParamValue";
+      server.requestHandler(req -> {
+         HttpServerResponse response = req.response();
+         if(String.format("%s=%s", queryParam, queryParamValue).equals(req.query())){
+            response.setStatusCode(200).end("Success");
+         }else{
+            response.setStatusCode(503).end("fail");
+         }
+      });
+
+      final Response response = client().target(baseUri())
+              .queryParam(queryParam, queryParamValue)
+              .request()
+              .get();
+      assertEquals(200, response.getStatus());
+      assertEquals("Success", response.readEntity(String.class));
+   }
+
+   @Test
+   public void testSimpleWithoutExecutor() throws Exception {
       server.requestHandler(req -> {
          HttpServerResponse response = req.response();
          if (req.getHeader("User-Agent").contains("Apache")) {
+            response.setStatusCode(503).end();
+         } else if (!"abracadabra".equals(req.getHeader("Password"))) {
+            response.setStatusCode(403).end();
+         } else {
+            req.response().end("Success");
+         }
+      });
+      final Response response = client(null).target(baseUri()).request()
+              .header("Password", "abracadabra")
+              .rx(CompletionStageRxInvoker.class)
+              .get()
+              .toCompletableFuture()
+              .get();
+
+      assertEquals(200, response.getStatus());
+      assertEquals("Success", response.readEntity(String.class));
+   }
+
+   @Test
+   public void testSimpleResponseRx() throws Exception {
+      server.requestHandler(req -> {
+         HttpServerResponse response = req.response();
+         if (req.getHeader(HttpHeaders.USER_AGENT).contains("Apache")) {
             response.setStatusCode(503).end();
          } else if (!"abracadabra".equals(req.getHeader("Password"))) {
             response.setStatusCode(403).end();
@@ -155,6 +228,27 @@ public class VertxClientEngineTest {
 
       String response = cs.toCompletableFuture().get();
       assertEquals("Success", response);
+   }
+
+   @Test
+   public void testSimpleStringRxPublisher() throws Exception {
+      server.requestHandler(req -> {
+         HttpServerResponse response = req.response();
+         if (req.getHeader("User-Agent").contains("Apache")) {
+            response.setStatusCode(503).end();
+         } else if (!"abracadabra".equals(req.getHeader("Password"))) {
+            response.setStatusCode(403).end();
+         } else {
+            req.response().putHeader("Content-Type", "text/plain").end("Success");
+         }
+      });
+
+      final Single<String> publisher = client().target(baseUri()).request()
+              .header("Password", "abracadabra")
+              .rx(SingleRxInvoker.class)
+              .get(String.class);
+
+      assertEquals("Success", publisher.blockingGet());
    }
 
    @Test
