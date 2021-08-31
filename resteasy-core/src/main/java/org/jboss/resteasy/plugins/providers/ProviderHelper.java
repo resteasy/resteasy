@@ -7,6 +7,8 @@ import javax.ws.rs.core.Variant.VariantListBuilder;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import com.ibm.asyncutil.iteration.AsyncTrampoline;
+import org.jboss.resteasy.spi.config.Configuration;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -160,7 +162,12 @@ public final class ProviderHelper
     */
    public static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out)
    {
-      final byte[] buf = new byte[2048];
+      final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
+      final int bufferSize = config.getOptionalValue(
+              "resteasy.async.output.stream.writer.buffer.size",
+              Integer.class
+      ).orElse(2048);
+      final byte[] buf = new byte[bufferSize];
       return AsyncTrampoline.asyncWhile(
             read -> read != -1,
             read -> out.asyncWrite(buf, 0, read).thenApply(v -> asyncRead(in, buf)),
