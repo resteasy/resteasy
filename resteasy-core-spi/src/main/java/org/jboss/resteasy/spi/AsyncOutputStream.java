@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
+
 import java.io.OutputStream;
 import java.util.concurrent.CompletionStage;
 
@@ -7,6 +9,13 @@ import java.util.concurrent.CompletionStage;
  * OutputStream which supports async IO operations. Use these operations if you need to support async IO.
  */
 public abstract class AsyncOutputStream extends OutputStream {
+
+    public static int ASYNC_MESSAGE_WRITE_BUFFER_SIZE = ConfigurationFactory.getInstance()
+            .getConfiguration()
+            .getOptionalValue(
+                    "resteasy.async.output.stream.write.buffer.size",
+                    Integer.class
+            ).orElse(2048);
 
     /**
      * Flushes this async output stream.
