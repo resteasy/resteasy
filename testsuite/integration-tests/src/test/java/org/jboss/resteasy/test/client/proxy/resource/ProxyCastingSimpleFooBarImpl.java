@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/foobar")
 public class ProxyCastingSimpleFooBarImpl implements ProxyCastingSimpleFooBar {

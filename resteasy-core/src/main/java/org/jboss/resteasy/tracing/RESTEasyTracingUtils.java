@@ -3,8 +3,8 @@ package org.jboss.resteasy.tracing;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpRequest;

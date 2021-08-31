@@ -3,8 +3,8 @@ package org.jboss.resteasy.resteasy1056;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  *

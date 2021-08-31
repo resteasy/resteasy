@@ -25,7 +25,7 @@
 		</servlet-class>
 
 		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
+			<param-name>jakarta.ws.rs.Application</param-name>
 			<param-value>org.jboss.resteasy.utils.TestApplication</param-value>
 		</init-param>
 		<init-param>

@@ -52,7 +52,7 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <context:component-scan base-package="org.jboss.resteasy.examples.springbasic">
-        <context:include-filter type="annotation" expression="javax.ws.rs.Path"/>
+        <context:include-filter type="annotation" expression="jakarta.ws.rs.Path"/>
     </context:component-scan>
     <context:annotation-config/>
 
@@ -196,13 +196,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             we provided.
         </para>
         <para>
-            In addition, A <code>javax.ws.rs.core.Application</code> subclass can be combined with a Spring
+            In addition, A <code>jakarta.ws.rs.core.Application</code> subclass can be combined with a Spring
             <code>DispatcherServlet</code>
             and used in the same web application.
         </para>
         <para>
             A servlet definition is required
-            for both the Spring <code>DispatcherServlet</code> and the <code>javax.ws.rs.core.Application</code> subclass
+            for both the Spring <code>DispatcherServlet</code> and the <code>jakarta.ws.rs.core.Application</code> subclass
             in the <code>web.xml</code>,
             as well as RESTEasy Configuration Switch, <code>resteasy.scan.resources</code>. Here is an example
             of the minimum configuration information needed in the <code>web.xml</code>.
@@ -462,8 +462,8 @@ server.deploy(deployment);]]></programlisting>
         <para>
             Furthermore, the use of <code>org.springframework.http.ResponseEntity</code> as a return value is
             supported as
-            is the use of <code>javax.servlet.http.HttpServletRequest</code> and
-            <code>javax.servlet.http.HttpServletResponse</code>
+            is the use of <code>jakarta.servlet.http.HttpServletRequest</code> and
+            <code>jakarta.servlet.http.HttpServletResponse</code>
             as method parameters.
         </para>
         <para>To see an example of the usage, please check the <ulink
@@ -496,8 +496,8 @@ server.deploy(deployment);]]></programlisting>
             <programlisting><![CDATA[package com.sample.app;
 
 import org.springframework.stereotype.Component;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 @Component
 @ApplicationPath("/sample-app/")

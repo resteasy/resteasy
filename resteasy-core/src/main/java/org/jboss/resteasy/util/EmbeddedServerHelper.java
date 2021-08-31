@@ -2,7 +2,7 @@ package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
-import javax.ws.rs.ApplicationPath;
+import jakarta.ws.rs.ApplicationPath;
 
 public class EmbeddedServerHelper {
 

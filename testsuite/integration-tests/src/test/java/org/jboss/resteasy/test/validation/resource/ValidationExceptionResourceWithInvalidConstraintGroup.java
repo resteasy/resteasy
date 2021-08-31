@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.validation.resource;
 
 import javax.validation.GroupDefinitionException;
 import javax.validation.GroupSequence;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ext.Provider;
 
 @Path("/")
 @GroupSequence({ValidationExceptionTestGroup1.class, ValidationExceptionTestGroup2.class})

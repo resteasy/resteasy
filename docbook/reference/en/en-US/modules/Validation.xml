@@ -328,7 +328,7 @@ path fields. [See <xref linkend="microprofile_config"/> for more information abo
    
          <para>
          RESTEasy obtains a bean validation implementation by looking in the available
-         META-INF/services/javax.ws.rs.Providers files for an implementation
+         META-INF/services/jakarta.ws.rs.Providers files for an implementation
          of <classname>ContextResolver&lt;GeneralValidator&gt;</classname>, where 
          <classname>org.jboss.resteasy.spi.GeneralValidator</classname> is
          </para>

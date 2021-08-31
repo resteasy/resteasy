@@ -10,9 +10,9 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.cache.server.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Configurable;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 import java.io.IOException;
 
 /**

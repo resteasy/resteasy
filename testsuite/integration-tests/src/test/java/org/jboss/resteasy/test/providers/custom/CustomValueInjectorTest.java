@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.custom.resource.CustomValueInjectorHello;
 import org.jboss.resteasy.test.providers.custom.resource.CustomValueInjectorHelloResource;
 import org.jboss.resteasy.test.providers.custom.resource.CustomValueInjectorInjectorFactoryImpl;

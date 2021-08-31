@@ -3,7 +3,7 @@ package org.jboss.resteasy.spi;
 import java.lang.reflect.Method;
 import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.NestedCollectionsFormAddress;
 import org.jboss.resteasy.test.form.resource.NestedCollectionsFormCountry;
 import org.jboss.resteasy.test.form.resource.NestedCollectionsFormPerson;
@@ -21,10 +21,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resources
@@ -68,7 +68,7 @@ public class NestedCollectionsFormTest {
     */
    @Test
    public void shouldSupportCollectionsWithNestedObjectsInForm() throws Exception {
-      javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
+      jakarta.ws.rs.core.Form form = new jakarta.ws.rs.core.Form()
          .param("telephoneNumbers[0].country.code", "31")
          .param("telephoneNumbers[0].number", "0612345678")
          .param("telephoneNumbers[1].country.code", "91")

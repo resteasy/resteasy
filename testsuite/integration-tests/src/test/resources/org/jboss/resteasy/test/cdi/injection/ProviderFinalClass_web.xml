@@ -4,11 +4,11 @@
    <display-name>ProviderFinalClassTest</display-name>
 
    <servlet>
-      <servlet-name>javax.ws.rs.core.Application</servlet-name>
+      <servlet-name>jakarta.ws.rs.core.Application</servlet-name>
       <async-supported>true</async-supported>
    </servlet>
    <servlet-mapping>
-      <servlet-name>javax.ws.rs.core.Application</servlet-name>
+      <servlet-name>jakarta.ws.rs.core.Application</servlet-name>
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
 </web-app>

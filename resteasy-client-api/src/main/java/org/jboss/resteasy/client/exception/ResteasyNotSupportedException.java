@@ -2,8 +2,8 @@ package org.jboss.resteasy.client.exception;
 
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
-import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.NotSupportedException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link NotSupportedException} with a {@linkplain #sanitize(Response) sanitized} response.

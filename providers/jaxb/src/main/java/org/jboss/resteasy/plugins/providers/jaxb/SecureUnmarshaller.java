@@ -12,14 +12,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.UnmarshallerHandler;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.UnmarshallerHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -115,10 +115,10 @@ public class SecureUnmarshaller implements Unmarshaller {
       this.disableDTDs = disableDTDs;
    }
 
-   @SuppressWarnings("unchecked")
-   public <A extends XmlAdapter> A getAdapter(Class<A> type) {
-      return delegate.getAdapter(type);
-   }
+//   @SuppressWarnings("unchecked")
+//   public <A extends XmlAdapter> A getAdapter(Class<A> type) {
+//      return delegate.getAdapter(type);
+//   }
 
    public AttachmentUnmarshaller getAttachmentUnmarshaller() {
       return delegate.getAttachmentUnmarshaller();
@@ -140,17 +140,13 @@ public class SecureUnmarshaller implements Unmarshaller {
       return delegate.getSchema();
    }
 
-   public UnmarshallerHandler getUnmarshallerHandler() {
-      return delegate.getUnmarshallerHandler();
+   @Override
+   public <A extends XmlAdapter<?, ?>> A getAdapter(Class<A> aClass) {
+      return delegate.getAdapter(aClass);
    }
 
-   /**
-    * @deprecated This method is deprecated as of JAXB 2.0 - please use the new
-    * {@link #getSchema()} API.
-    */
-   @Deprecated
-   public boolean isValidating() throws JAXBException {
-      return delegate.isValidating();
+   public UnmarshallerHandler getUnmarshallerHandler() {
+      return delegate.getUnmarshallerHandler();
    }
 
    @SuppressWarnings("unchecked")
@@ -159,7 +155,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    }
 
    @SuppressWarnings("unchecked")
-   public <A extends XmlAdapter> void setAdapter(Class<A> type, A adapter) {
+   public <A extends XmlAdapter<?, ?>> void setAdapter(Class<A> type, A adapter) {
       delegate.setAdapter(adapter);
    }
 
@@ -181,14 +177,6 @@ public class SecureUnmarshaller implements Unmarshaller {
 
    public void setSchema(Schema schema) {
       delegate.setSchema(schema);
-   }
-
-   /**
-    * @deprecated since JAXB2.0, please see {@link #getSchema()}
-    */
-   @Deprecated
-   public void setValidating(boolean validating) throws JAXBException {
-      delegate.setValidating(validating);
    }
 
    public Object unmarshal(File f) throws JAXBException {

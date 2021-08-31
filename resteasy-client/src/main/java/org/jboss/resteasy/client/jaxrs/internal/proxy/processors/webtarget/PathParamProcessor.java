@@ -8,8 +8,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.client.WebTarget;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

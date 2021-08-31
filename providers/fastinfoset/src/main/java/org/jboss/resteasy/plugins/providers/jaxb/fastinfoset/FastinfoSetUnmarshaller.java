@@ -6,15 +6,15 @@ import org.jboss.resteasy.plugins.providers.fastinfoset.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.UnmarshallerHandler;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.UnmarshallerHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -153,20 +153,6 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
       throw new UnsupportedOperationException();
    }
 
-   @SuppressWarnings("deprecation")
-   public void setValidating(boolean b)
-         throws JAXBException
-   {
-      unmarshaller.setValidating(b);
-   }
-
-   @SuppressWarnings("deprecation")
-   public boolean isValidating()
-         throws JAXBException
-   {
-      return unmarshaller.isValidating();
-   }
-
    public void setEventHandler(ValidationEventHandler validationEventHandler)
          throws JAXBException
    {
@@ -206,12 +192,12 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
       unmarshaller.setAdapter(xmlAdapter);
    }
 
-   public <A extends XmlAdapter> void setAdapter(Class<A> aClass, A a)
+   public <A extends XmlAdapter<?, ?>> void setAdapter(Class<A> aClass, A a)
    {
       unmarshaller.setAdapter(aClass, a);
    }
 
-   public <A extends XmlAdapter> A getAdapter(Class<A> aClass)
+   public <A extends XmlAdapter<?, ?>> A getAdapter(Class<A> aClass)
    {
       return unmarshaller.getAdapter(aClass);
    }

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.request.resource;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 
 @Path("/xml")
 public class AcceptXmlResource {

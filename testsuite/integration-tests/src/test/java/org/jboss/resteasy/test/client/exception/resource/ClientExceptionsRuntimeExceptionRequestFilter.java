@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.client.exception.resource;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
 
 public class ClientExceptionsRuntimeExceptionRequestFilter implements ClientRequestFilter {
 

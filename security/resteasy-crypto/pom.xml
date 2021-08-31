@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
            <groupId>org.bouncycastle</groupId>
-           <artifactId>bcmail-jdk15on</artifactId>
+           <artifactId>bcjmail-jdk15on</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>

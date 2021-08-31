@@ -12,11 +12,16 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import com.fasterxml.jackson.databind.type.ClassKey;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterInjector;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterModifier;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JsonEndpointConfig;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
@@ -34,11 +39,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
-import com.fasterxml.jackson.jaxrs.util.ClassKey;
+//import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+//import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
+//import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+//import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
+//import com.fasterxml.jackson.jaxrs.util.ClassKey;
 
 /**
  * Only different from Jackson one is *+json in @Produces/@Consumes
@@ -49,7 +54,7 @@ import com.fasterxml.jackson.jaxrs.util.ClassKey;
 @Provider
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements AsyncBufferedMessageBodyWriter<Object>
+public class ResteasyJackson2Provider extends JacksonJsonProvider implements AsyncBufferedMessageBodyWriter<Object>
 {
 
    DecoratorMatcher decoratorMatcher = new DecoratorMatcher();

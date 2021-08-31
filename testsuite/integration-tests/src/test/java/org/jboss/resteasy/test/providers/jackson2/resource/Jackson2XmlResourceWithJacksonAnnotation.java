@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.jackson2.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 public class Jackson2XmlResourceWithJacksonAnnotation {
    String attr1;

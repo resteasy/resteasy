@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 public class ParamConverterPOJOConverter implements ParamConverter<ParamConverterPOJO> {
    public ParamConverterPOJO fromString(String str) {

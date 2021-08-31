@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.StringWriter;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;

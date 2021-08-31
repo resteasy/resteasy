@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Any exception thrown by a MessageBodyReader chain that is not an instance of a ReaderException is caught internally

@@ -29,7 +29,7 @@ public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends NotAllowGzipOn
    }
 
    /**
-    * @tpTestDetails gzip is enabled on server by javax.ws.rs.ext.Providers file in deployment
+    * @tpTestDetails gzip is enabled on server by jakarta.ws.rs.ext.Providers file in deployment
     *                gzip is allowed on client by manual import of gzip interceptors
     * @tpSince RESTEasy 3.6
     */
@@ -41,7 +41,7 @@ public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends NotAllowGzipOn
 
 
    /**
-    * @tpTestDetails gzip is enabled on server by javax.ws.rs.ext.Providers file in deployment
+    * @tpTestDetails gzip is enabled on server by jakarta.ws.rs.ext.Providers file in deployment
     *                gzip is disabled on client
     * @tpSince RESTEasy 3.6
     */

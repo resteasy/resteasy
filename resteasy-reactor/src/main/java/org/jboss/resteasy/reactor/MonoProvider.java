@@ -2,7 +2,7 @@ package org.jboss.resteasy.reactor;
 
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;

@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * Utility methods for detecting CDI scopes and JAX-RS components.
@@ -83,7 +83,7 @@ public class Utils
     *
     * @param clazz class
     * @return true if and only if a give class is a JAX-RS resource, provider or
-    *         javax.ws.rs.core.Application subclass.
+    *         jakarta.ws.rs.core.Application subclass.
     */
    public static boolean isJaxrsComponent(Class<?> clazz)
    {

@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import javax.activation.DataSource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.activation.DataSource;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.StreamingOutput;
 
 import org.jboss.resteasy.plugins.providers.FileRange;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;

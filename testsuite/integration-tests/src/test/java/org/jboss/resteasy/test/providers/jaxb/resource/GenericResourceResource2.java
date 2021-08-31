@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import javax.ejb.Stateless;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("test2")
 @Stateless

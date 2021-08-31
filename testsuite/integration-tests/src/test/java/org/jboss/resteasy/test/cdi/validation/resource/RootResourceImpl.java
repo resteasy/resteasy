@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.cdi.validation.resource;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.core.Response;
 
 @RequestScoped
 public class RootResourceImpl implements RootResource

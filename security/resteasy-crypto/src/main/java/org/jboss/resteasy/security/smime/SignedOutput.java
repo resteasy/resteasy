@@ -1,6 +1,6 @@
 package org.jboss.resteasy.security.smime;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.security.PrivateKey;
 
 /**

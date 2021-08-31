@@ -6,7 +6,7 @@ import org.jboss.resteasy.links.ResourceIDs;
 import org.jboss.resteasy.links.i18n.Messages;
 
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @XmlSeeAlso({InheritanceDog.class, InheritanceCat.class})
 public abstract class InheritanceAnimal {

@@ -4,9 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 
 /**
  * MessageBodyWriter which supports async IO.
@@ -20,7 +20,7 @@ public interface AsyncMessageBodyWriter<T> extends MessageBodyWriter<T> {
      *
      * @param t            the instance to write.
      * @param type         the class of instance that is to be written.
-     * @param genericType  the type of instance to be written. {@link javax.ws.rs.core.GenericEntity}
+     * @param genericType  the type of instance to be written. {@link jakarta.ws.rs.core.GenericEntity}
      *                     provides a way to specify this information at runtime.
      * @param annotations  an array of the annotations attached to the message entity instance.
      * @param mediaType    the media type of the HTTP entity.
@@ -29,7 +29,7 @@ public interface AsyncMessageBodyWriter<T> extends MessageBodyWriter<T> {
      *                     implementation should not close the output stream.
      * @return a {@link CompletionStage} indicating completion
      * @throws java.io.IOException if an IO error arises (in the returned {@link CompletionStage})
-     * @throws javax.ws.rs.WebApplicationException
+     * @throws jakarta.ws.rs.WebApplicationException
      *                             if a specific HTTP error response needs to be produced (in the returned {@link CompletionStage}).
      *                             Only effective if thrown prior to the message being committed.
      */

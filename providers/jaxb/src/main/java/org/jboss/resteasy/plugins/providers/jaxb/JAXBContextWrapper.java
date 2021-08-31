@@ -6,14 +6,14 @@ import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.JAXBIntrospector;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBIntrospector;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -38,7 +38,7 @@ import java.util.Map;
 public class JAXBContextWrapper extends JAXBContext
 {
 
-   private static final String NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+   private static final String NAMESPACE_PREFIX_MAPPER = "org.glassfish.jaxb.namespacePrefixMapper";
    private static Constructor mapperConstructor = null;
 
    static
@@ -239,7 +239,7 @@ public class JAXBContextWrapper extends JAXBContext
 
    /**
     * @return {@link Binder}
-    * @see javax.xml.bind.JAXBContext#createBinder()
+    * @see jakarta.xml.bind.JAXBContext#createBinder()
     */
    public Binder<Node> createBinder()
    {
@@ -250,7 +250,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @param <T> type
     * @param domType dom class
     * @return {@link Binder}
-    * @see javax.xml.bind.JAXBContext#createBinder(java.lang.Class)
+    * @see jakarta.xml.bind.JAXBContext#createBinder(java.lang.Class)
     */
    public <T> Binder<T> createBinder(Class<T> domType)
    {
@@ -259,7 +259,7 @@ public class JAXBContextWrapper extends JAXBContext
 
    /**
     * @return {@link JAXBIntrospector}
-    * @see javax.xml.bind.JAXBContext#createJAXBIntrospector()
+    * @see jakarta.xml.bind.JAXBContext#createJAXBIntrospector()
     */
    public JAXBIntrospector createJAXBIntrospector()
    {
@@ -269,7 +269,7 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * @return jaxb marshaller
     * @throws JAXBException jaxb exception
-    * @see javax.xml.bind.JAXBContext#createMarshaller()
+    * @see jakarta.xml.bind.JAXBContext#createMarshaller()
     */
    public Marshaller createMarshaller() throws JAXBException
    {
@@ -291,7 +291,7 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * @return jaxb unmarshaller
     * @throws JAXBException jaxb exception
-    * @see javax.xml.bind.JAXBContext#createUnmarshaller()
+    * @see jakarta.xml.bind.JAXBContext#createUnmarshaller()
     */
    public Unmarshaller createUnmarshaller() throws JAXBException
    {
@@ -303,22 +303,22 @@ public class JAXBContextWrapper extends JAXBContext
       }
       return u;
    }
-
-   /**
-    * @return xml validator
-    * @throws JAXBException jaxb exception
-    * @see javax.xml.bind.JAXBContext#createValidator()
-    * @deprecated See javax.xml.bind.JAXBContext#createValidator().
-    */
-   public javax.xml.bind.Validator createValidator() throws JAXBException
-   {
-      return wrappedContext.createValidator();
-   }
+//
+//   /**
+//    * @return xml validator
+//    * @throws JAXBException jaxb exception
+//    * @see jakarta.xml.bind.JAXBContext#createValidator()
+//    * @deprecated see jakarta.xml.bind.JAXBContext#createValidator().
+//    */
+//   public jakarta.xml.bind.Validator createValidator() throws JAXBException
+//   {
+//      return wrappedContext.createValidator();
+//   }
 
    /**
     * @param outputResolver xml schema resolver
     * @throws IOException if I/O error occurred
-    * @see javax.xml.bind.JAXBContext#generateSchema(javax.xml.bind.SchemaOutputResolver)
+    * @see jakarta.xml.bind.JAXBContext#generateSchema(jakarta.xml.bind.SchemaOutputResolver)
     */
    public void generateSchema(SchemaOutputResolver outputResolver) throws IOException
    {

@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 @Decorator
 public abstract class ConcreteDecorator implements ConcreteResourceIntf {

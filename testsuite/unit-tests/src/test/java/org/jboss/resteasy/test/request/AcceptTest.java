@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.request.resource.AcceptXmlResourceSecond;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;

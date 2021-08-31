@@ -415,7 +415,7 @@
                                         <exclude>javax.persistence:javax.persistence-api</exclude>
                                         <exclude>javax.persistence:persistence-api</exclude>
                                         <exclude>javax.security.enterprise:javax.security.enterprise-api</exclude>
-                                        <exclude>javax.servlet:servlet-api</exclude>
+                                        <exclude>jakarta.servlet:servlet-api</exclude>
                                         <exclude>javax.transaction:jta</exclude>
                                         <exclude>javax.validation:validation-api</exclude>
                                         <exclude>javax.xml:jaxrpc-api</exclude>

@@ -15,7 +15,7 @@ import org.jboss.shrinkwrap.api.Archive;
 public class NotAllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
 
    /**
-    * Deployment with javax.ws.rs.ext.Providers file, that contains gzip interceptor definition
+    * Deployment with jakarta.ws.rs.ext.Providers file, that contains gzip interceptor definition
     */
    @Deployment(name = WAR_WITH_PROVIDERS_FILE, testable = false)
    public static Archive<?> createWebDeploymentWithGzipProvidersFile() {
@@ -23,7 +23,7 @@ public class NotAllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
    }
 
    /**
-    * Deployment without any javax.ws.rs.ext.Providers file
+    * Deployment without any jakarta.ws.rs.ext.Providers file
     */
    @Deployment(name = WAR_WITHOUT_PROVIDERS_FILE, testable = false)
    public static Archive<?> createWebDeploymentWithoutGzipProvidersFile() {

@@ -3,7 +3,7 @@ package org.jboss.resteasy.annotations.providers.jaxb;
 import org.jboss.resteasy.annotations.Decorator;
 import org.jboss.resteasy.plugins.providers.jaxb.StylesheetProcessor;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

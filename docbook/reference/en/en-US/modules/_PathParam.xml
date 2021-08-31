@@ -158,7 +158,7 @@ a/lot/of</entry>
 
 <para>
 
-The specification has a very simple abstraction for examining a fragment of the URI path being invoked on  javax.ws.rs.core.PathSegment:
+The specification has a very simple abstraction for examining a fragment of the URI path being invoked on  jakarta.ws.rs.core.PathSegment:
 </para>
 <para>
 

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.async;
 
 import javax.annotation.Priority;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 
 @Priority(3)
 @Provider

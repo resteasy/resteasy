@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 public class MultiValuedParamDefaultParamConverterHeaderDelegate implements HeaderDelegate<MultiValuedParamDefaultParamConverterHeaderDelegateClass> {
 

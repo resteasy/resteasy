@@ -8,8 +8,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.ext.Providers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 public class HeaderDelegateDelegate<T> implements HeaderDelegateInterface4, RuntimeDelegate.HeaderDelegate<T> {
    @Override

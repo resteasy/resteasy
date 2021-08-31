@@ -72,7 +72,7 @@ public class Foo {
 package my.test.asyc.resources;
 
 import io.reactivex.Single;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.ContextInjector;
 import my.test.Foo;
 

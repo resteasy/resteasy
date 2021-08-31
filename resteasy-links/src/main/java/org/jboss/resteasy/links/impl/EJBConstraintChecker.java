@@ -3,7 +3,7 @@ package org.jboss.resteasy.links.impl;
 import java.lang.reflect.Method;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 

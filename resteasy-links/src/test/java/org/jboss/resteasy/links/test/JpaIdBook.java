@@ -1,7 +1,7 @@
 package org.jboss.resteasy.links.test;
 
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class JpaIdBook extends IdBook{

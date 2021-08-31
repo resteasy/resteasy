@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.core.basic.resource;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class CacheControlAnnotationResource {

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.Response;
 
 public class ProxyJaxbResource implements ProxyJaxbResourceIntf {
    public Response getCredits(@PathParam("userId") String userId) {

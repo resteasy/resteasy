@@ -53,7 +53,7 @@ public void testQuery() throws Exception {
    
    <para>
    What if you have a class where <methodname>valueOf()</methodname>or this string constructor don't exist or are inappropriate
-   for an HTTP request? JAX-RS 2.0 has the <classname>javax.ws.rs.ext.ParamConverterProvider</classname> to help
+   for an HTTP request? JAX-RS 2.0 has the <classname>jakarta.ws.rs.ext.ParamConverterProvider</classname> to help
    in this situation.
    </para>
    
@@ -128,7 +128,7 @@ public class DateParamConverter implements ParamConverter&lt;Date&gt; {
    <title>StringParameterUnmarshaller</title>
    
    <para>
-   In addition to the JAX-RS <classname>javax.ws.rs.ext.ParamConverterProvider</classname>,
+   In addition to the JAX-RS <classname>jakarta.ws.rs.ext.ParamConverterProvider</classname>,
    RESTEasy also has its own <classname>org.jboss.resteasy.StringParameterUnmarshaller</classname>, defined
    </para>
    
@@ -141,7 +141,7 @@ public interface StringParameterUnmarshaller&lt;T&gt;
 }
    </programlisting>
    <para>
-   It is similar to <classname>javax.ws.rs.ext.ParamConverter</classname> except that
+   It is similar to <classname>jakarta.ws.rs.ext.ParamConverter</classname> except that
    </para>
    <itemizedlist>
       <listitem>it converts only from <classname>String</classname>s;</listitem>
@@ -272,7 +272,7 @@ public MultivaluedMap&lt;String, String&gt; getQueryParameters();
    </programlisting>
    
    <para>
-   in <classname>javax.ws.rs.core.UriInfo</classname>.
+   in <classname>jakarta.ws.rs.core.UriInfo</classname>.
    </para>
    </sect2>
    
@@ -293,7 +293,7 @@ public MultivaluedMap&lt;String, String&gt; getQueryParameters();
 MultivaluedMap&lt;String, String&gt; getMatrixParameters();
    </programlisting>
    <para>
-   in <classname>javax.ws.rs.core.PathSegment</classname> supports extraction of collections from matrix parameters.
+   in <classname>jakarta.ws.rs.core.PathSegment</classname> supports extraction of collections from matrix parameters.
    </para>
    </listitem>
    </orderedlist>
@@ -325,7 +325,7 @@ public MultivaluedMap&lt;String, String&gt; getRequestHeaders();
    </programlisting>
    
    <para>
-   in <classname>javax.ws.rs.core.HttpHeaders</classname> returns a <classname>MultivaluedMap</classname>.
+   in <classname>jakarta.ws.rs.core.HttpHeaders</classname> returns a <classname>MultivaluedMap</classname>.
    It is natural, then, for RESTEasy to treat
    </para>
    
@@ -355,7 +355,7 @@ public Map&lt;String, Cookie&gt; getCookies();
    </programlisting>
    
    <para>
-   in <classname>javax.ws.rs.core.HttpHeaders</classname> returns a <classname>Map</classname> rather than a
+   in <classname>jakarta.ws.rs.core.HttpHeaders</classname> returns a <classname>Map</classname> rather than a
    <classname>MultivaluedMap</classname>.
    </para>
    
@@ -366,7 +366,7 @@ public Map&lt;String, Cookie&gt; getCookies();
    
    <para>
    Deriving a collection from path segments is somewhat less natural than it is for other parameters,
-   but JAX-RS supports the injection of multiple <classname>javax.ws.rs.core.PathSegment</classname>s. There are a
+   but JAX-RS supports the injection of multiple <classname>jakarta.ws.rs.core.PathSegment</classname>s. There are a
    couple of ways of obtaining multiple <classname>PathSegment</classname>s. One is through the use of multiple path
    variables with the same name. For example, the result of calling <methodname>testTwoSegmentsArray()</methodname> and
    <methodname>testTwoSegmentsList()</methodname> in

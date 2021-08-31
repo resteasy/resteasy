@@ -1,8 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**

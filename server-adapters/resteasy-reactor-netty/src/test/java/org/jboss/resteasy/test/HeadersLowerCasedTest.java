@@ -8,10 +8,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.hamcrest.MatcherAssert;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

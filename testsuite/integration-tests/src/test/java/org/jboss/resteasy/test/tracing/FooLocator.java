@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.tracing;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/locator")
 public class FooLocator {

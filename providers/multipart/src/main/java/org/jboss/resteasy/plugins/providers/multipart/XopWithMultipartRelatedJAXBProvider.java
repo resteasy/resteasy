@@ -1,22 +1,22 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import jakarta.activation.DataSource;
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Providers;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.attachment.AttachmentMarshaller;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
+
 import javax.xml.transform.stream.StreamSource;
 
 import java.io.ByteArrayInputStream;
@@ -50,8 +50,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
       }
 
       @Override
-      public String addMtomAttachment(DataHandler data,
-            String elementNamespace, String elementLocalName) {
+      public String addMtomAttachment(jakarta.activation.DataHandler data,
+                                      String elementNamespace, String elementLocalName) {
          return addBinary(data.getDataSource(), data.getContentType());
       }
 
@@ -74,7 +74,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
       }
 
       @Override
-      public String addSwaRefAttachment(DataHandler data) {
+      public String addSwaRefAttachment(jakarta.activation.DataHandler data) {
          throw new UnsupportedOperationException(Messages.MESSAGES.swaRefsNotSupported());
       }
 
@@ -130,9 +130,9 @@ public class XopWithMultipartRelatedJAXBProvider extends
       }
 
       @Override
-      public DataHandler getAttachmentAsDataHandler(final String cid) {
+      public jakarta.activation.DataHandler getAttachmentAsDataHandler(final String cid) {
          final InputPart inputPart = getInputPart(cid);
-         return new DataHandler(
+         return new jakarta.activation.DataHandler(
                new InputPartBackedDataSource(cid, inputPart));
       }
 

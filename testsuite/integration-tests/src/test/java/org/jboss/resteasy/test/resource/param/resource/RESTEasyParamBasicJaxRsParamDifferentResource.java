@@ -8,9 +8,9 @@ import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 @Path("/different")
 public class RESTEasyParamBasicJaxRsParamDifferentResource
@@ -141,12 +141,12 @@ public class RESTEasyParamBasicJaxRsParamDifferentResource
          @MatrixParam String matrixParam3,
          @PathParam String pathParam3,
          @QueryParam String queryParam3,
-         @javax.ws.rs.CookieParam("cookieParam4") String jaxrsCookieParam4,
-         @javax.ws.rs.FormParam("formParam4") String jaxrsFormParam4,
-         @javax.ws.rs.HeaderParam("headerParam4") String jaxrsHeaderParam4,
-         @javax.ws.rs.MatrixParam("matrixParam4") String jaxrsMatrixParam4,
-         @javax.ws.rs.PathParam("pathParam4") String jaxrsPathParam4,
-         @javax.ws.rs.QueryParam("queryParam4") String jaxrsQueryParam4)
+         @jakarta.ws.rs.CookieParam("cookieParam4") String jaxrsCookieParam4,
+         @jakarta.ws.rs.FormParam("formParam4") String jaxrsFormParam4,
+         @jakarta.ws.rs.HeaderParam("headerParam4") String jaxrsHeaderParam4,
+         @jakarta.ws.rs.MatrixParam("matrixParam4") String jaxrsMatrixParam4,
+         @jakarta.ws.rs.PathParam("pathParam4") String jaxrsPathParam4,
+         @jakarta.ws.rs.QueryParam("queryParam4") String jaxrsQueryParam4)
    {
 
       StringBuilder details = new StringBuilder();

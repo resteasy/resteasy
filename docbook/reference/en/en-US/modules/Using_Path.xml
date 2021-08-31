@@ -57,7 +57,7 @@ Let's say you have the RESTEasy servlet configured and reachable at a root path 
 </para>
 <para>
 
-The @javax.ws.rs.Path annotation must exist on either the class and/or a resource method.  If it exists on both the class and method, the relative path to the resource method is a concatenation of the class and method.
+The @jakarta.ws.rs.Path annotation must exist on either the class and/or a resource method.  If it exists on both the class and method, the relative path to the resource method is a concatenation of the class and method.
 </para>
 <para>
 

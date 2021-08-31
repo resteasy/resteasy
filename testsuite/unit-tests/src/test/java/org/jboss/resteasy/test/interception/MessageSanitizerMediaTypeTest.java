@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.interception;
 
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseContextImpl;

@@ -8,8 +8,8 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 
 import javax.validation.ElementKind;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;

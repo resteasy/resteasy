@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.interceptor;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -51,7 +51,7 @@ public class GZIPAnnotationTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(GZIPAnnotationTest.class.getSimpleName());
       war.addClass(GZIPAnnotationInterface.class);
-      war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+      war.addAsManifestResource("org/jboss/resteasy/test/client/jakarta.ws.rs.ext.Providers", "services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, GZIPAnnotationResource.class);
    }
 

@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.LinkJaxbCustomer;
 import org.jboss.resteasy.test.providers.jaxb.resource.LinkJaxbResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -52,7 +52,7 @@ public class LinkJaxbTest {
    }
 
    /**
-    * @tpTestDetails Test for javax.ws.rs.core.Link class with Jaxb object
+    * @tpTestDetails Test for jakarta.ws.rs.core.Link class with Jaxb object
     * @tpSince RESTEasy 3.0.16
     */
    @Test

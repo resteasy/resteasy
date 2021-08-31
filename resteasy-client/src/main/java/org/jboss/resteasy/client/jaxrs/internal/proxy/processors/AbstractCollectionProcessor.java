@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 

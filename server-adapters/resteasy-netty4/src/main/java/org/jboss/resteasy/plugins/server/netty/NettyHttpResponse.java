@@ -5,8 +5,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -91,7 +91,7 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void addNewCookie(NewCookie cookie)
    {
-      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+      outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
    @Override

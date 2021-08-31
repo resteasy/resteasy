@@ -2,7 +2,7 @@ package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

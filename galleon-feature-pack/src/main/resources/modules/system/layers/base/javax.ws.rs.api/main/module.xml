@@ -19,10 +19,10 @@
   ~ limitations under the License.
   -->
 
-<module xmlns="urn:jboss:module:1.9" name="javax.ws.rs.api">
+<module xmlns="urn:jboss:module:1.9" name="jakarta.ws.rs.api">
 
     <resources>
-        <artifact name="${org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.1_spec}"/>
+        <artifact name="${org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_3.0_spec}"/>
     </resources>
 
     <dependencies>

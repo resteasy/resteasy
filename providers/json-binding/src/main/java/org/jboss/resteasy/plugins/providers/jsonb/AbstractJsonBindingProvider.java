@@ -5,9 +5,9 @@ import org.eclipse.yasson.internal.JsonBindingBuilder;
 import org.glassfish.json.JsonProviderImpl;
 
 import javax.json.bind.Jsonb;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
 import java.nio.charset.Charset;
 
 
@@ -20,7 +20,7 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
    private static final String PLUS_JSON = "+json";
 
    @Context
-   javax.ws.rs.ext.Providers providers;
+   jakarta.ws.rs.ext.Providers providers;
    private volatile Jsonb jsonbObj;
 
    protected Jsonb getJsonb(Class<?> type) {

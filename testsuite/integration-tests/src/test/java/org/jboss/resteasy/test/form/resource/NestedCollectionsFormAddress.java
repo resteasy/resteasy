@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.form.resource;
 
 import org.jboss.resteasy.annotations.Form;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 
 public class NestedCollectionsFormAddress {
    @FormParam("street")

@@ -5,9 +5,9 @@ import org.jboss.resteasy.annotations.providers.jaxb.XmlHeader;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 import org.jboss.resteasy.util.StringContextReplacement;
 
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
 import java.lang.annotation.Annotation;
 
 /**

@@ -2,8 +2,8 @@ package org.jboss.resteasy.links.test;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;

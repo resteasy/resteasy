@@ -6,16 +6,16 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.text.SimpleDateFormat;

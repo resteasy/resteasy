@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.cdi.validation.resource;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
 
 @RequestScoped
 public class AsyncSubResourceImpl implements AsyncSubResource

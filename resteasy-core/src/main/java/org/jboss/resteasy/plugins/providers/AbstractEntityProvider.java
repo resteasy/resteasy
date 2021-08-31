@@ -3,8 +3,8 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.MessageBodyReader;
 
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 

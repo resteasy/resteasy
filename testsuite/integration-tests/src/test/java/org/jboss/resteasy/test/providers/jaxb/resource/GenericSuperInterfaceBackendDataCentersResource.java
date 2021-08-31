@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public class GenericSuperInterfaceBackendDataCentersResource extends
       GenericSuperInterfaceAbstractBackendCollectionResource<GenericSuperInterfaceDataCenter, GenericSuperInterfaceStoragePool> implements GenericSuperInterfaceDataCentersResource {

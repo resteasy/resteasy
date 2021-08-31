@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.CookieParam;
+import jakarta.ws.rs.CookieParam;
 
 public class ParamResource implements ParamInterfaceResource {
    public String getMatrix(String matrix) {

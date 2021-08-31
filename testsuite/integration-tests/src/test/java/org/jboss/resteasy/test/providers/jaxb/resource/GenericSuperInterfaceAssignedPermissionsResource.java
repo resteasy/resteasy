@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 public class GenericSuperInterfaceAssignedPermissionsResource {
    @GET
