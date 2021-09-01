@@ -1,7 +1,6 @@
 package org.jboss.resteasy.api.validation;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -20,11 +19,11 @@ public class ViolationReport
 {
    private String exception;
 
-   private List<ResteasyConstraintViolation> fieldViolations = new ArrayList();
-   private List<ResteasyConstraintViolation> propertyViolations = new ArrayList();
-   private List<ResteasyConstraintViolation> classViolations = new ArrayList();
-   private List<ResteasyConstraintViolation> parameterViolations = new ArrayList();
-   private List<ResteasyConstraintViolation> returnValueViolations = new ArrayList();
+   private ArrayList<ResteasyConstraintViolation> fieldViolations = new ArrayList<ResteasyConstraintViolation>();
+   private ArrayList<ResteasyConstraintViolation> propertyViolations = new ArrayList<ResteasyConstraintViolation>();
+   private ArrayList<ResteasyConstraintViolation> classViolations = new ArrayList<ResteasyConstraintViolation>();
+   private ArrayList<ResteasyConstraintViolation> parameterViolations = new ArrayList<ResteasyConstraintViolation>();
+   private ArrayList<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
 
    public ViolationReport(final ResteasyViolationException exception)
    {
@@ -33,11 +32,11 @@ public class ViolationReport
       {
          this.exception = e.toString();
       }
-      this.fieldViolations =  exception.getFieldViolations();
-      this.propertyViolations = exception.getPropertyViolations();
-      this.classViolations = exception.getClassViolations();
-      this.parameterViolations = exception.getParameterViolations();
-      this.returnValueViolations = exception.getReturnValueViolations();
+      this.fieldViolations = new ArrayList<>(exception.getFieldViolations());
+      this.propertyViolations = new ArrayList<>(exception.getPropertyViolations());
+      this.classViolations = new ArrayList<>(exception.getClassViolations());
+      this.parameterViolations = new ArrayList<>(exception.getParameterViolations());
+      this.returnValueViolations = new ArrayList<>(exception.getReturnValueViolations());
    }
 
    public ViolationReport(final String s)
@@ -54,27 +53,27 @@ public class ViolationReport
       return exception;
    }
 
-   public List<ResteasyConstraintViolation> getFieldViolations()
+   public ArrayList<ResteasyConstraintViolation> getFieldViolations()
    {
       return fieldViolations;
    }
 
-   public List<ResteasyConstraintViolation> getPropertyViolations()
+   public ArrayList<ResteasyConstraintViolation> getPropertyViolations()
    {
       return propertyViolations;
    }
 
-   public List<ResteasyConstraintViolation> getClassViolations()
+   public ArrayList<ResteasyConstraintViolation> getClassViolations()
    {
       return classViolations;
    }
 
-   public List<ResteasyConstraintViolation> getParameterViolations()
+   public ArrayList<ResteasyConstraintViolation> getParameterViolations()
    {
       return parameterViolations;
    }
 
-   public List<ResteasyConstraintViolation> getReturnValueViolations()
+   public ArrayList<ResteasyConstraintViolation> getReturnValueViolations()
    {
       return returnValueViolations;
    }
