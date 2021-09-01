@@ -34,10 +34,10 @@ public class ViolationReport
       {
          this.exception = e.toString();
       }
-      this.propertyViolations = (ArrayList<ResteasyConstraintViolation>) exception.getPropertyViolations();
-      this.classViolations = (ArrayList<ResteasyConstraintViolation>) exception.getClassViolations();
-      this.parameterViolations = (ArrayList<ResteasyConstraintViolation>) exception.getParameterViolations();
-      this.returnValueViolations = (ArrayList<ResteasyConstraintViolation>) exception.getReturnValueViolations();
+      this.propertyViolations =  new ArrayList<>(exception.getPropertyViolations());
+      this.classViolations =  new ArrayList<>(exception.getClassViolations());
+      this.parameterViolations =  new ArrayList<>(exception.getParameterViolations());
+      this.returnValueViolations =  new ArrayList<>(exception.getReturnValueViolations());
    }
 
    public ViolationReport(final String s)
