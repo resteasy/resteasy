@@ -133,13 +133,13 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
           via your Application getSingletons() or getClasses() methods.  The underlying cache is Infinispan.  By default,
           RESTEasy will create an Infinispan cache for you.  Alternatively, you can create and pass in an instance
           of your cache to the ServerCacheFeature constructor.  You can also configure Infinispan by specifying
-          various parameters.  First, if you are using Maven you must depend on the resteasy-cache-core artifact:</para>
+          various parameters.  First, if you are using Maven you must depend on the cache-core artifact:</para>
 <programlisting>
 <![CDATA[
 <dependency>
-   <groupId>org.jboss.resteasy</groupId>
-   <artifactId>resteasy-cache-core</artifactId>
-   <version>5.0.0-SNAPSHOT</version>
+   <groupId>org.jboss.resteasy.cache</groupId>
+   <artifactId>cache-core</artifactId>
+   <version>${version.org.jboss.resteasy.cache}</version>
 </dependency>
 ]]>
 </programlisting>
