@@ -138,7 +138,6 @@
                 <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
                 <module>providers</module>
-                <module>resteasy-cache</module>
                 <module>security</module>
                 <module>resteasy-links</module>
                 <module>resteasy-jsapi</module>

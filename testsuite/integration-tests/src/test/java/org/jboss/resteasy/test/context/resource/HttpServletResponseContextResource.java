@@ -8,15 +8,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-
-import org.infinispan.commons.dataconversion.MediaType;
+import javax.ws.rs.core.MediaType;
 
 @Path("/")
 public class HttpServletResponseContextResource {
 
    @Path("print/string")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printString(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -26,7 +25,7 @@ public class HttpServletResponseContextResource {
 
    @Path("print/boolean")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printBoolean(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -36,7 +35,7 @@ public class HttpServletResponseContextResource {
 
    @Path("print/char")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printChar(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -46,7 +45,7 @@ public class HttpServletResponseContextResource {
 
    @Path("print/int")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printInt(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -56,7 +55,7 @@ public class HttpServletResponseContextResource {
 
    @Path("print/long")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printLong(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -66,7 +65,7 @@ public class HttpServletResponseContextResource {
 
    @Path("print/float")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printFloat(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -76,7 +75,7 @@ public class HttpServletResponseContextResource {
 
    @Path("print/double")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printDouble(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -86,7 +85,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/eol")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void println(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -96,7 +95,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/string")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnString(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -106,7 +105,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/boolean")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnBoolean(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -116,7 +115,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/char")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnChar(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -126,7 +125,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/int")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnInt(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -136,7 +135,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/long")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnLong(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -146,7 +145,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/float")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnFloat(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -156,7 +155,7 @@ public class HttpServletResponseContextResource {
 
    @Path("println/double")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void printlnDouble(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -166,7 +165,7 @@ public class HttpServletResponseContextResource {
 
    @Path("write/array/1")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void writeArray1(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -176,7 +175,7 @@ public class HttpServletResponseContextResource {
 
    @Path("write/array/3")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void writeArray3(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();
@@ -186,7 +185,7 @@ public class HttpServletResponseContextResource {
 
    @Path("write/int")
    @GET
-   @Produces(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
    public void writeInt(@Context HttpServletResponse response) throws IOException {
       response.setStatus(200);
       ServletOutputStream os = response.getOutputStream();

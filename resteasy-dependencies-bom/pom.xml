@@ -53,7 +53,6 @@
         <version.org.glassfish.jakarta.el>3.0.3</version.org.glassfish.jakarta.el>
         <version.org.glassfish.jakarta.json>1.1.6</version.org.glassfish.jakarta.json>
         <version.jakarta.persistence.persistence-api>2.2.3</version.jakarta.persistence.persistence-api>
-        <version.org.infinispan>12.1.1.Final</version.org.infinispan>
         <version.org.jacoco>0.8.7</version.org.jacoco>
         <version.org.javassist>3.23.2-GA</version.org.javassist>
         <version.org.jboss.logging.jboss-logging>3.4.2.Final</version.org.jboss.logging.jboss-logging>
@@ -549,30 +548,6 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${version.com.fasterxml.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.infinispan</groupId>
-                <artifactId>infinispan-core</artifactId>
-                <version>${version.org.infinispan}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.spec.javax.transaction</groupId>
-                        <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.infinispan</groupId>
-                <artifactId>infinispan-tree</artifactId>
-                <version>${version.org.infinispan}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.marshalling</groupId>
