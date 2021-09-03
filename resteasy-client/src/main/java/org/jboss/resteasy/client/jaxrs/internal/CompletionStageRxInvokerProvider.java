@@ -2,9 +2,9 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import java.util.concurrent.ExecutorService;
 
-import javax.ws.rs.client.CompletionStageRxInvoker;
-import javax.ws.rs.client.RxInvokerProvider;
-import javax.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.client.CompletionStageRxInvoker;
+import jakarta.ws.rs.client.RxInvokerProvider;
+import jakarta.ws.rs.client.SyncInvoker;
 
 public class CompletionStageRxInvokerProvider implements RxInvokerProvider<CompletionStageRxInvoker>
 {

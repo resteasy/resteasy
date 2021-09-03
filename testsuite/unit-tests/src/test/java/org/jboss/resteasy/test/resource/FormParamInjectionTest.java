@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;

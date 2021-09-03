@@ -25,9 +25,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.net.ssl.HostnameVerifier;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WRONG;
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WRONG;

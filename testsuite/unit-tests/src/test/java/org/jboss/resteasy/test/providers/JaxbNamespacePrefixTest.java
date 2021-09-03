@@ -10,10 +10,10 @@ import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.ObjectFact
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.annotation.XmlSchema;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 
@@ -48,7 +48,7 @@ public class JaxbNamespacePrefixTest {
       Assert.assertNotNull("Couldn't create xml schema for JaxbNameSpacePrefixPurchaseOrderType class", xmlSchema);
       XmlNamespacePrefixMapper mapper = new XmlNamespacePrefixMapper(xmlSchema.xmlns());
       try {
-         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
       } catch (PropertyException e) {
          logger.error(e.getMessage(), e);
       }

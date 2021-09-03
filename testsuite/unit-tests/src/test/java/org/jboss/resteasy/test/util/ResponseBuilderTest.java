@@ -4,9 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -21,7 +21,7 @@ import org.junit.Test;
 /**
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for javax.ws.rs.core.Response#ResponseBuilder class.
+ * @tpTestCaseDetails Test for jakarta.ws.rs.core.Response#ResponseBuilder class.
  * @tpSince RESTEasy 3.0.16
  */
 public class ResponseBuilderTest {

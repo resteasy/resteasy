@@ -6,7 +6,7 @@ import org.jboss.resteasy.links.impl.JsonLinkDecorator;
 import org.jboss.resteasy.links.impl.LinkDecorator;
 import org.jboss.resteasy.plugins.providers.jackson.DecoratedEntityContainer;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

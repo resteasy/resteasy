@@ -4,7 +4,7 @@ package org.jboss.resteasy.plugins.providers;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 
 import org.jboss.resteasy.core.StringParameterInjector;

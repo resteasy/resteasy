@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.extensions.resource;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @ScopeExtensionPlannedObsolescenceScope(3)
 public class ScopeExtensionObsolescentAfterThreeUses implements ScopeExtensionObsolescent {

@@ -230,8 +230,8 @@ String result = pojo.test();
    
    <para>
    These two facilities do not exist in Resteasy 3. Instead, the JAX-RS 2.0 specification mandates the
-   use of <classname>javax.ws.rs.ProcessingException</classname> and
-   <classname>javax.ws.rs.client.ResponseProcessingException</classname>. In particular, exceptions
+   use of <classname>jakarta.ws.rs.ProcessingException</classname> and
+   <classname>jakarta.ws.rs.client.ResponseProcessingException</classname>. In particular, exceptions
    thrown while processing a request should be mapped to a <classname>ProcessingException</classname>,
    and exceptions thrown while processing a response should be mapped to a
    <classname>ResponseProcessingException</classname>.
@@ -248,8 +248,8 @@ String result = pojo.test();
                 and media type combinations
       </listitem>
       <listitem>propagated <classname>java.io.IOException</classname>s thrown by
-                <classname>javax.ws.rs.ext.MessageBodyReader</classname>s and 
-                <classname>javax.ws.rs.ext.MessageBodyWriter</classname>s
+                <classname>jakarta.ws.rs.ext.MessageBodyReader</classname>s and
+                <classname>jakarta.ws.rs.ext.MessageBodyWriter</classname>s
                 during entity serialization and de-serialization
       </listitem>
    </itemizedlist>
@@ -257,7 +257,7 @@ String result = pojo.test();
    <para>
    Note that <classname>ProcessingException</classname> and <classname>ResponseProcessingException</classname>
    represent internal problems. If the client side receives a response with status codes 3xx, 4xx or 5xx,
-   it will map the response to an instance of <classname>javax.ws.rs.WebApplicationException</classname>
+   it will map the response to an instance of <classname>jakarta.ws.rs.WebApplicationException</classname>
    or one of its subclasses.
    </para>
 

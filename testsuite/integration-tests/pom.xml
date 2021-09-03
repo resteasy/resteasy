@@ -77,8 +77,9 @@
                         <log-time>${galleon.log.time}</log-time>
                         <offline>${galleon.offline}</offline>
                         <plugin-options>
-                            <jboss-maven-dist/>
+                            <!--<jboss-maven-dist/> -->
                             <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
+                            <jboss-jakarta-transform-artifacts>true</jboss-jakarta-transform-artifacts>
                         </plugin-options>
                         <feature-packs>
                             <feature-pack>
@@ -417,7 +418,7 @@
                 <executions>
                     <execution>
                         <id>initialize-basedirs</id>
-                        <phase>process-test-resources</phase>
+                        <phase>process-test-classes</phase>
                         <configuration>
                             <target>
                                 <!-- Initialize basedir for tested container by copying

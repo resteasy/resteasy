@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
-import javax.ejb.Stateful;
-import javax.enterprise.context.SessionScoped;
+import jakarta.ejb.Stateful;
+import jakarta.enterprise.context.SessionScoped;
 import java.util.Collection;
 import java.util.HashSet;
 

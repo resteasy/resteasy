@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.resource.resource.SegmentResourceSwitch;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.NotAllowedException;
+import jakarta.ws.rs.NotAllowedException;
 import java.net.URISyntaxException;
 
 /**

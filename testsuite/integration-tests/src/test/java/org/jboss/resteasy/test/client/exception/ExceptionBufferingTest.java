@@ -6,10 +6,10 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +18,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.test.client.exception.resource.ExceptionBufferingResource;

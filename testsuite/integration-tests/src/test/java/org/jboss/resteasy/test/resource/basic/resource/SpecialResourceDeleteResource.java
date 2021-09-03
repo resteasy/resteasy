@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.resource.basic.resource;
 
 import org.junit.Assert;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.Path;
 
 @Path("/delete")
 public class SpecialResourceDeleteResource {

@@ -1,10 +1,10 @@
 package org.jboss.resteasy.reactor;
 
 import java.util.concurrent.ExecutorService;
-import javax.ws.rs.client.RxInvokerProvider;
-import javax.ws.rs.client.SyncInvoker;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.client.RxInvokerProvider;
+import jakarta.ws.rs.client.SyncInvoker;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class FluxRxInvokerProvider implements RxInvokerProvider<FluxRxInvoker>

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import javax.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
 
 /**
  * Suspendable response context, which allows the users to suspend execution of the filter
@@ -16,7 +16,7 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
     *
     * No reply is going to be sent to the client until this response is resumed either
     * with {@link #resume()} or aborted with {@link #resume(Throwable)} or
-    * {@link ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
+    * {@link ResponseContainerRequestContext#abortWith(jakarta.ws.rs.core.Response)}.
     */
    void suspend();
 

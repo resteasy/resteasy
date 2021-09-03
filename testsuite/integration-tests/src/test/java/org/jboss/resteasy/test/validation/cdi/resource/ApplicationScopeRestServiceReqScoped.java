@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.validation.cdi.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.ws.rs.core.Response;
 
 @RequestScoped
 public class ApplicationScopeRestServiceReqScoped implements ApplicationScopeIRestServiceReqScoped {

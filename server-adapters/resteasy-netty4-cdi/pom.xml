@@ -13,7 +13,7 @@
     <name>RESTEasy Netty 4 Integration w/ CDI Support</name>
     <description/>
     <properties>
-        <dep.arq.weld.se>2.0.0.Final</dep.arq.weld.se>
+        <dep.arq.weld.se>3.0.0.Alpha1</dep.arq.weld.se>
     </properties>
     <dependencies>
         <dependency>

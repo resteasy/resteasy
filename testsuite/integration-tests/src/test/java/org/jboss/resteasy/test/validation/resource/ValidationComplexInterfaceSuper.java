@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 @ValidationComplexClassInheritanceSuperConstraint(3)

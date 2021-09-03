@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationSessionBeanProxy;
@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Invocation;
 
 import static org.junit.Assert.assertEquals;
 

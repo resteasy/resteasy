@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.form.resteasy1405;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 

@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.UriInfo;
 
 @Stateless(name = "SingletonTestBean")
 @Local({SingletonLocalIF.class})

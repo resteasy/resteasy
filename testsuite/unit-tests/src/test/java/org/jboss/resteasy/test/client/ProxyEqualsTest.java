@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.client;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.Assert;

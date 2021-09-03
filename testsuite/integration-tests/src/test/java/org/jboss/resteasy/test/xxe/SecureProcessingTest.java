@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingBar;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlRootElement;
@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.hamcrest.MatcherAssert;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 
 import java.io.File;
 
@@ -451,7 +451,7 @@ public class SecureProcessingTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("javax.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
@@ -459,7 +459,7 @@ public class SecureProcessingTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("javax.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
@@ -467,7 +467,7 @@ public class SecureProcessingTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("javax.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
@@ -475,7 +475,7 @@ public class SecureProcessingTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("javax.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
       {
          Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
@@ -483,7 +483,7 @@ public class SecureProcessingTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("doEntityExpansionFails() result: " + entity);
-         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("javax.xml.bind.UnmarshalException"));
+         MatcherAssert.assertThat("Wrong type of exception", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       }
    }
 
@@ -564,7 +564,7 @@ public class SecureProcessingTest {
       String entity = response.readEntity(String.class);
       logger.info("doDTDFails(): result: " + entity);
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-      MatcherAssert.assertThat("Wrong exception in response", entity, containsString("javax.xml.bind.UnmarshalException"));
+      MatcherAssert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       MatcherAssert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
       MatcherAssert.assertThat("Wrong content of response", entity, containsString("true"));
    }
@@ -577,7 +577,7 @@ public class SecureProcessingTest {
       String entity = response.readEntity(String.class);
       logger.info("doDTDFails(): result: " + entity);
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-      MatcherAssert.assertThat("Wrong exception in response", entity, containsString("javax.xml.bind.UnmarshalException"));
+      MatcherAssert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
       MatcherAssert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
       MatcherAssert.assertThat("Wrong content of response", entity, containsString("http:&#x2F;&#x2F;apache.org&#x2F;xml&#x2F;features&#x2F;disallow-doctype-decl"));
       MatcherAssert.assertThat("Wrong content of response", entity, containsString("true"));

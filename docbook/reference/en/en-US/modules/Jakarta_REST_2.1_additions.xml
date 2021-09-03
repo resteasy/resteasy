@@ -320,7 +320,7 @@
             <programlisting><![CDATA[
             //send JSON Patch request
             WebTarget patchTarget = client.target("http://localhost:8090/StudentPatchTest/students/1"));
-            javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+            jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
             .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
             .build();
             patchTarget.request().build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();

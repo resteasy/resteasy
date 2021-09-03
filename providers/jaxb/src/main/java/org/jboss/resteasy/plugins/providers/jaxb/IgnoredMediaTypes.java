@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import java.lang.annotation.Annotation;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes;

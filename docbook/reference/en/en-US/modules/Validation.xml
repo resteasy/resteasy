@@ -121,11 +121,11 @@ public class TestClassValidator implements ConstraintValidator<TestClassConstrai
    <para>
    If RESTEasy detects a structural validation problem, such as a validation annotation with a 
    missing validator class, it will return a String representation of a 
-   <classname>javax.validation.ValidationException</classname>.  For example
+   <classname>jakarta.validation.ValidationException</classname>.  For example
    </para>
    
 <programlisting><![CDATA[
-javax.validation.ValidationException: HV000028: Unexpected exception during isValid call.[org.jboss.resteasy.test.validation.TestValidationExceptions$OtherValidationException]
+jakarta.validation.ValidationException: HV000028: Unexpected exception during isValid call.[org.jboss.resteasy.test.validation.TestValidationExceptions$OtherValidationException]
 ]]></programlisting>
    
    <para>
@@ -328,7 +328,7 @@ path fields. [See <xref linkend="microprofile_config"/> for more information abo
    
          <para>
          RESTEasy obtains a bean validation implementation by looking in the available
-         META-INF/services/javax.ws.rs.Providers files for an implementation
+         META-INF/services/jakarta.ws.rs.Providers files for an implementation
          of <classname>ContextResolver&lt;GeneralValidator&gt;</classname>, where 
          <classname>org.jboss.resteasy.spi.GeneralValidator</classname> is
          </para>
@@ -409,8 +409,8 @@ public interface GeneralValidator
 
    <para>
    The methods and the javadoc are adapted from the Bean Validation 1.1 classes
-   <classname>javax.validation.Validator</classname> and
-   <classname>javax.validation.executable.ExecutableValidator</classname>.
+   <classname>jakarta.validation.Validator</classname> and
+   <classname>jakarta.validation.executable.ExecutableValidator</classname>.
    </para>
  
    <para>

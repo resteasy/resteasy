@@ -5,7 +5,7 @@ import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * WebApplicationExceptions are logged by RESTEasy.  Use this exception when you don't want your exception logged

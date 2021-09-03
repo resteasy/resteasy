@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.server.netty;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 

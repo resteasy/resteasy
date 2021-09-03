@@ -1,6 +1,6 @@
 package org.jboss.resteasy.util;
 
-import javax.ws.rs.core.NoContentException;
+import jakarta.ws.rs.core.NoContentException;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 

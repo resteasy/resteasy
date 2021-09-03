@@ -3,11 +3,11 @@ package org.jboss.resteasy.test.cdi.extensions.resource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 @Path("/extension")
 @RequestScoped

@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.resource.resource;
 
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import java.util.OptionalLong;
 
 @Path("optional_not_supported")

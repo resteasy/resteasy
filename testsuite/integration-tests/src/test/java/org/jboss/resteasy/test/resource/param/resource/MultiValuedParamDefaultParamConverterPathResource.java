@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 import org.jboss.resteasy.annotations.Separator;
 

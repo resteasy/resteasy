@@ -9,7 +9,7 @@ import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.wadl.i18n.LogMessages;
 import org.jboss.resteasy.wadl.i18n.Messages;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -5,8 +5,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverterProvider;
 
 public class MultiValuedParamPersonConverterProvider implements ParamConverterProvider {
 

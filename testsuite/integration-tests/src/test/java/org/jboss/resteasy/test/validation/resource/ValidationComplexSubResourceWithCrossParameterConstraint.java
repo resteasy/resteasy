@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 @Path("/{s}/{t}")
 public class ValidationComplexSubResourceWithCrossParameterConstraint {

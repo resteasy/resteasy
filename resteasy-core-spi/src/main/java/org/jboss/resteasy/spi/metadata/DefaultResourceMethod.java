@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi.metadata;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;

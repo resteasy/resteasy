@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 import java.util.logging.Logger;
 
 @InterceptorLifecycleBinding

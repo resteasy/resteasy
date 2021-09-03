@@ -26,7 +26,7 @@
       </dependency>
       <dependency>
           <groupId>org.jboss.spec.javax.ws.rs</groupId>
-          <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+          <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
       </dependency>
 
     <!-- Test dependencies -->
@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
         <groupId>org.jboss.arquillian.protocol</groupId>
-        <artifactId>arquillian-protocol-servlet</artifactId>
+        <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
         <scope>test</scope>
     </dependency>
     <dependency>

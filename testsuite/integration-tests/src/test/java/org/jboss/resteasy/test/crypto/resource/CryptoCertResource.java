@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.crypto.resource;
 
 import org.jboss.resteasy.utils.TestApplication;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

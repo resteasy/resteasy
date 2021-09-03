@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlHeaderJunkIntf

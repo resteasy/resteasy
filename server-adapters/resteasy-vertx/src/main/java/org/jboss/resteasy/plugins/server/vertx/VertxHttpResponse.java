@@ -8,9 +8,9 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -78,7 +78,7 @@ public class VertxHttpResponse implements HttpResponse
    @Override
    public void addNewCookie(NewCookie cookie)
    {
-      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+      outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
    void checkException() throws IOException

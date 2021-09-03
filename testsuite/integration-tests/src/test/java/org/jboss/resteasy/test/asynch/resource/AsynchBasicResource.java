@@ -4,12 +4,12 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.asynch.AsynchBasicTest;
 import org.junit.Assert;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
 
 @Path("/")
 public class AsynchBasicResource {

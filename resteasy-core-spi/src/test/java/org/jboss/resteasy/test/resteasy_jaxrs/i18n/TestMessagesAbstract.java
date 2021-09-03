@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.resteasy_jaxrs.i18n;
 import java.net.URI;
 import java.util.Locale;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.logging.Logger;
 import org.junit.Assert;

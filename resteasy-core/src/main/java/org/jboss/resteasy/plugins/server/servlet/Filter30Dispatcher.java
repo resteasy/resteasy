@@ -6,10 +6,10 @@ import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.NewCookie;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.NewCookie;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,7 +31,7 @@ public class Filter30Dispatcher extends FilterDispatcher
          @Override
          public void addNewCookie(NewCookie cookie)
          {
-            outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+            outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
          }
       };
    }

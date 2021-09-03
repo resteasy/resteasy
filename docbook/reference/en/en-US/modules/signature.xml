@@ -432,8 +432,8 @@ public void post(String input) {...}
 import org.jboss.resteasy.security.doseta.KeyRepository;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Context;
 
 public class SignatureApplication extends Application
 {

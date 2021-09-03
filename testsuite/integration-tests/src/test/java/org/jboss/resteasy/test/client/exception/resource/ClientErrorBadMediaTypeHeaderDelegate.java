@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.client.exception.resource;
 
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class ClientErrorBadMediaTypeHeaderDelegate extends MediaTypeHeaderDelegate {
    public MediaType fromString(String type) throws IllegalArgumentException {

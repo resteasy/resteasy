@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.i18n;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
@@ -43,7 +43,7 @@ public interface Messages
    @Message(id = BASE + 35, value = "Map wrapping failed, expect namespace of {0} got {1}", format=Format.MESSAGE_FORMAT)
    String mapWrappingFailedNamespace(String map, String namespace);
 
-   @Message(id = BASE + 40, value = "com.sun.xml.bind.marshaller.NamespacePrefixMapper is not in your classpath.  You need to use the JAXB RI for the prefix mapping feature")
+   @Message(id = BASE + 40, value = "org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper is not in your classpath.  You need to use the JAXB RI for the prefix mapping feature")
    String namespacePrefixMapperNotInClassPath();
 
    @Message(id = BASE + 45, value = "SecureUnmarshaller: unexpected use of unmarshal(%s)")

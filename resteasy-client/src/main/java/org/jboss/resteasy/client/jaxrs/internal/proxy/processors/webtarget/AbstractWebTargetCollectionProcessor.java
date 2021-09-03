@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProces
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.validation;
 
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 

@@ -3,15 +3,15 @@ package org.jboss.resteasy.test.resource.patch;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -116,7 +116,7 @@ public class StudentPatchTest {
       Assert.assertNull("Gender is not null", s.getGender());
 
       WebTarget patchTarget = client.target(PortProviderUtil.generateURL("/students/1", DISABLED_PATCH_DEPLOYMENT));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
               .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
               .add(Json.createObjectBuilder().add("op", "replace").add("path", "/firstName").add("value", "John").build())
               .build();
@@ -141,7 +141,7 @@ public class StudentPatchTest {
 
       //patch a student, after patch we can get a male student named John Taylor and school is null.
       WebTarget patchTarget = client.target(generateURL("/students/1", deployment));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
               .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
               .add(Json.createObjectBuilder().add("op", "replace").add("path", "/firstName").add("value", "John").build())
               .add(Json.createObjectBuilder().add("op", "remove").add("path", "/school").build())

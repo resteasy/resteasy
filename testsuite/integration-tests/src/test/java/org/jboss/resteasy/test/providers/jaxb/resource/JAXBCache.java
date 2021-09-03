@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ExceptionAdapter;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class JAXBCache {

@@ -30,12 +30,12 @@
     </resources>
 
     <dependencies>
-        <module name="javax.annotation.api"/>
-        <module name="javax.enterprise.api"/>
-        <module name="javax.json.api"/>
-        <module name="javax.json.bind.api"/>
-        <module name="javax.ws.rs.api"/>
-        <module name="javax.xml.bind.api"/>
+        <module name="jakarta.annotation.api"/>
+        <module name="jakarta.enterprise.api"/>
+        <module name="jakarta.json.api"/>
+        <module name="jakarta.json.bind.api"/>
+        <module name="jakarta.ws.rs.api"/>
+        <module name="jakarta.xml.bind.api"/>
         <module name="org.apache.commons.io"/>
         <module name="org.eclipse.yasson" services="import"/>
         <module name="org.jboss.logging"/>

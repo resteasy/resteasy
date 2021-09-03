@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.security.resource;
 
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.xml.bind.DatatypeConverter;
 import java.io.IOException;
 
 /**

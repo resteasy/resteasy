@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestRespon
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;

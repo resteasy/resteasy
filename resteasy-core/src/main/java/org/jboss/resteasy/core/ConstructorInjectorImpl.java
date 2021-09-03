@@ -12,9 +12,9 @@ import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.ConstructorParameter;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

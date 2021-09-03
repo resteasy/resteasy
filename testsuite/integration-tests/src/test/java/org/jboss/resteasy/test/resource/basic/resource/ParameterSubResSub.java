@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
 
 
 public interface ParameterSubResSub {

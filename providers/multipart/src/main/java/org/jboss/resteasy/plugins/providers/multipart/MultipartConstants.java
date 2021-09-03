@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

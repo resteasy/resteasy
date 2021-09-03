@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.resource.param;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -39,8 +39,8 @@ public class HeaderDelegateAsProviderTest {
       war.addClass(HeaderDelegateAsProviderHeader.class);
       war.addClass(HeaderDelegateAsProviderHeaderDelegate.class);
       war.addAsResource(HeaderDelegateAsProviderTest.class.getPackage(),
-         "javax.ws.rs.ext.Providers_HeaderDelegateAsProvider",
-         "META-INF/services/javax.ws.rs.ext.Providers");
+         "jakarta.ws.rs.ext.Providers_HeaderDelegateAsProvider",
+         "META-INF/services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, HeaderDelegateAsProviderResource.class);
    }
 

@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.sse;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 
 public class SseConstants
 {

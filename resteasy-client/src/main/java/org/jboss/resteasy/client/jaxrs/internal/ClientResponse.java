@@ -18,11 +18,11 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.reactivestreams.Publisher;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.ext.ReaderInterceptor;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

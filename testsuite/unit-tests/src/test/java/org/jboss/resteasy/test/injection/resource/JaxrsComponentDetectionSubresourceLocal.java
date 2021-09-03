@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 public interface JaxrsComponentDetectionSubresourceLocal {
    @GET

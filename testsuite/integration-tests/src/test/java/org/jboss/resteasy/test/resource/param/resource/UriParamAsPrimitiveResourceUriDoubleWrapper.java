@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.resource.param.resource;
 import org.jboss.resteasy.test.resource.param.UriParamAsPrimitiveTest;
 import org.junit.Assert;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 @Path("/double/wrapper/{arg}")
 public class UriParamAsPrimitiveResourceUriDoubleWrapper {

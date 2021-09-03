@@ -1,7 +1,7 @@
 package org.jboss.resteasy.security.smime;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.reflect.Type;
 import java.security.cert.X509Certificate;
 

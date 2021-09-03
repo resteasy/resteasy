@@ -2,7 +2,7 @@ package org.jboss.resteasy.links.test;
 
 import org.jboss.resteasy.links.ResourceIDs;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @ResourceIDs({"namea", "nameb"})

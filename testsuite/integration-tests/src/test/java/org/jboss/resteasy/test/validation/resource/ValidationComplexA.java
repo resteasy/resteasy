@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 public class ValidationComplexA {
    @Size(min = 4)

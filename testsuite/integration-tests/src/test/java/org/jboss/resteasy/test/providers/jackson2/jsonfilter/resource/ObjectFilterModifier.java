@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;

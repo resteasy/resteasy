@@ -1,6 +1,6 @@
 package org.jboss.resteasy.reactor;
 
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.reactivestreams.Publisher;

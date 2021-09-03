@@ -2,10 +2,10 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 public class HomecontrolCustomJAXBContext extends JAXBContext {
 
@@ -34,7 +34,7 @@ public class HomecontrolCustomJAXBContext extends JAXBContext {
 
    @SuppressWarnings("deprecation")
    @Override
-   public javax.xml.bind.Validator createValidator() throws JAXBException {
+   public jakarta.xml.bind.Validator createValidator() throws JAXBException {
       return this.delegate.createValidator();
    }
 }

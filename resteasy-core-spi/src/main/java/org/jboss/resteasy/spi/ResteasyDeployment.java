@@ -3,7 +3,7 @@ package org.jboss.resteasy.spi;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.core.Application;
 
 /**
  * This class is used to configure and initialize the core components of RESTEasy.
