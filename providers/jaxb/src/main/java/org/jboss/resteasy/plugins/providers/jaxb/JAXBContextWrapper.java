@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import jakarta.xml.bind.annotation.XmlNs;
 import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.w3c.dom.Node;
@@ -20,12 +22,13 @@ import javax.xml.validation.SchemaFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * A wrapper class around a JAXBContext that enables additional features
@@ -38,42 +41,7 @@ import java.util.Map;
 public class JAXBContextWrapper extends JAXBContext
 {
 
-   private static final String NAMESPACE_PREFIX_MAPPER = "org.glassfish.jaxb.namespacePrefixMapper";
-   private static Constructor mapperConstructor = null;
-
-   static
-   {
-      try
-      {
-         // check to see if NamespacePrefixMapper is in classpath
-         final Class[] namespace = new Class[1];
-         final Class[] mapper = new Class[1];
-
-         if (System.getSecurityManager() == null)
-         {
-            namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper");
-            mapper[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
-         }
-         else
-         {
-            AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
-               @Override public Void run() throws Exception {
-                  namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper");
-                  mapper[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
-
-                  return null;
-               }
-            });
-         }
-
-         mapperConstructor = mapper[0].getConstructors()[0];
-      }
-      catch (ClassNotFoundException | PrivilegedActionException e)
-      {
-
-      }
-
-   }
+   private static final String NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
 
    private final JAXBContext wrappedContext;
    private final ThreadLocal<Unmarshaller> unmarshaller = new ThreadLocal<Unmarshaller>();
@@ -186,17 +154,22 @@ public class JAXBContextWrapper extends JAXBContext
       {
          if (config.useNameSpacePrefix())
          {
-            if (mapperConstructor == null)
-            {
-               throw new JAXBException(Messages.MESSAGES.namespacePrefixMapperNotInClassPath());
-            }
-            try
-            {
-               mapper = mapperConstructor.newInstance((Object[])config.namespaces());
-            }
-            catch (Exception e)
-            {
-               throw new JAXBException(e);
+            try {
+               final Map<String, String> namespaces = new HashMap<>();
+               for (XmlNs xmlNs : config.namespaces()) {
+                  namespaces.put(xmlNs.namespaceURI(), xmlNs.prefix());
+               }
+               final BiFunction<String, String, String> mapperFunction = (namespace, suggestion) -> {
+                  if (namespaces.containsKey(namespace)) {
+                     return namespaces.get(namespace);
+                  }
+                  return suggestion;
+               };
+               mapper = RiHacks.createNamespacePrefixMapper(mapperFunction);
+            } catch (JAXBException e) {
+               throw e;
+            } catch (Exception e) {
+               throw Messages.MESSAGES.namespacePrefixMapperNotInClassPath(e);
             }
          }
          if (!"".equals(config.schema()))
@@ -273,7 +246,7 @@ public class JAXBContextWrapper extends JAXBContext
     */
    public Marshaller createMarshaller() throws JAXBException
    {
-      Marshaller marshaller = wrappedContext.createMarshaller();
+      Marshaller marshaller = RiHacks.createMarshaller(wrappedContext);
       if (mapper != null)
       {
          try
@@ -298,7 +271,7 @@ public class JAXBContextWrapper extends JAXBContext
       Unmarshaller u = unmarshaller.get();
       if (u == null)
       {
-         u = wrappedContext.createUnmarshaller();
+         u = RiHacks.createUnmarshaller(wrappedContext);
          unmarshaller.set(u);
       }
       return u;

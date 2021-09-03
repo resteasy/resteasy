@@ -11,7 +11,9 @@ import java.util.Map;
  *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
+ * @deprecated This should no longer be used as it's quite simple to implement and is tied to the implementation
  */
+@Deprecated
 public class XmlNamespacePrefixMapper extends NamespacePrefixMapper
 {
 

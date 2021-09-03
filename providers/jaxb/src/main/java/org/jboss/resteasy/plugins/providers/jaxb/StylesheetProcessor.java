@@ -24,7 +24,7 @@ public class StylesheetProcessor implements DecoratorProcessor<Marshaller, Style
       String h = "<?xml-stylesheet type='" + doctype + "' href='" + href + "' ?>";
       try
       {
-         target.setProperty("org.glassfish.jaxb.xmlHeaders", h);
+         target.setProperty("com.sun.xml.bind.xmlHeaders", h);
       }
       catch (PropertyException e)
       {

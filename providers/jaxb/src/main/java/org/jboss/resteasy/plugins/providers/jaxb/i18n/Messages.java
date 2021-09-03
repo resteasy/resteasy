@@ -2,6 +2,9 @@ package org.jboss.resteasy.plugins.providers.jaxb.i18n;
 
 import jakarta.ws.rs.core.MediaType;
 
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
@@ -43,8 +46,8 @@ public interface Messages
    @Message(id = BASE + 35, value = "Map wrapping failed, expect namespace of {0} got {1}", format=Format.MESSAGE_FORMAT)
    String mapWrappingFailedNamespace(String map, String namespace);
 
-   @Message(id = BASE + 40, value = "org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper is not in your classpath.  You need to use the JAXB RI for the prefix mapping feature")
-   String namespacePrefixMapperNotInClassPath();
+   @Message(id = BASE + 40, value = "Could not create NamespacePrefixMapper. You need to use the JAXB RI for the prefix mapping feature")
+   JAXBException namespacePrefixMapperNotInClassPath(@Cause Throwable cause);
 
    @Message(id = BASE + 45, value = "SecureUnmarshaller: unexpected use of unmarshal(%s)")
    String unexpectedUse(String s);
@@ -57,4 +60,14 @@ public interface Messages
 
    @Message(id = BASE + 60, value = "Could not find user's JAXBContext implementation for media type: %s")
    String couldNotFindUsersJAXBContext(MediaType mediaType);
+
+   @Message(id = BASE + 70, value = "Could not add property %s or renamed %s with value %s.")
+   PropertyException couldNotAddProperty(String first, String second, Object value);
+   @Message("Could not add property %s  with value %s.")
+   PropertyException couldNotAddProperty(String name, Object value);
+
+   @Message(id = BASE + 71, value = "Could not get property %s or renamed %s.")
+   PropertyException couldNotGetProperty(String first, String second);
+   @Message("Could not get property %s.")
+   PropertyException couldNotGetProperty(String name);
 }

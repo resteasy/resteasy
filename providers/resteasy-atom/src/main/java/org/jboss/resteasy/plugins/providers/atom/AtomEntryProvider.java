@@ -1,10 +1,10 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
@@ -107,17 +107,10 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, AsyncBuffere
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, set.toArray(new Class[set.size()]));
-         Marshaller marshaller = ctx.createMarshaller();
-         NamespacePrefixMapper mapper = new NamespacePrefixMapper()
-         {
-            public String getPreferredPrefix(String namespace, String s1, boolean b)
-            {
-               if (namespace.equals("http://www.w3.org/2005/Atom")) return "atom";
-               else return s1;
-            }
-         };
+         Marshaller marshaller = RiHacks.createMarshaller(ctx);
+         final Object mapper = RiHacks.createAtomNamespacePrefixMapper();
 
-         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
+         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
 
          marshaller.marshal(entry, entityStream);
       }

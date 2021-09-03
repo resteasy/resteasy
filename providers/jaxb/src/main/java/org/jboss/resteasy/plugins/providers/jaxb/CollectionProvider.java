@@ -42,6 +42,7 @@ import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -353,7 +354,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, AsyncBuffe
 
 
          JAXBElement<JaxbCollection> collection = new JAXBElement<JaxbCollection>(new QName(namespaceURI, element, prefix), JaxbCollection.class, col);
-         Marshaller marshaller = ctx.createMarshaller();
+         Marshaller marshaller = RiHacks.createMarshaller(ctx);
          AbstractJAXBProvider.decorateMarshaller(baseType, annotations, mediaType, marshaller);
          marshaller.marshal(collection, entityStream);
       }

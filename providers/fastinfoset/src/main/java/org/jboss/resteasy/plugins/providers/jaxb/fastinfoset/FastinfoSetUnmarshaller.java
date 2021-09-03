@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
 
 import org.jboss.resteasy.plugins.providers.fastinfoset.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -40,7 +41,7 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
 
    public FastinfoSetUnmarshaller(final JAXBContext context) throws JAXBException
    {
-      unmarshaller = context.createUnmarshaller();
+      unmarshaller = RiHacks.createUnmarshaller(context);
    }
 
    protected static XMLStreamReader getFastinfoSetXMLStreamReader(InputStream entityStream)
