@@ -568,7 +568,7 @@ public class Rx2ObservableTest {
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
-      Assert.assertEquals(thingListList, thingListList);
+      Assert.assertEquals(xThingListList, thingListList);
    }
 
    @SuppressWarnings("unchecked")
