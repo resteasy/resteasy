@@ -48,9 +48,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
 
     private final ReactorNettyHttpResponse parentResponse;
 
-    static final Throwable RESPONSE_WRITE_ABORTED_ON_CANCEL = new WriterException("Response write aborted due to cancellation");
-
-    static final Throwable RESPONSE_WRITE_ABORTED_ON_DISCARD = new WriterException("Response write aborted due to discarded bytes");
+    static final Throwable RESPONSE_WRITE_ABORTED = new WriterException("Response write aborted abruptly");
 
     ChunkOutputStream(
             final ReactorNettyHttpResponse parentResponse,
@@ -99,12 +97,6 @@ public class ChunkOutputStream extends AsyncOutputStream {
         return CompletableFuture.completedFuture(null);
     }
 
-    static class ReactorNettySendException extends RuntimeException {
-        ReactorNettySendException(final Throwable cause) {
-            super(cause);
-        }
-    }
-
     @Override
     public CompletableFuture<Void> asyncWrite(final byte[] bs, int offset, int length) {
         try {
@@ -122,13 +114,13 @@ public class ChunkOutputStream extends AsyncOutputStream {
                     .then()
                     .doOnError(err -> completionSink.emitError(err, Sinks.EmitFailureHandler.FAIL_FAST))
                     .doOnCancel(() -> completionSink.emitError(
-                            RESPONSE_WRITE_ABORTED_ON_CANCEL,
+                            RESPONSE_WRITE_ABORTED,
                             Sinks.EmitFailureHandler.FAIL_FAST
                     ))
                     .doOnDiscard(
                             ByteBuf.class,
                             byteBuf -> completionSink.emitError(
-                                    RESPONSE_WRITE_ABORTED_ON_DISCARD,
+                                    RESPONSE_WRITE_ABORTED,
                                     Sinks.EmitFailureHandler.FAIL_FAST
                     ))
                     .toFuture();
