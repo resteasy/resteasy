@@ -114,6 +114,43 @@ public class VertxClientEngineTest {
       assertEquals("Success", response.readEntity(String.class));
    }
 
+
+   @Test
+   public void testHTTP() throws Exception {
+      Vertx vertx = Vertx.vertx();
+      Client client = ((ResteasyClientBuilder)ClientBuilder
+              .newBuilder()
+              .scheduledExecutorService(executorService))
+              .httpEngine(new VertxClientHttpEngine(vertx)).build();
+      final Response resp = client.target("http://example.com:80").request().get();
+      assertEquals(200, resp.getStatus());
+      System.out.println("out -> " + resp.readEntity(String.class));
+   }
+
+   @Test
+   public void testHTTPS() throws Exception {
+      Vertx vertx = Vertx.vertx();
+      Client client = ((ResteasyClientBuilder)ClientBuilder
+              .newBuilder()
+              .scheduledExecutorService(executorService))
+              .httpEngine(new VertxClientHttpEngine(vertx)).build();
+      final Response resp = client.target("https://example.com:443").request().get();
+      assertEquals(200, resp.getStatus());
+      System.out.println("out -> " + resp.readEntity(String.class));
+   }
+
+   @Test
+   public void testHTTP2() throws Exception {
+      Vertx vertx = Vertx.vertx();
+      Client client = ((ResteasyClientBuilder)ClientBuilder
+              .newBuilder()
+              .scheduledExecutorService(executorService))
+              .httpEngine(new VertxClientHttpEngine(vertx)).build();
+      final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
+      assertEquals(200, resp.getStatus());
+      System.out.println("out -> " + resp.readEntity(String.class));
+   }
+
    @Test
    public void testSimpleResponseRx() throws Exception {
       server.requestHandler(req -> {
