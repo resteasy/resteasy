@@ -38,7 +38,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServer;
@@ -127,7 +126,6 @@ public class VertxClientEngineTest {
                 .httpEngine(new VertxClientHttpEngine(vertx)).build();
         final Response resp = client.target("http://example.com:80").request().get();
         assertEquals(200, resp.getStatus());
-        System.out.println("out -> " + resp.readEntity(String.class));
     }
 
     @Test
@@ -141,7 +139,6 @@ public class VertxClientEngineTest {
                 .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
         final Response resp = client.target("https://example.com:443").request().get();
         assertEquals(200, resp.getStatus());
-        System.out.println("out -> " + resp.readEntity(String.class));
     }
 
     @Test
@@ -157,7 +154,6 @@ public class VertxClientEngineTest {
                 .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
         final Response resp = client.target("https://nghttp2.org:443/httpbin/get").request().get();
         assertEquals(200, resp.getStatus());
-        System.out.println("out -> " + resp.readEntity(String.class));
     }
 
     @Test
