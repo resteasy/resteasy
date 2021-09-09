@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.cookie.Cookie;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
+import org.jboss.resteasy.spi.WriterException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
@@ -41,8 +42,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static org.jboss.resteasy.plugins.server.reactor.netty.ChunkOutputStream.RESPONSE_WRITE_ABORTED;
 
 public class ChunkOutputStreamTest {
 
@@ -134,7 +133,7 @@ public class ChunkOutputStreamTest {
                                 .timeout(Duration.ofSeconds(2))
                         )
                 )
-                .verifyError(RESPONSE_WRITE_ABORTED.getClass());
+                .verifyError(WriterException.class);
     }
 
     @Test
@@ -165,7 +164,7 @@ public class ChunkOutputStreamTest {
         StepVerifier.create(Mono.fromCompletionStage(asyncWriteFuture))
                 .thenCancel()
                 .verify();
-        Assert.assertEquals(RESPONSE_WRITE_ABORTED.getClass().getName(), buffer.toString());
+        Assert.assertEquals(WriterException.class.getName(), buffer.toString());
     }
 
     public String mkInputData() {

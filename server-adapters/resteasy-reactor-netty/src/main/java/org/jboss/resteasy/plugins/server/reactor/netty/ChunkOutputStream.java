@@ -46,9 +46,9 @@ public class ChunkOutputStream extends AsyncOutputStream {
      */
     private static final Predicate<ByteBuf> FLUSH_ON_EACH_WRITE = bb -> true;
 
-    private final ReactorNettyHttpResponse parentResponse;
+    private static final String RESPONSE_WRITE_ABORTED_ERROR = "Response write aborted abruptly";
 
-    static final Throwable RESPONSE_WRITE_ABORTED = new WriterException("Response write aborted abruptly");
+    private final ReactorNettyHttpResponse parentResponse;
 
     ChunkOutputStream(
             final ReactorNettyHttpResponse parentResponse,
@@ -114,13 +114,13 @@ public class ChunkOutputStream extends AsyncOutputStream {
                     .then()
                     .doOnError(err -> completionSink.emitError(err, Sinks.EmitFailureHandler.FAIL_FAST))
                     .doOnCancel(() -> completionSink.emitError(
-                            RESPONSE_WRITE_ABORTED,
+                            new WriterException(RESPONSE_WRITE_ABORTED_ERROR),
                             Sinks.EmitFailureHandler.FAIL_FAST
                     ))
                     .doOnDiscard(
                             ByteBuf.class,
                             byteBuf -> completionSink.emitError(
-                                    RESPONSE_WRITE_ABORTED,
+                                    new WriterException(RESPONSE_WRITE_ABORTED_ERROR),
                                     Sinks.EmitFailureHandler.FAIL_FAST
                     ))
                     .toFuture();
