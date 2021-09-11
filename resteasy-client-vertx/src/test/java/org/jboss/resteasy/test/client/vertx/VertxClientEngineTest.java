@@ -124,7 +124,7 @@ public class VertxClientEngineTest {
                 .newBuilder()
                 .scheduledExecutorService(executorService))
                 .httpEngine(new VertxClientHttpEngine(vertx)).build();
-        final Response resp = client.target("http://example.com:80").request().get();
+        final Response resp = client.target("http://example.com").request().get();
         assertEquals(200, resp.getStatus());
     }
 
@@ -137,7 +137,7 @@ public class VertxClientEngineTest {
                 .newBuilder()
                 .scheduledExecutorService(executorService))
                 .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
-        final Response resp = client.target("https://example.com:443").request().get();
+        final Response resp = client.target("https://example.com").request().get();
         assertEquals(200, resp.getStatus());
     }
 
@@ -152,7 +152,7 @@ public class VertxClientEngineTest {
                 .newBuilder()
                 .scheduledExecutorService(executorService))
                 .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
-        final Response resp = client.target("https://nghttp2.org:443/httpbin/get").request().get();
+        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
         assertEquals(200, resp.getStatus());
     }
 
