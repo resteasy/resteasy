@@ -140,7 +140,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         options.setHost(uri.getHost());
 
 
-        if (uri.getPort() == -1) {
+        if (-1 == uri.getPort()) {
             if ("http".equals(uri.getScheme())) {
                 options.setPort(80);
             } else if ("https".equals(uri.getScheme())) {
