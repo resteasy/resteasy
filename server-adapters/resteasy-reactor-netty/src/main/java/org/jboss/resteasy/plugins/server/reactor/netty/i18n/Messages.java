@@ -21,4 +21,7 @@ public interface Messages
 
     @Message(id = BASE + 5, value = "Already suspended")
     String alreadySuspended();
+
+    @Message(id = BASE + 10, value = "Response write aborted abruptly")
+    String responseWriteAborted();
 }

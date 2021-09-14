@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 import org.reactivestreams.Publisher;
@@ -25,13 +26,13 @@ import java.util.function.Predicate;
  * which is what reactor-netty works with.  Most of the heavy
  * lifting occurs in {@link #asyncWrite(byte[], int, int)}.
  */
-public class ChunkOutputStream extends AsyncOutputStream {
+class ChunkOutputStream extends AsyncOutputStream {
 
     /**
      * This is the {@link Mono} that we return from {@link ReactorNettyJaxrsServer.Handler#handle(HttpServerRequest,
      * HttpServerResponse)}
      */
-    protected final Sinks.Empty<Void> completionSink;
+    private final Sinks.Empty<Void> completionSink;
 
     /**
      * Indicates that we've starting sending the response bytes.
@@ -45,8 +46,6 @@ public class ChunkOutputStream extends AsyncOutputStream {
      * CompletableFuture} returned from `NettyOutbound#then().toFuture()` completes.
      */
     private static final Predicate<ByteBuf> FLUSH_ON_EACH_WRITE = bb -> true;
-
-    private static final String RESPONSE_WRITE_ABORTED_ERROR = "Response write aborted abruptly";
 
     private final ReactorNettyHttpResponse parentResponse;
 
@@ -114,13 +113,13 @@ public class ChunkOutputStream extends AsyncOutputStream {
                     .then()
                     .doOnError(err -> completionSink.emitError(err, Sinks.EmitFailureHandler.FAIL_FAST))
                     .doOnCancel(() -> completionSink.emitError(
-                            new WriterException(RESPONSE_WRITE_ABORTED_ERROR),
+                            new WriterException(Messages.MESSAGES.responseWriteAborted()),
                             Sinks.EmitFailureHandler.FAIL_FAST
                     ))
                     .doOnDiscard(
                             ByteBuf.class,
                             byteBuf -> completionSink.emitError(
-                                    new WriterException(RESPONSE_WRITE_ABORTED_ERROR),
+                                    new WriterException(Messages.MESSAGES.responseWriteAborted()),
                                     Sinks.EmitFailureHandler.FAIL_FAST
                     ))
                     .toFuture();
