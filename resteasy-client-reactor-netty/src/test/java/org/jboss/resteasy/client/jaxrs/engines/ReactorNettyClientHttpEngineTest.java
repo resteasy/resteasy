@@ -6,7 +6,6 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.concurrent.DefaultEventExecutor;
-import static org.hamcrest.CoreMatchers.containsString;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -17,9 +16,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 import reactor.netty.DisposableServer;
+import reactor.netty.NettyOutbound;
 import reactor.netty.http.HttpResources;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.resources.ConnectionProvider;
 
 import javax.ws.rs.InternalServerErrorException;
@@ -32,19 +34,32 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -132,6 +147,9 @@ public class ReactorNettyClientHttpEngineTest {
                         .get("/json", (request, response) ->
                             response.addHeader(HttpHeaderNames.CONTENT_TYPE, "application/json")
                                 .sendString(Mono.just("[]")))
+                        .post("/echo", (request, response) ->
+                            response.addHeader(HttpHeaderNames.CONTENT_TYPE, request.requestHeaders().get(HttpHeaderNames.CONTENT_TYPE))
+                                .send(request.receive().aggregate()))
                         .post("/birthday", (request, response) ->
                             response.addHeader(HttpHeaderNames.CONTENT_TYPE, "application/json")
                                     .sendString(
@@ -143,13 +161,30 @@ public class ReactorNettyClientHttpEngineTest {
                                 .status(500)
                                 .addHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain")
                                 .sendString(Mono.just("oh nos!")))
-                        .post("/headers", (request, response) ->
-                            response.sendString(
-                                Mono.just(
-                                    Optional.ofNullable(
-                                        request.requestHeaders().get(HttpHeaderNames.CONTENT_LENGTH))
-                                        .orElse("Content-Length header was not in request:(:(")))))
+                        .post("/headers/content-length", (req, resp) ->
+                                headerEcho(req, resp, HttpHeaderNames.CONTENT_LENGTH.toString()))
+                        .post("/headers/content-encoding", (req, resp) ->
+                                headerEcho(req, resp, HttpHeaderNames.CONTENT_ENCODING.toString()))
+                        .post("/headers/content-type", (req, resp) ->
+                                allHeaderEcho(req, resp, HttpHeaderNames.CONTENT_TYPE.toString())))
                 .bindNow();
+    }
+
+    private static NettyOutbound allHeaderEcho(HttpServerRequest req, HttpServerResponse resp, String header) {
+        return resp.sendString(
+                Mono.just(
+                        Optional.ofNullable(String.join(",", req.requestHeaders().getAll(header)))
+                                .orElse(header + " header was not in request:(:(")));
+    }
+
+    private static NettyOutbound headerEcho(
+            final HttpServerRequest req,
+            final HttpServerResponse resp,
+            final String header) {
+        return resp.sendString(
+                Mono.just(
+                    Optional.ofNullable(req.requestHeaders().get(header))
+                    .orElse(header + " header was not in request:(:(")));
     }
 
     @AfterClass
@@ -471,7 +506,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testThatRequestContentLengthIsSet() {
         final String payload = "hello";
-        final WebTarget target = client.target(url("/headers"));
+        final WebTarget target = client.target(url("/headers/content-length"));
         final Response response = target.request().post(Entity.text(payload));
         assertEquals(200, response.getStatus());
         assertEquals(Integer.toString(payload.length()), response.readEntity(String.class));
@@ -480,7 +515,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testThatRequestContentLengthHeaderIsOverwritten() {
         final String payload = "hello";
-        final WebTarget target = client.target(url("/headers"));
+        final WebTarget target = client.target(url("/headers/content-length"));
         final Response response =
             target
                 .request()
@@ -488,6 +523,88 @@ public class ReactorNettyClientHttpEngineTest {
                 .post(Entity.text(payload));
         assertEquals(200, response.getStatus());
         assertEquals(Integer.toString(payload.length()), response.readEntity(String.class));
+    }
+
+    @Test
+    public void testContextInWriter() {
+        final String payload = "hello";
+        final WebTarget target = client.target(url("/echo")).register(new ContextNeedingWriter());
+        final String respBody = target.request().post(Entity.text(payload), String.class);
+        assertEquals(ContextNeedingWriter.transform(payload), respBody);
+    }
+
+    @Test
+    public void testContextInWriterAsyncChaining() throws Exception {
+        final String firstPayload = "first";
+        final String secondPayload = "second";
+        final WebTarget target = client.target(url("/echo")).register(new ContextNeedingWriter());
+
+        final Function<String, CompletionStage<String>> httpGet =
+            payload -> target.request().rx().post(Entity.text(payload), String.class);
+
+        final CompletionStage<String> dataFut = httpGet.apply(firstPayload)
+            .thenCompose(firstResp -> httpGet.apply(secondPayload).thenApply(secResp -> firstResp + " : " + secResp));
+
+        final String data = dataFut.toCompletableFuture().get(500, TimeUnit.MILLISECONDS);
+        assertEquals(
+            ContextNeedingWriter.transform(firstPayload) + " : " + ContextNeedingWriter.transform(secondPayload),
+            data);
+    }
+
+    @Test
+    public void testThatMessageBodyWriterHeadersAreRespected() {
+        final String WRITER_ESTABLISHED_HEADER_VAL = "Binary";
+        class StringWriter implements MessageBodyWriter<String> {
+            @Override
+            public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+                return type == String.class;
+            }
+
+            @Override
+            public long getSize(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+                return s.length();
+            }
+
+            @Override
+            public void writeTo(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+                httpHeaders.add("Content-Encoding", WRITER_ESTABLISHED_HEADER_VAL);
+                entityStream.write(s.getBytes());
+            }
+        }
+        final WebTarget target = client.target(url("/headers/content-encoding")).register(new StringWriter());
+        final Response response = target.request().post(Entity.text("marcel sent me some text!"));
+        assertEquals(200, response.getStatus());
+        assertEquals(WRITER_ESTABLISHED_HEADER_VAL, response.readEntity(String.class));
+    }
+
+    @Test
+    public void testCaseInsensitiveHeaderReplace() {
+        final String CONTENT_TYPE_CLIENT_HEADER_VAL = "text/plain";
+        final String CONTENT_TYPE_WRITER_HEADER_VAL = "application/json";
+        final String CONTENT_TYPE_CC_HEADER_NAME = "CONTENT-TYPE";
+        final String CONTENT_TYPE_LC_HEADER_NAME = "content-type";
+        class StringWriter implements MessageBodyWriter<String> {
+            @Override
+            public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+                return type == String.class;
+            }
+
+            @Override
+            public long getSize(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+                return s.length();
+            }
+
+            @Override
+            public void writeTo(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+                httpHeaders.replace(CONTENT_TYPE_LC_HEADER_NAME, Collections.singletonList(CONTENT_TYPE_WRITER_HEADER_VAL));
+                entityStream.write(s.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+
+        final WebTarget target = client.target(url("/headers/content-type")).register(new StringWriter());
+        final Response response = target.request().header(CONTENT_TYPE_CC_HEADER_NAME, CONTENT_TYPE_CLIENT_HEADER_VAL).post(Entity.text("{'inputKey' : 'value'}"));
+        assertEquals(200, response.getStatus());
+        assertEquals(CONTENT_TYPE_WRITER_HEADER_VAL, response.readEntity(String.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -598,5 +715,26 @@ public class ReactorNettyClientHttpEngineTest {
         final int length = json.length();
         final String age = json.substring(length - 2, length - 1);
         return json.replaceFirst(age, Integer.toString(Integer.valueOf(age) + 1));
+    }
+
+    static class ContextNeedingWriter implements MessageBodyWriter<String> {
+
+        @Context
+        private Providers providers;
+
+        static String transform(final String s) {
+            return "My contextual writer did this: " + s;
+        }
+
+        @Override
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return true;
+        }
+
+        @Override
+        public void writeTo(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+            providers.getMessageBodyWriter(type, genericType, annotations, mediaType);
+            entityStream.write(transform(s).getBytes(StandardCharsets.UTF_8));
+        }
     }
 }

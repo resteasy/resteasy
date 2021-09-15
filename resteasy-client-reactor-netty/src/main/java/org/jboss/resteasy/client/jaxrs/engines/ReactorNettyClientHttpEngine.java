@@ -21,8 +21,11 @@ import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Providers;
 
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import static java.util.Objects.requireNonNull;
 
@@ -31,8 +34,13 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.TrackingClientRequestHeaders;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
+
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.TrackingMap;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
@@ -111,42 +119,8 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
     public <T> Mono<T> submitRx(final ClientInvocation request,
                                  final boolean buffered,
                                  final ResultExtractor<T> extractor) {
-        final Optional<byte[]> payload =
-            Optional.ofNullable(request.getEntity()).map(entity -> requestContent(request));
-
-        final HttpClient.RequestSender requestSender =
-                httpClient
-                        .headers(headerBuilder -> {
-                            final ClientRequestHeaders resteasyHeaders = request.getHeaders();
-                            resteasyHeaders.getHeaders().entrySet().forEach(entry -> {
-                                final String key = entry.getKey();
-                                final List<Object> valueList = entry.getValue();
-                                valueList.forEach(value -> headerBuilder.add(key, value != null ? value : ""));
-                            });
-
-                            payload.ifPresent(bytes -> {
-
-                                headerBuilder.set(CONTENT_LENGTH, bytes.length);
-
-                                if (log.isDebugEnabled() &&
-                                    isContentLengthInvalid(resteasyHeaders.getHeader(CONTENT_LENGTH), bytes)) {
-                                    log.debug("The request's Content-Length header is replaced " +
-                                            " by the size of the byte array computed from the request entity.");
-                                }
-                            });
-                        })
-                        .request(HttpMethod.valueOf(request.getMethod()))
-                        .uri(request.getUri().toString());
-
-        // Please see https://github.com/reactor/reactor-netty/issues/585 to see why
-        // we do not use outbound.sendObject(object) API.
-        final HttpClient.ResponseReceiver<?> responseReceiver =
-            payload.<HttpClient.ResponseReceiver<?>>map(bytes -> requestSender.send(
-                (httpClientRequest, outbound) ->
-                        outbound.sendByteArray(Mono.just(bytes)))
-            ).orElse(requestSender);
-
-        final Mono<ClientResponse> responseMono = responseReceiver
+        final Mono<ClientResponse> responseMono =
+            send(request)
                 .responseSingle((response, bytes) -> bytes
                         .asInputStream()
                         .map(is -> toRestEasyResponse(request.getClientConfiguration(), response, is))
@@ -173,7 +147,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                 );
 
         return requestTimeout
-                .map(duration -> responseMono.timeout(duration))
+                .map(responseMono::timeout)
                 .orElse(responseMono)
                 .handle((response, sink) -> {
                     try {
@@ -194,6 +168,81 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                         sink.error(e);
                     }
                 });
+    }
+
+    /**
+     * The main business logic mapping RestEasy's {@link ClientInvocation request} to Reactor Netty's concept
+     * of it.
+     */
+    private HttpClient.ResponseReceiver<?> send(final ClientInvocation resteasyReq) {
+        final Optional<Object> reqPayload = Optional.ofNullable(resteasyReq.getEntity());
+
+        final HttpClient.RequestSender requestSender = httpClient.headers(headers -> addHeaders(resteasyReq, headers))
+                    .request(HttpMethod.valueOf(resteasyReq.getMethod()))
+                    .uri(resteasyReq.getUri().toString());
+
+        return reqPayload.<HttpClient.ResponseReceiver<?>>map(ignore -> {
+            return requestSender.send((reactorReq, outbound) -> {
+                final ByteBufOutputStream byteBufOutputStream =
+                    new ByteBufOutputStream(outbound.alloc().buffer());
+
+                /* Replacing the ClientRequestHeaders with TrackingClientRequestHeaders
+                to track the changes to headers by the sendRequestBody method. */
+                resteasyReq.setHeaders(
+                    new TrackingClientRequestHeaders(
+                        resteasyReq.getClientConfiguration(),
+                        resteasyReq.getHeaders().getHeaders()
+                    )
+                );
+
+                try {
+                    sendRequestBody(resteasyReq, byteBufOutputStream);
+                } catch (final IOException ioe) {
+                    return Mono.error(ioe);
+                }
+
+                // Updating the HttpClientRequest with the headers modified by the sendRequestBody method.
+                final TrackingMap<?> trackingMap = (TrackingMap<?>) resteasyReq.getHeaders().getHeaders();
+                trackingMap.getAddedOrUpdatedKeys()
+                    .forEach(key -> updateHeader(
+                            key,
+                            resteasyReq.getHeaders().getHeaders(),
+                            reactorReq.requestHeaders()
+                        )
+                    );
+                trackingMap.getRemovedKeys()
+                    .forEach(reactorReq.requestHeaders()::remove);
+
+                final int length = byteBufOutputStream.writtenBytes();
+                reactorReq.header(CONTENT_LENGTH, Integer.toString(length));
+
+                if (log.isDebugEnabled() &&
+                    isContentLengthInvalid(
+                        resteasyReq.getHeaders().getHeader(CONTENT_LENGTH), length)) {
+
+                    log.debug("The request's Content-Length header is replaced " +
+                        " by the size of the byte array computed from the request entity.");
+                }
+
+                return outbound.send(Mono.defer(() -> Mono.just(byteBufOutputStream.buffer())));
+            });
+        }).orElse(requestSender);
+    }
+
+    private static void addHeaders(final ClientInvocation resteasyReq, final HttpHeaders reactorHeaders) {
+        final ClientRequestHeaders resteasyHeaders = resteasyReq.getHeaders();
+        resteasyHeaders.getHeaders().entrySet().forEach(entry -> {
+            final String key = entry.getKey();
+            final List<Object> valueList = entry.getValue();
+            valueList.forEach(value -> reactorHeaders.add(key, value != null ? value : ""));
+        });
+    }
+
+    private static void updateHeader(final String key,
+                                     final CaseInsensitiveMap<Object> headers,
+                                     final HttpHeaders reactorHeaders) {
+        List<Object> valueList  = headers.get(key);
+        reactorHeaders.set(key, valueList);
     }
 
     @Override
@@ -235,10 +284,10 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         return submitRx(request, buffered, extractor).toFuture();
     }
 
-    private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {
+    private static boolean isContentLengthInvalid(final String headerValue, final int length) {
 
         try {
-            return headerValue != null && Long.parseLong(headerValue) != payload.length;
+            return headerValue != null && Long.parseLong(headerValue) != length;
         } catch (Exception e) {
             log.warn("Problem parsing the Content-Length header value.", e);
         }
@@ -296,6 +345,24 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         } else {
             ret = new ProcessingException(ex);
         }
+        return ret;
+    }
+
+    private static void sendRequestBody(final ClientInvocation req, final ByteBufOutputStream out) throws IOException {
+        req.getDelegatingOutputStream().setDelegate(out);
+
+        if (ResteasyContext.getContextData(Providers.class) == null) {
+            try (ResteasyContext.CloseableContext cc = pushProvidersContext(req)) {
+                req.writeRequestBody(req.getEntityStream());
+            }
+        } else {
+            req.writeRequestBody(req.getEntityStream());
+        }
+    }
+
+    private static ResteasyContext.CloseableContext pushProvidersContext(final ClientInvocation req) {
+        ResteasyContext.CloseableContext ret = ResteasyContext.addCloseableContextDataLevel();
+        ResteasyContext.pushContext(Providers.class, req.getClientConfiguration());
         return ret;
     }
 
