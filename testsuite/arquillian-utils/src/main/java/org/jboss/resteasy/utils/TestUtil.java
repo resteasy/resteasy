@@ -191,10 +191,40 @@ public class TestUtil {
       return war;
    }
 
+   /**
+    * Returns the host name defined by the {@code wildfly.management.host} system property, {@code node} system property
+    * or {@code localhost} by default.
+    *
+    * @return the management host name
+    */
+   public static String getManagementHost() {
+      return System.getProperty("wildfly.management.host", PortProviderUtil.getHost());
+   }
+
+   /**
+    * Returns the management port defined by the {@code wildfly.management.port} or {@code 9990} by default.
+    *
+    * @return the management port
+    */
+   public static int getManagementPort() {
+      return Integer.parseInt(System.getProperty("wildfly.management.port", "9990"));
+   }
+
+   /**
+    * Returns the management port by the {@code wildfly.management.port} or {@code 9990} by default plus the offset.
+    *
+    * @param offset the offset for the default port
+    *
+    * @return the offset management port
+    */
+   public static int getManagementPort(final int offset) {
+      return getManagementPort() + offset;
+   }
+
    public static OnlineManagementClient clientInit() throws IOException {
       OnlineOptions onlineOptions = OnlineOptions
                .standalone()
-               .hostAndPort(PortProviderUtil.getHost(), 9990) // 9990 is default port for EAP 7
+               .hostAndPort(PortProviderUtil.getHost(), getManagementPort()) // 9990 is default port for EAP 7
                .connectionTimeout(120000)
                .build();
       return ManagementClient.online(onlineOptions);
@@ -203,7 +233,7 @@ public class TestUtil {
    public static OnlineManagementClient clientInit(int portOffset) throws IOException {
       OnlineOptions onlineOptions = OnlineOptions
             .standalone()
-            .hostAndPort("localhost", 9990 + portOffset) // 9990 is default port for EAP 7
+            .hostAndPort("localhost", getManagementPort(portOffset)) // 9990 is default port for EAP 7
             .connectionTimeout(120000)
             .build();
       return ManagementClient.online(onlineOptions);
