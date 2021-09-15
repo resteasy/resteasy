@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,17 @@ import org.junit.Test;
  * @tpSince RESTEasy 3.0.16
  */
 public class CaseInsentiveMapTest {
+
+   protected CaseInsensitiveMap<String> map;
+
+   public CaseInsentiveMapTest() {
+      this.map = new CaseInsensitiveMap<>();
+   }
+
+   @Before
+   public void beforeTest() {
+      this.map.clear();
+   }
 
    /**
     * @tpTestDetails Test for CaseInsensitiveMap class, key of map should be case insensitive.
