@@ -4,21 +4,37 @@ if (outcome != success) of /subsystem=elytron/http-authentication-factory=applic
     /subsystem=elytron/http-authentication-factory=application-http-authentication:add(http-server-mechanism-factory=global, security-domain=ApplicationDomain,mechanism-configurations=[{mechanism-name=BASIC},{mechanism-name=FORM}])
 end-if
 
-/subsystem=undertow/application-security-domain=other:add(http-authentication-factory=application-http-authentication)
-/subsystem=ejb3/application-security-domain=other:add(security-domain=ApplicationDomain)
+if (outcome != success) of /subsystem=undertow/application-security-domain=other:read-resource
+    /subsystem=undertow/application-security-domain=other:add(http-authentication-factory=application-http-authentication)
+end-if
+
+if (outcome != success) of /subsystem=ejb3/application-security-domain=other:read-resource
+    /subsystem=ejb3/application-security-domain=other:add(security-domain=ApplicationDomain)
+end-if
+
 /subsystem=batch-jberet:write-attribute(name=security-domain, value=ApplicationDomain)
 /subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name=sasl-authentication-factory, value=application-sasl-authentication)
 /subsystem=remoting/http-connector=http-remoting-connector:undefine-attribute(name=security-realm)
 /subsystem=messaging-activemq/server=default:undefine-attribute(name=security-domain)
 /subsystem=messaging-activemq/server=default:write-attribute(name=elytron-domain, value=ApplicationDomain)
-/core-service=management/access=identity:add(security-domain=ManagementDomain)
+
+if (outcome != success) of /core-service=management/access=identity:read-resource
+    /core-service=management/access=identity:add(security-domain=ManagementDomain)
+end-if
+
 /core-service=management/management-interface=http-interface:write-attribute(name=http-upgrade,value={enabled=true, sasl-authentication-factory=management-sasl-authentication})
 /core-service=management/management-interface=http-interface:write-attribute(name=http-authentication-factory,value=management-http-authentication)
-/core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm)
 
-/core-service=management/security-realm=ManagementRealm:remove
-/core-service=management/security-realm=ApplicationRealm/authentication=local:remove
-/core-service=management/security-realm=ApplicationRealm/authentication=properties:remove
-/core-service=management/security-realm=ApplicationRealm/authorization=properties:remove
+if (outcome == success) of /core-service=management/management-interface=http-interface:read-attribute(name=security-realm)
+    /core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm)
+end-if
+
+# Legacy security is not available on newer containers, if this is successful we need to remove the defaults
+if (outcome == success) of /core-service=management/security-realm=*:read-resource
+    /core-service=management/security-realm=ManagementRealm:remove
+    /core-service=management/security-realm=ApplicationRealm/authentication=local:remove
+    /core-service=management/security-realm=ApplicationRealm/authentication=properties:remove
+    /core-service=management/security-realm=ApplicationRealm/authorization=properties:remove
+end-if
 
 stop-embedded-server
