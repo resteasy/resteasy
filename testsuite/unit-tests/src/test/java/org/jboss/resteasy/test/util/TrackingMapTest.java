@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.TrackingMap;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,15 +22,9 @@ public class TrackingMapTest extends CaseInsentiveMapTest {
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String CONTENT_TYPE_HEADER_VAL = "application/json";
 
-    public TrackingMapTest() {
-        super();
-        // Replacing the map of the super class for the super class tests to run for this decorator.
-        this.map = new TrackingMap<>(map);
-    }
-
-    @Before
-    public void beforeTest() {
-        this.map.clear();
+    @Override
+    protected <T> CaseInsensitiveMap<T> createMap() {
+        return new TrackingMap<>(new CaseInsensitiveMap<>());
     }
 
     @Test
@@ -51,7 +44,7 @@ public class TrackingMapTest extends CaseInsentiveMapTest {
 
     @Test
     public void testRemoveNonExistingKey() {
-        final TrackingMap<String> trackingMap = (TrackingMap<String>) this.map;
+        final TrackingMap<String> trackingMap = createStringMap();
 
         trackingMap.remove("Cache-Control");
         trackingMap.remove("Content-Type", "application/json");
@@ -84,7 +77,7 @@ public class TrackingMapTest extends CaseInsentiveMapTest {
 
     @Test
     public void testClone() {
-        final TrackingMap<String> trackingMap = (TrackingMap<String>) this.map;
+        final TrackingMap<String> trackingMap = createStringMap();
 
         trackingMap.add(CACHE_CONTROL_HEADER, "no-store");
         trackingMap.add(CONTENT_TYPE_HEADER, "text-plain");
@@ -141,4 +134,7 @@ public class TrackingMapTest extends CaseInsentiveMapTest {
         assertTrue(trackingMap.getAddedOrUpdatedKeys().isEmpty());
     }
 
+    private TrackingMap<String> createStringMap() {
+        return new TrackingMap<>(new CaseInsensitiveMap<>());
+    }
 }
