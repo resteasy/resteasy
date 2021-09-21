@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -13,15 +12,11 @@ import org.junit.Test;
  */
 public class CaseInsentiveMapTest {
 
-   protected CaseInsensitiveMap<String> map;
-
-   public CaseInsentiveMapTest() {
-      this.map = new CaseInsensitiveMap<>();
-   }
-
-   @Before
-   public void beforeTest() {
-      this.map.clear();
+   /**
+    * This is done to support re-use of these tests in extensions like {@link org.jboss.resteasy.util.TrackingMap}.
+    */
+   protected <T> CaseInsensitiveMap<T> createMap() {
+      return new CaseInsensitiveMap<>();
    }
 
    /**
@@ -30,7 +25,7 @@ public class CaseInsentiveMapTest {
     */
    @Test
    public void testMap() {
-      CaseInsensitiveMap<String> map = new CaseInsensitiveMap<String>();
+      CaseInsensitiveMap<String> map = createMap();
       map.add("Cache-Control", "nocache");
       Assert.assertEquals("key of map should be case insensitive", "nocache", map.getFirst("caChe-CONTROL"));
    }
