@@ -581,7 +581,7 @@ public class ReactorNettyClientHttpEngineTest {
     public void testCaseInsensitiveHeaderReplace() {
         final String CONTENT_TYPE_CLIENT_HEADER_VAL = "text/plain";
         final String CONTENT_TYPE_WRITER_HEADER_VAL = "application/json";
-        final String CONTENT_TYPE_CC_HEADER_NAME = "CONTENT-TYPE";
+        final String CONTENT_TYPE_UC_HEADER_NAME = "CONTENT-TYPE";
         final String CONTENT_TYPE_LC_HEADER_NAME = "content-type";
         class StringWriter implements MessageBodyWriter<String> {
             @Override
@@ -602,7 +602,7 @@ public class ReactorNettyClientHttpEngineTest {
         }
 
         final WebTarget target = client.target(url("/headers/content-type")).register(new StringWriter());
-        final Response response = target.request().header(CONTENT_TYPE_CC_HEADER_NAME, CONTENT_TYPE_CLIENT_HEADER_VAL).post(Entity.text("{'inputKey' : 'value'}"));
+        final Response response = target.request().header(CONTENT_TYPE_UC_HEADER_NAME, CONTENT_TYPE_CLIENT_HEADER_VAL).post(Entity.text("{'inputKey' : 'value'}"));
         assertEquals(200, response.getStatus());
         assertEquals(CONTENT_TYPE_WRITER_HEADER_VAL, response.readEntity(String.class));
     }
