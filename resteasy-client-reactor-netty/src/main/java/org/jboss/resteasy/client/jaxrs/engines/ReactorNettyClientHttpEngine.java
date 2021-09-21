@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -364,19 +363,6 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         ResteasyContext.CloseableContext ret = ResteasyContext.addCloseableContextDataLevel();
         ResteasyContext.pushContext(Providers.class, req.getClientConfiguration());
         return ret;
-    }
-
-    private static byte[] requestContent(ClientInvocation request)
-    {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        request.getDelegatingOutputStream().setDelegate(baos);
-        try {
-            request.writeRequestBody(request.getEntityStream());
-            baos.close();
-            return baos.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write the request body!", e);
-        }
     }
 
     private ClientResponse toRestEasyResponse(final ClientConfiguration clientConfiguration,
