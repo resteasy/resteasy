@@ -10,7 +10,7 @@ import java.util.concurrent.CompletionStage;
  */
 public abstract class AsyncOutputStream extends OutputStream {
 
-    public static int ASYNC_MESSAGE_WRITE_BUFFER_SIZE = ConfigurationFactory.getInstance()
+    public static final int ASYNC_MESSAGE_WRITE_BUFFER_SIZE = ConfigurationFactory.getInstance()
             .getConfiguration()
             .getOptionalValue(
                     "resteasy.async.output.stream.write.buffer.size",
