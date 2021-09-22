@@ -1,7 +1,6 @@
-package org.jboss.resteasy.test.util;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.TrackingMap;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,17 +14,12 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class TrackingMapTest extends CaseInsentiveMapTest {
+public class TrackingMapTest {
 
     private static final String CACHE_CONTROL_HEADER = "Cache-Control";
     private static final String CACHE_CONTROL_HEADER_VAL = "nocache";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String CONTENT_TYPE_HEADER_VAL = "application/json";
-
-    @Override
-    protected <T> CaseInsensitiveMap<T> createMap() {
-        return new TrackingMap<>(new CaseInsensitiveMap<>());
-    }
 
     @Test
     public void testRemoveExistingKey() {

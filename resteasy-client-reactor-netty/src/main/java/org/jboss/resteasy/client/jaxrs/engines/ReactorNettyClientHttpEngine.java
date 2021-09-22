@@ -39,7 +39,7 @@ import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.TrackingMap;
+import org.jboss.resteasy.client.jaxrs.internal.TrackingMap;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
