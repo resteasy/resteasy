@@ -13,7 +13,7 @@ import org.junit.Test;
 public class CaseInsentiveMapTest {
 
    /**
-    * This is done to support re-use of these tests in extensions like {@link org.jboss.resteasy.util.TrackingMap}.
+    * This is done to support re-use of these tests in extensions like {@link org.jboss.resteasy.client.jaxrs.internal.TrackingMap}.
     */
    protected <T> CaseInsensitiveMap<T> createMap() {
       return new CaseInsensitiveMap<>();

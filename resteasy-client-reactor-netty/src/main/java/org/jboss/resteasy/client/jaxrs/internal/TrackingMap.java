@@ -1,4 +1,6 @@
-package org.jboss.resteasy.util;
+package org.jboss.resteasy.client.jaxrs.internal;
+
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
