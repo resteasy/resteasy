@@ -377,12 +377,14 @@ public class NettyHttpRequest extends BaseHttpRequest
             }
          }
 
-         protected synchronized void nettyFlush()
+         protected void nettyFlush()
          {
             flushed = true;
             try
             {
-               nettyResponse.finish();
+               synchronized (responseLock) {
+                  nettyResponse.finish();
+               }
             }
             catch (IOException e)
             {
