@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.TrackingMap;
 
 /**
  * An extension of ClientRequestHeaders that helps decorate the headers with a TrackingMap.
