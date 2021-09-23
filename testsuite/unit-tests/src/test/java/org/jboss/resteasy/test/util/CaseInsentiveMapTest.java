@@ -13,19 +13,12 @@ import org.junit.Test;
 public class CaseInsentiveMapTest {
 
    /**
-    * This is done to support re-use of these tests in extensions like {@link org.jboss.resteasy.client.jaxrs.internal.TrackingMap}.
-    */
-   protected <T> CaseInsensitiveMap<T> createMap() {
-      return new CaseInsensitiveMap<>();
-   }
-
-   /**
     * @tpTestDetails Test for CaseInsensitiveMap class, key of map should be case insensitive.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
    public void testMap() {
-      CaseInsensitiveMap<String> map = createMap();
+      CaseInsensitiveMap<String> map = new CaseInsensitiveMap<>();
       map.add("Cache-Control", "nocache");
       Assert.assertEquals("key of map should be case insensitive", "nocache", map.getFirst("caChe-CONTROL"));
    }
