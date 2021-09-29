@@ -82,7 +82,7 @@
          </row>
          <row>
             <entry align="left">10000-10499</entry>
-            <entry align="left">resteasy-cache-core</entry>
+            <entry align="left">cache-core</entry>
          </row>
          <row>
             <entry align="left">10500-10999</entry>

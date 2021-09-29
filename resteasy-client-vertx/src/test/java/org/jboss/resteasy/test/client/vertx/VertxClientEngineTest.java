@@ -39,10 +39,12 @@ import javax.ws.rs.core.StreamingOutput;
 import io.reactivex.Single;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.http.HttpVersion;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.jboss.resteasy.rxjava2.SingleRxInvoker;
@@ -75,31 +77,30 @@ public class VertxClientEngineTest {
       executorService.shutdownNow();
    }
 
-   private Client client(ScheduledExecutorService executor) throws Exception {
-      if (server.actualPort() == 0) {
-         CompletableFuture<Void> fut = new CompletableFuture<>();
-         server.listen(0, ar -> {
-            if (ar.succeeded()) {
-               fut.complete(null);
-            } else {
-               fut.completeExceptionally(ar.cause());
-            }
-         });
-         fut.get(2, TimeUnit.MINUTES);
-      }
-      if (client == null) {
-         client = ((ResteasyClientBuilder)ClientBuilder
-                 .newBuilder()
-                 .executorService(executor)
-                 .scheduledExecutorService(executor))
-                 .httpEngine(new VertxClientHttpEngine(vertx)).build();
-      }
-      return client;
-   }
+    private Client client() throws Exception {
+        return client(executorService);
+    }
 
-   private Client client() throws Exception {
-      return client(executorService);
-   }
+    private Client client(ScheduledExecutorService executor) throws Exception {
+        if (server.actualPort() == 0) {
+            CompletableFuture<Void> fut = new CompletableFuture<>();
+            server.listen(0, ar -> {
+                if (ar.succeeded()) {
+                    fut.complete(null);
+                } else {
+                    fut.completeExceptionally(ar.cause());
+                }
+            });
+            fut.get(2, TimeUnit.MINUTES);
+        }
+        if (client == null) {
+            client = ((ResteasyClientBuilder) ClientBuilder
+                    .newBuilder()
+                    .scheduledExecutorService(executor))
+                    .httpEngine(new VertxClientHttpEngine(vertx)).build();
+        }
+        return client;
+    }
 
    @Test
    public void testSimple() throws Exception {
@@ -251,190 +252,230 @@ public class VertxClientEngineTest {
       assertEquals("Success", publisher.blockingGet());
    }
 
-   @Test
-   public void testBigly() throws Exception {
-      server.requestHandler(new EchoHandler());
-      final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
-      final Response response = client().target(baseUri()).request()
-            .post(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+    @Test
+    public void testHTTP() throws Exception {
+        Vertx vertx = Vertx.vertx();
+        Client client = ((ResteasyClientBuilder) ClientBuilder
+                .newBuilder()
+                .scheduledExecutorService(executorService))
+                .httpEngine(new VertxClientHttpEngine(vertx)).build();
+        final Response resp = client.target("http://example.com").request().get();
+        assertEquals(200, resp.getStatus());
+    }
 
-      assertEquals(200, response.getStatus());
-      assertArrayEquals(valuableData, response.readEntity(byte[].class));
-   }
+    @Test
+    public void testHTTPS() throws Exception {
+        Vertx vertx = Vertx.vertx();
+        HttpClientOptions options = new HttpClientOptions();
+        options.setSsl(true);
+        Client client = ((ResteasyClientBuilder) ClientBuilder
+                .newBuilder()
+                .scheduledExecutorService(executorService))
+                .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
+        final Response resp = client.target("https://example.com").request().get();
+        assertEquals(200, resp.getStatus());
+    }
 
-   @Test
-   public void testFutureResponse() throws Exception {
-      server.requestHandler(new EchoHandler());
-      final String valuableData = randomAlpha();
-      final Future<Response> response = client().target(baseUri()).request()
-            .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
-            .submit();
+    @Test
+    public void testHTTP2() throws Exception {
+        Vertx vertx = Vertx.vertx();
+        HttpClientOptions options = new HttpClientOptions();
+        options.setSsl(true);
+        options.setProtocolVersion(HttpVersion.HTTP_2);
+        options.setUseAlpn(true);
+        Client client = ((ResteasyClientBuilder) ClientBuilder
+                .newBuilder()
+                .scheduledExecutorService(executorService))
+                .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
+        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
+        assertEquals(200, resp.getStatus());
+    }
 
-      final Response resp = response.get(10, TimeUnit.SECONDS);
-      assertEquals(200, resp.getStatus());
-      assertEquals(valuableData, resp.readEntity(String.class));
-   }
+    @Test
+    public void testBigly() throws Exception {
+        server.requestHandler(new EchoHandler());
+        final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
+        final Response response = client().target(baseUri()).request()
+                .post(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE));
 
-   @Test
-   public void testFutureString() throws Exception {
-      server.requestHandler(new EchoHandler());
-      final String valuableData = randomAlpha();
-      final Future<String> response = client().target(baseUri()).request()
-            .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
-            .submit(String.class);
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
 
-      final String result = response.get(10, TimeUnit.SECONDS);
-      assertEquals(valuableData, result);
-   }
+    @Test
+    public void testFutureResponse() throws Exception {
+        server.requestHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        final Future<Response> response = client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit();
 
-   private String randomAlpha() {
-      final StringBuilder builder = new StringBuilder();
-      final Random r = new Random();
-      for (int i = 0; i < 20 * 1024 * 1024; i++) {
-         builder.append((char) ('a' + (char) r.nextInt('z' - 'a')));
-         if (i % 100 == 0) builder.append('\n');
-      }
-      return builder.toString();
-   }
+        final Response resp = response.get(10, TimeUnit.SECONDS);
+        assertEquals(200, resp.getStatus());
+        assertEquals(valuableData, resp.readEntity(String.class));
+    }
 
-   @Test
-   public void testCallbackString() throws Exception {
-      server.requestHandler(new EchoHandler());
-      final String valuableData = randomAlpha();
-      CompletableFuture<String> cf = new CompletableFuture<>();
-      client().target(baseUri()).request()
-          .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
-          .submit(new InvocationCallback<String>() {
-             @Override
-             public void completed(String s) {
-                cf.complete(s);
-             }
-             @Override
-             public void failed(Throwable throwable) {
-                cf.completeExceptionally(throwable);
-             }
-          });
+    @Test
+    public void testFutureString() throws Exception {
+        server.requestHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        final Future<String> response = client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit(String.class);
 
-      final String result = cf.get(10, TimeUnit.SECONDS);
-      assertEquals(valuableData, result);
-   }
+        final String result = response.get(10, TimeUnit.SECONDS);
+        assertEquals(valuableData, result);
+    }
 
-   @Test
-   public void testTimeout() throws Exception {
-      server.requestHandler(req -> {
-         vertx.setTimer(1000, id -> {
-            req.response().end();
-         });
-      });
-      try {
-         Invocation.Builder property = client()
-             .target(baseUri())
-             .request()
-             .property(VertxClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(500));
-         property
-            .get();
-         fail();
-      } catch (ProcessingException e) {
-         assertTrue(e.getCause() instanceof TimeoutException);
-      }
-   }
+    @Test
+    public void testCallbackString() throws Exception {
+        server.requestHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        CompletableFuture<String> cf = new CompletableFuture<>();
+        client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit(new InvocationCallback<String>() {
+                    @Override
+                    public void completed(String s) {
+                        cf.complete(s);
+                    }
 
-   @Test
-   public void testDeferContent() throws Exception {
-      server.requestHandler(new EchoHandler());
-      final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
-      final Response response = client().target(baseUri()).request()
-            .post(Entity.entity(new StreamingOutput() {
-               @Override
-               public void write(OutputStream output) throws IOException, WebApplicationException {
-                  try {
-                     Thread.sleep(100);
-                  } catch (InterruptedException e) {
-                     Thread.currentThread().interrupt();
-                     throw new AssertionError(e);
-                  }
-                  output.write(valuableData);
-               }
-            }, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+                    @Override
+                    public void failed(Throwable throwable) {
+                        cf.completeExceptionally(throwable);
+                    }
+                });
 
-      assertEquals(200, response.getStatus());
-      assertArrayEquals(valuableData, response.readEntity(byte[].class));
-   }
+        final String result = cf.get(10, TimeUnit.SECONDS);
+        assertEquals(valuableData, result);
+    }
 
-   @Test
-   public void testFilterBufferReplay() throws Exception {
-      final String greeting = "Success";
-      final byte[] expected = greeting.getBytes(StandardCharsets.UTF_8);
-      server.requestHandler(req -> {
-        req.response().putHeader(HttpHeaders.CONTENT_TYPE, "text/plain").end(greeting);
-      });
+    @Test
+    public void testTimeout() throws Exception {
+        server.requestHandler(req -> {
+            vertx.setTimer(1000, id -> {
+                req.response().end();
+            });
+        });
+        try {
+            Invocation.Builder property = client()
+                    .target(baseUri())
+                    .request()
+                    .property(VertxClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(500));
+            property
+                    .get();
+            fail();
+        } catch (ProcessingException e) {
+            assertTrue(e.getCause() instanceof TimeoutException);
+        }
+    }
 
-      final byte[] content = new byte[expected.length];
-      final ClientResponseFilter capturer = new ClientResponseFilter() {
-         @Override
-         public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-            responseContext.getEntityStream().read(content);
-         }
-      };
+    @Test
+    public void testDeferContent() throws Exception {
+        server.requestHandler(new EchoHandler());
+        final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
+        final Response response = client().target(baseUri()).request()
+                .post(Entity.entity(new StreamingOutput() {
+                    @Override
+                    public void write(OutputStream output) throws IOException, WebApplicationException {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new AssertionError(e);
+                        }
+                        output.write(valuableData);
+                    }
+                }, MediaType.APPLICATION_OCTET_STREAM_TYPE));
 
-      try (InputStream response = client().register(capturer).target(baseUri()).request()
-         .get(InputStream.class)) {
-         // ignored, we are checking filter
-      }
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
 
-      assertArrayEquals(expected, content);
-   }
+    @Test
+    public void testFilterBufferReplay() throws Exception {
+        final String greeting = "Success";
+        final byte[] expected = greeting.getBytes(StandardCharsets.UTF_8);
+        server.requestHandler(req -> {
+            req.response().putHeader(HttpHeaders.CONTENT_TYPE, "text/plain").end(greeting);
+        });
 
-   @Test
-   public void testServerFailure1() throws Exception {
-      server.requestHandler(req -> {
-         req.response().close();
-      });
-
-      try {
-         client().target(baseUri()).request().get();
-         fail();
-      } catch (ProcessingException ignore) {
-         // Expected
-      }
-   }
-
-   @Test
-   public void testServerFailure2() throws Exception {
-      server.requestHandler(req -> {
-         HttpServerResponse resp = req.response();
-         resp.setChunked(true).write("something");
-         vertx.setTimer(1000, id -> {
-            // Leave it some time to receive the response headers and start processing the response
-            resp.close();
-         });
-      });
-
-      try {
-         Response response = client().target(baseUri()).request().get();
-         response.readEntity(String.class);
-         fail();
-      } catch (ProcessingException ignore) {
-         // Expected
-      }
-   }
-
-   public URI baseUri() {
-      return URI.create("http://localhost:" + server.actualPort());
-   }
-
-   static class EchoHandler implements Handler<HttpServerRequest> {
-      @Override
-      public void handle(HttpServerRequest req) {
-         req.bodyHandler(body -> {
-            String type = req.getHeader(HttpHeaders.CONTENT_TYPE);
-            if (type == null) {
-               type = "text/plain";
+        final byte[] content = new byte[expected.length];
+        final ClientResponseFilter capturer = new ClientResponseFilter() {
+            @Override
+            public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+                responseContext.getEntityStream().read(content);
             }
-            req.response()
-                .putHeader(HttpHeaders.CONTENT_TYPE, type)
-                .end(body);
-         });
-      }
-   }
+        };
+
+        try (InputStream response = client().register(capturer).target(baseUri()).request()
+                .get(InputStream.class)) {
+            // ignored, we are checking filter
+        }
+
+        assertArrayEquals(expected, content);
+    }
+
+    @Test
+    public void testServerFailure1() throws Exception {
+        server.requestHandler(req -> {
+            req.response().close();
+        });
+
+        try {
+            client().target(baseUri()).request().get();
+            fail();
+        } catch (ProcessingException ignore) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void testServerFailure2() throws Exception {
+        server.requestHandler(req -> {
+            HttpServerResponse resp = req.response();
+            resp.setChunked(true).write("something");
+            vertx.setTimer(1000, id -> {
+                // Leave it some time to receive the response headers and start processing the response
+                resp.close();
+            });
+        });
+
+        try {
+            Response response = client().target(baseUri()).request().get();
+            response.readEntity(String.class);
+            fail();
+        } catch (ProcessingException ignore) {
+            // Expected
+        }
+    }
+
+    private String randomAlpha() {
+        final StringBuilder builder = new StringBuilder();
+        final Random r = new Random();
+        for (int i = 0; i < 20 * 1024 * 1024; i++) {
+            builder.append((char) ('a' + (char) r.nextInt('z' - 'a')));
+            if (i % 100 == 0) builder.append('\n');
+        }
+        return builder.toString();
+    }
+
+    public URI baseUri() {
+        return URI.create("http://localhost:" + server.actualPort());
+    }
+
+    static class EchoHandler implements Handler<HttpServerRequest> {
+        @Override
+        public void handle(HttpServerRequest req) {
+            req.bodyHandler(body -> {
+                String type = req.getHeader(HttpHeaders.CONTENT_TYPE);
+                if (type == null) {
+                    type = "text/plain";
+                }
+                req.response()
+                        .putHeader(HttpHeaders.CONTENT_TYPE, type)
+                        .end(body);
+            });
+        }
+    }
 }

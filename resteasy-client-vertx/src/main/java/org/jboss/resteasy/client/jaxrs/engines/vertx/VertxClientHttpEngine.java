@@ -160,10 +160,31 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         if (body != null) {
             headers.set(HttpHeaders.CONTENT_LENGTH, "" + body.length());
         }
+
         if(!headers.contains(HttpHeaders.USER_AGENT)) {
             options.addHeader(HttpHeaders.USER_AGENT.toString(), "Vertx");
         }
-        options.setAbsoluteURI(request.getUri().toString());
+
+        URI uri = request.getUri();
+        options.setHost(uri.getHost());
+
+
+        if (-1 == uri.getPort()) {
+            if ("http".equals(uri.getScheme())) {
+                options.setPort(80);
+            } else if ("https".equals(uri.getScheme())) {
+                options.setPort(443);
+            }
+        } else {
+            options.setPort(uri.getPort());
+        }
+
+        if(uri.getRawQuery() != null && !uri.getRawQuery().trim().isEmpty()) {
+            options.setURI(String.format("%s?%s", uri.getRawPath(), uri.getRawQuery()));
+        }else {
+            options.setURI(uri.getRawPath());
+        }
+
 
         Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
         if (timeout != null) {
@@ -176,23 +197,23 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         final CompletableFuture<ClientResponse> futureResponse = new CompletableFuture<>();
         httpClient.request(options)
                 .map(httpClientRequest -> {
-            final Handler<AsyncResult<HttpClientResponse>> handler = event -> {
-                if (event.succeeded()) {
-                    final HttpClientResponse response = event.result();
-                    response.pause();
-                    futureResponse.complete(toRestEasyResponse(request.getClientConfiguration(), response));
-                    response.resume();
-                } else {
-                    futureResponse.completeExceptionally(event.cause());
-                }
-            };
-            if (body != null) {
-                httpClientRequest.send(body, handler);
-            } else {
-                httpClientRequest.send(handler);
-            }
-            return null;
-        });
+                    final Handler<AsyncResult<HttpClientResponse>> handler = event -> {
+                        if (event.succeeded()) {
+                            final HttpClientResponse response = event.result();
+                            response.pause();
+                            futureResponse.complete(toRestEasyResponse(request.getClientConfiguration(), response));
+                            response.resume();
+                        } else {
+                            futureResponse.completeExceptionally(event.cause());
+                        }
+                    };
+                    if (body != null) {
+                        httpClientRequest.send(body, handler);
+                    } else {
+                        httpClientRequest.send(handler);
+                    }
+                    return null;
+                });
         return futureResponse;
     }
 

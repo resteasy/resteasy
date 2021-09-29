@@ -51,7 +51,7 @@
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.org.jboss.galleon>4.2.8.Final</version.org.jboss.galleon>
-        <version.org.wildfly.galleon-plugins>5.2.0.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>5.2.2.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Beta1</version.org.wildfly.plugins.wildfly-maven-plugin>
     </properties>
 
@@ -138,7 +138,6 @@
                 <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
                 <module>providers</module>
-                <module>resteasy-cache</module>
                 <module>security</module>
                 <module>resteasy-links</module>
                 <module>resteasy-jsapi</module>
