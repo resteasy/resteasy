@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -526,5 +529,35 @@ public class TestUtil {
          Assert.fail("Can't get the operating system name");
       }
       return (osName.indexOf("Windows") > -1) || (osName.indexOf("windows") > -1);
+   }
+
+   /**
+    * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+    *
+    * @param base the base URL
+    * @param path the path to append
+    *
+    * @return the newly create URI
+    *
+    * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+    * @see URI
+    */
+   public static URI generateUri(final URL base, final String path) throws URISyntaxException {
+      if (path == null || path.isEmpty()) {
+         return base.toURI();
+      }
+      final StringBuilder builder = new StringBuilder(base.toString());
+      if (builder.charAt(builder.length() - 1) == '/') {
+         if (path.charAt(0) == '/') {
+            builder.append(path.substring(1));
+         } else {
+            builder.append(path);
+         }
+      } else if (path.charAt(0) == '/') {
+         builder.append(path.substring(1));
+      } else {
+         builder.append('/').append(path);
+      }
+      return new URI(builder.toString());
    }
 }
