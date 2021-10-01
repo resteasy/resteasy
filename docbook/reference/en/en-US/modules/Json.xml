@@ -251,7 +251,9 @@ public class ObjectWriterModifierFilter implements Filter {
     <sect1 id="Polymorphic_Typing_deserialization">
         <title>Polymorphic Typing deserialization</title>
         <para>
-           Due to numerous CVEs for a specific kind of Polymorphic Deserialization (see details in FasterXML Jackson documentation), starting from Jackson 2.10 users have a mean to allow only specified classes to be deserialized. RESTEasy enables this feature by default and allows controlling the contents of whitelist of allowed classes/packages using MicroProfile Config.
+           Due to numerous CVEs for a specific kind of Polymorphic Deserialization (see details in FasterXML Jackson documentation),
+            starting from Jackson 2.10 users have a mean to allow only specified classes to be deserialized. RESTEasy
+            enables this feature by default and allows controlling the contents of whitelist of allowed classes/packages.
 
 <table frame="topbot">
                 <tgroup cols="3" rowsep="1" colsep="1">

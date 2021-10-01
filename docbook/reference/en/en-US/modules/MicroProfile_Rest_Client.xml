@@ -15,6 +15,21 @@ In particular, the API code is in
 and the specification is in
 <ulink url="https://github.com/eclipse/microprofile-rest-client/tree/master/spec">https://github.com/eclipse/microprofile-rest-client/tree/master/spec</ulink>.
 </para>
+<para>
+    <emphasis role="bold">IMPORTANT:</emphasis> As of RESTEasy 5.0.0 the MicroProfile integration has moved to a new
+    project, group id, artifact id and version. The new group id is <code>org.jboss.resteasy.microprofile</code>.The
+    artifact id for the client is now <code>microprofile-client</code>. To use the MicroProfile Config sources the
+    artifact id is <code>microprofile-config</code>. Finally for context propagation the new artifact is is
+    <code>microprofile-context-propagation</code>
+</para>
+<para>
+    You could also use the RESTEasy MicroProfile BOM:
+    <programlisting><![CDATA[<dependency>
+    <groupId>org.jboss.resteasy.microprofile</groupId>
+    <artifactId>resteasy-microprofile-bom</artifactId>
+    <version>${version.org.jboss.resteasy.microprofile}</version>
+</dependency>]]></programlisting>
+</para>
 
 <sect1>
 <title>Client proxies</title>

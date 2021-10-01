@@ -6,7 +6,7 @@
     <para>
         <emphasis role="bold">IMPORTANT:</emphasis> As of RESTEasy 5.0.0 the Spring integration has moved to a new
         project, group id and version. The new group id is <code>org.jboss.resteasy.spring</code>. Currently the
-        artifact id's have not changed. The current released version is 2.0.0.Alpha1.
+        artifact id's have not changed.
     </para>
     <para>RESTEasy currently supports Spring version _SPRING_VER_</para>
     <section id="BasicIntegration">
@@ -17,7 +17,7 @@
         <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy.spring</groupId>
     <artifactId>resteasy-spring</artifactId>
-    <version>2.0.0.Alpha1</version>
+    <version>${version.org.jboss.resteasy.spring}</version>
 </dependency>]]></programlisting>
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
@@ -365,7 +365,7 @@ server.deploy(deployment);]]></programlisting>
             <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy.spring</groupId>
     <artifactId>resteasy-spring-web</artifactId>
-    <version>2.0.0.Alpha1</version>
+    <version>${version.org.jboss.resteasy.spring}</version>
 </dependency>]]></programlisting>
         </para>
         <para>

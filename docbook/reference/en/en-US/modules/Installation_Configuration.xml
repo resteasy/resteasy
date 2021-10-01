@@ -680,6 +680,22 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                 If an application is running inside Wildfly, then all of the dependencies are automatically available. Outside of
                 Wildfly, an application will need the Eclipse MicroProfile API at compile time. In maven, for example, use
             </para>
+
+            <para>
+                As of RESTEasy 5.0 you will first need to add the RESTEasy MicroProfile Config dependency.
+            </para>
+
+            <programlisting>
+        &lt;dependency&gt;
+          &lt;groupId&gt;org.jboss.resteasy.microprofile&lt;/groupId&gt;
+          &lt;artifactId&gt;microprofile-config&lt;/artifactId&gt;
+          &lt;scope&gt;compile&lt;/scope&gt;
+        &lt;/dependency&gt;
+            </programlisting>
+
+            <para>
+                You will also need the MicroProfile Config API and an Implementation, in our case SmallRye.
+            </para>
             
             <programlisting>
         &lt;dependency&gt;
@@ -688,10 +704,6 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
             &lt;scope&gt;compile&lt;/scope&gt;
         &lt;/dependency&gt;
             </programlisting>
-            
-            <para>
-                It will also need the implementation, smallrye-config, at runtime:
-            </para>
             
             <programlisting>
         &lt;dependency&gt;
