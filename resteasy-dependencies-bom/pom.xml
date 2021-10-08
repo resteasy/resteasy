@@ -395,7 +395,6 @@
                 <groupId>jakarta.enterprise</groupId>
                 <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 <version>${version.jakarta.enterprise.cdi-api}</version>
-                <scope>provided</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>jakarta.interceptor</groupId>
