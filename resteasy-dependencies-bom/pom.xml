@@ -215,7 +215,6 @@
                 <groupId>jakarta.ejb</groupId>
                 <artifactId>jakarta.ejb-api</artifactId>
                 <version>${version.jakarta.ejb.ejb-api}</version>
-                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -391,7 +390,6 @@
                 <groupId>jakarta.enterprise</groupId>
                 <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 <version>${version.jakarta.enterprise.cdi-api}</version>
-                <scope>provided</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>jakarta.interceptor</groupId>
@@ -446,7 +444,6 @@
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>${version.jakarta.servlet.servlet-api}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>
