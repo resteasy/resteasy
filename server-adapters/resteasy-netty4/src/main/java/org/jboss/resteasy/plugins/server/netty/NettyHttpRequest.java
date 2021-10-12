@@ -3,10 +3,11 @@ package org.jboss.resteasy.plugins.server.netty;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -56,7 +57,7 @@ public class NettyHttpRequest extends BaseHttpRequest
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected NettyHttpResponse response;
    private final boolean is100ContinueExpected;
-   private NettyExecutionContext executionContext;
+   private final NettyExecutionContext executionContext;
    private final ChannelHandlerContext ctx;
    private volatile boolean flushed;
    private ByteBuf content;
@@ -69,8 +70,8 @@ public class NettyHttpRequest extends BaseHttpRequest
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
-      this.executionContext = new NettyExecutionContext(this, response, dispatcher);
       this.ctx = ctx;
+      this.executionContext = new NettyExecutionContext(this, response, dispatcher);
    }
 
    @Override
@@ -88,22 +89,7 @@ public class NettyHttpRequest extends BaseHttpRequest
    @Override
    public Enumeration<String> getAttributeNames()
    {
-      Enumeration<String> en = new Enumeration<String>()
-      {
-         private Iterator<String> it = attributes.keySet().iterator();
-         @Override
-         public boolean hasMoreElements()
-         {
-            return it.hasNext();
-         }
-
-         @Override
-         public String nextElement()
-         {
-            return it.next();
-         }
-      };
-      return en;
+      return Collections.enumeration(new HashSet<>(attributes.keySet()));
    }
 
    @Override
@@ -203,7 +189,7 @@ public class NettyHttpRequest extends BaseHttpRequest
       protected volatile boolean done;
       protected volatile boolean cancelled;
       protected volatile boolean wasSuspended;
-      protected NettyHttpAsyncResponse asyncResponse;
+      protected final NettyHttpAsyncResponse asyncResponse;
 
       NettyExecutionContext(final NettyHttpRequest request, final NettyHttpResponse response, final SynchronousDispatcher dispatcher)
       {
@@ -302,8 +288,8 @@ public class NettyHttpRequest extends BaseHttpRequest
        */
       class NettyHttpAsyncResponse extends AbstractAsynchronousResponse {
          private final Object responseLock = new Object();
-         protected ScheduledFuture timeoutFuture;
-         private NettyHttpResponse nettyResponse;
+         protected ScheduledFuture<?> timeoutFuture;
+         private final NettyHttpResponse nettyResponse;
          NettyHttpAsyncResponse(final SynchronousDispatcher dispatcher, final NettyHttpRequest request, final NettyHttpResponse response) {
             super(dispatcher, request, response);
             this.nettyResponse = response;
@@ -377,12 +363,14 @@ public class NettyHttpRequest extends BaseHttpRequest
             }
          }
 
-         protected synchronized void nettyFlush()
+         protected void nettyFlush()
          {
             flushed = true;
             try
             {
-               nettyResponse.finish();
+               synchronized (responseLock) {
+                  nettyResponse.finish();
+               }
             }
             catch (IOException e)
             {
