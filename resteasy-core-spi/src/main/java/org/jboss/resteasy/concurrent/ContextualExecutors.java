@@ -283,7 +283,7 @@ public class ContextualExecutors {
                 }
                 return task.call();
             } finally {
-                reset(contexts.keySet());
+                reset(contexts);
             }
         };
     }
@@ -313,7 +313,7 @@ public class ContextualExecutors {
                 }
                 task.run();
             } finally {
-                reset(contexts.keySet());
+                reset(contexts);
             }
         };
     }
@@ -332,11 +332,11 @@ public class ContextualExecutors {
         });
     }
 
-    private static void reset(final Collection<ThreadContext<Object>> contexts) {
+    private static void reset(final Map<ThreadContext<Object>, Object> contexts) {
         Throwable error = null;
-        for (ThreadContext<Object> context : contexts) {
+        for (Map.Entry<ThreadContext<Object>, Object> context : contexts.entrySet()) {
             try {
-                context.reset();
+                context.getKey().reset(context.getValue());
             } catch (Throwable t) {
                 if (error == null) {
                     error = t;
