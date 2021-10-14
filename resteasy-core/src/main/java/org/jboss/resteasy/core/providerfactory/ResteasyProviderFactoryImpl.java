@@ -30,6 +30,8 @@ import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.concurrent.ThreadContext;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
@@ -911,6 +913,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          addHeaderDelegate(provider);
       }
+      if (Utils.isA(provider, ThreadContext.class, contracts)) {
+         ResteasyContext.computeIfAbsent(ThreadContexts.class, ThreadContexts::new)
+            .add(createProviderInstance((Class<? extends ThreadContext>) provider));
+      }
    }
 
    public void addHeaderDelegate(Class provider) {
@@ -1080,6 +1086,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             Class<?> headerClass = Types.getRawType(headerTypes[0]);
             addHeaderDelegate(headerClass, (HeaderDelegate) provider);
          }
+      }
+      if (Utils.isA(provider, ThreadContext.class, contracts)) {
+         ResteasyContext.computeIfAbsent(ThreadContexts.class, ThreadContexts::new)
+                 .add((ThreadContext<?>) provider);
       }
    }
 
