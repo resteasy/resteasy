@@ -723,7 +723,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
 
    private ContextualExecutorService getExecutorService() {
       if (asyncExecutor != null) {
-         return ContextualExecutors.wrap(asyncExecutor, cleanupExecutor);
+         return ContextualExecutors.wrap(asyncExecutor, !cleanupExecutor);
       }
       return ContextualExecutors.threadPool();
    }

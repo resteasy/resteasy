@@ -36,12 +36,12 @@ public class NettyHttpResponse implements HttpResponse
    private static final int EMPTY_CONTENT_LENGTH = 0;
    private int status = 200;
    private OutputStream os;
-   private MultivaluedMap<String, Object> outputHeaders;
+   private final MultivaluedMap<String, Object> outputHeaders;
    private final ChannelHandlerContext ctx;
    private boolean committed;
-   private boolean keepAlive;
-   private ResteasyProviderFactory providerFactory;
-   private HttpMethod method;
+   private final boolean keepAlive;
+   private final ResteasyProviderFactory providerFactory;
+   private final HttpMethod method;
 
    public NettyHttpResponse(final ChannelHandlerContext ctx, final boolean keepAlive, final ResteasyProviderFactory providerFactory)
    {
@@ -156,7 +156,6 @@ public class NettyHttpResponse implements HttpResponse
       {
          throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
       }
-      outputHeaders.clear();
       outputHeaders.clear();
    }
 

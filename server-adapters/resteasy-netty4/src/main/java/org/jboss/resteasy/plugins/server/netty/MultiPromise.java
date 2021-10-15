@@ -9,10 +9,10 @@ import io.netty.channel.ChannelPromise;
 public class MultiPromise
 {
 
-   private ChannelHandlerContext ctx;
-   private AtomicInteger created = new AtomicInteger();
-   private AtomicReference<Throwable> cause = new AtomicReference<>();
-   private ChannelPromise promise;
+   private final ChannelHandlerContext ctx;
+   private final AtomicInteger created = new AtomicInteger();
+   private final AtomicReference<Throwable> cause = new AtomicReference<>();
+   private final ChannelPromise promise;
    private boolean started;
 
    public MultiPromise(final ChannelHandlerContext ctx, final ChannelPromise promise)

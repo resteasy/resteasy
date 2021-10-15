@@ -376,7 +376,7 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
           Alternatively, you can use RESTEasy's support of 
           <ulink url="https://github.com/eclipse/microprofile-context-propagation">MicroProfile Context Propagation</ulink> by using <code>ThreadContext.contextualRunnable</code>
           around your <code>Runnable</code>, which will take care of capturing and restoring all 
-          registered contexts (you will need to import the <code>resteasy-context-propagation</code> module):
+          registered contexts (you will need to import the <code>org.jboss.resteasy.microprofile:microprofile-context-propagation</code> module):
        </para>
        
 <programlisting>
@@ -406,6 +406,29 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
             }
          }));
    return cs;
+}
+</programlisting>
+
+       <para>
+           As another alternative you can use the RESTEasy SPI's <code>ContextualExecutor</code> if the MicroProfile
+           Context Propagation is not available. This requires a dependency on <code>org.jboss.resteasy:resteasy-core</code>.
+       </para>
+
+<programlisting>
+@GET
+@Path("test")
+@Produces(MediaType.TEXT_PLAIN)
+public CompletionStage&lt;String&gt; text(@Context UriInfo uriInfo) {
+  CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
+  ExecutorService executor = ContextualExecutors.threadPool();
+  executor.submit(() -&gt; {
+     try {
+        cs.complete("hello from: " + uriInfo.getAbsolutePath());
+     } catch (Exception e) {
+        e.printStackTrace();
+     }
+  });
+  return cs;
 }
 </programlisting>
    </note>

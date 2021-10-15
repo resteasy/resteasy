@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -23,13 +22,12 @@ import javax.ws.rs.client.Invocation.Builder;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Ignore("RESTEASY-3013 something is wrong and causing these tests to fail.")
 public class JaxrsAsyncTest
 {
    static String BASE_URI = generateURL("");
    static Client client;
 
-   static final int REQUEST_TIMEOUT = 1000;
+   static final int REQUEST_TIMEOUT = 4000;
 
    @BeforeClass
    public static void setupSuite() throws Exception
