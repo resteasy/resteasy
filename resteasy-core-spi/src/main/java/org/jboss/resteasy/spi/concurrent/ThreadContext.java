@@ -21,7 +21,7 @@ package org.jboss.resteasy.spi.concurrent;
 
 /**
  * A utility used to {@linkplain #capture() capture} the current context and {@linkplain #push(Object) set it} on a
- * thread before it's execute. Finally {@linkplain #reset() resetting} the context.
+ * thread before it's execute. Finally {@linkplain #reset(Object) resetting} the context.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  * @see org.jboss.resteasy.concurrent.ContextualExecutorService
@@ -40,12 +40,14 @@ public interface ThreadContext<T> {
     /**
      * Pushes the context previously captured to the currently running thread.
      *
-     * @param context the context to push
+     * @param context the captured context to push
      */
     void push(T context);
 
     /**
      * Resets the context on the current thread.
+     *
+     * @param context the captured context to reset
      */
-    void reset();
+    void reset(T context);
 }

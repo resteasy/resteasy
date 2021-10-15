@@ -7,6 +7,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
 public final class ResteasyContext
@@ -42,6 +43,20 @@ public final class ResteasyContext
          return null;
       }
       return (T) contextDataMap.get(type);
+   }
+
+   /**
+    * Gets the current context for the type. If the context does not exist the value is resolved from the {@code newValue}
+    * supplier and pushed to the current context.
+    *
+    * @param type     the type to lookup in the context map
+    * @param newValue the new value if the value was not already setup in the value map
+    * @param <T>      the type to lookup
+    *
+    * @return the context data
+    */
+   public static <T> T computeIfAbsent(final Class<T> type, final Supplier<T> newValue) {
+      return (T) getContextDataMap().computeIfAbsent(type, (value) -> newValue.get());
    }
 
    public static <T> T popContextData(Class<T> type)

@@ -17,29 +17,20 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.concurrent;
+package org.jboss.resteasy.test.context.resource;
 
-import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.spi.concurrent.ThreadContext;
-
-import java.util.Map;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyThreadContext implements ThreadContext<Map<Class<?>, Object>> {
-    @Override
-    public Map<Class<?>, Object> capture() {
-        return ResteasyContext.getContextDataMap();
-    }
+@Path("/test")
+public class TestResource {
 
-    @Override
-    public void push(final Map<Class<?>, Object> context) {
-        ResteasyContext.pushContextDataMap(context);
-    }
-
-    @Override
-    public void reset(final Map<Class<?>, Object> context) {
-        ResteasyContext.removeContextDataLevel();
+    @GET
+    public Response response() {
+        return Response.ok().build();
     }
 }
