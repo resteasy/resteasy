@@ -47,6 +47,7 @@ import io.vertx.core.http.HttpVersion;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -129,31 +130,36 @@ public class VertxClientEngineTest {
     }
 
     @Test
-    public void testHTTPS() throws Exception {
+    public void testHTTPS() {
         Vertx vertx = Vertx.vertx();
         HttpClientOptions options = new HttpClientOptions();
         options.setSsl(true);
-        Client client = ((ResteasyClientBuilder) ClientBuilder
+
+        Client client = ClientBuilder
                 .newBuilder()
-                .scheduledExecutorService(executorService))
-                .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
+                .property("org.jboss.resteasy.http.client.engine", new VertxClientHttpEngine(vertx, options))
+                .build();
+
         final Response resp = client.target("https://example.com").request().get();
         assertEquals(200, resp.getStatus());
+        Assert.assertTrue(resp.readEntity(String.class).contains("example"));
     }
 
     @Test
-    public void testHTTP2() throws Exception {
+    public void testHTTP2() {
         Vertx vertx = Vertx.vertx();
         HttpClientOptions options = new HttpClientOptions();
         options.setSsl(true);
         options.setProtocolVersion(HttpVersion.HTTP_2);
         options.setUseAlpn(true);
-        Client client = ((ResteasyClientBuilder) ClientBuilder
+        Client client = ClientBuilder
                 .newBuilder()
-                .scheduledExecutorService(executorService))
-                .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
+                .property("org.jboss.resteasy.http.client.engine", new VertxClientHttpEngine(vertx, options))
+                .build();
         final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
         assertEquals(200, resp.getStatus());
+        Assert.assertTrue(resp.readEntity(String.class).contains("nghttp2.org"));
+
     }
 
     @Test
