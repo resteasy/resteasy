@@ -53,7 +53,7 @@ public void testQuery() throws Exception {
    
    <para>
    What if you have a class where <methodname>valueOf()</methodname>or this string constructor don't exist or are inappropriate
-   for an HTTP request? JAX-RS 2.0 has the <classname>javax.ws.rs.ext.ParamConverterProvider</classname> to help
+   for an HTTP request? JAX-RS 2.0 has the <classname>jakarta.ws.rs.ext.ParamConverterProvider</classname> to help
    in this situation.
    </para>
    
@@ -128,7 +128,7 @@ public class DateParamConverter implements ParamConverter&lt;Date&gt; {
    <title>StringParameterUnmarshaller</title>
    
    <para>
-   In addition to the JAX-RS <classname>javax.ws.rs.ext.ParamConverterProvider</classname>,
+   In addition to the Jakarta REST <classname>jakarta.ws.rs.ext.ParamConverterProvider</classname>,
    RESTEasy also has its own <classname>org.jboss.resteasy.StringParameterUnmarshaller</classname>, defined
    </para>
    
@@ -141,7 +141,7 @@ public interface StringParameterUnmarshaller&lt;T&gt;
 }
    </programlisting>
    <para>
-   It is similar to <classname>javax.ws.rs.ext.ParamConverter</classname> except that
+   It is similar to <classname>jakarta.ws.rs.ext.ParamConverter</classname> except that
    </para>
    <itemizedlist>
       <listitem>it converts only from <classname>String</classname>s;</listitem>
@@ -216,7 +216,7 @@ public @interface StringParameterUnmarshallerBinder
    
    <para>
    For parameters and properties annotated with <classname>@CookieParam</classname>, <classname>@HeaderParam</classname>,
-   <classname>@MatrixParam</classname>, <classname>@PathParam,</classname> or <classname>@QueryParam</classname>, the JAX-RS specification
+   <classname>@MatrixParam</classname>, <classname>@PathParam,</classname> or <classname>@QueryParam</classname>, the Jakarta REST specification
    [<ulink url="https://jcp.org/aboutJava/communityprocess/final/jsr339/index.html">https://jcp.org/aboutJava/communityprocess/final/jsr339/index.html</ulink>]
    allows conversion as defined in the Javadoc of the
    corresponding annotation. In general, the following types are supported: 
@@ -264,7 +264,7 @@ http://bluemonkeydiamond.com?q=1&amp;q=2&amp;q=3
    
    <para>
    In this case, there is a query with name "q" and value {1, 2, 3}. This notation is further supported
-   in JAX-RS by the method
+   in Jakarta REST by the method
    </para>
    
    <programlisting>
@@ -272,7 +272,7 @@ public MultivaluedMap&lt;String, String&gt; getQueryParameters();
    </programlisting>
    
    <para>
-   in <classname>javax.ws.rs.core.UriInfo</classname>.
+   in <classname>jakarta.ws.rs.core.UriInfo</classname>.
    </para>
    </sect2>
    
@@ -293,7 +293,7 @@ public MultivaluedMap&lt;String, String&gt; getQueryParameters();
 MultivaluedMap&lt;String, String&gt; getMatrixParameters();
    </programlisting>
    <para>
-   in <classname>javax.ws.rs.core.PathSegment</classname> supports extraction of collections from matrix parameters.
+   in <classname>jakarta.ws.rs.core.PathSegment</classname> supports extraction of collections from matrix parameters.
    </para>
    </listitem>
    </orderedlist>
@@ -325,7 +325,7 @@ public MultivaluedMap&lt;String, String&gt; getRequestHeaders();
    </programlisting>
    
    <para>
-   in <classname>javax.ws.rs.core.HttpHeaders</classname> returns a <classname>MultivaluedMap</classname>.
+   in <classname>jakarta.ws.rs.core.HttpHeaders</classname> returns a <classname>MultivaluedMap</classname>.
    It is natural, then, for RESTEasy to treat
    </para>
    
@@ -344,7 +344,7 @@ x-header: a, b, c
    <para>
    The syntax for cookies is specified, but, unfortunately, it is specified in multiple competing
    specifications. Typically, multiple name=value cookie pairs are separated by ";". However, unlike
-   the case with query and matrix parameters, there is no specified JAX-RS method that returns a
+   the case with query and matrix parameters, there is no specified Jakarta REST method that returns a
    collection of cookie values. Consequently, if two cookies with the same name are received on
    the server and directed to a collection typed parameter, RESTEasy will inject only the second one.
    Note, in fact, that the method
@@ -355,7 +355,7 @@ public Map&lt;String, Cookie&gt; getCookies();
    </programlisting>
    
    <para>
-   in <classname>javax.ws.rs.core.HttpHeaders</classname> returns a <classname>Map</classname> rather than a
+   in <classname>jakarta.ws.rs.core.HttpHeaders</classname> returns a <classname>Map</classname> rather than a
    <classname>MultivaluedMap</classname>.
    </para>
    
@@ -366,7 +366,7 @@ public Map&lt;String, Cookie&gt; getCookies();
    
    <para>
    Deriving a collection from path segments is somewhat less natural than it is for other parameters,
-   but JAX-RS supports the injection of multiple <classname>javax.ws.rs.core.PathSegment</classname>s. There are a
+   but Jakarta REST supports the injection of multiple <classname>jakarta.ws.rs.core.PathSegment</classname>s. There are a
    couple of ways of obtaining multiple <classname>PathSegment</classname>s. One is through the use of multiple path
    variables with the same name. For example, the result of calling <methodname>testTwoSegmentsArray()</methodname> and
    <methodname>testTwoSegmentsList()</methodname> in
@@ -471,7 +471,7 @@ list segments: 3
    <title>Extension to <classname>ParamConverter</classname> semantics</title>
    
    <para>
-   In the JAX-RS semantics, a <classname>ParamConverter</classname> is supposed to convert a single <classname>String</classname> that
+   In the Jakarta REST semantics, a <classname>ParamConverter</classname> is supposed to convert a single <classname>String</classname> that
    represents an individual object. RESTEasy extends the semantics to allow a <classname>ParamConverter</classname>
    to parse the <classname>String</classname> representation of multiple objects and generate a <classname>List&lt;T&gt;</classname>,
    <classname>Set&lt;T&gt;</classname>, <classname>SortedSet&lt;T&gt;</classname>, array, or, indeed, any multivalued data structure
@@ -670,7 +670,7 @@ public static class TestResource {
    <title>Default multiple valued <classname>ParamConverter</classname></title>
    
    <para>
-   RESTEasy includes two built-in <classname>ParamConverter</classname>s in the resteasy-jaxrs module,
+   RESTEasy includes two built-in <classname>ParamConverter</classname>s in the resteasy-core module,
    one for <classname>Collection</classname>s:
    </para>
    
@@ -780,7 +780,7 @@ public String pathMultiSeparator(@PathParam("p") @Separator("-") List&lt;String&
       The <classname>MultiValued*ParamConverter</classname>s depend on existing facilities for handling
       the individual elements. On the server side, once it has parsed the incoming string into substrings,
       <classname>MultiValued*ParamConverter</classname> turns each substring into an Java object according
-      to Section 3.2 "Fields and Bean Properties" of the JAX-RS specification. On the client side, 
+      to Section 3.2 "Fields and Bean Properties" of the Jakarta REST specification. On the client side, 
       <classname>MultiValued*ParamConverter</classname> turns a Java object into a string as follows:
    </para>
    

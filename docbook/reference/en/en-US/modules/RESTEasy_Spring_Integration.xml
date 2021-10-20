@@ -22,10 +22,10 @@
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
             <code>BeanPostProcessor</code>
-            that processes JAX-RS annotations when a bean is created by a <code>BeanFactory</code>. And it will
-            automatically scan for <code>@Provider</code> and JAX-RS resource annotations on your
+            that processes Jakarta REST annotations when a bean is created by a <code>BeanFactory</code>. And it will
+            automatically scan for <code>@Provider</code> and Jakarta REST resource annotations on your
             bean class and
-            register them as JAX-RS resources.
+            register them as Jakarta REST resources.
         </para>
         <para>Here is the content that you should add into your <code>web.xml</code> file:
         </para>
@@ -45,7 +45,7 @@
             attributes initialized by it.
         </para>
         <para>
-            And you can configure the Springframework to scan for the JAX-RS resources and beans in a Spring
+            And you can configure the Springframework to scan for the Jakarta REST resources and beans in a Spring
             configuration file. The content of the file is shown as follow:
         </para>
         <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
@@ -57,7 +57,7 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <context:component-scan base-package="org.jboss.resteasy.examples.springbasic">
-        <context:include-filter type="annotation" expression="javax.ws.rs.Path"/>
+        <context:include-filter type="annotation" expression="jakarta.ws.rs.Path"/>
     </context:component-scan>
     <context:annotation-config/>
 
@@ -139,12 +139,12 @@
     <section id="SpringMVC">
         <title>Spring MVC Integration</title>
         <para>
-            RESTEasy can also integrate with the Spring MVC framework. Generally speaking, JAX-RS can be combined with a
+            RESTEasy can also integrate with the Spring MVC framework. Generally speaking, Jakarta REST can be combined with a
             Spring <code>DispatcherServlet</code> and used in the same web application.
         </para>
         <para>
             An application combined in this way
-            allows you to dispatch to either the Spring controller or the JAX-RS resource
+            allows you to dispatch to either the Spring controller or the Jakarta REST resource
             using the same base URL. In addition you can use the Spring <code>ModelAndView</code> objects as return
             arguments from <code>@GET</code> resource methods.
         </para>
@@ -153,9 +153,10 @@
             as importing the <code>springmvc-resteasy.xml</code> file into your base Spring beans xml file. Here's an
             example <code>web.xml</code> file:
 
-            <programlisting><![CDATA[<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+            <programlisting><![CDATA[<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
     <display-name>resteasy-spring-mvc</display-name>
 
     <servlet>
@@ -191,7 +192,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
 ....]]></programlisting>
         <para>
-            And then you need to tell Spring the package to scan for your JAX-RS resource classes:
+            And then you need to tell Spring the package to scan for your Jakarta REST resource classes:
             <programlisting><![CDATA[<context:component-scan base-package="org.jboss.resteasy.examples.springmvc"/>
 <context:annotation-config/>]]></programlisting>
             Above is the basic configuration for Spring MVC framework. To see a complete example, please check the
@@ -201,13 +202,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             we provided.
         </para>
         <para>
-            In addition, A <code>javax.ws.rs.core.Application</code> subclass can be combined with a Spring
+            In addition, A <code>jakarta.ws.rs.core.Application</code> subclass can be combined with a Spring
             <code>DispatcherServlet</code>
             and used in the same web application.
         </para>
         <para>
             A servlet definition is required
-            for both the Spring <code>DispatcherServlet</code> and the <code>javax.ws.rs.core.Application</code> subclass
+            for both the Spring <code>DispatcherServlet</code> and the <code>jakarta.ws.rs.core.Application</code> subclass
             in the <code>web.xml</code>,
             as well as RESTEasy Configuration Switch, <code>resteasy.scan.resources</code>. Here is an example
             of the minimum configuration information needed in the <code>web.xml</code>.
@@ -232,7 +233,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </servlet-mapping>
 
     <!-- required RESTEasy Configuration Switch directs auto scanning
-         of the archive for JAX-RS resource files
+         of the archive for Jakarta REST resource files
     -->
     <context-param>
         <param-name>resteasy.scan.resources</param-name>
@@ -246,9 +247,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             for more information about application configuration.
         </para>
         <para>
-            If your web application contains JAX-RS provider classes the RESTEasy Configuration
+            If your web application contains Jakarta REST provider classes the RESTEasy Configuration
             Switch, <code>resteasy.scan.providers</code>, will also be needed. And if the url-pattern for the
-            JAX-RS Application subclass is other than <code>/*</code> you will need to declare the RESTEasy
+            Jakarta REST Application subclass is other than <code>/*</code> you will need to declare the RESTEasy
             Configuration Switch, <code>resteasy.servlet.mapping.prefix</code>. This switch can be declare
             either as a context-param or as a servlet init-param. It's value must be the text
             that preceeds the <code>/*</code>. Here is an example of such a <code>web.xml</code>:
@@ -467,8 +468,8 @@ server.deploy(deployment);]]></programlisting>
         <para>
             Furthermore, the use of <code>org.springframework.http.ResponseEntity</code> as a return value is
             supported as
-            is the use of <code>javax.servlet.http.HttpServletRequest</code> and
-            <code>javax.servlet.http.HttpServletResponse</code>
+            is the use of <code>jakarta.servlet.http.HttpServletRequest</code> and
+            <code>jakarta.servlet.http.HttpServletResponse</code>
             as method parameters.
         </para>
         <para>To see an example of the usage, please check the <ulink
@@ -496,13 +497,13 @@ server.deploy(deployment);]]></programlisting>
 </dependency>]]></programlisting>
         </para>
         <para>
-            And then you can use Spring annotation <code>@Component</code> to register your JAX-RS <code>Application
+            And then you can use Spring annotation <code>@Component</code> to register your Jakarta REST <code>Application
         </code> class:
             <programlisting><![CDATA[package com.sample.app;
 
 import org.springframework.stereotype.Component;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 @Component
 @ApplicationPath("/sample-app/")
@@ -510,8 +511,8 @@ public class JaxrsApplication extends Application {
 }]]></programlisting>
         </para>
         <para>
-            Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
-            automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
+            Finally, to register Jakarta REST resources and providers, just define them as Spring beans, and they will be
+            automatically registered. Notice that Jakarta REST resources can be singleton or request scoped, while Jakarta REST
             providers must be singletons.
         </para>
         <para>To see complete examples, please check the <ulink

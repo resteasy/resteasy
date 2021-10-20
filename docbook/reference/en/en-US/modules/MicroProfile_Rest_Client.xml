@@ -7,7 +7,7 @@ As the microservices style of system architecture (see, for example,
 gains increasing traction, new API standards are coming along to support it. One set of such standards comes from
 the <ulink url="https://microprofile.io/">Microprofile Project</ulink> supported by the Eclipse Foundation, and among 
 those is one, <ulink url="https://microprofile.io/project/eclipse/microprofile-rest-client">MicroProfile Rest Client</ulink>,
-of particular interest to RESTEasy and JAX-RS. In fact, it is intended to be based on, and consistent with, JAX-RS,
+of particular interest to RESTEasy and Jakarta REST. In fact, it is intended to be based on, and consistent with, Jakarta REST,
 and it includes ideas already implemented in RESTEasy. For a more detailed description of MicroProfile Rest Client,
 see <ulink url="https://github.com/eclipse/microprofile-rest-client">https://github.com/eclipse/microprofile-rest-client</ulink>.
 In particular, the API code is in 
@@ -53,7 +53,7 @@ public class TestResource {
 </programlisting>
 
 <para>
-The JAX-RS native way of accessing <classname>TestResource</classname> looks like
+The Jakarta REST native way of accessing <classname>TestResource</classname> looks like
 </para>
 
 <programlisting>
@@ -129,7 +129,7 @@ first and second parameters of <methodname>test()</methodname>, the Accept heade
 </para>
 
 <para>
-Using the JAX-RS API, <code>service.test("p", "q", "e")</code> would look like the more verbose
+Using the Jakarta REST API, <code>service.test("p", "q", "e")</code> would look like the more verbose
 </para>
 
 <programlisting>
@@ -181,33 +181,33 @@ in RESTEasy.
 </sect1>
 
 <sect1>
-<title>Concepts imported from JAX-RS</title>
+<title>Concepts imported from Jakarta REST</title>
 
 <para>
 Beyond the central concept of the client proxy, some basic concepts in MicroProfile Client originate
-in JAX-RS. Some of these have already been introduced in the previous section, since the interface
-implemented by a client proxy represents the facilities provided by a JAX-RS server. For example, the
+in Jakarta REST. Some of these have already been introduced in the previous section, since the interface
+implemented by a client proxy represents the facilities provided by a Jakarta REST server. For example, the
 HTTP verb annotations and the <code>@Consumes</code> and <code>@Produces</code> annotations originate on the
-JAX-RS server side. Injectable parameters annotated with <code>@PathParameter</code>, <code>@QueryParameter</code>,
-etc., also come from JAX-RS.
+Jakarta REST server side. Injectable parameters annotated with <code>@PathParameter</code>, <code>@QueryParameter</code>,
+etc., also come from Jakarta REST.
 </para>
 
 <para>
-Nearly all of the provider concepts supported by MicroProfile Client also originate in JAX-RS. These are:
+Nearly all of the provider concepts supported by MicroProfile Client also originate in Jakarta REST. These are:
 </para>
 
 <itemizedlist>
-   <listitem>javax.ws.rs.client.ClientRequestFilter</listitem>
-   <listitem>javax.ws.rs.client.ClientResponseFilter</listitem>
-   <listitem>javax.ws.rs.ext.MessageBodyReader</listitem>
-   <listitem>javax.ws.rs.ext.MessageBodyWriter</listitem>
-   <listitem>javax.ws.rs.ext.ParamConverter</listitem>
-   <listitem>javax.ws.rs.ext.ReaderInterceptor</listitem>
-   <listitem>javax.ws.rs.ext.WriterInterceptor</listitem>
+   <listitem>jakarta.ws.rs.client.ClientRequestFilter</listitem>
+   <listitem>jakarta.ws.rs.client.ClientResponseFilter</listitem>
+   <listitem>jakarta.ws.rs.ext.MessageBodyReader</listitem>
+   <listitem>jakarta.ws.rs.ext.MessageBodyWriter</listitem>
+   <listitem>jakarta.ws.rs.ext.ParamConverter</listitem>
+   <listitem>jakarta.ws.rs.ext.ReaderInterceptor</listitem>
+   <listitem>jakarta.ws.rs.ext.WriterInterceptor</listitem>
 </itemizedlist>
 
 <para>
-Like JAX-RS, MicroProfile Client also has the concept of mandated providers. These are
+Like Jakarta REST, MicroProfile Client also has the concept of mandated providers. These are
 </para>
 
 <itemizedlist>
@@ -229,10 +229,10 @@ Like JAX-RS, MicroProfile Client also has the concept of mandated providers. The
 </sect1>
 
 <sect1>
-<title>Beyond JAX-RS and RESTEasy</title>
+<title>Beyond Jakarta REST and RESTEasy</title>
 
 <para>
-Some concepts in MicroProfile Rest Client do not appear in either JAX-RS or RESTEasy.
+Some concepts in MicroProfile Rest Client do not appear in either Jakarta REST or RESTEasy.
 </para>
 
 <sect1>
@@ -240,7 +240,7 @@ Some concepts in MicroProfile Rest Client do not appear in either JAX-RS or REST
 
 <para>
 Whenever no media type is specified by, for example, <code>@Consumes</code> or <code>@Produces</code> annotations,
-the media type of a request entity or response entity is "application/json". This is different than JAX-RS, where
+the media type of a request entity or response entity is "application/json". This is different than Jakarta REST, where
 the media type defaults to "application/octet-stream".
 </para>
 </sect1>
@@ -373,8 +373,8 @@ public interface ClientHeadersFactory {
  * Updates the HTTP headers to send to the remote service. Note that providers
  * on the outbound processing chain could further update the headers.
  *
- * @param incomingHeaders - the map of headers from the inbound JAX-RS request. This will
- * be an empty map if the associated client interface is not part of a JAX-RS request.
+ * @param incomingHeaders - the map of headers from the inbound Jakarta REST request. This will
+ * be an empty map if the associated client interface is not part of a Jakarta REST request.
  * @param clientOutgoingHeaders - the read-only map of header parameters specified on the
  * client interface.
  * @return a map of HTTP headers to merge with the clientOutgoingHeaders to be sent to
@@ -406,7 +406,7 @@ default instance will be used.
 Although a <classname>ClientHeadersFactory</classname> is not officially designated as a provider, it is
 now (as of MicroProfile REST Client specification 1.4) subject to injection. In particular, when an instance of <classname>ClientHeadersFactory</classname>
 is managed by CDI, then CDI injection is mandatory. When a REST Client is executing in the context
-of a JAX-RS implementation, then @Context injection into a <classname>ClientHeadersFactory</classname> is
+of a Jakarta REST implementation, then @Context injection into a <classname>ClientHeadersFactory</classname> is
 currently optional. RESTEasy supports CDI injection and does not currently support @Context injection.
 </para>
 </sect1>
@@ -416,7 +416,7 @@ currently optional. RESTEasy supports CDI injection and does not currently suppo
 
 <para>
 The <classname>org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper</classname> is the
-client side inverse of the <classname>javax.ws.rs.ext.ExceptionMapper</classname> defined in JAX-RS. That is,
+client side inverse of the <classname>jakarta.ws.rs.ext.ExceptionMapper</classname> defined in Jakarta REST. That is,
 where <methodname>ExceptionMapper.toResponse()</methodname> turns an <classname>Exception</classname> thrown
 during server side processing into a <classname>Response</classname>,
 <methodname>ResponseExceptionMapper.toThrowable()</methodname> turns a 
@@ -441,15 +441,15 @@ then it is to be expected that services will often act as clients to other servi
 
 <para>
 CDI (Contexts and Dependency Injection) is a fairly rich subject and beyond the scope of this Guide. For more information, see 
-<ulink url="https://www.jcp.org/en/jsr/detail?id=365">JSR 365: Contexts and Dependency Injection for JavaTM 2.0</ulink> 
+<ulink url="https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html">Jakarta Contexts and Dependency Injection</ulink> 
 (the specification), 
-<ulink url="https://javaee.github.io/tutorial/toc.html">Java EE 8 Tutorial</ulink>, or
+<ulink url="https://eclipse-ee4j.github.io/jakartaee-tutorial/">Jakarta EE Tutorial</ulink>, or
 <ulink url="https://docs.jboss.org/weld/reference/latest-master/en-US/html/">WELD - CDI Reference Implementation</ulink>.
 </para>
 
 <para>
 The fundamental thing to know about CDI injection is that annotating a variable with 
-<classname>javax.inject.Inject</classname> will lead the CDI runtime (if it is present and enabled) to
+<classname>jakarta.inject.Inject</classname> will lead the CDI runtime (if it is present and enabled) to
 create an object of the appropriate type and assign it to the variable. For example, in
 </para>
 

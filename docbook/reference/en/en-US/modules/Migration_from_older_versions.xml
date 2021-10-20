@@ -104,7 +104,7 @@
       </para>
       <itemizedlist>
          <listitem><classname>org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder</classname> in resteasy-client,</listitem>
-         <listitem><classname>org.jboss.resteasy.specimpl.LinkBuilderImpl</classname> in resteasy-jaxrs,</listitem>
+         <listitem><classname>org.jboss.resteasy.specimpl.LinkBuilderImpl</classname> in resteasy-core,</listitem>
          <listitem><classname>org.jboss.resteasy.specimpl.ResteasyUriBuilder</classname> in resteasy-jaxrs</listitem>
       </itemizedlist>
       <para>
@@ -379,10 +379,10 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
             <listitem>
               The <classname>ResteasyClient</classname> and <classname>ResteasyClientBuilder</classname> are now abstract
               classes (from <classname>resteasy-client-api</classname>) and are not meant for user direct instantiation;
-              plain JAX-RS API usage is expected instead:
+              plain Jakarta REST API usage is expected instead:
               <programlisting>
 //ResteasyClient client = new ResteasyClientBuilder().build(); NO!
-//if plan JAX-RS is enough ...
+//if plain Jakarta REST is enough ...
 Client client = ClientBuilder.newClient();
 ...
 //if RESTEasy API is needed ...
@@ -390,7 +390,7 @@ ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 
 
 //ResteasyClientBuilder builder = new ResteasyClientBuilder(); NO!
-//if plan JAX-RS is enough ...
+//if plain Jakarta REST is enough ...
 ClientBuilder builder = ClientBuilder.newBuilder();
 ...
 //if RESTEasy API is needed ...

@@ -6,7 +6,7 @@
    <para>
     RESTEasy supports (though not by default - see below)
     GZIP decompression.  If properly configured,
-    the client framework or a JAX-RS service, upon receiving
+    the client framework or a Jakarta REST service, upon receiving
     a message body with a Content-Encoding of "gzip",
     will automatically decompress it.  The client framework can
     (though not by default - see below) automatically
@@ -89,7 +89,7 @@ public class MyService {
    
    <para>
    The interceptors may be enabled by including their classnames in a
-   META-INF/services/javax.ws.rs.ext.Providers file on the classpath. The upper limit on deflated files may
+   META-INF/services/jakarta.ws.rs.ext.Providers file on the classpath. The upper limit on deflated files may
    be configured by setting the parameter "resteasy.gzip.max.input".
    [See <xref linkend="microprofile_config"/> for more information about application configuration.]
    If the limit is exceeded on the server side, GZIPDecodingInterceptor will return a 
@@ -102,7 +102,7 @@ public class MyService {
    As of release 3.1.0.Final, the GZIP interceptors have moved from package 
    <classname>org.jboss.resteasy.plugins.interceptors.encoding</classname> to
    <classname>org.jboss.resteasy.plugins.interceptors</classname>. and they should be
-   named accordingly in javax.ws.rs.ext.Providers.
+   named accordingly in jakarta.ws.rs.ext.Providers.
    </para>
 
    </sect3>
@@ -181,7 +181,7 @@ public @interface GZIP
       For each value found in a <classname>@ContentEncoding</classname> decorated annotation on a resource method, an instance of
       <classname>ClientContentEncodingAnnotationFilter</classname> or
       <classname>ServerContentEncodingAnnotationFilter</classname>,
-      <classname>javax.ws.rs.ext.WriterInterceptor</classname>s in package
+      <classname>jakarta.ws.rs.ext.WriterInterceptor</classname>s in package
       <classname>org.jboss.resteasy.plugins.interceptors</classname>, is registered.
       They are responsible for adding an appropriate Content-Encoding header. For example,
       <classname>ClientContentEncodingAnnotationFilter</classname> is defined

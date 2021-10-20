@@ -6,7 +6,7 @@
         <ulink url="http://wiki.fasterxml.com/JacksonDataBinding">http://wiki.fasterxml.com/JacksonDataBinding</ulink>,
         which allows you to easily marshal Java objects to and from JSON.
         RESTEasy integrates with the JavaBean model.
-        While Jackson does come with its own JAX-RS integration, RESTEasy expanded it a little, as decribed below.
+        While Jackson does come with its own Jakarta REST integration, RESTEasy expanded it a little, as decribed below.
     </para>
     <para>
     <emphasis role="bold">NOTE.</emphasis> The resteasy-jackson-provider module, which is based on the outdated Jackson 1.9.x, is
@@ -120,7 +120,7 @@ try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
         <orderedlist>
            <listitem>As noted above, <methodname>Jackson2JsonpInterceptor</methodname> must be
            included in the deployment. For example,
-           a service file META-INF/services/javax.ws.rs.ext.Providers with the line
+           a service file META-INF/services/jakarta.ws.rs.ext.Providers with the line
 <programlisting>
 org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
 </programlisting>

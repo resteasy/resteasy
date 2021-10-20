@@ -18,7 +18,7 @@
    Each module in RESTEasy that produces any text in the form of logging messages or exception messages
    has an interface named org.jboss.resteasy...i18n.Messages which contains the default messages. Those
    modules which do any logging also have an interface named org.jboss.resteasy...i18n.LogMessages which gives access to an
-   underlying logger. With the exception of the resteasy-jaxrs module, all messages are in the Messages class. resteasy-jaxrs
+   underlying logger. With the exception of the resteasy-core-spi module, all messages are in the Messages class. resteasy-core-spi
    has exception messages in the Messages class and log messages in the LogMessages class.
    </para>
 
@@ -38,11 +38,11 @@
       <tbody>
          <row>
             <entry align="left">2000-2999</entry>
-            <entry align="left">resteasy-jaxrs log messages</entry>
+            <entry align="left">resteasy-core-spi log messages</entry>
          </row>
          <row>
             <entry align="left">3000-4499</entry>
-            <entry align="left">resteasy-jaxrs exception messages</entry>
+            <entry align="left">resteasy-core-spi exception messages</entry>
          </row>
          <row>
             <entry align="left">4500-4999</entry>

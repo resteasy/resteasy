@@ -38,7 +38,7 @@
             This section introduces the recommended way to enable WADL support under Servlet Container situation. Firstly, you need to add a class then extends the <code>ResteasyWadlDefaultResource</code> to serve a resource path. Here is an example:
         </para>
         <programlisting><![CDATA[import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class MyWadlResource extends ResteasyWadlDefaultResource {
@@ -49,7 +49,7 @@ public class MyWadlResource extends ResteasyWadlDefaultResource {
         <programlisting><![CDATA[import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlWriter;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class MyWadlResource extends ResteasyWadlDefaultResource {
@@ -153,7 +153,7 @@ UndertowJaxrsServer server = new UndertowJaxrsServer().start();
 WadlUndertowConnector connector = new WadlUndertowConnector();
 connector.deployToServer(server, MyApp.class);
 ]]></programlisting>
-        <para>The MyApp class shown in above code is a standard JAX-RS 2.0 Application class in your project:</para>
+        <para>The MyApp class shown in above code is a standard Jakarta REST Application class in your project:</para>
         <programlisting>
             <![CDATA[
 @ApplicationPath("/base")

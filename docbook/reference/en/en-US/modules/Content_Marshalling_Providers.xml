@@ -1,7 +1,7 @@
 <chapter id="Content_Marshalling_Providers">
    <title>Content Marshalling/Providers</title>
-   <sect1 id="Default_Providers_and_default_JAX-RS_Content_Marshalling">
-      <title>Default Providers and default JAX-RS Content Marshalling</title>
+   <sect1 id="Default_Providers_and_default_Jakarta REST_Content_Marshalling">
+      <title>Default Providers and default Jakarta REST Content Marshalling</title>
 
       <para>
 
@@ -68,7 +68,7 @@
                         */*
                      </entry>
                      <entry>
-                        javax.activation.DataSource
+                        jakarta.activation.DataSource
                      </entry>
                   </row>
                   <row>
@@ -92,7 +92,7 @@
                         application/x-www-form-urlencoded
                      </entry>
                      <entry>
-                        javax.ws.rs.core.MultivaluedMap
+                        jakarta.ws.rs.core.MultivaluedMap
                      </entry>
                   </row>
                </tbody>
@@ -136,7 +136,7 @@ public class TempFileDeletionResource
 
       <para>
 
-         The JAX-RS specification allows you to plug in your own request/response body reader and writers. To do this,
+         The Jakarta REST specification allows you to plug in your own request/response body reader and writers. To do this,
          you annotate a class
          with @Provider and specify the @Produces types for a writer and @Consumes types for a reader. You must
          also implement
@@ -218,7 +218,7 @@ public class TempFileDeletionResource
 
       <para>
 
-         javax.ws.rs.ext.Providers is a simple injectable interface that allows you to look up MessageBodyReaders,
+         jakarta.ws.rs.ext.Providers is a simple injectable interface that allows you to look up MessageBodyReaders,
           Writers, ContextResolvers, and ExceptionMappers. It is very useful, for instance, for implementing
           multipart providers. Content types that embed
          other random content types.
@@ -233,11 +233,11 @@ public interface Providers
     * Get a message body reader that matches a set of criteria. The set of
     * readers is first filtered by comparing the supplied value of
     * {@code mediaType} with the value of each reader's
-    * {@link javax.ws.rs.Consumes}, ensuring the supplied value of
+    * {@link jakarta.ws.rs.Consumes}, ensuring the supplied value of
     * {@code type} is assignable to the generic type of the reader, and
     * eliminating those that do not match.
     * The list of matching readers is then ordered with those with the best
-    * matching values of {@link javax.ws.rs.Consumes} (x/y > x&#47;* > *&#47;*)
+    * matching values of {@link jakarta.ws.rs.Consumes} (x/y > x&#47;* > *&#47;*)
     * sorted first. Finally, the
     * {@link MessageBodyReader#isReadable}
     * method is called on each reader in order using the supplied criteria and
@@ -264,11 +264,11 @@ public interface Providers
     * Get a message body writer that matches a set of criteria. The set of
     * writers is first filtered by comparing the supplied value of
     * {@code mediaType} with the value of each writer's
-    * {@link javax.ws.rs.Produces}, ensuring the supplied value of
+    * {@link jakarta.ws.rs.Produces}, ensuring the supplied value of
     * {@code type} is assignable to the generic type of the reader, and
     * eliminating those that do not match.
     * The list of matching writers is then ordered with those with the best
-    * matching values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
+    * matching values of {@link jakarta.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
     * sorted first. Finally, the
     * {@link MessageBodyWriter#isWriteable}
     * method is called on each writer in order using the supplied criteria and
@@ -306,12 +306,12 @@ public interface Providers
     * Get a context resolver for a particular type of context and media type.
     * The set of resolvers is first filtered by comparing the supplied value of
     * {@code mediaType} with the value of each resolver's
-    * {@link javax.ws.rs.Produces}, ensuring the generic type of the context
+    * {@link jakarta.ws.rs.Produces}, ensuring the generic type of the context
     * resolver is assignable to the supplied value of {@code contextType}, and
     * eliminating those that do not match. If only one resolver matches the
     * criteria then it is returned. If more than one resolver matches then the
     * list of matching resolvers is ordered with those with the best
-    * matching values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
+    * matching values of {@link jakarta.ws.rs.Produces} (x/y > x&#47;* > *&#47;*)
     * sorted first. A proxy is returned that delegates calls to
     * {@link ContextResolver#getContext(java.lang.Class)} to each matching context
     * resolver in order and returns the first non-null value it obtains or null
@@ -444,7 +444,7 @@ public class MultipartProvider implements MessageBodyReader {
       <title>Text media types and character sets</title>
    
    <para>
-   The JAX-RS specification says
+   The Jakarta REST specification says
    </para>
 
 <programlisting>

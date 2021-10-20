@@ -7,7 +7,7 @@
   <sect1 id="Cache_Annotation">
   <title>@Cache and @NoCache Annotations</title>
    <para>
-      RESTEasy provides an extension to JAX-RS that allows you to automatically set Cache-Control headers on a successful
+      RESTEasy provides an extension to Jakarta REST that allows you to automatically set Cache-Control headers on a successful
       GET request.  It can only be used on @GET annotated methods.  A successful @GET request is any request
       that returns 200 OK response.
    </para>
@@ -85,7 +85,7 @@ cacheFeature.setCache(cache);
 OrderServiceClient orderService = target.register(cacheFeature).proxy(OrderServiceClient.class); 
 </programlisting>
 
-   <para>If you are using the standard JAX-RS client framework to make invocations rather than the
+   <para>If you are using the standard Jakarta REST client framework to make invocations rather than the
    proxy framework, it is just as easy:</para>
 
 <programlisting>
@@ -104,14 +104,14 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
    </sect1>
    <sect1 id="server_cache">
       <title>Local Server-Side Response Cache</title>
-      <para>RESTEasy has a server-side cache that can sit in front of your JAX-RS services.
-          It automatically caches marshalled responses from HTTP GET JAX-RS invocations if, and only if your
-          JAX-RS resource method sets a Cache-Control header.  When a GET comes in, the RESTEasy Server Cache checks
+      <para>RESTEasy has a server-side cache that can sit in front of your Jakarta REST services.
+          It automatically caches marshalled responses from HTTP GET Jakarta REST invocations if, and only if your
+          Jakarta REST resource method sets a Cache-Control header.  When a GET comes in, the RESTEasy Server Cache checks
           to see if the URI is stored in the cache.  If it does, it returns the already marshalled response without
-          invoking your JAX-RS method.  Each cache entry has a max age to whatever is specified in the Cache-Control
+          invoking your Jakarta REST method.  Each cache entry has a max age to whatever is specified in the Cache-Control
           header of the initial request.  The cache also will automatically generate an ETag using an MD5 hash on the
           response body.  This allows the client to do HTTP 1.1 cache revalidation with the IF-NONE-MATCH header.
-          The cache is also smart enough to perform revalidation if there is no initial cache hit, but the jax-rs
+          The cache is also smart enough to perform revalidation if there is no initial cache hit, but the Jakarta REST
           method still returns a body that has the same ETag.
       </para>
        <para>
@@ -171,7 +171,7 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
    <sect1 id="Http_Precondition">
         <title>HTTP preconditions</title>
         <para>
-            JAX-RS provides an API for evaluating HTTP preconditions based on <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal>, <literal>"If-Modified-Since"</literal> and <literal>"If-Unmodified-Since"</literal> headers.
+            Jakarta REST provides an API for evaluating HTTP preconditions based on <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal>, <literal>"If-Modified-Since"</literal> and <literal>"If-Unmodified-Since"</literal> headers.
         </para>
         <programlisting>
             Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified, etag);

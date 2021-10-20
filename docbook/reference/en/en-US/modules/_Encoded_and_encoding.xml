@@ -3,7 +3,7 @@
 
 <para>
 
-JAX-RS allows you to get encoded or decoded @*Params and specify path definitions and parameter names using encoded or decoded strings.
+Jakarta REST allows you to get encoded or decoded @*Params and specify path definitions and parameter names using encoded or decoded strings.
 </para>
 <para>
 
@@ -11,7 +11,7 @@ JAX-RS allows you to get encoded or decoded @*Params and specify path definition
 </para>
 <para>
 
-The @javax.ws.rs.Encoded annotation can be used on a class, method, or param.  By default, inject @PathParam and @QueryParams are decoded.  By additionally adding the @Encoded annotation, the value of these params will be provided in encoded form.
+The @jakarta.ws.rs.Encoded annotation can be used on a class, method, or param.  By default, inject @PathParam and @QueryParams are decoded.  By additionally adding the @Encoded annotation, the value of these params will be provided in encoded form.
 </para>
 <para>
 

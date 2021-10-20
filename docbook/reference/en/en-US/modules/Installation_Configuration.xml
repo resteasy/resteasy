@@ -11,9 +11,9 @@
     <section id="resteasy_modules_in_wildfly">
         <title>RESTEasy modules in WildFly</title>
         <para>
-            In WildFly, RESTEasy and the JAX-RS API are automatically loaded into your deployment's classpath
-            if and only if you are deploying a JAX-RS application (as determined by the presence
-            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1.
+            In WildFly, RESTEasy and the Jakarta REST API are automatically loaded into your deployment's classpath
+            if and only if you are deploying a Jakarta REST application (as determined by the presence
+            of Jakarta REST annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1.
             If you need any of those libraries which are not loaded automatically, you'll have to bring them in
             with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:
         </para>
@@ -26,10 +26,10 @@
     </deployment>
 </jboss-deployment-structure>]]></programlisting>
         <para>The <literal>services</literal> attribute must be set to "import" for modules that have default providers
-            in a META-INF/services/javax.ws.rs.ext.Providers file.
+            in a META-INF/services/jakarta.ws.rs.ext.Providers file.
         </para>
         <para>
-            To get an idea of which RESTEasy modules are loaded by default when JAX-RS services are deployed, please
+            To get an idea of which RESTEasy modules are loaded by default when Jakarta REST services are deployed, please
             see the table below, which refers to a recent WildFly ditribution patched with the current RESTEasy
             distribution. Clearly, future and unpatched WildFly distributions might differ a bit in terms of modules
             enabled by default, as the container actually controls this too.
@@ -127,7 +127,7 @@
                     </entry>
                     <entry>
                         Core RESTEasy libraries for server and client.  You will need to include this in your deployment
-                        if you are only using JAX-RS client.
+                        if you are only using Jakarta REST client.
                     </entry>
                 </row>
                 <row>
@@ -176,7 +176,7 @@
                 </row>
                 <row>
                     <entry>
-                        javax.json.bind-api
+                        jakarta.json.bind-api
                     </entry>
                     <entry>
                         yes
@@ -295,9 +295,9 @@
     <section>
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
-            RESTEasy is bundled with WildFly and completely integrated as per the requirements of Java EE.
-            You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your JAX-RS services and providers.
-            All you have to provide is your JAX-RS service and provider classes packaged
+            RESTEasy is bundled with WildFly and completely integrated as per the requirements of Jakarta EE.
+            You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your Jakarta REST services and providers.
+            All you have to provide is your Jakarta REST service and provider classes packaged
             within a WAR either as POJOs, CDI beans, or EJBs.
             A simple way to configure an application is by simply providing an empty web.xml file.
             You can of course deploy any custom servlet, filter
@@ -305,9 +305,10 @@
         </para>
         <para>
             <programlisting><![CDATA[
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
 </web-app>]]></programlisting>
         </para>
         <para>
@@ -316,14 +317,14 @@
         </para>
         <para>
             Since we're not using a &lt;servlet-mapping&gt; element, we must define a
-            <classname>javax.ws.rs.core.Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>) that is annotated with
-            the <classname>javax.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
+            <classname>jakarta.ws.rs.core.Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>) that is annotated with
+            the <classname>jakarta.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
             which is the behavior inherited from <classname>Application</classname>, your WAR will
-            be scanned for resource and provider classes as indicated by the presence of JAX-RS annotations.
+            be scanned for resource and provider classes as indicated by the presence of Jakarta REST annotations.
         </para>
         <programlisting>
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/root-path")
 public class MyApplication extends Application
@@ -380,7 +381,7 @@ public class MyApplication extends Application
             RESTEasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
             for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.
             If you unzip it you will see a lib/ directory that contains the libraries needed by RESTEasy.
-            Copy these, as needed, into your /WEB-INF/lib directory. Place your JAX-RS annotated class resources and providers
+            Copy these, as needed, into your /WEB-INF/lib directory. Place your Jakarta REST annotated class resources and providers
             within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
         </para>
 
@@ -411,7 +412,7 @@ public class MyApplication extends Application
         <para>
             The <literal>resteasy-servlet-initializer</literal> artifact will not work in Servlet versions older than
             3.0.  You'll then have to manually declare the RESTEasy servlet in your WEB-INF/web.xml file of your WAR project,
-            and you'll have to use an <classname>Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>)
+            and you'll have to use an <classname>Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>)
             which explicitly lists resources and providers. For example:
         </para>
         <para>
@@ -425,7 +426,7 @@ public class MyApplication extends Application
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </servlet>
@@ -727,9 +728,10 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
     </para>
     
 <programlisting>
-&lt;web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+&lt;web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"&gt;
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0"&gt;
 
    &lt;context-param&gt;
       &lt;param-name&gt;system&lt;/param-name&gt;
@@ -765,9 +767,10 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
    </para>
    
    <programlisting>
-&lt;web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+&lt;web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"&gt;
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0"&gt;
 
    &lt;context-param&gt;
       &lt;param-name&gt;system&lt;/param-name&gt;
@@ -804,9 +807,10 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
    </para>
 
 <programlisting>
-&lt;web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+&lt;web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"&gt;
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0"&gt;
 
    &lt;listener&gt;
       &lt;listener-class&gt;
@@ -905,7 +909,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 no default
                             </entry>
                             <entry>
-                                A comma delimited list of fully qualified JAX-RS resource class names you want to
+                                A comma delimited list of fully qualified Jakarta REST resource class names you want to
                                 register
                             </entry>
                         </row>
@@ -918,12 +922,12 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 A comma delimited list of JNDI names which reference objects you want to register as
-                                JAX-RS resources
+                                Jakarta REST resources
                             </entry>
                         </row>
                         <row>
                             <entry>
-                                javax.ws.rs.Application
+                                jakarta.ws.rs.Application
                             </entry>
                             <entry>
                                 no default
@@ -943,7 +947,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 Replaces the need for an Accept header by mapping file name extensions (like .xml or
                                 .txt) to a media type. Used when the client
                                 is unable to use an Accept header to choose a representation (i.e. a browser). See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -957,7 +961,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 Replaces the need for an Accept-Language header by mapping file name extensions (like
                                 .en or .fr) to a language. Used when the client
                                 is unable to use an Accept-Language header to choose a language (i.e. a browser). See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -970,7 +974,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             <entry>
                                 Names a query parameter that can be set to an acceptable media type,
                                 enabling content negotiation without an Accept header. See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -981,7 +985,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 false
                             </entry>
                             <entry>
-                                Enables role based security. See <xref linkend="Securing_JAX-RS_and_RESTeasy"/>
+                                Enables role based security. See <xref linkend="Securing_Jakarta REST_and_RESTeasy"/>
                                 for more details.
                             </entry>
                         </row>
@@ -1029,7 +1033,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 false
                             </entry>
                             <entry>
-                                Turns off the JAX-RS spec defined class-level expression filtering and instead
+                                Turns off the Jakarta REST spec defined class-level expression filtering and instead
                                 tries to match version every method's full path.
                             </entry>
                         </row>
@@ -1141,7 +1145,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 When set to "true", this parameter will restore the original behavior in which
-                                a Client running in a resource method will throw a JAX-RS WebApplicationException
+                                a Client running in a resource method will throw a Jakarta REST WebApplicationException
                                 instead of a Resteasy version with a sanitized <classname>Response</classname>. For more information,
                                 see section <link linkend='ResteasyWebApplicationException'>Resteasy WebApplicationExceptions</link>
                             </entry>
@@ -1173,20 +1177,20 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
 &lt;/context-param&gt;</programlisting>
         </para>
     </section>
-    <section id="javax.ws.rs.core.Application">
-        <title>javax.ws.rs.core.Application</title>
+    <section id="jakarta.ws.rs.core.Application">
+        <title>jakarta.ws.rs.core.Application</title>
 
         <para>
 
-            The <classname>javax.ws.rs.core.Application</classname> class is a standard JAX-RS class that you may implement to provide
-            information on your deployment. It is simply a class the lists all JAX-RS root resources and providers.
+            The <classname>jakarta.ws.rs.core.Application</classname> class is a standard Jakarta REST class that you may implement to provide
+            information on your deployment. It is simply a class the lists all Jakarta REST root resources and providers.
         </para>
         <para>
 
             <programlisting>
 /**
-* Defines the components of a JAX-RS application and supplies additional
-* metadata. A JAX-RS application or implementation supplies a concrete
+* Defines the components of a Jakarta REST application and supplies additional
+* metadata. A Jakarta REST application or implementation supplies a concrete
 * subclass of this abstract class.
 */
 public abstract class Application
@@ -1296,7 +1300,7 @@ public abstract class Application
             you are and read the configuration section above on installing in Servlet 3.0.
             The downside of running RESTEasy as a Servlet is that you cannot have static resources like .html and .jpeg
             files in the
-            same path as your JAX-RS services. RESTEasy allows you to run as a Filter instead. If a JAX-RS resource is
+            same path as your Jakarta REST services. RESTEasy allows you to run as a Filter instead. If a Jakarta REST resource is
             not
             found under the URL requested, RESTEasy will delegate back to the base servlet container to resolve URLs.
         </para>
@@ -1309,7 +1313,7 @@ public abstract class Application
             org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
         </filter-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </filter>

@@ -129,9 +129,9 @@ public interface MultipartInput {
 <![CDATA[
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -147,7 +147,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultContentType")
     * String as key. It should be done in a
-    * {@link javax.ws.rs.container.ContainerRequestFilter}.
+    * {@link jakarta.ws.rs.container.ContainerRequestFilter}.
     */
    String DEFAULT_CONTENT_TYPE_PROPERTY =
     "resteasy.provider.multipart.inputpart.defaultContentType";
@@ -160,7 +160,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultCharset")
     * String as key. It should be done in a
-    * {@link javax.ws.rs.container.ContainerRequestFilter}.
+    * {@link jakarta.ws.rs.container.ContainerRequestFilter}.
     */
    String DEFAULT_CHARSET_PROPERTY =
     "resteasy.provider.multipart.inputpart.defaultCharset";
@@ -205,10 +205,10 @@ public interface InputPart {
 <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlRootElement(name = "soup")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -398,10 +398,10 @@ public class Soup {
             <![CDATA[
     package org.jboss.resteasy.test.providers.multipart.resource;
 
-    import javax.xml.bind.annotation.XmlAccessType;
-    import javax.xml.bind.annotation.XmlAccessorType;
-    import javax.xml.bind.annotation.XmlElement;
-    import javax.xml.bind.annotation.XmlRootElement;
+    import jakarta.xml.bind.annotation.XmlAccessType;
+    import jakarta.xml.bind.annotation.XmlAccessorType;
+    import jakarta.xml.bind.annotation.XmlElement;
+    import jakarta.xml.bind.annotation.XmlRootElement;
 
     @XmlRootElement(name = "customer")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -492,7 +492,7 @@ public class Soup {
          <![CDATA[
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class MultipartRelatedOutput extends MultipartOutput {
    private String startInfo;
@@ -537,7 +537,7 @@ public class MultipartRelatedOutput extends MultipartOutput {
          <![CDATA[
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class MultipartRelatedOutput extends MultipartOutput {
    private String startInfo;
@@ -659,11 +659,11 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
             <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlMimeType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -805,7 +805,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.GenericType;
+import javajakartars.core.GenericType;
 
 public interface MultipartFormDataInput extends MultipartInput {
    /**
@@ -832,10 +832,10 @@ public interface MultipartFormDataInput extends MultipartInput {
          <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "name")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -1006,7 +1006,7 @@ public class ContextProvidersName {
          <para>If you have an exact knowledge of your multipart/form-data packets,
             you can map them to and from a POJO class using the annotation
             <code>@org.jboss.resteasy.annotations.providers.multipart.MultipartForm</code>
-            and the JAX-RS <code>@FormParam</code> annotation. Simply define a POJO with
+            and the Jakarta REST <code>@FormParam</code> annotation. Simply define a POJO with
             at least a default constructor and annotate its fields and/or properties
             with <code>@FormParams</code>. These <code>@FormParams</code> must
             also be annotated with
@@ -1102,10 +1102,10 @@ public class JsonUser {
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class JsonFormResource {
@@ -1151,9 +1151,9 @@ public class JsonFormResource {
             <![CDATA[
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public interface JsonForm {
@@ -1208,7 +1208,7 @@ String name = proxy.putMultipartForm(new JsonFormResource
            request.  They send them only for the file parts.  This can cause
            character encoding and unmarshalling errors on the server side. To correct
            this there is an option to define an other, non-rfc compliant fallback value.
-           This can be done dynamically per request with the filter facility of JAX-RS
+           This can be done dynamically per request with the filter facility of Jakarta REST
            3.0. In the following example we will set
            <code>"*/*; charset=UTF-8"</code> as the new default fallback:
             <programlisting>

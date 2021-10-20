@@ -27,8 +27,8 @@
     <para>
        In java 1.8 and JAX-RS 2.1, the support for reactive programming is fairly limited. Java 1.8 introduces the interface
        <classname>java.util.concurrent.CompletionStage</classname>, and JAX-RS 2.1 mandates support for the
-       <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname>, which allows a client to obtain a 
-       response in the form of a <classname>CompletionStage</classname>. 
+       <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname> (later, <classname>jakarta.ws.rs.client.CompletionStageRxInvoker</classname>),
+       which allows a client to obtain a response in the form of a <classname>CompletionStage</classname>. 
     </para>
     
     <para>
@@ -172,11 +172,12 @@ private CompletionStage&lt;String&gt; getCompletionStageSupplyAsync1(String s, E
 </sect1>
 
 <sect1>
-<title>CompletionStage in JAX-RS</title>
+<title>CompletionStage in Jakarta REST</title>
 
     <para>
        On the client side, the JAX-RS 2.1 specification mandates an implementation of the interface
-       <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname>:
+       <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname>
+       (later, <classname>jakarta.ws.rs.client.CompletionStageRxInvoker</classname>):
     </para>
     
 <programlisting>
@@ -195,9 +196,9 @@ public interface CompletionStageRxInvoker extends RxInvoker&lt;CompletionStage&g
 
     <para>
        That is, there are invocation methods for the standard HTTP verbs, just as in the standard 
-       <classname>javax.ws.rs.client.SyncInvoker</classname>. A <classname>CompletionStageRxInvoker</classname>
+       <classname>jakarta.ws.rs.client.SyncInvoker</classname>. A <classname>CompletionStageRxInvoker</classname>
        is obtained by calling <methodname>rx()</methodname> on a
-       <classname>javax.ws.rs.client.Invocation.Builder</classname>, which extends <classname>SyncInvoker</classname>.
+       <classname>jakarta.ws.rs.client.Invocation.Builder</classname>, which extends <classname>SyncInvoker</classname>.
        For example,
     </para>
     
@@ -295,7 +296,7 @@ public void testGetStringAsyncSync() throws Exception {
 
    <note>
        <para>
-          <classname>CompletionStage</classname> in JAX-RS is also discussed in the chapter
+          <classname>CompletionStage</classname> in Jakarta REST is also discussed in the chapter
           <link linkend="Asynchronous_HTTP_Request_Processing">Asynchronous HTTP Request Processing</link>.
        </para>
    </note>
@@ -510,7 +511,7 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
 <title>Pluggable reactive types: RxJava 2 in RESTEasy</title>
 
     <para>
-       JAX-RS 2.1 doesn't require support for any Reactive Streams implementations, but it does allow
+       Jakarta REST doesn't currently require support for any Reactive Streams implementations, but it does allow
        for extensibility to support various reactive libraries.
        RESTEasy's optional module <code>resteasy-rxjava2</code> 
        adds support for <ulink url="https://github.com/ReactiveX/RxJava">RxJava 2</ulink>.
@@ -681,20 +682,20 @@ public interface FlowableOnSubscribe&lt;T&gt; {
  * Access a reactive invoker based on a {@link RxInvoker} subclass provider. Note
  * that corresponding {@link RxInvokerProvider} must be registered in the client runtime.
  * 
- * This method is an extension point for JAX-RS implementations to support other types
+ * This method is an extension point for Jakarta REST implementations to support other types
  * representing asynchronous computations.
  *
  * @param clazz {@link RxInvoker} subclass.
  * @return reactive invoker instance.
  * @throws IllegalStateException when provider for given class is not registered.
- * @see javax.ws.rs.client.Client#register(Class)
+ * @see jakarta.ws.rs.client.Client#register(Class)
  * @since 2.1
  */
 public &lt;T extends RxInvoker&gt; T rx(Class&lt;T&gt; clazz);
 </programlisting>
 
     <para>
-       to interface <classname> javax.ws.rs.client.Invocation.Builder</classname>. Resteasy
+       to interface <classname> jakarta.ws.rs.client.Invocation.Builder</classname>. Resteasy
        module <code>resteasy-rxjava2</code> adds support for classes:
     </para>
     
@@ -753,7 +754,7 @@ public void testPostThingList() throws Exception {
 <title>Representation on the wire</title>
 
     <para>
-       Neither Reactive Streams nor JAX-RS have anything to say about representing reactive types on the network.
+       Neither Reactive Streams nor Jakarta REST have anything to say about representing reactive types on the network.
        RESTEasy offers a number of representations, each suitable for different circumstances. The wire protocol
        is determined by 1) the presence or absence of the <code>@Stream</code> annotation on the resource method, 
        and 2) the value of the <code>value</code> field in the <code>@Stream</code> annotation:
@@ -1193,7 +1194,7 @@ public void testSseToFlowable() throws Exception {
 
     <para>
        Proxies, discussed in <link linkend="proxies">RESTEasy Proxy Framework</link>, are a RESTEasy extension
-       that supports a natural programming style in which generic JAX-RS invoker calls are replaced by application
+       that supports a natural programming style in which generic Jakarta REST invoker calls are replaced by application
        specific interface calls. The proxy framework is extended to include both
        <classname>CompletionStage</classname> and the RxJava2 types <classname>Single</classname>,
        <classname>Observable</classname>, and <classname>Flowable</classname>.
@@ -1365,7 +1366,7 @@ public interface AsyncStreamProvider&lt;T&gt; {
     
     <orderedlist>
        <listitem>support for <classname>CompletionStage</classname> in the form of
-          an implementation of the interface <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname>, and
+          an implementation of the interface <classname>jakarta.ws.rs.client.CompletionStageRxInvoker</classname>, and
        </listitem>
        <listitem>
           extensibility in the form of support for registering providers that implement
@@ -1376,7 +1377,7 @@ public interface RxInvokerProvider&lt;T extends RxInvoker&gt; {
 }
 </programlisting>
           Once an <classname>RxInvokerProvider</classname> is registered, an <classname>RxInvoker</classname>
-          can be requested by calling the <classname>javax.ws.rs.client.Invocation.Builder</classname> method
+          can be requested by calling the <classname>jakarta.ws.rs.client.Invocation.Builder</classname> method
 <programlisting>
 public &lt;T extends RxInvoker&gt; T rx(Class&lt;T&gt; clazz);
 </programlisting>

@@ -7,14 +7,14 @@ The @Context annotation allows you to inject instances of
 </para>
 
 <itemizedlist>
-   <listitem>javax.ws.rs.core.HttpHeaders</listitem>
-   <listitem>javax.ws.rs.core.UriInfo</listitem> 
-   <listitem>javax.ws.rs.core.Request</listitem>
-   <listitem>javax.servlet.http.HttpServletRequest</listitem>
-   <listitem>javax.servlet.http.HttpServletResponse</listitem>
-   <listitem>javax.servlet.ServletConfig</listitem>
-   <listitem>javax.servlet.ServletContext</listitem>
-   <listitem>javax.ws.rs.core.SecurityContext</listitem>
+   <listitem>jakarta.ws.rs.core.HttpHeaders</listitem>
+   <listitem>jakarta.ws.rs.core.UriInfo</listitem> 
+   <listitem>jakarta.ws.rs.core.Request</listitem>
+   <listitem>jakarta.servlet.http.HttpServletRequest</listitem>
+   <listitem>jakarta.servlet.http.HttpServletResponse</listitem>
+   <listitem>jakarta.servlet.ServletConfig</listitem>
+   <listitem>jakarta.servlet.ServletContext</listitem>
+   <listitem>jakarta.ws.rs.core.SecurityContext</listitem>
 </itemizedlist>
 
 <para>objects.</para>

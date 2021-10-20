@@ -4,8 +4,15 @@
 <para>
 
 JAX-RS 2.0 (JSR-339) and JAX-RS 2.1 (JSR-370), are JCP specifications that provide a Java API for RESTful Web Services over the HTTP protocol.
+Beginning in 2017, Oracle donated Java Enterprise Edition to the Eclipse Foundation, where Java EE evolved into Jakarta EE. In the process,
+JAX-RS evolved into the <ulink url="https://jakarta.ee/specifications/restful-ws/">Jakarta RESTFul Web Services</ulink> project. The
+shortened phrase "Jakarta REST" is frequently used in practice, and in this Guide, we generally use "Jakarta REST" where once we used "JAX-RS". Occasionally,
+we still refer to JAX-RS in an historical context.
+</para>
+
+<para>
     RESTEasy is a portable implementation of these specifications which can run in any Servlet container. Tighter
     integration with WildFly application server is also available to make the user experience nicer in that environment.
-    RESTEasy also comes with additional features on top of plain JAX-RS functionalities.
+    RESTEasy also comes with additional features on top of plain Jakarta REST functionalities.
 </para>
 </chapter>
