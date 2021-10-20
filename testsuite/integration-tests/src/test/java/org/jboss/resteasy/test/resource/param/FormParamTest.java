@@ -146,7 +146,7 @@ public class FormParamTest {
             header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED).post(null);
       Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
       String entity = response.readEntity(String.class);
-      Assert.assertTrue(ERROR_CODE, entity.contains("RESTEASY003870"));
+      Assert.assertTrue(ERROR_CODE, entity.isEmpty());
       response.close();
    }
 
