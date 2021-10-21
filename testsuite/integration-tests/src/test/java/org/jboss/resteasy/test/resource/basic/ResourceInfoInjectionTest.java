@@ -64,7 +64,7 @@ public class ResourceInfoInjectionTest {
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals("ResponseFilter was probably not applied to response", HttpResponseCodes.SC_NOT_FOUND * 2, response.getStatus());
-      Assert.assertTrue("Wrong body of response",  entity.startsWith("RESTEASY003210"));
+      Assert.assertTrue("Wrong body of response",  entity.isEmpty());
    }
 
    /**

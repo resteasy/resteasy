@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -181,17 +180,6 @@ public class ExceptionHandler
 
       if (response != null)
       {
-         BuiltResponse bResponse = (BuiltResponse)response;
-         if (bResponse.getStatus() == HttpResponseCodes.SC_BAD_REQUEST
-            || bResponse.getStatus() == HttpResponseCodes.SC_NOT_FOUND)
-         {
-            if (message != null)
-            {
-               Response.ResponseBuilder builder = bResponse.fromResponse(response);
-               builder.type(MediaType.TEXT_HTML).entity(message);
-               return builder.build();
-            }
-         }
          return response;
 
       } else {
