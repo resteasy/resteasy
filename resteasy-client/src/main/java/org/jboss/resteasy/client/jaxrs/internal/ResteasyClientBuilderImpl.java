@@ -410,6 +410,13 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
 
       if (propEngine instanceof ClientHttpEngine) {
          httpEngine((ClientHttpEngine) propEngine);
+       } else {
+         for (Object p : getProviderFactory().getProviderInstances()) {
+            if (p instanceof ClientHttpEngine) {
+               httpEngine((ClientHttpEngine) propEngine);
+            }
+         }
+
       }
 
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();

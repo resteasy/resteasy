@@ -146,7 +146,7 @@ public class VertxClientEngineTest {
     }
 
     @Test
-    public void testHTTP2() {
+    public void testHTTP2ByConfigProp() {
         Vertx vertx = Vertx.vertx();
         HttpClientOptions options = new HttpClientOptions();
         options.setSsl(true);
@@ -155,6 +155,23 @@ public class VertxClientEngineTest {
         Client client = ClientBuilder
                 .newBuilder()
                 .property("org.jboss.resteasy.http.client.engine", new VertxClientHttpEngine(vertx, options))
+                .build();
+        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
+        assertEquals(200, resp.getStatus());
+        Assert.assertTrue(resp.readEntity(String.class).contains("nghttp2.org"));
+
+    }
+
+    @Test
+    public void testHTTP2ByEngineRegistration() {
+        Vertx vertx = Vertx.vertx();
+        HttpClientOptions options = new HttpClientOptions();
+        options.setSsl(true);
+        options.setProtocolVersion(HttpVersion.HTTP_2);
+        options.setUseAlpn(true);
+        Client client = ClientBuilder
+                .newBuilder()
+                .register(new VertxClientHttpEngine(vertx, options))
                 .build();
         final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
         assertEquals(200, resp.getStatus());
