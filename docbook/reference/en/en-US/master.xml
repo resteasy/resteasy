@@ -75,8 +75,8 @@
    <preface id="preface" revision="1">
       <title>Preface</title>
       <para>
-         Commercial development support, production support and training for RESTEasy JAX-RS is
-         available through JBoss, a division of Red Hat Inc. (see http://www.jboss.com/).
+         Commercial development support, production support and training for RESTEasy is
+         available from <ulink url="https://access.redhat.com/support">Red Hat Support.</ulink>
       </para>
 
       <para>
