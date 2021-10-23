@@ -20,7 +20,7 @@
          and AsyncResponse interface.
       </para>
       <para>
-          Injecting an AsynchronousResponse as a parameter to your jax-rs methods tells RESTEasy that the HTTP request/response should be detached from the currently
+          Injecting an AsynchronousResponse as a parameter to your &JAX-RS; methods tells RESTEasy that the HTTP request/response should be detached from the currently
          executing thread and that the current thread should not try to automatically process the response.
       </para>
       <para>
@@ -150,11 +150,11 @@ public class SimpleResource
       <para>
          Some backends have what is called an "Event Loop Thread", which is a thread responsible for doing all IO operations. Those
          backends require the Event Loop Thread to never be blocked, because it does IO for every other thread. Those backends
-         typically require JAX-RS endpoints to be invoked on worker threads, to make sure they never block the Event Loop Thread.
+         typically require &JAX-RS; endpoints to be invoked on worker threads, to make sure they never block the Event Loop Thread.
       </para>
       <para>
-         Sometimes, with Async programming, it is possible for asynchronous JAX-RS requests to be resumed from the Event Loop Thread.
-         As a result, JAX-RS will attempt to serialise the response and send it to the client. But JAX-RS is written using "Blocking IO"
+         Sometimes, with Async programming, it is possible for asynchronous &JAX-RS; requests to be resumed from the Event Loop Thread.
+         As a result, &JAX-RS; will attempt to serialise the response and send it to the client. But &JAX-RS; is written using "Blocking IO"
          mechanics, such as <code>OutputStream</code> (used by <code>MessageBodyWriter</code> and <code>WriterInterceptor</code>), which
          means that sending the response will block the current thread until the response is received. This would work on a worker thread,
          but if it happens on the Event Loop Thread it will block it and prevent it from sending the response, resulting in a deadlock.

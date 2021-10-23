@@ -1,12 +1,12 @@
 <chapter id="CDI">
     <title>CDI Integration</title>
     <para>This module provides integration with JSR-299 (Contexts and
-        Dependency Injection for the Java EE platform)
+        Dependency Injection for the Jakarta EE platform)
     </para>
     <section>
-        <title>Using CDI beans as JAX-RS components</title>
+        <title>Using CDI beans as &JAX-RS; components</title>
         <para>
-            Both the JAX-RS and CDI specifications introduce their own
+            Both the &JAX-RS; and CDI specifications introduce their own
             component
             model. On the one hand, every class placed in a CDI archive that
             fulfills a set of basic constraints is implicitly a CDI bean. On
@@ -15,11 +15,11 @@
             <code>@Path</code>
             or
             <code>@Provider</code>
-            is required for it to become a JAX-RS component.
+            is required for it to become a &JAX-RS; component.
             Without the
             integration code, annotating a class suitable for being a CDI bean
             with
-            JAX-RS annotations leads into a faulty result (JAX-RS component
+            &JAX-RS; annotations leads into a faulty result (&JAX-RS; component
             not managed by CDI)
             The
             resteasy-cdi module is a bridge that
@@ -38,7 +38,7 @@
             for the
             managed
             instance
-            of a JAX-RS component. Then, this
+            of a &JAX-RS; component. Then, this
             instance is
             passed
             to
@@ -57,7 +57,7 @@
         </para>
         <para>
             As a result, CDI services like injection, lifecycle management,
-            events, decoration and interceptor bindings can be used in JAX-RS
+            events, decoration and interceptor bindings can be used in &JAX-RS;
             components.
         </para>
     </section>
@@ -72,7 +72,7 @@
             the bean it is
             injected into. Normal scopes (request,
             session,
-            application) are more suitable for JAX-RS components as they
+            application) are more suitable for &JAX-RS; components as they
             designate component's lifecycle boundaries explicitly. Therefore, the
             resteasy-cdi
             module alters the default
@@ -82,7 +82,7 @@
         <itemizedlist>
             <listitem>
                 <para>
-                    If a JAX-RS root resource does not define a scope
+                    If a &JAX-RS; root resource does not define a scope
                     explicitly,
                     it is
                     bound to the Request scope.
@@ -90,7 +90,7 @@
             </listitem>
             <listitem>
                 <para>
-                    If a JAX-RS Provider or
+                    If a &JAX-RS; Provider or
                     <code>javax.ws.rs.Application</code>
                     subclass
                     does not define a scope explicitly, it is bound to the

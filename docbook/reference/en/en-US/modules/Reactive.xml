@@ -172,7 +172,7 @@ private CompletionStage&lt;String&gt; getCompletionStageSupplyAsync1(String s, E
 </sect1>
 
 <sect1>
-<title>CompletionStage in JAX-RS</title>
+<title>CompletionStage in &JAX-RS;</title>
 
     <para>
        On the client side, the JAX-RS 2.1 specification mandates an implementation of the interface
@@ -295,7 +295,7 @@ public void testGetStringAsyncSync() throws Exception {
 
    <note>
        <para>
-          <classname>CompletionStage</classname> in JAX-RS is also discussed in the chapter
+          <classname>CompletionStage</classname> in &JAX-RS; is also discussed in the chapter
           <link linkend="Asynchronous_HTTP_Request_Processing">Asynchronous HTTP Request Processing</link>.
        </para>
    </note>
@@ -510,7 +510,7 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
 <title>Pluggable reactive types: RxJava 2 in RESTEasy</title>
 
     <para>
-       JAX-RS 2.1 doesn't require support for any Reactive Streams implementations, but it does allow
+       &JAX-RS; doesn't currently require support for any Reactive Streams implementations, but it does allow
        for extensibility to support various reactive libraries.
        RESTEasy's optional module <code>resteasy-rxjava2</code> 
        adds support for <ulink url="https://github.com/ReactiveX/RxJava">RxJava 2</ulink>.
@@ -681,7 +681,7 @@ public interface FlowableOnSubscribe&lt;T&gt; {
  * Access a reactive invoker based on a {@link RxInvoker} subclass provider. Note
  * that corresponding {@link RxInvokerProvider} must be registered in the client runtime.
  * 
- * This method is an extension point for JAX-RS implementations to support other types
+ * This method is an extension point for &JAX-RS; implementations to support other types
  * representing asynchronous computations.
  *
  * @param clazz {@link RxInvoker} subclass.
@@ -753,7 +753,7 @@ public void testPostThingList() throws Exception {
 <title>Representation on the wire</title>
 
     <para>
-       Neither Reactive Streams nor JAX-RS have anything to say about representing reactive types on the network.
+       Neither Reactive Streams nor &JAX-RS; have anything to say about representing reactive types on the network.
        RESTEasy offers a number of representations, each suitable for different circumstances. The wire protocol
        is determined by 1) the presence or absence of the <code>@Stream</code> annotation on the resource method, 
        and 2) the value of the <code>value</code> field in the <code>@Stream</code> annotation:
@@ -1193,7 +1193,7 @@ public void testSseToFlowable() throws Exception {
 
     <para>
        Proxies, discussed in <link linkend="proxies">RESTEasy Proxy Framework</link>, are a RESTEasy extension
-       that supports a natural programming style in which generic JAX-RS invoker calls are replaced by application
+       that supports a natural programming style in which generic &JAX-RS; invoker calls are replaced by application
        specific interface calls. The proxy framework is extended to include both
        <classname>CompletionStage</classname> and the RxJava2 types <classname>Single</classname>,
        <classname>Observable</classname>, and <classname>Flowable</classname>.
