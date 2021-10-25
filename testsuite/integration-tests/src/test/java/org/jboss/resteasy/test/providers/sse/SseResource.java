@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -423,6 +424,27 @@ public class SseResource
          }
       });
    }
+   @GET
+   @Path("/initialization-deadlock")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void initializationDeadlock(@Context SseEventSink sink) {
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      ExecutorService service = (ExecutorService) servletContext
+              .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(() -> {
+         int i = 0;
+         CompletableFuture<?> firstMsg = sink.send(sse.newEvent("msg-" + i++)).toCompletableFuture();
+         while (!firstMsg.isDone()) {
+            sink.send(sse.newEvent("msg-" + i++));
+            Thread.yield();
+         }
+         sink.send(sse.newEvent("last-msg-" + i)).thenAccept(v -> sink.close());
+      });
+   }
+
    public static String toString(final Reader input) throws IOException {
 
        final char[] buffer = new char[2048];
