@@ -88,7 +88,7 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
       if (resteasySecurity != null) {
          boolean useResteasySecurity = parseBooleanParam(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY, resteasySecurity);
-         deployment.setSecurityEnabled(Boolean.valueOf(useResteasySecurity));
+         deployment.setSecurityEnabled(useResteasySecurity);
       }
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
