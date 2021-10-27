@@ -177,7 +177,7 @@ public class UndertowTest
         <para>
             RESTEasy integrates with the reactor-netty project. This
             server adapter was created to pair with our reactor-netty
-            based JAX-RS client integration. Ultimately, if using
+            based &JAX-RS; client integration. Ultimately, if using
             reactor-netty for both the server and server-contained
             clients you will be able to do things like share the same
             event loop for both server and client calls.
@@ -246,7 +246,7 @@ public class UndertowTest
     <para>The per instance binding scope caches the same resource instance for each event loop providing the same
     concurrency model than a verticle deployed multiple times.</para>
 
-    <para>Vert.x can also embed a RESTEasy deployment, making easy to use Jax-RS annotated controller in Vert.x applications: </para>
+    <para>Vert.x can also embed a RESTEasy deployment, making easy to use &JAX-RS; annotated controller in Vert.x applications: </para>
     <programlisting> <![CDATA[
   Vertx vertx = Vertx.vertx();
   HttpServer server = vertx.createHttpServer();

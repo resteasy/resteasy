@@ -91,16 +91,16 @@
         <title>RESTEasy Proxy Framework</title>
     <para>
 
-        The RESTEasy Proxy  Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
-        JAX-RS annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
+        The RESTEasy Proxy  Framework is the mirror opposite of the &JAX-RS; server-side specification. Instead of using
+        &JAX-RS; annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
         HTTP request that it uses to invoke on a remote RESTful Web Service. This remote service does not have to be a
-        JAX-RS service and can be any web resource that accepts HTTP requests.
+        &JAX-RS; service and can be any web resource that accepts HTTP requests.
     </para>
     <para>
 
-        RESTEasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
+        RESTEasy has a client proxy framework that allows you to use &JAX-RS; annotations to invoke on a remote HTTP
         resource.
-        The way it works is that you write a Java interface and use JAX-RS annotations on methods and the interface. For
+        The way it works is that you write a Java interface and use &JAX-RS; annotations on methods and the interface. For
         example:
     </para>
     <para>
@@ -170,7 +170,7 @@ public interface SimpleClient
         so no extra metadata is needed.
     </para>
     <para>
-     The framework also supports the JAX-RS locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
+     The framework also supports the &JAX-RS; locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
      will return a new proxy of the interface returned by that method.
     </para>
     <section id="Custom_client-side_responses">
@@ -501,7 +501,7 @@ name: b
         <title>Sharing an interface between client and server</title>
         <para>
             It is generally possible to share an interface between the client and server. In this scenario, you just
-            have your JAX-RS services implement an annotated interface
+            have your &JAX-RS; services implement an annotated interface
             and then reuse that same interface to create client proxies to invoke on the client-side.
         </para>
 

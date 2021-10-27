@@ -37,7 +37,7 @@
    </para>
    <para>
 
-      When an application exception is thrown it will be caught by the JAX-RS runtime. JAX-RS will then scan registered
+      When an application exception is thrown it will be caught by the &JAX-RS; runtime. &JAX-RS; will then scan registered
       ExceptionMappers to see which one support marshalling the exception type thrown. Here is an example of
       ExceptionMapper
    </para>
@@ -121,7 +121,7 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 <row>
 <entry>DefaultOptionsMethodException</entry>
 <entry>N/A</entry>
-<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, RESTEasy provides a default behavior by throwing this exception</entry>
+<entry>If the user invokes HTTP OPTIONS and no &JAX-RS; method for it, RESTEasy provides a default behavior by throwing this exception</entry>
 </row>
 <row>
 <entry>UnrecognizedPropertyExceptionHandler</entry>
@@ -144,16 +144,16 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
    }
    </programlisting>
    <para>If the call to http://third.party.com returns a status code 3xx, 4xx, or 5xx, then the 
-   <classname>Client</classname> is obliged by the JAX-RS
+   <classname>Client</classname> is obliged by the &JAX-RS;
    specification to throw a <classname>WebApplicationException</classname>. Moreover, if the
    <classname>WebApplicationException</classname> contains a <classname>Response</classname>, which
-   it normally would in RESTEasy, the server runtime is obliged by the JAX-RS specification to return that
+   it normally would in RESTEasy, the server runtime is obliged by the &JAX-RS; specification to return that
    <classname>Response</classname>.
    As a result, information from the server at third.party.com, e.g., headers and body, will get sent back to
    local.com. The problem is that that information could be, at best, meaningless to the client
    and, at worst, a security breach.</para>
 
-   <para>RESTEasy has a solution that works around the problem and still conforms to the JAX-RS specification.
+   <para>RESTEasy has a solution that works around the problem and still conforms to the &JAX-RS; specification.
    In particular, for each <classname>WebApplicationException</classname> it defines a new subclass:</para>
 
 <programlisting>

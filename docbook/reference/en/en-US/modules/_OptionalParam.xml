@@ -58,9 +58,9 @@ public String optDouble(@BeanParam Bean bean) {
     OptionalDouble value;
 }]]></programlisting>
 
-  <para> Finally, the <code>Optional</code> types can be used directly as type of the fields of a JAX-RS resource class.</para>
+  <para> Finally, the <code>Optional</code> types can be used directly as type of the fields of a &JAX-RS; resource class.</para>
 
-  <para>Here is an example of a JAX-RS resource class with an <code>Optional</code> type:</para>
+  <para>Here is an example of a &JAX-RS; resource class with an <code>Optional</code> type:</para>
 
   <programlisting><![CDATA[@RequestScoped
 public class OptionalResource {
