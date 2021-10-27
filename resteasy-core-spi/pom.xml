@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-core-spi</artifactId>
-    <name>RESTEasy JAX-RS Core SPI</name>
+    <name>RESTEasy Core SPI</name>
     <description/>
     <packaging>jar</packaging>
 

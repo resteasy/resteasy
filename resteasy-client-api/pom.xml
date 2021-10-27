@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>resteasy-client-api</artifactId>
-    <name>RESTEasy JAX-RS Client API</name>
+    <name>RESTEasy Client API</name>
 
     <dependencies>
 

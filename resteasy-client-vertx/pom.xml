@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>resteasy-client-vertx</artifactId>
-    <name>RESTEasy JAX-RS Client - Vert.x Engine</name>
+    <name>RESTEasy Client - Vert.x Engine</name>
 
     <dependencies>
 

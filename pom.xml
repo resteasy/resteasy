@@ -9,7 +9,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>RESTEasy JAX-RS</name>
+    <name>RESTEasy</name>
     <description>Resteasy</description>
 
     <groupId>org.jboss.resteasy</groupId>
@@ -295,6 +295,7 @@
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
+                        <header><![CDATA[<b>${project.name} ${project.version}</b><br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.]]></header>
                     </configuration>
                       <executions>
                         <execution>

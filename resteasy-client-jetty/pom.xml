@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>resteasy-client-jetty</artifactId>
-    <name>RESTEasy JAX-RS Client - Jetty Engine</name>
+    <name>RESTEasy Client - Jetty Engine</name>
 
     <dependencies>
 
