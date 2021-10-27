@@ -1,6 +1,6 @@
 <chapter id="Interceptors">
     <title>Filters and Interceptors</title>
-    <para>JAX-RS 2.0 has two different concepts for interceptions: Filters and Interceptors.  Filters are mainly used to
+    <para>&REST-API; has two different concepts for interceptions: Filters and Interceptors.  Filters are mainly used to
     modify or process incoming and outgoing request headers or response headers.  They execute before and after
     request and response processing.</para>
     <sect1>

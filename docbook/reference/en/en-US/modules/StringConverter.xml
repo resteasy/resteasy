@@ -53,7 +53,7 @@ public void testQuery() throws Exception {
    
    <para>
    What if you have a class where <methodname>valueOf()</methodname>or this string constructor don't exist or are inappropriate
-   for an HTTP request? JAX-RS 2.0 has the <classname>javax.ws.rs.ext.ParamConverterProvider</classname> to help
+   for an HTTP request? &REST-API; has the <classname>javax.ws.rs.ext.ParamConverterProvider</classname> to help
    in this situation.
    </para>
    
@@ -670,7 +670,7 @@ public static class TestResource {
    <title>Default multiple valued <classname>ParamConverter</classname></title>
    
    <para>
-   RESTEasy includes two built-in <classname>ParamConverter</classname>s in the resteasy-jaxrs module,
+   RESTEasy includes two built-in <classname>ParamConverter</classname>s in the resteasy-core module,
    one for <classname>Collection</classname>s:
    </para>
    

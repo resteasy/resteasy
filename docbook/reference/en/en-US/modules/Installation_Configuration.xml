@@ -120,14 +120,24 @@
                 </row>
                 <row>
                     <entry>
-                        org.jboss.resteasy.resteasy-jaxrs
+                        org.jboss.resteasy.resteasy-core
                     </entry>
                     <entry>
                         yes
                     </entry>
                     <entry>
-                        Core RESTEasy libraries for server and client.  You will need to include this in your deployment
-                        if you are only using &REST-API; client.
+                        Core RESTEasy libraries for server.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-client
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Core RESTEasy libraries for client.
                     </entry>
                 </row>
                 <row>
@@ -355,7 +365,7 @@ public class MyApplication extends Application
         <para>
             If you are using RESTEasy outside of WildFly, in a standalone servlet container like Tomcat or Jetty, for example,
             you will need to include the appropriate RESTEasy jars in your WAR file.  You will need the core classes
-            in the resteasy-jaxrs module, and you may need additional facilities like the resteasy-jaxb-provider module.
+            in the resteasy-core and resteasy-client modules, and you may need additional facilities like the resteasy-jaxb-provider module.
             We strongly suggest that you use Maven to build your WAR files as RESTEasy is split into
             a bunch of different modules:
         </para>
@@ -363,6 +373,11 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-client</artifactId>
     <version>5.0.0-SNAPSHOT</version>
 </dependency>
 <dependency>
@@ -943,7 +958,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 Replaces the need for an Accept header by mapping file name extensions (like .xml or
                                 .txt) to a media type. Used when the client
                                 is unable to use an Accept header to choose a representation (i.e. a browser). See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta_REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -1387,7 +1402,7 @@ public abstract class Application
     <title>Client side</title>
 
     <para>
-        JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
+        &REST-API; conforming implementations, such as RESTEasy, support a client side framework which simplifies
         communicating with restful applications. In RESTEasy, the minimal set of modules needed for the client framework
         consists of resteasy-core and resteasy-client. You can access them by way of maven:
     </para>

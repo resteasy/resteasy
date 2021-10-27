@@ -2,7 +2,7 @@
 <title>Reactive programming support</title>
  
     <para>
-       With version 2.1, the JAX-RS specification 
+       With version 2.1, the &REST-API; specification
        (<ulink url="https://jcp.org/en/jsr/detail?id=370">https://jcp.org/en/jsr/detail?id=370</ulink>)
        takes its first steps into the world of <emphasis role="bold">Reactive Programming</emphasis>. There are many discussions
        of reactive programming on the internet, and a general introduction is beyond the scope of this document,
@@ -25,8 +25,8 @@
 <sect1>
 <title>CompletionStage</title>
     <para>
-       In java 1.8 and JAX-RS 2.1, the support for reactive programming is fairly limited. Java 1.8 introduces the interface
-       <classname>java.util.concurrent.CompletionStage</classname>, and JAX-RS 2.1 mandates support for the
+       In Java 1.8 and &REST-API;, the support for reactive programming is fairly limited. Java 1.8 introduces the interface
+       <classname>java.util.concurrent.CompletionStage</classname>, and &REST-API; mandates support for the
        <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname>, which allows a client to obtain a 
        response in the form of a <classname>CompletionStage</classname>. 
     </para>
@@ -175,7 +175,7 @@ private CompletionStage&lt;String&gt; getCompletionStageSupplyAsync1(String s, E
 <title>CompletionStage in &REST-API;</title>
 
     <para>
-       On the client side, the JAX-RS 2.1 specification mandates an implementation of the interface
+       On the client side, the &REST-API; specification mandates an implementation of the interface
        <classname>javax.ws.rs.client.CompletionStageRxInvoker</classname>:
     </para>
     
@@ -221,7 +221,7 @@ log.info("result: " + s);
 </programlisting>
 
     <para>
-       On the server side, the JAX-RS 2.1 specification requires support for resource methods with return type
+       On the server side, the &REST-API; specification requires support for resource methods with return type
        <classname>CompletionStage&lt;T&gt;</classname>. For example,
     </para>
     
@@ -673,7 +673,7 @@ public interface FlowableOnSubscribe&lt;T&gt; {
 <title>Client side</title>
    
     <para>
-       On the client side, JAX-RS 2.1 supports extensions for reactive classes by adding the method
+       On the client side, &REST-API; supports extensions for reactive classes by adding the method
     </para>
     
 <programlisting>
@@ -1359,7 +1359,7 @@ public interface AsyncStreamProvider&lt;T&gt; {
     </para>
     
     <para>
-       <emphasis role="bold">Client side.</emphasis> The JAX-RS specification version 2.1 imposes two
+       <emphasis role="bold">Client side.</emphasis> The &REST-API; specification imposes two
        requirements for support of reactive classes on the client side:   
     </para> 
     

@@ -1,6 +1,6 @@
 <chapter id="json-p">
     <title>JSON Support via Jakarta EE JSON-P API</title>
-    <para>No, this is not the JSONP you are thinking of!  JSON-P is a Jakarta EE parsing API introduced in Java EE 7.
+    <para>No, this is not the JSONP you are thinking of! JSON-P is a Jakarta EE parsing API.
         Horrible name for
         a new JSON parsing API!  What were they thinking?  Anyways, RESTEasy has
         a provider for it.  If you are using WildFly, it is required by Jakarta EE so you will have it automatically bundled.

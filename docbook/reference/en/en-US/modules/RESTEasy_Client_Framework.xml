@@ -2,8 +2,8 @@
     <title>RESTEasy Client API</title>
 
     <section>
-        <title>JAX-RS 2.0 Client API</title>
-        <para>JAX-RS 2.0 introduces a new client API so that you can make http requests to your remote RESTful web services.
+        <title>&REST-API; Client API</title>
+        <para>The &REST-API; includes a client API so that you can make http requests to your remote RESTful web services.
         It is a 'fluent' request building API with really 3 main classes:  Client, WebTarget, and Response.  The Client
         interface is a builder of WebTarget instances.  WebTarget represents a distinct URL or URL template from which
         you can build more sub-resource WebTargets or invoke requests on.</para>

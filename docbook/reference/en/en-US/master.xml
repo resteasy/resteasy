@@ -59,7 +59,7 @@
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
-                <!ENTITY JAX-RS_2.1_additions SYSTEM "modules/JAX-RS_2.1_additions.xml">
+                <!ENTITY Jakarta_REST_2.1_additions SYSTEM "modules/Jakarta_REST_2.1_additions.xml">
                 <!ENTITY REST-API "Jakarta RESTful Web Services">
                 ]>
 
@@ -127,7 +127,7 @@ This one is short
     &Json;
     &Json-p;
     &Multipart;
-   &JAX-RS_2.1_additions;
+   &Jakarta_REST_2.1_additions;
    &StringConverter;
    &Responses_using_javax.ws.rs.core.Response;
    &ExceptionMappers;

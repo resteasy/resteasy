@@ -23,19 +23,7 @@ that provide a Java API for RESTful Web Services over the HTTP protocol:
     <entry><ulink url="https://jcp.org/en/jsr/detail?id=339">JAX-RS 2.0</ulink></entry>
   </row>
   <row>
-    <entry>3.5-3.15.2</entry>
-    <entry><ulink url="https://jcp.org/en/jsr/detail?id=370">JAX-RS 2.1</ulink></entry>
-  </row>
-  <row>
-    <entry>3.9+</entry>
-    <entry><ulink url="https://jakarta.ee/specifications/restful-ws/2.1/restful-ws-spec-2.1.html">Jakarta RESTful Web Services 2.1</ulink></entry>
-  </row>
-  <row>
-    <entry>4.0-4.7.2</entry>
-    <entry><ulink url="https://jcp.org/en/jsr/detail?id=370">JAX-RS 2.1</ulink></entry>
-  </row>
-  <row>
-    <entry>4.3+</entry>
+    <entry>3.5+</entry>
     <entry><ulink url="https://jakarta.ee/specifications/restful-ws/2.1/restful-ws-spec-2.1.html">Jakarta RESTful Web Services 2.1</ulink></entry>
   </row>
 </tbody>

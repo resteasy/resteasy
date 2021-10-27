@@ -16,7 +16,7 @@
    <sect1>
       <title>Using the <code>@Suspended</code> annotation</title>
       <para>
-         The JAX-RS 2.0 specification has added asynchronous HTTP support via two classes.  The <code>@Suspended</code> annotation,
+         The &REST-API; specification includes asynchronous HTTP support via two classes. The <code>@Suspended</code> annotation,
          and AsyncResponse interface.
       </para>
       <para>
@@ -76,7 +76,7 @@ public class SimpleResource
    <sect1>
       <title>Using Reactive return types</title>
       <para id="CompletionStage">
-          The JAX-RS 2.1 specification adds support for declaring asynchronous resource methods by
+          The &REST-API; 2.1 specification adds support for declaring asynchronous resource methods by
           returning a <code>CompletionStage</code> instead of using the <code>@Suspended</code>
           annotation.
       </para>

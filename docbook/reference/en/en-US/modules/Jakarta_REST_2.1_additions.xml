@@ -1,6 +1,6 @@
-<chapter id="JAX-RS_2.1_additions">
-    <title>JAX-RS 2.1 Additions</title>
-    <para>JAX-RS 2.1 adds more asynchronous processing support in both the
+<chapter id="Jakarta_REST_2.1_additions">
+    <title>&REST-API; 2.1 Additions</title>
+    <para>&REST-API; 2.1 adds more asynchronous processing support in both the
         Client and the Server API.  The specification adds a Reactive programming
         style to the Client side and Server-Sent Events (SSE) protocol support to
         both client and server.
@@ -48,7 +48,7 @@
              The field can be event, data, id, retry and other kinds of field will be ignored.
         </para>
         <para>
-             From JAX-RS 2.1, Server-sent Events APIs are introduced to support sending, receiving and broadcasting SSE events.
+             From &REST-API; 2.1, Server-sent Events APIs are introduced to support sending, receiving and broadcasting SSE events.
         </para>
         <sect2>
             <title>SSE Server</title>
@@ -200,7 +200,7 @@
         </para>
         <para>
             The support for JSON-B is provided by the <code>JsonBindingProvider</code> from <code>resteasy-json-binding-provider</code> module.
-            To satisfy JAX-RS 2.1 requirements, JsonBindingProvider takes precedence over the other providers for dealing with JSON payloads,
+            To satisfy &REST-API; 2.1 requirements, JsonBindingProvider takes precedence over the other providers for dealing with JSON payloads,
             in particular the Jackson one. The JSON outputs (for the same input) from Jackson and JSON-B reference implementation can be slightly
             different.  As a consequence, in order to allow retaining backward compatibility, RESTEasy offers a
             <code>resteasy.preferJacksonOverJsonB</code> context property that can be set to <code>true</code> to disable JsonBindingProvider
