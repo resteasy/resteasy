@@ -208,7 +208,7 @@
         </para>
         <para>
             WildFly 14 supports specifying the default value for the <code>resteasy.preferJacksonOverJsonB</code> context property by setting
-            a system property with the same name. Moreover, if no value is set for the context and system properties, it scans &JAX-RS; deployments
+            a system property with the same name. Moreover, if no value is set for the context and system properties, it scans &REST-API; deployments
             for Jackson annotations and sets the property to <code>true</code> if any of those annotations is found.
         </para>
     </sect1>

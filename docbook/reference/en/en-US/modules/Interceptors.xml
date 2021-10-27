@@ -7,15 +7,15 @@
         <title>Server Side Filters</title>
     <para>
         On the server-side you have two different types of filters.  ContainerRequestFilters
-        run before your &JAX-RS; resource method is invoked.  ContainerResponseFilters run after your &JAX-RS; resource method
+        run before your &REST-API; resource method is invoked.  ContainerResponseFilters run after your &REST-API; resource method
         is invoked.  As an added caveat, ContainerRequestFilters come in two flavors:  pre-match and post-matching.  Pre-matching
-        ContainerRequestFilters are designated with the @PreMatching annotation and will execute before the &JAX-RS; resource
+        ContainerRequestFilters are designated with the @PreMatching annotation and will execute before the &REST-API; resource
         method is matched with the incoming HTTP request.  Pre-matching filters often are used to modify request attributes
         to change how it matches to a specific resource method (i.e. strip .xml and add an Accept header).  ContainerRequestFilters can abort the request by calling ContainerRequestContext.abortWith(Response).  A filter
         might want to abort if it implements a custom authentication protocol.
     </para>
     <para>
-          After the resource class method is executed, &JAX-RS; will run all ContainerResponseFilters.  These filters
+          After the resource class method is executed, &REST-API; will run all ContainerResponseFilters.  These filters
         allow you to modify the outgoing response before it is marshalling and sent to the client.
         So given all that, here's some pseudo
         code to give some understanding of how things work.

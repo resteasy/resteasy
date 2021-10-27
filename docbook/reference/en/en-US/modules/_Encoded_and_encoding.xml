@@ -3,7 +3,7 @@
 
 <para>
 
-&JAX-RS; allows you to get encoded or decoded @*Params and specify path definitions and parameter names using encoded or decoded strings.
+&REST-API; allows you to get encoded or decoded @*Params and specify path definitions and parameter names using encoded or decoded strings.
 </para>
 <para>
 

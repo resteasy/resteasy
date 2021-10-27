@@ -10,12 +10,12 @@
     <section>
     	<title>Generated JavaScript API</title>
     	<para>
-    		RESTEasy can generate a JavaScript API that uses AJAX calls to invoke &JAX-RS; operations.
+    		RESTEasy can generate a JavaScript API that uses AJAX calls to invoke &REST-API; operations.
     	</para>
    		<example>
-   			<title>First &JAX-RS; JavaScript API example</title>
+   			<title>First &REST-API; JavaScript API example</title>
     		<para>
-    			Let's take a simple &JAX-RS; API:
+    			Let's take a simple &REST-API; API:
 	    	</para>
 	    	<programlisting><![CDATA[@Path("orders")
 public interface Orders {
@@ -49,13 +49,13 @@ public interface Orders {
     	<section>
     		<title>JavaScript API usage</title>
     		<para>
-    			Each &JAX-RS; resource class will generate a JavaScript object of the same name
-    			as the declaring class (or interface), which will contain every &JAX-RS; method
+    			Each &REST-API; resource class will generate a JavaScript object of the same name
+    			as the declaring class (or interface), which will contain every &REST-API; method
     			as properties.
     		</para>
     		<example>
-    			<title>Structure of &JAX-RS; generated JavaScript</title>
-    			<para>For example, if the &JAX-RS; resource X defines methods Y and Z:
+    			<title>Structure of &REST-API; generated JavaScript</title>
+    			<para>For example, if the &REST-API; resource X defines methods Y and Z:
     			</para>
 	    		<programlisting language="java"><![CDATA[@Path("/")
 public interface X{
@@ -114,7 +114,7 @@ public interface X{
 					<tr>
 						<td>$apiURL</td>
 						<td>Determined by container</td>
-						<td>Set to the base URI of your &JAX-RS; endpoint, not including the last slash.</td>
+						<td>Set to the base URI of your &REST-API; endpoint, not including the last slash.</td>
 					</tr>
 					<tr>
 						<td>$username</td>
@@ -130,7 +130,7 @@ public interface X{
     		</table>
     		<example>
     			<title>Using the API</title>
-    			<para>Here is an example of &JAX-RS; API:</para>
+    			<para>Here is an example of &REST-API; API:</para>
 	    		<programlisting language="java"><![CDATA[@Path("foo")
 public class Foo{
  @Path("{id}")
@@ -143,7 +143,7 @@ public class Foo{
  public void post(String text){
  }
 }]]></programlisting>
-				<para>We can use the previous &JAX-RS; API in JavaScript using the following code:</para>
+				<para>We can use the previous &REST-API; API in JavaScript using the following code:</para>
 	    		<programlisting language="javascript"><![CDATA[
 var text = Foo.get({order: 'desc', 'X-Foo': 'hello',
                     colour: 'blue', 'Foo-Cookie': 123987235444});
@@ -217,7 +217,7 @@ public static class MyResource {
     		<title>MIME types and unmarshalling.</title>
     		<para>
     			The Accept header sent by any client JavaScript function is controlled by the $accepts parameter, which overrides
-    			the @Produces annotation on the &JAX-RS; endpoint. The returned value however is controlled by the Content-Type header
+    			the @Produces annotation on the &REST-API; endpoint. The returned value however is controlled by the Content-Type header
     			sent in the response as follows:
     		</para>
     		<table>
@@ -282,7 +282,7 @@ public interface Orders {
  }
 }]]></programlisting>
 	    		<para>
-					Let us look at what the preceding &JAX-RS; API would give us on the client side:
+					Let us look at what the preceding &REST-API; API would give us on the client side:
 	    		</para>
 	    		<programlisting language="javascript"><![CDATA[// this returns a JSON object
 var orderJSON = Orders.getOrderJSON({id: "23"});
@@ -298,7 +298,7 @@ orderXML.documentElement.childNodes[0].childNodes[0].nodeValue == "23";]]></prog
     		<title>MIME types and marshalling.</title>
     		<para>
     			The Content-Type header sent in the request is controlled by the $contentType parameter which overrides the
-    			@Consumes annotation on the &JAX-RS; endpoint. The value passed as entity body using the $entity parameter is marshalled
+    			@Consumes annotation on the &REST-API; endpoint. The value passed as entity body using the $entity parameter is marshalled
     			according to both its type and content type:
     		</para>
     		<table>
@@ -365,7 +365,7 @@ public interface Orders {
  }
 }]]></programlisting>
 	    		<para>
-					Let us look at what the preceding &JAX-RS; API would give us on the client side:
+					Let us look at what the preceding &REST-API; API would give us on the client side:
 	    		</para>
 	    		<programlisting language="javascript"><![CDATA[// this saves a JSON object
 Orders.putOrderJSON({$entity: {id: "23"}});
@@ -401,7 +401,7 @@ Orders.putOrderXML({$entity: order});]]></programlisting>
 					<tr>
 						<td>apiURL</td>
 						<td>
-							Set by default to the &JAX-RS; root URL, used by every JavaScript client API functions when constructing
+							Set by default to the &REST-API; root URL, used by every JavaScript client API functions when constructing
 							the requests.
 						</td>
 					</tr>

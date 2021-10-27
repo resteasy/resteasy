@@ -1006,7 +1006,7 @@ public class ContextProvidersName {
          <para>If you have an exact knowledge of your multipart/form-data packets,
             you can map them to and from a POJO class using the annotation
             <code>@org.jboss.resteasy.annotations.providers.multipart.MultipartForm</code>
-            and the &JAX-RS; <code>@FormParam</code> annotation. Simply define a POJO with
+            and the &REST-API; <code>@FormParam</code> annotation. Simply define a POJO with
             at least a default constructor and annotate its fields and/or properties
             with <code>@FormParams</code>. These <code>@FormParams</code> must
             also be annotated with
@@ -1208,7 +1208,7 @@ String name = proxy.putMultipartForm(new JsonFormResource
            request.  They send them only for the file parts.  This can cause
            character encoding and unmarshalling errors on the server side. To correct
            this there is an option to define an other, non-rfc compliant fallback value.
-           This can be done dynamically per request with the filter facility of &JAX-RS;
+           This can be done dynamically per request with the filter facility of &REST-API;
            3.0. In the following example we will set
            <code>"*/*; charset=UTF-8"</code> as the new default fallback:
             <programlisting>

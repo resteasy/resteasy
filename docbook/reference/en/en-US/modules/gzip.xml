@@ -6,7 +6,7 @@
    <para>
     RESTEasy supports (though not by default - see below)
     GZIP decompression.  If properly configured,
-    the client framework or a &JAX-RS; service, upon receiving
+    the client framework or a &REST-API; service, upon receiving
     a message body with a Content-Encoding of "gzip",
     will automatically decompress it.  The client framework can
     (though not by default - see below) automatically

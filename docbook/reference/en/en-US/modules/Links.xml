@@ -65,7 +65,7 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-					Annotate the &JAX-RS; method with <classname>@AddLinks</classname> to indicate that you want
+					Annotate the &REST-API; method with <classname>@AddLinks</classname> to indicate that you want
 					Atom links injected in your response entity.
 					</para>
 				</listitem>
@@ -77,7 +77,7 @@
 				</listitem>
 				<listitem>
 					<para>
-					Annotate the &JAX-RS; methods you want Atom links for with <classname>@LinkResource</classname>,
+					Annotate the &REST-API; methods you want Atom links for with <classname>@LinkResource</classname>,
 					so that RESTEasy knows which links to create for which resources.
 					</para>
 				</listitem>
@@ -174,7 +174,7 @@ public class Book {
 			</para>
 		</section>
 		<section>
-			<title>Specifying which &JAX-RS; methods are tied to which resources</title>
+			<title>Specifying which &REST-API; methods are tied to which resources</title>
 			<para>
 			This is all done by annotating the methods with the <classname>@LinkResource</classname> annotation.
 			It supports the following optional parameters:
@@ -413,7 +413,7 @@ public interface BookStore {
 			</para>
 			<para>
 			Security restrictions can either be specified on the <classname>@LinkResource</classname> annotation,
-			or using RESTEasy and EJB's security annotation <classname>@RolesAllowed</classname> on the &JAX-RS;
+			or using RESTEasy and EJB's security annotation <classname>@RolesAllowed</classname> on the &REST-API;
 			method.
 			</para>
 			<table>
@@ -432,7 +432,7 @@ public interface BookStore {
 						<td><classname>String</classname></td>
 						<td>A UEL expression which must evaluate to true to inject this method's link in the
 						response entity.</td>
-						<td>Defaults to using <classname>@RolesAllowed</classname> from the &JAX-RS; method.</td>
+						<td>Defaults to using <classname>@RolesAllowed</classname> from the &REST-API; method.</td>
 					</tr>
 				</tbody>
 			</table>
@@ -446,7 +446,7 @@ public interface BookStore {
 			</para>
 			<para>
 			If you want to add more variables or functions in this
-			context, you can by adding a <classname>@LinkELProvider</classname> annotation on the &JAX-RS; method,
+			context, you can by adding a <classname>@LinkELProvider</classname> annotation on the &REST-API; method,
 			its class, or its package. This annotation's value should point to a class that implements the
 			<classname>ELProvider</classname> interface, which wraps the default <classname>ELContext</classname>
 			in order to add any missing functions.
