@@ -52,4 +52,9 @@ RESTEasy is a portable implementation of these specifications which can run in a
 Tighter integration with the WildFly application server is also available to make the user experience nicer in that environment.
 RESTEasy also comes with additional features on top of the plain old specifications.
 </para>
+<note>
+  <para>
+    References in this document to JAX-RS refer to the &REST-API; unless otherwise noted.
+  </para>
+</note>
 </chapter>
