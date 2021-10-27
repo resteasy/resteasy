@@ -801,8 +801,8 @@ public ApacheHttpClient43Engine(HttpClient httpClient, boolean closeHttpClient) 
 
      <para>
          For more information about HttpClient (4.x), see the documentation
-         at <ulink url="http://hc.apache.org/httpcomponents-client-ga/tutorial/html/">
-         http://hc.apache.org/httpcomponents-client-ga/tutorial/html/</ulink>.
+         at <ulink url="https://hc.apache.org/index.html">
+         https://hc.apache.org/index.html/</ulink>.
      </para>
      
      <para>

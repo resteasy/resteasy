@@ -838,7 +838,7 @@ The extra @XmlSeeAlso on IFoo allows RESTEasy to create a JAXBContext that knows
    <para>
      As a consumer of XML datasets, JAXB is subject to a form of attack
      known as the XXE (Xml eXternal Entity) Attack
-     (<ulink url="http://www.securiteam.com/securitynews/6D0100A5PU.html">http://www.securiteam.com/securitynews/6D0100A5PU.html</ulink>),
+     (<ulink url="https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing">https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing</ulink>),
      in which expanding an external entity causes an unsafe file to be loaded.  Preventing the expansion of
      external entities is discussed in <xref linkend="Configuring_Document_Marshalling"/>.  The same
      parameter,

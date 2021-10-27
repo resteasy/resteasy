@@ -1,6 +1,6 @@
 <chapter id="Content_Marshalling_Providers">
    <title>Content Marshalling/Providers</title>
-   <sect1 id="Default_Providers_and_default_&REST-API;_Content_Marshalling">
+   <sect1 id="Default_Providers_and_default_Content_Marshalling">
       <title>Default Providers and default &REST-API; Content Marshalling</title>
 
       <para>
@@ -360,7 +360,7 @@ public class MultipartProvider implements MessageBodyReader {
       <para>
    
          XML document parsers are subject to a form of attack known as the XXE (Xml eXternal Entity) Attack
-         (<ulink url="http://www.securiteam.com/securitynews/6D0100A5PU.html">http://www.securiteam.com/securitynews/6D0100A5PU.html</ulink>),
+         (<ulink url="https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing">https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing</ulink>),
          in which expanding an external entity causes an unsafe file to be loaded. For example, the document
       </para>
       

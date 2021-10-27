@@ -6,9 +6,9 @@
    have a default value in English which can be overridden in any given locale by a file which gives translated values. For
    more information about internationalization and localization in Java, see, for example,
    <ulink url="http://docs.oracle.com/javase/tutorial/i18n">http://docs.oracle.com/javase/tutorial/i18n</ulink>. For more about
-   JBoss Logging, see
-   <ulink url="https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/">
-   https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/</ulink>,
+   JBoss Logging Tooling, see
+   <ulink url="https://jboss-logging.github.io/jboss-logging-tools/">
+      https://jboss-logging.github.io/jboss-logging-tools/</ulink>,
    Chapters 4 and 5.
    </para>
 

@@ -443,7 +443,7 @@ then it is to be expected that services will often act as clients to other servi
 CDI (Contexts and Dependency Injection) is a fairly rich subject and beyond the scope of this Guide. For more information, see 
 <ulink url="https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html">Jakarta Contexts and Dependency Injection</ulink> (the specification), 
 <ulink url="https://eclipse-ee4j.github.io/jakartaee-tutorial/">Jakarta EE Tutorial</ulink>, or
-<ulink url="https://docs.jboss.org/weld/reference/latest-master/en-US/html/">WELD - CDI Reference Implementation</ulink>.
+<ulink url="https://docs.jboss.org/weld/reference/latest-3.1/en-US/html_single/">WELD - CDI Reference Implementation</ulink>.
 </para>
 
 <para>
