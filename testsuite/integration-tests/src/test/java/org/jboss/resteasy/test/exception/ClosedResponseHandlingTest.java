@@ -10,6 +10,7 @@ import javax.ws.rs.NotSupportedException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.TracingRequired;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingEnableTracingRequestFilter;
@@ -22,6 +23,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
@@ -36,6 +38,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(TracingRequired.class)
 public class ClosedResponseHandlingTest {
 
    public static final String oldBehaviorDeploymentName = "OldBehaviorClosedResponseHandlingTest";

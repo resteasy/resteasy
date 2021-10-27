@@ -16,6 +16,7 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups/>
+        <additional.surefire.exclude.tracing.tests/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
@@ -112,7 +113,7 @@
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>

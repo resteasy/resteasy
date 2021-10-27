@@ -118,6 +118,17 @@
             </plugins>
           </build>
         </profile>
+        <profile>
+            <id>skip.tracing.tests</id>
+            <activation>
+                <property>
+                    <name>skip.tracing.tests</name>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.exclude.tracing.tests>,org.jboss.resteasy.category.TracingRequired</additional.surefire.exclude.tracing.tests>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>
