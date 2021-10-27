@@ -1155,6 +1155,54 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
 &lt;param-value&gt;/restful-services&lt;/param-value&gt;
 &lt;/context-param&gt;</programlisting>
         </para>
+
+        <para>
+            Resteasy internally uses a cache to find the resource invoker for the request url. This cache
+            size and enablement can be controlled with these system properties.
+        </para>
+        <para>
+            <table frame="topbot">
+                <tgroup cols="3" rowsep="1" colsep="1">
+                    <thead>
+                        <row>
+                            <entry>
+                                System Property Name
+                            </entry>
+                            <entry>
+                                Default Value
+                            </entry>
+                            <entry>
+                                Description
+                            </entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                resteasy.match.cache.enabled
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                If the match cache is enabled or not
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.match.cache.size
+                            </entry>
+                            <entry>
+                                2048
+                            </entry>
+                            <entry>
+                                The size of this match cache
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </para>
     </section>
     <section id="javax.ws.rs.core.Application">
         <title>javax.ws.rs.core.Application</title>
