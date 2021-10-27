@@ -1117,6 +1117,19 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                         </row>
                         <row>
                             <entry>
+                                resteasy.patchfilter.legacy
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Set this value to false, the jsonp provider will be activated to provide
+                                PatchFilter for Json patch or Json Merge patch functionalities. By default(true value),
+                                the Jackson provider will be used.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
                                 resteasy.original.webapplicationexception.behavior
                             </entry>
                             <entry>
