@@ -16,7 +16,7 @@ import java.io.Serializable;
  * 2) an @Entity class, suitable for JPA storage
  *
  * It implements Serializable so that it can be returned from a JAX-RS resource
- * in its role as EJB.
+ * in its role as enterprise bean.
  */
 @Entity
 @XmlRootElement(name = "book")

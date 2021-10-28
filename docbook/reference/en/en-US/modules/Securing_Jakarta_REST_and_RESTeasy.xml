@@ -32,7 +32,7 @@ To get around this problem you will need to use the security annotations defined
 <para>
 
 RESTEasy supports the @RolesAllowed, @PermitAll and @DenyAll annotations on &REST-API; methods.   By default though, RESTEasy does not recognize these annotations.  You have to
-configure RESTEasy to turn on role-based security by setting the appropriate parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
+configure RESTEasy to turn on role-based security by setting the appropriate parameter.  NOTE!!!  Do not turn on this switch if you are using &ENTERPRISE-BEANS;.  The &ENTERPRISE-BEANS; container will provide this
 functionality instead of RESTEasy. To configure this switch as a context-param, do this:
 
 </para>

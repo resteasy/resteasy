@@ -35,7 +35,7 @@
                 <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
                 <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
                 <!ENTITY Securing_Jakarta_REST_and_RESTeasy SYSTEM "modules/Securing_Jakarta_REST_and_RESTeasy.xml">
-                <!ENTITY RESTEasy_EJB_Integration SYSTEM "modules/RESTEasy_EJB_Integration.xml">
+                <!ENTITY RESTEasy_Enterprise_Bean_Integration SYSTEM "modules/RESTEasy_Enterprise_Bean_Integration.xml">
                 <!ENTITY RESTEasy_Spring_Integration SYSTEM "modules/RESTEasy_Spring_Integration.xml">
                 <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
                 <!ENTITY MicroProfile_Rest_Client SYSTEM "modules/MicroProfile_Rest_Client.xml">               
@@ -62,6 +62,7 @@
                 <!ENTITY Jakarta_REST_2.1_additions SYSTEM "modules/Jakarta_REST_2.1_additions.xml">
                 <!ENTITY REST-API "Jakarta RESTful Web Services">
                 <!ENTITY XML-BIND-API "Jakarta XML Binding">
+                <!ENTITY ENTERPRISE-BEANS "Jakarta Enterprise Beans">
                 ]>
 
 <book>
@@ -148,7 +149,7 @@ This one is short
     &JOSEJWT;
    &Signature;
     &SMIME;
-   &RESTEasy_EJB_Integration;
+   &RESTEasy_Enterprise_Bean_Integration;
    &RESTEasy_Spring_Integration;
    &CDI;
    &RESTEasy_Client_Framework;

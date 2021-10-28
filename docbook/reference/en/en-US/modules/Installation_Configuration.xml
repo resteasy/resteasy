@@ -306,9 +306,9 @@
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
             RESTEasy is bundled with WildFly and completely integrated as per the requirements of Jakarta EE.
-            You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your &REST-API; services and providers.
+            You can use it with &ENTERPRISE-BEANS; and CDI and you can rely completely on WildFly to scan for and deploy your &REST-API; services and providers.
             All you have to provide is your &REST-API; service and provider classes packaged
-            within a WAR either as POJOs, CDI beans, or EJBs.
+            within a WAR either as POJOs, CDI beans, or &ENTERPRISE-BEANS;.
             A simple way to configure an application is by simply providing an empty web.xml file.
             You can of course deploy any custom servlet, filter
             or security constraint you want to within your web.xml, but none of them are required:

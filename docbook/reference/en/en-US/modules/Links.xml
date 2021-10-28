@@ -413,7 +413,7 @@ public interface BookStore {
 			</para>
 			<para>
 			Security restrictions can either be specified on the <classname>@LinkResource</classname> annotation,
-			or using RESTEasy and EJB's security annotation <classname>@RolesAllowed</classname> on the &REST-API;
+			or using RESTEasy and &ENTERPRISE-BEANS; security annotation <classname>@RolesAllowed</classname> on the &REST-API;
 			method.
 			</para>
 			<table>
