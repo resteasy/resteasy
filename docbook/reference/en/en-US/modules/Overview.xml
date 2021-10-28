@@ -57,4 +57,9 @@ RESTEasy also comes with additional features on top of the plain old specificati
     References in this document to JAX-RS refer to the &REST-API; unless otherwise noted.
   </para>
 </note>
+  <note>
+    <para>
+      References in this document to JAXB refer to the &XML-BIND-API; unless otherwise noted.
+    </para>
+  </note>
 </chapter>

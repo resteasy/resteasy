@@ -27,7 +27,7 @@
                         application/*+xml, text/*+xml, application/*+json, application/*+fastinfoset, application/atom+*
                      </entry>
                      <entry>
-                        JaxB annotated classes
+                        &XML-BIND-API; annotated classes
                      </entry>
                   </row>
                   <row>

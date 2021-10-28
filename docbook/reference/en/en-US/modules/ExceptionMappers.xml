@@ -95,12 +95,12 @@ wrapped exception or if the exception isn't a WebApplicationException, then rest
 <row>
 <entry>o.j.r.plugins.providers.jaxb.JAXBUnmarshalException</entry>
 <entry>400</entry>
-<entry>The JAXB providers throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
+<entry>The &XML-BIND-API; providers throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
 </row>
 <row>
 <entry>o.j.r.plugins.providers.jaxb.JAXBMarshalException</entry>
 <entry>500</entry>
-<entry>The JAXB providers throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
+<entry>The &XML-BIND-API; providers throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
 </row>
 <row>
 <entry>ApplicationException</entry>

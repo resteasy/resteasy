@@ -2,7 +2,7 @@
     <title>JSON Support via Jackson</title>
     <para>RESTEasy supports integration with the Jackson project.
         For more on Jackson 2, see <ulink url="https://github.com/FasterXML/jackson-databind/wiki">https://github.com/FasterXML/jackson-databind/wiki</ulink>.
-        Besides JAXB like APIs, it has a JavaBean based model, described at
+        Besides &XML-BIND-API; like APIs, it has a JavaBean based model, described at
         <ulink url="https://github.com/FasterXML/jackson-databind/wiki/Databind-annotations">https://github.com/FasterXML/jackson-databind/wiki/Databind-annotations</ulink>,
         which allows you to easily marshal Java objects to and from JSON.
         RESTEasy integrates with the JavaBean model.
@@ -134,7 +134,7 @@ org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
     <sect1 id="Jackson_JSON_Decorator">
         <title>Jackson JSON Decorator</title>
         <para>
-            If you are using the Jackson 2 provider, RESTEasy has provided a pretty-printing annotation simliar with the one in JAXB provider:
+            If you are using the Jackson 2 provider, RESTEasy has provided a pretty-printing annotation similar with the one in &XML-BIND-API; provider:
 <programlisting>
 org.jboss.resteasy.annotations.providers.jackson.Formatted
 </programlisting>

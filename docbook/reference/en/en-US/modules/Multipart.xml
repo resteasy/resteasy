@@ -631,7 +631,7 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
          <title>XML-binary Optimized Packaging (XOP)</title>
          <para>RESTEasy supports XOP messages packaged as multipart/related messages
             (<link linkend="http://www.w3.org/TR/xop10/">http://www.w3.org/TR/xop10/</link>).
-            A JAXB annotated POJO that also holds binary content can be transmitted using XOP.
+            A &XML-BIND-API; annotated POJO that also holds binary content can be transmitted using XOP.
             XOP allows the binary data to skip going through the XML serializer because
             binary data can be serialized differently from text and this can result in faster
             transport time.
@@ -642,7 +642,7 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
          </para>
          <para>RESTEasy highly recommends, if you know the exact mime type of the POJO's
             binary data, tag the field with annotation @XmlMimeType.  This annotation tells
-            JAXB the mime type of the binary content, however this is not required in order
+            &XML-BIND-API; the mime type of the binary content, however this is not required in order
             to do XOP packaging.
          </para>
       </section>

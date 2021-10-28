@@ -49,7 +49,7 @@
                 <!ENTITY ContentRange SYSTEM "modules/content-range.xml">
                 <!ENTITY Json SYSTEM "modules/Json.xml">
                 <!ENTITY Json-p SYSTEM "modules/Json-p.xml">
-                <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
+                <!ENTITY Xml-Binding SYSTEM "modules/xml-binding.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
@@ -61,6 +61,7 @@
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
                 <!ENTITY Jakarta_REST_2.1_additions SYSTEM "modules/Jakarta_REST_2.1_additions.xml">
                 <!ENTITY REST-API "Jakarta RESTful Web Services">
+                <!ENTITY XML-BIND-API "Jakarta XML Binding">
                 ]>
 
 <book>
@@ -122,7 +123,7 @@ This one is short
    &Resources_Metadata;
    &Jakarta_REST_Content_Negotiation;
     &Content_Marshalling_Providers;
-    &Jaxb;
+    &Xml-Binding;
     &Atom;
     &Json;
     &Json-p;

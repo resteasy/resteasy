@@ -295,7 +295,11 @@
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
-                        <header><![CDATA[<b>${project.name} ${project.version}</b><br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.]]></header>
+                        <header><![CDATA[<b>${project.name} ${project.version}</b>
+                            <br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.
+                            <br>References in this document to JAXB refer to the Jakarta XML Binding unless otherwise noted.
+                            ]]>
+                        </header>
                     </configuration>
                       <executions>
                         <execution>

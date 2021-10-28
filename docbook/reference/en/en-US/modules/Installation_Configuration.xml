@@ -115,7 +115,7 @@
                         yes
                     </entry>
                     <entry>
-                        XML JAXB integration.
+                        &XML-BIND-API; integration.
                     </entry>
                 </row>
                 <row>
@@ -1009,7 +1009,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 Expand external entities in org.w3c.dom.Document documents
-                                and JAXB object representations
+                                and &XML-BIND-API; object representations
                             </entry>
                         </row>
                         <row>
@@ -1021,7 +1021,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 Impose security constraints in processing org.w3c.dom.Document documents
-                                and JAXB object representations
+                                and &XML-BIND-API; object representations
                             </entry>
                         </row>
                         <row>
@@ -1033,7 +1033,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 Prohibit DTDs in org.w3c.dom.Document documents
-                                and JAXB object representations
+                                and &XML-BIND-API; object representations
                             </entry>
                         </row>
                         <row>

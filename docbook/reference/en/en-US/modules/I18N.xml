@@ -149,7 +149,7 @@
    </table>
 
    <para>
-   For example, the jaxb provider contains the interface
+   For example, the &XML-BIND-API; provider contains the interface
    </para>
 
    <blockquote>
@@ -190,7 +190,7 @@ throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocal
 
    <para>
    When RESTEasy is built with the "i18n" profile, a template properties file containing the default messages
-   is created in a subdirectory of target/generated-translation-files. In the jaxb provider, for example,
+   is created in a subdirectory of target/generated-translation-files. In the &XML-BIND-API; provider, for example,
    the
    </para>
 
@@ -226,7 +226,7 @@ collectionWrappingFailedNamespace=Collection wrapping failed, expect namespace o
    <para>
    To provide the translation of the messages for a particular locale, the file should be renamed, replacing
    "locale", "COUNTRY", and "VARIANT" as appropriate (possibly omitting the latter two), and copied to the
-   src/main/resources directory. In the jaxb provider, it would go in
+   src/main/resources directory. In the &XML-BIND-API; provider, it would go in
    </para>
 
    <blockquote>
@@ -240,7 +240,7 @@ collectionWrappingFailedNamespace=Collection wrapping failed, expect namespace o
    </para>
 
    <para>
-   The Messages.i18n_xx.properties file in the jaxb provider, for example, looks like
+   The Messages.i18n_xx.properties file in the &XML-BIND-API; provider, for example, looks like
    </para>
 
    <programlisting>
