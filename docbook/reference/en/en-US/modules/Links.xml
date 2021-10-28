@@ -250,7 +250,7 @@ public class Book {
 				<para>
 					URI template values are extracted from the entity from fields or Java Bean properties
 					annotated with <classname>@ResourceID</classname>, &XML-BIND-API;'s <classname>@XmlID</classname> or
-					JPA's <classname>@Id</classname>. If there are more than one URI template
+					Jakarta Persistence's <classname>@Id</classname>. If there are more than one URI template
 					value to find in a given entity, you can annotate your entity with <classname>@ResourceIDs</classname>
 					to list the names of fields or properties that make up this entity's Id. If there are other
 					URI template values required from a parent entity, we try to find that parent in a field or
