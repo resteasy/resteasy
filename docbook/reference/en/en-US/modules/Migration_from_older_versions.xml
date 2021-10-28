@@ -40,12 +40,12 @@
     
     <orderedlist>
       <listitem>
-      <para><emphasis role="bold">RESTEasy 2</emphasis>: RESTEasy 2 conforms to the JAX-RS 1 specification, and adds a
+      <para><emphasis role="bold">RESTEasy 2</emphasis>: RESTEasy 2 implements the JAX-RS 1 specification, and adds a
       variety of additional facilities, such as a client API, a caching system, an interceptor framework, etc. 
       All of these user facing classes and interfaces comprise the RESTEasy 2 API.</para>
       </listitem>
       <listitem>
-      <para><emphasis role="bold">RESTEasy 3</emphasis>: RESTEasy 3 conforms to the JAX-RS 2 specification, and adds some additional
+      <para><emphasis role="bold">RESTEasy 3</emphasis>: RESTEasy 3 implements the JAX-RS 2 specification, and adds some additional
       facilities. Many of the non-spec facilities from the RESTEasy 2 API are formalized, in altered form,
       in JAX-RS 2, in which case the older facilites are deprecated. The non-deprecated user facing classes and interfaces in
       RESTEasy 3 comprise the RESTEasy 3 API.</para>
@@ -145,7 +145,7 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
       <para>
       This issue is related to refactoring deprecated elements of the RESTEasy 2 API into a separate module, and, ideally,
       would have no bearing at all on RESTEasy 3. However, a reorganization of packages has led to moving some
-      non-deprecated API elements in the resteasy-jaxrs module:
+      non-deprecated API elements in the resteasy-core module:
       </para>
       
       <itemizedlist>
@@ -217,12 +217,12 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
 <sect1>
     <title>Migration to RESTEasy 3.5+ series</title>
     <para>
-      RESTEasy 3.5 series is a spin-off of the old RESTEasy 3.0 series, featuring JAX-RS 2.1 implementation.
+      RESTEasy 3.5 series is a spin-off of the old RESTEasy 3.0 series, featuring &REST-API; implementation.
     </para>
     <para>
       The reason why 3.5 comes from 3.0 instead of the 3.1 / 4.0 development streams is basically providing
       users with a selection of RESTEasy 4 critical / strategic new features, while ensuring full backward
-      compatiblity. As a consequence, no major issues are expected when upgrading RESTEasy from 3.0.x to 3.5.x.
+      compatibility. As a consequence, no major issues are expected when upgrading RESTEasy from 3.0.x to 3.5.x.
       The 3.6 and all other 3.x minors after that are backward compatible evolutions of 3.5 series.
     </para>
     <para>
@@ -379,10 +379,10 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
             <listitem>
               The <classname>ResteasyClient</classname> and <classname>ResteasyClientBuilder</classname> are now abstract
               classes (from <classname>resteasy-client-api</classname>) and are not meant for user direct instantiation;
-              plain &JAX-RS; API usage is expected instead:
+              plain &REST-API; API usage is expected instead:
               <programlisting>
 //ResteasyClient client = new ResteasyClientBuilder().build(); NO!
-//if plain &JAX-RS; is enough ...
+//if plain &REST-API; is enough ...
 Client client = ClientBuilder.newClient();
 ...
 //if RESTEasy API is needed ...
@@ -390,7 +390,7 @@ ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 
 
 //ResteasyClientBuilder builder = new ResteasyClientBuilder(); NO!
-//if plain &JAX-RS; is enough ...
+//if plain &REST-API; is enough ...
 ClientBuilder builder = ClientBuilder.newBuilder();
 ...
 //if RESTEasy API is needed ...

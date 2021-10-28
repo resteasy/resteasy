@@ -153,7 +153,7 @@ UndertowJaxrsServer server = new UndertowJaxrsServer().start();
 WadlUndertowConnector connector = new WadlUndertowConnector();
 connector.deployToServer(server, MyApp.class);
 ]]></programlisting>
-        <para>The MyApp class shown in above code is a standard &JAX-RS; Application class in your project:</para>
+        <para>The MyApp class shown in above code is a standard &REST-API; Application class in your project:</para>
         <programlisting>
             <![CDATA[
 @ApplicationPath("/base")

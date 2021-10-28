@@ -23,7 +23,7 @@ public interface Messages
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
    int BASE = 10500;
 
-   @Message(id = BASE + 0, value = "ProcessInjectionTarget.getAnnotatedType() returned null. As a result, JAX-RS property injection will not work.")
+   @Message(id = BASE + 0, value = "ProcessInjectionTarget.getAnnotatedType() returned null. As a result, property injection will not work.")
    String annotatedTypeNull();
 
    @Message(id = BASE + 5, value = "Bean {0} does not have the scope defined. Binding to {1}.", format=Format.MESSAGE_FORMAT)
@@ -41,10 +41,10 @@ public interface Messages
    @Message(id = BASE + 25, value = "Discovered CDI bean which is javax.ws.rs.core.Application subclass {0}.", format=Format.MESSAGE_FORMAT)
    String discoveredCDIBeanApplication(String classname);
 
-   @Message(id = BASE + 30, value = "Discovered CDI bean which is a JAX-RS provider {0}.", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 30, value = "Discovered CDI bean which is a provider {0}.", format=Format.MESSAGE_FORMAT)
    String discoveredCDIBeanJaxRsProvider(String classname);
 
-   @Message(id = BASE + 35, value = "Discovered CDI bean which is a JAX-RS resource {0}.", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 35, value = "Discovered CDI bean which is a resource {0}.", format=Format.MESSAGE_FORMAT)
    String discoveredCDIBeanJaxRsResource(String classname);
 
    @Message(id = BASE + 40, value = "Doing a lookup for BeanManager in {0}", format=Format.MESSAGE_FORMAT)

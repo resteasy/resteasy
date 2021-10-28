@@ -1,6 +1,6 @@
 <chapter id="REST_BOOKS">
 <title>Books You Can Read</title>
-<para>There are a number of great books that you can learn REST and &JAX-RS; from</para>
+<para>There are a number of great books that you can learn REST and &REST-API; from</para>
 <itemizedlist>
 <listitem>
 <ulink url="http://oreilly.com/catalog/9780596529260/">RESTful Web Services</ulink> by Leonard Richardson and Sam Ruby.  A great introduction to REST.

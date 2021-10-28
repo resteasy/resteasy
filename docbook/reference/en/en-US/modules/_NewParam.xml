@@ -10,7 +10,7 @@ and <link linkend="_MatrixParam"><code>@MatrixParam</code></link>. In order to b
 with the same name, in a different package, which have an optional value parameter. To use this, follow these steps:
 </para>
 <itemizedlist>
-  <listitem>Import the <code>org.jboss.resteasy.annotations.jaxrs</code> package to replace annotations from the &JAX-RS; spec.</listitem>
+  <listitem>Import the <code>org.jboss.resteasy.annotations.jaxrs</code> package to replace annotations from the &REST-API; spec.</listitem>
   <listitem>Tell your build system to record method parameter names in the bytecode.</listitem>
   <listitem>Remove the annotation value if the name matches the name of the annotated variable.</listitem>
 </itemizedlist>

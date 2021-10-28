@@ -1,9 +1,9 @@
-<chapter id="RESTEasy_EJB_Integration">
-<title>EJB Integration</title>
+<chapter id="RESTEasy_Enterprise_Bean_Integration">
+<title>&ENTERPRISE-BEANS; Integration</title>
 
 <para>
 
-To integrate with EJB you must first modify your EJB's published interfaces.  RESTEasy currently only has simple portable integration with EJBs so you must also manually configure your RESTEasy WAR.
+To integrate with &ENTERPRISE-BEANS; you must first modify your beans published interfaces.  RESTEasy currently only has simple portable integration with &ENTERPRISE-BEANS; so you must also manually configure your RESTEasy WAR.
 </para>
 <para>
 
@@ -11,7 +11,7 @@ To integrate with EJB you must first modify your EJB's published interfaces.  RE
 </para>
 <para>
 
-RESTEasy currently only has simple integration with EJBs.  To make an EJB a &JAX-RS; resource, you must annotate an SLSB's @Remote or @Local interface with &JAX-RS; annotations:
+RESTEasy currently only has simple integration with &ENTERPRISE-BEANS;.  To make a bean a &REST-API; resource, you must annotate an SLSB's @Remote or @Local interface with &REST-API; annotations:
 </para>
 <para>
 
@@ -42,7 +42,7 @@ public class LibraryBean implements Library {
 </para>
 <para>
 
-Next, in RESTEasy's web.xml file you must manually register the EJB with RESTEasy using the resteasy.jndi.resources &lt;context-param&gt;
+Next, in RESTEasy's web.xml file you must manually register the bean with RESTEasy using the resteasy.jndi.resources &lt;context-param&gt;
 </para>
 <para>
 
@@ -60,7 +60,7 @@ Next, in RESTEasy's web.xml file you must manually register the EJB with RESTEas
 </para>
 <para>
 
-This is the only portable way we can offer EJB integration.  Future versions of RESTEasy will have tighter integration
+This is the only portable way we can offer &ENTERPRISE-BEANS; integration.  Future versions of RESTEasy will have tighter integration
     with WildFly so you do not have to do any manual registrations or modifications to web.xml.  For right now though,
     we're focusing on portability.
 </para>
@@ -73,7 +73,7 @@ This is the only portable way we can offer EJB integration.  Future versions of 
 </para>
 <para>
 
-If you're using RESTEasy with an EAR and EJB, a good structure to have is:
+If you're using RESTEasy with an EAR and &ENTERPRISE-BEANS;, a good structure to have is:
 </para>
 <para>
 

@@ -18,7 +18,7 @@ public interface Messages
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
    int BASE = 5000;
 
-   @Message(id = BASE + 0, value = "This constructor must be called in the context of a JAX-RS request")
+   @Message(id = BASE + 0, value = "This constructor must be called in the context of a request")
    String consructorMustBeCalled();
 
    @Message(id = BASE + 5, value = "Unable to find JAXBContext for media type: %s")

@@ -1,5 +1,5 @@
 <chapter id="Securing_Jakarta_REST_and_RESTeasy">
-<title>Securing &JAX-RS; and RESTEasy</title>
+<title>Securing &REST-API; and RESTEasy</title>
 
 <para>
 
@@ -7,7 +7,7 @@ Because RESTEasy is deployed as a servlet, you must use standard web.xml constra
 </para>
 <para>
 
-Unfortunately, web.xml constraints do not mesh very well with &JAX-RS; in some situations.  The problem is that web.xml URL pattern matching is very very limited.  URL patterns in web.xml only support simple wildcards, so &JAX-RS; resources like:
+Unfortunately, web.xml constraints do not mesh very well with &REST-API; in some situations.  The problem is that web.xml URL pattern matching is very very limited.  URL patterns in web.xml only support simple wildcards, so &REST-API; resources like:
 </para>
 <para>
 
@@ -23,7 +23,7 @@ Cannot be mapped as a web.xml URL pattern like:
 </para>
 <para>
 
-To get around this problem you will need to use the security annotations defined below on your &JAX-RS; methods.  You will still need to set up some general security constraint elements in web.xml to turn on authentication.
+To get around this problem you will need to use the security annotations defined below on your &REST-API; methods.  You will still need to set up some general security constraint elements in web.xml to turn on authentication.
 </para>
 <para>
 
@@ -31,8 +31,8 @@ To get around this problem you will need to use the security annotations defined
 </para>
 <para>
 
-RESTEasy supports the @RolesAllowed, @PermitAll and @DenyAll annotations on &JAX-RS; methods.   By default though, RESTEasy does not recognize these annotations.  You have to 
-configure RESTEasy to turn on role-based security by setting the appropriate parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
+RESTEasy supports the @RolesAllowed, @PermitAll and @DenyAll annotations on &REST-API; methods.   By default though, RESTEasy does not recognize these annotations.  You have to
+configure RESTEasy to turn on role-based security by setting the appropriate parameter.  NOTE!!!  Do not turn on this switch if you are using &ENTERPRISE-BEANS;.  The &ENTERPRISE-BEANS; container will provide this
 functionality instead of RESTEasy. To configure this switch as a context-param, do this:
 
 </para>
@@ -49,7 +49,7 @@ functionality instead of RESTEasy. To configure this switch as a context-param, 
 
 <para>See <xref linkend="microprofile_config"/> for more information about application configuration. </para>
 
-<para>There is a bit of quirkiness with this approach.   You will have to declare all roles used within the RESTEasy war file that you are using in your &JAX-RS; classes and set up a security constraint that permits all of these roles access to every URL handled by the &JAX-RS; runtime.  You'll just have to trust that RESTEasy &JAX-RS; authorizes properly.
+<para>There is a bit of quirkiness with this approach.   You will have to declare all roles used within the RESTEasy war file that you are using in your &REST-API; classes and set up a security constraint that permits all of these roles access to every URL handled by the &REST-API; runtime.  You'll just have to trust that RESTEasy &REST-API; authorizes properly.
 </para>
 <para>
 

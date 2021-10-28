@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-core</artifactId>
-    <name>RESTEasy JAX-RS Core</name>
+    <name>RESTEasy Core</name>
     <description/>
     <packaging>jar</packaging>
 

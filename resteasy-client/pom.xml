@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>resteasy-client</artifactId>
-    <name>RESTEasy JAX-RS Client</name>
+    <name>RESTEasy Client</name>
 
     <dependencies>
 

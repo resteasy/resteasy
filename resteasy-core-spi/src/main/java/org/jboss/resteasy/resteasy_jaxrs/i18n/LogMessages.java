@@ -135,7 +135,7 @@ public interface LogMessages extends BasicLogger
 
    @LogMessage(level = Level.WARN)
    @Message(id = BASE
-         + 140, value = "JAX-RS annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format = Format.MESSAGE_FORMAT)
+         + 140, value = "Qualifying annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format = Format.MESSAGE_FORMAT)
    void JAXRSAnnotationsFoundAtNonPublicMethod(String className, String method);
 
    @LogMessage(level = Level.WARN)

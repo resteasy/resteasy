@@ -35,7 +35,7 @@
                 <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
                 <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
                 <!ENTITY Securing_Jakarta_REST_and_RESTeasy SYSTEM "modules/Securing_Jakarta_REST_and_RESTeasy.xml">
-                <!ENTITY RESTEasy_EJB_Integration SYSTEM "modules/RESTEasy_EJB_Integration.xml">
+                <!ENTITY RESTEasy_Enterprise_Bean_Integration SYSTEM "modules/RESTEasy_Enterprise_Bean_Integration.xml">
                 <!ENTITY RESTEasy_Spring_Integration SYSTEM "modules/RESTEasy_Spring_Integration.xml">
                 <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
                 <!ENTITY MicroProfile_Rest_Client SYSTEM "modules/MicroProfile_Rest_Client.xml">               
@@ -49,7 +49,7 @@
                 <!ENTITY ContentRange SYSTEM "modules/content-range.xml">
                 <!ENTITY Json SYSTEM "modules/Json.xml">
                 <!ENTITY Json-p SYSTEM "modules/Json-p.xml">
-                <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
+                <!ENTITY Xml-Binding SYSTEM "modules/xml-binding.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
@@ -59,8 +59,10 @@
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
-                <!ENTITY JAX-RS_2.1_additions SYSTEM "modules/JAX-RS_2.1_additions.xml">
-                <!ENTITY JAX-RS "Jakarta RESTful Web Services">
+                <!ENTITY Jakarta_REST_2.1_additions SYSTEM "modules/Jakarta_REST_2.1_additions.xml">
+                <!ENTITY REST-API "Jakarta RESTful Web Services">
+                <!ENTITY XML-BIND-API "Jakarta XML Binding">
+                <!ENTITY ENTERPRISE-BEANS "Jakarta Enterprise Beans">
                 ]>
 
 <book>
@@ -122,12 +124,12 @@ This one is short
    &Resources_Metadata;
    &Jakarta_REST_Content_Negotiation;
     &Content_Marshalling_Providers;
-    &Jaxb;
+    &Xml-Binding;
     &Atom;
     &Json;
     &Json-p;
     &Multipart;
-   &JAX-RS_2.1_additions;
+   &Jakarta_REST_2.1_additions;
    &StringConverter;
    &Responses_using_javax.ws.rs.core.Response;
    &ExceptionMappers;
@@ -147,7 +149,7 @@ This one is short
     &JOSEJWT;
    &Signature;
     &SMIME;
-   &RESTEasy_EJB_Integration;
+   &RESTEasy_Enterprise_Bean_Integration;
    &RESTEasy_Spring_Integration;
    &CDI;
    &RESTEasy_Client_Framework;
