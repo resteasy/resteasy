@@ -4,7 +4,9 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseBroadcasterImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseEventOutputImpl;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /***
  *
@@ -32,7 +35,12 @@ import static org.mockito.Mockito.mock;
  */
 public class SseBroadcasterTest
 {
-
+   @Before
+   public void pushContext() throws Exception {
+      HttpResponse response = mock(HttpResponse.class);
+      when(response.getAsyncOutputStream()).thenReturn(mock(AsyncOutputStream.class));
+      ResteasyContext.pushContext(HttpResponse.class, response);
+   }
    // We are expecting this test to throw an IllegalStateException every time a
    // method from SseBroadcasterImpl is invoked on a closed instance.
    @Test
