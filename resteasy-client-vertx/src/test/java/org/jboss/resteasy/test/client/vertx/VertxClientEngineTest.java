@@ -47,6 +47,7 @@ import io.vertx.core.http.HttpVersion;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -157,6 +158,23 @@ public class VertxClientEngineTest {
     }
 
     @Test
+    public void testHTTP2ByEngineRegistration() {
+        Vertx vertx = Vertx.vertx();
+        HttpClientOptions options = new HttpClientOptions();
+        options.setSsl(true);
+        options.setProtocolVersion(HttpVersion.HTTP_2);
+        options.setUseAlpn(true);
+        Client client = ClientBuilder
+                .newBuilder()
+                .register(new VertxClientHttpEngine(vertx, options))
+                .build();
+        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
+        assertEquals(200, resp.getStatus());
+        Assert.assertTrue(resp.readEntity(String.class).contains("nghttp2.org"));
+
+    }
+
+    @Test
     public void testSimpleResponseRx() throws Exception {
         server.requestHandler(req -> {
             HttpServerResponse response = req.response();
@@ -177,6 +195,7 @@ public class VertxClientEngineTest {
         assertEquals(200, response.getStatus());
         assertEquals("Success", response.readEntity(String.class));
     }
+
 
     @Test
     public void testSimpleStringRx() throws Exception {

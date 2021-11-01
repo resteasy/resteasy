@@ -405,6 +405,13 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          // check for proxy config parameters
          setProxyIfNeeded(config);
       }
+
+      for (Object p : getProviderFactory().getProviderInstances()) {
+         if (p instanceof ClientHttpEngine) {
+            httpEngine((ClientHttpEngine) p);
+         }
+      }
+
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
       if (resetProxy) {
          this.defaultProxy = null;
