@@ -144,7 +144,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       private boolean asyncRegistered;
       private Queue<AsyncOperation> asyncQueue;
       private AsyncOperation lastAsyncOperation;
-      private boolean asyncListenerCalled;
+      private volatile boolean asyncListenerCalled;
 
       @Override
       public void write(int i) throws IOException
@@ -252,14 +252,14 @@ public class HttpServletResponseWrapper implements HttpResponse
       }
 
       @Override
-      public synchronized void onWritePossible() throws IOException
+      public void onWritePossible() throws IOException
       {
          asyncListenerCalled = true;
          flushQueue(response.getOutputStream());
       }
 
       @Override
-      public synchronized void onError(Throwable t)
+      public void onError(Throwable t)
       {
          asyncListenerCalled = true;
          if(lastAsyncOperation != null) {
