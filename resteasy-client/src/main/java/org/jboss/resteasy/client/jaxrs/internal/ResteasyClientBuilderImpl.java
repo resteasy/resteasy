@@ -409,6 +409,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       for (Object p : getProviderFactory().getProviderInstances()) {
          if (p instanceof ClientHttpEngine) {
             httpEngine((ClientHttpEngine) p);
+            break;
          }
       }
 
