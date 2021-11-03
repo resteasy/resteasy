@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['11', '17']
-        wildfly-version: ['24.0.1.Final']
+        wildfly-version: ['25.0.1.Final']
 
     steps:
       - uses: actions/checkout@v2
@@ -68,7 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest ]
-        wildfly-version: ['24.0.1.Final']
+        wildfly-version: ['25.0.1.Final']
 
     steps:
       - uses: actions/checkout@v2
