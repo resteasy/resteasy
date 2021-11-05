@@ -234,6 +234,11 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          if(lastAsyncOperation != null) {
             lastAsyncOperation.future.complete(null);
+            // Check if operation is complete before clearing, as completion of the operation might trigger more writes
+            // that could reassign lastAsyncOperation, which could still be pending, if so then wait for next onWritePossible or onError
+            if(!lastAsyncOperation.future.isDone()) {
+               return;
+            }
             lastAsyncOperation = null;
          }
 
