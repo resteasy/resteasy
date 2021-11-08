@@ -197,13 +197,13 @@ Nearly all of the provider concepts supported by MicroProfile Client also origin
 </para>
 
 <itemizedlist>
-   <listitem>jakarta.ws.rs.client.ClientRequestFilter</listitem>
-   <listitem>jakarta.ws.rs.client.ClientResponseFilter</listitem>
-   <listitem>jakarta.ws.rs.ext.MessageBodyReader</listitem>
-   <listitem>jakarta.ws.rs.ext.MessageBodyWriter</listitem>
-   <listitem>jakarta.ws.rs.ext.ParamConverter</listitem>
-   <listitem>jakarta.ws.rs.ext.ReaderInterceptor</listitem>
-   <listitem>jakarta.ws.rs.ext.WriterInterceptor</listitem>
+   <listitem>javax.ws.rs.client.ClientRequestFilter</listitem>
+   <listitem>javax.ws.rs.client.ClientResponseFilter</listitem>
+   <listitem>javax.ws.rs.ext.MessageBodyReader</listitem>
+   <listitem>javax.ws.rs.ext.MessageBodyWriter</listitem>
+   <listitem>javax.ws.rs.ext.ParamConverter</listitem>
+   <listitem>javax.ws.rs.ext.ReaderInterceptor</listitem>
+   <listitem>javax.ws.rs.ext.WriterInterceptor</listitem>
 </itemizedlist>
 
 <para>
@@ -416,7 +416,7 @@ currently optional. RESTEasy supports CDI injection and does not currently suppo
 
 <para>
 The <classname>org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper</classname> is the
-client side inverse of the <classname>jakarta.ws.rs.ext.ExceptionMapper</classname> defined in &REST-API;. That is,
+client side inverse of the <classname>javax.ws.rs.ext.ExceptionMapper</classname> defined in &REST-API;. That is,
 where <methodname>ExceptionMapper.toResponse()</methodname> turns an <classname>Exception</classname> thrown
 during server side processing into a <classname>Response</classname>,
 <methodname>ResponseExceptionMapper.toThrowable()</methodname> turns a 
@@ -448,7 +448,7 @@ CDI (Contexts and Dependency Injection) is a fairly rich subject and beyond the 
 
 <para>
 The fundamental thing to know about CDI injection is that annotating a variable with 
-<classname>jakarta.inject.Inject</classname> will lead the CDI runtime (if it is present and enabled) to
+<classname>javax.inject.Inject</classname> will lead the CDI runtime (if it is present and enabled) to
 create an object of the appropriate type and assign it to the variable. For example, in
 </para>
 
