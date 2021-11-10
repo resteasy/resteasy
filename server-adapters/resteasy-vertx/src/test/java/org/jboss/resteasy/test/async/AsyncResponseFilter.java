@@ -6,10 +6,10 @@ import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerResponseCo
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
-import javax.ws.rs.container.CompletionCallback;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.CompletionCallback;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;

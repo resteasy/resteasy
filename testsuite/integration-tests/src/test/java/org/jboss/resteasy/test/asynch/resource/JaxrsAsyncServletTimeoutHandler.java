@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.asynch.resource;
 
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.TimeoutHandler;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.TimeoutHandler;
 import java.util.concurrent.TimeUnit;
 
 public class JaxrsAsyncServletTimeoutHandler implements TimeoutHandler {

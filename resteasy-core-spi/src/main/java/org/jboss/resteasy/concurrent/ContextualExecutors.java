@@ -19,13 +19,6 @@
 
 package org.jboss.resteasy.concurrent;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.concurrent.ThreadContext;
-import org.jboss.resteasy.spi.config.Configuration;
-import org.jboss.resteasy.spi.config.ConfigurationFactory;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
@@ -42,6 +35,15 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.concurrent.ThreadContext;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
+import org.jboss.resteasy.spi.config.Configuration;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
  * A utility to create and/or wrap {@linkplain ExecutorService executors} in a contextual executor.
@@ -283,7 +285,7 @@ public class ContextualExecutors {
                 }
                 return task.call();
             } finally {
-                reset(contexts.keySet());
+                reset(contexts);
             }
         };
     }
@@ -313,30 +315,37 @@ public class ContextualExecutors {
                 }
                 task.run();
             } finally {
-                reset(contexts.keySet());
+                reset(contexts);
             }
         };
     }
 
     @SuppressWarnings("unchecked")
     private static Map<ThreadContext<Object>, Object> getContexts() {
+        final Map<ThreadContext<Object>, Object> contexts = new LinkedHashMap<>();
         if (System.getSecurityManager() == null) {
-            final Map<ThreadContext<Object>, Object> contexts = new LinkedHashMap<>();
             ServiceLoader.load(ThreadContext.class).forEach(context -> contexts.put(context, context.capture()));
-            return contexts;
+        } else {
+            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                ServiceLoader.load(ThreadContext.class).forEach(context -> contexts.put(context, context.capture()));
+                return null;
+            });
         }
-        return AccessController.doPrivileged((PrivilegedAction<Map<ThreadContext<Object>, Object>>) () -> {
-            final Map<ThreadContext<Object>, Object> contexts = new LinkedHashMap<>();
-            ServiceLoader.load(ThreadContext.class).forEach(context -> contexts.put(context, context.capture()));
-            return contexts;
-        });
+        // Load any registered providers
+        final ThreadContexts threadContexts = ResteasyProviderFactory.getInstance().getContextData(ThreadContexts.class);
+        if (threadContexts != null) {
+            for (ThreadContext<Object> context : threadContexts.getThreadContexts()) {
+                contexts.put(context, context.capture());
+            }
+        }
+        return contexts;
     }
 
-    private static void reset(final Collection<ThreadContext<Object>> contexts) {
+    private static void reset(final Map<ThreadContext<Object>, Object> contexts) {
         Throwable error = null;
-        for (ThreadContext<Object> context : contexts) {
+        for (Map.Entry<ThreadContext<Object>, Object> context : contexts.entrySet()) {
             try {
-                context.reset();
+                context.getKey().reset(context.getValue());
             } catch (Throwable t) {
                 if (error == null) {
                     error = t;

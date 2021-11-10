@@ -21,20 +21,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.CompletionStageRxInvoker;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.CompletionStageRxInvoker;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.InvocationCallback;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 
 import io.reactivex.Single;
 import io.vertx.core.Handler;
@@ -49,6 +49,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.jboss.resteasy.rxjava2.SingleRxInvoker;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -189,49 +190,6 @@ public class VertxClientEngineTest {
    }
 
    @Test
-   public void testSimpleResponseRx() throws Exception {
-      server.requestHandler(req -> {
-         HttpServerResponse response = req.response();
-         if (req.getHeader(HttpHeaders.USER_AGENT).contains("Apache")) {
-            response.setStatusCode(503).end();
-         } else if (!"abracadabra".equals(req.getHeader("Password"))) {
-            response.setStatusCode(403).end();
-         } else {
-            req.response().putHeader("Content-Type", "text/plain").end("Success");
-         }
-      });
-
-      final CompletionStage<Response> cs = client().target(baseUri()).request()
-         .header("Password", "abracadabra").rx(CompletionStageRxInvoker.class)
-         .get();
-
-      Response response = cs.toCompletableFuture().get();
-      assertEquals(200, response.getStatus());
-      assertEquals("Success", response.readEntity(String.class));
-   }
-
-   @Test
-   public void testSimpleStringRx() throws Exception {
-      server.requestHandler(req -> {
-         HttpServerResponse response = req.response();
-         if (req.getHeader("User-Agent").contains("Apache")) {
-            response.setStatusCode(503).end();
-         } else if (!"abracadabra".equals(req.getHeader("Password"))) {
-            response.setStatusCode(403).end();
-         } else {
-            req.response().putHeader("Content-Type", "text/plain").end("Success");
-         }
-      });
-
-      final CompletionStage<String> cs = client().target(baseUri()).request()
-         .header("Password", "abracadabra").rx(CompletionStageRxInvoker.class)
-         .get(String.class);
-
-      String response = cs.toCompletableFuture().get();
-      assertEquals("Success", response);
-   }
-
-   @Test
    public void testSimpleStringRxPublisher() throws Exception {
       server.requestHandler(req -> {
          HttpServerResponse response = req.response();
@@ -289,6 +247,67 @@ public class VertxClientEngineTest {
                 .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
         final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
         assertEquals(200, resp.getStatus());
+    }
+
+    @Test
+    public void testHTTP2ByEngineRegistration() {
+        Vertx vertx = Vertx.vertx();
+        HttpClientOptions options = new HttpClientOptions();
+        options.setSsl(true);
+        options.setProtocolVersion(HttpVersion.HTTP_2);
+        options.setUseAlpn(true);
+        Client client = ClientBuilder
+                .newBuilder()
+                .register(new VertxClientHttpEngine(vertx, options))
+                .build();
+        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
+        assertEquals(200, resp.getStatus());
+        Assert.assertTrue(resp.readEntity(String.class).contains("nghttp2.org"));
+
+    }
+
+    @Test
+    public void testSimpleResponseRx() throws Exception {
+        server.requestHandler(req -> {
+            HttpServerResponse response = req.response();
+            if (req.getHeader("User-Agent").contains("Apache")) {
+                response.setStatusCode(503).end();
+            } else if (!"abracadabra".equals(req.getHeader("Password"))) {
+                response.setStatusCode(403).end();
+            } else {
+                req.response().putHeader("Content-Type", "text/plain").end("Success");
+            }
+        });
+
+        final CompletionStage<Response> cs = client().target(baseUri()).request()
+                .header("Password", "abracadabra").rx(CompletionStageRxInvoker.class)
+                .get();
+
+        Response response = cs.toCompletableFuture().get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Success", response.readEntity(String.class));
+    }
+
+
+    @Test
+    public void testSimpleStringRx() throws Exception {
+        server.requestHandler(req -> {
+            HttpServerResponse response = req.response();
+            if (req.getHeader("User-Agent").contains("Apache")) {
+                response.setStatusCode(503).end();
+            } else if (!"abracadabra".equals(req.getHeader("Password"))) {
+                response.setStatusCode(403).end();
+            } else {
+                req.response().putHeader("Content-Type", "text/plain").end("Success");
+            }
+        });
+
+        final CompletionStage<String> cs = client().target(baseUri()).request()
+                .header("Password", "abracadabra").rx(CompletionStageRxInvoker.class)
+                .get(String.class);
+
+        String response = cs.toCompletableFuture().get();
+        assertEquals("Success", response);
     }
 
     @Test

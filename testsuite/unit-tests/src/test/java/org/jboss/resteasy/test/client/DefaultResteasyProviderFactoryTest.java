@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;

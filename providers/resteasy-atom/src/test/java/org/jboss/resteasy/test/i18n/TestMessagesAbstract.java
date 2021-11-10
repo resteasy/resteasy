@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.i18n;
 
 import java.util.Locale;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.junit.Assert;

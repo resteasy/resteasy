@@ -1,9 +1,9 @@
 package org.jboss.resteasy.utils;
 
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class TestApplication extends Application {
    }
 
    /**
-    * @see javax.ws.rs.core.Application#getClasses()
+    * @see jakarta.ws.rs.core.Application#getClasses()
     */
    @Override
    public Set<Class<?>> getClasses() {
@@ -76,7 +76,7 @@ public class TestApplication extends Application {
    }
 
    /**
-    * @see javax.ws.rs.core.Application#getSingletons()
+    * @see jakarta.ws.rs.core.Application#getSingletons()
     */
    @Override
    public Set<Object> getSingletons() {

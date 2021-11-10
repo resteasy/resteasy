@@ -9,7 +9,7 @@
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>org.jboss.resteasy.test.providers.sse.SsePostResourceMethodInvokerApplication</param-value>
         </init-param>
         <init-param>

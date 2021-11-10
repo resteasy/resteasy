@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-misc-arquillian-tests</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-1056-jetty-bv11</artifactId>
@@ -26,7 +26,7 @@
       </dependency>
       <dependency>
           <groupId>org.jboss.spec.javax.ws.rs</groupId>
-          <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+          <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
       </dependency>
 
     <!-- Test dependencies -->
@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
         <groupId>org.jboss.arquillian.protocol</groupId>
-        <artifactId>arquillian-protocol-servlet</artifactId>
+        <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
         <scope>test</scope>
     </dependency>
     <dependency>

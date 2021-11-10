@@ -1,15 +1,15 @@
 package org.jboss.resteasy.test.resource.param;
 
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriBoolean;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriBooleanInterface;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriBooleanWrapper;

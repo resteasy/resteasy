@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.PUT;
+import jakarta.ws.rs.NotAllowedException;
+import jakarta.ws.rs.PUT;
 import java.util.Collection;
 
 public class AnnotationInheritanceGenericsAbstract<ENTITY_TYPE, ID_TYPE> implements AnnotationInheritanceGenericsInterface<ENTITY_TYPE, ID_TYPE> {

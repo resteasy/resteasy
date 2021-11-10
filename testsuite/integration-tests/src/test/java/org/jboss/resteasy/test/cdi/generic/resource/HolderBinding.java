@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.generic.resource;
 
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

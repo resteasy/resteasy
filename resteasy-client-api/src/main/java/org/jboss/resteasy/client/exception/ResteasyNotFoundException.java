@@ -2,8 +2,8 @@ package org.jboss.resteasy.client.exception;
 
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link NotFoundException} with a {@linkplain #sanitize(Response) sanitized} response.

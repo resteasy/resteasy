@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.resource;
 
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 public class NullStringBeanHeaderDelegate implements RuntimeDelegate.HeaderDelegate<StringBean> {
 

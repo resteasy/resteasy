@@ -8,9 +8,9 @@
             @XmlJavaTypeAdapter(type = MediaType.class, value = MediaTypeAdapter.class)
       }) package org.jboss.resteasy.plugins.providers.atom;
 
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import java.net.URI;

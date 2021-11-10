@@ -1,14 +1,14 @@
 package org.jboss.resteasy.util;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * {@link javax.ws.rs.core.MultivaluedMap} implementation that delegates to another instance.
- * Convenience class for {@link javax.ws.rs.core.MultivaluedMap} enhancements that don't want to implement all methods.
+ * {@link jakarta.ws.rs.core.MultivaluedMap} implementation that delegates to another instance.
+ * Convenience class for {@link jakarta.ws.rs.core.MultivaluedMap} enhancements that don't want to implement all methods.
  *
  * @param <K> The type of keys in the map.
  * @param <V> The type of values in the lists in the map.

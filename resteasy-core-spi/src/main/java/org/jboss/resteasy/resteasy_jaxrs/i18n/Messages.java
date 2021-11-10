@@ -7,9 +7,9 @@ import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
 
-import javax.validation.ElementKind;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.validation.ElementKind;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
@@ -86,7 +86,7 @@ public interface Messages
    @Message(id = BASE + 00, value = "SelfExpandingBufferredInputStream is always marked at index 0.")
    String alwaysMarkedAtIndex0();
 
-   @Message(id = BASE + 05, value = "Ambiguous inherited JAX-RS annotations applied to method: %s")
+   @Message(id = BASE + 05, value = "Ambiguous inherited qualifying annotations applied to method: %s")
    String ambiguousInheritedAnnotations(Method method);
 
    @Message(id = BASE + 10, value = "annotations param was null")
@@ -619,7 +619,7 @@ public interface Messages
          + 810, value = "Stream wrapped by Signature, cannot reset the stream without destroying signature")
    String streamWrappedBySignature();
 
-   @Message(id = BASE + 815, value = "Subresource for target class has no jax-rs annotations.: %s")
+   @Message(id = BASE + 815, value = "Subresource for target class has no qualifying annotations.: %s")
    String subresourceHasNoJaxRsAnnotations(String className);
 
    @Message(id = BASE + 820, value = "tClass parameter is null")
@@ -665,7 +665,7 @@ public interface Messages
    @Message(id = BASE + 885, value = "Unable to find InjectorFactory implementation.")
    String unableToFindInjectorFactory();
 
-   @Message(id = BASE + 890, value = "Unable to find JAX-RS resource associated with path: %s.")
+   @Message(id = BASE + 890, value = "Unable to find resource associated with path: %s.")
    String unableToFindJaxRsResource(String path);
 
    @Message(id = BASE + 895, value = "Unable to find a public constructor for class %s")

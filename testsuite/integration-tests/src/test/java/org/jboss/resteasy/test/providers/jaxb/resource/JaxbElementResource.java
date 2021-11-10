@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;;
 
 @Path("resource")
 public class JaxbElementResource {

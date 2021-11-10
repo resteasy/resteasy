@@ -5,12 +5,18 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>resteasy-client-jetty</artifactId>
-    <name>RESTEasy JAX-RS Client - Jetty Engine</name>
+    <name>RESTEasy Client - Jetty Engine</name>
+
+    <properties>
+        <!-- The Jakarta version of Jetty only supports Java 11 -->
+        <!-- TODO (jrp) because of this should we use Java 11 as the compile version? -->
+        <skip.java8.tests>true</skip.java8.tests>
+    </properties>
 
     <dependencies>
 
@@ -44,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
         </dependency>
 
         <!-- Test dependencies -->

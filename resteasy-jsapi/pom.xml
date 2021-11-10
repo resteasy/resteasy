@@ -6,11 +6,11 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>resteasy-jsapi</artifactId>
-    <name>RESTEasy JAX-RS JSAPI</name>
+    <name>RESTEasy JSAPI</name>
     <description/>
 
     <dependencies>
@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>

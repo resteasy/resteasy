@@ -4,9 +4,9 @@ import org.jboss.resteasy.jsapi.i18n.LogMessages;
 import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.util.PathHelper;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;

@@ -3,18 +3,19 @@ package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
 
 import org.jboss.resteasy.plugins.providers.fastinfoset.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.UnmarshallerHandler;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.UnmarshallerHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -40,7 +41,7 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
 
    public FastinfoSetUnmarshaller(final JAXBContext context) throws JAXBException
    {
-      unmarshaller = context.createUnmarshaller();
+      unmarshaller = RiHacks.createUnmarshaller(context);
    }
 
    protected static XMLStreamReader getFastinfoSetXMLStreamReader(InputStream entityStream)

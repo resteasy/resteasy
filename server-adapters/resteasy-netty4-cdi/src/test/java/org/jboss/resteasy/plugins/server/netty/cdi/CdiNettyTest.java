@@ -15,9 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.spi.CDI;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import java.util.Random;
 
 /**
@@ -40,7 +40,7 @@ public class CdiNettyTest {
             .addPackage(CdiRequestDispatcher.class.getPackage())
             .addClasses(EchoResource.class, DefaultExceptionMapper.class)
             .addAsManifestResource(new StringAsset("org.jboss.resteasy.cdi.ResteasyCdiExtension"),
-                  "services/javax.enterprise.inject.spi.Extension")
+                  "services/jakarta.enterprise.inject.spi.Extension")
             .addAsManifestResource(new StringAsset(beans), "beans.xml");
    }
 

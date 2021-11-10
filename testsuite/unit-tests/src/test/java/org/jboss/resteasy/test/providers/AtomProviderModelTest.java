@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.providers;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.resteasy.plugins.providers.atom.Content;
@@ -9,12 +8,13 @@ import org.jboss.resteasy.plugins.providers.atom.Feed;
 import org.jboss.resteasy.plugins.providers.atom.Link;
 import org.jboss.resteasy.plugins.providers.atom.Person;
 import org.jboss.resteasy.plugins.providers.atom.Text;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.test.providers.resource.AtomProviderModelCustomerAtom;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -117,21 +117,12 @@ public class AtomProviderModelTest {
       content.setJAXBObject(new AtomProviderModelCustomerAtom("bill"));
       JAXBContext ctx = JAXBContext.newInstance(Content.class, AtomProviderModelCustomerAtom.class);
 
-      Marshaller marshaller = ctx.createMarshaller();
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
 
       marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       StringWriter writer = new StringWriter();
-
-      NamespacePrefixMapper mapper = new NamespacePrefixMapper() {
-         public String getPreferredPrefix(String namespace, String s1, boolean b) {
-            if (namespace.equals("http://www.w3.org/2005/Atom")) {
-               return "atom";
-            } else {
-               return s1;
-            }
-         }
-      };
+      final Object mapper = RiHacks.createAtomNamespacePrefixMapper();
 
       marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
       marshaller.marshal(content, writer);
@@ -182,18 +173,8 @@ public class AtomProviderModelTest {
       JAXBContext ctx = JAXBContext.newInstance(Feed.class);
 
 
-      Marshaller marshaller = ctx.createMarshaller();
-
-      NamespacePrefixMapper mapper = new NamespacePrefixMapper() {
-         public String getPreferredPrefix(String namespace, String s1, boolean b) {
-            if (namespace.equals("http://www.w3.org/2005/Atom")) {
-               return "atom";
-            } else {
-               return s1;
-            }
-         }
-      };
-
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
+      final Object mapper = RiHacks.createAtomNamespacePrefixMapper();
       marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
       marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -219,19 +200,8 @@ public class AtomProviderModelTest {
    public void testRFC() throws Exception {
       JAXBContext ctx = JAXBContext.newInstance(Feed.class);
       Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(new StringReader(RFC_COMPLEX_XML));
-      Marshaller marshaller = ctx.createMarshaller();
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
 
-      NamespacePrefixMapper mapper = new NamespacePrefixMapper() {
-         public String getPreferredPrefix(String namespace, String s1, boolean b) {
-            if (namespace.equals("http://www.w3.org/2005/Atom")) {
-               return "atom";
-            } else {
-               return s1;
-            }
-         }
-      };
-
-      //marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
       marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 

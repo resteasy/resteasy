@@ -5,9 +5,9 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * This is a ServletContextListener that creates the registry for resteasy and stuffs it as a servlet context attribute

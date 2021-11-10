@@ -15,8 +15,34 @@ end-if
 /subsystem=batch-jberet:write-attribute(name=security-domain, value=ApplicationDomain)
 /subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name=sasl-authentication-factory, value=application-sasl-authentication)
 /subsystem=remoting/http-connector=http-remoting-connector:undefine-attribute(name=security-realm)
-/subsystem=messaging-activemq/server=default:undefine-attribute(name=security-domain)
-/subsystem=messaging-activemq/server=default:write-attribute(name=elytron-domain, value=ApplicationDomain)
+# By default the embedded ActiveMQ server may not be there. If not add it.
+if (outcome != success) of /subsystem=messaging-activemq/server=default:read-resource
+    # Remove the default configuration
+    /subsystem=messaging-activemq/pooled-connection-factory=activemq-ra:remove
+    /subsystem=messaging-activemq/remote-connector=artemis:remove
+
+    # Add the default server which was in previous versions of WildFly
+    /subsystem=messaging-activemq/server=default:add(elytron-domain=ApplicationDomain, statistics-enabled="${wildfly.messaging-activemq.statistics-enabled:${wildfly.statistics-enabled:false}}")
+    /subsystem=messaging-activemq/server=default/security-setting=#:add()
+    /subsystem=messaging-activemq/server=default/security-setting=#/role=guest:add(send=true, consume=true,create-non-durable-queue=true, delete-non-durable-queue=true)
+    /subsystem=messaging-activemq/server=default/address-setting=#:add(dead-letter-address="jms.queue.DLQ", expiry-address="jms.queue.ExpiryQueue", max-size-bytes="10485760", page-size-bytes="2097152", message-counter-history-day-limit=10)
+    /subsystem=messaging-activemq/server=default/http-acceptor=http-acceptor:add(http-listener=default)
+    /subsystem=messaging-activemq/server=default/http-acceptor=http-acceptor-throughput:add(http-listener=default)
+    /subsystem=messaging-activemq/server=default/http-acceptor=http-acceptor-throughput:write-attribute(name=params.batch-delay, value=50)
+    /subsystem=messaging-activemq/server=default/http-acceptor=http-acceptor-throughput:write-attribute(name=params.direct-deliver, value=false)
+    /subsystem=messaging-activemq/server=default/in-vm-acceptor=in-vm:add(server-id=0, params={buffer-pooling=false})
+    /subsystem=messaging-activemq/server=default/in-vm-connector=in-vm:add(server-id=0, params={buffer-pooling=false})
+    /subsystem=messaging-activemq/server=default/http-connector=http-connector:add(socket-binding=http, endpoint=http-acceptor)
+    /subsystem=messaging-activemq/server=default/http-connector=http-connector-throughput:add(socket-binding=http, endpoint=http-acceptor-throughput, params={batch-delay=50})
+    /subsystem=messaging-activemq/server=default/jms-queue=ExpiryQueue:add(entries=[java:/jms/queue/ExpiryQueue])
+    /subsystem=messaging-activemq/server=default/jms-queue=DLQ:add(entries=[java:/jms/queue/DLQ])
+    /subsystem=messaging-activemq/server=default/connection-factory=InVmConnectionFactory:add(connectors=[in-vm],entries=[java:/ConnectionFactory])
+    /subsystem=messaging-activemq/server=default/connection-factory=RemoteConnectionFactory:add(connectors=[http-connector], entries=[java:jboss/exported/jms/RemoteConnectionFactory])
+    /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:add(entries=["java:/JmsXA", "java:jboss/DefaultJMSConnectionFactory"], connectors=[in-vm], transaction=xa)
+else
+    /subsystem=messaging-activemq/server=default:undefine-attribute(name=security-domain)
+    /subsystem=messaging-activemq/server=default:write-attribute(name=elytron-domain, value=ApplicationDomain)
+end-if
 
 if (outcome != success) of /core-service=management/access=identity:read-resource
     /core-service=management/access=identity:add(security-domain=ManagementDomain)
@@ -35,6 +61,13 @@ if (outcome == success) of /core-service=management/security-realm=*:read-resour
     /core-service=management/security-realm=ApplicationRealm/authentication=local:remove
     /core-service=management/security-realm=ApplicationRealm/authentication=properties:remove
     /core-service=management/security-realm=ApplicationRealm/authorization=properties:remove
+end-if
+
+# Do not run the Jakarta transformer on deployments
+if (outcome == success) of /system-property=org.wildfly.unsupported.skip.jakarta.transformer:read-resource
+    /system-property=org.wildfly.unsupported.skip.jakarta.transformer:write-attribute(name=value, value=true)
+else
+    /system-property=org.wildfly.unsupported.skip.jakarta.transformer:add(value=true)
 end-if
 
 stop-embedded-server

@@ -3,10 +3,10 @@ package org.jboss.resteasy.test.resource;
 import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -41,7 +41,7 @@ public class CookieObjectTest {
       String domain = "";
       int version = 0;
 
-      Cookie ck6 = javax.ws.rs.core.Cookie.valueOf(cookie_toParse);
+      Cookie ck6 = jakarta.ws.rs.core.Cookie.valueOf(cookie_toParse);
       pass = testCookie(ck6, name, value, path, domain, version);
    }
 
@@ -61,7 +61,7 @@ public class CookieObjectTest {
       String domain = "";
       int version = 1;
 
-      Cookie ck7 = javax.ws.rs.core.Cookie.valueOf(cookie_toParse);
+      Cookie ck7 = jakarta.ws.rs.core.Cookie.valueOf(cookie_toParse);
 
       pass = testCookie(ck7, name, value, path, domain, version);
    }
@@ -74,7 +74,7 @@ public class CookieObjectTest {
    public void testParse3() throws Exception {
 
       try {
-         Cookie ck8 = javax.ws.rs.core.Cookie.valueOf(null);
+         Cookie ck8 = jakarta.ws.rs.core.Cookie.valueOf(null);
          throw new Exception("Expectecd IllegalArgumentException not thrown.  Test Failed");
       } catch (java.lang.IllegalArgumentException ilex) {
       }
@@ -95,7 +95,7 @@ public class CookieObjectTest {
       String domain = "";
       int version = 1;
 
-      NewCookie nck26 = javax.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+      NewCookie nck26 = jakarta.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
 
       pass = verifyNewCookie(nck26, name, value, path, domain, version,
             "", -1, null, false, false);
@@ -120,7 +120,7 @@ public class CookieObjectTest {
       String domain = "";
       int version = 1;
 
-      NewCookie nck27 = javax.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+      NewCookie nck27 = jakarta.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
 
       pass = verifyNewCookie(nck27, name, value, path, domain, version,
             "", -1, null, false, false);
@@ -136,7 +136,7 @@ public class CookieObjectTest {
    @Test
    public void testNewCookie3() throws Exception {
       try {
-         NewCookie nck27 = javax.ws.rs.core.NewCookie.valueOf(null);
+         NewCookie nck27 = jakarta.ws.rs.core.NewCookie.valueOf(null);
          throw new Exception("Expected IllegalArgumentException not thrown. Test Failed.");
       } catch (IllegalArgumentException ilex) {
 
@@ -167,7 +167,7 @@ public class CookieObjectTest {
       boolean secure = true;
       boolean httpOnly = true;
 
-      NewCookie nck28 = javax.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+      NewCookie nck28 = jakarta.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
 
       pass = verifyNewCookie(nck28, name, value, path, domain, version,
             comment, maxAge, expiry, secure, httpOnly);
@@ -365,7 +365,7 @@ public class CookieObjectTest {
 
       String name = "name_1";
       String value = "value_1";
-      int maxage = javax.ws.rs.core.NewCookie.DEFAULT_MAX_AGE;
+      int maxage = jakarta.ws.rs.core.NewCookie.DEFAULT_MAX_AGE;
       int version = 1;
       boolean secure = false;
 

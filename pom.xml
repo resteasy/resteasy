@@ -9,12 +9,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>RESTEasy JAX-RS</name>
+    <name>RESTEasy</name>
     <description>Resteasy</description>
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -24,8 +24,9 @@
         <dep.arquillian-bom.version>1.7.0.Alpha10</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
-        <version.org.wildfly>24.0.1.Final</version.org.wildfly>
-        <version.org.wildfly.arquillian.wildfly-arquillian>4.0.0.Alpha2</version.org.wildfly.arquillian.wildfly-arquillian>
+        <server.version>25.0.1.Final</server.version>
+        <version.org.wildfly>${server.version}</version.org.wildfly>
+        <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha1</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
         <!-- print logs to file by default -->
@@ -52,7 +53,7 @@
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.org.jboss.galleon>4.2.8.Final</version.org.jboss.galleon>
         <version.org.wildfly.galleon-plugins>5.2.2.Final</version.org.wildfly.galleon-plugins>
-        <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Beta1</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
     </properties>
 
     <url>https://jboss.org/resteasy</url>
@@ -172,6 +173,35 @@
                         <version>${version.org.wildfly}</version>
                         <type>zip</type>
                     </dependency>
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-preview-feature-pack</artifactId>
+                        <version>${version.org.wildfly}</version>
+                        <type>zip</type>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-galleon-plugins</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-config-gen</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>transformer</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>*</groupId>
+                                <artifactId>*</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+
                 </dependencies>
             </dependencyManagement>
         </profile>
@@ -295,6 +325,11 @@
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
+                        <header><![CDATA[<b>${project.name} ${project.version}</b>
+                            <br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.
+                            <br>References in this document to JAXB refer to the Jakarta XML Binding unless otherwise noted.
+                            ]]>
+                        </header>
                     </configuration>
                       <executions>
                         <execution>

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 

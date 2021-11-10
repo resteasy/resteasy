@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlJavaTypeAdapter(XmlJavaTypeAdapterAlienAdapter.class)
 public class XmlJavaTypeAdapterAlien {

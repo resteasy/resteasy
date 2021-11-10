@@ -15,7 +15,7 @@ import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;

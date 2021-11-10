@@ -2,7 +2,7 @@ package org.jboss.resteasy.spi;
 
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * A type that may be used as a resource method return value or as the entity
@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
  * @author Paul Sandoz
  * @author Marc Hadley
  * @see AsyncMessageBodyWriter
- * @see javax.ws.rs.core.Response
+ * @see jakarta.ws.rs.core.Response
  */
 public interface AsyncStreamingOutput {
 
@@ -22,7 +22,7 @@ public interface AsyncStreamingOutput {
      *
      * @param output the OutputStream to write to.
      * @throws java.io.IOException if an IO error is encountered
-     * @throws javax.ws.rs.WebApplicationException
+     * @throws jakarta.ws.rs.WebApplicationException
      *                             if a specific
      *                             HTTP error response needs to be produced. Only effective if thrown prior
      *                             to any bytes being written to output.

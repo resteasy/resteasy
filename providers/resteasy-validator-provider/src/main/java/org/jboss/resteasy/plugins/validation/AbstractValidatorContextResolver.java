@@ -5,12 +5,12 @@ import java.util.Set;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.validation.BootstrapConfiguration;
-import javax.validation.Configuration;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableType;
+import jakarta.validation.BootstrapConfiguration;
+import jakarta.validation.Configuration;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidationException;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableType;
 
 import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;

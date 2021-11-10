@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.providers.jackson2.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

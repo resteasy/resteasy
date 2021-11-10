@@ -1,17 +1,17 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerService;
-import javax.inject.Inject;
-import javax.interceptor.AroundTimeout;
-import javax.interceptor.InvocationContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.Resource;
+import jakarta.ejb.SessionContext;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.Timeout;
+import jakarta.ejb.Timer;
+import jakarta.ejb.TimerService;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundTimeout;
+import jakarta.interceptor.InvocationContext;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 

@@ -10,24 +10,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Method;
-import javax.decorator.Decorator;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
-import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.inject.spi.WithAnnotations;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.decorator.Decorator;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessInjectionTarget;
+import jakarta.enterprise.inject.spi.ProcessSessionBean;
+import jakarta.enterprise.inject.spi.WithAnnotations;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
@@ -49,8 +49,8 @@ public class ResteasyCdiExtension implements Extension
    private static boolean active;
 
    private BeanManager beanManager;
-   private static final String JAVAX_EJB_STATELESS = "javax.ejb.Stateless";
-   private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
+   private static final String JAKARTA_EJB_STATELESS = "jakarta.ejb.Stateless";
+   private static final String JAKARTA_EJB_SINGLETON = "jakarta.ejb.Singleton";
 
    private final List<Class> providers = new ArrayList<Class>();
    private final List<Class> resources = new ArrayList<Class>();
@@ -239,7 +239,7 @@ public class ResteasyCdiExtension implements Extension
       for (Annotation annotation : annotatedType.getAnnotations())
       {
          Class<?> annotationType = annotation.annotationType();
-         if (annotationType.getName().equals(JAVAX_EJB_STATELESS) || annotationType.getName().equals(JAVAX_EJB_SINGLETON))
+         if (annotationType.getName().equals(JAKARTA_EJB_STATELESS) || annotationType.getName().equals(JAKARTA_EJB_SINGLETON))
          {
             LogMessages.LOGGER.debug(Messages.MESSAGES.beanIsSLSBOrSingleton(annotatedType.getJavaClass()));
             return true; // Do not modify scopes of SLSBs and Singletons

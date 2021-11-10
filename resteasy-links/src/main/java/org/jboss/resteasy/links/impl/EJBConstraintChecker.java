@@ -2,8 +2,8 @@ package org.jboss.resteasy.links.impl;
 
 import java.lang.reflect.Method;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 
@@ -13,7 +13,7 @@ final class EJBConstraintChecker {
         // Use dynamic class loading here since if the EJB annotation class is not present
         // it cannot be on the method, so we don't have to check for it
         try {
-            Class.forName("javax.annotation.security.RolesAllowed");
+            Class.forName("jakarta.annotation.security.RolesAllowed");
         } catch (ClassNotFoundException e) {
             // class not here, therefore not on method either
             return true;
@@ -25,7 +25,7 @@ final class EJBConstraintChecker {
         // Use dynamic class loading here since if the EJB annotation class is not present
         // it cannot be on the method, so we don't have to check for it
         try {
-            Class.forName("javax.annotation.security.RolesAllowed", true, classLoader);
+            Class.forName("jakarta.annotation.security.RolesAllowed", true, classLoader);
         } catch (ClassNotFoundException e) {
             // class not here, therefore not on method either
             return true;

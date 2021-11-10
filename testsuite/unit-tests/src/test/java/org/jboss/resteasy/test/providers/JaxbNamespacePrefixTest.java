@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixItems;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixPurchaseOrderType;
@@ -10,10 +11,10 @@ import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.ObjectFact
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.annotation.XmlSchema;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 
@@ -43,7 +44,7 @@ public class JaxbNamespacePrefixTest {
       jaxbNameSpacePrefixItem.setUSPrice(new BigDecimal(13.99));
       jaxbNameSpacePrefixItems.getJaxbNameSpacePrefixItem().add(jaxbNameSpacePrefixItem);
       po.setJaxbNameSpacePrefixItems(jaxbNameSpacePrefixItems);
-      Marshaller marshaller = ctx.createMarshaller();
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
       XmlSchema xmlSchema = JaxbNameSpacePrefixPurchaseOrderType.class.getPackage().getAnnotation(XmlSchema.class);
       Assert.assertNotNull("Couldn't create xml schema for JaxbNameSpacePrefixPurchaseOrderType class", xmlSchema);
       XmlNamespacePrefixMapper mapper = new XmlNamespacePrefixMapper(xmlSchema.xmlns());

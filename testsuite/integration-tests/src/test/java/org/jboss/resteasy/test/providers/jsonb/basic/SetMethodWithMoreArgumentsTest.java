@@ -16,11 +16,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @tpSubChapter Json-binding provider
@@ -56,7 +56,7 @@ public class SetMethodWithMoreArgumentsTest {
    }
 
    /**
-    * @tpTestDetails Entity class Dog has setNameAndSort method with two arguments which causes 'javax.json.bind.JsonbException: Invalid count of arguments for setter' with yasson-1.0.1.
+    * @tpTestDetails Entity class Dog has setNameAndSort method with two arguments which causes 'jakarta.json.bind.JsonbException: Invalid count of arguments for setter' with yasson-1.0.1.
     * This test checks that this behavior is no longer present in newer versions of yasson.
     * @tpSince RESTEasy 3.6.2.Final
     */

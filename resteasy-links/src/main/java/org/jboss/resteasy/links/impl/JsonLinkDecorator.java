@@ -5,7 +5,7 @@ import org.jboss.resteasy.links.LinksProvider;
 import org.jboss.resteasy.plugins.providers.jackson.DecoratedEntityContainer;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 

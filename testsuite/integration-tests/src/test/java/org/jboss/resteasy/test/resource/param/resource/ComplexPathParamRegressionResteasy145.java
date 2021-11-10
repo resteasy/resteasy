@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 @Path("/repository/workspaces")
 public class ComplexPathParamRegressionResteasy145 {

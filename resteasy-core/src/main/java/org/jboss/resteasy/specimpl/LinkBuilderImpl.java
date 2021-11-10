@@ -1,9 +1,9 @@
 package org.jboss.resteasy.specimpl;
 
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilderException;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 

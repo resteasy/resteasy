@@ -4,7 +4,7 @@ import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Method;
 
 /**

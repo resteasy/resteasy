@@ -10,7 +10,7 @@
   to easily encrypt and/or sign an email message using the S/MIME standard.
   While the API is described here, you may also want to check out the example
   projects that come with the RESTEasy distribution. It shows both Java and
-  Python clients exchanging S/MIME formatted messages with a JAX-RS
+  Python clients exchanging S/MIME formatted messages with a &REST-API;
   service.</para>
 
   <section>
@@ -21,7 +21,7 @@
     <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
             &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
-            &lt;version&gt;5.0.0-SNAPSHOT&lt;/version&gt;
+            &lt;version&gt;6.0.0-SNAPSHOT&lt;/version&gt;
         &lt;/dependency&gt;
 
 </programlisting></para>

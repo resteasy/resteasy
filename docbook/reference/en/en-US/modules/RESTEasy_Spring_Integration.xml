@@ -22,10 +22,10 @@
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
             <code>BeanPostProcessor</code>
-            that processes JAX-RS annotations when a bean is created by a <code>BeanFactory</code>. And it will
-            automatically scan for <code>@Provider</code> and JAX-RS resource annotations on your
+            that processes &REST-API; annotations when a bean is created by a <code>BeanFactory</code>. And it will
+            automatically scan for <code>@Provider</code> and &REST-API; resource annotations on your
             bean class and
-            register them as JAX-RS resources.
+            register them as &REST-API; resources.
         </para>
         <para>Here is the content that you should add into your <code>web.xml</code> file:
         </para>
@@ -45,7 +45,7 @@
             attributes initialized by it.
         </para>
         <para>
-            And you can configure the Springframework to scan for the JAX-RS resources and beans in a Spring
+            And you can configure the Springframework to scan for the &REST-API; resources and beans in a Spring
             configuration file. The content of the file is shown as follow:
         </para>
         <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
@@ -139,12 +139,12 @@
     <section id="SpringMVC">
         <title>Spring MVC Integration</title>
         <para>
-            RESTEasy can also integrate with the Spring MVC framework. Generally speaking, JAX-RS can be combined with a
+            RESTEasy can also integrate with the Spring MVC framework. Generally speaking, &REST-API; can be combined with a
             Spring <code>DispatcherServlet</code> and used in the same web application.
         </para>
         <para>
             An application combined in this way
-            allows you to dispatch to either the Spring controller or the JAX-RS resource
+            allows you to dispatch to either the Spring controller or the &REST-API; resource
             using the same base URL. In addition you can use the Spring <code>ModelAndView</code> objects as return
             arguments from <code>@GET</code> resource methods.
         </para>
@@ -191,7 +191,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
 ....]]></programlisting>
         <para>
-            And then you need to tell Spring the package to scan for your JAX-RS resource classes:
+            And then you need to tell Spring the package to scan for your &REST-API; resource classes:
             <programlisting><![CDATA[<context:component-scan base-package="org.jboss.resteasy.examples.springmvc"/>
 <context:annotation-config/>]]></programlisting>
             Above is the basic configuration for Spring MVC framework. To see a complete example, please check the
@@ -232,7 +232,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </servlet-mapping>
 
     <!-- required RESTEasy Configuration Switch directs auto scanning
-         of the archive for JAX-RS resource files
+         of the archive for Jakarta RESTful Web Services resource files
     -->
     <context-param>
         <param-name>resteasy.scan.resources</param-name>
@@ -246,9 +246,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             for more information about application configuration.
         </para>
         <para>
-            If your web application contains JAX-RS provider classes the RESTEasy Configuration
+            If your web application contains &REST-API; provider classes the RESTEasy Configuration
             Switch, <code>resteasy.scan.providers</code>, will also be needed. And if the url-pattern for the
-            JAX-RS Application subclass is other than <code>/*</code> you will need to declare the RESTEasy
+            &REST-API; Application subclass is other than <code>/*</code> you will need to declare the RESTEasy
             Configuration Switch, <code>resteasy.servlet.mapping.prefix</code>. This switch can be declare
             either as a context-param or as a servlet init-param. It's value must be the text
             that preceeds the <code>/*</code>. Here is an example of such a <code>web.xml</code>:
@@ -496,7 +496,7 @@ server.deploy(deployment);]]></programlisting>
 </dependency>]]></programlisting>
         </para>
         <para>
-            And then you can use Spring annotation <code>@Component</code> to register your JAX-RS <code>Application
+            And then you can use Spring annotation <code>@Component</code> to register your &REST-API; <code>Application
         </code> class:
             <programlisting><![CDATA[package com.sample.app;
 
@@ -510,8 +510,8 @@ public class JaxrsApplication extends Application {
 }]]></programlisting>
         </para>
         <para>
-            Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
-            automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
+            Finally, to register &REST-API; resources and providers, just define them as Spring beans, and they will be
+            automatically registered. Notice that &REST-API; resources can be singleton or request scoped, while &REST-API;
             providers must be singletons.
         </para>
         <para>To see complete examples, please check the <ulink

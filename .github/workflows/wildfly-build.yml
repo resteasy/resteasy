@@ -60,7 +60,7 @@ jobs:
           cache: 'maven'
       - name: Copy Maven Repository - Linux
         if: runner.os == 'Linux'
-        run: unzip -d ~/.m2/repository ./maven-repository.zip
+        run: unzip -o -d ~/.m2/repository ./maven-repository.zip
       - name: Copy Maven Repository - Windows
         if: runner.os == 'Windows'
         run: 7z x 'maven-repository.zip' '%USERPROFILE%\.m2\repository'

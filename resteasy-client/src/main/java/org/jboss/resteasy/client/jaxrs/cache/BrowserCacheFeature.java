@@ -1,7 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

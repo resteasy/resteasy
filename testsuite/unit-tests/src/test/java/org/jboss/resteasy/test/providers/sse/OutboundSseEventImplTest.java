@@ -3,10 +3,10 @@ package org.jboss.resteasy.test.providers.sse;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.OutboundSseEvent;
 
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 import org.jboss.resteasy.test.providers.resource.ContractsData;

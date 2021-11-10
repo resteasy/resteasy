@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.client;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resteasy-client

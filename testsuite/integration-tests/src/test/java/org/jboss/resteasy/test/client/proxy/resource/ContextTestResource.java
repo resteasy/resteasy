@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.client.proxy.resource;
 import org.jboss.resteasy.test.client.proxy.ContextTest;
 import org.junit.Assert;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 public class ContextTestResource implements ContextTest.ResourceInterface {
 

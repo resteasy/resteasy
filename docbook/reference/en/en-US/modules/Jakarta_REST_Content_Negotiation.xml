@@ -1,5 +1,5 @@
-<chapter id="JAX-RS_Content_Negotiation">
-   <title>JAX-RS Content Negotiation</title>
+<chapter id="Jakarta_REST_Content_Negotiation">
+   <title>&REST-API; Content Negotiation</title>
 
    <para>
 
@@ -30,7 +30,7 @@ public class Library {
    </para>
    <para>
 
-      When a client makes a request, JAX-RS first finds all methods that match the path, then, it sorts things based on
+      When a client makes a request, &REST-API; first finds all methods that match the path, then, it sorts things based on
       the content-type header sent by the client.
       So, if a client sent:
    </para>
@@ -113,9 +113,9 @@ Accept: application/json
    </para>
    <para>
 
-      A variant in JAX-RS is a combination of media type, content-language, and content encoding as well as etags, last
+      A variant in &REST-API; is a combination of media type, content-language, and content encoding as well as etags, last
       modified headers, and other preconditions. This is a more complex form of content negotiation that is done
-      programmatically by the application developer using the javax.ws.rs.Variant, VarianListBuilder, and Request
+      programmatically by the application developer using the jakarta.ws.rs.core.Variant, VarianListBuilder, and Request
       objects. Request is injected via @Context. Read the javadoc for more info on these.
    </para>
 <sect1 id="media_mappings">
@@ -154,7 +154,7 @@ Accept: application/xml
 Accept-Language: en-US
 </programlisting>
 <para>
-The mapped file suffixes are stripped from the target URL path before the request is dispatched to a corresponding JAX-RS resource.
+The mapped file suffixes are stripped from the target URL path before the request is dispatched to a corresponding &REST-API; resource.
 </para>
 </sect1>
 

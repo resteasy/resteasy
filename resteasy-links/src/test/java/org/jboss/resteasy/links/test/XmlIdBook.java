@@ -1,7 +1,7 @@
 package org.jboss.resteasy.links.test;
 
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class XmlIdBook extends IdBook {

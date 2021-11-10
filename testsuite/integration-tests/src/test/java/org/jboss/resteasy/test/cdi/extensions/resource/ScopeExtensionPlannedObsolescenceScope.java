@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.extensions.resource;
 
-import javax.enterprise.context.NormalScope;
+import jakarta.enterprise.context.NormalScope;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

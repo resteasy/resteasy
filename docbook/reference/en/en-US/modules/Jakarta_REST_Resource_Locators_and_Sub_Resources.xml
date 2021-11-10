@@ -1,5 +1,5 @@
-<chapter id="JAX-RS_Resource_Locators_and_Sub_Resources">
-<title>JAX-RS Resource Locators and Sub Resources</title>
+<chapter id="Jakarta_REST_Resource_Locators_and_Sub_Resources">
+<title>&REST-API; Resource Locators and Sub Resources</title>
 
 <para>
 
@@ -88,7 +88,7 @@ public class Customer {
 </para>
 <para>
 
-In the above example, getCustomer() returns a java.lang.Object.  Per request, at runtime, the JAX-RS server will figure out how to dispatch the request based on the object returned by getCustomer().  What are the uses of this?  Well, maybe you have a class hierarchy for your customers.  Customer is the abstract base, CorporateCustomer and IndividualCustomer are subclasses.  Your getCustomer() method might be doing a Hibernate polymorphic query and doesn't know, or care, what concrete class is it querying for, or what it returns.
+In the above example, getCustomer() returns a java.lang.Object.  Per request, at runtime, the &REST-API; server will figure out how to dispatch the request based on the object returned by getCustomer().  What are the uses of this?  Well, maybe you have a class hierarchy for your customers.  Customer is the abstract base, CorporateCustomer and IndividualCustomer are subclasses.  Your getCustomer() method might be doing a Hibernate polymorphic query and doesn't know, or care, what concrete class is it querying for, or what it returns.
 </para>
 <para>
 

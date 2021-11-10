@@ -39,7 +39,7 @@ public class ResteasyThreadContext implements ThreadContext<Map<Class<?>, Object
     }
 
     @Override
-    public void reset() {
+    public void reset(final Map<Class<?>, Object> context) {
         ResteasyContext.removeContextDataLevel();
     }
 }

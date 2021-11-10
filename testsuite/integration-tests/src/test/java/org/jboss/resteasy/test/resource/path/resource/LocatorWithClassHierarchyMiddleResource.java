@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.path.resource;
 
-import javax.ws.rs.POST;
+import jakarta.ws.rs.POST;
 
 public class LocatorWithClassHierarchyMiddleResource extends LocatorWithClassHierarchyPathParamResource {
 

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.core;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

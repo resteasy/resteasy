@@ -2,10 +2,10 @@ package org.jboss.resteasy.embedded.test.interceptor.resource;
 
 import org.jboss.resteasy.embedded.test.interceptor.PriorityExecutionTest;
 
-import javax.annotation.Priority;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 
 @Priority(Integer.MIN_VALUE)

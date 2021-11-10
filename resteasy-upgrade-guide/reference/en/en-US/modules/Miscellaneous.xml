@@ -11,10 +11,10 @@
    
    <para>
    <classname>org.jboss.resteasy.spi.Link</classname> has been replaced by
-   the abstract class <classname>javax.ws.rs.core.Link</classname> and its implementation
+   the abstract class <classname>jakarta.ws.rs.core.Link</classname> and its implementation
    <classname>org.jboss.resteasy.specimpl.LinkImpl</classname>. They both represent links as
    described in <ulink url="https://tools.ietf.org/html/rfc5988">RFC 5988</ulink>, with slight
-   variations. For example, there is now <methodname>javax.ws.rs.core.Link.getRel()</methodname>
+   variations. For example, there is now <methodname>jakarta.ws.rs.core.Link.getRel()</methodname>
    instead of <methodname>org.jboss.resteasy.spi.Link.getRelationship()</methodname>. Also, they
    are constructed differently. For example,
    </para>
@@ -54,7 +54,7 @@ public Response getWithHeader(@Context UriInfo uri)
    <para>
    <classname>org.jboss.resteasy.util.GenericType</classname>, which allows the creation of 
    parameterized type objects at runtime, is now replaced by
-   <classname>javax.ws.rs.core.GenericType</classname>. They are essentially the same class, with
+   <classname>jakarta.ws.rs.core.GenericType</classname>. They are essentially the same class, with
    minor method name changes. In particular, <methodname>getGenericType()</methodname> becomes 
    <methodname>getType()</methodname> and <methodname>getType()</methodname> becomes
    <methodname>getRawType()</methodname>. 
@@ -69,9 +69,9 @@ public Response getWithHeader(@Context UriInfo uri)
    Implementations of the <classname>org.jboss.resteasy.spi.StringConverter</classname> interface in
    Resteasy 2 are providers that can marshal and unmarshal string-based parameters labelled with @HeaderParam,
    @MatrixParam, @QueryParam, or @PathParam. JAX-RS 2.0 introduces a similar interface, 
-   <classname>javax.ws.rs.ext.ParamConverter</classname>, but implementations of 
+   <classname>jakarta.ws.rs.ext.ParamConverter</classname>, but implementations of
    <classname>ParamConverter</classname> are not recognized as providers. Rather, a provider
-   that implements <classname>javax.ws.rs.ext.ParamConverterProvider</classname>, which produces a
+   that implements <classname>jakarta.ws.rs.ext.ParamConverterProvider</classname>, which produces a
    <classname>ParamConverter</classname>, may be registered. For example,
    </para>
    

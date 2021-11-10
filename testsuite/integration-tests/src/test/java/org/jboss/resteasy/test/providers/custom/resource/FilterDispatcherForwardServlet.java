@@ -4,10 +4,10 @@ import org.jboss.logging.Logger;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
 
 public class FilterDispatcherForwardServlet extends HttpServlet {
    private static Logger logger = Logger.getLogger(FilterDispatcherForwardServlet.class);

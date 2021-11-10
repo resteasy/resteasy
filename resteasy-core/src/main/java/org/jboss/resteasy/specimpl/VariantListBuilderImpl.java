@@ -1,7 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

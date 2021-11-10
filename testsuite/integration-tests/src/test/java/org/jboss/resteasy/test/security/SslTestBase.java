@@ -14,7 +14,7 @@ import org.jboss.resteasy.utils.TestManagementClient;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import java.io.File;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.isIpv6;

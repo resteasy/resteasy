@@ -5,11 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 @Path("/ITest")
 public class XOPMultipartProxyResource implements XOPMultipartProxy {

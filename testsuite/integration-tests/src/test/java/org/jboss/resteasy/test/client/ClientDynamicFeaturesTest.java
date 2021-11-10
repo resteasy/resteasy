@@ -18,7 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.DynamicFeature;
 import java.lang.reflect.ReflectPermission;
 import java.util.Iterator;
 import java.util.PropertyPermission;

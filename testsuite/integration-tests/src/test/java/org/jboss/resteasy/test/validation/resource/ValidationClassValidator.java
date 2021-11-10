@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.logging.Logger;
 
 public class ValidationClassValidator implements ConstraintValidator<ValidationClassConstraint, ValidationResourceWithAllViolationTypes> {

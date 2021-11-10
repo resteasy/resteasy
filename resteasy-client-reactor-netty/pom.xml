@@ -5,12 +5,12 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>resteasy-client-reactor-netty</artifactId>
-    <name>RESTEasy JAX-RS Client - Reactor Netty Engine</name>
+    <name>RESTEasy Client - Reactor Netty Engine</name>
 
     <dependencies>
         <dependency>

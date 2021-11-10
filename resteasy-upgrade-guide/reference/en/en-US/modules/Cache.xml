@@ -12,7 +12,7 @@
    <para>
    Resteasy 3 offers the same client side cache facility as Resteasy 2, but it is enabled differently,
    by way of <classname>org.jboss.resteasy.client.jaxrs.cache.BrowserCacheFeature</classname>, which
-   implements the JAX-RS 2.0 class <classname>javax.ws.rs.core.Feature</classname>:
+   implements the JAX-RS 2.0 class <classname>jakarta.ws.rs.core.Feature</classname>:
    </para>
    
    <programlisting>
@@ -60,9 +60,9 @@ OrderServiceClient orderService = target.proxy(OrderServiceClient.class);
    
    <para>
    Server side caching is also enabled differently. Resteasy 3 uses the JAX-RS 2.0
-   <classname>javax.ws.rs.core.Feature</classname> facility, in the form of
+   <classname>jakarta.ws.rs.core.Feature</classname> facility, in the form of
    <classname>org.jboss.resteasy.plugins.cache.server.ServerCacheFeature</classname>, which should be
-   registered via the <classname>javax.ws.rs.core.Application.</classname>
+   registered via the <classname>jakarta.ws.rs.core.Application.</classname>
    </para>
    
    </sect1>

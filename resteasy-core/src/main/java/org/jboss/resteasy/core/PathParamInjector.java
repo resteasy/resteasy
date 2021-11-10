@@ -9,9 +9,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.util.Types;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.PathSegment;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.PathSegment;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;

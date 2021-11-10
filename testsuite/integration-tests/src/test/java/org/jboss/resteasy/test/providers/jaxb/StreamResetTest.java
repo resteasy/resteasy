@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.StreamResetPlace;
 import org.jboss.resteasy.test.providers.jaxb.resource.StreamResetResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.StreamResetPerson;
@@ -19,8 +19,8 @@ import org.junit.runner.RunWith;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Jaxb provider

@@ -16,11 +16,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resources
@@ -64,7 +64,7 @@ public class ResourceInfoInjectionTest {
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals("ResponseFilter was probably not applied to response", HttpResponseCodes.SC_NOT_FOUND * 2, response.getStatus());
-      Assert.assertTrue("Wrong body of response",  entity.contains("RESTEASY003210"));
+      Assert.assertTrue("Wrong body of response",  entity.isEmpty());
    }
 
    /**

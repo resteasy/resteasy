@@ -1,8 +1,8 @@
 package org.jboss.resteasy.rxjava2;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;

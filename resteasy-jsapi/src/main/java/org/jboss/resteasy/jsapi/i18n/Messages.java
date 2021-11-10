@@ -45,7 +45,7 @@ public interface Messages
    @Message(id = BASE + 45, value = "Serving %s")
    String serving(String pathinfo);
 
-   @Message(id = BASE + 50, value = "// start JAX-RS API")
+   @Message(id = BASE + 50, value = "// start REST API")
    String startJaxRsApi();
 
    @Message(id = BASE + 55, value = "// start RESTEasy client API")

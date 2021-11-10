@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.providers.multipart.i18n;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.MessageBodyReader;
 
 import org.apache.james.mime4j.stream.Field;
 import org.jboss.logging.annotations.Message;

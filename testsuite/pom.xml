@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -16,6 +16,7 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups/>
+        <additional.surefire.exclude.tracing.tests/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
@@ -23,7 +24,6 @@
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
-        <server.version>${version.org.wildfly}</server.version>
 
         <!-- Skip the default Java 8 testing. This will have to be done in CI or locally by setting the test.java.home -->
         <skip.java8.tests>true</skip.java8.tests>
@@ -113,7 +113,7 @@
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>

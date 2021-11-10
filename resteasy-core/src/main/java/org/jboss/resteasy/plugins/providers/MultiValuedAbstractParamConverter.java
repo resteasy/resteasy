@@ -3,8 +3,8 @@ package org.jboss.resteasy.plugins.providers;
 
 import java.util.Collection;
 
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.jboss.resteasy.core.StringParameterInjector;
 

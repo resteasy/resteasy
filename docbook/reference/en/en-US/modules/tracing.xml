@@ -13,13 +13,13 @@
             which provides more general information about the request and response.
         </para>
         <para>
-            The tracing feature provides more internal states of the JAX-RS container. For example, it could be able
+            The tracing feature provides more internal states of the &REST-API; container. For example, it could be able
             to show what filters a request is going through, or how long time a request is processed and other kinds
             of information.
         </para>
         <para>
             Currently it doesn't have a standard or spec to define the tracing feature, so the tracing feature is
-            tightly coupled with the concrete JAX-RS implementation itself. In this chapter, let's check the design and
+            tightly coupled with the concrete &REST-API; implementation itself. In this chapter, let's check the design and
             usage of the tracing feature.
         </para>
     </section>
@@ -277,7 +277,7 @@ X-RESTEasy-Tracing-000: [{"event":"START","duration":0,"timestamp":1952866945099
                         DISPATCH_RESPONSE
                     </para>
                     <para>
-                        Resource method invocation results to JAX-RS Response.
+                        Resource method invocation results to &REST-API; Response.
                     </para>
                 </listitem>
                 <listitem>

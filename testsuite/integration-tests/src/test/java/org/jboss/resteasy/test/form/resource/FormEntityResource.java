@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.form.resource;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("test")
 public class FormEntityResource {

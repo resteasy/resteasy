@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.interceptor.InterceptorBinding;
+import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

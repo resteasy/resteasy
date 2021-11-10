@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.validation.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ValidationComplexClassValidatorSubInheritance implements ConstraintValidator<ValidationComplexClassInheritanceSubConstraint, ValidationComplexInterfaceSub> {
    private static Logger logger = Logger.getLogger(ValidationComplexClassValidatorSubInheritance.class);

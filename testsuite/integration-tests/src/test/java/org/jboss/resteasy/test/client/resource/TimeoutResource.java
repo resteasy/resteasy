@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.client.resource;
 
 import org.jboss.resteasy.test.client.TimeoutTest;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 public class TimeoutResource implements TimeoutTest.TimeoutResourceInterface {
    @Override
