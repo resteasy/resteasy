@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.cdi.interceptors.resource;
 
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
 
 public class InterceptorOne {
    @Inject

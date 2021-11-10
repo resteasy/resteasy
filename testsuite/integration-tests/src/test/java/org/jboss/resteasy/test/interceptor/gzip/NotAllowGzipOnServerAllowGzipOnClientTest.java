@@ -41,7 +41,7 @@ public class NotAllowGzipOnServerAllowGzipOnClientTest extends NotAllowGzipOnSer
    }
 
    /**
-    * @tpTestDetails gzip is enabled on server by javax.ws.rs.ext.Providers file in deployment
+    * @tpTestDetails gzip is enabled on server by jakarta.ws.rs.ext.Providers file in deployment
     *                gzip is allowed on client by resteasy.allowGzip system property
     * @tpSince RESTEasy 3.6
     */

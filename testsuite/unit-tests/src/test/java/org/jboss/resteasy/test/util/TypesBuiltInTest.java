@@ -7,8 +7,8 @@ import org.jboss.resteasy.test.util.resource.TypesTestProvider;
 import org.jboss.resteasy.test.util.resource.TypesTestProviderSubclass;
 import org.junit.Test;
 
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.ParamConverter;
 import java.lang.reflect.Type;
 
 import static org.junit.Assert.assertEquals;

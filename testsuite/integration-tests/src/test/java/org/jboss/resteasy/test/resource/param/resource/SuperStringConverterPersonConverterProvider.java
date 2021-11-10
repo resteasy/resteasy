@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.resource.param.resource;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverterProvider;
 
 public class SuperStringConverterPersonConverterProvider implements ParamConverterProvider
 {

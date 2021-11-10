@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.core.smoke.resource;
 
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class ResourceWithMultipleInterfacesRootResource implements ResourceWithMultipleInterfacesIntA, ResourceWithMultipleInterfacesEmpty {

@@ -8,9 +8,9 @@ import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookResource;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.junit.Test;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;

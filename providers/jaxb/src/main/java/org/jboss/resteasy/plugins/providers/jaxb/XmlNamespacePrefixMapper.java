@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import jakarta.xml.bind.annotation.XmlNs;
+import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 
-import javax.xml.bind.annotation.XmlNs;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +11,9 @@ import java.util.Map;
  *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
+ * @deprecated This should no longer be used as it's quite simple to implement and is tied to the implementation
  */
+@Deprecated
 public class XmlNamespacePrefixMapper extends NamespacePrefixMapper
 {
 

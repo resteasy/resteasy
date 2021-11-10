@@ -6,10 +6,10 @@ import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.NewCookie;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.NewCookie;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -38,7 +38,7 @@ public class HttpServlet30Dispatcher extends HttpServletDispatcher
          @Override
          public void addNewCookie(NewCookie cookie)
          {
-            outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+            outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
          }
       };
    }

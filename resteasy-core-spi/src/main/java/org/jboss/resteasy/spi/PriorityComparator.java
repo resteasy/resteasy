@@ -20,8 +20,8 @@
 package org.jboss.resteasy.spi;
 
 import java.util.Comparator;
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
 
 /**
  * Sorts components based on the {@link Priority @Priority. The default is {@link Priorities#USER}.

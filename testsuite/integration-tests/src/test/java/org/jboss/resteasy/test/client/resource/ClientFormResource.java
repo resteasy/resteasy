@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.client.resource;
 
 import org.jboss.resteasy.test.client.ClientFormParamTest;
 
-import javax.ws.rs.core.Form;
+import jakarta.ws.rs.core.Form;
 
 public class ClientFormResource implements ClientFormParamTest.ClientFormResourceInterface {
 

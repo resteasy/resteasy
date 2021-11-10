@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.constructor.resource;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 public class HappinessParams {
     @QueryParam("duration")

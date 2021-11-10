@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.test.validation.resource.ValidationHibernateI18NResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -19,8 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.core.StringStartsWith.startsWith;
 
@@ -63,7 +63,7 @@ public class ValidationHibernateI18NTest {
    @Test
    public void testI18NSetAcceptLanguage() throws Exception {
       doTestI18NSetAcceptLanguage("fr", "la taille doit être");
-      doTestI18NSetAcceptLanguage("es", "el tama\u00F1o tiene que estar entre");
+      doTestI18NSetAcceptLanguage("es", "el tama\u00F1o debe estar entre");
    }
 
    protected void doTestI18NSetAcceptLanguage(String locale, String expectedMessage) throws Exception {

@@ -7,7 +7,7 @@ import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class RESTEasyParamBeanCdi

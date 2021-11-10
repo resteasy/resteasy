@@ -16,10 +16,10 @@ import org.jboss.resteasy.spi.RunnableWithException;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import reactor.netty.http.server.HttpServerRequest;
 
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;

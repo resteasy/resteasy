@@ -7,7 +7,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.util.Encode;
 
-import javax.ws.rs.FormParam;
+import jakarta.ws.rs.FormParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;

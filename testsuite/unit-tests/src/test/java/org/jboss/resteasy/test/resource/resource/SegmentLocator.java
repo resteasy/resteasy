@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.resource;
 
-import javax.ws.rs.OPTIONS;
+import jakarta.ws.rs.OPTIONS;
 
 public class SegmentLocator {
    @OPTIONS

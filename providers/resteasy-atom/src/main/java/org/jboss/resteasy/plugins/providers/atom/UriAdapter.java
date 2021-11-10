@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.net.URI;
 
 /**

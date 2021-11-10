@@ -120,7 +120,7 @@ try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
         <orderedlist>
            <listitem>As noted above, <methodname>Jackson2JsonpInterceptor</methodname> must be
            included in the deployment. For example,
-           a service file META-INF/services/javax.ws.rs.ext.Providers with the line
+           a service file META-INF/services/jakarta.ws.rs.ext.Providers with the line
 <programlisting>
 org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
 </programlisting>

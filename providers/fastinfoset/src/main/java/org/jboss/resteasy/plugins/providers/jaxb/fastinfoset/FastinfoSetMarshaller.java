@@ -1,16 +1,17 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
 import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
@@ -34,7 +35,7 @@ public class FastinfoSetMarshaller implements Marshaller
    public FastinfoSetMarshaller(final JAXBContext context) throws JAXBException
    {
       this.context = context;
-      marshaller = this.context.createMarshaller();
+      marshaller = RiHacks.createMarshaller(context);
    }
 
 

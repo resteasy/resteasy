@@ -2,7 +2,7 @@ package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Context;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 

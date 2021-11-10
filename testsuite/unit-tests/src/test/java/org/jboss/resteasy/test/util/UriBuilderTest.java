@@ -7,7 +7,7 @@ import org.jboss.resteasy.test.util.resource.UriBuilderResource;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
@@ -101,7 +101,7 @@ public class UriBuilderTest {
          Assert.assertEquals(ERROR_MSG, template, "http://localhost/x/y/z?name=42");
 
          // RESTEASY-1878 - test if regex templates work
-         // see javax.ws.rs.core.UriBuilder class description for info about regex template parameters
+         // see jakarta.ws.rs.core.UriBuilder class description for info about regex template parameters
          builder = UriBuilder.fromUri("{id: [0-9]+}");
          Assert.assertEquals(new URI("123"), builder.build("123"));
 

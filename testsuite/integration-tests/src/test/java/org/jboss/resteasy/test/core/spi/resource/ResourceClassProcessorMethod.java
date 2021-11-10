@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.core.spi.resource;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashSet;

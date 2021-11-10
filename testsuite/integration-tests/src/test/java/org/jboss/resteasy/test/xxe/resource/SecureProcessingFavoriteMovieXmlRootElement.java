@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.xxe.resource;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class SecureProcessingFavoriteMovieXmlRootElement {

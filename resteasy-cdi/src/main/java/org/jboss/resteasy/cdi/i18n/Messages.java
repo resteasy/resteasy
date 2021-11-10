@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
@@ -38,7 +38,7 @@ public interface Messages
    @Message(id = BASE + 20, value = "Beans found for {0} : {1}", format=Format.MESSAGE_FORMAT)
    String beansFound(Type type, Set<Bean<?>> beans);
 
-   @Message(id = BASE + 25, value = "Discovered CDI bean which is javax.ws.rs.core.Application subclass {0}.", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 25, value = "Discovered CDI bean which is jakarta.ws.rs.core.Application subclass {0}.", format=Format.MESSAGE_FORMAT)
    String discoveredCDIBeanApplication(String classname);
 
    @Message(id = BASE + 30, value = "Discovered CDI bean which is a provider {0}.", format=Format.MESSAGE_FORMAT)

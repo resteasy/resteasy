@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
 /**

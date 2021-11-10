@@ -7,7 +7,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingEndPoint;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingReaderInterceptorCustom;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingWriterInterceptorCustom;
@@ -27,9 +27,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
@@ -72,7 +72,7 @@ public class DebugLoggingTest {
       // enable RESTEasy debug logging
       TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=ALL)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:add(level=ALL)");
+      TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:add(level=ALL)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:add(level=ALL)");
 
       client.close();
@@ -85,7 +85,7 @@ public class DebugLoggingTest {
       // enable RESTEasy debug logging
       TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=INFO)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:remove()");
+      TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:remove()");
       TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:remove()");
 
       client.close();

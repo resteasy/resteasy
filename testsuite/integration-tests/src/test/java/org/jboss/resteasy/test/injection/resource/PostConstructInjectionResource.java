@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.annotation.PostConstruct;
-import javax.validation.constraints.Size;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.Size;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("/normal")
 public class PostConstructInjectionResource {

@@ -26,7 +26,7 @@
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
         <server.version>25.0.1.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
-        <version.org.wildfly.arquillian.wildfly-arquillian>4.0.0.Alpha2</version.org.wildfly.arquillian.wildfly-arquillian>
+        <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha1</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
         <!-- print logs to file by default -->
@@ -173,6 +173,35 @@
                         <version>${version.org.wildfly}</version>
                         <type>zip</type>
                     </dependency>
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-preview-feature-pack</artifactId>
+                        <version>${version.org.wildfly}</version>
+                        <type>zip</type>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-galleon-plugins</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-config-gen</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>transformer</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>*</groupId>
+                                <artifactId>*</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+
                 </dependencies>
             </dependencyManagement>
         </profile>

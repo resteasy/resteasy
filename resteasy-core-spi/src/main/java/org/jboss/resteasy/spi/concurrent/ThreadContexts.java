@@ -61,7 +61,7 @@ public class ThreadContexts {
 
     /**
      * Returns a collection of the current thread contexts. This is a snapshot of what is currently in the collection
-     * sorted by {@linkplain javax.annotation.Priority priority}.
+     * sorted by {@linkplain jakarta.annotation.Priority priority}.
      *
      * @return an immutable collection of the curren thread contexts
      */

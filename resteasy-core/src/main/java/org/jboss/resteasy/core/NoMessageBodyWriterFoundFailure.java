@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.LoggableFailure;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("serial")
 public class NoMessageBodyWriterFoundFailure extends LoggableFailure

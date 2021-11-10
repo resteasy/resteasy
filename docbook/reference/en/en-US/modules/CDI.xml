@@ -91,7 +91,7 @@
             <listitem>
                 <para>
                     If a &REST-API; Provider or
-                    <code>javax.ws.rs.Application</code>
+                    <code>jakarta.ws.rs.Application</code>
                     subclass
                     does not define a scope explicitly, it is bound to the
                     Application

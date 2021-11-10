@@ -1,6 +1,6 @@
 package org.jboss.resteasy.links;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.ResteasyContext;

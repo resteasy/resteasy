@@ -2,7 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;

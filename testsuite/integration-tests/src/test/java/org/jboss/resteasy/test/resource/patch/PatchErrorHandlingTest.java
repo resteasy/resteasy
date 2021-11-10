@@ -14,14 +14,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.json.Json;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.json.Json;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class PatchErrorHandlingTest {
       base.request().post(Entity.entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
 
       WebTarget patchTarget = client.target(generateURL("/students/1"));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
             .add(Json.createObjectBuilder().add("op", "copyyy").add("from", "/firstName").add("path", "/lastName").build())
             .build();
       Response res = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();
@@ -93,7 +93,7 @@ public class PatchErrorHandlingTest {
       base.request().post(Entity.entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
 
       WebTarget patchTarget = client.target(generateURL("/students/1088"));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
             .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
             .build();
       Response res = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();
@@ -112,7 +112,7 @@ public class PatchErrorHandlingTest {
       base.request().post(Entity.entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
 
       WebTarget patchTarget = client.target(generateURL("/students/1"));
-      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+      jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
             .add(Json.createObjectBuilder().add("op", "replace").add("path", "/wrongProperty").add("value", "John").build())
             .build();
       Response res = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();

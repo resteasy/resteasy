@@ -3,8 +3,8 @@ package org.jboss.resteasy.client.exception;
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
 import java.net.URI;
-import javax.ws.rs.RedirectionException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.RedirectionException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link RedirectionException} with a {@linkplain #sanitize(Response) sanitized} response.

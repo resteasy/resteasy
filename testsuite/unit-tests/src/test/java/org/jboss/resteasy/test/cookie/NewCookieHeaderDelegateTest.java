@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.cookie;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.junit.Before;

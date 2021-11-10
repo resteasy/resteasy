@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 public interface AnnotationInheritanceSomeOtherInterface {
    @Path("superint")

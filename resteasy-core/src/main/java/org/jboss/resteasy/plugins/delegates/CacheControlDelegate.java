@@ -3,8 +3,8 @@ package org.jboss.resteasy.plugins.delegates;
 import org.jboss.resteasy.core.ExtendedCacheControl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import java.util.List;
 

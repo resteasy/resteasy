@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.mediatype;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.junit.Assert;
 import org.junit.Test;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
 

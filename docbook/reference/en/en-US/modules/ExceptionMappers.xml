@@ -11,22 +11,22 @@
    <para>
 
       <programlisting>
-         package javax.ws.rs.ext;
+         package jakarta.ws.rs.ext;
 
-         import javax.ws.rs.core.Response;
+         import jakarta.ws.rs.core.Response;
 
          /**
          * Contract for a provider that maps Java exceptions to
-         * {@link javax.ws.rs.core.Response}. An implementation of this interface must
+         * {@link jakarta.ws.rs.core.Response}. An implementation of this interface must
          * be annotated with {@link Provider}.
          *
          * @see Provider
-         * @see javax.ws.rs.core.Response
+         * @see jakarta.ws.rs.core.Response
          */
          public interface ExceptionMapper&lt;E&gt;
          {
             /**
-            * Map an exception to a {@link javax.ws.rs.core.Response}.
+            * Map an exception to a {@link jakarta.ws.rs.core.Response}.
             *
             * @param exception the exception to map to a response
             * @return a response mapped from the supplied exception
@@ -46,7 +46,7 @@
       <programlisting>
 
          @Provider
-         public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
+         public class EJBExceptionMapper implements ExceptionMapper&lt;jakarta.ejb.EJBException&gt;
          {
             public Response toResponse(EJBException exception) {
                return Response.status(500).build();

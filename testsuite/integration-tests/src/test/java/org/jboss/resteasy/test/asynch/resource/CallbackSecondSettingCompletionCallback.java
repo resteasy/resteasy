@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.asynch.resource;
 
-import javax.ws.rs.container.CompletionCallback;
+import jakarta.ws.rs.container.CompletionCallback;
 
 public class CallbackSecondSettingCompletionCallback implements CompletionCallback {
 

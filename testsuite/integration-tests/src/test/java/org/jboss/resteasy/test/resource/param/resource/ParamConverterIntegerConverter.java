@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 public class ParamConverterIntegerConverter implements ParamConverter<Integer> {
    public Integer fromString(String str) {

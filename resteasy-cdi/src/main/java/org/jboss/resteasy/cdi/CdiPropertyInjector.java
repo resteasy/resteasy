@@ -7,8 +7,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.weld.proxy.WeldClientProxy;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.ws.rs.WebApplicationException;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.ws.rs.WebApplicationException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;

@@ -18,7 +18,7 @@ package org.jboss.resteasy.spi;
 
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.ext.WriterInterceptor;
 
 /**
  * Writer interceptors which support async IO.
@@ -36,7 +36,7 @@ public interface AsyncWriterInterceptor extends WriterInterceptor {
      * @return a {@link CompletionStage} indicating completion
      * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
      *                             {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned {@link CompletionStage}.
-     * @throws javax.ws.rs.WebApplicationException
+     * @throws jakarta.ws.rs.WebApplicationException
      *                             thrown by the wrapped {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned {@link CompletionStage}.
      */
     CompletionStage<Void> asyncAroundWriteTo(AsyncWriterInterceptorContext context);

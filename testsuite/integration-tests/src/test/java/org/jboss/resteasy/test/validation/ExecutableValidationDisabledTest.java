@@ -9,7 +9,7 @@ import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
@@ -29,8 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Response
@@ -51,7 +51,7 @@ public class ExecutableValidationDisabledTest {
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
-            .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
+            .addAsResource("META-INF/services/jakarta.ws.rs.ext.Providers")
             .addAsResource(ExecutableValidationDisabledTest.class.getPackage(), "ExecutableValidationDisabledValidationDisabled.xml", "META-INF/validation.xml");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }

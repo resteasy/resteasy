@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2JAXBResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2Resource;
@@ -28,15 +28,15 @@ import org.junit.runner.RunWith;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 
 /**
@@ -77,7 +77,7 @@ public class Jackson2Test {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(Jackson2Test.class.getSimpleName());
       war.addClass(Jackson2Test.class);
-      war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
+      war.addAsResource(Jackson2Test.class.getPackage(), "jakarta.ws.rs.ext.Providers", "META-INF/services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
@@ -87,7 +87,7 @@ public class Jackson2Test {
    public static Archive<?> deployJSONPenabled() {
       WebArchive war = TestUtil.prepareArchive(JSONP_ENABLED);
       war.addClass(Jackson2Test.class);
-      war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
+      war.addAsResource(Jackson2Test.class.getPackage(), "jakarta.ws.rs.ext.Providers", "META-INF/services/jakarta.ws.rs.ext.Providers");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.jsonp.enable", "true");
       return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
@@ -99,7 +99,7 @@ public class Jackson2Test {
    public static Archive<?> deployJSONPdisabled() {
       WebArchive war = TestUtil.prepareArchive(JSONP_DISABLED);
       war.addClass(Jackson2Test.class);
-      war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
+      war.addAsResource(Jackson2Test.class.getPackage(), "jakarta.ws.rs.ext.Providers", "META-INF/services/jakarta.ws.rs.ext.Providers");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put("resteasy.jsonp.enable", "false");
       return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,

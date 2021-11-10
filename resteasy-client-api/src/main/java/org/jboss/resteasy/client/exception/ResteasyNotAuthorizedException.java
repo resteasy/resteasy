@@ -4,8 +4,8 @@ import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper
 
 import java.util.Collections;
 import java.util.List;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link NotAuthorizedException} with a {@linkplain #sanitize(Response) sanitized} response

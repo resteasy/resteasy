@@ -25,7 +25,7 @@
                 <!ENTITY Jakarta_REST_Content_Negotiation SYSTEM "modules/Jakarta_REST_Content_Negotiation.xml">
                 <!ENTITY Content_Marshalling_Providers SYSTEM "modules/Content_Marshalling_Providers.xml">
                 <!ENTITY StringConverter SYSTEM "modules/StringConverter.xml">
-                <!ENTITY Responses_using_javax.ws.rs.core.Response SYSTEM "modules/Responses_using_javax.ws.rs.core.Response.xml">
+                <!ENTITY Responses_using_jakarta.ws.rs.core.Response SYSTEM "modules/Responses_using_jakarta.ws.rs.core.Response.xml">
                 <!ENTITY ExceptionMappers SYSTEM "modules/ExceptionMappers.xml">
                 <!ENTITY Configuring_Individual_Jakarta_REST_Resource_Beans SYSTEM "modules/Configuring_Individual_Jakarta_REST_Resource_Beans.xml">
                 <!ENTITY Asynchronous_HTTP SYSTEM "modules/Asynchronous_HTTP.xml">
@@ -131,7 +131,7 @@ This one is short
     &Multipart;
    &Jakarta_REST_2.1_additions;
    &StringConverter;
-   &Responses_using_javax.ws.rs.core.Response;
+   &Responses_using_jakarta.ws.rs.core.Response;
    &ExceptionMappers;
    &Configuring_Individual_Jakarta_REST_Resource_Beans;
     &GZIP;

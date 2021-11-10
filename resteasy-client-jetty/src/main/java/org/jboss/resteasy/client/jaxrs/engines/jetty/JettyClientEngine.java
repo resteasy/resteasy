@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.InvocationCallback;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
@@ -264,7 +264,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
       return extracted;
    }
 
-   private static RuntimeException clientException(Throwable ex, javax.ws.rs.core.Response clientResponse) {
+   private static RuntimeException clientException(Throwable ex, jakarta.ws.rs.core.Response clientResponse) {
       RuntimeException ret;
       if (ex == null) {
          final NullPointerException e = new NullPointerException();

@@ -4,10 +4,10 @@ import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlWriter;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class WadlTestApplication extends Application {
    }
 
    /**
-    * @see javax.ws.rs.core.Application#getClasses()
+    * @see jakarta.ws.rs.core.Application#getClasses()
     */
    @Override
    public Set<Class<?>> getClasses() {
@@ -79,7 +79,7 @@ public class WadlTestApplication extends Application {
    private static class MyWadlResource extends ResteasyWadlDefaultResource {}
 
    /**
-    * @see javax.ws.rs.core.Application#getSingletons()
+    * @see jakarta.ws.rs.core.Application#getSingletons()
     */
    @Override
    public Set<Object> getSingletons() {

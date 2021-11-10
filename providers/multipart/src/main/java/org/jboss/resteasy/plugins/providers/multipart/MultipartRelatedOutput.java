@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Represents a multipart/related (RFC2387) outgoing mime message. A

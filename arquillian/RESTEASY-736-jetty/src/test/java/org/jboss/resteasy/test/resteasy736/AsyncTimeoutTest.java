@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.resteasy736;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

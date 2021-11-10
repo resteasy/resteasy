@@ -3,8 +3,8 @@ package org.jboss.resteasy.core;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
 
 class ContextServletOutputStream extends ServletOutputStream
 {

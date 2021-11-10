@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.apache.http.HttpHost;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;

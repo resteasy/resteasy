@@ -9,14 +9,14 @@ import java.net.SocketPermission;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.Resource;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +24,7 @@ import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -69,7 +70,8 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class InjectionTest extends AbstractInjectionTestBase {
+@ServerSetup(JmsTestQueueSetupTask.class)
+public class InjectionTest {
    protected static final Logger log = LogManager.getLogger(InjectionTest.class.getName());
 
    static Client client;
@@ -112,10 +114,8 @@ public class InjectionTest extends AbstractInjectionTestBase {
    @SuppressWarnings(value = "unchecked")
    @Deployment(testable = false)
    public static Archive<?> createTestArchive() throws Exception {
-      initQueue();
       WebArchive war = TestUtil.prepareArchive(InjectionTest.class.getSimpleName());
-      war.addClass(AbstractInjectionTestBase.class)
-            .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class, BookCollectionType.getClass())
+      war.addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class, BookCollectionType.getClass())
             .addClasses(Counter.class, CDIInjectionBookCollection.class, CDIInjectionBookReader.class, CDIInjectionBookWriter.class)
             .addClasses(CDIInjectionDependentScoped.class, CDIInjectionStatefulEJB.class, CDIInjectionUnscopedResource.class)
             .addClasses(CDIInjectionBookBagLocal.class, CDIInjectionBookBag.class)

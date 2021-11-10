@@ -26,7 +26,7 @@
     </deployment>
 </jboss-deployment-structure>]]></programlisting>
         <para>The <literal>services</literal> attribute must be set to "import" for modules that have default providers
-            in a META-INF/services/javax.ws.rs.ext.Providers file.
+            in a META-INF/services/jakarta.ws.rs.ext.Providers file.
         </para>
         <para>
             To get an idea of which RESTEasy modules are loaded by default when &REST-API; services are deployed, please
@@ -186,7 +186,7 @@
                 </row>
                 <row>
                     <entry>
-                        javax.json.bind-api
+                        jakarta.json.bind-api
                     </entry>
                     <entry>
                         yes
@@ -326,14 +326,14 @@
         </para>
         <para>
             Since we're not using a &lt;servlet-mapping&gt; element, we must define a
-            <classname>javax.ws.rs.core.Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>) that is annotated with
-            the <classname>javax.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
+            <classname>jakarta.ws.rs.core.Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>) that is annotated with
+            the <classname>jakarta.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
             which is the behavior inherited from <classname>Application</classname>, your WAR will
             be scanned for resource and provider classes as indicated by the presence of &REST-API; annotations.
         </para>
         <programlisting>
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/root-path")
 public class MyApplication extends Application
@@ -426,7 +426,7 @@ public class MyApplication extends Application
         <para>
             The <literal>resteasy-servlet-initializer</literal> artifact will not work in Servlet versions older than
             3.0.  You'll then have to manually declare the RESTEasy servlet in your WEB-INF/web.xml file of your WAR project,
-            and you'll have to use an <classname>Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>)
+            and you'll have to use an <classname>Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>)
             which explicitly lists resources and providers. For example:
         </para>
         <para>
@@ -440,7 +440,7 @@ public class MyApplication extends Application
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </servlet>
@@ -938,7 +938,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                         </row>
                         <row>
                             <entry>
-                                javax.ws.rs.Application
+                                jakarta.ws.rs.Application
                             </entry>
                             <entry>
                                 no default
@@ -1249,12 +1249,12 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
             </table>
         </para>
     </section>
-    <section id="javax.ws.rs.core.Application">
-        <title>javax.ws.rs.core.Application</title>
+    <section id="jakarta.ws.rs.core.Application">
+        <title>jakarta.ws.rs.core.Application</title>
 
         <para>
 
-            The <classname>javax.ws.rs.core.Application</classname> class is a standard &REST-API; class that you may implement to provide
+            The <classname>jakarta.ws.rs.core.Application</classname> class is a standard &REST-API; class that you may implement to provide
             information on your deployment. It is simply a class the lists all &REST-API; root resources and providers.
         </para>
         <para>
@@ -1385,7 +1385,7 @@ public abstract class Application
             org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
         </filter-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </filter>

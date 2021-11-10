@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProce
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Cookie;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

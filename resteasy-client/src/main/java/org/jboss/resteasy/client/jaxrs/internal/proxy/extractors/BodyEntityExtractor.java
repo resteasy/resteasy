@@ -10,7 +10,7 @@ import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.spi.util.Types;
 import org.reactivestreams.Publisher;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -26,7 +26,7 @@ import java.lang.reflect.TypeVariable;
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractorFactory
- * @see javax.ws.rs.ext.MessageBodyReader
+ * @see jakarta.ws.rs.ext.MessageBodyReader
  */
 @SuppressWarnings("unchecked")
 public class BodyEntityExtractor implements EntityExtractor

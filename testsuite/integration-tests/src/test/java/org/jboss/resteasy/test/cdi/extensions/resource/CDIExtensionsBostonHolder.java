@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.extensions.resource;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @CDIExtensionsBoston
 public class CDIExtensionsBostonHolder {

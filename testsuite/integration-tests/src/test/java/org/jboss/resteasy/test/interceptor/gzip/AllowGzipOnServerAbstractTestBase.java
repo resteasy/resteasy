@@ -53,7 +53,7 @@ public class AllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
    }
 
    /**
-    * Deployment with javax.ws.rs.ext.Providers file, that contains gzip interceptor definition
+    * Deployment with jakarta.ws.rs.ext.Providers file, that contains gzip interceptor definition
     */
    @Deployment(name = WAR_WITH_PROVIDERS_FILE, managed = false, testable = false)
    @TargetsContainer(GZIP_CONTAINER_QUALIFIER)
@@ -62,7 +62,7 @@ public class AllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
    }
 
    /**
-    * Deployment without any javax.ws.rs.ext.Providers file
+    * Deployment without any jakarta.ws.rs.ext.Providers file
     */
    @Deployment(name = WAR_WITHOUT_PROVIDERS_FILE, managed = false, testable = false)
    @TargetsContainer(GZIP_CONTAINER_QUALIFIER)

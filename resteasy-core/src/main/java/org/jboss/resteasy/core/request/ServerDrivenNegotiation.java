@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.request;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Variant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;

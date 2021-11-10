@@ -1,8 +1,8 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 
 /**

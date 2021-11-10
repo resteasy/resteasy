@@ -3,10 +3,10 @@ package org.jboss.resteasy.test.client.resource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.client.TraceTest;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 @Path("resource")
 public class TraceResource {

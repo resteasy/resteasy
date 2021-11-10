@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.response;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 

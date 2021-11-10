@@ -4,7 +4,7 @@ import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.annotations.Status;
 
-import javax.ws.rs.HeaderParam;
+import jakarta.ws.rs.HeaderParam;
 
 @ResponseObject
 public interface ResponseObjectBasicObjectIntf {

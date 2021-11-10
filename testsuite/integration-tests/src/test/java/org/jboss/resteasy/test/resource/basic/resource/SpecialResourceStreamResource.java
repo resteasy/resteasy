@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import java.io.IOException;
 import java.io.InputStream;
 

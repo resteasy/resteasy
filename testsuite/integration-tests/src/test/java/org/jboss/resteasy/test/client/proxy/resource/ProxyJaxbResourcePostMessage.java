@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.util.Date;
 

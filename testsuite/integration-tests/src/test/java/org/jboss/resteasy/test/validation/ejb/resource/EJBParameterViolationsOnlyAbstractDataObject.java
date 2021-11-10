@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.validation.ejb.resource;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 public abstract class EJBParameterViolationsOnlyAbstractDataObject implements Serializable
 {

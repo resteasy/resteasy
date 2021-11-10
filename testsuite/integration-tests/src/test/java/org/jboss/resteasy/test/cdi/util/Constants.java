@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.util;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class Constants {
    public static final String MEDIA_TYPE_TEST_XML = "application/test+xml";

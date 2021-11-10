@@ -2,7 +2,7 @@ package org.jboss.resteasy.spi.metadata;
 
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author Christian Kaltepoth

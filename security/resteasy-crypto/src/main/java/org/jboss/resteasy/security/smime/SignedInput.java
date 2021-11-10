@@ -3,7 +3,7 @@ package org.jboss.resteasy.security.smime;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

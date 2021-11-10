@@ -7,15 +7,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import static org.junit.Assert.assertTrue;
 
 /**
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for javax.ws.rs.core.CacheControl; class.
+ * @tpTestCaseDetails Test for jakarta.ws.rs.core.CacheControl; class.
  * @tpSince RESTEasy 3.0.16
  */
 public class CacheControlTest {

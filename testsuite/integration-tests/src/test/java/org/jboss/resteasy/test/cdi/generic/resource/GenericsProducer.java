@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.generic.resource;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 
 
 @ApplicationScoped

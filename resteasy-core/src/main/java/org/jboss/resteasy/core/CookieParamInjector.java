@@ -6,8 +6,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.core.Cookie;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.core.Cookie;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;

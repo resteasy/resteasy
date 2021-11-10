@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.logging.Logger;
 
 @InterceptorClassMethodInterceptorStereotype

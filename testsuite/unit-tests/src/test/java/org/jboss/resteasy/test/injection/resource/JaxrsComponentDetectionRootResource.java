@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("resource")
 public class JaxrsComponentDetectionRootResource implements JaxrsComponentDetectionSubresourceLocal {

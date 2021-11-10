@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.request;
 
-import javax.ws.rs.BadRequestException;
+import jakarta.ws.rs.BadRequestException;
 
 import org.jboss.resteasy.core.request.AcceptHeaders;
 import org.jboss.resteasy.core.request.QualityValue;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

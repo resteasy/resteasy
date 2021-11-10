@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.resource.resource;
 
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.Configurable;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
 

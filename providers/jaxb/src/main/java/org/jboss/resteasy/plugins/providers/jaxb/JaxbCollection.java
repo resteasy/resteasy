@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import javax.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
 import java.util.ArrayList;
 import java.util.List;
 

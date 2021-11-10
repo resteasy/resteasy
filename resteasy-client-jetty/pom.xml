@@ -12,6 +12,12 @@
     <artifactId>resteasy-client-jetty</artifactId>
     <name>RESTEasy Client - Jetty Engine</name>
 
+    <properties>
+        <!-- The Jakarta version of Jetty only supports Java 11 -->
+        <!-- TODO (jrp) because of this should we use Java 11 as the compile version? -->
+        <skip.java8.tests>true</skip.java8.tests>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -44,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
         </dependency>
 
         <!-- Test dependencies -->
