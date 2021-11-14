@@ -301,6 +301,10 @@
                             </configuration>
                         </execution>
                     </executions>
+                    <configuration>
+                    	<fork>true</fork>
+                    	<useIncrementalCompilation>true</useIncrementalCompilation>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
