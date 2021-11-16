@@ -6,9 +6,11 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.xml.namespace.QName;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
@@ -28,8 +30,6 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 
@@ -54,13 +54,11 @@ public class SseResource
 
    private volatile SseBroadcaster sseBroadcaster;
 
-   private Object openLock = new Object();
+   private final Object openLock = new Object();
 
-   private volatile boolean sending = true;
+   private final List<OutboundSseEvent> eventsStore = new ArrayList<>();
 
-   private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
-
-   private AtomicInteger noContentCount = new AtomicInteger();
+   private final AtomicInteger noContentCount = new AtomicInteger();
 
    private static final Logger logger = Logger.getLogger(SseResource.class);
 
@@ -256,7 +254,7 @@ public class SseResource
       {
          public void run()
          {
-            while (!eventSink.isClosed() && sending)
+            while (!eventSink.isClosed())
             {
                try
                {
@@ -285,14 +283,6 @@ public class SseResource
       {
          return !eventSink.isClosed();
       }
-
-   }
-
-   @GET
-   @Path("/stopevent")
-   public void stopEvent()
-   {
-      this.sending = false;
 
    }
 
@@ -367,7 +357,7 @@ public class SseResource
       {
          public void run()
          {
-            if (!eventSink.isClosed() && sending)
+            if (!eventSink.isClosed())
             {
                try
                {
@@ -402,7 +392,7 @@ public class SseResource
       {
          public void run()
          {
-            if (!eventSink.isClosed() && sending)
+            if (!eventSink.isClosed())
             {
                try
                {
@@ -423,6 +413,36 @@ public class SseResource
          }
       });
    }
+
+   @GET
+   @Path("/initialization-deadlock")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void initializationDeadlock(@Context SseEventSink sink) {
+      if (sink == null) {
+         throw new IllegalStateException("No client connected.");
+      }
+      final ExecutorService service = (ExecutorService) servletContext
+              .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(() -> {
+         int i = 0;
+         final CompletableFuture<?> firstMsg = sink.send(createEvent(i++, "msg-"))
+                 .toCompletableFuture();
+         while (!firstMsg.isDone()) {
+            sink.send(createEvent(i++, "msg-"));
+         }
+         sink.send(createEvent(i, "last-msg-"))
+                 .thenAccept(v -> sink.close());
+      });
+   }
+
+   private OutboundSseEvent createEvent(final int id, final String prefix) {
+      return sse.newEventBuilder()
+              .id(Integer.toString(id))
+              .mediaType(MediaType.TEXT_PLAIN_TYPE)
+              .data(prefix + id)
+              .build();
+   }
+
    public static String toString(final Reader input) throws IOException {
 
        final char[] buffer = new char[2048];

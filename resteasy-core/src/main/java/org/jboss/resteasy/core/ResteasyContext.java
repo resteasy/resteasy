@@ -44,6 +44,25 @@ public final class ResteasyContext
       return (T) contextDataMap.get(type);
    }
 
+   /**
+    * Gets the current context for the type. If not found in the current context a {@linkplain IllegalArgumentException}
+    * is thrown.
+    *
+    * @param type the type to lookup in the context map
+    * @param <T>  the type of the lookup
+    *
+    * @return the context data
+    *
+    * @throws IllegalArgumentException if the type is not found in the current context
+    */
+   public static <T> T getRequiredContextData(final Class<T> type) {
+      final T result = getContextData(type);
+      if (result == null) {
+         throw Messages.MESSAGES.requiredContextParameterNotFound();
+      }
+      return result;
+   }
+
    public static <T> T popContextData(Class<T> type)
    {
       return (T) getContextDataMap().remove(type);
