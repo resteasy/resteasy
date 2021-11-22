@@ -13,7 +13,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.sse.SseEventSource;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -25,7 +24,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,18 +51,8 @@ public class SseEventSinkTest
       return PortProviderUtil.generateURL(path, SseEventSinkTest.class.getSimpleName());
    }
 
-   @After
-   public void stopSendEvent() throws Exception
-   {
-      Client isOpenClient = ClientBuilder.newClient();
-      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/server-sent-events/stopevent"))
-            .request();
-      isOpenRequest.get();
-
-   }
-
    @Test
-   public void testCloseByEvnetSource() throws Exception
+   public void testCloseByEventSource() throws Exception
    {
       final CountDownLatch latch = new CountDownLatch(5);
       final List<String> results = new ArrayList<String>();
@@ -108,5 +96,46 @@ public class SseEventSinkTest
             results.indexOf("messageAfterClose") == -1);
       Assert.assertFalse("EventSink close is expected ", isOpenRequest.get().readEntity(Boolean.class));
 
+   }
+
+   /**
+    * @tpTestDetails Test deadlock in sending of first sse events seen in 3.7.2
+    * @tpInfo RESTEASY-3033
+    * @tpSince RESTEasy 3.7.2
+    */
+   @Test
+   public void deadlockAtInitialization() throws Exception {
+      for (int i = 0; i < 100; i++) {
+         testDeadlockAtInitialization(i);
+      }
+   }
+
+   private void testDeadlockAtInitialization(final int run) throws Exception {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final List<String> results = new ArrayList<>();
+      final Client client = ClientBuilder.newClient();
+      try {
+         final WebTarget target = client.target(generateURL("/server-sent-events/initialization-deadlock"));
+         try (SseEventSource eventSource = SseEventSource.target(target).build()) {
+            eventSource.register(event -> {
+               final String msg = event.readData(String.class);
+               results.add(msg);
+               if (msg.startsWith("last-msg")) {
+                  latch.countDown();
+               }
+            }, ex -> {
+               logger.error(ex.getMessage(), ex);
+               Assert.fail(ex.getMessage());
+            });
+            eventSource.open();
+            final boolean await = latch.await(15, TimeUnit.SECONDS);
+            Assert.assertTrue(String.format("Waiting for event to be delivered has timed out at run %d.", run), await);
+            for (int i = 0; i < results.size(); i++) {
+               Assert.assertTrue(String.format("Wrong message order in run %d: %s", run, results), results.get(i).endsWith("-" + i));
+            }
+         }
+      } finally {
+         client.close();
+      }
    }
 }

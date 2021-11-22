@@ -46,6 +46,25 @@ public final class ResteasyContext
    }
 
    /**
+    * Gets the current context for the type. If not found in the current context a {@linkplain IllegalArgumentException}
+    * is thrown.
+    *
+    * @param type the type to lookup in the context map
+    * @param <T>  the type of the lookup
+    *
+    * @return the context data
+    *
+    * @throws IllegalArgumentException if the type is not found in the current context
+    */
+   public static <T> T getRequiredContextData(final Class<T> type) {
+      final T result = getContextData(type);
+      if (result == null) {
+         throw Messages.MESSAGES.requiredContextParameterNotFound();
+      }
+      return result;
+   }
+
+   /**
     * Gets the current context for the type. If the context does not exist the value is resolved from the {@code newValue}
     * supplier and pushed to the current context.
     *

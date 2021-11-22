@@ -2,11 +2,12 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
@@ -30,8 +31,8 @@ public class HttpServletResponseWrapper implements HttpResponse
 {
    public abstract class AsyncOperation
    {
-      CompletableFuture<Void> future = new CompletableFuture<>();
-      OutputStream stream;
+      final CompletableFuture<Void> future = new CompletableFuture<>();
+      final OutputStream stream;
       public AsyncOperation(final OutputStream stream)
       {
          this.stream = stream;
@@ -47,9 +48,9 @@ public class HttpServletResponseWrapper implements HttpResponse
    public class WriteOperation extends AsyncOperation
    {
 
-      private byte[] bytes;
-      private int offset;
-      private int length;
+      private final byte[] bytes;
+      private final int offset;
+      private final int length;
 
       public WriteOperation(final OutputStream stream, final byte[] bytes, final int offset, final int length)
       {
@@ -115,14 +116,14 @@ public class HttpServletResponseWrapper implements HttpResponse
       }
    }
 
-   protected HttpServletResponse response;
+   protected final HttpServletResponse response;
    protected int status = 200;
    protected MultivaluedMap<String, Object> outputHeaders;
-   protected ResteasyProviderFactory factory;
-   protected OutputStream outputStream = new DeferredOutputStream();
+   protected final ResteasyProviderFactory factory;
+   private OutputStream outputStream;
    protected volatile boolean suppressExceptionDuringChunkedTransfer = true;
-   protected HttpServletRequest request;
-   protected Map<Class<?>, Object> contextDataMap;
+   protected final HttpServletRequest request;
+   protected final Map<Class<?>, Object> contextDataMap;
 
    // RESTEASY-1784
    @Override
@@ -138,36 +139,50 @@ public class HttpServletResponseWrapper implements HttpResponse
    /**
     * RESTEASY-684 wants to defer access to outputstream until a write happens
     *
+    * <p>
+    * Note that all locking is on {@code this} and should remain that way to avoid deadlocks on consumers of this
+    * stream.
+    * </p>
+    *
     */
    protected class DeferredOutputStream extends AsyncOutputStream implements WriteListener
    {
-      private boolean asyncRegistered;
-      private Queue<AsyncOperation> asyncQueue;
+      private final ServletOutputStream out;
+      // Guarded by this
+      private final Queue<AsyncOperation> asyncQueue;
+      private final AtomicBoolean asyncRegistered;
+      // Guarded by this
       private AsyncOperation lastAsyncOperation;
-      private boolean asyncListenerCalled;
+      private volatile boolean asyncListenerCalled;
+
+      DeferredOutputStream() throws IOException {
+         asyncQueue = new LinkedList<>();
+         out = response.getOutputStream();
+         asyncRegistered = new AtomicBoolean();
+      }
 
       @Override
       public void write(int i) throws IOException
       {
-         response.getOutputStream().write(i);
+         out.write(i);
       }
 
       @Override
       public void write(byte[] bytes) throws IOException
       {
-         response.getOutputStream().write(bytes);
+         out.write(bytes);
       }
 
       @Override
       public void write(byte[] bytes, int i, int i1) throws IOException
       {
-         response.getOutputStream().write(bytes, i, i1);
+         out.write(bytes, i, i1);
       }
 
       @Override
       public void flush() throws IOException
       {
-         response.getOutputStream().flush();
+         out.flush();
       }
 
       @Override
@@ -197,79 +212,64 @@ public class HttpServletResponseWrapper implements HttpResponse
          // fetch it from the context directly to avoid having to restore the context just in case we're invoked on a context-less thread
          HttpRequest resteasyRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
          if(request.isAsyncStarted() && !resteasyRequest.getAsyncContext().isOnInitialRequest()) {
+            boolean flush = false;
             synchronized(this) {
-               ServletOutputStream os;
-               try
-               {
-                  os = response.getOutputStream();
-               } catch (IOException e)
-               {
-                  // return a failed future, do not queue it
-                  op.future.completeExceptionally(e);
-                  return;
+               if (asyncRegistered.compareAndSet(false, true)) {
+                  out.setWriteListener(this);
                }
-               if(!asyncRegistered) {
-                  // start the queue
-                  asyncRegistered = true;
-                  // make sure we have something ready to be executed
-                  addToQueue(op);
-                  os.setWriteListener(this);
-                  // never call isReady before Undertow is ready and has already called our listener at least once
-               } else if(asyncListenerCalled && os.isReady()) {
+               if(asyncListenerCalled && out.isReady()) {
                   // it's possible that we startAsync and queue, then queue another event and the stream becomes ready before
                   // onWritePossible is called, which means we need to flush the queue here to guarantee ordering if that happens
-                  addToQueue(op);
-                  flushQueue(os);
+                  asyncQueue.add(op);
+                  flush = true;
                } else {
                   // just queue
-                  addToQueue(op);
+                  asyncQueue.add(op);
                }
+            }
+            // Invoked outside the lock to avoid deadlocks, the flushQueue itself locks on this
+            if (flush) {
+               flushQueue();
             }
          } else {
             op.work(null);
          }
       }
 
-      private void flushQueue(ServletOutputStream sos)
+      private void flushQueue()
       {
-         if(lastAsyncOperation != null) {
-            lastAsyncOperation.future.complete(null);
-            lastAsyncOperation = null;
-         }
+         synchronized (this) {
+            if (lastAsyncOperation != null) {
+               lastAsyncOperation.future.complete(null);
+               lastAsyncOperation = null;
+            }
 
-         while(!asyncQueue.isEmpty() && sos.isReady()) {
-            lastAsyncOperation = asyncQueue.poll();
-            lastAsyncOperation.work(sos);
+            while (out.isReady() && (lastAsyncOperation = asyncQueue.poll()) != null) {
+               lastAsyncOperation.work(out);
+            }
          }
-      }
-
-      private synchronized void addToQueue(AsyncOperation op)
-      {
-         if(asyncQueue == null) {
-            asyncQueue = new ConcurrentLinkedQueue<>();
-         }
-         asyncQueue.add(op);
       }
 
       @Override
-      public synchronized void onWritePossible() throws IOException
-      {
+      public void onWritePossible() {
          asyncListenerCalled = true;
-         flushQueue(response.getOutputStream());
+         flushQueue();
       }
 
       @Override
-      public synchronized void onError(Throwable t)
+      public void onError(Throwable t)
       {
-         asyncListenerCalled = true;
-         if(lastAsyncOperation != null) {
-            lastAsyncOperation.future.completeExceptionally(t);
-            lastAsyncOperation = null;
-         }
-         while(!asyncQueue.isEmpty()) {
-            AsyncOperation op = asyncQueue.poll();
-            if(!op.future.isDone())
-               op.future.completeExceptionally(t);
+         synchronized (this) {
+            asyncListenerCalled = true;
+            if (lastAsyncOperation != null) {
+               lastAsyncOperation.future.completeExceptionally(t);
+               lastAsyncOperation = null;
+            }
+            AsyncOperation op;
+            while ((op = asyncQueue.poll()) != null) {
+               if (!op.future.isDone())
+                  op.future.completeExceptionally(t);
+            }
          }
       }
    }
@@ -299,13 +299,16 @@ public class HttpServletResponseWrapper implements HttpResponse
       return outputHeaders;
    }
 
-   public OutputStream getOutputStream() throws IOException
+   public synchronized OutputStream getOutputStream() throws IOException
    {
+      if (outputStream == null) {
+         outputStream = new DeferredOutputStream();
+      }
       return outputStream;
    }
 
    @Override
-   public void setOutputStream(OutputStream os)
+   public synchronized void setOutputStream(OutputStream os)
    {
       this.outputStream = os;
    }
