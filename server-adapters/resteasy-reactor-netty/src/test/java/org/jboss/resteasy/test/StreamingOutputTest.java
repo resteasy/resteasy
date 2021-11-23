@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class StreamingOutputTest
 {
+   private static final int LOOP_COUNT = 10;
    static String BASE_URI = generateURL("");
    static Client client;
    static CountDownLatch latch;
@@ -53,7 +55,7 @@ public class StreamingOutputTest
          return new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-               for (int i = 0; i < 10; i++) {
+               for (int i = 0; i < LOOP_COUNT; i++) {
                   output.write(("" + i + "\n\n").getBytes(StandardCharsets.ISO_8859_1));
                   output.flush();
                }
@@ -68,7 +70,7 @@ public class StreamingOutputTest
          return new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-               for (int i = 0; i < 10; i++) {
+               for (int i = 0; i < LOOP_COUNT; i++) {
                   output.write(("" + i + "\n\n").getBytes(StandardCharsets.ISO_8859_1));
                   try
                   {
@@ -128,7 +130,7 @@ public class StreamingOutputTest
    public void testConcurrent() throws Exception
    {
       pass = false;
-      latch = new CountDownLatch(1);
+      latch = new CountDownLatch(LOOP_COUNT);
       Runnable r = new Runnable()
       {
          @Override
@@ -140,11 +142,10 @@ public class StreamingOutputTest
       };
       Thread t = new Thread(r);
       t.start();
-      latch.await();
+      Assert.assertTrue("Result not returned within 30 seconds. Lath count: " + latch.getCount(), latch.await(30, TimeUnit.SECONDS));
       long start = System.currentTimeMillis();
       testStreamingOutput();
       long end = System.currentTimeMillis() - start;
-//      System.out.println(end);
       Assert.assertTrue(end < 1000);
       t.join();
       Assert.assertTrue(pass);
