@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.AsyncStreamingOutput;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jakarta.ws.rs.GET;
@@ -39,6 +40,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Ignore("See RESTEASY-3052")
 public class StreamingOutputTest
 {
    private static final int LOOP_COUNT = 10;
