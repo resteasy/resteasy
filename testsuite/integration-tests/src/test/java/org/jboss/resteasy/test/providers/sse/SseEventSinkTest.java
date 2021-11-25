@@ -111,11 +111,12 @@ public class SseEventSinkTest
    }
 
    private void testDeadlockAtInitialization(final int run) throws Exception {
+      final int count = run == 0 ? 10 : Math.min((run * 10), 200);
       final CountDownLatch latch = new CountDownLatch(1);
       final List<String> results = new ArrayList<>();
       final Client client = ClientBuilder.newClient();
       try {
-         final WebTarget target = client.target(generateURL("/server-sent-events/initialization-deadlock"));
+         final WebTarget target = client.target(generateURL("/server-sent-events/initialization-deadlock/" + count));
          try (SseEventSource eventSource = SseEventSource.target(target).build()) {
             eventSource.register(event -> {
                final String msg = event.readData(String.class);

@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -415,9 +414,9 @@ public class SseResource
    }
 
    @GET
-   @Path("/initialization-deadlock")
+   @Path("/initialization-deadlock/{count}")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void initializationDeadlock(@Context SseEventSink sink) {
+   public void initializationDeadlock(@Context final SseEventSink sink, @PathParam("count") final int count) {
       if (sink == null) {
          throw new IllegalStateException("No client connected.");
       }
@@ -425,9 +424,7 @@ public class SseResource
               .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
       service.execute(() -> {
          int i = 0;
-         final CompletableFuture<?> firstMsg = sink.send(createEvent(i++, "msg-"))
-                 .toCompletableFuture();
-         while (!firstMsg.isDone()) {
+         while (i < count) {
             sink.send(createEvent(i++, "msg-"));
          }
          sink.send(createEvent(i, "last-msg-"))
