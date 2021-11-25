@@ -65,10 +65,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
-            stream.write(bytes, offset, length);
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
+               stream.write(bytes, offset, length);
                future.complete(null);
             }
          } catch (IOException e)
@@ -97,10 +97,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
-            stream.flush();
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
+               stream.flush();
                future.complete(null);
             }
          } catch (IOException e)
@@ -213,10 +213,10 @@ public class HttpServletResponseWrapper implements HttpResponse
          HttpRequest resteasyRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
          if(request.isAsyncStarted() && !resteasyRequest.getAsyncContext().isOnInitialRequest()) {
             boolean flush = false;
+            if (asyncRegistered.compareAndSet(false, true)) {
+               out.setWriteListener(this);
+            }
             synchronized(this) {
-               if (asyncRegistered.compareAndSet(false, true)) {
-                  out.setWriteListener(this);
-               }
                if(asyncListenerCalled && out.isReady()) {
                   // it's possible that we startAsync and queue, then queue another event and the stream becomes ready before
                   // onWritePossible is called, which means we need to flush the queue here to guarantee ordering if that happens
@@ -240,7 +240,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          synchronized (this) {
             if (lastAsyncOperation != null) {
-               lastAsyncOperation.future.complete(null);
+               // Do not reset the lastAsyncOperation unless the current one is complete
+               if (!lastAsyncOperation.future.isDone()) {
+                  return;
+               }
                lastAsyncOperation = null;
             }
 
