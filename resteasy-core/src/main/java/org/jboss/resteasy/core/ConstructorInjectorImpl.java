@@ -52,9 +52,9 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    public ConstructorInjectorImpl(@SuppressWarnings("rawtypes") final Constructor constructor, final ResteasyProviderFactory factory)
    {
       this.constructor = constructor;
-      params = new ValueInjector[constructor.getParameterTypes().length];
+      params = new ValueInjector[constructor.getParameterCount()];
       Parameter[] reflectionParameters = constructor.getParameters();
-      for (int i = 0; i < constructor.getParameterTypes().length; i++)
+      for (int i = 0; i < constructor.getParameterCount(); i++)
       {
          Class<?> type = constructor.getParameterTypes()[i];
          Type genericType = constructor.getGenericParameterTypes()[i];

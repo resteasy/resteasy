@@ -67,7 +67,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
        {
           if ((method.isAnnotationPresent(FormParam.class)
                   || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
-                  && method.getName().startsWith("get") && method.getParameterTypes().length == 0
+                  && method.getName().startsWith("get") && method.getParameterCount() == 0
                   && method.isAnnotationPresent(PartType.class))
           {
              FormParam param = method.getAnnotation(FormParam.class);

@@ -166,6 +166,6 @@ public class BeanUtils {
 
    private static boolean isBeanAccessor(Method m) {
       String name = m.getName();
-      return (name.startsWith("get") || name.startsWith("is")) && m.getParameterTypes().length == 0;
+      return (name.startsWith("get") || name.startsWith("is")) && m.getParameterCount() == 0;
    }
 }

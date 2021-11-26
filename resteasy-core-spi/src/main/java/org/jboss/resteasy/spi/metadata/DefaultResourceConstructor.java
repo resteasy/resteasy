@@ -19,9 +19,9 @@ public class DefaultResourceConstructor implements ResourceConstructor
       this.constructor = constructor;
       if (constructor.getParameterTypes() != null)
       {
-         this.params = new ConstructorParameter[constructor.getParameterTypes().length];
+         this.params = new ConstructorParameter[constructor.getParameterCount()];
          Parameter[] reflectionParameters = constructor.getParameters();
-         for (int i = 0; i < constructor.getParameterTypes().length; i++)
+         for (int i = 0; i < constructor.getParameterCount(); i++)
          {
             this.params[i] = new ConstructorParameter(this, reflectionParameters[i].getName(), constructor.getParameterTypes()[i], constructor.getGenericParameterTypes()[i], constructor.getParameterAnnotations()[i]);
          }

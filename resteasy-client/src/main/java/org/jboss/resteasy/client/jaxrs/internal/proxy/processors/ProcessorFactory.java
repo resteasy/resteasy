@@ -46,8 +46,8 @@ public class ProcessorFactory
 
    public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration, MediaType defaultConsumes)
    {
-      Object[] params = new Object[method.getParameterTypes().length];
-      for (int i = 0; i < method.getParameterTypes().length; i++)
+      Object[] params = new Object[method.getParameterCount()];
+      for (int i = 0; i < method.getParameterCount(); i++)
       {
          String parameterName = method.getParameters()[i].getName();
          Class<?> type = method.getParameterTypes()[i];

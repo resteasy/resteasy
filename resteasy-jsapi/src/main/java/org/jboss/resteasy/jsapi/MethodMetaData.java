@@ -169,7 +169,7 @@ public class MethodMetaData
       }
       for (Method method : type.getDeclaredMethods())
       {
-         if (method.getParameterTypes().length != 1
+         if (method.getParameterCount() != 1
                || !method.getReturnType().equals(Void.class))
             continue;
          processMetaData(method.getParameterTypes()[0],
