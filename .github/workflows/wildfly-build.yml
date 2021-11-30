@@ -15,6 +15,9 @@ jobs:
     outputs:
       wildfly-version: ${{steps.version.outputs.wildfly-version}}
     steps:
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout WildFly
         uses: actions/checkout@v2
         with:
@@ -31,11 +34,11 @@ jobs:
       - id: version
         run: echo "::set-output name=wildfly-version::$(mvn -B help:evaluate -Dexpression=project.version -pl . | grep -v '^\[')"
       - name: Archive the repository
-        run: zip -r ~/maven-repository.zip ~/.m2/repository
+        run: tar -czf maven-repository.tgz -C ~ .m2/repository
       - uses: actions/upload-artifact@v2
         with:
           name: maven-repository
-          path: ~/maven-repository.zip
+          path: maven-repository.tgz
           retention-days: 5
 
   resteasy-build:
@@ -48,22 +51,23 @@ jobs:
         java: ['11', '17']
 
     steps:
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
           name: maven-repository
+          path: .
+      - name: Extract Maven Repo
+        shell: bash
+        run: tar -xzf maven-repository.tgz -C ~
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Copy Maven Repository - Linux
-        if: runner.os == 'Linux'
-        run: unzip -o -d ~/.m2/repository ./maven-repository.zip
-      - name: Copy Maven Repository - Windows
-        if: runner.os == 'Windows'
-        run: 7z x 'maven-repository.zip' '%USERPROFILE%\.m2\repository'
       - name: Build with Maven Java ${{ matrix.java }}
         run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
       - name: Upload surefire reports
