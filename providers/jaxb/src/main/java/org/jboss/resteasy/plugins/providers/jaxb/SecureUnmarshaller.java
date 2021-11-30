@@ -93,8 +93,17 @@ public class SecureUnmarshaller implements Unmarshaller {
          SAXParserFactory f = factories[index];
          if (f == null)
          {
-            f = SAXParserFactory.newInstance();
-            configureParserFactory(f, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
+            // Get the current context class loader
+            final ClassLoader current = SecurityActions.getContextClassLoader();
+            try {
+               // Set the current context class loader to the class loader for this type
+               SecurityActions.setContextClassLoader();
+               f = SAXParserFactory.newInstance();
+               configureParserFactory(f, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
+            } finally {
+               // Reset the current context class loader
+               SecurityActions.setContextClassLoader(current);
+            }
             factories[index] = f;
          }
          SAXParser sp = f.newSAXParser();
