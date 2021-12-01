@@ -15,9 +15,6 @@ jobs:
     outputs:
       wildfly-version: ${{steps.version.outputs.wildfly-version}}
     steps:
-      - uses: n1hility/cancel-previous-runs@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout WildFly
         uses: actions/checkout@v2
         with:
@@ -51,9 +48,6 @@ jobs:
         java: ['11', '17']
 
     steps:
-      - uses: n1hility/cancel-previous-runs@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
