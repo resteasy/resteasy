@@ -381,6 +381,11 @@ public class SseEventSourceImpl implements SseEventSource
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput != null && eventInput.isClosed()) {
+               if (alwaysReconnect) {
+                   reconnect(reconnectDelay);
+               } else {
+                  internalClose();
+               }
                break;
             }
             try
@@ -389,12 +394,6 @@ public class SseEventSourceImpl implements SseEventSource
                if (event != null)
                {
                   onEvent(event);
-               }
-               //event sink closed
-               else if (!alwaysReconnect)
-               {
-                  internalClose();
-                  break;
                }
             }
             catch (IOException e)

@@ -1,10 +1,13 @@
 package org.jboss.resteasy.test.providers.sse;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.mock.MockHttpRequest;
+import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseBroadcasterImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseEventOutputImpl;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,6 +17,8 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.SseEventSink;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -215,6 +220,10 @@ public class SseBroadcasterTest
 
    @Test
    public void testRemoveDisconnectedEventSink() throws Exception {
+      final Map<Class<?>, Object> testContext = new HashMap<>();
+      testContext.put(HttpRequest.class, new MockHttpRequest(){});
+      testContext.put(HttpResponse.class, new MockHttpResponse());
+      ResteasyContext.pushContextDataMap(testContext);
       SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
 
       final ConcurrentLinkedQueue<SseEventSink> outputQueue = getOutputQueue(sseBroadcasterImpl);
@@ -249,6 +258,8 @@ public class SseBroadcasterTest
          Assert.assertTrue(outputQueue.size() == 1);
          Assert.assertSame(outputQueue.peek(), sseEventSink1);
       }
+
+      ResteasyContext.removeContextDataLevel();
    }
 
    @SuppressWarnings("unchecked")

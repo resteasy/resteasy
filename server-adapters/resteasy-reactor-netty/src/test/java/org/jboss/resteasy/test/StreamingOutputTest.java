@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.AsyncStreamingOutput;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jakarta.ws.rs.GET;
@@ -26,7 +27,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,11 +40,12 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Ignore("See RESTEASY-3052")
 public class StreamingOutputTest
 {
+   private static final int LOOP_COUNT = 10;
    static String BASE_URI = generateURL("");
    static Client client;
-   static CountDownLatch latch;
 
    @Path("/org/jboss/resteasy/test")
    public static class Resteasy1029Netty4StreamingOutput {
@@ -53,7 +56,7 @@ public class StreamingOutputTest
          return new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-               for (int i = 0; i < 10; i++) {
+               for (int i = 0; i < LOOP_COUNT; i++) {
                   output.write(("" + i + "\n\n").getBytes(StandardCharsets.ISO_8859_1));
                   output.flush();
                }
@@ -68,11 +71,10 @@ public class StreamingOutputTest
          return new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-               for (int i = 0; i < 10; i++) {
+               for (int i = 0; i < LOOP_COUNT; i++) {
                   output.write(("" + i + "\n\n").getBytes(StandardCharsets.ISO_8859_1));
                   try
                   {
-                     latch.countDown();
                      Thread.sleep(100);
                   }
                   catch (InterruptedException e)
@@ -122,32 +124,48 @@ public class StreamingOutputTest
       ReactorNettyContainer.stop();
    }
 
-   static boolean pass = false;
-
    @Test
    public void testConcurrent() throws Exception
    {
-      pass = false;
-      latch = new CountDownLatch(1);
+      final String expectedText = "0\n" +
+              "\n1\n" +
+              "\n2\n" +
+              "\n3\n" +
+              "\n4\n" +
+              "\n5\n" +
+              "\n6\n" +
+              "\n7\n" +
+              "\n8\n" +
+              "\n9\n" +
+              "\n";
+      final CompletableFuture<String> future = new CompletableFuture<>();
       Runnable r = new Runnable()
       {
          @Override
          public void run()
          {
-            String str = client.target(BASE_URI).path("org/jboss/resteasy/test/delay").request().get(String.class);
-            pass = true;
+            try {
+               String str = client.target(BASE_URI).path("org/jboss/resteasy/test/delay").request().get(String.class);
+               future.complete(str);
+            } catch (Exception e) {
+               future.completeExceptionally(e);
+            }
          }
       };
       Thread t = new Thread(r);
       t.start();
-      latch.await();
-      long start = System.currentTimeMillis();
-      testStreamingOutput();
-      long end = System.currentTimeMillis() - start;
-//      System.out.println(end);
-      Assert.assertTrue(end < 1000);
-      t.join();
-      Assert.assertTrue(pass);
+      Future<Response> futureResponse = client.target(BASE_URI)
+               .path("org/jboss/resteasy/test")
+              .request()
+              .async()
+              .get();
+
+      final String value = future.get(30, TimeUnit.SECONDS);
+      Assert.assertEquals(expectedText, value);
+
+      final Response response = futureResponse.get(30, TimeUnit.SECONDS);
+      Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+      Assert.assertEquals(expectedText, response.readEntity(String.class));
    }
 
    @Test

@@ -21,6 +21,7 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.providers.jsonb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
@@ -66,10 +67,9 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
                                  Annotation[] annotations, MediaType mediaType,
                                  MultivaluedMap<String, String> httpHeaders,
                                  InputStream entityStream) throws java.io.IOException, jakarta.ws.rs.WebApplicationException {
-      Jsonb jsonb = getJsonb(type);
       final EmptyCheckInputStream is = new EmptyCheckInputStream(entityStream);
 
-      try {
+      try (Jsonb jsonb = getJsonb(type)) {
          return jsonb.fromJson(is, genericType);
          // If null is returned, considered to be empty stream
       } catch (Throwable e)
@@ -127,8 +127,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream)
          throws java.io.IOException, jakarta.ws.rs.WebApplicationException {
-      Jsonb jsonb = getJsonb(type);
-      try
+      try (Jsonb jsonb = getJsonb(type))
       {
          entityStream = new DelegatingOutputStream(entityStream) {
             @Override
@@ -151,11 +150,23 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       Jsonb jsonb = getJsonb(type);
       try
       {
-         return entityStream.asyncWrite(jsonb.toJson(t).getBytes(getCharset(mediaType)));
+         return entityStream.asyncWrite(jsonb.toJson(t).getBytes(getCharset(mediaType)))
+                 .whenComplete((unused, throwable) -> {
+                    try {
+                       jsonb.close();
+                    } catch (Exception e) {
+                       LogMessages.LOGGER.debug("Failed to close the JSONB context.", e);
+                    }
+                 });
       } catch (Throwable e)
       {
          CompletableFuture<Void> ret = new CompletableFuture<>();
          ret.completeExceptionally(new ProcessingException(Messages.MESSAGES.jsonBSerializationError(e.toString()), e));
+         try {
+            jsonb.close();
+         } catch (Exception ex) {
+            LogMessages.LOGGER.debug("Failed to close the JSONB context.", ex);
+         }
          return ret;
       }
    }

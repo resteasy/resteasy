@@ -853,4 +853,7 @@ public interface Messages
 
    @Message(id = BASE + 2050, value = "The executor has been shutdown and is no longer available.")
    IllegalStateException executorShutdown();
+
+   @Message(id = BASE + 2051, value = "Required context value not found.")
+   IllegalArgumentException requiredContextParameterNotFound();
 }

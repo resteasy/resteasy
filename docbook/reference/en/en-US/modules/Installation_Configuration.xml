@@ -393,7 +393,7 @@ public class MyApplication extends Application
         <para>
             If you are not using Maven, you can include the necessary jars by hand. If you download
             RESTEasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
-            for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.
+            for example) you will get a file like resteasy-&lt;version&gt;-all.zip.
             If you unzip it you will see a lib/ directory that contains the libraries needed by RESTEasy.
             Copy these, as needed, into your /WEB-INF/lib directory. Place your &REST-API; annotated class resources and providers
             within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
