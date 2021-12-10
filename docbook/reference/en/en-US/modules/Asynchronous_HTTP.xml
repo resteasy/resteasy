@@ -20,7 +20,7 @@
          and AsyncResponse interface.
       </para>
       <para>
-          Injecting an AsynchronousResponse as a parameter to your &REST-API; methods tells RESTEasy that the HTTP request/response should be detached from the currently
+          Injecting an AsyncResponse as a parameter to your &REST-API; methods tells RESTEasy that the HTTP request/response should be detached from the currently
          executing thread and that the current thread should not try to automatically process the response.
       </para>
       <para>
@@ -31,7 +31,7 @@
    
       <programlisting>
 import jakarta.ws.rs.Suspend;
-import jakarta.ws.rs.core.AsynchronousResponse;
+import jakarta.ws.rs.container.AsyncResponse;
 
 @Path("/")
 public class SimpleResource
@@ -92,7 +92,7 @@ public class SimpleResource
       </para>
       <programlisting>
 import jakarta.ws.rs.Suspend;
-import jakarta.ws.rs.core.AsynchronousResponse;
+import jakarta.ws.rs.container.AsyncResponse;
 
 @Path("/")
 public class SimpleResource
