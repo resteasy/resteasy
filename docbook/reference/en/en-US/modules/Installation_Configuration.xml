@@ -257,20 +257,35 @@
 	    <section id="upgrading-wildfly">
 	        <title>Upgrading RESTEasy within WildFly</title>
 	        <para>
-                RESTEasy is bundled with WildFly. However you may wish to upgrade to the latest version. With
-                <ulink url="https://docs.wildfly.org/24/Galleon_Guide.html">Galleon</ulink> this makes upgrading RESTEasy
-                in WildFly quite easy.
+               For developers working in a non-production environment there are several
+               options for installing an alternate version of RESTEasy in a local copy
+               of Wildfly.
 	        </para>
             <para>
-                The first requirement is the WildFly installation is provisioned with Galleon. The simplest way to do
-                this for a local installation is with <ulink url="https://docs.wildfly.org/galleon/#_galleon_cli_tool">Galleon CLI</ulink>.
-                <programlisting><![CDATA[$ galleon.sh install wildfly:current]]></programlisting>
-
-                To install the RESTEasy upgrade on top of that you simply need to use the tool again with the Maven GAV:
-                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:6.0.0-SNAPSHOT]]></programlisting>
+                The following options assume there is a local build of the RESTEasy project,
+                version 6.x.x or higher and a local installation of Wildfly version 25.x.x or higher.
             </para>
+           <para>
+               Option 1, if Wildfly project source code was installed locally from a zip file or there
+               is a local build of the Wildfly project, then Wildfly will need to be rebuilt
+               with the alternate version of RESTEasy specified in one of the following ways.
+           </para>
+           <para>
+               Either edit Wildfly's project root pom.xml file. Change property "version.org.jboss.resteasy"
+               to specify the desired RESTEasy version and rebuild Wildfly, or
+               override the RESTEasy version on the command-line by specifying the RESTEasy property
+               as a runtime option when rebuilding Wildfly.
+               <programlisting>mvn clean install -Dversion.org.jboss.resteasy=6.0.0-SNAPSHOT</programlisting>
+           </para>
+           <para>
+               Option 2, if Wildlfy has been installed using galleon then the RESTEasy version
+               can also be installed with the galleon install command.
+               <programlisting>galleon.sh install org.jboss.resteasy:galleon-feature-pack:6.0.0-SNAPSHOT</programlisting>
+           </para>
             <para>
-                If you are using Maven to provision WildFly you can simply add the feature pack to your plugin configuration.
+                Option 3, if using Maven to provision a galleon installed version of WildFly, then
+                the org.jboss.galleon:galleon-maven-plugin can be added to your pom file and
+                configured to install RESTEasy's galleon-feature-pack.
                 <programlisting><![CDATA[
 <plugin>
     <groupId>org.jboss.galleon</groupId>
@@ -300,6 +315,18 @@
 </plugin>]]>
                 </programlisting>
             </para>
+
+        <para>
+        Wildfly project builds contain two server builds, a fat server located in
+        directory $WILDFLY_HOME/dist/target//wildfly-xxx-SNAPSHOT and a thin server located in
+        directory $WILDFLY_HOME/build/target/wildfly-xxx-SNAPSHOT.  The thin server uses the
+        Maven artifacts instead of the JAR files, thus artifacts installed in your
+        local maven repository that match the version are used.  The thin server is
+        advantageous to developers making changes to RESTEasy and testing the changes
+        via Wildfly because the engineer only needs to rebuild Wildfly once with the
+        RESTeasy version under development and the thin server will pickup archive
+            changes on each run.
+        </para>
 	    </section>
     </section>
     <section>
