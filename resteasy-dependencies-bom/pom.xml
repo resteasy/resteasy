@@ -38,7 +38,7 @@
         <version.jakarta.validation-api>3.0.0</version.jakarta.validation-api>
         <version.javax.ws.rs-api>1.0.0.Final</version.javax.ws.rs-api>
         <version.junit>4.13.1</version.junit>
-        <version.log4j>2.13.3</version.log4j>
+        <version.log4j>2.16.0</version.log4j>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.13</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.14</version.org.apache.httpcomponents.httpcore>
