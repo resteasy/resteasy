@@ -133,6 +133,23 @@
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
                 <version>2.2.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj-pdf</artifactId>
+                        <version>1.6.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby-complete</artifactId>
+                        <version>9.3.1.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj</artifactId>
+                        <version>2.5.2</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>output-html</id>
@@ -144,7 +161,6 @@
                             <backend>html5</backend>
                             <preserveDirectories>true</preserveDirectories>
                             <attributes>
-                                <!--toc/-->
                                 <linkcss>false</linkcss>
                                 <source-highlighter>coderay</source-highlighter>
                                 <resteasy-version>${project.version}</resteasy-version>
@@ -154,10 +170,27 @@
                             <headerFooter>true</headerFooter>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-pdf</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>pdf</backend>
+                            <doctype>book</doctype>
+                            <attributes>
+                                <source-highlighter>coderay</source-highlighter>
+                                <pagenums/>
+                                <resteasy-version>${project.version}</resteasy-version>
+                                <spring-version>${version.org.springframework}</spring-version>
+                            </attributes>
+                            <sourceDirectory>src/main/adoc</sourceDirectory>
+                            <sourceDocumentName>resteasy-reference-guide.adoc</sourceDocumentName>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-
 </project>

@@ -3,8 +3,9 @@
 :toc:
 :toclevels: 5
 :doctype: book
-
+:title-logo-image: images/resteasy_logo_300x.png
 :leveloffset: -1
+
 include::modules/preface.adoc[]
 
 :leveloffset: 0

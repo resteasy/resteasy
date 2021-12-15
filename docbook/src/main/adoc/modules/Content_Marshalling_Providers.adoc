@@ -322,7 +322,7 @@ defined the following entities
 <!ENTITY foo6 '&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;'>
 ....
 
-then the expansion of &foo6; would result in 1,000,000 foos. By default,
+then the expansion of \&foo6; would result in 1,000,000 foos. By default,
 RESTEasy will limit the number of expansions and the number of
 attributes per entity. The exact behavior depends on the underlying
 parser. The limits can be turned off by setting the parameter
