@@ -1,16 +1,15 @@
 package org.jboss.resteasy.utils.maven;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.aether.AbstractRepositoryListener;
 import org.eclipse.aether.RepositoryEvent;
+import org.jboss.logging.Logger;
 
 /**
  * This class prints logs about status of downloaded artifacts. It is used from MavenUtil class.
  */
 class ConsoleRepositoryListener extends AbstractRepositoryListener {
 
-   protected static final Logger logger = LogManager.getLogger(ConsoleRepositoryListener.class.getName());
+   protected static final Logger logger = Logger.getLogger(ConsoleRepositoryListener.class.getName());
 
    public void artifactDeployed(RepositoryEvent event) {
       logger.debug("Deployed " + event.getArtifact() + " to " + event.getRepository());

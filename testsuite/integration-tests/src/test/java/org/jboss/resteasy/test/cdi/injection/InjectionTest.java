@@ -18,13 +18,12 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -72,7 +71,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 @ServerSetup(JmsTestQueueSetupTask.class)
 public class InjectionTest {
-   protected static final Logger log = LogManager.getLogger(InjectionTest.class.getName());
+   protected static final Logger log = Logger.getLogger(InjectionTest.class.getName());
 
    static Client client;
 

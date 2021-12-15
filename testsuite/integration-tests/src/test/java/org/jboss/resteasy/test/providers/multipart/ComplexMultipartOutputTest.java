@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -41,7 +40,7 @@ import java.util.Set;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ComplexMultipartOutputTest {
-    protected final Logger logger = LogManager.getLogger(
+    protected final Logger logger = Logger.getLogger(
             ComplexMultipartOutputTest.class.getName());
 
     static ResteasyClient client;

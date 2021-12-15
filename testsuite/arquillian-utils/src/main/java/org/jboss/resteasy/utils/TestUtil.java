@@ -22,8 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jakarta.ws.rs.core.Application;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.ViolationReport;
@@ -46,7 +45,7 @@ import org.wildfly.extras.creaper.core.online.OnlineOptions;
  */
 public class TestUtil {
 
-   protected static Logger logger;
+   protected static final Logger logger = Logger.getLogger(TestUtil.class.getName());
 
    private static String baseResourcePath = new StringBuilder()
          .append("src").append(File.separator)
@@ -60,11 +59,6 @@ public class TestUtil {
     * Logger is not necessary for this class. Some methods could be used without it.
     */
    static {
-      try {
-         logger = LogManager.getLogger(TestUtil.class.getName());
-      } catch (NoClassDefFoundError e) {
-         // unable to initialize logger, finishContainerPrepare method could not be used
-      }
 
       // Shouldn't happen, but we'll assume we're not a modular environment
       final String javaSpecVersion = System.getProperty("java.specification.version");

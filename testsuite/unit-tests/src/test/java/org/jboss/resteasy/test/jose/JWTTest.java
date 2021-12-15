@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.jose;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.jwt.JsonWebToken;
 import org.junit.Test;
@@ -17,7 +16,7 @@ import org.hamcrest.MatcherAssert;
  * @tpSince RESTEasy 3.0.16
  */
 public class JWTTest {
-   protected static final Logger logger = LogManager.getLogger(JWTTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(JWTTest.class.getName());
    private static final String ERROR_MSG = "Wrong JsonWebToken conversion";
 
    /**

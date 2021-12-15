@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.jose;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.jwe.JWEBuilder;
 import org.jboss.resteasy.jose.jwe.JWEInput;
 import org.jboss.resteasy.utils.TestUtil;
@@ -26,7 +25,7 @@ import java.security.interfaces.RSAPublicKey;
 public class JWETest {
    private static final String ERROR_MSG = "Wrong conversion";
    private static final String BOUNCY_CASTLE_ERROR = "BouncyCastle security provider can't be used in non-OpenJDK (missing signatures)";
-   protected final Logger logger = LogManager.getLogger(JWETest.class.getName());
+   protected final Logger logger = Logger.getLogger(JWETest.class.getName());
 
    /**
     * @tpTestDetails RSA test

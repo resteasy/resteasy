@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.CookieResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -31,7 +30,7 @@ import java.util.Map;
 @RunAsClient
 public class CookieTest {
 
-   protected final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+   protected final Logger logger = Logger.getLogger(VariantsTest.class.getName());
 
    static Client client;
 

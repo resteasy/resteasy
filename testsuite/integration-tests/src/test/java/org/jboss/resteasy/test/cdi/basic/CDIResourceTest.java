@@ -4,10 +4,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -50,7 +49,7 @@ import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
 @RunAsClient
 public class CDIResourceTest {
 
-   protected static final Logger logger = LogManager.getLogger(CDIResourceTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(CDIResourceTest.class.getName());
 
    private static final String WAR_NAME = "RESTEASY-1082.war";
    static final String toStr;

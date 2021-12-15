@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.xxe;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.XxeSecureProcessingFavoriteMovieXmlRootElement;
@@ -35,7 +34,7 @@ import java.util.Map;
 public class XxeSecureProcessingTest {
 
    private ResteasyClient client;
-   public final Logger logger = LogManager.getLogger(XxeSecureProcessingTest.class.getName());
+   public final Logger logger = Logger.getLogger(XxeSecureProcessingTest.class.getName());
 
    String doctype =
             "<!DOCTYPE foodocument [" +

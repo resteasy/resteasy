@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.ResponseAnnotatedClass;
 import org.jboss.resteasy.test.response.resource.ResponseDateReaderWriter;
 import org.jboss.resteasy.test.response.resource.ResponseResource;
@@ -44,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunAsClient
 public class ResponseTest {
 
-   protected static final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(VariantsTest.class.getName());
 
    @Rule
    public ExpectedException thrown = ExpectedException.none();

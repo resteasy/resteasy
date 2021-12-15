@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
@@ -64,7 +63,7 @@ public class SigningTest {
    public static PrivateKey badKey;
    private static ResteasyClient client;
 
-   protected final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
+   protected final Logger logger = Logger.getLogger(PKCS7SignatureSmokeTest.class.getName());
 
    private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
    static final String testJksPath;

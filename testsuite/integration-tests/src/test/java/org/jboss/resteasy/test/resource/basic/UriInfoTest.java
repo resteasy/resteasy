@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedQueryResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedTemplateResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEscapedMatrParamResource;
@@ -44,7 +43,7 @@ import java.util.PropertyPermission;
 @RunAsClient
 public class UriInfoTest {
 
-   protected final Logger logger = LogManager.getLogger(UriInfoTest.class.getName());
+   protected final Logger logger = Logger.getLogger(UriInfoTest.class.getName());
 
    private static Client client;
 

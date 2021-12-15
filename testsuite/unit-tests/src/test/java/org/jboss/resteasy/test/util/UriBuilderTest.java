@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 import org.jboss.resteasy.test.util.resource.UriBuilderResource;
 import org.junit.Assert;
@@ -23,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class UriBuilderTest {
    private static final String ERROR_MSG = "UriBuilder works incorrectly";
-   protected static final Logger logger = LogManager.getLogger(UriBuilderTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(UriBuilderTest.class.getName());
 
    private static final Pattern uriPattern = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
 

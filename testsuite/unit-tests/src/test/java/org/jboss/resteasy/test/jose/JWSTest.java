@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.jose;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSHeader;
@@ -42,7 +41,7 @@ import org.hamcrest.CoreMatchers;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JWSTest {
-   protected static final Logger logger = LogManager.getLogger(JWSTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(JWSTest.class.getName());
    private static final String HEADER_ERROR_MSG = "Wrong algorithm header";
    private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
    private static final String VERIFY_ERROR_MSG = "Wrong verification";

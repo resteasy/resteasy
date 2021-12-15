@@ -1,8 +1,7 @@
 package org.jboss.resteasy.test.tracing;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 public class OnDemandTracingTest extends TracingTestBase {
 
-   private static final Logger LOG = LogManager.getLogger(OnDemandTracingTest.class);
+   private static final Logger LOG = Logger.getLogger(OnDemandTracingTest.class);
 
    @Test
    @OperateOnDeployment(WAR_ON_DEMAND_TRACING_FILE)

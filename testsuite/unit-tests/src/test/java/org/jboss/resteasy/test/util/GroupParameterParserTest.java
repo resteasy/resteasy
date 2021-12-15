@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.util.GroupParameterParser;
 import org.jboss.resteasy.util.ParameterParser;
 import org.junit.Assert;
@@ -17,7 +16,7 @@ import java.util.Map;
  * @tpSince RESTEasy 3.0.16
  */
 public class GroupParameterParserTest {
-   protected final Logger logger = LogManager.getLogger(GroupParameterParserTest.class.getName());
+   protected final Logger logger = Logger.getLogger(GroupParameterParserTest.class.getName());
 
    /**
     * @tpTestDetails Test for GroupParameterParser class.

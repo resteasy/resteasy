@@ -1,10 +1,9 @@
 package org.jboss.resteasy.utils.maven;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.aether.transfer.AbstractTransferListener;
 import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.transfer.TransferResource;
+import org.jboss.logging.Logger;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -17,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 class ConsoleTransferListener extends AbstractTransferListener {
 
-   protected static final Logger logger = LogManager.getLogger(ConsoleRepositoryListener.class.getName());
+   protected static final Logger logger = Logger.getLogger(ConsoleRepositoryListener.class.getName());
 
    private Map<TransferResource, Long> downloads = new ConcurrentHashMap<TransferResource, Long>();
 

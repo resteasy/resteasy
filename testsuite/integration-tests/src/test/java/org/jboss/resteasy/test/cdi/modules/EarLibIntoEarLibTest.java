@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.cdi.modules;
 
-import org.apache.logging.log4j.LogManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectable;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableBinder;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
@@ -41,7 +41,7 @@ import java.net.URL;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EarLibIntoEarLibTest {
-   protected static final org.apache.logging.log4j.Logger log = LogManager.getLogger(EarLibIntoEarLibTest.class.getName());
+   protected static final Logger log = Logger.getLogger(EarLibIntoEarLibTest.class.getName());
 
    @ArquillianResource
    private URL url;

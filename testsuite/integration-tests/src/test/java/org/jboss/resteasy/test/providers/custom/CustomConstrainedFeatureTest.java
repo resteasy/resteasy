@@ -7,11 +7,10 @@ import static org.junit.Assert.assertTrue;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.custom.resource.CustomClientConstrainedFeature;
@@ -35,7 +34,7 @@ import org.junit.runner.RunWith;
 public class CustomConstrainedFeatureTest {
 
    private static final String TEST_URI = generateURL("/test-custom-feature");
-   private static final Logger LOGGER = LogManager.getLogger(CustomConstrainedFeatureTest.class.getName());
+   private static final Logger LOGGER = Logger.getLogger(CustomConstrainedFeatureTest.class.getName());
    private static final String CUSTOM_PROVIDERS_FILENAME = "CustomConstrainedFeature.Providers";
 
    @Deployment
@@ -67,7 +66,7 @@ public class CustomConstrainedFeatureTest {
       assertTrue(CustomConstrainedFeatureResource.ERROR_CLIENT_FEATURE, CustomClientConstrainedFeature.wasInvoked());
       assertFalse(CustomConstrainedFeatureResource.ERROR_SERVER_FEATURE, CustomServerConstrainedFeature.wasInvoked());
       Response response = client.target(TEST_URI).request().get();
-      LOGGER.info("Response from server: {}", response.readEntity(String.class));
+      LOGGER.infof("Response from server: %s", response.readEntity(String.class));
       // server must return 200 if only registered feature was for server runtime
       assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       client.close();

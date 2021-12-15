@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.interceptors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.interceptors.resource.TimerInterceptorResource;
 import org.jboss.resteasy.test.cdi.interceptors.resource.TimerInterceptorResourceIntf;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class TimerInterceptorTest {
-   protected static final Logger log = LogManager.getLogger(TimerInterceptorTest.class.getName());
+   protected static final Logger log = Logger.getLogger(TimerInterceptorTest.class.getName());
 
    @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
