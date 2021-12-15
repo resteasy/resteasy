@@ -1,0 +1,8 @@
+[[Responses_using_jakarta.ws.rs.core.Response]]
+== Responses using jakarta.ws.rs.core.Response
+
+You can build custom responses using the jakarta.ws.rs.core.Response and
+ResponseBuilder classes. If you want to do your own streaming, your
+entity response must be an implementation of
+jakarta.ws.rs.core.StreamingOutput. See the java doc for more
+information.

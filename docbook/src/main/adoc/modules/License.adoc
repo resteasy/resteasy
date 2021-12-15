@@ -1,0 +1,4 @@
+== License
+
+RESTEasy is distributed under the Apache License 2.0. Some dependencies
+are covered by other open source licenses.

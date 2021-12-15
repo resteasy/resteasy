@@ -1,0 +1,74 @@
+[[_Encoded_and_encoding]]
+== @Encoded and encoding
+
+Jakarta RESTful Web Services; allows you to get encoded or decoded
+@*Params and specify path definitions and parameter names using encoded
+or decoded strings.
+
+The @jakarta.ws.rs.Encoded annotation can be used on a class, method, or
+param. By default, inject @PathParam and @QueryParams are decoded. By
+additionally adding the @Encoded annotation, the value of these params
+will be provided in encoded form.
+
+....
+@Path("/")
+public class MyResource {
+
+    @Path("/{param}")
+    @GET
+    public String get(@PathParam("param") @Encoded String param) {...}
+}
+....
+
+In the above example, the value of the @PathParam injected into the
+param of the get() method will be URL encoded. Adding the @Encoded
+annotation as a paramater annotation triggers this affect.
+
+You may also use the @Encoded annotation on the entire method and any
+combination of @QueryParam or @PathParam's values will be encoded.
+
+....
+@Path("/")
+public class MyResource {
+  
+    @Path("/{param}")
+    @GET
+    @Encoded
+    public String get(@QueryParam("foo") String foo, @PathParam("param") String param) {}
+}
+....
+
+In the above example, the values of the "foo" query param and "param"
+path param will be injected as encoded values.
+
+You can also set the default to be encoded for the entire class.
+
+....
+@Path("/")
+@Encoded
+public class ClassEncoded {
+  
+    @GET
+    public String get(@QueryParam("foo") String foo) {}
+}
+....
+
+The @Path annotation has an attribute called encode. Controls whether
+the literal part of the supplied value (those characters that are not
+part of a template variable) are URL encoded. If true, any characters in
+the URI template that are not valid URI character will be automatically
+encoded. If false then all characters must be valid URI characters. By
+default this is set to true. If you want to encoded the characters
+yourself, you may.
+
+....
+@Path(value="hello%20world", encode=false)
+....
+
+Much like @Path.encode(), this controls whether the specified query
+param name should be encoded by the container before it tries to find
+the query param in the request.
+
+....
+@QueryParam(value="hello%20world", encode=false)
+....

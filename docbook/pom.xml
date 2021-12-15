@@ -13,6 +13,8 @@
     <properties>
         <jbang.ver>0.67.3</jbang.ver>
         <translation>en-US</translation>
+        <!--TODO: move this property to parent or look at other approach to reference this version-->
+        <version.org.springframework>5.3.7</version.org.springframework>
     </properties>
 
     <repositories>
@@ -27,7 +29,6 @@
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </pluginRepository>
     </pluginRepositories>
-
     <build>
         <plugins>
             <plugin>
@@ -124,6 +125,33 @@
                         <configuration>
                             <jbangVersion>${jbang.ver}</jbangVersion>
                             <script>scripts/after.java</script>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>html5</backend>
+                            <preserveDirectories>true</preserveDirectories>
+                            <attributes>
+                                <!--toc/-->
+                                <linkcss>false</linkcss>
+                                <source-highlighter>coderay</source-highlighter>
+                                <resteasy-version>${project.version}</resteasy-version>
+                                <spring-version>${version.org.springframework}</spring-version>
+                            </attributes>
+                            <sourceDirectory>src/main/adoc</sourceDirectory>
+                            <headerFooter>true</headerFooter>
                         </configuration>
                     </execution>
                 </executions>

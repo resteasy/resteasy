@@ -1,0 +1,198 @@
+[[Asynchronous_HTTP_Request_Processing]]
+== Asynchronous HTTP Request Processing
+
+Asynchronous HTTP Request Processing is a relatively new technique that
+allows you to process a single HTTP request using non-blocking I/O and,
+if desired in separate threads. Some refer to it as COMET capabilities.
+The primary use case for Asynchronous HTTP is in the case where the
+client is polling the server for a delayed response. The usual example
+is an AJAX chat client where you want to push/pull from both the client
+and the server. These scenarios have the client blocking a long time on
+the server’s socket waiting for a new message. What happens in
+synchronous HTTP where the server is blocking on incoming and outgoing
+I/O is that you end up having a thread consumed per client connection.
+This eats up memory and valuable thread resources. Not such a big deal
+in 90% of applications (in fact using asynchronous processing may
+actually hurt your performance in most common scenarios), but when you
+start getting a lot of concurrent clients that are blocking like this,
+there’s a lot of wasted resources and your server does not scale that
+well.
+
+=== Using the `@Suspended` annotation
+
+The Jakarta RESTful Web Services; specification includes asynchronous
+HTTP support via two classes. The `@Suspended` annotation, and
+AsyncResponse interface.
+
+Injecting an AsynchronousResponse as a parameter to your Jakarta RESTful
+Web Services; methods tells RESTEasy that the HTTP request/response
+should be detached from the currently executing thread and that the
+current thread should not try to automatically process the response.
+
+The AsyncResponse is the callback object. The act of calling one of the
+resume() methods will cause a response to be sent back to the client and
+will also terminate the HTTP request. Here is an example of asynchronous
+processing:
+
+....
+import jakarta.ws.rs.Suspend;
+import jakarta.ws.rs.core.AsynchronousResponse;
+
+@Path("/")
+public class SimpleResource
+{
+
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   public void getBasic(@Suspended final AsyncResponse response) throws Exception
+   {
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               Response jaxrs = Response.ok("basic").type(MediaType.TEXT_PLAIN).build();
+               response.resume(jaxrs);
+            }
+            catch (Exception e)
+            {
+               response.resume(e);
+            }
+         }
+      };
+      t.start();
+   }
+}
+      
+....
+
+AsyncResponse also has other methods to cancel the execution. See
+javadoc for more details.
+
+*NOTE:* The old RESTEasy proprietary API for async http has been
+deprecated and may be removed as soon as RESTEasy 3.1. In particular,
+the RESTEasy @Suspend annotation is replaced by
+`jakarta.ws.rs.container.Suspended`, and
+`org.jboss.resteasy.spi.AsynchronousResponse` is replaced by
+`jakarta.ws.rs.container.AsyncResponse`. Note that @Suspended does not
+have a value field, which represented a timeout limit. Instead,
+AsyncResponse.setTimeout() may be called.
+
+=== Using Reactive return types
+
+The Jakarta RESTful Web Services; 2.1 specification adds support for
+declaring asynchronous resource methods by returning a `CompletionStage`
+instead of using the `@Suspended` annotation.
+
+Whenever a resource method returns a `CompletionStage`, it will be
+subscribed to, the request will be suspended, and only resumed when the
+`CompletionStage` is resolved either to a value (which is then treated
+as the return value for the method), or as an error case, in which case
+the exception will be processed as if it were thrown by the resource
+method.
+
+Here is an example of asynchronous processing using `CompletionStage`:
+
+....
+import jakarta.ws.rs.Suspend;
+import jakarta.ws.rs.core.AsynchronousResponse;
+
+@Path("/")
+public class SimpleResource
+{
+
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   public CompletionStage<Response> getBasic() throws Exception
+   {
+      final CompletableFuture<Response> response = new CompletableFuture<>();
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               Response jaxrs = Response.ok("basic").type(MediaType.TEXT_PLAIN).build();
+               response.complete(jaxrs);
+            }
+            catch (Exception e)
+            {
+               response.completeExceptionally(e);
+            }
+         }
+      };
+      t.start();
+      return response;
+   }
+}
+     
+....
+
+[NOTE]
+====
+RESTEasy link:#Reactive[supports more reactive types for asynchronous
+programming].
+====
+
+=== Asynchronous filters
+
+It is possible to write link:#Asynchronous_Filter[filters that also turn
+the request asynchronous]. Whether or not filters turned the request
+asynchronous before execution of your method makes absolutely no
+difference to your method: it does not need to be declared asynchronous
+in order to function as specified. Synchronous methods and asynchronous
+methods will work as specified by the spec.
+
+[[Asynchronous_IO]]
+=== Asynchronous IO
+
+Some backends support asynchronous IO operations (Servlet, Undertow,
+Vert.x, Quarkus, Netty), which are exposed using the `AsyncOutputStream`
+subtype of `OutputStream`. It includes async variants for writing and
+flushing the stream.
+
+Some backends have what is called an "Event Loop Thread", which is a
+thread responsible for doing all IO operations. Those backends require
+the Event Loop Thread to never be blocked, because it does IO for every
+other thread. Those backends typically require Jakarta RESTful Web
+Services; endpoints to be invoked on worker threads, to make sure they
+never block the Event Loop Thread.
+
+Sometimes, with Async programming, it is possible for asynchronous
+Jakarta RESTful Web Services; requests to be resumed from the Event Loop
+Thread. As a result, Jakarta RESTful Web Services; will attempt to
+serialise the response and send it to the client. But Jakarta RESTful
+Web Services; is written using "Blocking IO" mechanics, such as
+`OutputStream` (used by `MessageBodyWriter` and `WriterInterceptor`),
+which means that sending the response will block the current thread
+until the response is received. This would work on a worker thread, but
+if it happens on the Event Loop Thread it will block it and prevent it
+from sending the response, resulting in a deadlock.
+
+As a result, we've decided to support and expose Async IO interfaces in
+the form of `AsyncOutputStream`, `AsyncMessageBodyWriter` and
+`AsyncWriterInterceptor`, to allow users to write Async IO applications
+in RESTEasy.
+
+Most built-in `MessageBodyWriter` and `WriterInterceptor` support Async
+IO, with the notable exceptions of:
+
+* `HtmlRenderableWriter`, which is tied to servlet APIs
+* `ReaderProvider`
+* `StreamingOutputProvider`: use `AsyncStreamingOutput` instead
+* `GZIPEncodingInterceptor`
+
+Async IO will be preferred if the following conditions are met:
+
+* The backend supports it
+* The writer supports it
+* All writer interceptors support it
+
+If those conditions are not met, and you attempt to use Blocking IO on
+an Event Loop Thread (as determined by the backend), then an exception
+will be thrown.

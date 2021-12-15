@@ -1,0 +1,68 @@
+[[_NewParam]]
+== Improved `@…Param` annotations
+
+With the addition of parameter names in the bytecode since Java 8, it is
+no longer necessary to require users to specify parameter names in the
+following annotations: link:#_PathParam[`@PathParam`],
+link:#_QueryParam[`@QueryParam`], link:#_FormParam[`@FormParam`],
+link:#_CookieParam[`@CookieParam`], link:#_HeaderParam[`@HeaderParam`]
+and link:#_MatrixParam[`@MatrixParam`]. In order to benefit from this
+feature, you have to switch to new annotations with the same name, in a
+different package, which have an optional value parameter. To use this,
+follow these steps:
+
+* Import the
++
+org.jboss.resteasy.annotations.jaxrs
++
+package to replace annotations from the Jakarta RESTful Web Services;
+spec.
+* Tell your build system to record method parameter names in the
+bytecode.
+* Remove the annotation value if the name matches the name of the
+annotated variable.
+
+Note that you can omit the annotation name for annotated method
+parameters as well as annotated fields or JavaBean properties.
+
+For Maven users, recording method parameter names in the bytecode can be
+enabled by setting the `maven.compiler.parameters` to `true`:
+
+....
+    <properties>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+    </properties>
+....
+
+Usage:
+
+....
+import org.jboss.resteasy.annotations.jaxrs.*;
+
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam String isbn) {
+      // search my database and get a string representation and return it
+   }
+}
+....
+
+If your annotated variable does not have the same name as the path
+parameter, you can still specify the name:
+
+....
+import org.jboss.resteasy.annotations.jaxrs.*;
+
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam("isbn") String id) {
+      // search my database and get a string representation and return it
+   }
+}
+....
