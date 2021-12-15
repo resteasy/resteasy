@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.client.resource.ClientCustomException;
 import org.jboss.resteasy.test.client.resource.RequestFilterAbortWith;
 import org.jboss.resteasy.test.client.resource.RequestFilterAcceptLanguage;
@@ -32,7 +31,7 @@ import java.util.Locale;
  */
 public class RequestFilterTest {
 
-   protected static final Logger logger = LogManager.getLogger(RequestFilterTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(RequestFilterTest.class.getName());
 
    static Client client;
    String dummyUrl = "dummyUrl";

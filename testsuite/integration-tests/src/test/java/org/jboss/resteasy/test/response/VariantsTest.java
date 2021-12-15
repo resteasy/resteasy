@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.test.response.resource.VariantComplexResource;
 import org.jboss.resteasy.test.response.resource.VariantEncodingResource;
@@ -38,7 +37,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 @RunAsClient
 public class VariantsTest {
 
-   protected static final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(VariantsTest.class.getName());
 
    static Client client;
 

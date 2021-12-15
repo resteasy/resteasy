@@ -22,11 +22,10 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
@@ -67,7 +66,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ContextProvidersTest {
 
-   protected final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
+   protected final Logger logger = Logger.getLogger(ContextProvidersTest.class.getName());
 
    public static final Annotation PART_TYPE_APPLICATION_XML = new S1() {
       private static final long serialVersionUID = 1L;

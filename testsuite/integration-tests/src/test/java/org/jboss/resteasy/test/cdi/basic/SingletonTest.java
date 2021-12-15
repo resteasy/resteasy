@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.basic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonLocalIF;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonRootResource;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonSubResource;
@@ -35,7 +34,7 @@ import jakarta.ws.rs.core.Response;
 @RunAsClient
 public class SingletonTest {
    static Client client;
-   protected static final Logger logger = LogManager.getLogger(SingletonTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(SingletonTest.class.getName());
 
    @BeforeClass
    public static void setup() {

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.request;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -27,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class ContainerRequestContextTest {
 
    private HttpRequest request;
-   protected static final Logger logger = LogManager.getLogger(ContainerRequestContextTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ContainerRequestContextTest.class.getName());
 
    @Before
    public void before() throws URISyntaxException {

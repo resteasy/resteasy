@@ -10,11 +10,10 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBoston;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBostonBean;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBostonBeanExtension;
@@ -46,7 +45,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class BeanExtensionTest {
-   protected static final Logger log = LogManager.getLogger(BeanExtensionTest.class.getName());
+   protected static final Logger log = Logger.getLogger(BeanExtensionTest.class.getName());
 
    @SuppressWarnings(value = "unchecked")
    @Deployment

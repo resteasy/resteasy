@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.inheritence;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceBook;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceBookSpecialized;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceInheritanceResource;
@@ -35,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SpecializedInheritanceTest {
-   protected static final Logger log = LogManager.getLogger(SpecializedInheritanceTest.class.getName());
+   protected static final Logger log = Logger.getLogger(SpecializedInheritanceTest.class.getName());
 
    @Deployment
    public static Archive<?> createTestArchive() {

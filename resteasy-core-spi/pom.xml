@@ -72,16 +72,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>jboss-logmanager</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- Required by Hibernate Validator 5.x for testing -->
@@ -104,6 +98,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <test.config.prop>sys-prop-value</test.config.prop>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <TEST_CONFIG_ENV>env-value</TEST_CONFIG_ENV>

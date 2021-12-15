@@ -6,6 +6,7 @@ import java.net.URL;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.custom.resource.FilterDispatcherForwardServlet;
 import org.jboss.resteasy.test.providers.custom.resource.FilterDispatcherServlet;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -16,8 +17,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -28,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class FilterDispatcherUndertowTest {
-   private static final Logger logger = LogManager.getLogger(FilterDispatcherUndertowTest.class.getName());
+   private static final Logger logger = Logger.getLogger(FilterDispatcherUndertowTest.class.getName());
 
    @Deployment
    public static Archive<?> createTestArchive() {

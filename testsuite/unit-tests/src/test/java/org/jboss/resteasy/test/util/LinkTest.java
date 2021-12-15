@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.util.resource.LinkResource;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +20,7 @@ import java.net.URI;
  */
 public class LinkTest {
 
-   protected static final Logger logger = LogManager.getLogger(LinkTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(LinkTest.class.getName());
 
    /**
     * @tpTestDetails Check relative path option

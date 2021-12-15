@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -38,7 +37,7 @@ import java.util.PropertyPermission;
 public class ClientResponseRedirectTest extends ClientTestBase{
 
 
-   protected static final Logger logger = LogManager.getLogger(ClientResponseRedirectTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ClientResponseRedirectTest.class.getName());
    static ResteasyClient client;
 
    @Deployment

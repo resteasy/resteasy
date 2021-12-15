@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.atom.Content;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
 import org.jboss.resteasy.plugins.providers.atom.Feed;
@@ -31,7 +30,7 @@ import java.util.Date;
  */
 public class AtomProviderModelTest {
 
-   protected final Logger logger = LogManager.getLogger(AtomProviderModelTest.class.getName());
+   protected final Logger logger = Logger.getLogger(AtomProviderModelTest.class.getName());
 
    private static final String XML = "<content xmlns=\"http://www.w3.org/2005/Atom\" language=\"en\">Text\n" +
          "</content>";

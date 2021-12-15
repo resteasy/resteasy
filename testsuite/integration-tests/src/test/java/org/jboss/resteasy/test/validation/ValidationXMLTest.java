@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.validation;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -52,7 +51,7 @@ import java.util.Map;
 @RunAsClient
 public class ValidationXMLTest {
    static final String WRONG_ERROR_MSG = "Expected validation error is not in response";
-   protected static final Logger logger = LogManager.getLogger(ValidationXMLTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ValidationXMLTest.class.getName());
    ResteasyClient client;
 
    @Deployment

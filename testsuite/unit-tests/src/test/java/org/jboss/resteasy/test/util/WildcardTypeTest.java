@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +18,7 @@ import java.util.List;
  * @tpSince RESTEasy 3.0.17
  */
 public class WildcardTypeTest {
-   protected final Logger logger = LogManager.getLogger(WildcardTypeTest.class.getName());
+   protected final Logger logger = Logger.getLogger(WildcardTypeTest.class.getName());
 
    /**
     * @tpTestDetails Tests upper bound.

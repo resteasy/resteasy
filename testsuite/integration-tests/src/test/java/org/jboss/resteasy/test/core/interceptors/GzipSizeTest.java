@@ -11,11 +11,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Variant;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
@@ -47,7 +46,7 @@ import com.google.common.net.HttpHeaders;
 public class GzipSizeTest {
 
    static Client client;
-   protected static final Logger logger = LogManager.getLogger(GzipSizeTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(GzipSizeTest.class.getName());
 
    @Deployment
    public static Archive<?> deploySimpleResource() {

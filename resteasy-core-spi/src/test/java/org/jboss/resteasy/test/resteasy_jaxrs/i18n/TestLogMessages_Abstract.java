@@ -4,17 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Locale;
+import java.util.logging.Logger;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.WriterAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.jboss.logmanager.Level;
+import org.jboss.logmanager.LogContext;
+import org.jboss.logmanager.formatters.PatternFormatter;
+import org.jboss.logmanager.handlers.WriterHandler;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +23,12 @@ import org.junit.Test;
  */
 public abstract class TestLogMessages_Abstract extends TestMessagesParent
 {
-   private static final Logger LOG = LogManager.getLogger(TestLogMessages_Abstract.class);
+   private static final LogContext TEST_CONTEXT = LogContext.create();
+   private static final Logger LOG = TEST_CONTEXT.getLogger(TestLogMessages_Abstract.class.getName());
+
+   static {
+      LogContext.setLogContextSelector(() -> TEST_CONTEXT);
+   }
 
    protected static Locale savedLocale;
 
@@ -41,36 +41,22 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       super.before(locale, filename);
       baos.reset();
       PrintWriter writer = new PrintWriter(baos, true);
-      addAppender(writer, "testAppender", level);
+      addAppender(writer, level);
    }
 
    public void after()
    {
-      removeAppender("testAppender");
+      TEST_CONTEXT.getLogger("").clearHandlers();
    }
 
-   private void addAppender(final Writer writer, final String writerName, final Level level) {
-       final LoggerContext context = LoggerContext.getContext(false);
-       final Configuration config = context.getConfiguration();
-       final PatternLayout layout = PatternLayout.newBuilder().withConfiguration(config).withPattern("[%d{ABSOLUTE}] [%t] %5p (%F:%L) - %m%n").build();
-       final Appender appender = WriterAppender.createAppender(layout, null, writer, writerName, false, true);
-       appender.start();
-       config.addAppender(appender);
-       updateLoggers(appender, config, level);
-   }
-
-   private void removeAppender(final String writerName) {
-      final LoggerContext context = LoggerContext.getContext(false);
-      final Configuration config = context.getConfiguration();
-      config.getRootLogger().removeAppender(writerName);
-   }
-
-   private void updateLoggers(final Appender appender, final Configuration config, final Level level) {
-       final Filter filter = null;
-       for (final LoggerConfig loggerConfig : config.getLoggers().values()) {
-           loggerConfig.addAppender(appender, level, filter);
-       }
-       config.getRootLogger().addAppender(appender, level, filter);
+   private void addAppender(final Writer writer, final Level level) {
+      final PatternFormatter formatter = new PatternFormatter("%d{HH:mm:ss,SSS} [%t] %5p (%F:%L) - %s%e%n");
+      final WriterHandler handler = new WriterHandler();
+      handler.setFormatter(formatter);
+      handler.setWriter(writer);
+      final Logger root = TEST_CONTEXT.getLogger("");
+      root.addHandler(handler);
+      root.setLevel(level);
    }
 
    @Test

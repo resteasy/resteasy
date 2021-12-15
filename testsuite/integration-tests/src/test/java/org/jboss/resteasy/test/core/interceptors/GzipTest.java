@@ -15,11 +15,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
@@ -52,7 +51,7 @@ import org.junit.runner.RunWith;
 public class GzipTest {
 
    static ResteasyClient client;
-   protected static final Logger logger = LogManager.getLogger(GzipTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(GzipTest.class.getName());
 
    @Deployment
    public static Archive<?> deploySimpleResource() {

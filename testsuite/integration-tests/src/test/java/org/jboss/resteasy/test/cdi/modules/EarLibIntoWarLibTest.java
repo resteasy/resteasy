@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.modules;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectable;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableBinder;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
@@ -39,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EarLibIntoWarLibTest {
-   protected static final Logger log = LogManager.getLogger(EarLibIntoWarLibTest.class.getName());
+   protected static final Logger log = Logger.getLogger(EarLibIntoWarLibTest.class.getName());
 
 
    @Deployment

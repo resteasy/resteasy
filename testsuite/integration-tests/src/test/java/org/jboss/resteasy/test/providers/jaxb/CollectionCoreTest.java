@@ -1,11 +1,10 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.CollectionCustomer;
@@ -39,7 +38,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 @RunAsClient
 public class CollectionCoreTest {
    private static final String WRONG_RESPONSE = "Response contains wrong data";
-   protected static final Logger logger = LogManager.getLogger(CollectionCoreTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(CollectionCoreTest.class.getName());
 
    static ResteasyClient client;
 
