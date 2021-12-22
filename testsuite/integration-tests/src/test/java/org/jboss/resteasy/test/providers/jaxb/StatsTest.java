@@ -8,6 +8,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
+
+import org.jboss.resteasy.plugins.stats.PatchResourceMethod;
 import org.jboss.resteasy.plugins.stats.RegistryStatsResource;
 import org.jboss.resteasy.plugins.stats.RegistryData;
 import org.jboss.resteasy.plugins.stats.RegistryEntry;
@@ -50,7 +52,7 @@ public class StatsTest {
       return TestUtil.finishContainerPrepare(war, null, StatsResource.class, RegistryStatsResource.class,
             ResourceMethodEntry.class, GetResourceMethod.class, PutResourceMethod.class, DeleteResourceMethod.class,
             PostResourceMethod.class, OptionsResourceMethod.class, HeadResourceMethod.class, TraceResourceMethod.class,
-            RegistryData.class, RegistryEntry.class, SubresourceLocator.class);
+            PatchResourceMethod.class, RegistryData.class, RegistryEntry.class, SubresourceLocator.class);
    }
 
    @Before

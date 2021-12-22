@@ -54,6 +54,7 @@ public class RegistryStatsResource
                   else if (httpMethod.equals("OPTIONS")) method = new OptionsResourceMethod();
                   else if (httpMethod.equals("TRACE")) method = new TraceResourceMethod();
                   else if (httpMethod.equals("HEAD")) method = new HeadResourceMethod();
+                  else if (httpMethod.equals("PATCH")) method = new PatchResourceMethod();
 
                   method.setClazz(rm.getResourceClass().getName());
                   method.setMethod(rm.getMethod().getName());

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
+import javax.ws.rs.PATCH;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.POST;
@@ -39,5 +40,10 @@ public class StatsResource {
    @HEAD
    @Path("resource")
    public void head() {
+   }
+
+   @PATCH
+   @Path("resource")
+   public void patch() {
    }
 }
