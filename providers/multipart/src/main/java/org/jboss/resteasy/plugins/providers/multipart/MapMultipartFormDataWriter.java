@@ -46,7 +46,7 @@ public class MapMultipartFormDataWriter extends AbstractMultipartFormDataWriter 
       {
          output.addFormData(entry.getKey(), entry.getValue(), partMediaType);
       }
-      write(output, mediaType, httpHeaders, entityStream);
+      write(output, mediaType, httpHeaders, entityStream, annotations);
    }
 
    @Override
@@ -61,6 +61,6 @@ public class MapMultipartFormDataWriter extends AbstractMultipartFormDataWriter 
        {
           output.addFormData(entry.getKey(), entry.getValue(), partMediaType);
        }
-       return asyncWrite(output, mediaType, httpHeaders, entityStream);
+       return asyncWrite(output, mediaType, httpHeaders, entityStream, annotations);
    }
 }
