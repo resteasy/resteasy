@@ -49,7 +49,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
    public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
 
-      write(getMultipart(obj, type), mediaType, httpHeaders, entityStream);
+      write(getMultipart(obj, type), mediaType, httpHeaders, entityStream, annotations);
 
    }
 
@@ -106,7 +106,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
    public CompletionStage<Void> asyncWriteTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                                              MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
        try {
-           return asyncWrite(getMultipart(obj, type), mediaType, httpHeaders, entityStream);
+           return asyncWrite(getMultipart(obj, type), mediaType, httpHeaders, entityStream, annotations);
        } catch (IOException e) {
            return ProviderHelper.completedException(e);
        }

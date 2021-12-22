@@ -38,13 +38,13 @@ public class MultipartWriter extends AbstractMultipartWriter implements AsyncMes
 
    public void writeTo(MultipartOutput multipartOutput, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
-      write(multipartOutput, mediaType, httpHeaders, entityStream);
+      write(multipartOutput, mediaType, httpHeaders, entityStream, annotations);
    }
 
    @Override
    public CompletionStage<Void> asyncWriteTo(MultipartOutput multipartOutput, Class<?> type, Type genericType, Annotation[] annotations,
                                              MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
                                              AsyncOutputStream entityStream) {
-       return asyncWrite(multipartOutput, mediaType, httpHeaders, entityStream);
+       return asyncWrite(multipartOutput, mediaType, httpHeaders, entityStream, annotations);
    }
 }
