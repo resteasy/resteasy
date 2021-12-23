@@ -1,0 +1,290 @@
+= Embedded Containers
+
+* <<anchor-2501,41.1. Undertow>>
+* <<anchor-2502,41.2. Sun JDK HTTP Server>>
+* <<anchor-2503,41.3. Netty>>
+* <<anchor-2504,41.4. Reactor-Netty>>
+* <<anchor-2505,41.5. Vert.x>>
+* <<anchor-2506,41.6. EmbeddedJaxrsServer>>
+
+RESTEasy has a few different plugins for different embedabble HTTP and/or Servlet containers if use RESTEasy in a test environment, or within an environment where you do not want a Servlet engine dependency.
+
+
+[[anchor-2501]]
+= 41.1. Undertow
+
+Undertow is a new Servlet Container that is used by WildFly (JBoss Community Server). You can embed Undertow as you wish. Here's a a test that shows it in action.
+
+----
+import io.undertow.servlet.api.DeploymentInfo;
+import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Application;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @version $Revision: 1 $
+ */
+public class UndertowTest
+{
+   private static UndertowJaxrsServer server;
+
+   @Path("/test")
+   public static class Resource
+   {
+      @GET
+      @Produces("text/plain")
+      public String get()
+      {
+         return "hello world";
+      }
+   }
+
+   @ApplicationPath("/base")
+   public static class MyApp extends Application
+   {
+      @Override
+      public Set<Class<?>> getClasses()
+      {
+         HashSet<Class<?>> classes = new HashSet<Class<?>>();
+         classes.add(Resource.class);
+         return classes;
+      }
+   }
+
+   @BeforeClass
+   public static void init() throws Exception
+   {
+      server = new UndertowJaxrsServer().start();
+   }
+
+   @AfterClass
+   public static void stop() throws Exception
+   {
+      server.stop();
+   }
+
+   @Test
+   public void testApplicationPath() throws Exception
+   {
+      server.deployOldStyle(MyApp.class);
+      Client client = ClientBuilder.newClient();
+      String val = client.target(TestPortProvider.generateURL("/base/test"))
+                         .request().get(String.class);
+      Assert.assertEquals("hello world", val);
+      client.close();
+   }
+
+   @Test
+   public void testApplicationContext() throws Exception
+   {
+      server.deployOldStyle(MyApp.class, "/root");
+      Client client = ClientBuilder.newClient();
+      String val = client.target(TestPortProvider.generateURL("/root/test"))
+                         .request().get(String.class);
+      Assert.assertEquals("hello world", val);
+      client.close();
+   }
+
+   @Test
+   public void testDeploymentInfo() throws Exception
+   {
+      DeploymentInfo di = server.undertowDeployment(MyApp.class);
+      di.setContextPath("/di");
+      di.setDeploymentName("DI");
+      server.deploy(di);
+      Client client = ClientBuilder.newClient();
+      String val = client.target(TestPortProvider.generateURL("/di/base/test"))
+                         .request().get(String.class);
+      Assert.assertEquals("hello world", val);
+      client.close();
+   }
+}
+----
+
+[[anchor-2502]]
+= 41.2. Sun JDK HTTP Server
+
+The Sun JDK comes with a simple HTTP server implementation (com.sun.net.httpserver.HttpServer) which you can run RESTEasy on top of.
+
+----
+      HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
+      contextBuilder = new HttpContextBuilder();
+      contextBuilder.getDeployment().getActualResourceClasses().add(SimpleResource.class);
+      HttpContext context = contextBuilder.bind(httpServer);
+      context.getAttributes().put("some.config.info", "42");
+      httpServer.start();
+
+      contextBuilder.cleanup();
+      httpServer.stop(0);
+----
+
+Create your HttpServer the way you want then use the org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize Resteasy and bind it to an HttpContext. The HttpContext attributes are available by injecting in a org.jboss.resteasy.spi.ResteasyConfiguration interface using @Context within your provider and resource classes.
+
+Maven project you must include is:
+
+----
+<dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jdk-http</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+  </dependency>
+----
+
+[[anchor-2503]]
+= 41.3. Netty
+
+RESTEasy has integration with the popular Netty project as well.
+
+----
+public static void start(ResteasyDeployment deployment) throws Exception
+   {
+      netty = new NettyJaxrsServer();
+      netty.setDeployment(deployment);
+      netty.setPort(TestPortProvider.getPort());
+      netty.setRootResourcePath("");
+      netty.setSecurityDomain(null);
+      netty.start();
+   }
+----
+
+Maven project you must include is:
+
+----
+<dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-netty4</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+  </dependency>
+----
+
+[[anchor-2504]]
+= 41.4. Reactor-Netty
+
+RESTEasy integrates with the reactor-netty project. This server adapter was created to pair with our reactor-netty based Jakarta RESTful Web Services client integration. Ultimately, if using reactor-netty for both the server and server-contained clients you will be able to do things like share the same event loop for both server and client calls.
+
+----
+public static void start(ResteasyDeployment deployment) throws Exception
+   {
+      ReactorNettyJaxrsServer server =  new ReactorNettyJaxrsServer();
+      server.setDeployment(new ResteasyDeploymentImpl());
+      server.setDeployment(deployment);
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("");
+      server.setSecurityDomain(null);
+      server.start();
+   }
+----
+
+Maven project you must include is:
+
+----
+<dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-reactor-netty</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+  </dependency>
+----
+
+
+[[anchor-2505]]
+= 41.5. Vert.x
+
+RESTEasy has integration with the popular Vert.x project as well.
+
+----
+public static void start(VertxResteasyDeployment deployment) throws Exception
+   {
+      VertxJaxrsServer server = new VertxJaxrsServer();
+      server.setDeployment(deployment);
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("");
+      server.setSecurityDomain(null);
+      server.start();
+   }
+----
+
+Maven project you must include is:
+
+----
+<dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-vertx</artifactId>
+      <version>6.0.0-SNAPSHOT</version>
+  </dependency>
+----
+
+The server will bootstrap its own Vert.x instance and Http server.
+
+When a resource is called, it is done with the Vert.x Event Loop thread, keep in mind to not block this thread and respect the Vert.x programming model, see the related Vert.x
+https://vertx.io/docs/vertx-core/java/#_don_t_block_me[manual page].
+
+Vert.x extends the RESTEasy registry to provide a new binding scope that creates resources per Event Loop:
+
+----
+  VertxResteasyDeployment deployment = new VertxResteasyDeployment();
+  // Create an instance of resource per Event Loop
+  deployment.getRegistry().addPerInstanceResource(Resource.class);
+----
+
+The per instance binding scope caches the same resource instance for each event loop providing the same concurrency model than a verticle deployed multiple times.
+
+Vert.x can also embed a RESTEasy deployment, making easy to use Jakarta RESTful Web Services annotated controller in Vert.x applications:
+
+----
+  Vertx vertx = Vertx.vertx();
+  HttpServer server = vertx.createHttpServer();
+
+  // Set an handler calling Resteasy
+  server.requestHandler(new VertxRequestHandler(vertx, deployment));
+
+  // Start the server
+  server.listen(8080, "localhost");
+----
+
+Vert.x objects can be injected in annotated resources:
+
+----
+@GET
+  @Path("/somepath")
+  @Produces("text/plain")
+  public String context(
+      @Context io.vertx.core.Context context,
+      @Context io.vertx.core.Vertx vertx,
+      @Context io.vertx.core.http.HttpServerRequest req,
+      @Context io.vertx.core.http.HttpServerResponse resp) {
+    return "the-response";
+  }
+----
+
+[[anchor-2506]]
+= 41.6. EmbeddedJaxrsServer
+
+EmbeddedJaxrsServer is an interface provided to enable each embedded container wrapper class to configurate, start and stop its container in a standard fashion. Each of UndertowJaxrsServer, SunHttpJaxrsServer, NettyJaxrsServer, and VertxJaxrsServer implements EmbeddedJaxrsServer.
+
+----
+public interface EmbeddedJaxrsServer<T> {
+         T deploy();
+         T start();
+         void stop();
+         ResteasyDeployment getDeployment();
+         T setDeployment(ResteasyDeployment deployment);
+         T setPort(int port);
+         T setHostname(String hostname);
+         T setRootResourcePath(String rootResourcePath);
+         T setSecurityDomain(SecurityDomain sc);
+      }
+----

@@ -1,0 +1,85 @@
+= @HeaderParam
+
+* <<anchor-501,7.1. HeaderDelegates>>
+
+====
+TIP:
+
+RESTEasy link:/13-Improved-Param-annotations.html[supports @HeaderParam annotations with no parameter name]
+====
+
+The @HeaderParam annotation allows you to map a request HTTP header to your method invocation.
+
+GET /books?num=5
+
+----
+@GET
+public String getBooks(@HeaderParam("From") String from) {
+...
+}
+----
+
+Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static valueOf() method. For example, MediaType has a valueOf() method and you could do:
+
+----
+@PUT
+public void put(@HeaderParam("Content-Type") MediaType contentType, ...)
+----
+
+[[anchor-501]]
+= 7.1. HeaderDelegates
+
+In addition to the usual methods for translating parameters to and from strings, parameters annotated with @HeaderParam have another option: implementations of RuntimeDelegate$HeaderDelegate:
+
+----
+/**
+     * Defines the contract for a delegate that is responsible for
+     * converting between the String form of a HTTP header and
+     * the corresponding Jakarta RESTful Web Services type {@code T}.
+     *
+     * @param <T> a Jakarta RESTful Web Services type that corresponds to the value of a HTTP header.
+     */
+    public static interface HeaderDelegate<T> {
+
+        /**
+         * Parse the supplied value and create an instance of {@code T}.
+         *
+         * @param value the string value.
+         * @return the newly created instance of {@code T}.
+         * @throws IllegalArgumentException if the supplied string cannot be
+         *                                  parsed or is {@code null}.
+         */
+        public T fromString(String value);
+
+        /**
+         * Convert the supplied value to a String.
+         *
+         * @param value the value of type {@code T}.
+         * @return a String representation of the value.
+         * @throws IllegalArgumentException if the supplied object cannot be
+         *                                  serialized or is {@code null}.
+         */
+        public String toString(T value);
+    }
+----
+
+HeaderDelegate is similar to ParamConverter, but it is not very convenient to register a HeaderDelegate since, unlike, for example, ParamConverterProvider, it is not treated by the Jakarta RESTful Web Services specification as a provider. The class jakarta.ws.rs.core.Configurable, which is subclassed by, for example, org.jboss.resteasy.spi.ResteasyProviderFactory has methods like
+
+----
+/**
+     * Register a class of a custom Jakarta RESTful Web Services component (such as an extension provider or
+     * a {@link jakarta.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
+     *
+     * ...
+     *
+     * @param componentClass Jakarta RESTful Web Services component class to be configured in the scope of this
+     *                       configurable context.
+     * @return the updated configurable context.
+     */
+    public C register(Class<?> componentClass);
+----
+
+but it is not clear that they are applicable to HeaderDelegates.
+
+RESTEasy approaches this problem by allowing HeaderDelegates to be annotated with @Provider. Not only will ResteasyProviderFactory.register() process HeaderDelegates, but another useful consequence is that HeaderDelegates can be discovered automatically at runtime.

@@ -1,0 +1,10 @@
+= Books You Can Read
+
+
+
+There are a number of great books that you can learn REST and Jakarta RESTful Web Services from
+
+* https://www.oreilly.com/library/view/restful-web-services/9780596529260/[RESTful Web Services] by Leonard Richardson and Sam Ruby. A great introduction to REST.
+* https://www.oreilly.com/[RESTful Java with JAX-RS] by Bill Burke. Overview of REST and detailed explanation of JAX-RS. Book examples are distributed with RESTEasy.
+* https://www.oreilly.com/[RESTful Web Services Cookbook] by Subbu Allamaraju and Mike Amundsen. Detailed cookbook on how to design RESTful services.
+

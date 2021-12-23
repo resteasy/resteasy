@@ -1,0 +1,265 @@
+= RESTEasy Tracing Feature
+
+* <<anchor-3601,54.1. Overview>>
+* <<anchor-3602,54.2. Tracing Info Mode>>
+* <<anchor-3603,54.3. Tracing Info Level>>
+* <<anchor-3604,54.4. Basic Usages>>
+* <<anchor-3605,54.5. Client Side Tracing Info>>
+* <<anchor-3606,54.6. Json Formatted Response>>
+* <<anchor-3607,54.7. List Of Tracing Events>>
+* <<anchor-3608,54.8. Tracing Example>>
+
+[[anchor-3601]]
+= 54.1. Overview
+
+Tracing feature is a way for the users of the RESTEasy to understand what's going on internally in the container when a request is processed. It's different from the pure logging system or profiling feature, which provides more general information about the request and response.
+
+The tracing feature provides more internal states of the Jakarta RESTful Web Services container. For example, it could be able to show what filters a request is going through, or how long time a request is processed and other kinds of information.
+
+Currently it doesn't have a standard or spec to define the tracing feature, so the tracing feature is tightly coupled with the concrete Jakarta RESTful Web Services implementation itself. In this chapter, let's check the design and usage of the tracing feature.
+
+
+[[anchor-3602]]
+= 54.2. Tracing Info Mode
+
+The RESTEasy tracing feature supports three logging mode:
+
+* OFF
+* ON_DEMAND
+* ALL
+
+"ALL" will enable the tracing feature. "ON_DEMAND" mode will give the control to client side: A client can send a tracing request via HTTP header and get the tracing info back from response headers. "OFF" mode will disable the tracing feature, and this is the default mode.
+
+
+[[anchor-3603]]
+= 54.3. Tracing Info Level
+
+The tracing info has three levels:
+
+* SUMMARY
+* TRACE
+* VERBOSE
+
+The "SUMMARY" level will emit some brief tracing information. The "TRACE" level will produce more detailed tracing information, and the "VERBOSE" level will generate extremely detailed tracing information.
+
+The tracing feature relies on the JBoss Logging framework to produce the tracing info, so the JBoss Logging configuration actually controls the final output of the tracing info. So it is JBoss Logging framework configuration that controls the logging threshold of the tracing info.
+
+[[anchor-3604]]
+= 54.4. Basic Usages
+
+By default, the tracing feature is turned off. If you want to enable the tracing feature, you need to add the following dependency in your project:
+
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-tracing-api</artifactId>
+</dependency>
+----
+
+Because the tracing feature is an optional feature, the above dependency is provided by the resteasy-extensions project.
+
+After including the dependency in your project, you can set the tracing mode and tracing level via the context-param parameters in your web project’s web.xml file. Here is the example:
+
+----
+<context-param>
+    <param-name>resteasy.server.tracing.type</param-name>
+    <param-value>ALL</param-value>
+    <param-name>resteasy.server.tracing.threshold</param-name>
+    <param-value>SUMMARY</param-value>
+</context-param>
+----
+
+Besides the above configuration, we also need to make sure that the underlying JBoss Logger is configured properly so it can output the tracing info as required. Here is an example of the "logging.properties":
+
+----
+# Additional logger names to configure (root logger is always configured)
+#loggers=org.foo.bar, org.foo.baz
+# Root logger level
+logger.level=ALL
+# Declare handlers for the root logger
+logger.handlers=CONSOLE, FILE
+# Declare handlers for additional loggers
+#logger.org.foo.bar.handlers=XXX, YYY
+# Console handler configuration
+handler.CONSOLE=org.jboss.logmanager.handlers.ConsoleHandler
+handler.CONSOLE.properties=autoFlush
+handler.CONSOLE.level=ALL
+handler.CONSOLE.autoFlush=true
+handler.CONSOLE.formatter=PATTERN
+# File handler configuration
+handler.FILE=org.jboss.logmanager.handlers.FileHandler
+handler.FILE.level=ALL
+handler.FILE.properties=autoFlush,fileName
+handler.FILE.autoFlush=true
+handler.FILE.fileName=/tmp/jboss.log
+handler.FILE.formatter=PATTERN
+# The log format pattern for both logs
+formatter.PATTERN=org.jboss.logmanager.formatters.PatternFormatter
+formatter.PATTERN.properties=pattern
+formatter.PATTERN.pattern=%d{HH:mm:ss,SSS} %-5p [%c{1}] %m%n
+----
+
+In above setting, we have set the logger level to "ALL", and output log file to "/tmp/jboss.log". In this case, we can make sure that we get all the tracing info.
+
+After enabling the tracing feature as shown above, we should get the tracing info output like following:
+
+----
+16:21:40,110 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=n/a accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a  [ ---- ms]
+16:21:40,110 TRACE [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START_HEADERS Other request headers: Connection=[Keep-Alive] Host=[localhost:8081] User-Agent=[Apache-HttpClient/4.5.4 (Java/1.8.0_201)]  [ ---- ms]
+16:21:40,114 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff PRE_MATCH_SUMMARY PreMatchRequest summary: 0 filters [ 0.04 ms]
+16:21:40,118 DEBUG [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff REQUEST_FILTER Filter by [io.weli.tracing.HttpMethodOverride @60353244] [ 0.02 ms]
+...
+16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
+16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]
+----
+
+From the above tracing log output shown above, we can see that the entry of tracing log contains several parts:
+
+* Level Of The Log Entry: We can see the log entries have different log levels, such as "TRACE", "INFO", "DEBUG". The tracing feature maps its own tracing info levels to the JBoss Logger output levels like this.
+* The Request Scope Id: We can see the request id like:
+----
+org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff
+----
+So we can know which request the log entry belongs to.
+
+* The Type Of The Tracing Log: tracing log entries are divided into multiple categories, such as "START_HEADERS", "REQUEST_FILTER", "FINISHED", etc.
+
+* The Detail Of The Log Entry: The last part of a log entry is the detail message of this entry.
+
+In next section let's see how do we fetch the tracing info from client side.
+
+[[anchor-3605]]
+= 54.5. Client Side Tracing Info
+
+From client side, we can send request to the server side as usual, and if the server side is configured properly to produce tracing info, then the info will also be sent back to client side via response headers. For example, we can send request to the server like this:
+
+----
+$ curl -i http://localhost:8081/foo
+----
+
+And then we can get the tracing info from the response header like the following:
+
+----
+HTTP/1.1 200 OK
+X-RESTEasy-Tracing-026: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.57 ms |  ---- %] [org.jboss.resteasy.plugins.providers.InputStreamProvider @1cbf0b08] is skipped
+...
+Date: Wed, 27 Mar 2019 09:39:50 GMT
+Connection: keep-alive
+X-RESTEasy-Tracing-000: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa START       [ ---- /  ---- ms |  ---- %] baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a
+...
+X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.42 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @35b791fa] is skipped
+----
+
+From above output, we can see the tracing info is in response headers, and it's marked in sequence as in the form of "X-RESTEasy-Tracing-nnn".
+
+[[anchor-3606]]
+= 54.6. Json Formatted Response
+
+The tracing log can be returned to client side in JSON format. To use this feature, we need to choose a JSON provider for tracing module to generate JSON formatted info. There are two JSON providers you can choose from and they both support the JSON data marshalling. The first choice is to use the jackson2 provider:
+
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-jackson2-provider</artifactId>
+</dependency>
+----
+
+The second choice is to use the json-binding provider:
+
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-json-binding-provider</artifactId>
+</dependency>
+----
+
+After including either of the above module, we can send request to server to get the JSON formatted tracing info. Here is a request example(the example is provided at last section of this chapter):
+
+----
+$ curl -H "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/type
+----
+
+In the above curl command, we have added "X-RESTEasy-Tracing-Accept-Format: JSON" into request header, in this way we are requesting the json formatted tracing info from server, and the tracing info in response header is like the following:
+
+----
+X-RESTEasy-Tracing-000: [{"event":"START","duration":0,"timestamp":195286694509932,"text":"baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"},{"event":"START_HEADERS","duration":0,"timestamp":195286695053606,"text":"Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.54.0] X-RESTEasy-Tracing-Accept-Format=[JSON] ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"}...{"event":"FINISHED","duration":0,"timestamp":195286729758836,"text":"Response status: 200","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"}]
+----
+
+The above text is the raw output from response, and we can format it to make it readable:
+
+----
+[{
+    "X-RESTEasy-Tracing-000": [
+        {
+            "event": "START",
+            "duration": 0,
+            "timestamp": 195286694509932,
+            "text": "baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "START_HEADERS",
+            "duration": 0,
+            "timestamp": 195286695053606,
+            "text": "Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.54.0] X-RESTEasy-Tracing-Accept-Format=[JSON] ",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "PRE_MATCH_SUMMARY",
+            "duration": 14563,
+            "timestamp": 195286697637157,
+            "text": "PreMatchRequest summary: 0 filters",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+ ...
+        {
+            "event": "FINISHED",
+            "duration": 0,
+            "timestamp": 195286729758836,
+            "text": "Response status: 200",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        }
+    ]
+}]
+----
+
+From above we can see the tracing info is returned as JSON text.
+
+[[anchor-3607]]
+= 54.7. List Of Tracing Events
+
+The tracing events are defined in RESTEasyServerTracingEvent. Here is a complete list of the tracing events and its descriptions:
+
+.Tracing Events
+|=======================
+|Event |Description
+|DISPATCH_RESPONSE |Resource method invocation results to Jakarta RESTful Web Services Response.
+|EXCEPTION_MAPPING |ExceptionMapper invoked.
+|FINISHED  |Request processing finished.
+|MATCH_LOCATOR  |Matched sub-resource locator method.
+|MATCH_PATH_FIND |Matching path pattern.
+|MATCH_PATH_NOT_MATCHED |Path pattern not matched.
+|MATCH_PATH_SELECTED  |Path pattern matched/selected.
+|MATCH_PATH_SKIPPED |Path pattern skipped as higher-priority pattern has been selected already.
+|MATCH_RESOURCE |Matched resource instance.
+|MATCH_RESOURCE_METHOD |Matched resource method.
+|MATCH_RUNTIME_RESOURCE |Matched runtime resource.
+|MATCH_SUMMARY |Matching summary.
+|METHOD_INVOKE |Resource method invoked.
+|PRE_MATCH  |RESTEasy HttpRequestPreprocessor invoked.
+|PRE_MATCH_SUMMARY  |RESTEasy HttpRequestPreprocessor invoked.
+|REQUEST_FILTER  |ContainerRequestFilter invoked.
+|REQUEST_FILTER_SUMMARY |ContainerRequestFilter invoked.
+|REQUEST_FILTER_SUMMARY |ContainerRequestFilter invocation summary.
+|RESPONSE_FILTER  |ContainerResponseFilter invoked.
+|RESPONSE_FILTER_SUMMARY |ContainerResponseFilter invocation summary.
+|START |Request processing started.
+|START_HEADERS  |All HTTP request headers.
+|=======================
+
+[[anchor-3608]]
+= 54.8. Tracing Example
+
+In the "resteasy-example" project, it contains a
+https://github.com/resteasy/resteasy-examples/tree/main/tracing-example[RESTEasy Tracing Example]
+to show the usages of tracing features. Please check the example to see the usages in action.

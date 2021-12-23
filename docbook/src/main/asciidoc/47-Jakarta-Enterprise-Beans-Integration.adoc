@@ -1,0 +1,57 @@
+= Jakarta Enterprise Beans Integration
+
+To integrate with Jakarta Enterprise Beans you must first modify your beans published interfaces. RESTEasy currently only has simple portable integration with Jakarta Enterprise Beans so you must also manually configure your RESTEasy WAR.
+
+RESTEasy currently only has simple integration with Jakarta Enterprise Beans. To make a bean a Jakarta RESTful Web Services resource, you must annotate an SLSB's @Remote or @Local interface with Jakarta RESTful Web Services annotations:
+
+----
+@Local
+@Path("/Library")
+public interface Library {
+
+   @GET
+   @Path("/books/{isbn}")
+   public String getBook(@PathParam("isbn") String isbn);
+}
+
+@Stateless
+public class LibraryBean implements Library {
+
+...
+
+}
+----
+
+Next, in RESTEasy's web.xml file you must manually register the bean with RESTEasy using the resteasy.jndi.resources <context-param>
+
+----
+<web-app>
+   <display-name>Archetype Created Web Application</display-name>
+   <context-param>
+      <param-name>resteasy.jndi.resources</param-name>
+      <param-value>LibraryBean/local</param-value>
+   </context-param>
+
+   ...
+</web-app>
+----
+
+This is the only portable way we can offer Jakarta Enterprise Beans integration. Future versions of RESTEasy will have tighter integration with WildFly so you do not have to do any manual registrations or modifications to web.xml. For right now though, we're focusing on portability.
+
+If you're using RESTEasy with an EAR and Jakarta Enterprise Beans, a good structure to have is:
+
+----
+my-ear.ear
+|------myejb.jar
+|------resteasy-jaxrs.war
+       |
+       ----WEB-INF/web.xml
+       ----WEB-INF/lib (nothing)
+|------lib/
+       |
+       ----All RESTEasy jar files
+----
+
+From the distribution, remove all libraries from WEB-INF/lib and place them in a common EAR lib. OR. Just place the RESTEasy jar dependencies in your application server's system classpath. (i.e. In JBoss put them in server/default/lib)
+
+An example EAR project is available from our testsuite here

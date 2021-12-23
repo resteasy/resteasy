@@ -1,0 +1,13 @@
+= JSON Support via Jakarta EE JSON-P API
+
+No, this is not the JSONP you are thinking of! JSON-P is a Jakarta EE parsing API. Horrible name for a new JSON parsing API! What were they thinking? Anyways, RESTEasy has a provider for it. If you are using WildFly, it is required by Jakarta EE so you will have it automatically bundled. Otherwise, use this maven dependency.
+
+----
+<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-json-p-provider</artifactId>
+   <version>6.0.0-SNAPSHOT</version>
+</dependency>
+----
+
+It has built in support for JsonObject, JsonArray, and JsonStructure as request or response entities. It should not conflict with Jackson if you have that in your path too.
