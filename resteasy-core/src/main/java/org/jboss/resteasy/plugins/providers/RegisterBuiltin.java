@@ -168,6 +168,10 @@ public class RegisterBuiltin
             String line;
             while ((line = reader.readLine()) != null)
             {
+               int commentIdx = line.indexOf('#');
+               if (commentIdx >= 0) {
+                  line = line.substring(0, commentIdx);
+               }
                line = line.trim();
                if (line.equals("")) continue;
                origins.put(line, url);
