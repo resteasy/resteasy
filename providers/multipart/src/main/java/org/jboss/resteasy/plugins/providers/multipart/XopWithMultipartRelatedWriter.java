@@ -58,7 +58,7 @@ public class XopWithMultipartRelatedWriter extends
               workers);
       xopWithMultipartRelatedJAXBProvider.writeTo(t, type, genericType,
               annotations, mediaType, httpHeaders, xopPackage);
-      writeRelated(xopPackage, mediaType, httpHeaders, entityStream);
+      writeRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
    }
 
    @Override
@@ -73,6 +73,6 @@ public class XopWithMultipartRelatedWriter extends
        } catch (IOException e) {
            return ProviderHelper.completedException(e);
        }
-       return asyncWriteRelated(xopPackage, mediaType, httpHeaders, entityStream);
+       return asyncWriteRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
    }
 }

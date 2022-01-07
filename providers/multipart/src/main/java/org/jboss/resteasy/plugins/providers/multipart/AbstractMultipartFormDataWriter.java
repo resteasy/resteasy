@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.concurrent.CompletionStage;
 public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
    @Override
    protected void writeParts(MultipartOutput multipartOutput,
-                             OutputStream entityStream, byte[] boundaryBytes) throws IOException {
+                             OutputStream entityStream, byte[] boundaryBytes, Annotation[] annotations) throws IOException {
       if (!(multipartOutput instanceof MultipartFormDataOutput))
          throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
       MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
@@ -35,13 +36,14 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
             headers.putSingle("Content-Disposition", "form-data; name=\""
                   + entry.getKey() + "\""
                   + getFilename(outputPart));
-            writePart(entityStream, boundaryBytes, outputPart, headers);
+            writePart(entityStream, boundaryBytes, outputPart, headers, annotations);
          }
       }
    }
 
    @Override
-   protected CompletionStage<Void> asyncWriteParts(MultipartOutput multipartOutput, AsyncOutputStream entityStream, byte[] boundaryBytes) {
+   protected CompletionStage<Void> asyncWriteParts(MultipartOutput multipartOutput, AsyncOutputStream entityStream,
+                                                   byte[] boundaryBytes, Annotation[] annotations) {
        if (!(multipartOutput instanceof MultipartFormDataOutput))
            throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
        MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
@@ -55,7 +57,7 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
                headers.putSingle("Content-Disposition", "form-data; name=\""
                        + entry.getKey() + "\""
                        + getFilename(outputPart));
-               ret = ret.thenCompose(v -> asyncWritePart(entityStream, boundaryBytes, outputPart, headers));
+               ret = ret.thenCompose(v -> asyncWritePart(entityStream, boundaryBytes, outputPart, headers, annotations));
            }
        }
        return ret;

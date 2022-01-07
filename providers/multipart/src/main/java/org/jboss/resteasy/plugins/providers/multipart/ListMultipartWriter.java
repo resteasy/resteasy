@@ -46,7 +46,7 @@ public class ListMultipartWriter extends AbstractMultipartWriter implements Asyn
       {
          output.addPart(obj, partMediaType);
       }
-      write(output, mediaType, httpHeaders, entityStream);
+      write(output, mediaType, httpHeaders, entityStream, annotations);
    }
 
    @Override
@@ -61,6 +61,6 @@ public class ListMultipartWriter extends AbstractMultipartWriter implements Asyn
        {
           output.addPart(obj, partMediaType);
        }
-       return asyncWrite(output, mediaType, httpHeaders, entityStream);
+       return asyncWrite(output, mediaType, httpHeaders, entityStream, annotations);
    }
 }
