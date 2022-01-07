@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
@@ -21,7 +22,7 @@ import java.util.concurrent.CompletionStage;
 public class AbstractMultipartRelatedWriter extends AbstractMultipartWriter {
    protected void writeRelated(MultipartRelatedOutput multipartRelatedOutput,
          MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-         OutputStream entityStream) throws IOException,
+         OutputStream entityStream, Annotation[] annotations) throws IOException,
          WebApplicationException {
       for (OutputPart outputPart : multipartRelatedOutput.getParts())
          if (outputPart.getHeaders().get("Content-ID") == null)
@@ -43,12 +44,12 @@ public class AbstractMultipartRelatedWriter extends AbstractMultipartWriter {
       MediaType modifiedMediaType = new MediaType(mediaType.getType(),
             mediaType.getSubtype(), mediaTypeParameters);
       write(multipartRelatedOutput, modifiedMediaType, httpHeaders,
-            entityStream);
+            entityStream, annotations);
    }
 
    protected CompletionStage<Void> asyncWriteRelated(MultipartRelatedOutput multipartRelatedOutput,
                                                      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-                                                     AsyncOutputStream entityStream) {
+                                                     AsyncOutputStream entityStream, Annotation[] annotations) {
        for (OutputPart outputPart : multipartRelatedOutput.getParts())
            if (outputPart.getHeaders().get("Content-ID") == null)
                outputPart.getHeaders().putSingle("Content-ID",
@@ -69,6 +70,6 @@ public class AbstractMultipartRelatedWriter extends AbstractMultipartWriter {
        MediaType modifiedMediaType = new MediaType(mediaType.getType(),
                                                    mediaType.getSubtype(), mediaTypeParameters);
        return asyncWrite(multipartRelatedOutput, modifiedMediaType, httpHeaders,
-             entityStream);
+             entityStream, annotations);
    }
 }
