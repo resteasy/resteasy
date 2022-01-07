@@ -147,42 +147,41 @@ public class HttpServletResponseWrapper implements HttpResponse
     */
    protected class DeferredOutputStream extends AsyncOutputStream implements WriteListener
    {
-      private final ServletOutputStream out;
       // Guarded by this
       private final Queue<AsyncOperation> asyncQueue;
       private final AtomicBoolean asyncRegistered;
       // Guarded by this
       private AsyncOperation lastAsyncOperation;
       private volatile boolean asyncListenerCalled;
+      private volatile ServletOutputStream lazyOut;
 
       DeferredOutputStream() throws IOException {
          asyncQueue = new LinkedList<>();
-         out = response.getOutputStream();
          asyncRegistered = new AtomicBoolean();
       }
 
       @Override
       public void write(int i) throws IOException
       {
-         out.write(i);
+         getServletOutputStream().write(i);
       }
 
       @Override
       public void write(byte[] bytes) throws IOException
       {
-         out.write(bytes);
+         getServletOutputStream().write(bytes);
       }
 
       @Override
       public void write(byte[] bytes, int i, int i1) throws IOException
       {
-         out.write(bytes, i, i1);
+         getServletOutputStream().write(bytes, i, i1);
       }
 
       @Override
       public void flush() throws IOException
       {
-         out.flush();
+         getServletOutputStream().flush();
       }
 
       @Override
@@ -213,6 +212,13 @@ public class HttpServletResponseWrapper implements HttpResponse
          HttpRequest resteasyRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
          if(request.isAsyncStarted() && !resteasyRequest.getAsyncContext().isOnInitialRequest()) {
             boolean flush = false;
+            final ServletOutputStream out;
+            try {
+               out = getServletOutputStream();
+            } catch (IOException e) {
+               op.future.completeExceptionally(e);
+               return;
+            }
             if (asyncRegistered.compareAndSet(false, true)) {
                out.setWriteListener(this);
             }
@@ -246,7 +252,13 @@ public class HttpServletResponseWrapper implements HttpResponse
                }
                lastAsyncOperation = null;
             }
-
+            final ServletOutputStream out;
+            try {
+               out = getServletOutputStream();
+            } catch (IOException e) {
+               onError(e);
+               return;
+            }
             while (out.isReady() && (lastAsyncOperation = asyncQueue.poll()) != null) {
                lastAsyncOperation.work(out);
             }
@@ -274,6 +286,17 @@ public class HttpServletResponseWrapper implements HttpResponse
                   op.future.completeExceptionally(t);
             }
          }
+      }
+
+      private ServletOutputStream getServletOutputStream() throws IOException {
+         if (lazyOut == null) {
+            synchronized (this) {
+               if (lazyOut == null) {
+                  lazyOut = response.getOutputStream();
+               }
+            }
+         }
+         return lazyOut;
       }
    }
 
