@@ -12,12 +12,6 @@
     <artifactId>resteasy-client-jetty</artifactId>
     <name>RESTEasy Client - Jetty Engine</name>
 
-    <properties>
-        <!-- The Jakarta version of Jetty only supports Java 11 -->
-        <!-- TODO (jrp) because of this should we use Java 11 as the compile version? -->
-        <skip.java8.tests>true</skip.java8.tests>
-    </properties>
-
     <dependencies>
 
         <dependency>
