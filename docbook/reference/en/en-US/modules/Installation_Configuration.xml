@@ -295,12 +295,9 @@
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
             RESTEasy is bundled with WildFly and completely integrated as per the requirements of Jakarta EE.
-            You can use it with &ENTERPRISE-BEANS; and CDI and you can rely completely on WildFly to scan for and deploy your &REST-API; services and providers.
-            All you have to provide is your &REST-API; service and provider classes packaged
-            within a WAR either as POJOs, CDI beans, or &ENTERPRISE-BEANS;.
-            A simple way to configure an application is by simply providing an empty web.xml file.
-            You can of course deploy any custom servlet, filter
-            or security constraint you want to within your web.xml, but none of them are required:
+            A &REST-API; application can contain &ENTERPRISE-BEANS; and CDI.
+            WildFly scans the WAR file for the &REST-API; services and provider classes packaged in the
+            WAR either as POJOs, CDI beans, or &ENTERPRISE-BEANS;.
         </para>
         <para>
             <programlisting><![CDATA[
@@ -310,14 +307,15 @@
 </web-app>]]></programlisting>
         </para>
         <para>
-            Also, web.xml can supply to RESTEasy init-params and context-params (see <xref linkend="configuration_switches"/>)
+            The web.xml can supply to RESTEasy init-params and context-params (see <xref linkend="configuration_switches"/>)
             if you want to tweak or turn on/off any specific RESTEasy feature.
         </para>
         <para>
-            Since we're not using a &lt;servlet-mapping&gt; element, we must define a
-            <classname>jakarta.ws.rs.core.Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>) that is annotated with
-            the <classname>jakarta.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
-            which is the behavior inherited from <classname>Application</classname>, your WAR will
+            When a &lt;servlet-mapping&gt; element is not declared in the web.xml, then a class must be provided
+            that implements
+            <classname>jakarta.ws.rs.core.Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>).
+            This class must be annotated with the <classname>jakarta.ws.rs.ApplicationPath</classname> annotation.
+            If this implementation class returns an empty set for classes and singletons, the WAR will
             be scanned for resource and provider classes as indicated by the presence of &REST-API; annotations.
         </para>
         <programlisting>
@@ -330,21 +328,21 @@ public class MyApplication extends Application
 }       </programlisting>
 
         <para>
-            <emphasis role="bold">Note.</emphasis> Actually, if the application jar contains an
+            <emphasis role="bold">Note.</emphasis> If the application WAR contains an
             <classname>Application</classname> class (or a subclass thereof)
-            which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
-            Of course, even in this case it can be used to specify additional information such as context parameters.
-            If there is an <classname>Application</classname> class but it doesn't have an
-            <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
-            &lt;servlet-mapping&gt; element is required.
+            which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml
+            file is not required.
+            If the application WAR contains an <classname>Application</classname> class but the
+            class doesn't have an declare a <classname>@ApplicationPath</classname> annotation, then
+            the web.xml must at least a declare a &lt;servlet-mapping&gt; element.
         </para>
 
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
             not all RESTEasy modules are bundled with WildFly. For example,
             resteasy-fastinfoset-provider and resteasy-wadl are not included among the
-            modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If you want
-            to use them in your application, you can include them in your WAR as you would if you were
+            modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If they are required by
+            the application, they can be included in the WAR as is done if you were
             deploying outside of WildFly. See <xref linkend="standalone_resteasy"/> for more information.
         </para>
 
