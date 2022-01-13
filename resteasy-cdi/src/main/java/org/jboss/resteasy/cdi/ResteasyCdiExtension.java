@@ -3,17 +3,24 @@ package org.jboss.resteasy.cdi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.lang.reflect.Method;
+import java.util.Set;
+
 import jakarta.decorator.Decorator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -21,16 +28,19 @@ import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.InjectionTarget;
 import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessBean;
 import jakarta.enterprise.inject.spi.ProcessInjectionTarget;
 import jakarta.enterprise.inject.spi.ProcessSessionBean;
 import jakarta.enterprise.inject.spi.WithAnnotations;
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.ext.Provider;
-
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.util.GetRestful;
 
 /**
@@ -71,6 +81,7 @@ public class ResteasyCdiExtension implements Extension
    }
 
    private Map<Class<?>, Type> sessionBeanInterface = new HashMap<Class<?>, Type>();
+   private boolean generateClientBean = true;
 
    /**
     * Obtain BeanManager reference for future use.
@@ -81,7 +92,41 @@ public class ResteasyCdiExtension implements Extension
    public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager)
    {
       this.beanManager = beanManager;
+      final AnnotatedType<ContextProducers> producersAnnotatedType = beanManager.createAnnotatedType(ContextProducers.class);
+      event.addAnnotatedType(producersAnnotatedType, ContextProducers.class.getCanonicalName());
       active = true;
+   }
+
+   /**
+    * Process any client beans.
+    *
+    * @param pb the bean being processed
+    */
+   public void processClientBean(@Observes final ProcessBean<?> pb) {
+      // this method will get notified if there is any bean of type `Client` created
+      if (pb.getBean().getTypes().contains(Client.class)) {
+         final Set<Annotation> qualifiers = pb.getBean()
+                 .getQualifiers(); // you want to detect beans with no explicit qualifiers
+         if (qualifiers.contains(Any.Literal.INSTANCE) && qualifiers.contains(Default.Literal.INSTANCE)) {
+            generateClientBean = false;
+         }
+      }
+   }
+
+
+   /**
+    * Registers a producer and disable for a {@link Client REST client}.
+    *
+    * @param event       the after bean discovery event
+    * @param beanManager the bean manager
+    */
+   public void registerClientProducer(@Observes final AfterBeanDiscovery event, final BeanManager beanManager) {
+      if (generateClientBean) {
+         event.addBean().addTransitiveTypeClosure(Client.class)
+                 .scope(ApplicationScoped.class)
+                 .produceWith(instance -> ClientBuilder.newClient(RegisterBuiltin.getClientInitializedResteasyProviderFactory(getClassLoader())))
+                 .disposeWith((client, instance) -> client.close());
+      }
    }
 
    /**
@@ -320,5 +365,22 @@ public class ResteasyCdiExtension implements Extension
 
    private boolean isStatic(Member member) {
       return Modifier.isStatic(member.getModifiers());
+   }
+
+   private static ClassLoader getClassLoader() {
+      if (System.getSecurityManager() == null) {
+         ClassLoader result = Thread.currentThread().getContextClassLoader();
+         if (result == null) {
+            result = ResteasyCdiExtension.class.getClassLoader();
+         }
+         return result;
+      }
+      return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
+         ClassLoader result = Thread.currentThread().getContextClassLoader();
+         if (result == null) {
+            result = ResteasyCdiExtension.class.getClassLoader();
+         }
+         return result;
+      });
    }
 }
