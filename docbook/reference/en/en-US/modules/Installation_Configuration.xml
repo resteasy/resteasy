@@ -21,7 +21,7 @@
 <jboss-deployment-structure>
     <deployment>
         <dependencies>
-            <module name="org.jboss.resteasy.resteasy-jackson-provider" services="import"/>
+            <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
         </dependencies>
     </deployment>
 </jboss-deployment-structure>]]></programlisting>
@@ -83,17 +83,6 @@
                     </entry>
                     <entry>
                         S/MIME, DKIM, and support for other security formats.
-                    </entry>
-                </row>
-                <row>
-                    <entry>
-                        org.jboss.resteasy.resteasy-jackson-provider
-                    </entry>
-                    <entry>
-                        no
-                    </entry>
-                    <entry>
-                        Integration with the JSON parser and object mapper Jackson (deprecated)
                     </entry>
                 </row>
                 <row>

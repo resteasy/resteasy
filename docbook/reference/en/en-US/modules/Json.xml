@@ -8,32 +8,6 @@
         RESTEasy integrates with the JavaBean model.
         While Jackson does come with its own &REST-API; integration, RESTEasy expanded it a little, as decribed below.
     </para>
-    <para>
-    <emphasis role="bold">NOTE.</emphasis> The resteasy-jackson-provider module, which is based on the outdated Jackson 1.9.x, is
-    currently deprecated, and will be removed in a release subsequent to 3.1.0.Final. The resteasy-jackson2-provider
-    module is based on Jackson 2.
-    </para>
-
-    <sect1>
-        <title>Using Jackson 1.9.x Outside of WildFly</title>
-        <para>If you're deploying RESTEasy outside of WildFly,
-        add the RESTEasy Jackson provder to your WAR pom.xml build:</para>
-        <programlisting><![CDATA[
-<dependency>
-   <groupId>org.jboss.resteasy</groupId>
-   <artifactId>resteasy-jackson-provider</artifactId>
-   <version>${version.resteasy}</version>
-</dependency>
-]]></programlisting>
-    </sect1>
-    <sect1>
-        <title>Using Jackson 1.9.x Inside WildFly 8</title>
-        <para>If you're deploying RESTEasy with WildFly 8,
-        there's nothing you need to do except to make sure
-        you've updated your installation with the latest and greatest RESTEasy.  See the
-        <link linkend='Installation_Configuration'>Installation/Configuration</link> section
-        of this documentation for more details.</para>
-    </sect1>
     <sect1>
         <title>Using Jackson 2 Outside of WildFly</title>
         <para>If you're deploying RESTEasy outside of WildFly,
@@ -77,7 +51,7 @@ public class MyService {
         <title>JSONP Support</title>
         <para>
             If you're using Jackson, RESTEasy has <ulink url="http://en.wikipedia.org/wiki/JSONP">JSONP</ulink> that you can turn on by adding
-            the provider <literal>org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor</literal> (Jackson2JsonpInterceptor if you're using the Jackson2 provider)
+            the provider <literal>org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor</literal> (Jackson2JsonpInterceptor if you're using the Jackson2 provider)
             to your deployments.
             If the media type of the response is json and a callback query parameter is given, the response will be a javascript snippet with
             a method call of the method defined by the callback parameter.
@@ -90,12 +64,12 @@ GET /resources/stuff?callback=processStuffResponse
 processStuffResponse(&lt;nomal JSON body&gt;)
 </programlisting>
             This supports the default behavior of <ulink url="http://api.jquery.com/jQuery.ajax/">jQuery</ulink>.
-            To enable JacksonJsonpInterceptor in WildFly, you need to import annotations from <literal>org.jboss.resteasy.resteasy-jackson-provider</literal> module using jboss-deployment-structure.xml:
+            To enable Jackson2JsonpInterceptor in WildFly, you need to import annotations from <literal>org.jboss.resteasy.resteasy-jackson2-provider</literal> module using jboss-deployment-structure.xml:
 <programlisting><![CDATA[
 <jboss-deployment-structure>
   <deployment>
     <dependencies>
-      <module name="org.jboss.resteasy.resteasy-jackson-provider" annotations="true"/>
+      <module name="org.jboss.resteasy.resteasy-jackson2-provider" annotations="true"/>
     </dependencies>
   </deployment>
 </jboss-deployment-structure>
@@ -105,7 +79,7 @@ processStuffResponse(&lt;nomal JSON body&gt;)
             You can change the name of the callback parameter by setting the callbackQueryParameter property.
         </para>
         <para>
-            JacksonJsonpInterceptor can wrap the response into a try-catch block:
+            Jackson2JsonpInterceptor can wrap the response into a try-catch block:
 <programlisting>
 try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
 </programlisting>
