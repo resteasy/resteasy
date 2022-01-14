@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-dependencies</artifactId>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
@@ -65,6 +65,7 @@
         <version.jakarta.ejb.ejb-api>4.0.0</version.jakarta.ejb.ejb-api>
         <version.jakarta.interceptor.interceptor-api>2.0.0</version.jakarta.interceptor.interceptor-api>
         <version.jakarta.jms.jms-api>3.0.0</version.jakarta.jms.jms-api>
+        <version.jakarta.ws.rs>3.0.0</version.jakarta.ws.rs>
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
         <version.jakarta.servlet.servlet-api>5.0.0</version.jakarta.servlet.servlet-api>
         <version.jakarta.transaction.transaction-api>2.0.0</version.jakarta.transaction.transaction-api>
@@ -218,9 +219,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                <artifactId>jboss-jaxrs-api_3.0_spec</artifactId>
-                <version>${version.javax.ws.rs-api}</version>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${version.jakarta.ws.rs}</version>
             </dependency>
 
             <dependency>
@@ -379,7 +380,7 @@
                 <exclusions>
                     <exclusion>
                         <groupId>org.jboss.spec.javax.annotation</groupId>
-                        <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+                        <artifactId>jboss-annotations-api_1.3_spec</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
