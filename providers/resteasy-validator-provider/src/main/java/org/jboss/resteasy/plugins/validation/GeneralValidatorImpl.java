@@ -169,7 +169,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
-      if (method.getParameterTypes().length == 0)
+      if (method.getParameterCount() == 0)
       {
          checkViolations(request);
          return;
@@ -400,7 +400,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return false;
       }
-      if (m.getParameterTypes().length > 0)
+      if (m.getParameterCount() > 0)
       {
          return false;
       }
@@ -493,7 +493,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          return false;
       }
 
-      if (subTypeMethod.getParameterTypes().length != superTypeMethod.getParameterTypes().length)
+      if (subTypeMethod.getParameterCount() != superTypeMethod.getParameterCount())
       {
          return false;
       }
@@ -511,7 +511,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
     */
    protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
    {
-      if (subTypeMethod.getParameterTypes().length == 0)
+      if (subTypeMethod.getParameterCount() == 0)
       {
          return true;
       }

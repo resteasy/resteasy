@@ -30,9 +30,9 @@ public class DefaultResourceLocator implements ResourceLocator
       // annotated.  This is so we have the appropriate generic type information.
       this.genericReturnType = Types.resolveTypeVariables(resourceClass.getClazz(), method.getGenericReturnType());
       this.returnType = Types.getRawType(genericReturnType);
-      this.params = new MethodParameter[method.getParameterTypes().length];
+      this.params = new MethodParameter[method.getParameterCount()];
       Parameter[] reflectionParameters = method.getParameters();
-      for (int i = 0; i < method.getParameterTypes().length; i++)
+      for (int i = 0; i < method.getParameterCount(); i++)
       {
          this.params[i] = new MethodParameter(this, reflectionParameters[i].getName(), method.getParameterTypes()[i], method.getGenericParameterTypes()[i], annotatedMethod.getParameterAnnotations()[i]);
       }

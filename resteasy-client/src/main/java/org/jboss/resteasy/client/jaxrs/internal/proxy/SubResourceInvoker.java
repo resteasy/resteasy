@@ -26,7 +26,7 @@ public class SubResourceInvoker implements MethodInvoker
       this.config = config;
       this.method = method;
       this.iface = method.getReturnType();
-      jaxParams = new Annotation[method.getParameterTypes().length];
+      jaxParams = new Annotation[method.getParameterCount()];
       for (int i = 0; i < jaxParams.length; i++)
       {
          Annotation[] paramAnnotations = method.getParameterAnnotations()[i];

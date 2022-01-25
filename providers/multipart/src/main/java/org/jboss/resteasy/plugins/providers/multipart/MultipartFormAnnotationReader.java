@@ -88,7 +88,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
          if ((method.isAnnotationPresent(FormParam.class)
                  || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
                  && method.getName().startsWith("set")
-                 && method.getParameterTypes().length == 1)
+                 && method.getParameterCount() == 1)
          {
             FormParam param = method.getAnnotation(FormParam.class);
             String name;

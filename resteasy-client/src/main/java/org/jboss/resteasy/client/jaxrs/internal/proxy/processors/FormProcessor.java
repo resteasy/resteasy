@@ -149,7 +149,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
       {
          if (!method.getName().startsWith("get")) continue;
 
-         if (method.getParameterTypes().length > 0) continue;
+         if (method.getParameterCount() > 0) continue;
 
          Annotation[] annotations = method.getAnnotations();
          if (annotations == null || annotations.length == 0) continue;

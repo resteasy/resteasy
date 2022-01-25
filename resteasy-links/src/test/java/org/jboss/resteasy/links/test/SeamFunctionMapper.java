@@ -68,7 +68,7 @@ public class SeamFunctionMapper extends FunctionMapper
          {
             for (Method m : methods)
             {
-               if (m.getParameterTypes().length == paramCount) return m;
+               if (m.getParameterCount() == paramCount) return m;
             }
          }
 

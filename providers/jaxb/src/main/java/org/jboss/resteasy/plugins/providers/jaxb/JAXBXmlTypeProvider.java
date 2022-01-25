@@ -274,7 +274,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 
          for (Method current : method)
          {
-            if (current.getParameterTypes().length == 1 && current.getParameterTypes()[0].equals(type)
+            if (current.getParameterCount() == 1 && current.getParameterTypes()[0].equals(type)
                && current.getName().startsWith("create"))
             {
                Object result = current.invoke(factory, t);
