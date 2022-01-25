@@ -36,7 +36,6 @@
         <version.jakarta.json-api>2.0.0</version.jakarta.json-api>
         <version.jakarta.json.bind-api>2.0.0</version.jakarta.json.bind-api>
         <version.jakarta.validation-api>3.0.0</version.jakarta.validation-api>
-        <version.javax.ws.rs-api>1.0.0.Final</version.javax.ws.rs-api>
         <version.junit>4.13.1</version.junit>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.13</version.org.apache.httpcomponents.httpclient>
@@ -65,7 +64,7 @@
         <version.jakarta.ejb.ejb-api>4.0.0</version.jakarta.ejb.ejb-api>
         <version.jakarta.interceptor.interceptor-api>2.0.0</version.jakarta.interceptor.interceptor-api>
         <version.jakarta.jms.jms-api>3.0.0</version.jakarta.jms.jms-api>
-        <version.jakarta.ws.rs>3.0.0</version.jakarta.ws.rs>
+        <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
         <version.jakarta.servlet.servlet-api>5.0.0</version.jakarta.servlet.servlet-api>
         <version.jakarta.transaction.transaction-api>2.0.0</version.jakarta.transaction.transaction-api>

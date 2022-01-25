@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core.providerfactory;
 
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.EntityPart;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
@@ -1685,6 +1687,33 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    public Link.Builder createLinkBuilder()
    {
       return Utils.createLinkBuilder();
+   }
+
+   @Override
+   public boolean hasProperty(final String name) {
+      return super.hasProperty(name);
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      throw new UnsupportedOperationException("Pending implementation");
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Application application,
+                                                          final SeBootstrap.Configuration configuration) {
+      throw new UnsupportedOperationException("Pending implementation");
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Class<? extends Application> clazz,
+                                                          final SeBootstrap.Configuration configuration) {
+      throw new UnsupportedOperationException("Pending implementation");
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(final String partName) throws IllegalArgumentException {
+      throw new UnsupportedOperationException("Pending implementation");
    }
 
    public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
