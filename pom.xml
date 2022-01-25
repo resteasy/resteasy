@@ -24,7 +24,7 @@
         <dep.arquillian-bom.version>1.7.0.Alpha10</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
-        <server.version>25.0.1.Final</server.version>
+        <server.version>26.0.1.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha1</version.org.wildfly.arquillian.wildfly-arquillian>
 
@@ -117,6 +117,20 @@
             <name>JBoss Public Repository Group</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
             <layout>default</layout>
+        </repository>
+        <!-- Temporary repository for staged Jakarta EE 10 dependencies -->
+        <repository>
+            <id>jakarta-staging</id>
+            <name>Jakarta Staging</name>
+            <url>https://jakarta.oss.sonatype.org/content/repositories/staging/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

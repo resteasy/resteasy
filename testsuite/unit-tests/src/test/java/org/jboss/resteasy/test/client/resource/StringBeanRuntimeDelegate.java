@@ -1,6 +1,10 @@
 package org.jboss.resteasy.test.client.resource;
 
+import java.util.concurrent.CompletionStage;
+
+import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.Link.Builder;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.UriBuilder;
@@ -47,6 +51,28 @@ public class StringBeanRuntimeDelegate extends RuntimeDelegate {
    @Override
    public VariantListBuilder createVariantListBuilder() {
       return original.createVariantListBuilder();
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      return original.createConfigurationBuilder();
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Application application,
+                                                          final SeBootstrap.Configuration configuration) {
+      return original.bootstrap(application, configuration);
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Class<? extends Application> clazz,
+                                                          final SeBootstrap.Configuration configuration) {
+      return original.bootstrap(clazz, configuration);
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(final String partName) throws IllegalArgumentException {
+      return original.createEntityPartBuilder(partName);
    }
 
    public RuntimeDelegate getOriginal() {

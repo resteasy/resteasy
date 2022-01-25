@@ -6,6 +6,8 @@
  */
 package org.jboss.resteasy.core.providerfactory;
 
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.EntityPart;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 /**
  *
@@ -634,5 +637,32 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    @Override
    protected boolean isOnServer() {
       return resteasyProviderFactoryDelegator.isOnServer();
+   }
+
+   @Override
+   public boolean hasProperty(final String name) {
+      return resteasyProviderFactoryDelegator.hasProperty(name);
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      return resteasyProviderFactoryDelegator.createConfigurationBuilder();
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Application application,
+                                                          final SeBootstrap.Configuration configuration) {
+      return resteasyProviderFactoryDelegator.bootstrap(application, configuration);
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Class<? extends Application> clazz,
+                                                          final SeBootstrap.Configuration configuration) {
+      return resteasyProviderFactoryDelegator.bootstrap(clazz, configuration);
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(final String partName) throws IllegalArgumentException {
+      return resteasyProviderFactoryDelegator.createEntityPartBuilder(partName);
    }
 }
