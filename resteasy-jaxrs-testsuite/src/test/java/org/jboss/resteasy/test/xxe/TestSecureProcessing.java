@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.xxe;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -20,6 +22,8 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
+import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -101,6 +105,13 @@ public class TestSecureProcessing
          //System.out.println("text: " + text.substring(0, len));
          return text;
       }
+   }
+
+   @BeforeClass
+   public static void checkJvm() {
+      final String value = System.getProperty("java.specification.version");
+      final Matcher matcher = Pattern.compile("^(?:1\\.)?(\\d+)$").matcher(value);
+      Assume.assumeTrue("Do not run on Java 17", matcher.find() && Integer.parseInt(matcher.group(1)) < 17);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////

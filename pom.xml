@@ -177,6 +177,15 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>modular-jdk</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <modular.jdk.args>--add-opens=java.base/java.lang=ALL-UNNAMED</modular.jdk.args>
+            </properties>
+        </profile>
     </profiles>
 
     <contributors>

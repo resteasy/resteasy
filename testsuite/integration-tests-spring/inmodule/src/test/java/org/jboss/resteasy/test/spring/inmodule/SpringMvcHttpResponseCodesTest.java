@@ -19,11 +19,13 @@ import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCod
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.TestResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 import org.junit.After;
 import org.junit.Assert;
@@ -63,6 +65,11 @@ public class SpringMvcHttpResponseCodesTest {
       war.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
       war.addClass(SpringMvcHttpResponseCodesPerson.class);
       return TestUtil.finishContainerPrepare(war, null, SpringMvcHttpResponseCodesResource.class, TestResource.class);
+   }
+
+   @BeforeClass
+   public static void canRun() {
+      AssumeUtils.checkElytronEnabled();
    }
 
    @Before

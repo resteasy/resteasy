@@ -1,10 +1,20 @@
 package org.jboss.resteasy.test.security;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Hashtable;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Response;
+
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -17,11 +27,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
-import org.jboss.resteasy.test.security.resource.BasicAuthRequestFilter;
+import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceAnybody;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceMoreSecured;
+import org.jboss.resteasy.test.security.resource.BasicAuthRequestFilter;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -33,15 +44,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Hashtable;
 
 /**
  * @tpSubChapter Security
@@ -72,6 +74,7 @@ public class BasicAuthTest {
 
     @BeforeClass
     public static void init() {
+        AssumeUtils.checkElytronEnabled();
         // authorizedClient
         {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
@@ -109,12 +112,12 @@ public class BasicAuthTest {
 
     @AfterClass
     public static void after() throws Exception {
-        authorizedClient.close();
-        unauthorizedClient.close();
-        noAutorizationClient.close();
-        authorizedClientUsingRequestFilter.close();
-        unauthorizedClientUsingRequestFilter.close();
-        unauthorizedClientUsingRequestFilterWithWrongPassword.close();
+        safeClose(authorizedClient);
+        safeClose(unauthorizedClient);
+        safeClose(noAutorizationClient);
+        safeClose(authorizedClientUsingRequestFilter);
+        safeClose(unauthorizedClientUsingRequestFilter);
+        safeClose(unauthorizedClientUsingRequestFilterWithWrongPassword);
     }
 
    @Deployment
@@ -384,6 +387,15 @@ public class BasicAuthTest {
         process.destroy();
 
         Assert.assertTrue(new File(jarPath).delete());
+    }
+
+    private static void safeClose(final Client client) throws IOException {
+        if (client != null) {
+            try {
+                client.close();
+            } catch (Exception ignore) {
+            }
+        }
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

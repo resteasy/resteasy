@@ -15,6 +15,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
+import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.CustomForbiddenMessageExceptionMapper;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -67,6 +68,7 @@ public class CustomForbiddenMessageTest {
 
    @BeforeClass
    public static void init() {
+      AssumeUtils.checkElytronEnabled();
       // authorizedClient
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
@@ -80,7 +82,9 @@ public class CustomForbiddenMessageTest {
 
    @AfterClass
    public static void after() throws Exception {
-      authorizedClient.close();
+      if (authorizedClient != null) {
+         authorizedClient.close();
+      }
    }
 
    private String generateURL(String path) {
