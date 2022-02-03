@@ -192,7 +192,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>23.0.2.Final</server.version>
+                <server.version>24.0.1.Final</server.version>
             </properties>
         </profile>
         <profile>
@@ -263,7 +263,11 @@
                 <jdk>[9,)</jdk>
             </activation>
             <properties>
-                <modular.jdk.args>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+                <modular.jdk.args>
+                    --add-opens=java.base/java.lang=ALL-UNNAMED
+                    --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+                    --add-opens=java.base/java.util=ALL-UNNAMED
+                    --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
                     --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
                     --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED
                     --add-modules=java.se</modular.jdk.args>

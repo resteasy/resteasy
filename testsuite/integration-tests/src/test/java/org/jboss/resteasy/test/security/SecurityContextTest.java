@@ -9,6 +9,7 @@ import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConf
 import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.BasicAuthentication;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
+import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.test.security.resource.SecurityContextResource;
 import org.jboss.resteasy.test.security.resource.SecurityContextContainerRequestFilter;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -19,6 +20,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -55,6 +57,11 @@ public class SecurityContextTest {
 
    private Client authorizedClient;
    private Client nonauthorizedClient;
+
+   @BeforeClass
+   public static void canRun() {
+      AssumeUtils.checkElytronEnabled();
+   }
 
    @Before
    public void initClient() throws IOException, CommandFailedException {

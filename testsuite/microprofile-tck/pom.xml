@@ -210,7 +210,7 @@
         <configuration>
           <skip>${skip.mp.tck}</skip>
           <systemPropertyVariables>
-            <org.eclipse.microprofile.rest.client.tck.timeoutCushion>30</org.eclipse.microprofile.rest.client.tck.timeoutCushion>
+            <org.eclipse.microprofile.rest.client.tck.timeoutCushion>60</org.eclipse.microprofile.rest.client.tck.timeoutCushion>
           </systemPropertyVariables>
         </configuration>
         <executions>
