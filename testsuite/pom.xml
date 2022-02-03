@@ -169,7 +169,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>23.0.2.Final</server.version>
+                <server.version>26.0.1.Final</server.version>
             </properties>
         </profile>
         <profile>
@@ -474,6 +474,21 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>jdk9</id>
+            <activation>
+                <property>
+                    <name>!test.java8.home</name>
+                </property>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <additionalJvmArgs>
+                    --add-opens=java.base/java.util=ALL-UNNAMED
+                </additionalJvmArgs>
+            </properties>
         </profile>
 
         <profile>
