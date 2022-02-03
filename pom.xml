@@ -36,6 +36,8 @@
 
         <!-- Require at least Java 11 to compile -->
         <jdk.min.version>11</jdk.min.version>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
 
