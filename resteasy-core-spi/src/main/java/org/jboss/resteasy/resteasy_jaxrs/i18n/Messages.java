@@ -1,5 +1,7 @@
 package org.jboss.resteasy.resteasy_jaxrs.i18n;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -11,6 +13,7 @@ import jakarta.validation.ElementKind;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
+import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
@@ -856,4 +859,10 @@ public interface Messages
 
    @Message(id = BASE + 2051, value = "Required context value not found.")
    IllegalArgumentException requiredContextParameterNotFound();
+
+   @Message(id = BASE + 2060, value = "Failed to load services for type %s")
+   UncheckedIOException failedToLoadService(@Cause IOException e, Class<?> type);
+
+   @Message(id = BASE + 2061, value ="Failed to construct type %s")
+   RuntimeException failedToConstructClass(@Cause Throwable cause, Class<?> type);
 }
