@@ -313,6 +313,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 360, value = "Failed to look up JNDI resource \"%s\". Using a default ExecutorService.")
    void failedToLookupManagedExecutorService(@Cause Throwable cause, String name);
 
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 370, value = "Failed to load: %s")
+   void failedToLoad(@Cause Throwable cause, String resourceName);
+
 
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
