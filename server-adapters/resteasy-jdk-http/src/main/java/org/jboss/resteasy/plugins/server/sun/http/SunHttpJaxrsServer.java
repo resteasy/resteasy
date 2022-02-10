@@ -16,7 +16,9 @@ import java.net.InetSocketAddress;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated Prefer using a different implementation as this relies on JDK implementation details
  */
+@Deprecated
 public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServer>
 {
    protected HttpContextBuilder context = new HttpContextBuilder();

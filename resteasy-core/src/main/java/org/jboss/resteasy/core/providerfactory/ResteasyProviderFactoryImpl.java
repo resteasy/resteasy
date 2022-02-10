@@ -5,6 +5,8 @@ import jakarta.ws.rs.core.EntityPart;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.se.ResteasySeConfiguration;
+import org.jboss.resteasy.core.se.ResteasySeInstance;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
@@ -1691,24 +1693,26 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    @Override
    public boolean hasProperty(final String name) {
-      return super.hasProperty(name);
+      return properties.containsKey(name);
    }
 
    @Override
    public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
-      throw new UnsupportedOperationException("Pending implementation");
+      return ResteasySeConfiguration.builder();
    }
 
    @Override
    public CompletionStage<SeBootstrap.Instance> bootstrap(final Application application,
                                                           final SeBootstrap.Configuration configuration) {
-      throw new UnsupportedOperationException("Pending implementation");
+      return ResteasySeInstance.create(Objects.requireNonNull(application, Messages.MESSAGES.nullParameter("application")),
+              configuration);
    }
 
    @Override
    public CompletionStage<SeBootstrap.Instance> bootstrap(final Class<? extends Application> clazz,
                                                           final SeBootstrap.Configuration configuration) {
-      throw new UnsupportedOperationException("Pending implementation");
+      return ResteasySeInstance.create(Objects.requireNonNull(clazz, Messages.MESSAGES.nullParameter("clazz")),
+              configuration);
    }
 
    @Override
