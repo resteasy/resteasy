@@ -113,57 +113,60 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>
                         <id>default-test</id>
+                    </execution>
+                    <execution>
+                        <id>Undertow</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
-
                         <configuration>
-                            <systemPropertyVariables>
-                                <fileName>org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer</fileName>
-                            </systemPropertyVariables>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-netty4</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-vertx</exclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </execution>
 
                     <execution>
-                        <id>NettyJaxrsServer</id>
+                        <id>Netty</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
 
                         <configuration>
-                            <systemPropertyVariables>
-                                <fileName>org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer</fileName>
-                            </systemPropertyVariables>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-undertow</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-vertx</exclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </execution>
 
                     <execution>
-                        <id>SunHttpJaxrsServer</id>
+                        <id>Vert.x</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
 
                         <configuration>
-                            <systemPropertyVariables>
-                                <fileName>org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer</fileName>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>VertxJaxrsServer</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-
-                        <configuration>
-                            <systemPropertyVariables>
-                                <fileName>org.jboss.resteasy.plugins.server.vertx.VertxJaxrsServer</fileName>
-                            </systemPropertyVariables>
+                            <!-- This test was previously only executed on the UndertowJaxrsServer. It does not seem to
+                                 work with Vert.x, so we'll just skip it. -->
+                            <excludes>
+                                <exclude>**/NonCDIValidatorFactoryTest</exclude>
+                            </excludes>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-undertow</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-netty4</exclude>
+                            </classpathDependencyExcludes>
                         </configuration>
                     </execution>
                 </executions>

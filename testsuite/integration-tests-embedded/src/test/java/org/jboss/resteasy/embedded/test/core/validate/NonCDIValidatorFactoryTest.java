@@ -7,20 +7,17 @@ import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
-import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
+import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 
@@ -30,9 +27,8 @@ import org.junit.Test;
  * @tpTestCaseDetails Regression test for RESTEASY-2549
  * @tpSince RESTEasy 3.14.0
  */
-public class NonCDIValidatorFactoryTest
+public class NonCDIValidatorFactoryTest extends AbstractBootstrapTest
 {
-   private static UndertowJaxrsServer server;
 
    public static class TestApp extends Application
    {
@@ -57,17 +53,10 @@ public class NonCDIValidatorFactoryTest
    }
 
    //////////////////////////////////////////////////////////////////////////////
-   @BeforeClass
-   public static void before() throws Exception
+   @Before
+   public void before() throws Exception
    {
-      server = new UndertowJaxrsServer().start();
-      server.deploy(TestApp.class);
-   }
-
-   @AfterClass
-   public static void after() throws Exception
-   {
-      server.stop();
+      start(new TestApp());
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +64,6 @@ public class NonCDIValidatorFactoryTest
    @Test
    public void testValidate() throws Exception
    {
-      Client client = ClientBuilder.newClient();
       Invocation.Builder request = client.target("http://localhost:8081/test/validate/x").request();
       Response response = request.get();
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
