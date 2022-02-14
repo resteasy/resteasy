@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -102,13 +103,23 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     public static <S> PriorityServiceLoader<S> load(final Class<S> type, final ClassLoader cl) {
         try {
-            final Holder<S>[] holders = findClasses(type, cl);
+            final Holder<S>[] holders = findClasses(type, cl, null);
             return new PriorityServiceLoader<>(type, holders);
         } catch (IOException e) {
             throw Messages.MESSAGES.failedToLoadService(e, type);
         }
     }
 
+    //-- todo rls add doc
+    public static <S> PriorityServiceLoader<S> load(final Class<S> type, final ClassLoader cl,
+                                                       final String warName) {
+        try {
+            final Holder<S>[] holders = findClasses(type, cl, warName);
+            return new PriorityServiceLoader<>(type, holders);
+        } catch (IOException e) {
+            throw Messages.MESSAGES.failedToLoadService(e, type);
+        }
+    }
 
     /**
      * If there are services available the first one is returned.
@@ -174,9 +185,22 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
     }
 
     @SuppressWarnings("unchecked")
-    private static <S> Holder<S>[] findClasses(final Class<S> type, final ClassLoader cl) throws IOException {
+    private static <S> Holder<S>[] findClasses(final Class<S> type, final ClassLoader cl,String warName) throws IOException {
         final Set<Holder<S>> holders = new TreeSet<>();
-        final Enumeration<URL> resources = cl.getResources(PREFIX + type.getName());
+        final Enumeration<URL> resourcesEnum = cl.getResources(PREFIX + type.getName());
+
+        Enumeration<URL> resources = resourcesEnum;
+        if (warName != null) {
+            Vector<URL> vector = new Vector();
+            while (resourcesEnum.hasMoreElements()) {
+                final URL url = resourcesEnum.nextElement();
+                if (url.getPath().contains(warName)) {
+                    vector.add(url);
+                }
+            }
+            resources = vector.elements();
+        }
+
         while (resources.hasMoreElements()) {
             final URL url = resources.nextElement();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8))) {
