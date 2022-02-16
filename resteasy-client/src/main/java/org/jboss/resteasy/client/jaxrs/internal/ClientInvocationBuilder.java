@@ -106,7 +106,12 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       if (!(Cookie.class.equals(cookie.getClass())))
       {
-         cookie = new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion());
+         cookie = new Cookie.Builder(cookie.getName())
+                 .value(cookie.getValue())
+                 .path(cookie.getPath())
+                 .domain(cookie.getDomain())
+                 .version(cookie.getVersion())
+                 .build();
       }
       getHeaders().cookie(cookie);
       return this;
@@ -115,7 +120,10 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation.Builder cookie(String name, String value)
    {
-      getHeaders().cookie(new Cookie(name, value));
+      Cookie ck1 = new Cookie.Builder(name)
+              .value(value)
+              .build();
+      getHeaders().cookie(ck1);
       return this;
    }
 

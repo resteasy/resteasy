@@ -158,7 +158,9 @@ public class CookieInjectionTest {
       }
       {
          CookieProxy proxy = ProxyBuilder.builder(CookieProxy.class, client.target(generateURL("/"))).build();
-         Cookie cookie = new Cookie("meaning", "42");
+         Cookie cookie = new Cookie.Builder("meaning")
+                 .value("42")
+                 .build();
          proxy.param(cookie);
       }
    }

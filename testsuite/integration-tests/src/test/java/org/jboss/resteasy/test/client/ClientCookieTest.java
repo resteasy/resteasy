@@ -43,7 +43,10 @@ public class ClientCookieTest extends ClientTestBase
       @Path("createCookie")
       public Response createCookie()
       {
-         return Response.ok().cookie(new NewCookie("Cookie", "CookieValue")).build();
+         NewCookie cookie = new NewCookie.Builder("Cookie")
+                 .value("CookieValue")
+                 .build();
+         return Response.ok().cookie(cookie).build();
       }
 
       @GET
