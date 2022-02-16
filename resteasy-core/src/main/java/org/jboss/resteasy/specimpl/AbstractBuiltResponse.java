@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.CookieUtil;
 import org.jboss.resteasy.util.DateUtil;
 
 import jakarta.ws.rs.core.EntityTag;
@@ -358,7 +359,7 @@ public abstract class AbstractBuiltResponse extends Response
          else
          {
             String str = toHeaderString(obj);
-            NewCookie cookie = NewCookie.valueOf(str);
+            NewCookie cookie = CookieUtil.valueOf(NewCookie.class, str);
             cookies.put(cookie.getName(), cookie);
          }
       }

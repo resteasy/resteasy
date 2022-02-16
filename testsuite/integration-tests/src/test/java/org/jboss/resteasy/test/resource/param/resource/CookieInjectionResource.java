@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.jboss.resteasy.util.CookieUtil;
 import org.junit.Assert;
 
 import jakarta.ws.rs.CookieParam;
@@ -22,23 +23,48 @@ public class CookieInjectionResource {
    @Path("/set")
    @GET
    public Response set() {
-      return Response.ok("content").cookie(new NewCookie("meaning", "42")).build();
+      NewCookie cookie = new NewCookie.Builder("meaning")
+              .value("42")
+              .build();
+      return Response.ok("content").cookie(cookie).build();
    }
 
    @Path("/expire")
    @GET
    public Response expire() {
-      NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 0, "comment", 3600, new Date(),
-            true, true);
-      return Response.ok().cookie(cookie).entity(cookie.toString()).build();
+      NewCookie cookie = new NewCookie.Builder("Name")
+              .value("Value")
+              .path("/")
+              .domain("*")
+              .version(0)
+              .comment("comment")
+              .maxAge(3600)
+              .expiry(new Date())
+              .secure(true)
+              .httpOnly(true)
+              .build();
+      return Response.ok().cookie(cookie)
+              .entity(CookieUtil.toString(NewCookie.class, cookie))
+              .build();
    }
 
    @Path("/expire1")
    @GET
    public Response expire1() {
-      NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 1, "comment", 3600, new Date(),
-            true, true);
-      return Response.ok().cookie(cookie).entity(cookie.toString()).build();
+      NewCookie cookie = new NewCookie.Builder("Name")
+              .value("Value")
+              .path("/")
+              .domain("*")
+              .version(1)
+              .comment("comment")
+              .maxAge(3600)
+              .expiry(new Date())
+              .secure(true)
+              .httpOnly(true)
+              .build();
+      return Response.ok().cookie(cookie)
+              .entity(CookieUtil.toString(NewCookie.class, cookie))
+              .build();
    }
 
    @Path("/expired")
@@ -46,9 +72,20 @@ public class CookieInjectionResource {
    public Response expired() {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
-      NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 1, "comment", 1800, cal.getTime(),
-            true, true);
-      return Response.ok().cookie(cookie).entity(cookie.toString()).build();
+      NewCookie cookie = new NewCookie.Builder("Name")
+              .value("Value")
+              .path("/")
+              .domain("*")
+              .version(1)
+              .comment("comment")
+              .maxAge(1800)
+              .expiry(cal.getTime())
+              .secure(true)
+              .httpOnly(true)
+              .build();
+      return Response.ok().cookie(cookie)
+              .entity(CookieUtil.toString(NewCookie.class, cookie))
+              .build();
    }
 
    @Context

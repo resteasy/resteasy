@@ -31,7 +31,13 @@ public class CookieParser {
             if (!name.startsWith("$"))
             {
                if (cookieName != null) {
-                  cookies.add(new Cookie(cookieName, cookieValue, path, domain, version));
+                  Cookie ck1 = new Cookie.Builder(cookieName)
+                          .value(cookieValue)
+                          .path(path)
+                          .domain(domain)
+                          .version(version)
+                          .build();
+                  cookies.add(ck1);
                   cookieName = cookieValue = path = domain = null;
                }
 
@@ -52,7 +58,13 @@ public class CookieParser {
             }
          }
          if (cookieName != null) {
-            cookies.add(new Cookie(cookieName, cookieValue, path, domain, version));
+            Cookie ck1 = new Cookie.Builder(cookieName)
+                    .value(cookieValue)
+                    .path(path)
+                    .domain(domain)
+                    .version(version)
+                    .build();
+            cookies.add(ck1);
 
          }
          return cookies;
