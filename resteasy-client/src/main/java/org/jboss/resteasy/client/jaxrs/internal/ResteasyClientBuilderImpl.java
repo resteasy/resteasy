@@ -432,16 +432,19 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     */
    private void setProxyIfNeeded(ClientConfiguration clientConfig) {
       try {
-         Object proxyHostProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST);
-         if (proxyHostProp != null) {
-            Object proxyPortProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT);
-            // default if the port is not set or if it is not string or number
+         if (clientConfig.hasProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST)) {
+            Object proxyHostProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST);
             Integer proxyPort = -1;
-            if (proxyPortProp != null && proxyPortProp instanceof Number) {
-               proxyPort = ((Number) proxyPortProp).intValue();
-            } else if (proxyPortProp != null && proxyPortProp instanceof String) {
-               proxyPort = Integer.parseInt((String) proxyPortProp);
+            if (clientConfig.hasProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT)) {
+               // default if the port is not set or if it is not string or number
+               Object proxyPortProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT);
+               if (proxyPortProp instanceof Number) {
+                  proxyPort = ((Number) proxyPortProp).intValue();
+               } else if (proxyPortProp instanceof String) {
+                  proxyPort = Integer.parseInt((String) proxyPortProp);
+               }
             }
+
             Object proxySchemeProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME);
             defaultProxy((String)proxyHostProp, proxyPort, (String)proxySchemeProp);
          }
