@@ -152,10 +152,9 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
         options.setURI(uri.getRawPath());
 
-
-        Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
-        if (timeout != null) {
-            long timeoutMs = unwrapTimeout(timeout);
+        if (request.getConfiguration().hasProperty(REQUEST_TIMEOUT_MS)) {
+            long timeoutMs = unwrapTimeout(
+                    request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS));
             if (timeoutMs > 0) {
                 options.setTimeout(timeoutMs);
             }

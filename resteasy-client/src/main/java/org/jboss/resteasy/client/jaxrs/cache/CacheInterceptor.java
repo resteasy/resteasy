@@ -86,7 +86,7 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
    @Override
    public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException
    {
-      if (!request.getMethod().equalsIgnoreCase("GET") || request.getProperty("cached") != null) return;
+      if (!request.getMethod().equalsIgnoreCase("GET") || request.hasProperty("cached")) return;
       else if (response.getStatus() == 304)
       {
          BrowserCache.Entry entry = (BrowserCache.Entry)request.getProperty("expired.cache.entry");
