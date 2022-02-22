@@ -29,7 +29,7 @@
         <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
         <version.io.netty.netty4>4.1.65.Final</version.io.netty.netty4>
         <version.io.vertx>4.1.0</version.io.vertx>
-        <version.io.undertow>2.2.7.Final</version.io.undertow>
+        <version.io.undertow>2.2.14.Final</version.io.undertow>
         <version.jakarta.activation>2.0.0</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>3.0.0</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.0</version.jakarta.inject.jakarta.inject-api>
@@ -374,7 +374,7 @@
             </dependency>
             <dependency>
                 <groupId>io.undertow</groupId>
-                <artifactId>undertow-servlet-jakartaee9</artifactId>
+                <artifactId>undertow-servlet-jakarta</artifactId>
                 <version>${version.io.undertow}</version>
                 <exclusions>
                     <exclusion>
