@@ -160,7 +160,7 @@ public class ClientInvocation implements Invocation
          {
             if (response.getMediaType() == null)
             {
-               return null;
+               throw new ProcessingException("Response has no content type");
             }
             else
             {
