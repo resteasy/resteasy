@@ -6,6 +6,7 @@ import java.util.Map;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.NotAllowedException;
@@ -83,7 +84,7 @@ public class ClientWebApplicationExceptionTest {
          new WebApplicationException(commonBuilder.status(401).build()),
          new WebApplicationException(commonBuilder.status(403).build()),
          new WebApplicationException(commonBuilder.status(404).build()),
-         new WebApplicationException(commonBuilder.status(405).build()),
+         new WebApplicationException(Response.fromResponse(commonBuilder.status(405).build()).allow(HttpMethod.GET).build()),
          new WebApplicationException(commonBuilder.status(406).build()),
          new WebApplicationException(commonBuilder.status(415).build()),
          new WebApplicationException(commonBuilder.status(500).build()),
