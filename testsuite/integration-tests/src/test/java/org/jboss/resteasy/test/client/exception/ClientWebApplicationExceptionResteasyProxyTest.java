@@ -106,7 +106,7 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
    /**
     * @tpTestDetails For each ResteasyWebApplicationException in newExceptions, calls the resource method newException() to throw
     *                that ResteasyWebApplicationException. Since it is running on the client side, the standard behavior of throwing a
-    *                WebApplicationException will occur. That WebApplicationException should match the result returned by newException().
+    *                WebApplicationException will occur. That WebApplicationException should be sanitized.
     * @tpSince RESTEasy 4.6.0.Final
     */
    @Test
@@ -133,12 +133,12 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     * @tpTestDetails 1. The value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is
     *                   set to "true" to compel the original Client behavior on the server side.
     *
-    *                2. For each WebApplicationException in oldExceptions, the resource method noCatchOld() is called.
+    *                2. For each WebApplicationException in oldExceptions, the resource method noCatchOldOld() is called.
     *
-    *                3. noCatchOld() calls oldException(), which throws the chosen member of oldExceptions. The resulting
+    *                3. noCatchOldOld() calls oldException(), which throws the chosen member of oldExceptions. The resulting
     *                   HTTP response contains the status, headers, and entity in that WebApplicationException.
     *
-    *                4. In noCatchOld(), the original behavior causes the HTTP response to be turned into a WebApplicationException,
+    *                4. In noCatchOldOld(), the original behavior causes the HTTP response to be turned into a WebApplicationException,
     *                   which is thrown by the Client. The resulting HTTP response contains the status, headers, and entity in that
     *                   WebApplicationException.
     *
@@ -173,12 +173,12 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     *                   set to "true" to compel the original Client behavior on the server side.
     *
     *                2. For each ResteasyWebApplicationException in ClientWebApplicationExceptionTest.newExceptions,
-    *                   the resource method noCatchNew() is called.
+    *                   the resource method noCatchOldNew() is called.
     *
-    *                3. noCatchNew() calls newException(), which throws the matching member of newExceptions. The resulting
+    *                3. noCatchOldNew() calls newException(), which throws the matching member of newExceptions. The resulting
     *                   Response is sanitized.
     *
-    *                4. In noCatchNew(), the original behavior causes the HTTP response to be turned into a WebApplicationException,
+    *                4. In noCatchOldNew(), the original behavior causes the HTTP response to be turned into a WebApplicationException,
     *                   which is thrown by the Client. The resulting HTTP response is sanitized.
     *
     *                5. The client side Client constructs and throws a WebApplicationException which is checked for a sanitized
@@ -209,12 +209,12 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
    }
 
    /**
-    * @tpTestDetails 1. For each WebApplicationException in oldExceptions, the resource method noCatchOld() is called.
+    * @tpTestDetails 1. For each WebApplicationException in oldExceptions, the resource method noCatchNewOld() is called.
     *
-    *                2. noCatchOld() calls oldException(), which throws the matching member of oldExceptions. The resulting
+    *                2. noCatchNewOld() calls oldException(), which throws the matching member of oldExceptions. The resulting
     *                   HTTP response contains the status, headers, and entity in that WebApplicationException.
     *
-    *                3. In noCatchOld(), the new behavior causes the HTTP response to be turned into a ResteasyWebApplicationException,
+    *                3. In noCatchNewOld(), the new behavior causes the HTTP response to be turned into a ResteasyWebApplicationException,
     *                   which is thrown by the Client. ResteasyWebApplicationException.getResponse() returns a sanitized Response.
     *
     *                4. The client side Client constructs and throws a WebApplicationException which is checked for a sanitized
@@ -242,12 +242,12 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
    }
 
    /**
-    * @tpTestDetails 1. For each ResteasyWebApplicationException in newExceptions, the resource method noCatchNew() is called.
+    * @tpTestDetails 1. For each ResteasyWebApplicationException in newExceptions, the resource method noCatchNewNew() is called.
     *
-    *                2. noCatchNew() calls newException(), which throws the matching member of newExceptions.
-    *                   ResteasyWebApplicationException.getResponse() returns a sanitized Response.
+    *                2. noCatchNewNew() calls newException(), which throws the matching member of newExceptions.
+    *                   The resulting response is sanitized.
     *
-    *                3. In noCatchNew(), the new behavior causes the HTTP response to be turned into a ResteasyWebApplicationException,
+    *                3. In noCatchNewNew(), the new behavior causes the HTTP response to be turned into a ResteasyWebApplicationException,
     *                   which is thrown by the Client. The resulting  HTTP response has a sanitized Response.
     *
     *                4. The client side Client constructs and throws a WebApplicationException which is checked for a sanitized
@@ -323,7 +323,7 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
     *                2. For each ResteasyWebApplicationException in newExceptions, the resource method catchOldNew() is called.
     *
     *                3. catchOldNew() calls newException(), which throws the chosen member of newExceptions.
-    *                   ResteasyWebApplicationException.getResponse() returns a sanitized Response.
+    *                   The resulting response is sanitized.
     *
     *                4. In catchOldNew(), the original behavior causes the HTTP response to be turned into a WebApplicationException,
     *                   which is thrown by the Client. That WebApplicationException is caught, verified to

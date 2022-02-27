@@ -14,14 +14,21 @@ public class ResteasyNotFoundException extends NotFoundException implements WebA
 
    private static final long serialVersionUID = 8915809730318765630L;
    private final NotFoundException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyNotFoundException(final NotFoundException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public NotFoundException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }
