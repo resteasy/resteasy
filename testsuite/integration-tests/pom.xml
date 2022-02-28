@@ -561,22 +561,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <!-- Required for PicketBox, once this is removed from WildFly this can be removed -->
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            <id>jboss-enterprise-maven-repository</id>
-            <name>JBoss Enterprise Maven Repository</name>
-            <url>https://maven.repository.redhat.com/ga/</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
 </project>

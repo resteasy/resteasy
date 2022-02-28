@@ -4,6 +4,9 @@ embed-server --admin-only=true
 /subsystem=logging/console-handler=CONSOLE:undefine-attribute(name=level)
 /subsystem=logging/logger=org.jboss.resteasy:add(level=TRACE)
 
+# Allow TRACE methods in Undertow
+/subsystem=undertow/server=default-server/http-listener=default:list-clear(name=disallowed-methods)
+
 # Permission mapper
 /subsystem=elytron/constant-permission-mapper=tck-permission-mapper:add(permissions=[{class-name=org.wildfly.security.auth.permission.LoginPermission}, {class-name=org.wildfly.security.auth.permission.RunAsPrincipalPermission, target-name="*"}])
 
@@ -11,10 +14,10 @@ embed-server --admin-only=true
 /subsystem=elytron/filesystem-realm=tck-realm:add(path=tck-users, relative-to=jboss.server.config.dir)
 /subsystem=elytron/filesystem-realm=tck-realm:add-identity(identity=resteasy-staff)
 /subsystem=elytron/filesystem-realm=tck-realm:set-password(identity=resteasy-staff, clear={password="resteasy-staff.12345"})
-/subsystem=elytron/filesystem-realm=tck-realm:add-identity-attribute(identity=resteasy-staff, name=groups, value=["staff", "mgr"])
+/subsystem=elytron/filesystem-realm=tck-realm:add-identity-attribute(identity=resteasy-staff, name=groups, value=["staff", "mgr", "DIRECTOR"])
 /subsystem=elytron/filesystem-realm=tck-realm:add-identity(identity=resteasy-user)
 /subsystem=elytron/filesystem-realm=tck-realm:set-password(identity=resteasy-user, clear={password="resteasy-user.12345"})
-/subsystem=elytron/filesystem-realm=tck-realm:add-identity-attribute(identity=resteasy-user, name=groups, value=["guest"])
+/subsystem=elytron/filesystem-realm=tck-realm:add-identity-attribute(identity=resteasy-user, name=groups, value=["guest", "OTHERROLE"])
 
 # Configure a security domain
 /subsystem=elytron/security-domain=tck-security-domain:add(realms=[{realm=tck-realm,role-decoder=groups-to-roles}], default-realm=tck-realm, permission-mapper=tck-permission-mapper)
