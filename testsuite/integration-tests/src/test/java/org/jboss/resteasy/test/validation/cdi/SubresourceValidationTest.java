@@ -15,7 +15,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +38,7 @@ public class SubresourceValidationTest {
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(SubresourceValidationTest.class.getSimpleName())
             .addClasses(SubresourceValidationResource.class, SubresourceValidationSubResource.class, SubresourceValidationQueryBeanParam.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, SubresourceValidationResource.class);
    }
 

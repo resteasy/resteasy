@@ -19,11 +19,10 @@ public class CDIExtensionsBostonBeanExtension implements Extension {
    @SuppressWarnings({"rawtypes", "unchecked"})
    void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
       log.info("AfterBeanDiscovery");
-      CDIExtensionsBostonBean<?> rb = new CDIExtensionsBostonBean(CDIExtensionsBostonHolder.class, bm.createInjectionTarget(bm.createAnnotatedType(CDIExtensionsBostonHolder.class)));
+      CDIExtensionsBostonBean<?> rb = new CDIExtensionsBostonBean(CDIExtensionsBostonHolder.class, bm.getInjectionTargetFactory(bm.createAnnotatedType(CDIExtensionsBostonHolder.class)));
       abd.addBean(rb);
       log.info("registered " + rb.toString());
-
-      rb = new CDIExtensionsBostonBean(CDIExtensionsBostonlLeaf.class, bm.createInjectionTarget(bm.createAnnotatedType(CDIExtensionsBostonlLeaf.class)));
+      rb = new CDIExtensionsBostonBean(CDIExtensionsBostonlLeaf.class, bm.getInjectionTargetFactory(bm.createAnnotatedType(CDIExtensionsBostonlLeaf.class)));
       abd.addBean(rb);
       log.info("registered " + rb.toString());
    }

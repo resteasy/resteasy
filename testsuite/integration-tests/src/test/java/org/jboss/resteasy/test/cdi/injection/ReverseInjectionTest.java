@@ -43,7 +43,6 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -148,7 +147,7 @@ public class ReverseInjectionTest {
             .addClasses(ReverseInjectionEJBHolderRemote.class, ReverseInjectionEJBHolderLocal.class, ReverseInjectionEJBHolder.class)
             .addClasses(ReverseInjectionResource.class)
             .addClasses(CDIInjectionNewBean.class, CDIInjectionStereotypedApplicationScope.class, CDIInjectionStereotypedDependentScope.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
             .addAsResource(ReverseInjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),

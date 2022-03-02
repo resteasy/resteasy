@@ -13,7 +13,6 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.Instance;
-import jakarta.enterprise.inject.New;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
@@ -66,7 +65,6 @@ public class CDIInjectionBookResource {
    public static final String COLLECTION = "collection";
    public static final String BOOK_BAG = "bookBag";
    public static final String NEW_BEAN_APPLICATION_SCOPED = "newBeanApplicationScoped";
-   public static final String NEW_BEAN_DEPENDENT_SCOPED = "newBeanDependentScoped";
    public static final String STEREOTYPED_APPLICATION_SCOPED = "stereotypedApplicationScoped";
    public static final String STEREOTYPED_DEPENDENT_SCOPED = "stereotypedDependentScoped";
 
@@ -106,9 +104,6 @@ public class CDIInjectionBookResource {
    private Queue bookQueue;
    @Inject
    private CDIInjectionNewBean newBean1;
-   @Inject
-   @New
-   private CDIInjectionNewBean newBean2;
    @Inject
    private CDIInjectionStereotypedApplicationScope stereotypeApplicationScoped;
    @Inject
@@ -191,7 +186,6 @@ public class CDIInjectionBookResource {
          store.put(COLLECTION, collection);
          store.put(BOOK_BAG, bookBag);
          store.put(NEW_BEAN_APPLICATION_SCOPED, newBean1);
-         store.put(NEW_BEAN_DEPENDENT_SCOPED, newBean2);
          store.put(STEREOTYPED_APPLICATION_SCOPED, stereotypeApplicationScoped);
          store.put(STEREOTYPED_DEPENDENT_SCOPED, stereotypedRequestScoped);
          return Response.ok().build();
@@ -223,8 +217,6 @@ public class CDIInjectionBookResource {
             store.get(COLLECTION).equals(collection) &&
             store.get(BOOK_BAG).equals(bookBag) &&
             store.get(NEW_BEAN_APPLICATION_SCOPED).equals(newBean1) &&
-            !store.get(NEW_BEAN_DEPENDENT_SCOPED).equals(newBean2) &&
-            !newBean1.equals(newBean2) &&
             store.get(STEREOTYPED_APPLICATION_SCOPED).equals(stereotypeApplicationScoped) &&
             !store.get(STEREOTYPED_DEPENDENT_SCOPED).equals(stereotypedRequestScoped)
       ) {

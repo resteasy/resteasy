@@ -43,7 +43,6 @@ import org.jboss.resteasy.test.cdi.injection.resource.RootApplication;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -67,7 +66,7 @@ public class RequiredInjectableContextTest {
     public static Archive<?> deployment() {
         return ShrinkWrap.create(WebArchive.class, RequiredInjectableContextTest.class.getSimpleName() + ".war")
                 .addClasses(RequiredInjectableContextResource.class, RootApplication.class, TestExceptionMapper.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
     }
 
     @BeforeClass

@@ -10,7 +10,6 @@ import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,7 @@ public class TimerInterceptorTest {
       WebArchive war = TestUtil.prepareArchive(TimerInterceptorTest.class.getSimpleName())
             .addClasses(UtilityProducer.class, PortProviderUtil.class)
             .addClasses(TimerInterceptorResourceIntf.class, TimerInterceptorResource.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return war;
    }
 

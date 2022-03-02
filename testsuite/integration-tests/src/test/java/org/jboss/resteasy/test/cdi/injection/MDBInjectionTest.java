@@ -42,7 +42,6 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -79,7 +78,7 @@ public class MDBInjectionTest {
             .addClasses(CDIInjectionScopeStereotype.class, CDIInjectionScopeInheritingStereotype.class)
             .addClasses(CDIInjectionStereotypedApplicationScope.class, CDIInjectionStereotypedDependentScope.class)
             .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
             .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
       String host = PortProviderUtil.getHost();
       if (PortProviderUtil.isIpv6()) {

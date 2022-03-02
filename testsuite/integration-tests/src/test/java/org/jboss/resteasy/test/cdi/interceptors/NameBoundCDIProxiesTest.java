@@ -14,7 +14,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class NameBoundCDIProxiesTest {
    public static Archive<?> deploySimpleResource() {
       WebArchive war = prepareArchive(NameBoundCDIProxiesTest.class.getSimpleName());
       war.addClass(NameBoundProxiesAnnotation.class);
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, NameBoundCDIProxiesResource.class, NameBoundCDIProxiesInterceptor.class);
    }
 

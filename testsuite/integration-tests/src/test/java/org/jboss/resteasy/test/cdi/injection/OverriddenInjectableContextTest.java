@@ -26,9 +26,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.cdi.injection.resource.RequiredInjectableContextResource;
 import org.jboss.resteasy.test.cdi.injection.resource.RootApplication;
 import org.jboss.resteasy.test.cdi.injection.resource.TestProducer;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class OverriddenInjectableContextTest {
     public static Archive<?> deployment() {
         return ShrinkWrap.create(WebArchive.class, RequiredInjectableContextTest.class.getSimpleName() + ".war")
                 .addClasses(RequiredInjectableContextResource.class, RootApplication.class, TestProducer.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
     }
 
     @Test

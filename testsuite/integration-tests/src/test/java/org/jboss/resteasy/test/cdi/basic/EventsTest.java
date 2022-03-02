@@ -22,7 +22,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +58,7 @@ public class EventsTest {
             .addClasses(EventResource.class)
             .addClasses(EventsRead.class, EventsReadIntercept.class)
             .addClasses(EventsUnused.class, EventsWrite.class, EventsWriteIntercept.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return war;
    }
 
