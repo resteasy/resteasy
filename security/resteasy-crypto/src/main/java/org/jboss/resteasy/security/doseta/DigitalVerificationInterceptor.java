@@ -30,8 +30,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
-      Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
-      if (verifier == null)
+      if (!context.hasProperty(Verifier.class.getName()))
       {
          return context.proceed();
       }
@@ -64,6 +63,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
          context.setInputStream(stream);
          Object rtn = context.proceed();
          byte[] body = stream.toByteArray();
+         Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
 
          if (verifier.getRepository() == null)
          {
