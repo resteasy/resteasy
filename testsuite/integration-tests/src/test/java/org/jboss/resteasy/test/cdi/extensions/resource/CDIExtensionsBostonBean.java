@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.cdi.extensions.resource;
 
+import jakarta.enterprise.inject.spi.InjectionTargetFactory;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 
@@ -36,10 +37,10 @@ public class CDIExtensionsBostonBean<T> implements Bean<T> {
    private Class<? extends Annotation> scope;
    private Set<InjectionPoint> injectionPoints;
 
-   public CDIExtensionsBostonBean(final Class<T> clazz, final InjectionTarget<T> injectionTarget) {
+   public CDIExtensionsBostonBean(final Class<T> clazz, final InjectionTargetFactory<T> factory) {
       this.clazz = clazz;
       this.className = clazz.getSimpleName();
-      this.injectionTarget = injectionTarget;
+      this.injectionTarget = factory.createInjectionTarget(this);
       types = Utilities.getTypeClosure(clazz);
       qualifiers = Utilities.getQualifiers(clazz);
       injectionPoints = injectionTarget.getInjectionPoints();

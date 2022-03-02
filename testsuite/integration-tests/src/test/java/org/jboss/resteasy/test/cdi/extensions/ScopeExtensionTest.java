@@ -16,7 +16,6 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +56,7 @@ public class ScopeExtensionTest {
             .addClasses(ScopeExtensionPlannedObsolescenceExtension.class, ScopeExtensionPlannedObsolescenceScope.class)
             .addClasses(ScopeExtensionPlannedObsolescenceContext.class, ScopeExtensionResource.class)
             .addClasses(ScopeExtensionObsolescent.class, ScopeExtensionObsolescentAfterTwoUses.class, ScopeExtensionObsolescentAfterThreeUses.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
             .addAsServiceProvider(Extension.class, ScopeExtensionPlannedObsolescenceExtension.class);
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(

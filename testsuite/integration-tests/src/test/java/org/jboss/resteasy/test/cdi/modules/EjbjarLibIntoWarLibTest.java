@@ -15,7 +15,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -47,14 +46,14 @@ public class EjbjarLibIntoWarLibTest {
       JavaArchive fromJar = ShrinkWrap.create(JavaArchive.class, "ejb-jar.jar")
             .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
             .add(new FileAsset(new File("src/test/resources/org/jboss/resteasy/test/cdi/modules/ejb-jar.xml")), "META-INF/ejb-jar.xml")
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       JavaArchive toJar = ShrinkWrap.create(JavaArchive.class, "to.jar")
             .addClasses(EjbjarLibIntoWarLibTest.class, UtilityProducer.class)
             .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       WebArchive war = TestUtil.prepareArchive(EjbjarLibIntoWarLibTest.class.getSimpleName())
             .addAsLibrary(toJar)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
 
       EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
             .addAsLibrary(fromJar)

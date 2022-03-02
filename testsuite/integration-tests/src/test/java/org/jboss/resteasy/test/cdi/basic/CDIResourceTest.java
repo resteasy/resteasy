@@ -14,7 +14,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -69,7 +68,7 @@ public class CDIResourceTest {
       war.addClasses(FooResource.class,
             TestApplication.class,
             TestServlet.class);
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       war.addAsWebInfResource(CDIResourceTest.class.getPackage(),
             "web-resteasy1082.xml", "web.xml");
 

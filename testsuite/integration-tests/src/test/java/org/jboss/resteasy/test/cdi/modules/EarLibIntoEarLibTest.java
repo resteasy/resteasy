@@ -15,9 +15,9 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
@@ -50,12 +50,12 @@ public class EarLibIntoEarLibTest {
    public static Archive<?> createTestArchive() {
       JavaArchive fromJar = ShrinkWrap.create(JavaArchive.class, "from.jar")
             .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       JavaArchive toJar = ShrinkWrap.create(JavaArchive.class, "to.jar")
             .addClasses(UtilityProducer.class)
             .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
             .addClasses(TestApplication.class, PortProviderUtil.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
             .addAsLibrary(fromJar)
             .addAsLibrary(toJar);

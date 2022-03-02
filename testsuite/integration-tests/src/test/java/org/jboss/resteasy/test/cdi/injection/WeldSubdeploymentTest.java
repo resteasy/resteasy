@@ -17,9 +17,9 @@ import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentStateless
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -56,7 +56,7 @@ public class WeldSubdeploymentTest {
       war.addClasses(WeldSubdeploymentTest.class, WeldSubdeploymentCdiJpaInjectingBean.class, TestApplication.class);
       war.addClasses(WeldSubdeploymentRequestResource.class, WeldSubdeploymentApplicationResource.class,
             WeldSubdeploymentStatefulResource.class, WeldSubdeploymentStatelessResource.class);
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "util.jar");
       jar.addAsManifestResource(WeldSubdeploymentTest.class.getPackage(), "persistence_subdeployment.xml", "persistence.xml");
       war.addAsLibrary(jar);

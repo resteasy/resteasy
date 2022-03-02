@@ -22,7 +22,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assume;
@@ -79,7 +78,7 @@ public class EJBTest {
          .addClasses(EJBBookWriterImpl.class)
          .addClasses(EJBResourceParent.class, EJBLocalResource.class, EJBRemoteResource.class, EJBBookResource.class)
          .setWebXML(EJBTest.class.getPackage(), "ejbtest_web.xml")
-         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+         .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new LoggingPermission("control", ""),

@@ -11,7 +11,6 @@ import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +49,7 @@ public class AsynchronousCdiTest {
       war.addClasses(UtilityProducer.class)
             .addClasses(AsynchronousStatelessLocal.class, AsynchronousStateless.class)
             .addClasses(AsynchronousResource.class, AsynchronousCdiTest.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return war;
    }
 
