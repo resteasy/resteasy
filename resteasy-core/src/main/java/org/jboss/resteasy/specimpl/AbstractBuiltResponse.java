@@ -7,7 +7,6 @@ import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.CookieUtil;
 import org.jboss.resteasy.util.DateUtil;
 
 import jakarta.ws.rs.core.EntityTag;
@@ -322,7 +321,7 @@ public abstract class AbstractBuiltResponse extends Response
       Object obj = metadata.getFirst(HttpHeaders.CONTENT_LANGUAGE);
       if (obj == null) return null;
       if (obj instanceof Locale) return (Locale) obj;
-      return new LocaleDelegate().fromString(toHeaderString(obj));
+      return LocaleDelegate.INSTANCE.fromString(toHeaderString(obj));
    }
 
    @Override
@@ -358,8 +357,7 @@ public abstract class AbstractBuiltResponse extends Response
          }
          else
          {
-            String str = toHeaderString(obj);
-            NewCookie cookie = CookieUtil.valueOf(NewCookie.class, str);
+            NewCookie cookie = createHeader(NewCookie.class, obj);
             cookies.put(cookie.getName(), cookie);
          }
       }
@@ -372,7 +370,7 @@ public abstract class AbstractBuiltResponse extends Response
       Object d = metadata.getFirst(HttpHeaders.ETAG);
       if (d == null) return null;
       if (d instanceof EntityTag) return (EntityTag) d;
-      return EntityTag.valueOf(toHeaderString(d));
+      return createHeader(EntityTag.class, d);
    }
 
    @Override
@@ -425,6 +423,18 @@ public abstract class AbstractBuiltResponse extends Response
    {
       if (header instanceof String) return (String)header;
       return getHeaderValueProcessor().toHeaderString(header);
+   }
+
+   private <T> T createHeader(final Class<T> type, final Object header) {
+      final String value;
+      if (header instanceof String) {
+         value = (String) header;
+      } else {
+         value = getHeaderValueProcessor().toHeaderString(header);
+      }
+      return ResteasyProviderFactory.getInstance()
+              .createHeaderDelegate(type)
+              .fromString(value);
    }
 
    @Override

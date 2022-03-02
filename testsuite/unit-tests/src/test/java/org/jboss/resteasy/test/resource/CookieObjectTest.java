@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.util.CookieUtil;
+import org.jboss.resteasy.utils.CookieUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import jakarta.ws.rs.core.Cookie;

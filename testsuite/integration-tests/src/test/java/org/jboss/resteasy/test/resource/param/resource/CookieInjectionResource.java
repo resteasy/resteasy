@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.jboss.resteasy.util.CookieUtil;
+import org.jboss.resteasy.utils.CookieUtil;
 import org.junit.Assert;
 
 import jakarta.ws.rs.CookieParam;

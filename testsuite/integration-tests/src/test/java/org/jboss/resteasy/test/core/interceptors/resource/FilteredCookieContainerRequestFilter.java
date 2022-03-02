@@ -8,7 +8,7 @@ import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.ext.Provider;
-import org.jboss.resteasy.util.CookieUtil;
+import org.jboss.resteasy.utils.CookieUtil;
 
 @Provider
 @PreMatching
