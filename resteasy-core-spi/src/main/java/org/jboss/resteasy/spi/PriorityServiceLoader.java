@@ -22,18 +22,23 @@ package org.jboss.resteasy.spi;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,9 +49,29 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.util.Functions;
 
 /**
+ * <p>
  * A service loader which loads classes aggressively sorting the implementations by the value in the {@link Priority}
  * annotation. If the implementation does not include the annotation {@link Integer#MAX_VALUE} is used for the priority.
  * The instances themselves are lazily created.
+ * </p>
+ * <br/>
+ * <p>
+ * <h3><a id="constructorArg">Constructor</a></h3>
+ * If a {@linkplain Function constructor function} is used the argument passed to the function is the resolved type.
+ * The function is free to construct the type however it sees fit.
+ * </p>
+ * <p>
+ * Example:
+ * <pre>{@code
+ * PriorityServiceLoader.load(Service.class, (service) -> {
+ *      try {
+ *          return service.getConstructor(String.class).newInstance("init value");
+ *      } catch (Exception e) {
+ *          throw new RuntimeException(e);
+ *      }
+ * });
+ * }</pre>
+ * </p>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  * @see java.util.ServiceLoader
@@ -56,14 +81,16 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
 
     private static final String PREFIX = "META-INF/services/";
 
+    private final Object lock = new Object();
     private final Supplier<String> toString;
+    // Guarded by lock
     private final Holder<S>[] holders;
     private final int size;
 
-    private PriorityServiceLoader(final Class<S> type, final Holder<S>[] holders) {
+    private PriorityServiceLoader(final Class<S> service, final Holder<S>[] holders) {
         this.holders = holders;
         size = holders.length;
-        toString = Functions.singleton(() -> "PriorityServiceLoader[type=" + type.getName()
+        toString = Functions.singleton(() -> "PriorityServiceLoader[type=" + service.getName()
                 + ", implementations=" + Stream.of(holders)
                 .map((holder) -> holder.type.getName())
                 .collect(Collectors.toList())
@@ -87,7 +114,29 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      *                           retrieving the class loader
      */
     public static <S> PriorityServiceLoader<S> load(final Class<S> type) {
-        return load(type, classLoader(type));
+        return load(type, classLoader(type), null);
+    }
+
+    /**
+     * Creates a new service loader for the type.
+     * <p>
+     * To resolve the class loader this first attempts to get the {@linkplain Thread#currentThread() current threads}
+     * {@linkplain Thread#getContextClassLoader() context class loader}. If that is {@code null} the services class
+     * loader is used. Finally if the class loader from the service is {@code null} then the
+     * {@linkplain ClassLoader#getSystemClassLoader() system class loader} is used.
+     * </p>
+     *
+     * @param type        the type to load the services for
+     * @param constructor an optional <a href="#constructorArg">constructor</a> used to construct the type
+     *
+     * @return a new service loader
+     *
+     * @throws SecurityException if the security manager is enabled there is a security issue loading the class or
+     *                           retrieving the class loader
+     */
+    public static <S> PriorityServiceLoader<S> load(final Class<S> type,
+                                                    final Function<Class<? extends S>, S> constructor) {
+        return load(type, classLoader(type), constructor);
     }
 
     /**
@@ -101,8 +150,24 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      * @throws SecurityException if the security manager is enabled and there is a security issue loading the class
      */
     public static <S> PriorityServiceLoader<S> load(final Class<S> type, final ClassLoader cl) {
+        return load(type, cl, null);
+    }
+
+    /**
+     * Creates a new service loader for the type and class loader.
+     *
+     * @param type        the type to load the services for
+     * @param cl          the class loader used to load the found services
+     * @param constructor an optional <a href="#constructorArg">constructor</a> used to construct the type
+     *
+     * @return a new service loader
+     *
+     * @throws SecurityException if the security manager is enabled and there is a security issue loading the class
+     */
+    public static <S> PriorityServiceLoader<S> load(final Class<S> type, final ClassLoader cl,
+                                                    final Function<Class<? extends S>, S> constructor) {
         try {
-            final Holder<S>[] holders = findClasses(type, cl);
+            final Holder<S>[] holders = findClasses(type, cl, constructor);
             return new PriorityServiceLoader<>(type, holders);
         } catch (IOException e) {
             throw Messages.MESSAGES.failedToLoadService(e, type);
@@ -120,7 +185,9 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     public Optional<S> first() {
         if (size > 0) {
-            return Optional.of(holders[0].getInstance());
+            synchronized (lock) {
+                return Optional.of(holders[0].getInstance());
+            }
         }
         return Optional.empty();
     }
@@ -135,9 +202,32 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     public Optional<S> last() {
         if (size > 0) {
-            return Optional.of(holders[size - 1].getInstance());
+            synchronized (lock) {
+                return Optional.of(holders[size - 1].getInstance());
+            }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Returns the types found for this service.
+     * <p>
+     * Note if accessed before the iterator the types are not actually constructed.
+     * </p>
+     *
+     * @return the types found for this service
+     */
+    public Set<Class<S>> getTypes() {
+        final Holder<S>[] holders;
+        synchronized (lock) {
+            holders = this.holders.clone();
+        }
+        final int len = holders.length;
+        final Set<Class<S>> result = new LinkedHashSet<>(len);
+        for (Holder<S> holder : holders) {
+            result.add(holder.type);
+        }
+        return result;
     }
 
     /**
@@ -148,6 +238,10 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     @Override
     public Iterator<S> iterator() {
+        final Holder<S>[] holders;
+        synchronized (lock) {
+            holders = this.holders.clone();
+        }
         return new Iterator<>() {
             final AtomicInteger current = new AtomicInteger();
 
@@ -174,7 +268,8 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
     }
 
     @SuppressWarnings("unchecked")
-    private static <S> Holder<S>[] findClasses(final Class<S> type, final ClassLoader cl) throws IOException {
+    private static <S> Holder<S>[] findClasses(final Class<S> type, final ClassLoader cl,
+                                               final Function<Class<? extends S>, S> constructor) throws IOException {
         final Set<Holder<S>> holders = new TreeSet<>();
         final Enumeration<URL> resources = cl.getResources(PREFIX + type.getName());
         while (resources.hasMoreElements()) {
@@ -189,13 +284,13 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
                     line = line.trim();
                     if (line.equals("")) continue;
                     try {
-                        final Class<? extends S> found = (Class<? extends S>) cl.loadClass(line);
+                        final Class<S> found = (Class<S>) cl.loadClass(line);
                         final Priority priority = found.getAnnotation(Priority.class);
                         int p = Integer.MAX_VALUE;
                         if (priority != null) {
                             p = priority.value();
                         }
-                        holders.add(new Holder<>(found, p));
+                        holders.add(new Holder<>(found, p, constructor));
                     } catch (ClassNotFoundException e) {
                         LogMessages.LOGGER.failedToLoad(e, line);
                     }
@@ -219,13 +314,17 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
     }
 
     private static class Holder<S> implements Comparable<Holder<S>> {
-        final Class<? extends S> type;
+        final Class<S> type;
         final int priority;
+        final Function<Class<? extends S>, S> constructor;
+        final AccessControlContext acc;
         volatile S instance;
 
-        private Holder(final Class<? extends S> type, final int priority) {
+        private Holder(final Class<S> type, final int priority, final Function<Class<? extends S>, S> constructor) {
             this.type = type;
             this.priority = priority;
+            this.constructor = constructor;
+            acc = System.getSecurityManager() == null ? null : AccessController.getContext();
         }
 
         @Override
@@ -259,8 +358,12 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
             if (instance == null) {
                 synchronized (this) {
                     try {
-                        instance = createInstance();
-                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                        if (acc == null) {
+                            instance = createInstance();
+                        } else {
+                            instance = AccessController.doPrivileged((PrivilegedExceptionAction<S>) this::createInstance, acc);
+                        }
+                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | PrivilegedActionException e) {
                         throw Messages.MESSAGES.failedToConstructClass(e, type);
                     }
                 }
@@ -270,8 +373,10 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
 
         private S createInstance()
                 throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-            final Constructor<? extends S> constructor = type.getConstructor();
-            return constructor.newInstance();
+            if (constructor == null) {
+                return type.getConstructor().newInstance();
+            }
+            return constructor.apply(type);
         }
     }
 }

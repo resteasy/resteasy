@@ -22,7 +22,9 @@ package org.jboss.resteasy.spi;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
+import org.jboss.resteasy.spi.resources.AbstractResolver;
 import org.jboss.resteasy.spi.resources.NoEntriesInterface;
 import org.jboss.resteasy.spi.resources.TestImpl;
 import org.jboss.resteasy.spi.resources.TestImplFirst;
@@ -74,6 +76,34 @@ public class PriorityServiceLoaderTestCase {
     @Test
     public void noImplementation() {
         checkNoMore(PriorityServiceLoader.load(NoEntriesInterface.class).iterator());
+    }
+
+    @Test
+    public void types() throws Exception {
+        final PriorityServiceLoader<TestInterface> loader = PriorityServiceLoader.load(TestInterface.class);
+        final Set<Class<TestInterface>> found = loader.getTypes();
+        // Should have 4 implementations
+        Assert.assertEquals("Expected 4 implementations found " + found.size(), 4, found.size());
+        final Iterator<Class<TestInterface>> iterator = found.iterator();
+        // These should be in a specific order
+        Assert.assertEquals(TestImplFirst.class, iterator.next());
+        Assert.assertEquals(TestImpl.class, iterator.next());
+        Assert.assertEquals(TestImplLast.class, iterator.next());
+        Assert.assertEquals(TestImplNoPriority.class, iterator.next());
+    }
+
+    @Test
+    public void constructorParameter() {
+        final Optional<AbstractResolver> resolver = PriorityServiceLoader.load(AbstractResolver.class, (service) -> {
+                    try {
+                        return service.getConstructor(String.class).newInstance("test-value");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .first();
+        Assert.assertTrue(resolver.isPresent());
+        Assert.assertEquals("test-value", resolver.get().resolve());
     }
 
     private void checkNext(final Class<?> expected, final int count,
