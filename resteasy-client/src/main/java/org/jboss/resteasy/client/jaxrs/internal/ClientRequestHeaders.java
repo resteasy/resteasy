@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HeaderHelper;
@@ -139,7 +140,12 @@ public class ClientRequestHeaders
    {
       if (!(Cookie.class.equals(cookie.getClass())))
       {
-         cookie = new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion());
+         cookie = new Cookie.Builder(cookie.getName())
+                 .value(cookie.getValue())
+                 .path(cookie.getPath())
+                 .domain(cookie.getDomain())
+                 .version(cookie.getVersion())
+              .build();
       }
       headers.add(HttpHeaders.COOKIE, cookie);
    }
@@ -303,7 +309,9 @@ public class ClientRequestHeaders
          else
          {
             String str = configuration.toHeaderString(obj);
-            Cookie cookie = Cookie.valueOf(str);
+            Cookie cookie = ResteasyProviderFactory.getInstance()
+                    .createHeaderDelegate(Cookie.class)
+                    .fromString(str);
             cookies.put(cookie.getName(), cookie);
          }
       }

@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.param.resource.CookieInjectionResource;
+import org.jboss.resteasy.utils.CookieUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -59,7 +60,8 @@ public class CookieInjectionTest {
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(CookieInjectionTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(CookieInjectionTest.class.getSimpleName())
+              .addClass(CookieUtil.class);
       return TestUtil.finishContainerPrepare(war, null, CookieInjectionResource.class);
    }
 
@@ -158,7 +160,9 @@ public class CookieInjectionTest {
       }
       {
          CookieProxy proxy = ProxyBuilder.builder(CookieProxy.class, client.target(generateURL("/"))).build();
-         Cookie cookie = new Cookie("meaning", "42");
+         Cookie cookie = new Cookie.Builder("meaning")
+                 .value("42")
+                 .build();
          proxy.param(cookie);
       }
    }

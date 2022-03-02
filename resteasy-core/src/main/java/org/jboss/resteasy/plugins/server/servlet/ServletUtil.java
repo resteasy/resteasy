@@ -93,8 +93,13 @@ public class ServletUtil
       {
          for (jakarta.servlet.http.Cookie cookie : request.getCookies())
          {
-            cookies.put(cookie.getName(), new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(),
-                  cookie.getDomain(), cookie.getVersion()));
+            Cookie ck1 = new Cookie.Builder(cookie.getName())
+                    .value(cookie.getValue())
+                    .path(cookie.getPath())
+                    .domain(cookie.getDomain())
+                    .version(cookie.getVersion())
+                    .build();
+            cookies.put(cookie.getName(), ck1);
 
          }
       }

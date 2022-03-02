@@ -205,7 +205,9 @@ public class MockHttpRequest extends BaseHttpRequest
 
    public MockHttpRequest cookie(String name, String value)
    {
-      Cookie cookie = new Cookie(name, value);
+      Cookie cookie = new Cookie.Builder(name)
+           .value(value)
+           .build();
       httpHeaders.getMutableCookies().put(name, cookie);
       return this;
    }

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.resource;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.utils.CookieUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import jakarta.ws.rs.core.Cookie;
@@ -41,7 +42,7 @@ public class CookieObjectTest {
       String domain = "";
       int version = 0;
 
-      Cookie ck6 = jakarta.ws.rs.core.Cookie.valueOf(cookie_toParse);
+      Cookie ck6 = CookieUtil.valueOf(Cookie.class, cookie_toParse);
       pass = testCookie(ck6, name, value, path, domain, version);
    }
 
@@ -61,7 +62,7 @@ public class CookieObjectTest {
       String domain = "";
       int version = 1;
 
-      Cookie ck7 = jakarta.ws.rs.core.Cookie.valueOf(cookie_toParse);
+      Cookie ck7 = CookieUtil.valueOf(Cookie.class, cookie_toParse);
 
       pass = testCookie(ck7, name, value, path, domain, version);
    }
@@ -74,7 +75,7 @@ public class CookieObjectTest {
    public void testParse3() throws Exception {
 
       try {
-         Cookie ck8 = jakarta.ws.rs.core.Cookie.valueOf(null);
+         Cookie ck8 = CookieUtil.valueOf(Cookie.class, null);
          throw new Exception("Expectecd IllegalArgumentException not thrown.  Test Failed");
       } catch (java.lang.IllegalArgumentException ilex) {
       }
@@ -95,13 +96,14 @@ public class CookieObjectTest {
       String domain = "";
       int version = 1;
 
-      NewCookie nck26 = jakarta.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+      NewCookie nck26 = CookieUtil.valueOf(NewCookie.class, NewCookie_toParse);
 
       pass = verifyNewCookie(nck26, name, value, path, domain, version,
             "", -1, null, false, false);
 
       // check round-tripping
-      Assert.assertEquals(nck26, NewCookie.valueOf(nck26.toString()));
+      Assert.assertEquals(nck26, CookieUtil.valueOf(NewCookie.class,
+              CookieUtil.toString(NewCookie.class, nck26)));
    }
 
    /**
@@ -120,13 +122,14 @@ public class CookieObjectTest {
       String domain = "";
       int version = 1;
 
-      NewCookie nck27 = jakarta.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+      NewCookie nck27 = CookieUtil.valueOf(NewCookie.class, NewCookie_toParse);
 
       pass = verifyNewCookie(nck27, name, value, path, domain, version,
             "", -1, null, false, false);
 
       // check round-tripping
-      Assert.assertEquals(nck27, NewCookie.valueOf(nck27.toString()));
+      Assert.assertEquals(nck27, CookieUtil.valueOf(NewCookie.class,
+              CookieUtil.toString(NewCookie.class, nck27)));
    }
 
    /**
@@ -136,7 +139,7 @@ public class CookieObjectTest {
    @Test
    public void testNewCookie3() throws Exception {
       try {
-         NewCookie nck27 = jakarta.ws.rs.core.NewCookie.valueOf(null);
+         NewCookie nck27 = CookieUtil.valueOf(NewCookie.class, null);
          throw new Exception("Expected IllegalArgumentException not thrown. Test Failed.");
       } catch (IllegalArgumentException ilex) {
 
@@ -167,13 +170,14 @@ public class CookieObjectTest {
       boolean secure = true;
       boolean httpOnly = true;
 
-      NewCookie nck28 = jakarta.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+      NewCookie nck28 = CookieUtil.valueOf(NewCookie.class, NewCookie_toParse);
 
       pass = verifyNewCookie(nck28, name, value, path, domain, version,
             comment, maxAge, expiry, secure, httpOnly);
 
       // check round-tripping
-      Assert.assertEquals(nck28, NewCookie.valueOf(nck28.toString()));
+      Assert.assertEquals(nck28, CookieUtil.valueOf(NewCookie.class,
+              CookieUtil.toString(NewCookie.class, nck28)));
    }
 
    private boolean testCookie(Cookie ck, String name, String value,
@@ -369,28 +373,39 @@ public class CookieObjectTest {
       int version = 1;
       boolean secure = false;
 
-      Cookie ck1 = new Cookie(name, value);
-      NewCookie nck1 = new NewCookie(ck1);
+      Cookie ck1 = new Cookie.Builder(name)
+              .value(value)
+              .build();
+      NewCookie nck1 = new NewCookie.Builder(ck1).build();
 
       name = "name_2";
       value = "value_2";
       String path = "/acme";
       String domain = "";
 
-      Cookie ck2 = new Cookie(name, value, path, domain);
-      NewCookie nck2 = new NewCookie(ck2);
+      Cookie ck2 = new Cookie.Builder(name)
+              .value(value)
+              .path(path)
+              .domain(domain)
+              .build();
+      NewCookie nck2 = new NewCookie.Builder(ck2).build();
 
       name = "name_3";
       value = "value_3";
       path = "";
       domain = "y.x.foo.com";
 
-      Cookie ck3 = new Cookie(name, value, path, domain);
-      NewCookie nck3 = new NewCookie(ck3);
+      Cookie ck3 = new Cookie.Builder(name)
+              .value(value)
+              .path(path)
+              .domain(domain)
+              .build();
+      NewCookie nck3 = new NewCookie.Builder(ck3).build();
 
-      List<String> cookies = Arrays.asList(nck1.toString().toLowerCase(),
-            nck2.toString().toLowerCase(),
-            nck3.toString().toLowerCase());
+      List<String> cookies = Arrays.asList(
+              CookieUtil.toString(NewCookie.class, nck1).toLowerCase(),
+              CookieUtil.toString(NewCookie.class, nck2).toLowerCase(),
+              CookieUtil.toString(NewCookie.class, nck3).toLowerCase());
 
       Response resp = Response.status(status).cookie(nck1, nck2, nck3).build();
       String tmp = verifyResponse(resp, null, status, null, null, null, null,
@@ -422,10 +437,13 @@ public class CookieObjectTest {
 
       String name = "name_1";
       String value = "value_1";
-      Cookie ck1 = new Cookie(name, value);
-      NewCookie nck1 = new NewCookie(ck1);
+      Cookie ck1 = new Cookie.Builder(name)
+              .value(value)
+              .build();
+      NewCookie nck1 = new NewCookie.Builder(ck1).build();
 
-      List<String> cookies = Arrays.asList(nck1.toString().toLowerCase());
+      List<String> cookies = Arrays.asList(
+              CookieUtil.toString(NewCookie.class, nck1).toLowerCase());
 
       Response resp = Response.status(status).header("Content-type",
             "text/plain").header("Content-type", "text/html").header("Content-Language", "en_US").

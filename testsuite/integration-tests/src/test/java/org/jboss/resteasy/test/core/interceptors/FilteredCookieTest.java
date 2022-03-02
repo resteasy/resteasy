@@ -12,6 +12,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieContainerRequestFilter;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieResource;
+import org.jboss.resteasy.utils.CookieUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,7 +36,8 @@ public class FilteredCookieTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName())
+              .addClass(CookieUtil.class);
       return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
    }
 
