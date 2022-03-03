@@ -64,7 +64,7 @@
         <version.jakarta.ejb.ejb-api>4.0.0</version.jakarta.ejb.ejb-api>
         <version.jakarta.interceptor.interceptor-api>2.0.0</version.jakarta.interceptor.interceptor-api>
         <version.jakarta.jms.jms-api>3.0.0</version.jakarta.jms.jms-api>
-        <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
+        <version.jakarta.ws.rs>3.1.0.RC1-jbossorg-1-SNAPSHOT</version.jakarta.ws.rs>
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
         <version.jakarta.servlet.servlet-api>5.0.0</version.jakarta.servlet.servlet-api>
         <version.jakarta.transaction.transaction-api>2.0.0</version.jakarta.transaction.transaction-api>
@@ -221,6 +221,12 @@
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${version.jakarta.ws.rs}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta-restful-ws-tck</artifactId>
+                <version>${version.jakarta.ws.rs}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>

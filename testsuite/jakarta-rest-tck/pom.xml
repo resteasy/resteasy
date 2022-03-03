@@ -53,9 +53,7 @@
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta-restful-ws-tck</artifactId>
-            <version>3.1.0</version>
-            <systemPath>${project.basedir}/../target/jakarta-rest-tck/jakarta-restful-ws-tck-3.1.0.jar</systemPath>
-            <scope>system</scope>
+            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

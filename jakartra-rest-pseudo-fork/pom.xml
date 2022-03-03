@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ JBoss, Home of Professional Open Source.
+  ~
+  ~ Copyright 2022 Red Hat, Inc., and individual contributors
+  ~ as indicated by the @author tags.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <groupId>org.jboss.resteasy</groupId>
+        <version>6.1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>jakartra-rest-pseudo-fork</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>2.0.0-M1</version>
+                <configuration>
+                    <basedir>${project.build.directory}</basedir>
+                    <connectionUrl>scm:git:https://github.com/jakartaee/rest</connectionUrl>
+                    <scmVersion>master</scmVersion>
+                    <scmVersionType>branch</scmVersionType>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkout-repo</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>bootstrap</goal>
+                        </goals>
+                        <configuration>
+                            <goals>org.codehaus.mojo:versions-maven-plugin:2.9.0:set -DnewVersion=3.1.0.RC1-jbossorg-1-SNAPSHOT</goals>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-repo</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>bootstrap</goal>
+                        </goals>
+                        <configuration>
+                            <checkoutDirectory>${project.build.directory}/discard</checkoutDirectory>
+                            <goalsDirectory>../checkout</goalsDirectory>
+                            <goals>install -pl jaxrs-tck -am -DskipTests -Dmaven.repo.local=${settings.localRepository}</goals>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
