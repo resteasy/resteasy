@@ -153,6 +153,7 @@
                 <module>resteasy-client-jetty</module>
                 <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
+                <module>resteasy-client-utils</module>
                 <module>providers</module>
                 <module>security</module>
                 <module>resteasy-links</module>

@@ -1082,7 +1082,38 @@ webTarget.path("/foo").get().rx(MonoRxInvoker.class).map(...).subscribe()
     </section>
 
    </section>
-   
+
+    <section id="client-utilities">
+        <title>Client Utilities</title>
+        <para>
+            The client utilities contain various client side helpers that can be registered on a client. These utilities
+            do not require RESTEasy and can be used with any Jakarta RESTful Web Services implementation.
+        </para>
+        <section id="client-utilities-auth">
+            <title>Client Authentication</title>
+            <para>
+                The client authentication utilities can be used on a client when an endpoint requires authentication.
+                Currently, BASIC and DIGEST authentication are supported.
+                <programlisting>
+try (
+        Client client = ClientBuilder.newBuilder()
+                .register(HttpAuthenticators.basic(UserCredentials.clear("user", new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'})))
+                .build()
+    ) {
+    final Response response = client.target("https://example.com/api/info")
+            .request(MediaType.APPLICATION_JSON_TYPE)
+            .get();
+}
+                </programlisting>
+                <programlisting>
+final Response response = client.target("https://example.com/api/info")
+        .register(HttpAuthenticators.digest(UserCredentials.clear("user", new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'})))
+        .request(MediaType.APPLICATION_JSON_TYPE)
+        .get();
+                </programlisting>
+            </para>
+        </section>
+    </section>
 
 </chapter>
 
