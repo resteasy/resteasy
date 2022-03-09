@@ -1,5 +1,11 @@
 <chapter id="RESTEasy_Embedded_Container">
 <title>Embedded Containers</title>
+    <para>
+        <emphasis role="bold">NOTE:</emphasis> The <classname>org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer</classname>
+        is deprecated and replaced by <classname>org.jboss.resteasy.plugins.server.embedded.EmbeddedServer</classname>
+        and <classname>jakarta.ws.rs.SeBootstrap.Instance</classname>. The preference should be to use the
+        <link linkend="Se_Bootstrap">SeBootstrap API</link>
+    </para>
 
     <para>RESTEasy has a few different plugins for different embedabble HTTP and/or Servlet containers if use RESTEasy in
     a test environment, or within an environment where you do not want a Servlet engine dependency.</para>
@@ -7,7 +13,7 @@
         <title>Undertow</title>
         <para>
             Undertow is a new Servlet Container that is used by WildFly (JBoss Community Server).  You can embed
-            Undertow as you wish.  Here's a a test that shows it in action.
+            Undertow as you wish.  Here's a test that shows it in action.
 <programlisting><![CDATA[
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
@@ -113,6 +119,9 @@ public class UndertowTest
     <section>
         <title>Sun JDK HTTP Server</title>
         <para>
+            <emphasis>NOTE:</emphasis> This module is deprecated and should not be used.
+        </para>
+        <para>>
             The Sun JDK comes with a simple HTTP server implementation (com.sun.net.httpserver.HttpServer) which you
             can run RESTEasy on top of.
         </para>
