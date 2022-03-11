@@ -65,10 +65,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
+            stream.write(bytes, offset, length);
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
-               stream.write(bytes, offset, length);
                future.complete(null);
             }
          } catch (IOException e)
@@ -97,10 +97,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
+            stream.flush();
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
-               stream.flush();
                future.complete(null);
             }
          } catch (IOException e)
@@ -246,8 +246,11 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          synchronized (this) {
             if (lastAsyncOperation != null) {
-               // Do not reset the lastAsyncOperation unless the current one is complete
-               if (!lastAsyncOperation.future.isDone()) {
+               lastAsyncOperation.future.complete(null);
+               // the above complete can trigger further writes inline, so the lastAsyncOperation when all
+               // those inline writes gets completed may not be the same as the one
+               // where the future is completed in the previous LOC.
+               if(!lastAsyncOperation.future.isDone()) {
                   return;
                }
                lastAsyncOperation = null;
