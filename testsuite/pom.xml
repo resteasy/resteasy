@@ -220,7 +220,7 @@
                         </executions>
                         <configuration>
                             <url>
-                                https://download.eclipse.org/ee4j/jakartaee-tck/jakartaee10/staged/eftl/jakarta-restful-ws-tck-3.1.0.zip
+                                https://ci.eclipse.org/jakartaee-tck/job/10/job/jakarta-rest-tck-build/lastSuccessfulBuild/artifact/bundle/jakarta-restful-ws-tck-3.1.0.zip
                             </url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/jakarta-rest-tck</outputDirectory>

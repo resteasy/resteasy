@@ -78,6 +78,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 41, value = "Failed to get the patch/merge target for request {0}", format = Format.MESSAGE_FORMAT)
    void errorPatchTarget(String requestURI);
 
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 50, value = "The set instance of %s for property %s is not a valid %s.")
+   void invalidPropertyType(Object instance, String name, String type);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  WARN                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

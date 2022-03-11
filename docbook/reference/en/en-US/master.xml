@@ -32,6 +32,7 @@
                 <!ENTITY Asynchronous_Job SYSTEM "modules/Async_job_service.xml">
                 <!ENTITY Asynchronous_Injection SYSTEM "modules/Async_Injection.xml">
                 <!ENTITY Reactive SYSTEM "modules/Reactive.xml">
+                <!ENTITY RESTEasy_Se_Container SYSTEM "modules/Jakarta_Se_Bootstrap.xml">
                 <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
                 <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
                 <!ENTITY Securing_Jakarta_REST_and_RESTeasy SYSTEM "modules/Securing_Jakarta_REST_and_RESTeasy.xml">
@@ -143,6 +144,7 @@ This one is short
    &Asynchronous_Job;
    &Asynchronous_Injection;
    &Reactive;
+   &RESTEasy_Se_Container;
    &RESTEasy_Embedded_Container;
    &RESTEasy_Server-side_Mock_Framework;
    &Securing_Jakarta_REST_and_RESTeasy;

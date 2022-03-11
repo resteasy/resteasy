@@ -1,27 +1,24 @@
 package org.jboss.resteasy.embedded.test.core.basic;
 
-import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
+import jakarta.ws.rs.SeBootstrap;
+import org.jboss.jandex.Index;
+import org.jboss.resteasy.core.se.ConfigurationOption;
+import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
+import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestResourceA;
+import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestResourceB;
+import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonA;
+import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonB;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestAExplicitApplication;
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestBExplicitApplication;
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestMappedApplication;
-import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestResourceA;
-import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestResourceB;
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestScannedApplication;
-import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonA;
-import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonB;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -30,42 +27,17 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @tpTestCaseDetails Test for usage of different types of application class definitions
  * @tpSince RESTEasy 4.1.0
  */
-public class ApplicationTest extends EmbeddedServerTestBase {
+public class ApplicationTest extends AbstractBootstrapTest {
 
    private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";
+   private static Index INDEX;
 
-   static Client client;
-   private static EmbeddedJaxrsServer server;
-   private static ResteasyDeployment deployment;
-
-   @Before
-   public void setup() throws Exception
-   {
-      server = getServer();
-
-      deployment = server.getDeployment();
-      List<String> scannedResourceClasses = deployment.getScannedResourceClasses();
-      scannedResourceClasses.add(ApplicationTestResourceA.class.getName());
-      scannedResourceClasses.add(ApplicationTestSingletonA.class.getName());
-      scannedResourceClasses.add(ApplicationTestResourceB.class.getName());
-      scannedResourceClasses.add(ApplicationTestSingletonB.class.getName());
-      server.setDeployment(deployment);
-
-      client = ClientBuilder.newBuilder().build();
-   }
-
-   @After
-   public void end() throws Exception
-   {
-      try
-      {
-         client.close();
-      }
-      catch (Exception e)
-      {
-
-      }
-      server.stop();
+   @BeforeClass
+   public static void configureIndex() throws Exception {
+      INDEX = Index.of(ApplicationTestResourceA.class,
+              ApplicationTestResourceB.class,
+              ApplicationTestSingletonA.class,
+              ApplicationTestSingletonB.class);
    }
 
    /**
@@ -75,10 +47,7 @@ public class ApplicationTest extends EmbeddedServerTestBase {
     */
    @Test
    public void testExplicitA() throws Exception {
-
-      deployment.setApplicationClass(ApplicationTestAExplicitApplication.class.getName());
-      server.start();
-      server.deploy();
+      start(new ApplicationTestAExplicitApplication());
 
       WebTarget base = client.target(generateURL("/a/explicit"));
 
@@ -103,10 +72,7 @@ public class ApplicationTest extends EmbeddedServerTestBase {
     */
    @Test
    public void testExplicitB() throws Exception {
-
-      deployment.setApplicationClass(ApplicationTestBExplicitApplication.class.getName());
-      server.start();
-      server.deploy();
+      start(new ApplicationTestBExplicitApplication());
 
       WebTarget base = client.target(generateURL("/b/explicit"));
 
@@ -131,10 +97,9 @@ public class ApplicationTest extends EmbeddedServerTestBase {
     */
    @Test
    public void testScanned() throws Exception {
-
-      deployment.setApplicationClass(ApplicationTestScannedApplication.class.getName());
-      server.start();
-      server.deploy();
+      start(new ApplicationTestScannedApplication(), SeBootstrap.Configuration.builder()
+              .property(ConfigurationOption.JANDEX_INDEX.key(), INDEX)
+              .build());
 
       WebTarget base = client.target(generateURL("/scanned"));
 
@@ -162,10 +127,10 @@ public class ApplicationTest extends EmbeddedServerTestBase {
    @Test
    public void testMapped() throws Exception {
 
-      deployment.setApplicationClass(ApplicationTestMappedApplication.class.getName());
-      server.setRootResourcePath("/mapped");
-      server.start();
-      server.deploy();
+      start(new ApplicationTestMappedApplication(), SeBootstrap.Configuration.builder()
+              .property(ConfigurationOption.JANDEX_INDEX.key(), INDEX)
+              .rootPath("/mapped")
+              .build());
 
       WebTarget base = client.target(generateURL("/mapped"));
 

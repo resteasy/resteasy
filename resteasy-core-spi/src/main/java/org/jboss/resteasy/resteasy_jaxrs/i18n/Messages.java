@@ -8,8 +8,10 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletionException;
 
 import jakarta.validation.ElementKind;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -865,4 +867,22 @@ public interface Messages
 
    @Message(id = BASE + 2061, value ="Failed to construct type %s")
    RuntimeException failedToConstructClass(@Cause Throwable cause, Class<?> type);
+
+   @Message(id = BASE + 2070, value = "Invalid protocol %s. Only protocols %s are allowed.")
+   IllegalArgumentException invalidProtocol(String protocol, String... values);
+
+   @Message(id = BASE + 2071, value = "Invalid argument %s for property %s. Require type is %s.")
+   IllegalArgumentException invalidArgumentType(String propertyName, Object value, Class<?> expected);
+
+   @Message(id = BASE + 2072, value = "Parameter %s is a required parameter and cannot be set to null.")
+   String nullParameter(String name);
+
+   @Message(id = BASE + 2073, value = "Failed to scan for resources.")
+   UncheckedIOException failedToScanResources(@Cause IOException cause);
+
+   @Message(id = BASE + 2074, value = "No implementation of %s was found.")
+   CompletionException noImplementationFound(String name);
+
+   @Message(id = BASE + 2075, value = "Could no load default SSL context")
+   IllegalStateException couldNotLoadSslContext(@Context Throwable cause);
 }

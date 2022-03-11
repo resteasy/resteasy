@@ -1,18 +1,16 @@
 package org.jboss.resteasy.embedded.test.providers.custom;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
-import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
+import jakarta.ws.rs.SeBootstrap;
+import org.jboss.resteasy.core.se.ConfigurationOption;
+import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
+import org.jboss.resteasy.embedded.test.TestApplication;
 import org.jboss.resteasy.embedded.test.providers.custom.resource.ReaderWriterResource;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.embedded.test.providers.custom.resource.WriterNotBuiltinTestWriter;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -23,35 +21,14 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @tpTestCaseDetails Demonstrate MessageBodyWriter, MessageBodyReader
  * @tpSince RESTEasy 4.1.0
  */
-public class WriterNotBuiltinTest extends EmbeddedServerTestBase {
-
-    static ResteasyClient client;
-    private static EmbeddedJaxrsServer server;
+public class WriterNotBuiltinTest extends AbstractBootstrapTest {
 
     @Before
     public void setup() throws Exception {
-        server = getServer();
-
-        ResteasyDeployment deployment = server.getDeployment();
-        deployment.setRegisterBuiltin(false);
-        deployment.getActualProviderClasses().add(WriterNotBuiltinTestWriter.class);
-        deployment.getActualResourceClasses().add(ReaderWriterResource.class);
-        server.setDeployment(deployment);
-
-        server.start();
-        server.deploy();
-
-        client = (ResteasyClient) ClientBuilder.newClient();
-    }
-
-    @After
-    public void end() throws Exception {
-        try {
-            client.close();
-        } catch (Exception e) {
-
-        }
-        server.stop();
+        start(new TestApplication(ReaderWriterResource.class, WriterNotBuiltinTestWriter.class),
+                SeBootstrap.Configuration.builder()
+                        .property(ConfigurationOption.REGISTER_BUILT_INS.key(), false)
+                        .build());
     }
 
     /**

@@ -17,6 +17,7 @@ import io.netty.handler.ssl.SniHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutor;
+import jakarta.ws.rs.SeBootstrap.Configuration;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
@@ -30,10 +31,8 @@ import javax.net.ssl.SSLEngine;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -79,9 +78,24 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
       return this;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public NettyJaxrsServer start() {
+      final Configuration.Builder builder = Configuration.builder()
+              .host(hostname)
+              .port(configuredPort)
+              .rootPath(root)
+              .sslContext(sslContext);
+      start(builder.build());
+      return this;
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public void start(final Configuration configuration) {
+
+      final String hostname = configuration.host();
+      final int configuredPort = configuration.port();
+      String contextPath = configuration.rootPath();
       serverHelper.checkDeployment(deployment);
 
       eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
@@ -89,14 +103,17 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
 
       // dynamically set the root path (the user can rewrite it by calling setRootResourcePath)
       String appPath = serverHelper.checkAppDeployment(deployment);
-      if (appPath != null && (root == null || "".equals(root))) {
-         setRootResourcePath(appPath);
+      if (appPath != null && (contextPath == null || "".equals(contextPath) || "/".equals(contextPath))) {
+         contextPath = appPath;
+      }
+      if (!contextPath.startsWith("/")) {
+         contextPath = "/" + contextPath;
       }
 
       // Configure the server.
       bootstrap.group(eventLoopGroup)
          .channel(NioServerSocketChannel.class)
-         .childHandler(createChannelInitializer())
+         .childHandler(createChannelInitializer(configuration, contextPath))
          .option(ChannelOption.SO_BACKLOG, backlog)
          .childOption(ChannelOption.SO_KEEPALIVE, true);
 
@@ -117,7 +134,6 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
 
       Channel channel = bootstrap.bind(socketAddress).syncUninterruptibly().channel();
       runtimePort = ((InetSocketAddress) channel.localAddress()).getPort();
-      return this;
    }
 
    @Override
@@ -171,11 +187,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
    @Override
    public NettyJaxrsServer setRootResourcePath(String rootResourcePath)
    {
-      root = rootResourcePath;
-      if (root != null && root.equals("/")) {
+      if (rootResourcePath == null || rootResourcePath.equals("/")) {
          root = "";
-      } else if (!root.startsWith("/")) {
-         root = "/" + root;
+      } else if (!rootResourcePath.startsWith("/")) {
+         root = "/" + rootResourcePath;
+      } else {
+         root = rootResourcePath;
       }
       return this;
    }
@@ -331,13 +348,20 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
                deployment.getProviderFactory(), domain);
    }
 
-   private ChannelInitializer<SocketChannel> createChannelInitializer() {
+   private ChannelInitializer<SocketChannel> createChannelInitializer(final Configuration configuration, final String contextPath) {
       final RequestDispatcher dispatcher = createRequestDispatcher();
+      final String protocol = configuration.protocol().toLowerCase(Locale.ROOT);
+      final SSLContext sslContext;
+      if ("https".equals(protocol)) {
+         sslContext = configuration.sslContext();
+      } else {
+         sslContext = null;
+      }
       if (sslContext == null && sniConfiguration == null) {
          return new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-               setupHandlers(ch, dispatcher, HTTP);
+               setupHandlers(ch, dispatcher, protocol, contextPath);
             }
          };
       } else if (sniConfiguration == null) {
@@ -346,8 +370,10 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
             public void initChannel(SocketChannel ch) throws Exception {
                SSLEngine engine = sslContext.createSSLEngine();
                engine.setUseClientMode(false);
+               engine.setWantClientAuth(configuration.sslClientAuthentication() == Configuration.SSLClientAuthentication.OPTIONAL);
+               engine.setNeedClientAuth(configuration.sslClientAuthentication() == Configuration.SSLClientAuthentication.MANDATORY);
                ch.pipeline().addFirst(new SslHandler(engine));
-               setupHandlers(ch, dispatcher, HTTPS);
+               setupHandlers(ch, dispatcher, protocol, contextPath);
             }
          };
       } else {
@@ -355,13 +381,13 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
                ch.pipeline().addFirst(new SniHandler(sniConfiguration.buildMapping()));
-               setupHandlers(ch, dispatcher, HTTPS);
+               setupHandlers(ch, dispatcher, protocol, contextPath);
             }
          };
       }
    }
 
-   private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
+   private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, String protocol, final String contextPath) {
       ChannelPipeline channelPipeline = ch.pipeline();
       channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
       if (idleTimeout > 0) {
@@ -371,7 +397,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
       channelPipeline.addLast(new HttpResponseEncoder());
       channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
       channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
-      channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
+      channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), contextPath, protocol));
       channelPipeline.addLast(new RestEasyHttpResponseEncoder());
       channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
    }
