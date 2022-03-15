@@ -113,7 +113,16 @@ public class ServerResponseWriter
          Class type = jaxrsResponse.getEntityClass();
          Type generic = jaxrsResponse.getGenericType();
          Annotation[] annotations = jaxrsResponse.getAnnotations();
-         final MediaType mt = jaxrsResponse.getMediaType();
+         MediaType mt = jaxrsResponse.getMediaType();
+         // A filter could set the entity without setting the media type. While the java doc for Response.setEntity(Object)
+         // states "The existing entity annotations and media type are preserved.", we need the media type for the
+         // writer. We'll go ahead and set a default.
+         if (mt == null) {
+            mt = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
+            if (mt != null) {
+               jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt);
+            }
+         }
          MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
                type, generic, annotations, mt);
          if (writer!=null)
