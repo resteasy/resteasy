@@ -635,6 +635,11 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    }
 
    @Override
+   public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
+      return resteasyProviderFactoryDelegator.getThrowableExceptionMapper();
+   }
+
+   @Override
    protected boolean isOnServer() {
       return resteasyProviderFactoryDelegator.isOnServer();
    }

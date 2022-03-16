@@ -96,23 +96,15 @@ public class JsonBindingDebugLoggingTest {
    @Test
    public void exceptionDuringServerSend() throws Exception {
       // count log messages before request
-      LogCounter errorStringLog = new LogCounter("ERROR",
-              false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+      LogCounter peStringLog = new LogCounter(".*jakarta.ws.rs.ProcessingException.*",
+              false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
       LogCounter resteasyExceptionLog = new LogCounter(
               ".*ERROR .* RESTEASY002025.*", true,
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter yassonExceptionLog = new LogCounter(
+      LogCounter jsonbExceptionLog = new LogCounter(
               "Caused by: jakarta.json.bind.JsonbException",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter(
-              "at org.eclipse.yasson", true,
-              ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-
-      LogCounter applicationExcpetionLog = new LogCounter(
-              "Caused by: java.lang.RuntimeException: "
-            + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
               true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
       // perform request
@@ -122,24 +114,18 @@ public class JsonBindingDebugLoggingTest {
       MatcherAssert.assertThat("Wrong response code", response.getStatus(), is(500));
       MatcherAssert.assertThat("Response message doesn't contains full stacktrace",
               response.readEntity(String.class), allOf(
-            containsString("org.eclipse.yasson.internal"),
-            containsString("java.lang.RuntimeException: "
-                              + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
-            containsString("jakarta.json.bind.JsonbException: Error getting value on"),
+            containsString(JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
+            containsString("jakarta.json.bind.JsonbException: Unable to serialize property 'a'"),
             containsString("RESTEASY008205")
       ));
 
-      MatcherAssert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(1));
       MatcherAssert.assertThat("RESTEasy exception should be logged",
               resteasyExceptionLog.count(), is(0));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), greaterThan(0));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
+              jsonbExceptionLog.count(), greaterThan(0));
 
       MatcherAssert.assertThat("There are not only 1 error logs in server",
-              errorStringLog.count(), is(1));
+              peStringLog.count(), is(1));
    }
 
 
@@ -155,8 +141,7 @@ public class JsonBindingDebugLoggingTest {
 
       LogCounter resteasyExceptionLog = new LogCounter(".*DEBUG .* RESTEASY002305.*", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter yassonExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+      LogCounter jsonbExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter applicationExcpetionLog = new LogCounter(
               "Caused by: java.lang.RuntimeException: "
             + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(), true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
@@ -181,10 +166,8 @@ public class JsonBindingDebugLoggingTest {
               applicationExcpetionLog.count(), is(1));
       MatcherAssert.assertThat("RESTEasy exception should be logged",
               resteasyExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
+              jsonbExceptionLog.count(), is(1));
 
       MatcherAssert.assertThat("There shouldn't be any error logs in server",
               errorStringLog.count(), is(0));
@@ -209,10 +192,8 @@ public class JsonBindingDebugLoggingTest {
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
 
-      LogCounter yassonExceptionLog = new LogCounter(
+      LogCounter jsonbExceptionLog = new LogCounter(
               "Caused by: jakarta.json.bind.JsonbException",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
               true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter applicationExcpetionLog = new LogCounter(
               "Caused by: java.lang.RuntimeException: "
@@ -231,8 +212,6 @@ public class JsonBindingDebugLoggingTest {
 
          MatcherAssert.assertThat("Stracktrace doesn't contain jakarta.json.bind.JsonbException", stackTrace,
                containsString("jakarta.json.bind.JsonbException"));
-         MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
-               containsString("org.eclipse.yasson.internal"));
          MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
                containsString("Caused by: java.lang.RuntimeException: "
                        + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()));
@@ -243,10 +222,8 @@ public class JsonBindingDebugLoggingTest {
               applicationExcpetionLog.count(), is(1));
       MatcherAssert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
+              jsonbExceptionLog.count(), is(1));
       MatcherAssert.assertThat("There shouldn't be any error logs in client",
          errorStringLog.count(), is(0));
    }
@@ -266,11 +243,9 @@ public class JsonBindingDebugLoggingTest {
               ".*DEBUG .* RESTEASY004672.*", true,
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter yassonExceptionLog = new LogCounter(
+      LogCounter jsonbExceptionLog = new LogCounter(
               "Caused by: jakarta.json.bind.JsonbException", true,
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter applicationExcpetionLog = new LogCounter(
               "Caused by: java.lang.RuntimeException: "+
               JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
@@ -289,8 +264,6 @@ public class JsonBindingDebugLoggingTest {
 
          MatcherAssert.assertThat("Stracktrace doesn't contain jakarta.json.bind.JsonbException", stackTrace,
                containsString("jakarta.json.bind.JsonbException"));
-         MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
-               containsString("org.eclipse.yasson.internal"));
          MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
                containsString("Caused by: java.lang.RuntimeException: "
                        + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()));
@@ -299,12 +272,10 @@ public class JsonBindingDebugLoggingTest {
       // assert log messages after request
       MatcherAssert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
+              jsonbExceptionLog.count(), greaterThan(0));
       MatcherAssert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
       MatcherAssert.assertThat("There shouldn't be any error logs in client",
          errorStringLog.count(), is(0));
    }

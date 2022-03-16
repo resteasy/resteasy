@@ -102,6 +102,10 @@ public class ExceptionHandler
       }
       jaxrsResponse = unwrapException(request, e, logger);
       if (jaxrsResponse == null) {
+         jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e.getCause());
+      }
+      // This should never happen, but we need to be safe.
+      if (jaxrsResponse == null) {
          throw new UnhandledException(e.getCause());
       }
       return jaxrsResponse;
@@ -364,6 +368,11 @@ public class ExceptionHandler
          }
       }
 
+      if (jaxrsResponse == null) {
+         // Get the default exception mapper if we've made it here
+         jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e);
+      }
+      // This should never happen, but we need to be safe.
       if (jaxrsResponse == null) {
          throw new UnhandledException(e);
       }

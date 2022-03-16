@@ -60,6 +60,16 @@
       annotated classes, or programmatically through the
       ResteasyProviderFactory class.
    </para>
+      <para>
+         As of RESTEasy 6.1 if a default <code>ExceptionMapper</code> is registered. This handles all uncaught
+         exceptions and returns a response with the exceptions message and a status of 500. If the exception is a
+         <code>WebApplicationException</code> the response from the exception is returned.
+      </para>
+      <para>
+         The default <code>ExceptionMapper</code> will also log the exception at a debug level for debugging purposes.
+         The logger name is <code>org.jboss.resteasy.core.providerfactory.DefaultExceptionMapper</code> which can be
+         used to enabled/disable debug logging.
+      </para>
    <para>
 
 

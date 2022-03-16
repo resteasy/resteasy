@@ -570,4 +570,8 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
       return reader;
    }
 
+   @Override
+   public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
+      return getDelegate().getThrowableExceptionMapper();
+   }
 }

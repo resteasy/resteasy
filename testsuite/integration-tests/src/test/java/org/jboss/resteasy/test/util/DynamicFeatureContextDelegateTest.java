@@ -145,9 +145,9 @@ public class DynamicFeatureContextDelegateTest
       ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
       DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
       featureContext.register(new CustomExceptionMapper());
-      Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
+      Assert.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(), CustomExceptionMapper.class);
       featureContext.register(CustomExceptionMapper.class);
-      Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
+      Assert.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(), CustomExceptionMapper.class);
    }
 
    @Test
