@@ -463,7 +463,6 @@
                             <goal>execute-commands</goal>
                         </goals>
                         <configuration>
-                            <skip>${skipTests}</skip>
                             <jboss-home>${jboss.home}</jboss-home>
                             <offline>true</offline>
                             <scripts>

@@ -43,11 +43,13 @@
 
         <maven.test.skip>false</maven.test.skip>
         <skipTests>${maven.test.skip}</skipTests>
+        <wildfly.skip>${skipTests}</wildfly.skip>
 
         <!-- Galleon -->
         <galleon.fork.embedded>true</galleon.fork.embedded>
         <galleon.log.time>true</galleon.log.time>
         <galleon.offline>false</galleon.offline>
+        <galleon.skip>${skipTests}</galleon.skip>
 
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>

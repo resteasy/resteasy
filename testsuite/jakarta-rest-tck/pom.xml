@@ -225,9 +225,6 @@
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <configuration>
-                    <skip>${skipTests}</skip>
-                </configuration>
                 <executions>
                     <execution>
                         <id>configure-wildfly</id>
@@ -251,6 +248,10 @@
     <profiles>
         <profile>
             <id>se-only</id>
+            <properties>
+                <galleon.skip>true</galleon.skip>
+                <wildfly.skip>true</wildfly.skip>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -259,46 +260,6 @@
                             <includes>
                                 <include>**/SeBootstrapIT</include>
                             </includes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jboss.galleon</groupId>
-                        <artifactId>galleon-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>skip-wildfly-provisioning</id>
-            <activation>
-                <property>
-                    <name>skip.provisioning</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jboss.galleon</groupId>
-                        <artifactId>galleon-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
                         </configuration>
                     </plugin>
                 </plugins>

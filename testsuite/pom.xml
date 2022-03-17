@@ -132,7 +132,7 @@
                 <artifactId>galleon-maven-plugin</artifactId>
                 <configuration>
                     <install-dir>${jboss.home}</install-dir>
-                    <skip>${skipTests}</skip>
+                    <skip>${galleon.skip}</skip>
                     <record-state>false</record-state>
                     <log-time>${galleon.log.time}</log-time>
                     <offline>${galleon.offline}</offline>
@@ -165,6 +165,13 @@
                             </excluded-packages>
                         </feature-pack>
                     </feature-packs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <configuration>
+                    <skip>${wildfly.skip}</skip>
                 </configuration>
             </plugin>
         </plugins>
@@ -526,6 +533,19 @@
             <properties>
                 <debug.port>8787</debug.port>
                 <debugJvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${debug.port}</debugJvmArgs>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>skip-wildfly-provisioning</id>
+            <activation>
+                <property>
+                    <name>skip.provisioning</name>
+                </property>
+            </activation>
+            <properties>
+                <galleon.skip>true</galleon.skip>
+                <wildfly.skip>true</wildfly.skip>
             </properties>
         </profile>
     </profiles>
