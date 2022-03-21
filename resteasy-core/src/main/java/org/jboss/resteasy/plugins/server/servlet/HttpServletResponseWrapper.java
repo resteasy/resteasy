@@ -51,13 +51,17 @@ public class HttpServletResponseWrapper implements HttpResponse
       private final byte[] bytes;
       private final int offset;
       private final int length;
+      private final Queue<AsyncOperation> asyncQueue;
+      private boolean dataWritten;
 
-      public WriteOperation(final OutputStream stream, final byte[] bytes, final int offset, final int length)
+      public WriteOperation(final OutputStream stream, final byte[] bytes, final int offset, final int length,
+                            final Queue<AsyncOperation> asyncQueue)
       {
          super(stream);
          this.bytes = bytes;
          this.offset = offset;
          this.length = length;
+         this.asyncQueue = asyncQueue;
       }
 
       @Override
@@ -65,11 +69,22 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
-            stream.write(bytes, offset, length);
+            if(dataWritten) {
+               future.complete(null);
+               return;
+            }
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
-               future.complete(null);
+               stream.write(bytes, offset, length);
+               dataWritten = true;
+               if(sos == null || sos.isReady()) {
+                  future.complete(null);
+               } else {
+                  // Queueing this operation to complete the future later
+                  // when the stream is ready.
+                  asyncQueue.add(this);
+               }
             }
          } catch (IOException e)
          {
@@ -97,10 +112,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
-            stream.flush();
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
+               stream.flush();
                future.complete(null);
             }
          } catch (IOException e)
@@ -201,7 +216,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       @Override
       public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length)
       {
-         AsyncOperation op = new WriteOperation(this, bytes, offset, length);
+         AsyncOperation op = new WriteOperation(this, bytes, offset, length, asyncQueue);
          queue(op);
          return op.future;
       }
@@ -245,16 +260,6 @@ public class HttpServletResponseWrapper implements HttpResponse
       private void flushQueue()
       {
          synchronized (this) {
-            if (lastAsyncOperation != null) {
-               lastAsyncOperation.future.complete(null);
-               // the above complete can trigger further writes inline, so the lastAsyncOperation when all
-               // those inline writes gets completed may not be the same as the one
-               // where the future is completed in the previous LOC.
-               if(!lastAsyncOperation.future.isDone()) {
-                  return;
-               }
-               lastAsyncOperation = null;
-            }
             final ServletOutputStream out;
             try {
                out = getServletOutputStream();
