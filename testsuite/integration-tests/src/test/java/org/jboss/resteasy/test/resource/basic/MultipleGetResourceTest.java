@@ -1,14 +1,11 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleGetResource;
-import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -31,7 +28,6 @@ import java.util.Map;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
@@ -79,13 +75,12 @@ public class MultipleGetResourceTest {
 
     @Test
     public void testFailFast() throws Exception {
-        LogCounter errorStringLog = new LogCounter("RESTEASY005042",
-                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
         WebTarget base = client.target(generateURL("/api"));
-        Response  response = base.request().get();
-        Assert.assertEquals(500, response.getStatus());
-        response.close();
-        MatcherAssert.assertThat(errorStringLog.count(), is(2));
+        try (Response  response = base.request().get()) {
+            Assert.assertEquals(500, response.getStatus());
+            final String error = response.readEntity(String.class);
+            Assert.assertTrue("RESTEASY005042 not found in: " + error, error.contains("RESTEASY005042"));
+        }
     }
 }

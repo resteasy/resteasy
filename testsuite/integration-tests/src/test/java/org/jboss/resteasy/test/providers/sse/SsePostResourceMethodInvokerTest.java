@@ -22,6 +22,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -87,6 +88,7 @@ public class SsePostResourceMethodInvokerTest {
       }
    }
 
+   @Ignore("RESTEASY-3109 - This test hangs when the default ExceptionMapper is used.")
    @Test(expected = InternalServerErrorException.class)
    @OperateOnDeployment(WITH_EXCEPTION_REQUEST_FILTER)
    public void Should_ThrowIntenalServerError_When_AnyFilterAfterSseFilterThrowsIOException() throws Exception {

@@ -82,27 +82,26 @@ public class ExceptionHandlerTest {
    }
 
    @Test
-   public void testUnhandledException() throws Exception {
+   public void testDefaultExceptionMapper() throws Exception {
 
       ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
       HttpRequest request = MockHttpRequest.get("/locating/basic");
 
       ExceptionHandler eHandler = new ExceptionHandler(factory, unwrappedExceptions);
 
-      // Check that an exception unknown to Resteasy and with no ExceptionMapper
-      // is flagged with an UnknownException.
+      // Check that an exception unknown to Resteasy is processed with the default exception mapper
       SprocketDBException sdbe = new SprocketDBException("SprocketDBException test",
               new ApplicationException("ApplicationException test",
                       new IOException("IOException child")));
 
-      boolean isTestSuccess = false;
       try
       {
          Response result = eHandler.handleException(request, sdbe);
+         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, result.getStatusInfo());
+         Assert.assertEquals("SprocketDBException test", result.readEntity(String.class));
       } catch (UnhandledException ue) {
-         isTestSuccess = true;
+         Assert.fail("Test failed to properly handle the exception with the default exception handler");
       }
-      Assert.assertTrue("Test failed to properly throw UnhandledException", isTestSuccess);
    }
 
    @Test

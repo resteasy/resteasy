@@ -1104,7 +1104,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       SortedKey<ExceptionMapper> mapper = null;
       Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getSortedExceptionMappers();
       if (mappers == null) {
-         return null;
+         return (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
       }
       while (mapper == null)
       {
@@ -1114,7 +1114,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          if (mapper == null)
             exceptionType = exceptionType.getSuperclass();
       }
-      return mapper != null ? mapper.getObj() : null;
+      return mapper != null ? mapper.getObj() : (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
    }
 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapperForClass(Class<T> type)
@@ -1784,6 +1784,12 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public StatisticsController getStatisticsController() {
       return statisticsController;
+   }
+
+   @Override
+   public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
+      final ExceptionMapper<Throwable> result = getExceptionMapperForClass(Throwable.class);
+      return result != null ? result : DefaultExceptionMapper.INSTANCE;
    }
 
    @Override

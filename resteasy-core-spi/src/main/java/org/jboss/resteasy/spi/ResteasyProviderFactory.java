@@ -22,6 +22,7 @@ import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.MessageBodyReader;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.ParamConverter;
@@ -354,6 +355,16 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract void initializeClientProviders(ResteasyProviderFactory factory);
 
    public abstract StatisticsController getStatisticsController();
+
+   /**
+    * Returns an exception mapper which handles the generic {@linkplain Throwable throwable} which is typically the
+    * default exception mapper.
+    *
+    * @return an exception mapper which handles a {@link Throwable}
+    */
+   public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
+      return getExceptionMapper(Throwable.class);
+   }
 
    protected abstract boolean isOnServer();
 }
