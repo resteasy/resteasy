@@ -98,6 +98,9 @@ public class ServerResponseWriter
       // which is used by marshalling, and NPEs otherwise
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
 
+      // Saves the entity before applying filter for future check
+      Object preFilterEntity = jaxrsResponse.isClosed() ? null : jaxrsResponse.getEntity();
+
       executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, (onWriteComplete) -> {
          Object entity = jaxrsResponse.isClosed() ? null : jaxrsResponse.getEntity();
 
@@ -108,6 +111,23 @@ public class ServerResponseWriter
             commitHeaders(jaxrsResponse, response);
             onWriteComplete.accept(null);
             return;
+         }
+
+         // [RESTEASY-3089] Checks if entity was null before applying filter with SetEntity(). If yes, sets correct MediaType for new entity
+         // If the new entity is also null, this method won't get here because of the previous check
+         if ((preFilterEntity == null)){
+            if (jaxrsResponse.getGenericType() == null)
+            {
+               if (method.getReturnType().equals(Response.class))
+               {
+                  jaxrsResponse.setGenericType(jaxrsResponse.getEntityClass());
+               }
+               else
+               {
+                  jaxrsResponse.setGenericType(method.getGenericReturnType());
+               }
+            }
+            setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
          }
 
          Class type = jaxrsResponse.getEntityClass();
