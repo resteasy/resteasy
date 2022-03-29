@@ -2,8 +2,9 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -31,11 +32,23 @@ public class HttpServletResponseWrapper implements HttpResponse
 {
    public abstract class AsyncOperation
    {
-      final CompletableFuture<Void> future = new CompletableFuture<>();
+      final CompletableFuture<Void> future;
       final OutputStream stream;
+      private final long id;
+      @Deprecated
       public AsyncOperation(final OutputStream stream)
       {
+         this(stream, new CompletableFuture<>(), (stream instanceof DeferredOutputStream ? ((DeferredOutputStream) stream).getId() : -1));
+      }
+      private AsyncOperation(final DeferredOutputStream stream)
+      {
+         this(stream, new CompletableFuture<>(), stream.getId());
+      }
+      private AsyncOperation(final OutputStream stream, final CompletableFuture<Void> future, final long id)
+      {
          this.stream = stream;
+         this.future = future;
+         this.id = id;
       }
       public void work(ServletOutputStream sos) {
          try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
@@ -43,6 +56,24 @@ public class HttpServletResponseWrapper implements HttpResponse
          }
       }
       protected abstract void doWork(ServletOutputStream sos);
+
+      protected void requeue(final AsyncOperation op) {
+         if (op.future.isDone()) {
+            return;
+         }
+         if (stream instanceof DeferredOutputStream) {
+            ((DeferredOutputStream) stream).queue(op);
+         }
+      }
+      protected void queueComplete(final AsyncOperation op) {
+         if (op.future.isDone()) {
+            return;
+         }
+         if (stream instanceof DeferredOutputStream) {
+            final AsyncOperation requeue = (op instanceof CompletionOperation ? op : new CompletionOperation(op));
+            ((DeferredOutputStream) stream).queue(requeue);
+         }
+      }
    }
 
    public class WriteOperation extends AsyncOperation
@@ -52,7 +83,16 @@ public class HttpServletResponseWrapper implements HttpResponse
       private final int offset;
       private final int length;
 
+      @Deprecated
       public WriteOperation(final OutputStream stream, final byte[] bytes, final int offset, final int length)
+      {
+         super(stream);
+         this.bytes = bytes;
+         this.offset = offset;
+         this.length = length;
+      }
+
+      private WriteOperation(final DeferredOutputStream stream, final byte[] bytes, final int offset, final int length)
       {
          super(stream);
          this.bytes = bytes;
@@ -67,9 +107,23 @@ public class HttpServletResponseWrapper implements HttpResponse
          {
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
-            if(sos == null || sos.isReady()) {
+            if (sos == null) {
                stream.write(bytes, offset, length);
                future.complete(null);
+            } else {
+               // Check if the stream is ready and if so write the data
+               if (sos.isReady()) {
+                  stream.write(bytes, offset, length);
+                  // Recheck before we complete the future as the write above may still be in process
+                  if (sos.isReady()) {
+                     future.complete(null);
+                  } else {
+                     queueComplete(this);
+                  }
+               } else {
+                  // The stream is not ready, requeue ourself
+                  requeue(this);
+               }
             }
          } catch (IOException e)
          {
@@ -86,8 +140,12 @@ public class HttpServletResponseWrapper implements HttpResponse
 
    public class FlushOperation extends AsyncOperation
    {
-
+      @Deprecated
       public FlushOperation(final OutputStream os)
+      {
+         super(os);
+      }
+      public FlushOperation(final DeferredOutputStream os)
       {
          super(os);
       }
@@ -99,9 +157,23 @@ public class HttpServletResponseWrapper implements HttpResponse
          {
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
-            if(sos == null || sos.isReady()) {
+            if (sos == null) {
                stream.flush();
                future.complete(null);
+            } else {
+               // The stream is ready, flush the output
+               if (sos.isReady()) {
+                  stream.flush();
+                  // Recheck before we complete the future as the flush above may still be in process
+                  if (sos.isReady()) {
+                     future.complete(null);
+                  } else {
+                     queueComplete(this);
+                  }
+               } else {
+                  // The stream is not ready, requeue ourself
+                  requeue(this);
+               }
             }
          } catch (IOException e)
          {
@@ -113,6 +185,25 @@ public class HttpServletResponseWrapper implements HttpResponse
       public String toString()
       {
          return "[flush]";
+      }
+   }
+
+   private class CompletionOperation extends AsyncOperation {
+
+      CompletionOperation(final AsyncOperation op) {
+         super(op.stream, op.future, op.id);
+      }
+
+      @Override
+      protected void doWork(final ServletOutputStream sos) {
+         if (sos == null || sos.isReady()) {
+            if (!future.isDone()) {
+               future.complete(null);
+            }
+         } else {
+            // We need to requeue
+            queueComplete(this);
+         }
       }
    }
 
@@ -151,12 +242,13 @@ public class HttpServletResponseWrapper implements HttpResponse
       private final Queue<AsyncOperation> asyncQueue;
       private final AtomicBoolean asyncRegistered;
       // Guarded by this
-      private AsyncOperation lastAsyncOperation;
       private volatile boolean asyncListenerCalled;
       private volatile ServletOutputStream lazyOut;
+      // Guarded by this
+      private long idCounter;
 
       DeferredOutputStream() throws IOException {
-         asyncQueue = new LinkedList<>();
+         asyncQueue = new PriorityQueue<>(AsyncOperationComparator.INSTANCE);
          asyncRegistered = new AtomicBoolean();
       }
 
@@ -245,13 +337,6 @@ public class HttpServletResponseWrapper implements HttpResponse
       private void flushQueue()
       {
          synchronized (this) {
-            if (lastAsyncOperation != null) {
-               // Do not reset the lastAsyncOperation unless the current one is complete
-               if (!lastAsyncOperation.future.isDone()) {
-                  return;
-               }
-               lastAsyncOperation = null;
-            }
             final ServletOutputStream out;
             try {
                out = getServletOutputStream();
@@ -259,8 +344,9 @@ public class HttpServletResponseWrapper implements HttpResponse
                onError(e);
                return;
             }
-            while (out.isReady() && (lastAsyncOperation = asyncQueue.poll()) != null) {
-               lastAsyncOperation.work(out);
+            AsyncOperation op;
+            while (out.isReady() && (op = asyncQueue.poll()) != null) {
+               op.work(out);
             }
          }
       }
@@ -276,10 +362,6 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          synchronized (this) {
             asyncListenerCalled = true;
-            if (lastAsyncOperation != null) {
-               lastAsyncOperation.future.completeExceptionally(t);
-               lastAsyncOperation = null;
-            }
             AsyncOperation op;
             while ((op = asyncQueue.poll()) != null) {
                if (!op.future.isDone())
@@ -297,6 +379,16 @@ public class HttpServletResponseWrapper implements HttpResponse
             }
          }
          return lazyOut;
+      }
+
+      private long getId() {
+         synchronized (this) {
+            if (idCounter == Long.MAX_VALUE) {
+               // This should never happen, but we will be safe and just reset the id in case it does.
+               idCounter = 0;
+            }
+            return idCounter++;
+         }
       }
    }
 
@@ -369,5 +461,14 @@ public class HttpServletResponseWrapper implements HttpResponse
    public void flushBuffer() throws IOException
    {
       response.flushBuffer();
+   }
+
+   private static class AsyncOperationComparator implements Comparator<AsyncOperation> {
+      static final AsyncOperationComparator INSTANCE = new AsyncOperationComparator();
+
+      @Override
+      public int compare(final AsyncOperation o1, final AsyncOperation o2) {
+         return Long.compare(o1.id, o2.id);
+      }
    }
 }
