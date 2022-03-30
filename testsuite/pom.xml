@@ -193,50 +193,6 @@
             </modules>
         </profile>
         <profile>
-            <id>jakarta-rest-tck</id>
-            <activation>
-                <property>
-                    <name>jakarta.rest.tck</name>
-                </property>
-            </activation>
-            <modules>
-                <module>jakarta-rest-tck</module>
-            </modules>
-            <build>
-                <plugins>
-                    <!-- Temporarily skip surefire tests -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.googlecode.maven-download-plugin</groupId>
-                        <artifactId>download-maven-plugin</artifactId>
-                        <version>1.6.8</version>
-                        <executions>
-                            <execution>
-                                <id>download-tck</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>wget</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <url>
-                                https://ci.eclipse.org/jakartaee-tck/job/10/job/jakarta-rest-tck-build/lastSuccessfulBuild/artifact/bundle/jakarta-restful-ws-tck-3.1.0.zip
-                            </url>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/jakarta-rest-tck</outputDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>home</id>
             <activation>
                 <property>
