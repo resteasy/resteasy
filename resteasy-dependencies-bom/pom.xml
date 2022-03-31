@@ -88,7 +88,7 @@
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
         <version.org.hibernate.validator>6.0.22.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
-        <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
+        <version.org.springframework>5.2.20.RELEASE</version.org.springframework>
         <version.org.mockito>3.9.0</version.org.mockito>
 
         <version.asyncutil>0.1.0</version.asyncutil>

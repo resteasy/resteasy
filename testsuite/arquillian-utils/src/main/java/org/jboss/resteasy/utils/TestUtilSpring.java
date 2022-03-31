@@ -12,7 +12,9 @@ import java.util.List;
  */
 public class TestUtilSpring {
 
-   private static String defaultSpringVersion = "5.2.0.RELEASE";
+   // todo: We should not hardcode the version here.
+   // Using jBang to automatically update this version should be a solution.
+   private static String defaultSpringVersion = "5.2.20.RELEASE";
    //protected static Logger logger;
 
 
