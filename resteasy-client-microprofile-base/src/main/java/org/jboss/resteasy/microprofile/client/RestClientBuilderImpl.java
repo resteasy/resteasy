@@ -1,4 +1,4 @@
-package org.jboss.resteasy.microprofile.client;
+package io.quarkus.restclient.runtime;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -52,8 +52,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.AccessController;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,20 +67,28 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_HOST;
 import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_PORT;
 import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.PROPERTY_PROXY_SCHEME;
 
-public class RestClientBuilderImpl implements RestClientBuilder {
+import io.quarkus.restclient.NoopHostnameVerifier;
+import io.quarkus.resteasy.common.runtime.QuarkusInjectorFactory;
+import io.quarkus.runtime.graal.DisabledSSLContext;
+import io.quarkus.runtime.ssl.SslContextConfiguration;
 
+/**
+ * This is mostly a copy from {@link org.jboss.resteasy.microprofile.client.RestClientBuilderImpl}. It is required to
+ * remove the reference to org.jboss.resteasy.cdi.CdiInjectorFactory so we don't require the RESTEasy CDI dependency.
+ */
+public class QuarkusRestClientBuilderImpl implements RestClientBuilder {
     private static final String RESTEASY_PROPERTY_PREFIX = "resteasy.";
 
     private static final String DEFAULT_MAPPER_PROP = "microprofile.rest.client.disable.default.mapper";
-    private static final Logger LOGGER = Logger.getLogger(RestClientBuilderImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(QuarkusRestClientBuilderImpl.class);
     private static final DefaultMediaTypeFilter DEFAULT_MEDIA_TYPE_FILTER = new DefaultMediaTypeFilter();
+    private static final String TLS_TRUST_ALL = "quarkus.tls.trust-all";
+
     public static final MethodInjectionFilter METHOD_INJECTION_FILTER = new MethodInjectionFilter();
     public static final ClientHeadersRequestFilter HEADERS_REQUEST_FILTER = new ClientHeadersRequestFilter();
 
@@ -87,7 +98,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         PROVIDER_FACTORY = providerFactory;
     }
 
-    public RestClientBuilderImpl() {
+    public QuarkusRestClientBuilderImpl() {
         builderDelegate = new MpClientBuilderImpl();
 
         if (PROVIDER_FACTORY != null) {
@@ -99,7 +110,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         }
         if (getBeanManager() != null) {
             builderDelegate.getProviderFactory()
-                    .setInjectorFactory(new CdiInjectorFactory(getBeanManager()));
+                    .setInjectorFactory(new QuarkusInjectorFactory());
         }
         configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
 
@@ -242,49 +253,27 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         T actualClient;
         ResteasyClient client;
 
-        ResteasyClientBuilder resteasyClientBuilder;
-        List<String> noProxyHosts = Arrays.asList(
-                getSystemProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
+        ResteasyClientBuilder resteasyClientBuilder = builderDelegate;
+
         if (this.proxyHost != null) {
-            resteasyClientBuilder = builderDelegate.defaultProxy(proxyHost, this.proxyPort);
+            resteasyClientBuilder.defaultProxy(proxyHost, this.proxyPort);
         } else {
-            String envProxyHost = getSystemProperty("http.proxyHost", null);
-            boolean isUriMatched = false;
-            if (envProxyHost != null && !noProxyHosts.isEmpty()) {
-                for (String s : noProxyHosts) {
-                    Pattern p = Pattern.compile(s);
-                    Matcher m = p.matcher(baseURI.getHost());
-                    isUriMatched = m.matches();
-                    if (isUriMatched) {
-                        break;
-                    }
-                }
-            }
+            String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
+                    .filter(String.class::isInstance).map(String.class::cast).orElse(null);
 
-            if (envProxyHost != null && !isUriMatched) {
-                // Use proxy, if defined in the env variables
-                resteasyClientBuilder = builderDelegate.defaultProxy(envProxyHost,
-                        Integer.parseInt(getSystemProperty("http.proxyPort", "80")));
-            } else {
-                // Search for proxy settings passed in the client builder, if passed and use them if found
-                String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
-                        .filter(String.class::isInstance).map(String.class::cast).orElse(null);
+            Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
+                    .filter(Integer.class::isInstance).map(Integer.class::cast).orElse(null);
 
-                Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
-                        .filter(Integer.class::isInstance).map(Integer.class::cast).orElse(null);
-
+            // configuration of the builder has precedence over environment variables
+            if (userProxyHost != null && userProxyPort != null) {
                 String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
                         .filter(String.class::isInstance).map(String.class::cast).orElse(null);
 
-                if (userProxyHost != null && userProxyPort != null) {
-                    resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
-                } else {
-                    // ProxySelector if applicable
-                    selectHttpProxy().ifPresent(
-                            proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
-
-                    resteasyClientBuilder = builderDelegate;
-                }
+                resteasyClientBuilder.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
+            } else {
+                selectHttpProxy().ifPresent(
+                        proxyAddress -> resteasyClientBuilder.defaultProxy(proxyAddress.getHostString(),
+                                proxyAddress.getPort()));
             }
         }
 
@@ -321,6 +310,14 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             resteasyClientBuilder.trustStore(null);
             resteasyClientBuilder.keyStore(null, "");
         }
+
+        configureTrustAll(resteasyClientBuilder);
+        // we need to push a disabled SSL context when SSL has been disabled
+        // because otherwise Apache HTTP Client will try to initialize one and will fail
+        if (ImageInfo.inImageRuntimeCode() && !SslContextConfiguration.isSslNativeEnabled()) {
+            resteasyClientBuilder.sslContext(new DisabledSSLContext());
+        }
+
         client = resteasyClientBuilder
                 .build();
         ((MpClient)client).setQueryParamStyle(queryParamStyle);
@@ -341,6 +338,24 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, beanManager));
         ClientHeaderProviders.registerForClass(aClass, proxy, beanManager);
         return proxy;
+    }
+
+    private void configureTrustAll(ResteasyClientBuilder clientBuilder) {
+        if (config == null) {
+            return;
+        }
+        Optional<Boolean> trustAll = config.getOptionalValue(TLS_TRUST_ALL, Boolean.class);
+        if (trustAll.isPresent() && trustAll.get()) {
+            clientBuilder.hostnameVerifier(new NoopHostnameVerifier());
+            try {
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, new TrustManager[] { new PassthroughTrustManager() },
+                        new SecureRandom());
+                clientBuilder.sslContext(sslContext);
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                throw new RuntimeException("Failed to initialized SSL context", e);
+            }
+        }
     }
 
     /**
@@ -451,9 +466,6 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                 // ignore cast exception
             }
         }
-        if (disabled) {
-            LOGGER.warnf("The default ResponseExceptionMapper has been disabled");
-        }
         return disabled;
     }
 
@@ -527,8 +539,6 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                         : (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(classPathAnno.value() + "/" + methodPathAnno.value());
             } else if (classPathAnno != null) {
                 template = (ResteasyUriBuilder) new ResteasyUriBuilderImpl().uri(classPathAnno.value());
-            } else {
-                template = null;
             }
 
             if (template == null) {
@@ -577,18 +587,20 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             // Makes it possible to configure some of the ResteasyClientBuilder delegate properties
             String builderMethodName = name.substring(RESTEASY_PROPERTY_PREFIX.length());
             Method builderMethod = Arrays.stream(ResteasyClientBuilder.class.getMethods())
-                    .filter(m -> builderMethodName.equals(m.getName()) && m.getParameterTypes().length >= 1)
+                    .filter(m -> builderMethodName.equals(m.getName()) && m.getParameterCount() >= 1)
                     .findFirst()
                     .orElse(null);
             if (builderMethod == null) {
                 throw new IllegalArgumentException("ResteasyClientBuilder setter method not found: " + builderMethodName);
             }
             Object[] arguments;
-            if (builderMethod.getParameterTypes().length > 1) {
+            if (builderMethod.getParameterCount() > 1) {
                 if (value instanceof List) {
                     arguments = ((List<?>) value).toArray();
                 } else {
-                    throw new IllegalArgumentException("Value must be an instance of List<> for ResteasyClientBuilder setter method: " + builderMethodName);
+                    throw new IllegalArgumentException(
+                            "Value must be an instance of List<> for ResteasyClientBuilder setter method: "
+                                    + builderMethodName);
                 }
             } else {
                 arguments = new Object[] { value };
