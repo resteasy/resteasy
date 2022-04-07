@@ -97,8 +97,8 @@
         </dependency>
         <!-- Jakarta JSON Processing implementation -->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
