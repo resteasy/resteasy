@@ -101,6 +101,16 @@
             </roles>
             <timezone>-5</timezone>
         </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@redhat.com</email>
+            <organization>JBoss</organization>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
     </developers>
 
     <repositories>
