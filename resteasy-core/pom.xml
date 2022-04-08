@@ -82,6 +82,11 @@
             <groupId>jakarta.activation</groupId>
             <artifactId>jakarta.activation-api</artifactId>
         </dependency>
+        <!-- Jakarta Activation Implementation -->
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>jakarta.validation</groupId>
