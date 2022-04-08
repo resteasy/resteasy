@@ -21,7 +21,7 @@
         <version.com.google.guava>31.0.1-jre</version.com.google.guava>
         <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
-        <version.jakarta.mail>2.0.1</version.jakarta.mail>
+        <version.jakarta.mail>2.1.0</version.jakarta.mail>
         <version.org.glassfish.jaxb.jaxb>2.3.3-b02</version.org.glassfish.jaxb.jaxb>
         <version.com.sun.xml.fastinfoset>1.2.17</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.9.0</version.commons-io.commons-io>
@@ -46,6 +46,7 @@
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
         <version.org.bouncycastle>1.70</version.org.bouncycastle>
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
+        <version.org.eclipse.angus.angus-mail>1.0.0</version.org.eclipse.angus.angus-mail>
         <version.org.eclipse.jetty>11.0.7</version.org.eclipse.jetty>
         <version.org.eclipse.yasson>2.0.1</version.org.eclipse.yasson>
         <version.com.github.tomakehurst.wiremock>2.20.0</version.com.github.tomakehurst.wiremock>
@@ -244,18 +245,14 @@
                 <artifactId>jakarta.mail-api</artifactId>
                 <version>${version.jakarta.mail}</version>
             </dependency>
-            <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>jakarta.mail</artifactId>
-                <version>${version.jakarta.mail}</version>
+            <dependency> <!-- Jakarta Mail Implementation -->
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-mail</artifactId>
+                <version>${version.org.eclipse.angus.angus-mail}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>com.sun.activation</groupId>
-                        <artifactId>jakarta.activation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>jakarta.activation</groupId>
-                        <artifactId>jakarta.activation-api</artifactId>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
