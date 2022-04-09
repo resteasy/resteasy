@@ -146,6 +146,7 @@
                 <module>integration-tests-spring</module>
                 <module>integration-tests-spring-web</module>
                 <module>integration-tests-embedded</module>
+                <module>integration-tests-tomcat-embedded</module>
                 <module>microprofile-tck</module>
             </modules>
         </profile>
