@@ -62,7 +62,7 @@
         <version.org.jboss.resteasy.tracing.api>1.0.0.Final</version.org.jboss.resteasy.tracing.api>
         <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
         <version.org.jboss.threads>2.3.3.Final</version.org.jboss.threads>
-        <version.jakarta.annotation.jakarta-annotation-api>2.0.0</version.jakarta.annotation.jakarta-annotation-api>
+        <version.jakarta.annotation.jakarta-annotation-api>2.1.0</version.jakarta.annotation.jakarta-annotation-api>
         <version.jakarta.el.el-api>4.0.0</version.jakarta.el.el-api>
         <version.jakarta.ejb.ejb-api>4.0.0</version.jakarta.ejb.ejb-api>
         <version.jakarta.interceptor.interceptor-api>2.0.0</version.jakarta.interceptor.interceptor-api>
