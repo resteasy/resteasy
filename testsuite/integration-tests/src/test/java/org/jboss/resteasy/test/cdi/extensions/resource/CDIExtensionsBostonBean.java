@@ -116,12 +116,6 @@ public class CDIExtensionsBostonBean<T> implements Bean<T> {
    }
 
    @Override
-   public boolean isNullable() {
-      log.info("BostonBean[" + className + "].isNullable()");
-      return false;
-   }
-
-   @Override
    public Set<InjectionPoint> getInjectionPoints() {
       log.info("BostonBean[" + className + "].getInjectionPoints()");
       return injectionPoints;

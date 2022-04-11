@@ -48,10 +48,6 @@ public class SessionBeanInterfaceMockBean<T> implements Bean<T> {
       return false;
    }
 
-   public boolean isNullable() {
-      return false;
-   }
-
    public T create(CreationalContext<T> creationalContext) {
       return null;
    }
