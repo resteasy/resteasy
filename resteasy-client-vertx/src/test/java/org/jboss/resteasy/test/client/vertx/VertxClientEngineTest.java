@@ -38,16 +38,12 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.http.HttpVersion;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,10 +84,10 @@ public class VertxClientEngineTest {
             fut.get(2, TimeUnit.MINUTES);
         }
         if (client == null) {
-            client = ((ResteasyClientBuilder) ClientBuilder
-                    .newBuilder()
-                    .scheduledExecutorService(executorService))
-                    .httpEngine(new VertxClientHttpEngine(vertx)).build();
+            client = ClientBuilder.newBuilder()
+                    .scheduledExecutorService(executorService)
+                    .register(new VertxClientHttpEngine(vertx))
+                    .build();
         }
         return client;
     }
@@ -120,58 +116,17 @@ public class VertxClientEngineTest {
 
     @Test
     public void testHTTP() throws Exception {
-        Vertx vertx = Vertx.vertx();
-        Client client = ((ResteasyClientBuilder) ClientBuilder
-                .newBuilder()
-                .scheduledExecutorService(executorService))
-                .httpEngine(new VertxClientHttpEngine(vertx)).build();
-        final Response resp = client.target("http://example.com").request().get();
+        server.requestHandler(req -> {
+            HttpServerResponse response = req.response();
+            if (req.getHeader("User-Agent").contains("Apache")) {
+                response.setStatusCode(503).end();
+            } else {
+                req.response().end("Success");
+            }
+        });
+        final Response resp = client().target(baseUri()).request().get();
         assertEquals(200, resp.getStatus());
-    }
-
-    @Test
-    public void testHTTPS() throws Exception {
-        Vertx vertx = Vertx.vertx();
-        HttpClientOptions options = new HttpClientOptions();
-        options.setSsl(true);
-        Client client = ((ResteasyClientBuilder) ClientBuilder
-                .newBuilder()
-                .scheduledExecutorService(executorService))
-                .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
-        final Response resp = client.target("https://example.com").request().get();
-        assertEquals(200, resp.getStatus());
-    }
-
-    @Test
-    public void testHTTP2() throws Exception {
-        Vertx vertx = Vertx.vertx();
-        HttpClientOptions options = new HttpClientOptions();
-        options.setSsl(true);
-        options.setProtocolVersion(HttpVersion.HTTP_2);
-        options.setUseAlpn(true);
-        Client client = ((ResteasyClientBuilder) ClientBuilder
-                .newBuilder()
-                .scheduledExecutorService(executorService))
-                .httpEngine(new VertxClientHttpEngine(vertx, options)).build();
-        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
-        assertEquals(200, resp.getStatus());
-    }
-
-    @Test
-    public void testHTTP2ByEngineRegistration() {
-        Vertx vertx = Vertx.vertx();
-        HttpClientOptions options = new HttpClientOptions();
-        options.setSsl(true);
-        options.setProtocolVersion(HttpVersion.HTTP_2);
-        options.setUseAlpn(true);
-        Client client = ClientBuilder
-                .newBuilder()
-                .register(new VertxClientHttpEngine(vertx, options))
-                .build();
-        final Response resp = client.target("https://nghttp2.org/httpbin/get").request().get();
-        assertEquals(200, resp.getStatus());
-        Assert.assertTrue(resp.readEntity(String.class).contains("nghttp2.org"));
-
+        assertEquals("Success", resp.readEntity(String.class));
     }
 
     @Test
