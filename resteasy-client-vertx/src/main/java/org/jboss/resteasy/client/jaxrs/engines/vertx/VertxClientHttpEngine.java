@@ -168,7 +168,8 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
                 httpClientRequest.send(handler);
             }
             return null;
-        });
+        })
+                .onFailure(futureResponse::completeExceptionally);
         return futureResponse;
     }
 
