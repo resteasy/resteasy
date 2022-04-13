@@ -493,6 +493,7 @@
                             <configuration>
                                 <excludes>
                                     <!-- Tests requires excluding JsonBindingProvider-->
+                                    <exclude>**/JaxbXmlRootElementProviderTest.java</exclude>
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
                                     <exclude>**/SseJsonEventTest</exclude>
                                 </excludes>
@@ -509,6 +510,7 @@
                             </goals>
                             <configuration>
                                 <includes>
+                                    <include>**/JaxbXmlRootElementProviderTest.java</include>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                     <include>**/SseJsonEventTest.java</include>
                                     <include>**/ValidationJaxbTest.java</include>

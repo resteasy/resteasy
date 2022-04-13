@@ -135,7 +135,7 @@ public class JaxbXmlRootElementProviderTest {
          Assert.fail(String.format("Regression of JBEAP-3530, see %s", exc.getCause().toString()));
       }
       Assert.assertNotNull(ERR_PARENT_NULL, parent);
-      Assert.assertEquals(ERR_PARENT_NAME, parent.getName(), JSON_PARENT);
+      Assert.assertEquals(ERR_PARENT_NAME, JSON_PARENT, parent.getName());
 
       String mapped = jsonClient.getParentString(JSON_PARENT);
       Assert.assertEquals("Wrong response from the server",
