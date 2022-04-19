@@ -70,7 +70,7 @@
    <bookinfo>
       <title>RESTEasy</title>
       <subtitle>Jakarta RESTFul Web Services</subtitle>
-      <releaseinfo>6.0.1-SNAPSHOT</releaseinfo>
+      <releaseinfo>6.0.1.Final</releaseinfo>
    </bookinfo>
 
    <toc/>
