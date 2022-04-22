@@ -3,16 +3,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>39</version>
+        <relativePath/>
+    </parent>
 
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-reference-guide-${translation}</artifactId>
+    <artifactId>resteasy-reference-guide</artifactId>
     <version>6.1.0-SNAPSHOT</version>
     <packaging>jdocbook</packaging>
-    <name>RESTEasy Reference Guide (${translation})</name>
+    <name>RESTEasy Reference Guide</name>
     <description/>
     <properties>
         <jbang.ver>0.67.3</jbang.ver>
-        <translation>en-US</translation>
     </properties>
 
     <repositories>
@@ -30,6 +35,12 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jboss.maven.plugins</groupId>
                 <artifactId>maven-jdocbook-plugin</artifactId>
@@ -53,9 +64,9 @@
                 <configuration>
                     <sourceDocumentName>master.xml</sourceDocumentName>
                     <masterTranslation>en-US</masterTranslation>
-                    <sourceDirectory>reference/en</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/reference/en</sourceDirectory>
                     <imageResource>
-                        <directory>reference/en</directory>
+                        <directory>${project.basedir}/reference/en</directory>
                         <includes>
                             <include>images/*</include>
                         </includes>
@@ -103,6 +114,7 @@
             <plugin>
                 <groupId>dev.jbang</groupId>
                 <artifactId>jbang-maven-plugin</artifactId>
+                <version>0.0.7</version>
                 <executions>
                     <execution>
                         <id>replace</id>
@@ -112,7 +124,10 @@
                         </goals>
                         <configuration>
                             <jbangVersion>${jbang.ver}</jbangVersion>
-                            <script>scripts/before.java</script>
+                            <script>${project.basedir}/scripts/before.java</script>
+                            <args>
+                                <arg>${project.basedir}</arg>
+                            </args>
                         </configuration>
                     </execution>
                     <execution>
@@ -123,7 +138,10 @@
                         </goals>
                         <configuration>
                             <jbangVersion>${jbang.ver}</jbangVersion>
-                            <script>scripts/after.java</script>
+                            <script>${project.basedir}/scripts/after.java</script>
+                            <args>
+                                <arg>${project.basedir}</arg>
+                            </args>
                         </configuration>
                     </execution>
                 </executions>
