@@ -242,6 +242,42 @@
               </plugins>
           </build>
       </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>docbook</module>
+                <module>distribution</module>
+            </modules>
+            <reporting>
+                <excludeDefaults>true</excludeDefaults>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <reportSets>
+                            <reportSet>
+                                <id>aggregate</id>
+                                <inherited>false</inherited>
+                                <reports>
+                                    <report>aggregate-no-fork</report>
+                                </reports>
+                            </reportSet>
+                            <reportSet>
+                                <id>default</id>
+                                <reports>
+                                    <report>javadoc</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
     </profiles>
 
     <contributors>
@@ -259,9 +295,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <compilerArgs>
-                            <compilerArg>-Aorg.jboss.logging.tools.addGeneratedAnnotation=false</compilerArg>
-                        </compilerArgs>
+                        <release>11</release>
                     </configuration>
                     <executions>
                         <execution>
@@ -287,6 +321,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
+                        <additionalJOption>--no-module-directories</additionalJOption>
                         <doclint>none</doclint>
                         <minmemory>128m</minmemory>
                         <maxmemory>1024m</maxmemory>
