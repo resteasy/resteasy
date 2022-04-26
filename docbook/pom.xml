@@ -16,9 +16,6 @@
     <packaging>jdocbook</packaging>
     <name>RESTEasy Reference Guide</name>
     <description/>
-    <properties>
-        <jbang.ver>0.67.3</jbang.ver>
-    </properties>
 
     <repositories>
         <repository>
@@ -110,41 +107,6 @@
                         <!-- <localeSeparator>-</localeSeparator> -->
                     </options>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>dev.jbang</groupId>
-                <artifactId>jbang-maven-plugin</artifactId>
-                <version>0.0.7</version>
-                <executions>
-                    <execution>
-                        <id>replace</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <jbangVersion>${jbang.ver}</jbangVersion>
-                            <script>${project.basedir}/scripts/before.java</script>
-                            <args>
-                                <arg>${project.basedir}</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>restore</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <jbangVersion>${jbang.ver}</jbangVersion>
-                            <script>${project.basedir}/scripts/after.java</script>
-                            <args>
-                                <arg>${project.basedir}</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
