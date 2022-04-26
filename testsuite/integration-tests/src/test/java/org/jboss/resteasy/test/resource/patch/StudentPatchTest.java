@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -101,6 +102,7 @@ public class StudentPatchTest {
 
    @Test
    @OperateOnDeployment(DISABLED_PATCH_DEPLOYMENT)
+   @Ignore("RESTEASY-3132")
    public void testPatchDisabled() throws Exception {
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
 
