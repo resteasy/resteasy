@@ -143,9 +143,9 @@
                     </plugin-options>
                     <feature-packs>
                         <feature-pack>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>galleon-feature-pack</artifactId>
-                            <version>${project.version}</version>
+                            <groupId>org.wildfly</groupId>
+                            <artifactId>wildfly-preview-feature-pack</artifactId>
+                            <version>${version.org.wildfly}</version>
                             <inherit-configs>false</inherit-configs>
                             <included-configs>
                                 <config>
@@ -163,6 +163,12 @@
                                 <name>appclient</name>
                                 <name>domain</name>
                             </excluded-packages>
+                        </feature-pack>
+                        <feature-pack>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>galleon-feature-pack</artifactId>
+                            <version>${project.version}</version>
+                            <inherit-configs>false</inherit-configs>
                         </feature-pack>
                     </feature-packs>
                 </configuration>
