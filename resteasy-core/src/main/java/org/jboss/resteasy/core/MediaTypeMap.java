@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
  */
 public class MediaTypeMap<T>
 {
+   private static String GRPC_JAXRS_PARAMETER = "grpc-jaxrs";
+
    public interface Typed
    {
       Class<?> getType();
@@ -85,9 +87,20 @@ public class MediaTypeMap<T>
 
       }
 
+      private int checkGrpcJaxrs(Entry<?> entry, Entry<?> entry1) {
+         if (entry.mediaType.getParameters().get(GRPC_JAXRS_PARAMETER) != null) {
+            return -1;
+         } else if (entry1.mediaType.getParameters().get(GRPC_JAXRS_PARAMETER) != null) {
+            return 1;
+         } else {
+            return 0;
+         }
+      }
+
       public int compare(Entry<?> entry, Entry<?> entry1)
       {
-         int val = compareTypes(entry, entry1);
+         int val = checkGrpcJaxrs(entry, entry1);  // kludge
+         if (val == 0) val = compareTypes(entry, entry1);
          if (val == 0) val = entry.compareTo(entry1);
          return val;
       }

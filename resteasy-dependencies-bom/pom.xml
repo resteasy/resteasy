@@ -95,6 +95,11 @@
         <version.io.projectreactor>2020.0.8</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
+        
+        <!-- protobuf, gRPC, javaparser for grpc-bridge -->
+        <version.com.google.protobuf>3.17.3</version.com.google.protobuf>
+        <version.io.grpc>1.39.0</version.io.grpc>
+        <version.javaparser>3.18.0</version.javaparser>
     </properties>
 
     <dependencyManagement>
@@ -618,6 +623,69 @@
                         <artifactId>servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <!-- protobuf, gRPC, javaparser for grpc-bridge -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${version.com.google.protobuf}</version>
+            </dependency>
+
+            <dependency>
+               <groupId>io.grpc</groupId>
+               <artifactId>grpc-bom</artifactId>
+               <version>${version.io.grpc}</version>
+               <type>pom</type>
+               <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-api</artifactId>
+                <version>${version.io.grpc}</version>
+                <exclusions>
+                   <exclusion>
+                      <groupId>com.google.code.findbugs</groupId>
+                      <artifactId>jsr305</artifactId>
+                   </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-core</artifactId>
+                <version>${version.io.grpc}</version>
+            </dependency>
+
+            <!--dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty</artifactId>
+                <version>${version.io.grpc}</version>
+            </dependency-->
+
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty-shaded</artifactId>
+                <version>${version.io.grpc}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${version.io.grpc}</version>
+                <exclusions>
+                   <exclusion>
+                      <groupId>com.google.errorprone</groupId>
+                      <artifactId>error_prone_annotations</artifactId>
+                   </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.javaparser</groupId>
+                <artifactId>javaparser-symbol-solver-core</artifactId>
+                <version>${version.javaparser}</version>
             </dependency>
 
             <!-- Required by Hibernate Validator 5.x for testing -->

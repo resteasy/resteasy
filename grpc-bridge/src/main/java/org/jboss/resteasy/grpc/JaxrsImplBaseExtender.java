@@ -1,0 +1,524 @@
+package org.jboss.resteasy.grpc;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
+import org.jboss.logging.Logger;
+
+import jakarta.enterprise.inject.spi.CDI;
+
+public class JaxrsImplBaseExtender {
+
+   private static Logger logger = Logger.getLogger(JaxrsImplBaseExtender.class);
+   private static String contextPath = "";
+
+   private boolean inWildFly = true;
+   private String packageName = "";
+   private String outerClassName = "";
+   private String serviceName = "";
+   private String servletName = "";
+   private Set<String> imports = new HashSet<String>();
+   
+   public static void main(String[] args) {
+      if (args.length != 3 && args.length != 4) {
+         logger.info("need three args:");
+         logger.info("  arg[0]: .proto file prefix");
+         logger.info("  arg[1]: servlet name");
+         logger.info("  arg[2]: context path");
+         logger.info("  arg[3]: in WildFly (optional)");
+         return;
+      }
+      contextPath = args[2];
+      new JaxrsImplBaseExtender(args);
+   }
+
+   public JaxrsImplBaseExtender(String[] args) {
+      servletName = args[1];
+      if (args.length == 4) {
+         inWildFly = Boolean.valueOf(args[3]);
+      }
+      parse(args[0]);
+   }
+
+   private void parse(String root) {
+      File file = new File("./src/main/proto/" + root + ".proto");
+      if (!file.exists()) {
+         throw new RuntimeException(root + ".proto not found");
+      }
+      try {
+         StringBuilder sbHeader = new StringBuilder();
+         StringBuilder sbBody = new StringBuilder();
+         Reader reader = new FileReader(file);
+         Scanner scanner = new Scanner(reader);
+         classHeader(scanner, sbHeader, root);
+         String s = scanner.findWithinHorizon("service ", 0);
+         while (s != null) {
+            serviceName = scanner.next();
+            sbHeader.append("import ")
+                    .append(packageName).append(".")
+                    .append(serviceName).append("Grpc").append(".")
+                    .append(serviceName).append("ImplBase;\n");
+            service(scanner, sbHeader, sbBody, root);
+            s = scanner.findWithinHorizon("service ", 0);
+         }
+         sbHeader.append("\n");
+         staticMethods(sbBody, root);
+         sbBody.append("}\n");
+         writeClass(sbHeader, sbBody);
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
+
+   private void classHeader(Scanner scanner, StringBuilder sb, String fileName) {
+      String pkg = null;
+      String s = scanner.findWithinHorizon("java_package", 0);
+      if (s != null) {
+         scanner.findWithinHorizon("\"", 0);
+         scanner.useDelimiter("[ \"]");
+         pkg = scanner.next();
+      } else {
+         s = scanner.findWithinHorizon("package", 0);
+         if (s != null) {
+            scanner.useDelimiter("[ ;]");
+            pkg = scanner.next();
+         }
+      }
+      sb.append("package ").append(pkg).append(";\n\n");
+      packageName = pkg;
+      s = scanner.findWithinHorizon("java_outer_classname", 0);
+      if (s != null) {
+         s = scanner.findWithinHorizon("=", 0);
+         s = scanner.findWithinHorizon("\"", 0);
+         outerClassName = scanner.next();
+      }
+      imports(scanner, sb, fileName);
+      scanner.reset();
+   }
+
+   private void imports(Scanner scanner, StringBuilder sb, String fileName) {
+      sb.append("import com.google.protobuf.ByteString;\n")
+        .append("import com.google.protobuf.GeneratedMessageV3;\n")
+        .append("import com.google.protobuf.Message;\n")
+        .append("import io.grpc.stub.StreamObserver;\n")
+        .append("import java.io.ByteArrayInputStream;\n")
+        .append("import java.io.ByteArrayOutputStream;\n")
+        .append("import java.io.IOException;\n")
+        .append("import java.io.InputStream;\n")
+        .append("import java.lang.reflect.Proxy;\n")
+        .append("import java.util.ArrayList;\n")
+        .append("import java.util.concurrent.ExecutorService;\n")
+        .append("import java.util.HashMap;\n")
+        .append("import java.util.Iterator;\n")
+        .append("import java.util.List;\n")
+        .append("import java.util.Map;\n")
+        .append("import jakarta.ws.rs.RuntimeType;\n")
+        .append("import jakarta.ws.rs.core.MediaType;\n")
+        .append("import jakarta.servlet.Servlet;\n")
+        .append("import jakarta.servlet.ServletConfig;\n")
+        .append("import jakarta.servlet.ServletContext;\n")
+        .append("import jakarta.servlet.http.Cookie;\n")
+        .append("import jakarta.servlet.http.HttpServletRequest;\n")
+        .append("import jakarta.servlet.http.HttpServletResponse;\n")
+        .append("import org.jboss.as.weld.WeldProvider;\n")
+        .append("import org.jboss.weld.environment.se.WeldSEProvider;\n")
+        .append("import org.jboss.resteasy.core.ResteasyContext;\n")
+        .append("import org.jboss.resteasy.core.SynchronousDispatcher;\n")
+        .append("import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.ServletConfigWrapper;\n")
+        .append("import org.jboss.resteasy.grpc.GrpcCdiExtension;\n")
+//        .append("import org.jboss.resteasy.plugins.grpc.sse.SseEvent;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.AsyncContextImpl;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.AsyncMockServletOutputStream;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.HttpServletRequestImpl;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.HttpServletRequestHandler;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.HttpServletResponseHandler;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.MockServletInputStream;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.MockServletOutputStream;\n")
+        .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;\n")
+        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;\n")
+        .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;\n")
+        .append("import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;\n")
+        .append("import org.jboss.resteasy.plugins.server.servlet.ServletContainerDispatcher;\n")
+        .append("import org.jboss.resteasy.spi.Dispatcher;\n")
+        .append("import org.jboss.resteasy.spi.ResteasyProviderFactory;\n")
+        .append("import org.jboss.weld.SimpleCDI;\n")
+        .append("import org.jboss.weld.context.bound.BoundRequestContext;\n")
+        .append("import org.wildfly.grpc.GrpcService;\n")
+        .append("import javax.inject.Inject;\n")
+        .append("import jakarta.enterprise.inject.spi.BeanManager;\n")
+        .append("import jakarta.enterprise.inject.spi.CDI;\n")
+        .append("import jakarta.enterprise.context.RequestScoped;\n")
+        .append("import jakarta.enterprise.context.ContextNotActiveException;\n")
+        .append("import org.jboss.weld.context.http.HttpRequestContext;\n")
+        .append("import org.jboss.weld.module.web.context.http.HttpRequestContextImpl;\n")
+        .append("import org.jboss.weld.manager.BeanManagerImpl;\n")
+        .append("import org.jboss.weld.bean.builtin.BeanManagerProxy;\n")
+        .append("import com.google.protobuf.Any;\n")
+        .append("import test.grpc.").append(fileName).append("_Server;\n");
+   }
+
+   private void service(Scanner scanner, StringBuilder sbHeader, StringBuilder sbBody, String root) {
+     if (inWildFly) {
+        sbBody.append("@GrpcService\n");
+     }
+      sbBody.append("public class ")
+            .append(serviceName)
+            .append("GrpcImpl extends ")
+            .append(serviceName)
+            .append("ImplBase {\n\n")
+            .append("   private HttpServletDispatcher servlet;\n")
+            .append("   private HttpRequestContext cdiContext;\n")
+            ;
+      scanner.nextLine();
+      scanner.skip("//");
+      String path = scanner.next();
+      String actualEntityClass = scanner.next();
+      String httpMethod = scanner.next();
+      String syncType = scanner.next();
+      String rpc = scanner.findWithinHorizon(" rpc ", 0);
+      while (rpc != null) {
+         rpc(scanner, root, actualEntityClass, httpMethod, syncType, sbHeader, sbBody);
+         scanner.nextLine();
+         if (!scanner.hasNext("//")) {
+            break;
+         }
+         scanner.skip("//");
+         path = scanner.next();
+         actualEntityClass = scanner.next();
+         httpMethod = scanner.next();
+         syncType = scanner.next();
+         rpc = scanner.findWithinHorizon(" rpc ", 0);
+      }
+   }
+
+   private void rpc(Scanner scanner, String root, String actualEntityClass, String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
+      sbBody.append("\n   @java.lang.Override\n");
+      String method = scanner.next();
+      scanner.findWithinHorizon("\\(", 0);
+      scanner.useDelimiter("\\)");
+//      sbHeader.append("import " + packageName + "." + outerClassName + ".MessageExtension;\n");
+      String param = getParamType(packageName, outerClassName, scanner.next());
+      if (!imports.contains(actualEntityClass)) {
+         sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";\n");
+         imports.add(actualEntityClass);
+      }
+      scanner.findWithinHorizon("returns", 0);
+      scanner.findWithinHorizon("\\(", 0);
+      String retn = getReturnType(packageName, outerClassName, scanner.next());
+      if (!imports.contains(retn)) {
+         sbHeader.append("import " + retn + ";\n");
+         imports.add(retn);
+      }
+      sbBody.append("   public void ")
+            .append(method).append("(")
+//            .append(param).append(" extension, ")
+            .append(param).append(" param, ")
+            .append("StreamObserver<").append(retn).append("> responseObserver) {\n");
+      rpcBody(scanner, root, actualEntityClass, httpMethod, syncType, sbBody, retn);
+      sbBody.append("   }\n");
+      scanner.reset();
+   }
+
+   private void rpcBody(Scanner scanner, String root, String actualEntityClass, String method, String syncType, StringBuilder sb, String retn) {
+      sb.append("      try {\n")
+        .append("         HttpServletResponse response = getHttpServletResponse(\"" + retn + "\", \"" + syncType + "\");\n")
+        .append("         GeneratedMessageV3 actualParam = param.").append(getGetterMethod(actualEntityClass)).append(";\n")
+        .append("         HttpServletRequest request = getHttpServletRequest(param, actualParam, response, \"").append(contextPath).append("\", \"").append(method).append("\", \"").append(retn).append("\");\n")
+//        .append("         MessageExtension messageExtension = extension.getMessageExtension();\n")
+//        .append("         GeneratedMessageV3 actualParam = extension.getValue();\n")
+//        .append("         HttpServletRequest request = getHttpServletRequest(messageExtension, actualParam, response, \"").append(contextPath).append("\", \"").append(method).append("\", \"").append(retn).append("\");\n")
+        .append("         associateCdiContext(request);\n")
+        .append("         HttpServletDispatcher servlet = getServlet();\n")
+        .append("         servlet.service(\"").append(method).append("\", request, response);\n");
+      if ("suspended".equals(syncType)) {
+         sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();\n")
+           .append("         amsos.await();\n")
+           .append("         ByteArrayOutputStream baos = amsos.getDelegate();\n")
+           .append("         ByteArrayInputStream bais1 = new ByteArrayInputStream(baos.toByteArray());\n")
+           .append("         com.google.protobuf.Any reply = com.google.protobuf.Any.parseFrom(bais1);\n")
+           .append("         responseObserver.onNext(reply);\n");
+      } else if ("completionStage".equals(syncType)) {
+         sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();\n")
+           .append("         amsos.await();\n")
+           .append("         ByteArrayOutputStream baos = amsos.getDelegate();\n")
+           .append("         ByteArrayInputStream bais1 = new ByteArrayInputStream(baos.toByteArray());\n")
+           .append("         ").append(retn).append(" reply = ").append(retn).append(".parseFrom(bais1);\n")
+           .append("         responseObserver.onNext(reply);\n");
+      }
+      
+      else if ("sse".equals(syncType)) {
+//         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
+//           .append("         ByteArrayOutputStream baos = msos.getDelegate();\n")
+//           .append("         bais = new ByteArrayInputStream(baos.toByteArray());\n")
+//           .append("         bais.mark(0);\n")
+//           .append("         while (bais.read() != -1) {\n")
+//           .append("            bais.reset();\n")
+//           .append("            responseObserver.onNext(transformSseEvent(bais));\n")
+//           .append("            bais.mark(0);\n")
+//           .append("         }\n")
+           ;
+         // temporary
+//         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
+//         .append("         ByteArrayOutputStream baos = msos.getDelegate();\n");
+//         
+//         sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();\n")
+//           .append("         while (true) {\n")
+//           .append("            ByteArrayOutputStream baos = amsos.await();\n")
+//           .append("            if (amsos.isClosed()) {\n")
+//           .append("               break;\n")
+//           .append("            }\n")
+//           .append("            byte[] bytes = baos.toByteArray();\n")
+//           .append("            if (bytes.length == 2 && bytes[0] == 10 && bytes[1] == 10) {\n")
+//           .append("               continue;\n")
+//           .append("            }\n")
+//           .append("            try {\n")
+//           .append("System.out.println(\"sending \" + baos.toString());\n")
+//           .append("               org_jboss_resteasy_plugins_protobuf_sse___SseEvent reply = org_jboss_resteasy_plugins_protobuf_sse___SseEvent.parseFrom(bytes);\n")
+//           .append("               responseObserver.onNext(reply);\n")
+//           .append("            } catch (Exception e) {\n")
+//           .append("               continue;\n")
+//           .append("            }\n")           
+//           .append("         }\n");
+      } else {
+         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
+           .append("         ByteArrayOutputStream baos = msos.getDelegate();\n")
+           .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());\n")
+           .append("         ").append(retn).append(" reply = ").append(retn).append(".parseFrom(bais);\n")
+           .append("         responseObserver.onNext(reply);\n");
+      }
+      sb.append("      } catch (Exception e) {\n")
+        .append("         e.printStackTrace();\n")
+        .append("         responseObserver.onError(e);\n")
+        .append("      } finally {\n")
+        .append("         responseObserver.onCompleted();\n")
+        .append("      }\n");
+   }
+/*
+               WeldSEProvider weldSEProvider = new WeldSEProvider()
+               CDI.setCDIProvider(weldSEProvider);
+               cdiContext = new HttpRequestContextImpl("jaxrs.example.grpc-0.0.1-SNAPSHOT.war");
+               cdiContext.associate(request);
+               cdiContext.activate();
+               BeanManager bm = GrpcCdiExtension.getBeanManager();
+               if (bm == null) {
+                   bm = weldSEProvider.getCDI().getBeanManager();
+               }
+ */
+   /*
+             if (cdiContext == null) {
+                 CDI.setCDIProvider(new WeldProvider());
+                 cdiContext = new HttpRequestContextImpl("jaxrs.example.grpc-0.0.1-SNAPSHOT.war");
+                 cdiContext.associate(request);
+                 cdiContext.activate();
+                 BeanManager bm = GrpcCdiExtension.getBeanManager();
+                 try {
+                    bm.getContext(RequestScoped.class);
+                 } catch (ContextNotActiveException e) {
+                    BeanManagerProxy bmp = (BeanManagerProxy) bm;
+                    BeanManagerImpl bmi = bmp.delegate();
+                    bmi.addContext(cdiContext);
+                 }
+                 return;
+              }
+    */
+   private void staticMethods(StringBuilder sb, String root) {
+      sb.append("\n")
+        .append("//=============================  static methods =============================\n")
+        .append("   private void associateCdiContext(HttpServletRequest request) {\n")
+        .append("      if (cdiContext == null) {\n")
+        .append("         synchronized(this) {\n")
+        .append("            if (cdiContext == null) {\n")  
+        .append("               CDI.setCDIProvider(new WeldProvider());\n")
+        .append("               cdiContext = new HttpRequestContextImpl(\"jaxrs.example.grpc-0.0.1-SNAPSHOT.war\");\n")
+        .append("               cdiContext.associate(request);\n")
+        .append("               cdiContext.activate();\n")
+        .append("               BeanManager bm = GrpcCdiExtension.getBeanManager();\n")
+        .append("               if (bm == null) {\n")
+        .append("                  bm = CDI.current().getBeanManager();\n")
+        .append("               }\n")
+        .append("               try {\n")
+        .append("                  bm.getContext(RequestScoped.class);\n")
+        .append("               } catch (ContextNotActiveException e) {\n")
+        .append("                  BeanManagerProxy bmp = (BeanManagerProxy) bm;\n")
+        .append("                  BeanManagerImpl bmi = bmp.delegate();\n")
+        .append("                  bmi.addContext(cdiContext);\n")
+        .append("               }\n")
+        .append("               return;\n")
+        /*
+        .append("               WeldSEProvider weldSEProvider = new WeldSEProvider();\n")
+        .append("               CDI.setCDIProvider(weldSEProvider);\n") //HERE
+        .append("               cdiContext = new HttpRequestContextImpl(\"jaxrs.example.grpc-0.0.1-SNAPSHOT.war\");\n")
+        .append("               cdiContext.associate(request);\n")
+        .append("               cdiContext.activate();\n")
+        .append("               BeanManager bm = GrpcCdiExtension.getBeanManager();\n")
+        .append("               if (bm == null) {\n")
+        .append("                  bm = weldSEProvider.getCDI().getBeanManager();\n")
+        .append("               }\n")
+        .append("               try {\n")
+        .append("                  bm.getContext(RequestScoped.class);\n")
+        .append("               } catch (ContextNotActiveException e) {\n")
+        .append("                  BeanManagerProxy bmp = (BeanManagerProxy) bm;\n")
+        .append("                  BeanManagerImpl bmi = bmp.delegate();\n")
+        .append("                  bmi.addContext(cdiContext);\n")
+        .append("               }\n")
+        .append("               return;\n")
+        */
+        .append("            }\n")
+        .append("         }\n")
+        .append("      }\n")
+        .append("      cdiContext.associate(request);\n")
+        .append("      cdiContext.activate();\n")
+        .append("   }\n\n")
+        ;
+      sb.append("   private HttpServletDispatcher getServlet() throws Exception {\n")
+        .append("      if (servlet == null) {\n")
+        .append("         synchronized(this) {\n")
+        .append("            if (servlet != null) {\n")
+        .append("               return servlet;\n")
+        .append("            }\n")
+        .append("            servlet = (HttpServletDispatcher) ResteasyContext.getServlet(\"").append(servletName).append("\");\n")
+        .append("            ServletContainerDispatcher servletContainerDispatcher = servlet.getServletContainerDispatcher();\n")
+        .append("            ResteasyProviderFactory resteasyProviderFactory = servletContainerDispatcher.getProviderFactory();\n")
+        .append("            resteasyProviderFactory.registerProvider(Class.forName(\"jaxrs.example.").append(root).append("MessageBodyReaderWriter\"), false);\n")
+        .append("         }\n")
+        .append("      }\n")
+        .append("      return servlet;\n")
+        .append("   }\n\n")
+        ;
+      sb.append("   private static HttpServletResponse getHttpServletResponse(String retn, String syncType) {\n")
+        .append("      return (HttpServletResponse) Proxy.newProxyInstance(\n")
+        .append("         HttpServletResponse.class.getClassLoader(),\n")
+        .append("         new Class[] { HttpServletResponse.class },\n")
+        .append("         new HttpServletResponseHandler(retn, syncType));\n")
+        .append("   }\n\n")
+        ;
+      sb.append("   private static Map<String, List<String>> convertHeaders(Map<String, jaxrs.example.").append(root).append("_proto.Header> protoHeaders) {\n")
+        .append("      Map<String, List<String>> headers = new HashMap<String, List<String>>();\n")
+        .append("      for (Map.Entry<String, jaxrs.example.").append(root).append("_proto.Header> entry : protoHeaders.entrySet()) {\n")
+        .append("         String key = entry.getKey();\n")
+        .append("         jaxrs.example.").append(root).append("_proto.Header protoHeader = entry.getValue();\n")
+        .append("         List<String> values = new ArrayList<String>();\n")
+        .append("         for (int i = 0; i < protoHeader.getValuesCount(); i++) {\n")
+        .append("            values.add(protoHeader.getValues(i));\n")
+        .append("         }\n")
+        .append("         headers.put(key, values);\n")
+        .append("      }\n")
+        .append("      return headers;\n")
+        .append("   }\n\n")
+        ;
+      /*
+    private static HttpServletRequest getHttpServletRequest(jaxrs.example.MessageExtension extensioin, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {
+      String url = param.getURL();
+      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());
+      MockServletInputStream msis = new MockServletInputStream(bais);
+      Map<String, List<String>> headers = convertHeaders(extension.getHeaders());
+      .Cookie[] cookies = convertCookies(param.getCookies());
+      ServletContext servletContext = CC1_Server.getContext();
+      HttpServletRequest request = new HttpServletRequestImpl(response, servletContext, context, url, verb, msis, type, headers, cookies);
+      return request;
+   }
+//       */
+//      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.MessageExtension extension, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {\n")
+//        .append("      String url = extension.getURL();\n")
+//      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.MessageExtension extension, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {\n")
+//        .append("      String url = extension.getURL();\n")
+      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {\n")
+        .append("      String url = param.getURL();\n")
+        .append("      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());\n")
+        .append("      MockServletInputStream msis = new MockServletInputStream(bais);\n")
+        .append("      Map<String, List<String>> headers = convertHeaders(param.getHeadersMap());\n")
+        .append("      Cookie[] cookies = convertCookies(param.getCookiesList());\n")
+        //        .append("      Map<String, List<String>> headers = convertHeaders(extension.getHeaders());\n")
+//        .append("      Cookie[] cookies = convertCookies(extension.getCookiesList());\n")
+        .append("      ServletContext servletContext = ").append(root).append("_Server.getContext();\n")
+        .append("      HttpServletRequest request = new HttpServletRequestImpl(response, servletContext, context, url, verb, msis, type, headers, cookies);\n")
+        .append("      return request;\n")
+        .append("   }\n\n")
+        ;
+      sb.append("   private static jakarta.servlet.http.Cookie[] convertCookies(List<jaxrs.example.").append(root).append("_proto.Cookie> cookieList) {\n")
+        .append("      jakarta.servlet.http.Cookie[] cookieArray = new jakarta.servlet.http.Cookie[cookieList.size()];\n")
+        .append("      int i = 0;\n")
+        .append("      for (Iterator<jaxrs.example.").append(root).append("_proto.Cookie> it = cookieList.iterator(); it.hasNext(); ) {\n")
+        .append("         jaxrs.example.").append(root).append("_proto.Cookie protoCookie = it.next();\n")
+        .append("         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie(protoCookie.getName(), protoCookie.getValue());\n")
+        .append("         cookie.setVersion(protoCookie.getVersion());\n")
+        .append("         cookie.setPath(protoCookie.getPath());\n")
+        .append("         cookie.setDomain(protoCookie.getDomain());\n")
+        .append("         cookieArray[i++] = cookie;\n")
+        .append("      }\n")
+        .append("      return cookieArray;\n")
+        .append("   }\n\n")
+        ;
+//        .append("   private static org_jboss_resteasy_plugins_grpc_sse___SseEvent transformSseEvent(ByteArrayInputStream bais) throws IOException {\n")
+//        .append("      SseEventInputImpl eventInput = new SseEventInputImpl(null, MediaType.TEXT_PLAIN_TYPE, null, null, bais);\n")
+//        .append("      InboundSseEventImpl inboundEvent = (InboundSseEventImpl) eventInput.read();\n")
+//        .append("      org_jboss_resteasy_plugins_grpc_sse___SseEvent.Builder builder = org_jboss_resteasy_plugins_grpc_sse___SseEvent.newBuilder();\n")
+//        .append("      builder.setComment(inboundEvent.getComment());\n")
+//        .append("      builder.setData(ByteString.copyFrom(inboundEvent.getRawData()));\n")
+//        .append("      builder.setId(inboundEvent.getId());\n")
+//        .append("      builder.setName(inboundEvent.getName());\n")
+//        .append("      builder.setReconnectDelay(inboundEvent.getReconnectDelay());\n")
+//        .append("      return builder.build();\n")
+//        .append("   }\n")
+        ;
+   }
+
+   private static String getParamType(String packageName, String outerClassName, String param) {
+//      return packageName + "." + outerClassName + "." + param;
+      return packageName + "." + outerClassName + "." + param;
+   }
+   
+   private static String getReturnType(String packageName, String outerClassName, String param) {
+      int pos = param.indexOf("stream");
+      if (pos >= 0) {
+         param = param.substring(pos + 6).stripLeading();
+      }
+      if ("google.protobuf.Any".equals(param)) {
+         return "com.google.protobuf.Any";
+      }
+      return packageName + "." + outerClassName + "." + param;
+   }
+
+   private String getGetterMethod(String actualEntityClass) {
+      actualEntityClass = actualEntityClass.replaceAll("___", "_");
+      StringBuilder sb = new StringBuilder("get");
+      sb.append(actualEntityClass.substring(0, 1).toUpperCase());
+      for (int i = 1; i < actualEntityClass.length(); ) {
+         if ("_".equals(actualEntityClass.substring(i, i + 1))) {
+            sb.append(actualEntityClass.substring(i + 1, i + 2).toUpperCase());
+            i += 2;
+         } else {
+            sb.append(actualEntityClass.charAt(i++));
+         }
+      }
+      sb.append("Field()");
+      return sb.toString();
+   }
+   
+   private void writeClass(StringBuilder sbHeader, StringBuilder sbBody) throws IOException {
+      String path = "";
+      for (String s : ("target/generated-sources/protobuf/grpc-java/" + packageName.replace(".", "/")).split("/")) {
+         path += s;
+         File dir = new File(path);
+         if(!dir.exists()){
+            dir.mkdir();
+         }
+         path += "/";
+      }
+      File file = new File(path + serviceName + "GrpcImpl.java");
+      file.createNewFile();
+      FileWriter fw = new FileWriter(file.getAbsoluteFile());
+      BufferedWriter bw = new BufferedWriter(fw);
+      bw.write(sbHeader.toString());
+      bw.write(sbBody.toString());
+      bw.close();
+   }
+}

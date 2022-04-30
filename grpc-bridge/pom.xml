@@ -1,0 +1,292 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs-all</artifactId>
+      <version>6.1.0-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
+   </parent>
+   <artifactId>grpc-bridge</artifactId>
+   <packaging>jar</packaging>
+   <name>RESTEasy gRPC to JAX-RS bridge</name>
+   <url>http://maven.apache.org</url>
+
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <version.io.grpc>1.39.0</version.io.grpc>
+      <maven.compiler.release>11</maven.compiler.release>
+      <maven.compiler.source>11</maven.compiler.source>
+      <maven.compiler.target>11</maven.compiler.target>
+   </properties>
+
+   <!--dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-bom</artifactId>
+            <version>${version.io.grpc}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement-->
+
+   <dependencies>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-core-spi</artifactId>
+         <version>${project.version}</version>
+         <scope>provided</scope>
+      </dependency>
+
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se-core</artifactId>
+                <version>5.0.0.CR2</version>
+            </dependency>
+            
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-cdi</artifactId>
+         <version>${project.version}</version>
+         <scope>provided</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.jboss.weld</groupId>
+               <artifactId>weld-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>jakarta.servlet</groupId>
+         <artifactId>jakarta.servlet-api</artifactId>
+         <scope>compile</scope>
+      </dependency>
+
+            <!--dependency>
+                <groupId>org.jboss.spec.javax.servlet</groupId>
+                <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+                <version>2.0.0.Final</version>
+                <scope>compile</scope>
+            </dependency-->
+    <!--dependency>
+	<groupId>org.jboss.weld.module</groupId>
+	<artifactId>weld-web</artifactId>
+	<version>3.1.4.Final</version>
+</dependency-->
+            
+      <dependency>
+         <groupId>com.google.protobuf</groupId>
+         <artifactId>protobuf-java</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>io.grpc</groupId>
+         <artifactId>grpc-api</artifactId>
+      </dependency>
+      
+      <dependency>
+         <groupId>io.grpc</groupId>
+         <artifactId>grpc-core</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>io.grpc</groupId>
+         <artifactId>grpc-stub</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>io.grpc</groupId>
+         <artifactId>grpc-netty-shaded</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>com.github.javaparser</groupId>
+         <artifactId>javaparser-symbol-solver-core</artifactId>
+      </dependency>
+
+      <!--dependency>
+         <groupId>org.jboss.weld</groupId>
+         <artifactId>weld-api</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>javax.enterprise</groupId>
+               <artifactId>cdi-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+     <version.weld.api>3.1.SP4</version.weld.api>
+        <version.weld>3.1.7.SP1</version.weld>
+      <dependency>
+         <groupId>org.jboss.weld</groupId>
+         <artifactId>weld-core-impl</artifactId>
+      </dependency-->
+      
+            <!--dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-api</artifactId>
+                <version>3.1.SP4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                       <groupId>jakarta.enterprise</groupId>
+                       <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
+           </dependency-->
+           <!--dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core-impl</artifactId>
+                <version>3.1.7.SP1</version>
+                <exclusions>
+                   <exclusion>
+                      <groupId>org.jboss.weld</groupId>
+                      <artifactId>weld-api</artifactId>
+                   </exclusion>
+                </exclusions>
+           </dependency-->
+
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging-annotations</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging-processor</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <!--scope>compile</scope-->
+      </dependency>
+      
+         <!--dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.0.0</version>
+        </dependency-->
+            <!--version>2.0.2</version-->
+        
+        
+            <!--dependency>    
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>2.0.SP1</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.interceptor</groupId>
+                        <artifactId>javax.interceptor-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.el</groupId>
+                        <artifactId>javax.el-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency-->
+            
+      <!--dependency>
+         <groupId>org.wildfly</groupId>
+         <artifactId>wildfly-weld</artifactId>
+         <version>26.0.0.Final</version>
+      </dependency-->
+        <!--dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow</artifactId>
+             <version>${project.version}</version>
+        </dependency-->
+   </dependencies>
+  
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>default-compile</id>
+                  <phase>compile</phase>
+                  <goals>
+                     <goal>compile</goal>
+                  </goals>
+                  <configuration>
+                     <release>11</release>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+
+   <profiles>
+      <profile>
+         <id>i18n</id>
+         <activation>
+            <property>
+               <name>i18n</name>
+            </property>
+         </activation>
+         <build>
+            <plugins>
+               <!--plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-resources-plugin</artifactId>
+                  <executions>
+                     <execution>
+                        <id>copy-resources</id>
+                        <phase>initialize</phase>
+                        <goals>
+                           <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                           <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/plugins/validation/i18n</outputDirectory>
+                           <resources>
+                              <resource>
+                                 <directory>${basedir}/src/test/resources/i18n</directory>
+                                 <includes>
+                                    <include>*</include>
+                                 </includes>
+                              </resource>
+                           </resources>
+                           <overwrite>true</overwrite>
+                        </configuration>
+                     </execution>
+                  </executions>
+               </plugin-->
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <executions>
+                     <execution>
+                        <id>i18</id>
+                        <phase>test</phase>
+                        <goals>
+                           <goal>test</goal>
+                        </goals>
+                        <configuration>
+                           <skip>false</skip>
+                           <reuseForks>false</reuseForks>
+                           <includes>
+                              <include>**/I18nTestMessages_*.java</include>
+                           </includes>
+                        </configuration>
+                     </execution>
+                  </executions>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
+</project>

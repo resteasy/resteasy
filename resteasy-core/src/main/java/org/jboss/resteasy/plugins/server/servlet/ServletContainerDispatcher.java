@@ -268,4 +268,14 @@ public class ServletContainerDispatcher
 
       }
    }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return this.providerFactory;
+   }
+
+   public void setProviderFactory(ResteasyProviderFactory providerFactory)
+   {
+      this.providerFactory = providerFactory;
+   }
 }
