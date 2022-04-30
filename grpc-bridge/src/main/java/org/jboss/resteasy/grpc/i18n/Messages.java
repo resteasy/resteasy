@@ -27,6 +27,9 @@ public interface Messages
    @Message(id = BASE + 15, value = "Expected Message, got %s")
    String expectedMessage(Class<?> clazz);
    
+   @Message(id = BASE + 17, value = "Header %s cannot be converted to a date")
+   IllegalArgumentException headerCannotBeConvertedToDate(String header);
+
    @Message(id = BASE + 20, value = "No suitable message body writer for class : %s")
    String notFoundMBW(String className);
    

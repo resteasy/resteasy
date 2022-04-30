@@ -179,6 +179,7 @@ public class JavabufTranslatorGenerator {
 //             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
          } else if ("GeneralEntityMessage".equals(simpleName)
                  || "GeneralReturnMessage".equals(simpleName)
+                 || "ServletInfo".equals(simpleName)
                  || "Cookie".equals(simpleName)
                  || "Header".equals(simpleName)) {
             continue;
@@ -225,6 +226,7 @@ public class JavabufTranslatorGenerator {
          if ("gEmpty".equals(simpleName)
                || "GeneralEntityMessage".equals(simpleName)
                || "GeneralReturnMessage".equals(simpleName)
+               || "ServletInfo".equals(simpleName)
                || "Cookie".equals(simpleName)
                || "Header".equals(simpleName)) {
             continue;
@@ -374,7 +376,7 @@ public class JavabufTranslatorGenerator {
         .append("         }\n")
         .append("      }\n")
         .append("      return null;\n")
-        .append("   }\n");
+        .append("   }\n\n");
       sb.append("   private static Object messageToObject(Message message) throws ClassNotFoundException {\n")
         .append("      String messageClassName = message.getClass().getName();\n")
         .append("      int i = messageClassName.indexOf(\"___\");\n")
@@ -391,7 +393,8 @@ public class JavabufTranslatorGenerator {
    private static void createTranslatorToJavabuf(Class<?> clazz, StringBuilder sb) throws Exception {
       if ("gEmpty".equals(clazz.getSimpleName())
             || "Cookie".equals(clazz.getSimpleName())
-            || "Header".equals(clazz.getSimpleName())) {
+            || "Header".equals(clazz.getSimpleName())
+            || "ServletInfo".equals(clazz.getSimpleName())) {
 //            || "MessageExtension".equals(clazz.getSimpleName())
 //            || clazz.getSimpleName().endsWith("_Extension")) {
          return;
@@ -441,7 +444,8 @@ public class JavabufTranslatorGenerator {
       }
       if ("AbstractMessage".equals(clazz.getSimpleName())
             || "Cookie".equals(clazz.getSimpleName())
-            || "Header".equals(clazz.getSimpleName())) {
+            || "Header".equals(clazz.getSimpleName())
+            || "ServletInfo".equals(clazz.getSimpleName())) {
 //            || "MessageExtension".equals(clazz.getSimpleName())
 //            || clazz.getSimpleName().endsWith("_Extension")) {
          return;

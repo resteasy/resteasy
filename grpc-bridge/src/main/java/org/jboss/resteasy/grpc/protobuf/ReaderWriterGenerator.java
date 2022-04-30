@@ -94,6 +94,7 @@ public class ReaderWriterGenerator {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
          } else if ("GeneralEntityMessage".equals(clazz.getSimpleName())
                  || "GeneralReturnMessage".equals(clazz.getSimpleName())
+                 || "ServletInfo".equals(clazz.getSimpleName())
                  || "Cookie".equals(clazz.getSimpleName())
                  || "Header".equals(clazz.getSimpleName())) {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
