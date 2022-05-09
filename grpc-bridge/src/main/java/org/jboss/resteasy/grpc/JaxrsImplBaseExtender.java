@@ -12,12 +12,9 @@ import java.util.Set;
 
 import org.jboss.logging.Logger;
 
-import jakarta.enterprise.inject.spi.CDI;
-
 public class JaxrsImplBaseExtender {
 
    private static Logger logger = Logger.getLogger(JaxrsImplBaseExtender.class);
-   private static String contextPath = "";
 
    private boolean inWildFly = true;
    private String packageName = "";
@@ -25,21 +22,19 @@ public class JaxrsImplBaseExtender {
    private String serviceName = "";
    private String servletName = "";
    private Set<String> imports = new HashSet<String>();
-   
+
    public static void main(String[] args) {
-      if (args.length != 3 && args.length != 4) {
+      if (args.length != 2 && args.length != 3) {
          logger.info("need three args:");
          logger.info("  arg[0]: .proto file prefix");
          logger.info("  arg[1]: servlet name");
-         logger.info("  arg[2]: context path");
          logger.info("  arg[3]: in WildFly (optional)");
          return;
       }
-      contextPath = args[2];
       new JaxrsImplBaseExtender(args);
    }
 
-   public JaxrsImplBaseExtender(String[] args) {
+   public JaxrsImplBaseExtender(final String[] args) {
       servletName = args[1];
       if (args.length == 4) {
          inWildFly = Boolean.valueOf(args[3]);
@@ -105,6 +100,7 @@ public class JaxrsImplBaseExtender {
 
    private void imports(Scanner scanner, StringBuilder sb, String fileName) {
       sb.append("import com.google.protobuf.ByteString;\n")
+        .append("import com.google.protobuf.Descriptors.FieldDescriptor;\n")
         .append("import com.google.protobuf.GeneratedMessageV3;\n")
         .append("import com.google.protobuf.Message;\n")
         .append("import io.grpc.stub.StreamObserver;\n")
@@ -138,8 +134,7 @@ public class JaxrsImplBaseExtender {
         .append("import org.jboss.resteasy.grpc.servlet.AsyncContextImpl;\n")
         .append("import org.jboss.resteasy.grpc.servlet.AsyncMockServletOutputStream;\n")
         .append("import org.jboss.resteasy.grpc.servlet.HttpServletRequestImpl;\n")
-        .append("import org.jboss.resteasy.grpc.servlet.HttpServletRequestHandler;\n")
-        .append("import org.jboss.resteasy.grpc.servlet.HttpServletResponseHandler;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.HttpServletResponseImpl;\n")
         .append("import org.jboss.resteasy.grpc.servlet.MockServletInputStream;\n")
         .append("import org.jboss.resteasy.grpc.servlet.MockServletOutputStream;\n")
         .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;\n")
@@ -174,6 +169,8 @@ public class JaxrsImplBaseExtender {
             .append("GrpcImpl extends ")
             .append(serviceName)
             .append("ImplBase {\n\n")
+            .append("   private static ").append(root).append("_proto.gString.Builder builder = ").append(root).append("_proto.gString.newBuilder();\n")
+            .append("   private static FieldDescriptor fd = builder.getDescriptorForType().getFields().iterator().next();\n")
             .append("   private HttpServletDispatcher servlet;\n")
             .append("   private HttpRequestContext cdiContext;\n")
             ;
@@ -185,7 +182,7 @@ public class JaxrsImplBaseExtender {
       String syncType = scanner.next();
       String rpc = scanner.findWithinHorizon(" rpc ", 0);
       while (rpc != null) {
-         rpc(scanner, root, actualEntityClass, httpMethod, syncType, sbHeader, sbBody);
+         rpc(scanner, root, path, actualEntityClass, httpMethod, syncType, sbHeader, sbBody);
          scanner.nextLine();
          if (!scanner.hasNext("//")) {
             break;
@@ -199,12 +196,11 @@ public class JaxrsImplBaseExtender {
       }
    }
 
-   private void rpc(Scanner scanner, String root, String actualEntityClass, String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
+   private void rpc(Scanner scanner, String root, String path, String actualEntityClass, String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
       sbBody.append("\n   @java.lang.Override\n");
       String method = scanner.next();
       scanner.findWithinHorizon("\\(", 0);
       scanner.useDelimiter("\\)");
-//      sbHeader.append("import " + packageName + "." + outerClassName + ".MessageExtension;\n");
       String param = getParamType(packageName, outerClassName, scanner.next());
       if (!imports.contains(actualEntityClass)) {
          sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";\n");
@@ -219,22 +215,18 @@ public class JaxrsImplBaseExtender {
       }
       sbBody.append("   public void ")
             .append(method).append("(")
-//            .append(param).append(" extension, ")
             .append(param).append(" param, ")
             .append("StreamObserver<").append(retn).append("> responseObserver) {\n");
-      rpcBody(scanner, root, actualEntityClass, httpMethod, syncType, sbBody, retn);
+      rpcBody(scanner, root, path, actualEntityClass, httpMethod, syncType, sbBody, retn);
       sbBody.append("   }\n");
       scanner.reset();
    }
 
-   private void rpcBody(Scanner scanner, String root, String actualEntityClass, String method, String syncType, StringBuilder sb, String retn) {
+   private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String method, String syncType, StringBuilder sb, String retn) {
       sb.append("      try {\n")
-        .append("         HttpServletResponse response = getHttpServletResponse(\"" + retn + "\", \"" + syncType + "\");\n")
+        .append("         HttpServletResponse response = new HttpServletResponseImpl(\"").append(retn).append("\", \"").append(syncType).append("\", ").append(root).append("_Server.getContext(), builder, fd);\n")
         .append("         GeneratedMessageV3 actualParam = param.").append(getGetterMethod(actualEntityClass)).append(";\n")
-        .append("         HttpServletRequest request = getHttpServletRequest(param, actualParam, response, \"").append(contextPath).append("\", \"").append(method).append("\", \"").append(retn).append("\");\n")
-//        .append("         MessageExtension messageExtension = extension.getMessageExtension();\n")
-//        .append("         GeneratedMessageV3 actualParam = extension.getValue();\n")
-//        .append("         HttpServletRequest request = getHttpServletRequest(messageExtension, actualParam, response, \"").append(contextPath).append("\", \"").append(method).append("\", \"").append(retn).append("\");\n")
+        .append("         HttpServletRequest request = getHttpServletRequest(param, actualParam, \"").append(path).append("\", response, ").append("\"").append(method).append("\", \"").append(retn).append("\");\n")
         .append("         associateCdiContext(request);\n")
         .append("         HttpServletDispatcher servlet = getServlet();\n")
         .append("         servlet.service(\"").append(method).append("\", request, response);\n");
@@ -253,7 +245,7 @@ public class JaxrsImplBaseExtender {
            .append("         ").append(retn).append(" reply = ").append(retn).append(".parseFrom(bais1);\n")
            .append("         responseObserver.onNext(reply);\n");
       }
-      
+
       else if ("sse".equals(syncType)) {
 //         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
 //           .append("         ByteArrayOutputStream baos = msos.getDelegate();\n")
@@ -264,11 +256,11 @@ public class JaxrsImplBaseExtender {
 //           .append("            responseObserver.onNext(transformSseEvent(bais));\n")
 //           .append("            bais.mark(0);\n")
 //           .append("         }\n")
-           ;
+//           ;
          // temporary
 //         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
 //         .append("         ByteArrayOutputStream baos = msos.getDelegate();\n");
-//         
+//
 //         sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();\n")
 //           .append("         while (true) {\n")
 //           .append("            ByteArrayOutputStream baos = amsos.await();\n")
@@ -285,7 +277,7 @@ public class JaxrsImplBaseExtender {
 //           .append("               responseObserver.onNext(reply);\n")
 //           .append("            } catch (Exception e) {\n")
 //           .append("               continue;\n")
-//           .append("            }\n")           
+//           .append("            }\n")
 //           .append("         }\n");
       } else {
          sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
@@ -301,41 +293,14 @@ public class JaxrsImplBaseExtender {
         .append("         responseObserver.onCompleted();\n")
         .append("      }\n");
    }
-/*
-               WeldSEProvider weldSEProvider = new WeldSEProvider()
-               CDI.setCDIProvider(weldSEProvider);
-               cdiContext = new HttpRequestContextImpl("jaxrs.example.grpc-0.0.1-SNAPSHOT.war");
-               cdiContext.associate(request);
-               cdiContext.activate();
-               BeanManager bm = GrpcCdiExtension.getBeanManager();
-               if (bm == null) {
-                   bm = weldSEProvider.getCDI().getBeanManager();
-               }
- */
-   /*
-             if (cdiContext == null) {
-                 CDI.setCDIProvider(new WeldProvider());
-                 cdiContext = new HttpRequestContextImpl("jaxrs.example.grpc-0.0.1-SNAPSHOT.war");
-                 cdiContext.associate(request);
-                 cdiContext.activate();
-                 BeanManager bm = GrpcCdiExtension.getBeanManager();
-                 try {
-                    bm.getContext(RequestScoped.class);
-                 } catch (ContextNotActiveException e) {
-                    BeanManagerProxy bmp = (BeanManagerProxy) bm;
-                    BeanManagerImpl bmi = bmp.delegate();
-                    bmi.addContext(cdiContext);
-                 }
-                 return;
-              }
-    */
+
    private void staticMethods(StringBuilder sb, String root) {
       sb.append("\n")
         .append("//=============================  static methods =============================\n")
         .append("   private void associateCdiContext(HttpServletRequest request) {\n")
         .append("      if (cdiContext == null) {\n")
         .append("         synchronized(this) {\n")
-        .append("            if (cdiContext == null) {\n")  
+        .append("            if (cdiContext == null) {\n")
         .append("               CDI.setCDIProvider(new WeldProvider());\n")
         .append("               cdiContext = new HttpRequestContextImpl(\"jaxrs.example.grpc-0.0.1-SNAPSHOT.war\");\n")
         .append("               cdiContext.associate(request);\n")
@@ -352,25 +317,6 @@ public class JaxrsImplBaseExtender {
         .append("                  bmi.addContext(cdiContext);\n")
         .append("               }\n")
         .append("               return;\n")
-        /*
-        .append("               WeldSEProvider weldSEProvider = new WeldSEProvider();\n")
-        .append("               CDI.setCDIProvider(weldSEProvider);\n") //HERE
-        .append("               cdiContext = new HttpRequestContextImpl(\"jaxrs.example.grpc-0.0.1-SNAPSHOT.war\");\n")
-        .append("               cdiContext.associate(request);\n")
-        .append("               cdiContext.activate();\n")
-        .append("               BeanManager bm = GrpcCdiExtension.getBeanManager();\n")
-        .append("               if (bm == null) {\n")
-        .append("                  bm = weldSEProvider.getCDI().getBeanManager();\n")
-        .append("               }\n")
-        .append("               try {\n")
-        .append("                  bm.getContext(RequestScoped.class);\n")
-        .append("               } catch (ContextNotActiveException e) {\n")
-        .append("                  BeanManagerProxy bmp = (BeanManagerProxy) bm;\n")
-        .append("                  BeanManagerImpl bmi = bmp.delegate();\n")
-        .append("                  bmi.addContext(cdiContext);\n")
-        .append("               }\n")
-        .append("               return;\n")
-        */
         .append("            }\n")
         .append("         }\n")
         .append("      }\n")
@@ -393,13 +339,6 @@ public class JaxrsImplBaseExtender {
         .append("      return servlet;\n")
         .append("   }\n\n")
         ;
-      sb.append("   private static HttpServletResponse getHttpServletResponse(String retn, String syncType) {\n")
-        .append("      return (HttpServletResponse) Proxy.newProxyInstance(\n")
-        .append("         HttpServletResponse.class.getClassLoader(),\n")
-        .append("         new Class[] { HttpServletResponse.class },\n")
-        .append("         new HttpServletResponseHandler(retn, syncType));\n")
-        .append("   }\n\n")
-        ;
       sb.append("   private static Map<String, List<String>> convertHeaders(Map<String, jaxrs.example.").append(root).append("_proto.Header> protoHeaders) {\n")
         .append("      Map<String, List<String>> headers = new HashMap<String, List<String>>();\n")
         .append("      for (Map.Entry<String, jaxrs.example.").append(root).append("_proto.Header> entry : protoHeaders.entrySet()) {\n")
@@ -414,32 +353,14 @@ public class JaxrsImplBaseExtender {
         .append("      return headers;\n")
         .append("   }\n\n")
         ;
-      /*
-    private static HttpServletRequest getHttpServletRequest(jaxrs.example.MessageExtension extensioin, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {
-      String url = param.getURL();
-      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());
-      MockServletInputStream msis = new MockServletInputStream(bais);
-      Map<String, List<String>> headers = convertHeaders(extension.getHeaders());
-      .Cookie[] cookies = convertCookies(param.getCookies());
-      ServletContext servletContext = CC1_Server.getContext();
-      HttpServletRequest request = new HttpServletRequestImpl(response, servletContext, context, url, verb, msis, type, headers, cookies);
-      return request;
-   }
-//       */
-//      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.MessageExtension extension, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {\n")
-//        .append("      String url = extension.getURL();\n")
-//      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.MessageExtension extension, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {\n")
-//        .append("      String url = extension.getURL();\n")
-      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, HttpServletResponse response, String context, String verb, String type) throws Exception {\n")
-        .append("      String url = param.getURL();\n")
+      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {\n")
+        .append("      String url = param.getURL() == \"\" ? \"http://localhost:8080/\" + path : param.getURL();\n")
         .append("      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());\n")
         .append("      MockServletInputStream msis = new MockServletInputStream(bais);\n")
         .append("      Map<String, List<String>> headers = convertHeaders(param.getHeadersMap());\n")
         .append("      Cookie[] cookies = convertCookies(param.getCookiesList());\n")
-        //        .append("      Map<String, List<String>> headers = convertHeaders(extension.getHeaders());\n")
-//        .append("      Cookie[] cookies = convertCookies(extension.getCookiesList());\n")
         .append("      ServletContext servletContext = ").append(root).append("_Server.getContext();\n")
-        .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, context, url, verb, msis, type, headers, cookies);\n")
+        .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, url, verb, msis, type, headers, cookies);\n")
         .append("      jaxrs.example.").append(root).append("_proto.ServletInfo servletInfo = param.getServletInfo();\n")
         .append("      if (servletInfo != null) {\n")
         .append("         if (servletInfo.getCharacterEncoding() != null) {\n")
@@ -483,14 +404,13 @@ public class JaxrsImplBaseExtender {
 //        .append("      builder.setReconnectDelay(inboundEvent.getReconnectDelay());\n")
 //        .append("      return builder.build();\n")
 //        .append("   }\n")
-        ;
+//        ;
    }
 
    private static String getParamType(String packageName, String outerClassName, String param) {
-//      return packageName + "." + outerClassName + "." + param;
       return packageName + "." + outerClassName + "." + param;
    }
-   
+
    private static String getReturnType(String packageName, String outerClassName, String param) {
       int pos = param.indexOf("stream");
       if (pos >= 0) {
@@ -517,7 +437,7 @@ public class JaxrsImplBaseExtender {
       sb.append("Field()");
       return sb.toString();
    }
-   
+
    private void writeClass(StringBuilder sbHeader, StringBuilder sbBody) throws IOException {
       String path = "";
       for (String s : ("target/generated-sources/protobuf/grpc-java/" + packageName.replace(".", "/")).split("/")) {

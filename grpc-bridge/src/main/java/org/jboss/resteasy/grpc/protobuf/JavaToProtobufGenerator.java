@@ -201,6 +201,7 @@ public class JavaToProtobufGenerator {
    private static JavaSymbolSolver symbolSolver;
    private static ClassVisitor classVisitor = new ClassVisitor();
    private static JaxrsResourceVisitor jaxrsResourceVisitor = new JaxrsResourceVisitor();
+   private static boolean started = false;
    private static int counter = 1;
    private static boolean isSSE;
    private static String SSE_EVENT;
@@ -274,7 +275,7 @@ public class JavaToProtobufGenerator {
       HTTP_VERBS.add("PATCH");
       HTTP_VERBS.add("POST");
       HTTP_VERBS.add("PUT");
-      
+
       SSE_EVENT = "package org.jboss.resteasy.plugins.grpc.sse;\n"
                 + "\n"
                 + "public class SseEvent {\n"
@@ -342,6 +343,9 @@ public class JavaToProtobufGenerator {
       for (ParseResult<CompilationUnit> p : list) {
          jaxrsResourceVisitor.visit(p.getResult().get(), sb);
       }
+      if (started) {
+         sb.append("}\n");
+      }
       processAdditionalClasses(symbolSolver, sb);
    }
 
@@ -384,7 +388,7 @@ public class JavaToProtobufGenerator {
          sb.append("\n").append(wrapper.replace("$V$", String.valueOf(counter++)));
       }
       createGeneralEntityMessageType(sb);
-      createGeneralReturnMessageType(sb);   
+      createGeneralReturnMessageType(sb);
    }
 
    private static void createGeneralEntityMessageType(StringBuilder sb) {
@@ -408,11 +412,6 @@ public class JavaToProtobufGenerator {
         .append("   map<string, Header> headers = ").append(counter++).append(";\n")
         .append("   repeated Cookie cookies = ").append(counter++).append(";\n")
         .append("   oneof messageType {\n");
-//      sb.append("\n\nmessage MessageExtension {\n")
-//        .append("   string URL = ").append(counter++).append(";\n")
-//        .append("   map<string, Header> headers = ").append(counter++).append(";\n")
-//        .append("   repeated Cookie cookies = ").append(counter++).append(";\n")
-//        .append("}\n");
       for (String messageType : entityMessageTypes) {
          sb.append("      ")
          .append(messageType)
@@ -422,12 +421,6 @@ public class JavaToProtobufGenerator {
          .append(counter++)
          .append(";\n");
       }
-//      for (String messageType : entityMessageTypes) {
-//         sb.append("\nmessage ").append(messageType).append("_Extension {\n")
-//           .append("   MessageExtension messageExtension = ").append(counter++).append(";\n")
-//           .append("   ").append(messageType).append(" value = ").append(counter++).append(";\n")
-//           .append("}\n");
-//      }
     sb.append("   }\n}\n");
    }
 
@@ -487,7 +480,6 @@ public class JavaToProtobufGenerator {
    static class JaxrsResourceVisitor extends VoidVisitorAdapter<StringBuilder> {
 
       public void visit(final ClassOrInterfaceDeclaration subClass, StringBuilder sb) {
-         boolean started = false;
          // Don't process gRPC server
          if (subClass.getFullyQualifiedName().orElse("").startsWith("grpc.server")) {
             return;
@@ -510,7 +502,7 @@ public class JavaToProtobufGenerator {
                annotationExpr = opt.isPresent() ? (SingleMemberAnnotationExpr) opt.get() : null;
                if (annotationExpr != null) {
                   methodPath = annotationExpr.getMemberValue().toString();
-                  methodPath = methodPath.substring(1, methodPath.length() - 1);  
+                  methodPath = methodPath.substring(1, methodPath.length() - 1);
                }
                String httpMethod = getHttpMethod(md);
                // Add service with a method for each resource method in class.
@@ -534,7 +526,6 @@ public class JavaToProtobufGenerator {
                .append(md.getNameAsString())
                .append(" (")
                .append("GeneralEntityMessage")
-//               .append(entityType).append("_Extension")
                .append(") returns (")
                .append("sse".equals(syncType) ? "stream " : "")
                .append(returnType)
@@ -556,9 +547,6 @@ public class JavaToProtobufGenerator {
                   }
                }
             }
-         }
-         if (started) {
-            sb.append("}\n");
          }
       }
    }
@@ -691,7 +679,7 @@ public class JavaToProtobufGenerator {
    static class AdditionalClassVisitor extends VoidVisitorAdapter<StringBuilder> {
       private String dir;
 
-      public AdditionalClassVisitor(String dir) {
+      AdditionalClassVisitor(final String dir) {
          this.dir = dir;
       }
 
@@ -706,7 +694,7 @@ public class JavaToProtobufGenerator {
          String fqn = packageName + "." + clazz.getNameAsString();
          String filename = dir + ":" + fqn;
          additionalClasses.remove(filename);
-         
+
          if (visited.contains(fqn)) {
             return;
          }
@@ -782,7 +770,7 @@ public class JavaToProtobufGenerator {
       }
    }
 
-   static private String getPackageName(ClassOrInterfaceDeclaration clazz) {
+   private static String getPackageName(ClassOrInterfaceDeclaration clazz) {
       String fqn = clazz.getFullyQualifiedName().orElse(null);
       if (fqn == null) {
          return null;
@@ -812,7 +800,7 @@ public class JavaToProtobufGenerator {
       needEmpty = true;
       return "gEmpty";
    }
-   
+
    private static boolean isEntity(Parameter p) {
       for (AnnotationExpr ae : p.getAnnotations()) {
          if (ANNOTATIONS.contains(ae.getNameAsString())) {
@@ -877,7 +865,7 @@ public class JavaToProtobufGenerator {
       }
       return false;
    }
-   
+
    private static boolean isCompletionStage(MethodDeclaration md) {
       for (Node node : md.getChildNodes()) {
          if (node instanceof Type) {
@@ -894,7 +882,7 @@ public class JavaToProtobufGenerator {
       }
       return false;
    }
-   
+
    private static boolean isSSE(MethodDeclaration md) {
       Optional<AnnotationExpr> opt = md.getAnnotationByName("Produces");
       if (opt.isEmpty()) {
@@ -907,7 +895,7 @@ public class JavaToProtobufGenerator {
          if (MediaType.SERVER_SENT_EVENTS.equals(sle.getValue())) {
             isSSE = true;
             return true;
-         }  
+         }
       }
       List<FieldAccessExpr> list2 = ae.findAll(FieldAccessExpr.class);
       for (Iterator<FieldAccessExpr> it = list2.iterator(); it.hasNext(); ) {
@@ -924,7 +912,7 @@ public class JavaToProtobufGenerator {
       }
       return false;
    }
-   
+
    // @Path() ???
    private static boolean isResourceMethod(MethodDeclaration md) {
       for (AnnotationExpr ae : md.getAnnotations()) {
@@ -952,7 +940,7 @@ public class JavaToProtobufGenerator {
       int i = t.lastIndexOf("_");
       return t.substring(0, i) + "__" + t.substring(i);
    }
-   
+
    private static String getHttpMethod(MethodDeclaration md) {
       if (!md.getAnnotationByName("DELETE").isEmpty()) {
          return "DELETE";

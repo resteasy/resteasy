@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.grpc.servlet.HttpServletResponseHandler;
+import org.jboss.resteasy.grpc.servlet.HttpServletResponseImpl;
 
 public class ReaderWriterGenerator {
 
@@ -80,7 +80,7 @@ public class ReaderWriterGenerator {
         .append("import com.google.protobuf.CodedOutputStream;\n")
         .append("import ").append("jakarta.servlet.http.HttpServletResponse;\n")
         .append("import ").append("org.jboss.resteasy.grpc.servlet.AsyncMockServletOutputStream;\n")
-        .append("import ").append(HttpServletResponseHandler.class.getCanonicalName()).append(";\n")
+        .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";\n")
         .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;\n")
         .append("import ").append(ResteasyContext.class.getCanonicalName()).append(";\n")
         .append("import org.jboss.resteasy.grpc.servlet.ServletConfigWrapper;\n")
@@ -123,7 +123,7 @@ public class ReaderWriterGenerator {
         .append("   public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType,\n")
         .append("        MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {\n")
         .append("      try {\n")
-        .append("      if (httpHeaders.getFirst(HttpServletResponseHandler.GRPC_RETURN_RESPONSE) != null) {\n")
+        .append("      if (httpHeaders.getFirst(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
         .append("         return Any.parseFrom(CodedInputStream.newInstance(entityStream));\n")
         .append("      } else {\n")
         .append("         GeneratedMessageV3 message = getMessage(type, entityStream);\n")
@@ -146,7 +146,7 @@ public class ReaderWriterGenerator {
         .append("      System.out.println(\"t: \" + t);\n")
         .append("      Message message = ").append(args[1]).append("_JavabufTranslator.translateToJavabuf(t);\n")
         .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);\n")
-        .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseHandler.GRPC_RETURN_RESPONSE) != null) {\n")
+        .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
         .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);\n")
         .append("         Any.pack(message).writeTo(cos);\n")
         .append("         cos.flush();\n")
@@ -192,7 +192,7 @@ public class ReaderWriterGenerator {
            .append("      }\n");
       }
       sb.append("   }\n\n");
-      
+
       startElse = false;
       sb.append("   private static GeneratedMessageV3 unpackMessage(Class<?> clazz, Any any) throws IOException {\n");
       for (int i = 0; i < subclasses.length; i++) {
@@ -248,21 +248,21 @@ public class ReaderWriterGenerator {
       bw.write(sbBody.toString());
       bw.close();
    }
-   
+
    private static String javabufToJavaClass(String classname) {
       int i = classname.indexOf("___");
       String simpleName = i < 0 ? classname : classname.substring(i + 3);
       if (primitives.containsKey(simpleName) && !"gEmpty".equals(simpleName)) {
-         return "java.lang." + simpleName.substring(1); 
+         return "java.lang." + simpleName.substring(1);
       }
-      return simpleName;      
+      return simpleName;
    }
 
    private static String originalSimpleName(String s) {
       int i = s.lastIndexOf("___");
       return i < 0 ? s : s.substring(i + 3);
    }
-   
+
    private static String originalClassName(String s) {
       int i = s.indexOf("$");
       int j = s.lastIndexOf("___");

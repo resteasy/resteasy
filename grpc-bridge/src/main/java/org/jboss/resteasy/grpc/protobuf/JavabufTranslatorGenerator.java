@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.grpc.servlet.HttpServletResponseHandler;
+import org.jboss.resteasy.grpc.servlet.HttpServletResponseImpl;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
@@ -103,7 +103,7 @@ public class JavabufTranslatorGenerator {
       PRIMITIVE_WRAPPER_TYPES.put("gCharacter", char.class);
       PRIMITIVE_WRAPPER_TYPES.put("gString",    String.class);
       PRIMITIVE_WRAPPER_TYPES.put("gEmpty",     void.class);
-      
+
       GET_METHODS.put("Byte",      ".byteValue()");
       GET_METHODS.put("Short",     ".shortValue()");
       GET_METHODS.put("Integer",   ".intValue()");
@@ -114,7 +114,6 @@ public class JavabufTranslatorGenerator {
       GET_METHODS.put("Character", ".toString()");
       GET_METHODS.put("String",    "");
    }
-   
 
    public static void main(String[] args) {
       if (args.length != 2) {
@@ -162,7 +161,7 @@ public class JavabufTranslatorGenerator {
         .append("import ").append(AssignToJavabuf.class.getCanonicalName()).append(";\n")
         .append("import ").append(TranslateFromJavabuf.class.getCanonicalName()).append(";\n")
         .append("import ").append(TranslateToJavabuf.class.getCanonicalName()).append(";\n")
-        .append("import ").append(HttpServletResponseHandler.class.getCanonicalName()).append(";\n")
+        .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";\n")
         ;
       Class<?>[] classes = wrapperClass.getClasses();
       for (Class<?> clazz: classes) {
@@ -231,10 +230,10 @@ public class JavabufTranslatorGenerator {
                || "Header".equals(simpleName)) {
             continue;
          }
-         int i = simpleName.lastIndexOf("___");   
+         int i = simpleName.lastIndexOf("___");
          String originalClassName
             = i >= 0 ? simpleName.substring(i + 3)
-                     : (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName) ? simpleName.substring(1) : simpleName);      
+                     : (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName) ? simpleName.substring(1) : simpleName);
          sb.append("      toJavabufMap.put(")
            .append(originalClassName)
            .append(".class, new ")
@@ -250,7 +249,6 @@ public class JavabufTranslatorGenerator {
    }
 
    private static void publicMethods(StringBuilder sb) {
-      
       sb.append("   public static boolean handlesToJavabuf(Class<?> clazz) {\n")
         .append("      return clazz.isPrimitive() || toJavabufMap.containsKey(clazz);\n")
         .append("   }\n\n")

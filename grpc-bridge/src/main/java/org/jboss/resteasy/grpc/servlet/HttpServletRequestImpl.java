@@ -16,6 +16,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jboss.resteasy.grpc.i18n.Messages;
+import org.jboss.resteasy.grpc.util.DateUtils;
+import org.jboss.resteasy.grpc.util.IteratorEnumeration;
+import org.jboss.resteasy.grpc.util.LocaleUtils;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
@@ -32,22 +38,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
-import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.grpc.i18n.Messages;
-import org.jboss.resteasy.grpc.util.DateUtils;
-import org.jboss.resteasy.grpc.util.IteratorEnumeration;
-import org.jboss.resteasy.grpc.util.LocaleUtils;
-import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 public class HttpServletRequestImpl implements HttpServletRequest {
 
    public static final String GRPC_RETURN_RESPONSE = "grpc-return-response";
 
    private ServletResponse servletResponse;
-   private String contextPath;
+   private String uri;
    private UriInfo uriInfo;
    private String method;
    private ServletInputStream sis;
@@ -58,24 +58,22 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    private volatile AsyncContext asyncContext;
    private boolean gotInputStream = false;
    private boolean gotReader = false;
-   
+
    // servlet info
    private String characterEncoding;
    private String clientAddr;
    private String clientHost;
    private int    clientPort;
-   private String contentType;
-   
+
    private Map<String, Object> attributes = new HashMap<String, Object>();
    private Map<String, String[]> parameters = new HashMap<String, String[]>();
 
-   public HttpServletRequestImpl(ServletResponse servletResponse, ServletContext servletContext, String contextPath,
-         String uri, String method, ServletInputStream sis, String retn, Map<String, List<String>> headers,
-         Cookie[] cookies) throws URISyntaxException {
+   public HttpServletRequestImpl(final ServletResponse servletResponse, final ServletContext servletContext,
+         final String uri, final String method, final ServletInputStream sis, final String retn, final Map<String, List<String>> headers,
+         final Cookie[] cookies) throws URISyntaxException {
       this.servletResponse = servletResponse;
       this.servletContext = servletContext;
-      this.contextPath = contextPath;
-      this.uriInfo = new ResteasyUriInfo(uri, contextPath);
+      this.uri = uri;
       this.method = method;
       this.sis = sis;
       this.headers = headers;
@@ -86,8 +84,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       List<String> contentTypeList = new ArrayList<String>();
       contentTypeList.add("*/*;grpc-jaxrs=true");
       headers.put("Content-Type", contentTypeList);
-      //      headers.get("Accept").add("application/grpc-jaxrs");
-      //      headers.get("Content-Type").add("application/grpc-jaxrs");
       if ("com.google.protobuf.Any".equals(retn)) {
          acceptList = new ArrayList<String>();
          acceptList.add("true");
@@ -170,23 +166,23 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getScheme() {
-      return uriInfo.getBaseUri().getScheme();
+      return getUriInfo().getBaseUri().getScheme();
    }
 
    @Override
    public String getServerName() {
-      return uriInfo.getBaseUri().getHost();
+      return getUriInfo().getBaseUri().getHost();
    }
 
    @Override
    public int getServerPort() {
-      return uriInfo.getBaseUri().getPort();
+      return getUriInfo().getBaseUri().getPort();
    }
 
    @Override
    public BufferedReader getReader() throws IOException {
       if (gotInputStream) {
-         throw new IllegalStateException("InputStream already returned");
+         throw new IllegalStateException(Messages.MESSAGES.inputStreamAlreadyReturned());
       }
       gotReader = true;
       return new BufferedReader(new InputStreamReader(this.sis));
@@ -196,7 +192,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    public String getRemoteAddr() {
       return clientAddr;
    }
-   
+
    public void setRemoteAddr(String addr) {
       clientAddr = addr;
    }
@@ -205,7 +201,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    public String getRemoteHost() {
       return clientHost;
    }
-   
+
    public void setRemoteHost(String host) {
       clientHost = host;
    }
@@ -222,46 +218,46 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public Locale getLocale() {
-       return getLocales().nextElement();
+      return getLocales().nextElement();
    }
 
    @Override
    public Enumeration<Locale> getLocales() {
-       final List<String> acceptLanguage = headers.get(HttpHeaders.ACCEPT_LANGUAGE);
-       List<Locale> ret = LocaleUtils.getLocalesFromHeader(acceptLanguage);
-       if(ret.isEmpty()) {
-           return new IteratorEnumeration<>(Collections.singletonList(Locale.getDefault()).iterator());
-       }
-       return new IteratorEnumeration<>(ret.iterator());
+      final List<String> acceptLanguage = headers.get(HttpHeaders.ACCEPT_LANGUAGE);
+      List<Locale> ret = LocaleUtils.getLocalesFromHeader(acceptLanguage);
+      if(ret.isEmpty()) {
+         return new IteratorEnumeration<>(Collections.singletonList(Locale.getDefault()).iterator());
+      }
+      return new IteratorEnumeration<>(ret.iterator());
    }
 
    @Override
    public boolean isSecure() {
-      throw new ProcessingException("isSecure() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isSecure()"));
    }
 
    @Override
    public RequestDispatcher getRequestDispatcher(String path) {
-       if (path == null) {
-           return null;
-       }
-       String realPath;
-       if (path.startsWith("/")) {
-           realPath = path;
-       } else {
-           String current = uriInfo.relativize(uriInfo.getBaseUri()).toString();
-           int lastSlash = current.lastIndexOf("/");
-           if (lastSlash != -1) {
-               current = current.substring(0, lastSlash + 1);
-           }
-           realPath = current + path;
-       }
-       return servletContext.getRequestDispatcher(realPath);
+      if (path == null) {
+         return null;
+      }
+      String realPath;
+      if (path.startsWith("/")) {
+         realPath = path;
+      } else {
+         String current = getUriInfo().relativize(getUriInfo().getBaseUri()).toString();
+         int lastSlash = current.lastIndexOf("/");
+         if (lastSlash != -1) {
+            current = current.substring(0, lastSlash + 1);
+         }
+         realPath = current + path;
+      }
+      return servletContext.getRequestDispatcher(realPath);
    }
 
    @Override
    public String getRealPath(String path) {
-       return servletContext.getRealPath(path);
+      return servletContext.getRealPath(path);
    }
 
    @Override
@@ -272,20 +268,20 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    public void setRemotePort(int port) {
       clientPort = port;
    }
-   
+
    @Override
    public String getLocalName() {
-      throw new ProcessingException("getLocalName() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getLocalName()"));
    }
 
    @Override
    public String getLocalAddr() {
-      throw new ProcessingException("getLocalAddr() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getLocalAddr()"));
    }
 
    @Override
    public int getLocalPort() {
-      throw new ProcessingException("getLocalPort() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getLocalPort()"));
    }
 
    @Override
@@ -346,7 +342,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getAuthType() {
-      throw new ProcessingException("getAuthType() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getAuthType()"));
    }
 
    @Override
@@ -356,15 +352,15 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public long getDateHeader(String name) {
-       String header = headers.get(name).get(0);
-       if (header == null) {
-           return -1;
-       }
-       Date date = DateUtils.parseDate(header);
-       if (date == null) {
-           throw Messages.MESSAGES.headerCannotBeConvertedToDate(header);
-       }
-       return date.getTime();
+      String header = headers.get(name).get(0);
+      if (header == null) {
+         return -1;
+      }
+      Date date = DateUtils.parseDate(header);
+      if (date == null) {
+         throw Messages.MESSAGES.headerCannotBeConvertedToDate(header);
+      }
+      return date.getTime();
    }
 
    @Override
@@ -402,122 +398,132 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getPathInfo() {
-      throw new ProcessingException("getPathInfo() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getPathInfo()"));
    }
 
    @Override
    public String getPathTranslated() {
-      throw new ProcessingException("getPathTranslated() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getPathTranslated()"));
    }
 
    @Override
    public String getContextPath() {
-      return contextPath;
+      return servletContext.getContextPath();
    }
 
    @Override
    public String getQueryString() {
-      return uriInfo.getRequestUri().getQuery();
+      return getUriInfo().getRequestUri().getQuery();
    }
 
    @Override
    public String getRemoteUser() {
-      throw new ProcessingException("getRemoteUser() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getRemoteUser()"));
    }
 
    @Override
    public boolean isUserInRole(String role) {
-      throw new ProcessingException("isUserInRole() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isUserInRole()"));
    }
 
    @Override
    public Principal getUserPrincipal() {
-      throw new ProcessingException("getUserPrincipal() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getUserPrincipal()"));
    }
 
    @Override
    public String getRequestedSessionId() {
-      throw new ProcessingException("getRequestedSessionId() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getRequestedSessionId()"));
    }
 
    @Override
    public String getRequestURI() {
-      return uriInfo.getAbsolutePath().toString();
+      return getUriInfo().getAbsolutePath().toString();
    }
 
    @Override
    public StringBuffer getRequestURL() {
-      return new StringBuffer(uriInfo.getAbsolutePath().toString());
+      return new StringBuffer(getUriInfo().getAbsolutePath().toString());
    }
 
    @Override
    public String getServletPath() {
-      throw new ProcessingException("getServletPath() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getServletPath()"));
    }
 
    @Override
    public HttpSession getSession(boolean create) {
-      throw new ProcessingException("getSession() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getSession()"));
    }
 
    @Override
    public HttpSession getSession() {
-      throw new ProcessingException("getSession() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getSession()"));
    }
 
    @Override
    public String changeSessionId() {
-      throw new ProcessingException("changeSessionId() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("changeSessionId()"));
    }
 
    @Override
    public boolean isRequestedSessionIdValid() {
-      throw new ProcessingException("isRequestedSessionIdValid() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdValid()"));
    }
 
    @Override
    public boolean isRequestedSessionIdFromCookie() {
-      throw new ProcessingException("isRequestedSessionIdFromCookie() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromCookie()"));
    }
 
    @Override
    public boolean isRequestedSessionIdFromURL() {
-      throw new ProcessingException("isRequestedSessionIdFromURL() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromURL()"));
    }
 
    @Override
    public boolean isRequestedSessionIdFromUrl() {
-      throw new ProcessingException("isRequestedSessionIdFromUrl() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("isRequestedSessionIdFromUrl()"));
    }
 
    @Override
    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-      throw new ProcessingException("authenticate() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("authenticate()"));
    }
 
    @Override
    public void login(String username, String password) throws ServletException {
-      throw new ProcessingException("login() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("login()"));
    }
 
    @Override
    public void logout() throws ServletException {
-      throw new ProcessingException("logout() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("logout()"));
    }
 
    @Override
    public Collection<Part> getParts() throws IOException, ServletException {
-      throw new ProcessingException("getParts() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getParts()"));
    }
 
    @Override
    public Part getPart(String name) throws IOException, ServletException {
-      throw new ProcessingException("getPart() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getPart()"));
    }
 
    @Override
    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-      throw new ProcessingException("upgrade() is not implemented");
+      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("upgrade()"));
    }
 
+   private UriInfo getUriInfo() {
+      if (uriInfo == null) {
+         synchronized (this) {
+            if (uriInfo == null) {
+               uriInfo = new ResteasyUriInfo(uri, servletContext.getContextPath());
+            }
+         }
+      }
+      return uriInfo;
+   }
 }

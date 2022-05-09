@@ -13,7 +13,7 @@ public class ServletConfigWrapper implements ServletConfig {
    ServletConfig delegate;
    String readerWriter;
 
-   public ServletConfigWrapper(ServletConfig delegate, String readerWriter) {
+   public ServletConfigWrapper(final ServletConfig delegate, final String readerWriter) {
       this.delegate = delegate;
       this.readerWriter = readerWriter;
    }

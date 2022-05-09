@@ -9,17 +9,17 @@ public class SseEvent {
    private String  name;
    private byte[]  data;
    private long    reconnectDelay;
-   
+
    public SseEvent() {}
-   
-   public SseEvent(InboundSseEventImpl inboundSseEvent) {
+
+   public SseEvent(final InboundSseEventImpl inboundSseEvent) {
       setComment(inboundSseEvent.getComment());
       setData(inboundSseEvent.getRawData());
       setId(inboundSseEvent.getId());
       setName(inboundSseEvent.getName());
       setReconnectDelay(inboundSseEvent.getReconnectDelay());
    }
-   
+
    public String getComment()
    {
       return comment;

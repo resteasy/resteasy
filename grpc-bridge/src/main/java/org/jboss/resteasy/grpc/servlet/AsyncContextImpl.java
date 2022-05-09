@@ -22,11 +22,11 @@ public class AsyncContextImpl implements AsyncContext {
    long timeout;
    private volatile boolean complete = false;
 
-   public AsyncContextImpl(ServletRequest servletRequest, ServletResponse servletResponse) {
+   public AsyncContextImpl(final ServletRequest servletRequest, final ServletResponse servletResponse) {
       this.servletRequest = servletRequest;
       this.servletResponse = servletResponse;
    }
-   
+
    public static ExecutorService getExecutorService() {
       return executorService;
    }

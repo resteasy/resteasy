@@ -8,11 +8,11 @@ import jakarta.servlet.ServletInputStream;
 
 public class MockServletInputStream extends ServletInputStream {
    private InputStream is;
-   
-   public MockServletInputStream(InputStream is) {
+
+   public MockServletInputStream(final InputStream is) {
       this.is = is;
    }
-   
+
    @Override
    public boolean isFinished() {
       try {
@@ -28,7 +28,7 @@ public class MockServletInputStream extends ServletInputStream {
    }
 
    @Override
-   public void setReadListener(ReadListener readListener) { 
+   public void setReadListener(ReadListener readListener) {
    }
 
    @Override
