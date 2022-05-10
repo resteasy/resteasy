@@ -86,6 +86,10 @@ public class ProxyInvocationHandler implements InvocationHandler {
         for (Object p : providerInstances) {
             if (p instanceof ParamConverterProvider) {
 
+                if (args == null) {
+                    continue;
+                }
+
                 int index = 0;
                 for (Object arg : args) {
                     // ParamConverter's are not allowed to be passed null values. If we have a null value do not process
