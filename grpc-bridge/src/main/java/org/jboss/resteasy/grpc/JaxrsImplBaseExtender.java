@@ -25,7 +25,7 @@ public class JaxrsImplBaseExtender {
 
    public static void main(String[] args) {
       if (args.length != 2 && args.length != 3) {
-         logger.info("need three args:");
+         logger.info("need two or three args:");
          logger.info("  arg[0]: .proto file prefix");
          logger.info("  arg[1]: servlet name");
          logger.info("  arg[3]: in WildFly (optional)");
