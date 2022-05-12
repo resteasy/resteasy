@@ -44,10 +44,16 @@ public class BaseServletConfigSource implements Serializable {
     }
 
     public String getName() {
-       return source.getName();
+        if (!available) {
+            return getClass().getSimpleName();
+        }
+        return source.getName();
     }
 
     public Set<String> getPropertyNames() {
+        if (!available) {
+            return Collections.emptySet();
+        }
         return source.getPropertyNames();
     }
 }
