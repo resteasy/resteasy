@@ -44,6 +44,9 @@ public class BaseServletConfigSource implements ConfigSource {
 
    @Override
    public Set<String> getPropertyNames() {
+        if (!available) {
+            return Collections.emptySet();
+        }
         return getProperties().keySet();
     }
 
@@ -65,7 +68,10 @@ public class BaseServletConfigSource implements ConfigSource {
 
     @Override
     public String getName() {
-       return name;
+        if (!available) {
+            return getClass().getSimpleName();
+        }
+        return source.getName();
     }
 
 }
