@@ -133,7 +133,6 @@ public class JavabufTranslatorGenerator {
          finishClass(sb);
          writeTranslatorClass(args, translatorClass, sb);
       } catch (Exception e) {
-         e.printStackTrace();
          logger.error(e);
       }
    }

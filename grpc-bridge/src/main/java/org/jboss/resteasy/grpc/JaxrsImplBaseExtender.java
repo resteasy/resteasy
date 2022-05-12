@@ -287,7 +287,6 @@ public class JaxrsImplBaseExtender {
            .append("         responseObserver.onNext(reply);\n");
       }
       sb.append("      } catch (Exception e) {\n")
-        .append("         e.printStackTrace();\n")
         .append("         responseObserver.onError(e);\n")
         .append("      } finally {\n")
         .append("         responseObserver.onCompleted();\n")

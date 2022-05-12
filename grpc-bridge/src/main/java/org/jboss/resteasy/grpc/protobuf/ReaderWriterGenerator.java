@@ -46,7 +46,6 @@ public class ReaderWriterGenerator {
          finishClass(sbBody);
          writeClass(wrapperClass, args[1], sbHeader, sbBody);
       } catch (Exception e) {
-         e.printStackTrace();
          logger.error(e);
       }
    }
@@ -115,7 +114,6 @@ public class ReaderWriterGenerator {
         .append("public class ").append(args[1]).append("MessageBodyReaderWriter implements MessageBodyReader<Object>, MessageBodyWriter<Object> {\n\n")
         .append("   @Override\n")
         .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {\n")
-        .append("      System.out.println(\"isReadable: \" +  CC1_JavabufTranslator.handlesFromJavabuf(type));\n")
         .append("      return ").append(args[1]).append("_JavabufTranslator.handlesFromJavabuf(type);\n")
         .append("   }\n\n")
         .append("   @SuppressWarnings(\"unchecked\")\n")
@@ -142,8 +140,6 @@ public class ReaderWriterGenerator {
         .append("   @Override\n")
         .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType,\n")
         .append("      MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {\n")
-        .append("      System.out.println(\"entering writeTo()\");")
-        .append("      System.out.println(\"t: \" + t);\n")
         .append("      Message message = ").append(args[1]).append("_JavabufTranslator.translateToJavabuf(t);\n")
         .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);\n")
         .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
