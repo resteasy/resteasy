@@ -121,6 +121,7 @@ public class GrpcToJaxrsTest
             .build();
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/p/context")).request().get();
+      Assert.assertEquals(200, response.getStatus());
       log.info("status: " + response.getStatus());
       log.info("response: " + response.readEntity(String.class));
       response = client.target(generateURL("/root/grpcserver/start")).request().get();

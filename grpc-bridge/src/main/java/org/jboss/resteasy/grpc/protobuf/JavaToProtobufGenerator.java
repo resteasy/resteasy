@@ -192,6 +192,7 @@ public class JavaToProtobufGenerator {
    private static Map<String, String> PRIMITIVE_WRAPPER_DEFINITIONS = new HashMap<String, String>();
    private static Set<String> ANNOTATIONS = new HashSet<String>();
    private static Set<String> HTTP_VERBS = new HashSet<String>();
+   private static String prefix;
    private static boolean needEmpty = false;
    private static List<ResolvedReferenceTypeDeclaration> resolvedTypes = new CopyOnWriteArrayList<ResolvedReferenceTypeDeclaration>();
    private static Set<String> entityMessageTypes = new HashSet<String>();
@@ -299,6 +300,7 @@ public class JavaToProtobufGenerator {
          logger.info("  arg[4]: comma separated of addition classes [optional]");
          return;
       }
+      prefix = args[3];
       additionalClasses = args[4] == null ? new CopyOnWriteArraySet<String>()
                                           : new CopyOnWriteArraySet<String>(Arrays.asList(args[4].split(",")));
       StringBuilder sb = new StringBuilder();
@@ -508,7 +510,8 @@ public class JavaToProtobufGenerator {
                // Add service with a method for each resource method in class.
                if (!started) {
                   sb.append("\nservice ")
-                  .append(fqnify(subClass.getNameAsString()))
+//                  .append(fqnify(subClass.getNameAsString()))
+                  .append(prefix)
                   .append("Service {\n");
                   started = true;
                }

@@ -24,10 +24,11 @@ public class JaxrsImplBaseExtender {
    private Set<String> imports = new HashSet<String>();
 
    public static void main(String[] args) {
-      if (args.length != 2 && args.length != 3) {
-         logger.info("need two or three args:");
+      if (args.length != 3 && args.length != 4) {
+         logger.info("need three or four args:");
          logger.info("  arg[0]: .proto file prefix");
          logger.info("  arg[1]: servlet name");
+         logger.info("  arg[2]: package of generated sources");
          logger.info("  arg[3]: in WildFly (optional)");
          return;
       }
@@ -39,10 +40,10 @@ public class JaxrsImplBaseExtender {
       if (args.length == 4) {
          inWildFly = Boolean.valueOf(args[3]);
       }
-      parse(args[0]);
+      parse(args[0], args[2]);
    }
 
-   private void parse(String root) {
+   private void parse(String root, String pkg) {
       File file = new File("./src/main/proto/" + root + ".proto");
       if (!file.exists()) {
          throw new RuntimeException(root + ".proto not found");
@@ -64,7 +65,7 @@ public class JaxrsImplBaseExtender {
             s = scanner.findWithinHorizon("service ", 0);
          }
          sbHeader.append("\n");
-         staticMethods(sbBody, root);
+         staticMethods(sbBody, root, pkg);
          sbBody.append("}\n");
          writeClass(sbHeader, sbBody);
       } catch (Exception e) {
@@ -157,7 +158,7 @@ public class JaxrsImplBaseExtender {
         .append("import org.jboss.weld.manager.BeanManagerImpl;\n")
         .append("import org.jboss.weld.bean.builtin.BeanManagerProxy;\n")
         .append("import com.google.protobuf.Any;\n")
-        .append("import test.grpc.").append(fileName).append("_Server;\n");
+        .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;\n");
    }
 
    private void service(Scanner scanner, StringBuilder sbHeader, StringBuilder sbBody, String root) {
@@ -293,7 +294,7 @@ public class JaxrsImplBaseExtender {
         .append("      }\n");
    }
 
-   private void staticMethods(StringBuilder sb, String root) {
+   private void staticMethods(StringBuilder sb, String root, String pkg) {
       sb.append("\n")
         .append("//=============================  static methods =============================\n")
         .append("   private void associateCdiContext(HttpServletRequest request) {\n")
@@ -301,7 +302,7 @@ public class JaxrsImplBaseExtender {
         .append("         synchronized(this) {\n")
         .append("            if (cdiContext == null) {\n")
         .append("               CDI.setCDIProvider(new WeldProvider());\n")
-        .append("               cdiContext = new HttpRequestContextImpl(\"jaxrs.example.grpc-0.0.1-SNAPSHOT.war\");\n")
+        .append("               cdiContext = new HttpRequestContextImpl(\"").append(pkg).append(".grpc-0.0.1-SNAPSHOT.war\");\n")
         .append("               cdiContext.associate(request);\n")
         .append("               cdiContext.activate();\n")
         .append("               BeanManager bm = GrpcCdiExtension.getBeanManager();\n")
@@ -332,17 +333,17 @@ public class JaxrsImplBaseExtender {
         .append("            servlet = (HttpServletDispatcher) ResteasyContext.getServlet(\"").append(servletName).append("\");\n")
         .append("            ServletContainerDispatcher servletContainerDispatcher = servlet.getServletContainerDispatcher();\n")
         .append("            ResteasyProviderFactory resteasyProviderFactory = servletContainerDispatcher.getProviderFactory();\n")
-        .append("            resteasyProviderFactory.registerProvider(Class.forName(\"jaxrs.example.").append(root).append("MessageBodyReaderWriter\"), false);\n")
+        .append("            resteasyProviderFactory.registerProvider(Class.forName(\"").append(pkg).append(".").append(root).append("MessageBodyReaderWriter\"), false);\n")
         .append("         }\n")
         .append("      }\n")
         .append("      return servlet;\n")
         .append("   }\n\n")
         ;
-      sb.append("   private static Map<String, List<String>> convertHeaders(Map<String, jaxrs.example.").append(root).append("_proto.Header> protoHeaders) {\n")
+      sb.append("   private static Map<String, List<String>> convertHeaders(Map<String, ").append(pkg).append(".").append(root).append("_proto.Header> protoHeaders) {\n")
         .append("      Map<String, List<String>> headers = new HashMap<String, List<String>>();\n")
-        .append("      for (Map.Entry<String, jaxrs.example.").append(root).append("_proto.Header> entry : protoHeaders.entrySet()) {\n")
+        .append("      for (Map.Entry<String, ").append(pkg).append(".").append(root).append("_proto.Header> entry : protoHeaders.entrySet()) {\n")
         .append("         String key = entry.getKey();\n")
-        .append("         jaxrs.example.").append(root).append("_proto.Header protoHeader = entry.getValue();\n")
+        .append("         ").append(pkg).append(".").append(root).append("_proto.Header protoHeader = entry.getValue();\n")
         .append("         List<String> values = new ArrayList<String>();\n")
         .append("         for (int i = 0; i < protoHeader.getValuesCount(); i++) {\n")
         .append("            values.add(protoHeader.getValues(i));\n")
@@ -352,7 +353,7 @@ public class JaxrsImplBaseExtender {
         .append("      return headers;\n")
         .append("   }\n\n")
         ;
-      sb.append("   private static HttpServletRequest getHttpServletRequest(jaxrs.example.").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {\n")
+      sb.append("   private static HttpServletRequest getHttpServletRequest(").append(pkg).append(".").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {\n")
         .append("      String url = param.getURL() == \"\" ? \"http://localhost:8080/\" + path : param.getURL();\n")
         .append("      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());\n")
         .append("      MockServletInputStream msis = new MockServletInputStream(bais);\n")
@@ -360,7 +361,7 @@ public class JaxrsImplBaseExtender {
         .append("      Cookie[] cookies = convertCookies(param.getCookiesList());\n")
         .append("      ServletContext servletContext = ").append(root).append("_Server.getContext();\n")
         .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, url, verb, msis, type, headers, cookies);\n")
-        .append("      jaxrs.example.").append(root).append("_proto.ServletInfo servletInfo = param.getServletInfo();\n")
+        .append("      ").append(pkg).append(".").append(root).append("_proto.ServletInfo servletInfo = param.getServletInfo();\n")
         .append("      if (servletInfo != null) {\n")
         .append("         if (servletInfo.getCharacterEncoding() != null) {\n")
         .append("            request.setCharacterEncoding(servletInfo.getCharacterEncoding());\n")
@@ -378,11 +379,11 @@ public class JaxrsImplBaseExtender {
         .append("      return request;\n")
         .append("   }\n\n")
         ;
-      sb.append("   private static jakarta.servlet.http.Cookie[] convertCookies(List<jaxrs.example.").append(root).append("_proto.Cookie> cookieList) {\n")
+      sb.append("   private static jakarta.servlet.http.Cookie[] convertCookies(List<").append(pkg).append(".").append(root).append("_proto.Cookie> cookieList) {\n")
         .append("      jakarta.servlet.http.Cookie[] cookieArray = new jakarta.servlet.http.Cookie[cookieList.size()];\n")
         .append("      int i = 0;\n")
-        .append("      for (Iterator<jaxrs.example.").append(root).append("_proto.Cookie> it = cookieList.iterator(); it.hasNext(); ) {\n")
-        .append("         jaxrs.example.").append(root).append("_proto.Cookie protoCookie = it.next();\n")
+        .append("      for (Iterator<").append(pkg).append(".").append(root).append("_proto.Cookie> it = cookieList.iterator(); it.hasNext(); ) {\n")
+        .append("         ").append(pkg).append(".").append(root).append("_proto.Cookie protoCookie = it.next();\n")
         .append("         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie(protoCookie.getName(), protoCookie.getValue());\n")
         .append("         cookie.setVersion(protoCookie.getVersion());\n")
         .append("         cookie.setPath(protoCookie.getPath());\n")
