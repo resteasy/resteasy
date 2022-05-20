@@ -5,7 +5,10 @@ import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 /**
  * A class that adds a {@link Object#finalize) method to the {@link ClientResponse} as a last ditch backstop to prevent
  * leaking resources with ill-behaved clients.  Use of finalize could incur a significant performance penalty.
+ *
+ * @deprecated {@linkplain #finalize() finalizers} should no longer be used and this type will be removed in the future
  */
+@Deprecated
 public abstract class FinalizedClientResponse extends ClientResponse {
 
     protected FinalizedClientResponse(final ClientConfiguration configuration,
