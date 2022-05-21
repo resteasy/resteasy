@@ -394,8 +394,8 @@ public class JavaToProtobufGenerator {
    }
 
    private static void createGeneralEntityMessageType(StringBuilder sb) {
-      sb.append("\n\nmessage Header {\n").append("   repeated string values = ").append(counter++).append(";\n}");
-      sb.append("\n\nmessage Cookie {\n")
+      sb.append("\n\nmessage gHeader {\n").append("   repeated string values = ").append(counter++).append(";\n}");
+      sb.append("\n\nmessage gCookie {\n")
         .append("   string name = ").append(counter++).append(";\n")
         .append("   string value = ").append(counter++).append(";\n")
         .append("   int32  version = ").append(counter++).append(";\n")
@@ -411,8 +411,8 @@ public class JavaToProtobufGenerator {
       sb.append("\n\nmessage GeneralEntityMessage {\n")
         .append("   ServletInfo servletInfo = ").append(counter++).append(";\n")
         .append("   string URL = ").append(counter++).append(";\n")
-        .append("   map<string, Header> headers = ").append(counter++).append(";\n")
-        .append("   repeated Cookie cookies = ").append(counter++).append(";\n")
+        .append("   map<string, gHeader> headers = ").append(counter++).append(";\n")
+        .append("   repeated gCookie cookies = ").append(counter++).append(";\n")
         .append("   oneof messageType {\n");
       for (String messageType : entityMessageTypes) {
          sb.append("      ")
@@ -428,12 +428,14 @@ public class JavaToProtobufGenerator {
 
    private static void createGeneralReturnMessageType(StringBuilder sb) {
       sb.append("\nmessage GeneralReturnMessage {\n")
+        .append("   map<string, gHeader> headers = ").append(counter++).append(";\n")
+        .append("   repeated gCookie cookies = ").append(counter++).append(";\n")
         .append("   oneof messageType {\n");
-    for (String messageType : entityMessageTypes) {
+    for (String messageType : returnMessageTypes) {
        sb.append("      ")
          .append(messageType)
          .append(" ")
-         .append(messageType).append("_field")
+         .append(namify(messageType)).append("_field")
          .append(" = ")
          .append(counter++)
          .append(";\n");
@@ -521,6 +523,7 @@ public class JavaToProtobufGenerator {
                isSuspended(md);
                sb.append("// ").append(classPath).append("/").append(methodPath).append(" ")
                  .append(entityType).append(" ")
+                 .append(returnType).append(" ")
                  .append(httpMethod).append(" ")
                  .append(syncType).append("\n");
                entityMessageTypes.add(entityType);
@@ -531,7 +534,7 @@ public class JavaToProtobufGenerator {
                .append("GeneralEntityMessage")
                .append(") returns (")
                .append("sse".equals(syncType) ? "stream " : "")
-               .append(returnType)
+               .append("GeneralReturnMessage")
                .append(");\n");
 
                // Add each parameter and return type to resolvedTypes for further processing.
@@ -942,6 +945,10 @@ public class JavaToProtobufGenerator {
       String t = s.replace(".", "_");
       int i = t.lastIndexOf("_");
       return t.substring(0, i) + "__" + t.substring(i);
+   }
+
+   private static String namify(String s) {
+      return s.replace(".", "_");
    }
 
    private static String getHttpMethod(MethodDeclaration md) {

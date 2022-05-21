@@ -158,7 +158,12 @@ public class JaxrsImplBaseExtender {
         .append("import org.jboss.weld.manager.BeanManagerImpl;\n")
         .append("import org.jboss.weld.bean.builtin.BeanManagerProxy;\n")
         .append("import com.google.protobuf.Any;\n")
-        .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;\n");
+        .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;\n")
+        .append("import ").append(packageName).append(".").append(outerClassName).append(".gCookie;\n")
+        .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;\n")
+        .append("import ").append(packageName).append(".").append(outerClassName).append(".GeneralEntityMessage;\n")
+        .append("import ").append(packageName).append(".").append(outerClassName).append(".GeneralReturnMessage;\n")
+        ;
    }
 
    private void service(Scanner scanner, StringBuilder sbHeader, StringBuilder sbBody, String root) {
@@ -179,11 +184,15 @@ public class JaxrsImplBaseExtender {
       scanner.skip("//");
       String path = scanner.next();
       String actualEntityClass = scanner.next();
+      String actualReturnClass = scanner.next();
+      if ("google.protobuf.Any".equals(actualReturnClass)) {
+         actualReturnClass = "Any";
+      }
       String httpMethod = scanner.next();
       String syncType = scanner.next();
       String rpc = scanner.findWithinHorizon(" rpc ", 0);
       while (rpc != null) {
-         rpc(scanner, root, path, actualEntityClass, httpMethod, syncType, sbHeader, sbBody);
+         rpc(scanner, root, path, actualEntityClass, actualReturnClass, httpMethod, syncType, sbHeader, sbBody);
          scanner.nextLine();
          if (!scanner.hasNext("//")) {
             break;
@@ -191,41 +200,45 @@ public class JaxrsImplBaseExtender {
          scanner.skip("//");
          path = scanner.next();
          actualEntityClass = scanner.next();
+         actualReturnClass = scanner.next();
+         if ("google.protobuf.Any".equals(actualReturnClass)) {
+           actualReturnClass = "Any";
+         }
          httpMethod = scanner.next();
          syncType = scanner.next();
          rpc = scanner.findWithinHorizon(" rpc ", 0);
       }
    }
 
-   private void rpc(Scanner scanner, String root, String path, String actualEntityClass, String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
+   private void rpc(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass, String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
       sbBody.append("\n   @java.lang.Override\n");
       String method = scanner.next();
       scanner.findWithinHorizon("\\(", 0);
       scanner.useDelimiter("\\)");
       String param = getParamType(packageName, outerClassName, scanner.next());
-      if (!imports.contains(actualEntityClass)) {
+      if (!imports.contains(actualEntityClass) && !"Any".equals(actualEntityClass)) {
          sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";\n");
          imports.add(actualEntityClass);
       }
+      if (!imports.contains(actualReturnClass) && !"Any".equals(actualReturnClass)) {
+          sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";\n");
+          imports.add(actualReturnClass);
+       }
       scanner.findWithinHorizon("returns", 0);
       scanner.findWithinHorizon("\\(", 0);
       String retn = getReturnType(packageName, outerClassName, scanner.next());
-      if (!imports.contains(retn)) {
-         sbHeader.append("import " + retn + ";\n");
-         imports.add(retn);
-      }
       sbBody.append("   public void ")
             .append(method).append("(")
             .append(param).append(" param, ")
             .append("StreamObserver<").append(retn).append("> responseObserver) {\n");
-      rpcBody(scanner, root, path, actualEntityClass, httpMethod, syncType, sbBody, retn);
+      rpcBody(scanner, root, path, actualEntityClass, actualReturnClass, httpMethod, syncType, sbBody, retn);
       sbBody.append("   }\n");
       scanner.reset();
    }
 
-   private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String method, String syncType, StringBuilder sb, String retn) {
+   private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass, String method, String syncType, StringBuilder sb, String retn) {
       sb.append("      try {\n")
-        .append("         HttpServletResponse response = new HttpServletResponseImpl(\"").append(retn).append("\", \"").append(syncType).append("\", ").append(root).append("_Server.getContext(), builder, fd);\n")
+        .append("         HttpServletResponseImpl response = new HttpServletResponseImpl(\"").append(actualReturnClass).append("\", \"").append(syncType).append("\", ").append(root).append("_Server.getContext(), builder, fd);\n")
         .append("         GeneratedMessageV3 actualParam = param.").append(getGetterMethod(actualEntityClass)).append(";\n")
         .append("         HttpServletRequest request = getHttpServletRequest(param, actualParam, \"").append(path).append("\", response, ").append("\"").append(method).append("\", \"").append(retn).append("\");\n")
         .append("         associateCdiContext(request);\n")
@@ -235,16 +248,20 @@ public class JaxrsImplBaseExtender {
          sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();\n")
            .append("         amsos.await();\n")
            .append("         ByteArrayOutputStream baos = amsos.getDelegate();\n")
-           .append("         ByteArrayInputStream bais1 = new ByteArrayInputStream(baos.toByteArray());\n")
-           .append("         com.google.protobuf.Any reply = com.google.protobuf.Any.parseFrom(bais1);\n")
-           .append("         responseObserver.onNext(reply);\n");
+           .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());\n")
+           .append("         Any reply = Any.parseFrom(bais);\n")
+           .append("         ").append(retn).append(".Builder grmb = createGeneralReturnMessageBuilder(response);\n")
+           .append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);\n")
+           .append("         responseObserver.onNext(grmb.build());\n");
       } else if ("completionStage".equals(syncType)) {
          sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();\n")
            .append("         amsos.await();\n")
            .append("         ByteArrayOutputStream baos = amsos.getDelegate();\n")
-           .append("         ByteArrayInputStream bais1 = new ByteArrayInputStream(baos.toByteArray());\n")
-           .append("         ").append(retn).append(" reply = ").append(retn).append(".parseFrom(bais1);\n")
-           .append("         responseObserver.onNext(reply);\n");
+           .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());\n")
+           .append("         ").append(actualReturnClass).append(" reply = ").append(actualReturnClass).append(".parseFrom(bais);\n")
+           .append("         ").append(retn).append(".Builder grmb = createGeneralReturnMessageBuilder(response);\n")
+           .append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);\n")
+           .append("         responseObserver.onNext(grmb.build());\n");
       }
 
       else if ("sse".equals(syncType)) {
@@ -273,7 +290,6 @@ public class JaxrsImplBaseExtender {
 //           .append("               continue;\n")
 //           .append("            }\n")
 //           .append("            try {\n")
-//           .append("System.out.println(\"sending \" + baos.toString());\n")
 //           .append("               org_jboss_resteasy_plugins_protobuf_sse___SseEvent reply = org_jboss_resteasy_plugins_protobuf_sse___SseEvent.parseFrom(bytes);\n")
 //           .append("               responseObserver.onNext(reply);\n")
 //           .append("            } catch (Exception e) {\n")
@@ -284,8 +300,10 @@ public class JaxrsImplBaseExtender {
          sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();\n")
            .append("         ByteArrayOutputStream baos = msos.getDelegate();\n")
            .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());\n")
-           .append("         ").append(retn).append(" reply = ").append(retn).append(".parseFrom(bais);\n")
-           .append("         responseObserver.onNext(reply);\n");
+           .append("         ").append(actualReturnClass).append(" reply = ").append(actualReturnClass).append(".parseFrom(bais);\n")
+           .append("         ").append(retn).append(".Builder grmb = createGeneralReturnMessageBuilder(response);\n")
+           .append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);\n")
+           .append("         responseObserver.onNext(grmb.build());\n");
       }
       sb.append("      } catch (Exception e) {\n")
         .append("         responseObserver.onError(e);\n")
@@ -339,11 +357,11 @@ public class JaxrsImplBaseExtender {
         .append("      return servlet;\n")
         .append("   }\n\n")
         ;
-      sb.append("   private static Map<String, List<String>> convertHeaders(Map<String, ").append(pkg).append(".").append(root).append("_proto.Header> protoHeaders) {\n")
+      sb.append("   private static Map<String, List<String>> convertHeaders(Map<String, ").append(pkg).append(".").append(root).append("_proto.gHeader> protoHeaders) {\n")
         .append("      Map<String, List<String>> headers = new HashMap<String, List<String>>();\n")
-        .append("      for (Map.Entry<String, ").append(pkg).append(".").append(root).append("_proto.Header> entry : protoHeaders.entrySet()) {\n")
+        .append("      for (Map.Entry<String, ").append(pkg).append(".").append(root).append("_proto.gHeader> entry : protoHeaders.entrySet()) {\n")
         .append("         String key = entry.getKey();\n")
-        .append("         ").append(pkg).append(".").append(root).append("_proto.Header protoHeader = entry.getValue();\n")
+        .append("         ").append(pkg).append(".").append(root).append("_proto.gHeader protoHeader = entry.getValue();\n")
         .append("         List<String> values = new ArrayList<String>();\n")
         .append("         for (int i = 0; i < protoHeader.getValuesCount(); i++) {\n")
         .append("            values.add(protoHeader.getValues(i));\n")
@@ -379,11 +397,11 @@ public class JaxrsImplBaseExtender {
         .append("      return request;\n")
         .append("   }\n\n")
         ;
-      sb.append("   private static jakarta.servlet.http.Cookie[] convertCookies(List<").append(pkg).append(".").append(root).append("_proto.Cookie> cookieList) {\n")
+      sb.append("   private static jakarta.servlet.http.Cookie[] convertCookies(List<").append(pkg).append(".").append(root).append("_proto.gCookie> cookieList) {\n")
         .append("      jakarta.servlet.http.Cookie[] cookieArray = new jakarta.servlet.http.Cookie[cookieList.size()];\n")
         .append("      int i = 0;\n")
-        .append("      for (Iterator<").append(pkg).append(".").append(root).append("_proto.Cookie> it = cookieList.iterator(); it.hasNext(); ) {\n")
-        .append("         ").append(pkg).append(".").append(root).append("_proto.Cookie protoCookie = it.next();\n")
+        .append("      for (Iterator<").append(pkg).append(".").append(root).append("_proto.gCookie> it = cookieList.iterator(); it.hasNext(); ) {\n")
+        .append("         ").append(pkg).append(".").append(root).append("_proto.gCookie protoCookie = it.next();\n")
         .append("         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie(protoCookie.getName(), protoCookie.getValue());\n")
         .append("         cookie.setVersion(protoCookie.getVersion());\n")
         .append("         cookie.setPath(protoCookie.getPath());\n")
@@ -393,7 +411,34 @@ public class JaxrsImplBaseExtender {
         .append("      return cookieArray;\n")
         .append("   }\n\n")
         ;
-//        .append("   private static org_jboss_resteasy_plugins_grpc_sse___SseEvent transformSseEvent(ByteArrayInputStream bais) throws IOException {\n")
+      sb.append("   private static GeneralReturnMessage.Builder createGeneralReturnMessageBuilder(HttpServletResponseImpl response) {\n")
+        .append("      GeneralReturnMessage.Builder grmBuilder = GeneralReturnMessage.newBuilder();\n")
+        .append("      if (!response.getHeaderNames().isEmpty()) {\n")
+        .append("         gHeader.Builder headerBuilder = gHeader.newBuilder();\n")
+        .append("         for (String headerName : response.getHeaderNames()) {\n")
+        .append("            for (String value : response.getHeaders(headerName)) {\n")
+        .append("                headerBuilder.addValues(value);\n")
+        .append("            }\n")
+        .append("            grmBuilder.putHeaders(headerName, headerBuilder.build());\n")
+        .append("            headerBuilder.clear();\n")
+        .append("         }\n")
+        .append("      }\n")
+        .append("      if (!response.getCookies().isEmpty()) {\n")
+        .append("         gCookie.Builder cookieBuilder = gCookie.newBuilder();\n")
+        .append("         for (Cookie cookie : response.getCookies()) {\n")
+        .append("            cookieBuilder.setDomain(cookie.getDomain())\n")
+        .append("                         .setName(cookie.getName())\n")
+        .append("                         .setPath(cookie.getPath())\n")
+        .append("                         .setValue(cookie.getValue())\n")
+        .append("                         .setVersion(cookie.getVersion());\n")
+        .append("            grmBuilder.addCookies(cookieBuilder.build());\n")
+        .append("            cookieBuilder.clear();\n")
+        .append("         }\n")
+        .append("      }\n")
+        .append("      return grmBuilder;\n")
+        .append("   }\n")
+        ;
+        //        .append("   private static org_jboss_resteasy_plugins_grpc_sse___SseEvent transformSseEvent(ByteArrayInputStream bais) throws IOException {\n")
 //        .append("      SseEventInputImpl eventInput = new SseEventInputImpl(null, MediaType.TEXT_PLAIN_TYPE, null, null, bais);\n")
 //        .append("      InboundSseEventImpl inboundEvent = (InboundSseEventImpl) eventInput.read();\n")
 //        .append("      org_jboss_resteasy_plugins_grpc_sse___SseEvent.Builder builder = org_jboss_resteasy_plugins_grpc_sse___SseEvent.newBuilder();\n")
@@ -438,6 +483,35 @@ public class JaxrsImplBaseExtender {
       return sb.toString();
    }
 
+   private String getSetterMethod(String actualReturnClass) {
+      if ("com.google.protobuf.Any".equals(actualReturnClass) || "Any".equals(actualReturnClass)) {
+         return "grmb.setGoogleProtobufAnyField";
+      }
+     if (actualReturnClass.contains("___")) {
+        return "grmb.set" + camelize(actualReturnClass) + "Field";
+     }
+      return "grmb.set" + actualReturnClass.substring(0, 1).toUpperCase() + actualReturnClass.substring(1) + "Field";
+   }
+
+   private static String camelize(String s) {
+      boolean sawUnderScore = false;
+      StringBuilder sb = new StringBuilder();
+      sb.append(Character.toUpperCase(s.charAt(0)));
+      for (int i = 1; i < s.length(); i++) {
+         if (s.charAt(i) == '_') {
+            sawUnderScore = true;
+            continue;
+         }
+         if (sawUnderScore) {
+            sb.append(Character.toUpperCase(s.charAt(i)));
+            sawUnderScore = false;
+         } else {
+            sb.append(s.charAt(i));
+         }
+      }
+      return sb.toString();
+   }
+
    private void writeClass(StringBuilder sbHeader, StringBuilder sbBody) throws IOException {
       String path = "";
       for (String s : ("target/generated-sources/protobuf/grpc-java/" + packageName.replace(".", "/")).split("/")) {
@@ -449,6 +523,9 @@ public class JaxrsImplBaseExtender {
          path += "/";
       }
       File file = new File(path + serviceName + "GrpcImpl.java");
+      if (file.exists()) {
+         return;
+      }
       file.createNewFile();
       FileWriter fw = new FileWriter(file.getAbsoluteFile());
       BufferedWriter bw = new BufferedWriter(fw);

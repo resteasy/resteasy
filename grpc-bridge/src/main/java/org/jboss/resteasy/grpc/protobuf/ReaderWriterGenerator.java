@@ -94,8 +94,8 @@ public class ReaderWriterGenerator {
          } else if ("GeneralEntityMessage".equals(clazz.getSimpleName())
                  || "GeneralReturnMessage".equals(clazz.getSimpleName())
                  || "ServletInfo".equals(clazz.getSimpleName())
-                 || "Cookie".equals(clazz.getSimpleName())
-                 || "Header".equals(clazz.getSimpleName())) {
+                 || "gCookie".equals(clazz.getSimpleName())
+                 || "gHeader".equals(clazz.getSimpleName())) {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
          } else {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");

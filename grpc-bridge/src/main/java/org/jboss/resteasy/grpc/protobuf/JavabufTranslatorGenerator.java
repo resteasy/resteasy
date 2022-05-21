@@ -167,19 +167,14 @@ public class JavabufTranslatorGenerator {
          if (clazz.isInterface()) {
             continue;
          }
-//         if (clazz.getSimpleName().endsWith("_Extension")) {
-//            continue;
-//         }
          String simpleName = clazz.getSimpleName();
          if (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName)) {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
-//         } if (simpleName.endsWith("_Extension") && PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName.substring(0, simpleName.indexOf("_Extension")))) {
-//             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
          } else if ("GeneralEntityMessage".equals(simpleName)
                  || "GeneralReturnMessage".equals(simpleName)
                  || "ServletInfo".equals(simpleName)
-                 || "Cookie".equals(simpleName)
-                 || "Header".equals(simpleName)) {
+                 || "gCookie".equals(simpleName)
+                 || "gHeader".equals(simpleName)) {
             continue;
          } else {
             sb.append("import ")
@@ -214,19 +209,13 @@ public class JavabufTranslatorGenerator {
          if (clazz.isInterface()) {
             continue;
          }
-//         if (clazz.getSimpleName().endsWith("_Extension")) {
-//            continue;
-//         }
-//         if (clazz.getSimpleName().equals("MessageExtension")) {
-//            continue;
-//         }
          String simpleName = clazz.getSimpleName();
          if ("gEmpty".equals(simpleName)
                || "GeneralEntityMessage".equals(simpleName)
                || "GeneralReturnMessage".equals(simpleName)
                || "ServletInfo".equals(simpleName)
-               || "Cookie".equals(simpleName)
-               || "Header".equals(simpleName)) {
+               || "gCookie".equals(simpleName)
+               || "gHeader".equals(simpleName)) {
             continue;
          }
          int i = simpleName.lastIndexOf("___");
@@ -326,27 +315,16 @@ public class JavabufTranslatorGenerator {
         .append("                  Message superMessage = (Message) message.getField(sfd);\n")
         .append("                  t.assignExistingFromJavabuf(superMessage, object);\n")
         .append("               } else {\n")
-//        .append("                  String simpleName = message.getDescriptorForType().getFullName();\n")
-//        .append("                  simpleName = simpleName.lastIndexOf(\".\") >= 0 ? simpleName.substring(simpleName.lastIndexOf(\".\") + 1) : simpleName;\n")
-//        .append("                  String type = fd.getMessageType().getName();\n")
         .append("                  final Field field = javaClass.getDeclaredField(fd.getName());\n")
         .append("                  field.setAccessible(true);\n")
         .append("                  if (Descriptors.FieldDescriptor.Type.MESSAGE.equals(fd.getType())\n")
         .append("                      && fromJavabufMap.keySet().contains(fd.getMessageType().getName())) {\n")
-//        .append("                  if (fromJavabufMap.keySet().contains(type)) {\n")
-        /*
-        Field field = javaClass.getDeclaredField(fd.getName());
-        field.setAccessible(true);
-        if (Descriptors.FieldDescriptor.Type.MESSAGE.equals(fd.getType())
-              && fromJavabufMap.keySet().contains(fd.getMessageType().getName())) {
-*/
         .append("                     Message submessage = (Message) message.getField(fd);\n")
         .append("                     Object obj = fromJavabufMap.get(fd.getMessageType().getName()).assignFromJavabuf(submessage);\n")
         .append("                     field.set(object, obj);\n")
         .append("                  } else {\n")
         .append("                     Object ooo = message.getField(fd);\n")
         .append("                     field.set(object, ooo);\n")
-        //        .append("                     field.set(object, message.getField(fd));\n")
         .append("                  }\n")
         .append("               }\n")
         .append("            } catch (Exception e) {\n")
@@ -389,11 +367,9 @@ public class JavabufTranslatorGenerator {
 
    private static void createTranslatorToJavabuf(Class<?> clazz, StringBuilder sb) throws Exception {
       if ("gEmpty".equals(clazz.getSimpleName())
-            || "Cookie".equals(clazz.getSimpleName())
-            || "Header".equals(clazz.getSimpleName())
+            || "gCookie".equals(clazz.getSimpleName())
+            || "gHeader".equals(clazz.getSimpleName())
             || "ServletInfo".equals(clazz.getSimpleName())) {
-//            || "MessageExtension".equals(clazz.getSimpleName())
-//            || clazz.getSimpleName().endsWith("_Extension")) {
          return;
       }
       sb.append("   static class ")
@@ -440,11 +416,9 @@ public class JavabufTranslatorGenerator {
          return;
       }
       if ("AbstractMessage".equals(clazz.getSimpleName())
-            || "Cookie".equals(clazz.getSimpleName())
-            || "Header".equals(clazz.getSimpleName())
+            || "gCookie".equals(clazz.getSimpleName())
+            || "gHeader".equals(clazz.getSimpleName())
             || "ServletInfo".equals(clazz.getSimpleName())) {
-//            || "MessageExtension".equals(clazz.getSimpleName())
-//            || clazz.getSimpleName().endsWith("_Extension")) {
          return;
       }
       sb.append("   static class ")
@@ -452,10 +426,6 @@ public class JavabufTranslatorGenerator {
         .append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName()).append(".getDescriptor();\n");
       if (PRIMITIVE_WRAPPER_TYPES.containsKey(originalName)) {
          String javaName = originalName.substring(1);
-//         if ("gShort".equals(originalName)) {
-//            originalName = "Integer"; // protobuf Short is represented as int32
-//            javaName = "Integer";
-//         }
          if ("gByte".equals(originalName)) {
              sb.append("      public ").append(javaName).append(" assignFromJavabuf(Message message) {\n")
                .append("         FieldDescriptor fd = descriptor.getFields().get(0);\n")
@@ -565,9 +535,6 @@ public class JavabufTranslatorGenerator {
    }
 
    private static String originalClassName(String s) {
-//      if (s.endsWith("MessageExtension")) {
-//           return s.replace('$', '.');
-//      }
       int i = s.indexOf("$");
       int j = s.lastIndexOf("___");
       j = j < 0 ? s.length() : j;

@@ -49,9 +49,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
    private PrintWriter writer;
    private int statusCode;
    private Locale locale;
+   private List<Cookie> cookies = new ArrayList<Cookie>();
 
    public HttpServletResponseImpl(final String retn, final String async, final ServletContext servletContext, final GeneratedMessageV3.Builder<?> builder, final FieldDescriptor fd) {
-      if ("com.google.protobuf.Any".equals(retn)) {
+      if ("com.google.protobuf.Any".equals(retn) || "Any".equals(retn)) {
          List<String> list = new ArrayList<String>();
          list.add("true");
          headers.put(GRPC_RETURN_RESPONSE, list);
@@ -185,7 +186,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
    @Override
    public void addCookie(Cookie cookie) {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("addCookie()"));
+      cookies.add(cookie);
    }
 
    @Override
@@ -298,6 +299,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
    @Override
    public Collection<String> getHeaderNames() {
       return headers.keySet();
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////
+   //////////////////////////////   public non override methods   /////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////
+   public List<Cookie> getCookies() {
+      return cookies;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////
