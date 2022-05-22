@@ -16,7 +16,6 @@ import java.util.zip.GZIPInputStream;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
-import org.jboss.resteasy.spi.BlockingAsyncOutputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -80,14 +79,14 @@ public class GZIPEncodingInterceptorTest {
       verify(context).proceed();
       verify(headers).remove(HttpHeaders.CONTENT_LENGTH);
       verify(context, times(2)).setOutputStream(outputStreamCaptor.capture());
-      assertTrue(outputStreamCaptor.getAllValues().get(0) instanceof GZIPEncodingInterceptor.CommittedGZIPAsyncOutputStream);
+      assertTrue(outputStreamCaptor.getAllValues().get(0) instanceof GZIPEncodingInterceptor.CommittedGZIPOutputStream);
       assertEquals(originalStream, outputStreamCaptor.getAllValues().get(1));
    }
 
    @Test
    public void testCommittedGzipAsyncOutputStreamWrite() throws Exception {
       ByteArrayOutputStream originalStream = new ByteArrayOutputStream();
-      var gzipStream = new GZIPEncodingInterceptor.CommittedGZIPAsyncOutputStream(new BlockingAsyncOutputStream(originalStream));
+      var gzipStream = new GZIPEncodingInterceptor.CommittedGZIPOutputStream(originalStream, null);
       String plainContent = "This is a sample plain text response content";
 
       gzipStream.write(plainContent.getBytes(StandardCharsets.UTF_8));
@@ -137,14 +136,14 @@ public class GZIPEncodingInterceptorTest {
       assertNotEquals(asyncContextProceedResult, result);
       verify(headers).remove(HttpHeaders.CONTENT_LENGTH);
       verify(asyncContext, times(2)).setAsyncOutputStream(asyncOutputStreamCaptor.capture());
-      assertTrue(asyncOutputStreamCaptor.getAllValues().get(0) instanceof GZIPEncodingInterceptor.CommittedGZIPAsyncOutputStream);
+      assertTrue(asyncOutputStreamCaptor.getAllValues().get(0) instanceof GZIPEncodingInterceptor.CommittedGZIPOutputStream);
       assertEquals(originalStream, asyncOutputStreamCaptor.getAllValues().get(1));
    }
 
    @Test
    public void testCommittedGzipAsyncOutputStreamAsyncWrite() throws Exception {
       ByteArrayOutputStream originalStream = new ByteArrayOutputStream();
-      var gzipStream = new GZIPEncodingInterceptor.CommittedGZIPAsyncOutputStream(new BlockingAsyncOutputStream(originalStream));
+      var gzipStream = new GZIPEncodingInterceptor.CommittedGZIPOutputStream(originalStream, null);
       String plainContent = "This is a sample plain text response content";
 
       gzipStream.asyncWrite(plainContent.getBytes(StandardCharsets.UTF_8))

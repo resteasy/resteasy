@@ -20,6 +20,7 @@ import jakarta.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
+import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,14 +45,24 @@ public class GZIPEncodingInterceptor implements AsyncWriterInterceptor
       }
    }
 
-   public static class CommittedGZIPAsyncOutputStream extends CommitHeaderAsyncOutputStream
+   public static class CommittedGZIPOutputStream extends CommitHeaderAsyncOutputStream
    {
-      protected CommittedGZIPAsyncOutputStream(final AsyncOutputStream delegate)
+      protected CommittedGZIPOutputStream(final OutputStream delegate, final CommitHeaderOutputStream.CommitCallback headers)
       {
-         super(delegate, null);
+         this(new BlockingAsyncOutputStream(delegate), headers);
+      }
+
+      protected CommittedGZIPOutputStream(final AsyncOutputStream delegate, final CommitHeaderOutputStream.CommitCallback headers)
+      {
+         super(delegate, headers);
       }
 
       protected GZIPOutputStream gzip;
+
+      public GZIPOutputStream getGzip()
+      {
+         return gzip;
+      }
 
       @Override
       public synchronized void commit()
@@ -97,7 +108,7 @@ public class GZIPEncodingInterceptor implements AsyncWriterInterceptor
       {
          OutputStream old = context.getOutputStream();
          removeContentLengthHeader(context.getHeaders());
-         CommittedGZIPAsyncOutputStream gzipOutputStream = replaceOutputStream(new BlockingAsyncOutputStream(old), context::setOutputStream);
+         CommittedGZIPOutputStream gzipOutputStream = replaceOutputStream(new BlockingAsyncOutputStream(old), context::setOutputStream);
          try
          {
             context.proceed();
@@ -122,7 +133,7 @@ public class GZIPEncodingInterceptor implements AsyncWriterInterceptor
       {
          AsyncOutputStream old = context.getAsyncOutputStream();
          removeContentLengthHeader(context.getHeaders());
-         CommittedGZIPAsyncOutputStream gzipOutputStream = replaceOutputStream(old, context::setAsyncOutputStream);
+         CommittedGZIPOutputStream gzipOutputStream = replaceOutputStream(old, context::setAsyncOutputStream);
          return context.asyncProceed()
                  .handle((v, e) -> gzipOutputStream.asyncFinish()
                          .thenAccept(f -> context.setAsyncOutputStream(old)))
@@ -144,9 +155,9 @@ public class GZIPEncodingInterceptor implements AsyncWriterInterceptor
       headers.remove(HttpHeaders.CONTENT_LENGTH);
    }
 
-   private CommittedGZIPAsyncOutputStream replaceOutputStream(AsyncOutputStream originalStream, Consumer<AsyncOutputStream> contextSetter) {
+   private CommittedGZIPOutputStream replaceOutputStream(AsyncOutputStream originalStream, Consumer<AsyncOutputStream> contextSetter) {
       // GZIPOutputStream constructor writes to underlying OS causing headers to be written.
-      CommittedGZIPAsyncOutputStream gzipOutputStream = new CommittedGZIPAsyncOutputStream(originalStream);
+      CommittedGZIPOutputStream gzipOutputStream = new CommittedGZIPOutputStream(originalStream, null);
       contextSetter.accept(gzipOutputStream);
       return gzipOutputStream;
    }
