@@ -7,7 +7,7 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptorContext;
 
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterInjector;
 
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>

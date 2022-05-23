@@ -35,7 +35,7 @@
         <module name="com.fasterxml.jackson.core.jackson-databind"/>
         <module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
         <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
-        <module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+        <module name="com.fasterxml.jackson.jakarta.jackson-jakarta-json-provider"/>
         <module name="jakarta.enterprise.api"/>
         <module name="jakarta.servlet.api"/>
         <module name="jakarta.ws.rs.api"/>
