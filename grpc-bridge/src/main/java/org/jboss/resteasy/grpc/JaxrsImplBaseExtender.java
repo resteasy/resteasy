@@ -237,10 +237,11 @@ public class JaxrsImplBaseExtender {
    }
 
    private void rpcBody(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass, String method, String syncType, StringBuilder sb, String retn) {
-      sb.append("      try {\n")
+      sb.append("      HttpServletRequest request = null;\n")
+        .append("      try {\n")
         .append("         HttpServletResponseImpl response = new HttpServletResponseImpl(\"").append(actualReturnClass).append("\", \"").append(syncType).append("\", ").append(root).append("_Server.getContext(), builder, fd);\n")
         .append("         GeneratedMessageV3 actualParam = param.").append(getGetterMethod(actualEntityClass)).append(";\n")
-        .append("         HttpServletRequest request = getHttpServletRequest(param, actualParam, \"").append(path).append("\", response, ").append("\"").append(method).append("\", \"").append(retn).append("\");\n")
+        .append("         request = getHttpServletRequest(param, actualParam, \"").append(path).append("\", response, ").append("\"").append(method).append("\", \"").append(retn).append("\");\n")
         .append("         associateCdiContext(request);\n")
         .append("         HttpServletDispatcher servlet = getServlet();\n")
         .append("         servlet.service(\"").append(method).append("\", request, response);\n");
@@ -309,6 +310,7 @@ public class JaxrsImplBaseExtender {
         .append("         responseObserver.onError(e);\n")
         .append("      } finally {\n")
         .append("         responseObserver.onCompleted();\n")
+        .append("         cdiContext.dissociate(request);\n")
         .append("      }\n");
    }
 
