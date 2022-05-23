@@ -78,9 +78,8 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-base</artifactId>
-            <classifier>jakarta</classifier>
+            <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+            <artifactId>jackson-jakarta-rs-base</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -89,9 +88,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <classifier>jakarta</classifier>
+            <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+            <artifactId>jackson-jakarta-rs-json-provider</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -101,8 +99,7 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <classifier>jakarta</classifier>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -404,8 +401,6 @@
                             <jakarta-transform>true</jakarta-transform>
                             <!--<jakarta-transform-verbose>true</jakarta-transform-verbose> -->
                             <jakarta-transform-excluded-artifacts>
-                                <exclude>com.fasterxml.jackson.jaxrs:.*\z</exclude>
-                                <exclude>com.fasterxml.jackson.module:.*\z</exclude>
                                 <exclude>org.jboss.resteasy:.*\z</exclude>
                                 <exclude>org.jboss.spec.javax.ws.rs:.*\z</exclude>
                             </jakarta-transform-excluded-artifacts>

@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
+import com.fasterxml.jackson.jakarta.rs.cfg.EndpointConfigBase;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterModifier;
 
 public class ObjectFilterModifierMultiple extends ObjectWriterModifier {
    public ObjectFilterModifierMultiple() {
