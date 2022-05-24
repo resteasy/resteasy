@@ -19,7 +19,6 @@
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
-        <additionalJvmArgs/>
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
@@ -488,6 +487,22 @@
                 <additionalJvmArgs>
                     --add-opens=java.base/java.util=ALL-UNNAMED
                 </additionalJvmArgs>
+            </properties>
+        </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <property>
+                    <name>!test.java8.home</name>
+                </property>
+                <os>
+                    <family>windows</family>
+                </os>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
+                <additionalJvmArgs>--add-opens=java.base/java.util=ALL-UNNAMED -Djdk.io.File.enableADS=true</additionalJvmArgs>
             </properties>
         </profile>
 
