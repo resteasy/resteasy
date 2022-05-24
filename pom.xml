@@ -57,6 +57,9 @@
         <version.org.jboss.galleon>4.2.8.Final</version.org.jboss.galleon>
         <version.org.wildfly.galleon-plugins>5.2.2.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
+
+        <!-- Test options -->
+        <additionalJvmArgs/>
     </properties>
 
     <url>https://jboss.org/resteasy</url>
@@ -277,6 +280,18 @@
                     </plugin>
                 </plugins>
             </reporting>
+        </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
+            </properties>
         </profile>
     </profiles>
 
