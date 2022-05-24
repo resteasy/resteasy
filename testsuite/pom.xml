@@ -22,7 +22,6 @@
         <!-- Optional property for jacoco report generation -->
         <sources.path></sources.path>
         <jacoco.agent></jacoco.agent>
-        <additionalJvmArgs></additionalJvmArgs>
         <ipv6ArquillianSettings></ipv6ArquillianSettings>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
         <security.provider>picketbox</security.provider>
