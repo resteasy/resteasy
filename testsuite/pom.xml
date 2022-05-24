@@ -20,7 +20,6 @@
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
-        <additionalJvmArgs/>
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
