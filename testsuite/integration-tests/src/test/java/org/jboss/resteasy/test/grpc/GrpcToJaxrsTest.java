@@ -12,6 +12,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -65,6 +66,7 @@ public class GrpcToJaxrsTest
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
 //            + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
       + "Dependencies: com.google.guava services\n"));
+      war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.2-SNAPSHOT")));
       TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge:jar:6.1.0-SNAPSHOT");
       TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-symbol-solver-core:jar:3.24.2");
       TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-core:jar:3.24.2");
@@ -82,7 +84,6 @@ public class GrpcToJaxrsTest
       TestUtil.addOtherLibrary(war, "io.perfmark:perfmark-api:0.23.0");
       TestUtil.addOtherLibrary(war, "org.jboss.weld.se:weld-se-core:jar:5.0.0.CR2");
       TestUtil.addOtherLibrary(war, "org.jboss.weld.environment:weld-environment-common:jar:5.0.0.CR2");
-      TestUtil.addOtherLibrary(war, "jaxrs.example:jaxrs.example.grpc:jar:0.0.2-SNAPSHOT");
       TestUtil.addOtherLibrary(war, "com.google.guava:failureaccess:jar:1.0.1");
       WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
       log.info(archive.toString(true));
@@ -106,11 +107,7 @@ public class GrpcToJaxrsTest
    {
       channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
       Client client = ClientBuilder.newClient();
-      Response response = client.target(generateURL("/p/context")).request().get();
-      Assert.assertEquals(200, response.getStatus());
-      log.info("status: " + response.getStatus());
-      log.info("response: " + response.readEntity(String.class));
-      response = client.target(generateURL("/root/grpcserver/start")).request().get();
+      Response response = client.target(generateURL("/root/grpcserver/start")).request().get();
       log.info("status: " + response.getStatus());
       log.info("response: " + response.readEntity(String.class));
       response = client.target(generateURL("/root/grpcserver/context")).request().get();
