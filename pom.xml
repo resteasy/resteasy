@@ -21,11 +21,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
-        <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
-        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <dep.arquillian-bom.version>1.7.0.Alpha10</dep.arquillian-bom.version>
+        <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
-        <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
-        <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
+        <version.org.wildfly.wildfly-arquillian-container-managed>5.0.0.Alpha2</version.org.wildfly.wildfly-arquillian-container-managed>
+        <version.org.wildfly.wildfly-arquillian-container-remote>5.0.0.Alpha2</version.org.wildfly.wildfly-arquillian-container-remote>
+        <org.wildfly.core.version>19.0.0.Beta10</org.wildfly.core.version>
 
         <jboss.home/>
         <!-- print logs to file by default -->

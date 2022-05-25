@@ -27,6 +27,10 @@
         <!-- Skip the default Java 8 testing. This will have to be done in CI or locally by setting the test.java.home -->
         <skip.java8.tests>true</skip.java8.tests>
         <test.java.home>${java.home}</test.java.home>
+
+        <!-- JDK 17 -->
+        <server.jvm.jpms.args></server.jvm.jpms.args>
+        <client.jvm.jpms.args></client.jvm.jpms.args>
     </properties>
 
     <dependencyManagement>
@@ -58,7 +62,17 @@
                         <groupId>javax.inject</groupId>
                         <artifactId>javax.inject</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.wildfly.core</groupId>
+                        <artifactId>wildfly-launcher</artifactId>
+                    </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-launcher</artifactId>
+                <version>${org.wildfly.core.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
@@ -111,8 +125,10 @@
                         <project.version>${project.version}</project.version>
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
+                        <server.jvm.jpms.args>${server.jvm.jpms.args}</server.jvm.jpms.args>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
+                    <argLine>${surefire.system.args} ${client.jvm.jpms.args} -Dlauncher.skip.jpms.properties=true</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -133,6 +149,16 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>jdk17</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <properties>
+                <server.jvm.jpms.args>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED</server.jvm.jpms.args>
+                <client.jvm.jpms.args>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED</client.jvm.jpms.args>
+            </properties>
+        </profile>
         <profile>
             <id>default</id>
             <activation>
@@ -254,7 +280,9 @@
                             </additionalClasspathElements>
                             <environmentVariables>
                                 <JAVA_HOME>${test.java.home}</JAVA_HOME>
+                                <server.jvm.jpms.args></server.jvm.jpms.args>
                             </environmentVariables>
+                            <argLine>${surefire.system.args}</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -373,7 +401,7 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <argLine>${surefireArgLine}</argLine>
+                            <argLine>${surefireArgLine} ${surefire.system.args} ${client.jvm.jpms.args} -Dlauncher.skip.jpms.properties=true</argLine>
                             <skipTests>false</skipTests>
                             <systemPropertyVariables>
                                 <jacoco.agent>@{jacoco.agent}</jacoco.agent>
