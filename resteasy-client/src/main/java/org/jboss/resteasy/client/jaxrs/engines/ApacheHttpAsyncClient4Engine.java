@@ -878,9 +878,11 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    }
 
    private static void safeClose(final Closeable closeable) {
-      if (closeable != null) try {
-         closeable.close();
-      } catch (IOException ignore){}
+      if (closeable != null) {
+         try {
+            closeable.close();
+         } catch (IOException ignore){}
+      }
    }
 
 }

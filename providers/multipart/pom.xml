@@ -14,10 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
             <version>${project.version}</version>
@@ -48,6 +44,12 @@
             <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j-storage</artifactId>
         </dependency>
+        <!-- Required by org.apache.james:apache-mime4j-storage -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>

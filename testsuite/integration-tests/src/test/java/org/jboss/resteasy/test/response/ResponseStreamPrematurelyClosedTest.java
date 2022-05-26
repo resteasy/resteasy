@@ -62,9 +62,6 @@ public class ResponseStreamPrematurelyClosedTest {
       try (MyByteArrayOutputStream baos = new MyByteArrayOutputStream()) {
 
          if (! TestUtil.isIbmJdk()) {
-            //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
-            //to let the JVM try finalizing the ClientResponse object
-            InputStream ins = builder.get().readEntity(InputStream.class);
             //suggest jvm to do gc and wait the gc notification
             final CountDownLatch coutDown = new CountDownLatch(1);
 
@@ -74,7 +71,9 @@ public class ResponseStreamPrematurelyClosedTest {
                   coutDown.countDown();
                }
             };
-            try {
+            //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
+            //to let the JVM try finalizing the ClientResponse object
+            try (InputStream ins = builder.get().readEntity(InputStream.class)) {
                for (GarbageCollectorMXBean gcbean : gcbeans) {
                   NotificationEmitter emitter = (NotificationEmitter) gcbean;
                   emitter.addNotificationListener(listener, null, null);

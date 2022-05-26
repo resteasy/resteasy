@@ -195,8 +195,9 @@ class EntityOutputStream extends OutputStream {
      * @throws IOException if there is an error determining the length of the content
      */
     long getContentLength() throws IOException {
-        final Path file = this.file;
-        return file == null ? inMemory.size() : Files.size(file);
+        synchronized (lock) {
+            return file == null ? inMemory.size() : Files.size(file);
+        }
     }
 
     private OutputStream getDelegate() {
