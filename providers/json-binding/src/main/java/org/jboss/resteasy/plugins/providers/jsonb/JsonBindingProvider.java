@@ -19,7 +19,6 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.MessageBodyReader;
 import jakarta.ws.rs.ext.Provider;
 
-import org.apache.commons.io.input.ProxyInputStream;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
@@ -82,18 +81,89 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       }
    }
 
-   private class EmptyCheckInputStream extends ProxyInputStream
+   private static class EmptyCheckInputStream extends InputStream
    {
+      private final InputStream delegate;
       boolean read = false;
       boolean empty = false;
 
-      EmptyCheckInputStream(final InputStream proxy)
+      EmptyCheckInputStream(final InputStream delegate)
       {
-         super(proxy);
+         this.delegate = delegate;
       }
 
       @Override
-      protected synchronized void afterRead(final int n) throws IOException {
+      public int read() throws IOException {
+         final int i = delegate.read();
+         afterRead(i);
+         return i;
+      }
+
+      @Override
+      public int read(final byte[] b) throws IOException {
+         final int i = delegate.read();
+         afterRead(i);
+         return i;
+      }
+
+      @Override
+      public int read(final byte[] b, final int off, final int len) throws IOException {
+         final int i = delegate.read(b, off, len);
+         afterRead(i);
+         return i;
+      }
+
+      @Override
+      public byte[] readAllBytes() throws IOException {
+         return delegate.readAllBytes();
+      }
+
+      @Override
+      public byte[] readNBytes(final int len) throws IOException {
+         return delegate.readNBytes(len);
+      }
+
+      @Override
+      public int readNBytes(final byte[] b, final int off, final int len) throws IOException {
+         return delegate.readNBytes(b, off, len);
+      }
+
+      @Override
+      public long skip(final long n) throws IOException {
+         return delegate.skip(n);
+      }
+
+      @Override
+      public int available() throws IOException {
+         return delegate.available();
+      }
+
+      @Override
+      public void close() throws IOException {
+         delegate.close();
+      }
+
+      @Override
+      public void mark(final int readlimit) {
+         delegate.mark(readlimit);
+      }
+
+      @Override
+      public void reset() throws IOException {
+         delegate.reset();
+      }
+
+      @Override
+      public boolean markSupported() {
+         return delegate.markSupported();
+      }
+
+      @Override
+      public long transferTo(final OutputStream out) throws IOException {
+         return delegate.transferTo(out);
+      }
+
+      private synchronized void afterRead(final int n) {
          if (!read && n <= 0) {
             empty = true;
          }

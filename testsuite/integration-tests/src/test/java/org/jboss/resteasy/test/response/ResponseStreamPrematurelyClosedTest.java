@@ -15,7 +15,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation.Builder;
 
-import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -83,7 +82,7 @@ public class ResponseStreamPrematurelyClosedTest {
                System.gc();
                coutDown.await(10, TimeUnit.SECONDS);
 
-               IOUtils.copy(ins, baos);
+               ins.transferTo(baos);
                Assert.assertEquals("Received string: " + baos.toShortString(), 10000000, baos.size());
             } finally {
                //remove the listener
@@ -94,7 +93,9 @@ public class ResponseStreamPrematurelyClosedTest {
          } else { // workaround for Ibm jdk - doesn't allow to use NotificationEmitter with GarbageCollectorMXBean
             //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
             //to let the JVM try finalizing the ClientResponse object
-            IOUtils.copy(builder.get().readEntity(InputStream.class), baos);
+            try (InputStream in = builder.get().readEntity(InputStream.class)) {
+               in.transferTo(baos);
+            }
             Assert.assertEquals(100000000, baos.size());
          }
       }

@@ -25,7 +25,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.ContentTooLongException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -108,7 +107,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    {
       if (closeHttpClient)
       {
-         IOUtils.closeQuietly(client);
+         safeClose(client);
       }
    }
 
@@ -420,7 +419,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          if (sharedStream != null)
          {
             sharedStream.setException(ioException(ex));
-            IOUtils.closeQuietly(sharedStream);
+            safeClose(sharedStream);
          }
          releaseResources();
       }
@@ -433,7 +432,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          if (sharedStream != null)
          {
             sharedStream.setException(new IOException("cancelled"));
-            IOUtils.closeQuietly(sharedStream);
+            safeClose(sharedStream);
          }
          releaseResources();
          return true;
@@ -730,7 +729,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
             {
                if (thrown)
                {
-                  IOUtils.closeQuietly(connection);
+                  safeClose(connection);
                }
                else
                {
@@ -876,6 +875,12 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
 
    private static IOException ioException(Exception ex) {
       return (ex instanceof IOException) ? (IOException) ex : new IOException(ex);
+   }
+
+   private static void safeClose(final Closeable closeable) {
+      if (closeable != null) try {
+         closeable.close();
+      } catch (IOException ignore){}
    }
 
 }
