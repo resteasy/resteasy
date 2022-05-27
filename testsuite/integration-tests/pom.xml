@@ -370,11 +370,27 @@
             <version>${version.resteasy.testsuite}</version>
         </dependency>
 
-        <dependency>
+       <dependency>
             <groupId>jaxrs.example</groupId>
             <artifactId>jaxrs.example.grpc</artifactId>
             <version>${version.jaxrs.example.grpc}</version>
             <type>jar</type>
+           <exclusions>
+               <exclusion>
+                  <groupId>javax.inject</groupId>
+                  <artifactId>javax.inject</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>jaxrs.example</groupId>
+                  <artifactId>jaxrs.example</artifactId>
+               </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>jaxrs.example</groupId>
+            <artifactId>jaxrs.example.grpc</artifactId>
+            <version>${version.jaxrs.example.grpc}</version>
+            <type>war</type>
             <exclusions>
                <exclusion>
                   <groupId>javax.inject</groupId>

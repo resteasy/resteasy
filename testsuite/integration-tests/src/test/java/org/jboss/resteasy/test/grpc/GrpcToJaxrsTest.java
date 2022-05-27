@@ -33,7 +33,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 import jaxrs.example.CC1ServiceGrpc;
 import jaxrs.example.CC1_proto;
-//import jaxrs.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import jaxrs.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
 import jaxrs.example.CC1_proto.GeneralEntityMessage;
 import jaxrs.example.CC1_proto.GeneralReturnMessage;
 import jaxrs.example.CC1_proto.ServletInfo;
@@ -93,7 +93,7 @@ public class GrpcToJaxrsTest
 
 //   private static String target = "localhost:9555";
    private static String target = "localhost:8082";
-   private static CC1ServiceGrpc.CC1ServiceBlockingStub blockingStub;
+   private static CC1ServiceBlockingStub blockingStub;
    private static ManagedChannel channel;
    org.jboss.weld.environment.se.WeldContainer x;
    org.jboss.weld.environment.ContainerInstance y;
@@ -126,6 +126,8 @@ public class GrpcToJaxrsTest
       }
       if (i == 5) {
          throw new RuntimeException("can't connect to gRPC server");
+      } else {
+    	  log.info("beforeClass() successful");
       }
    }
 

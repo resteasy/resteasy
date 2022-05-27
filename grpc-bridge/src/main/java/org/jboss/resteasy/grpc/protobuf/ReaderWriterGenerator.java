@@ -81,11 +81,10 @@ public class ReaderWriterGenerator {
         .append("import ").append("org.jboss.resteasy.grpc.servlet.AsyncMockServletOutputStream;\n")
         .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";\n")
         .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;\n")
-        .append("import ").append(ResteasyContext.class.getCanonicalName()).append(";\n")
+        .append("import org.jboss.resteasy.core.ResteasyContext;\n")
         .append("import org.jboss.resteasy.grpc.servlet.ServletConfigWrapper;\n")
         ;
       for (Class<?> clazz : wrapperClass.getClasses()) {
-//         if (clazz.isInterface() || clazz.getName().endsWith("_Extension") || "MessageExtension".equals(clazz.getSimpleName())) {
          if (clazz.isInterface()) {
             continue;
          }
