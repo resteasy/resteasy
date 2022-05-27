@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -40,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -122,7 +122,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = getTempDir();
+   protected Path fileUploadTempFileDir = getTempDir();
 
    public ManualClosingApacheHttpClient43Engine()
    {
@@ -228,12 +228,12 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    public File getFileUploadTempFileDir()
    {
-      return fileUploadTempFileDir;
+      return fileUploadTempFileDir.toFile();
    }
 
    public void setFileUploadTempFileDir(File fileUploadTempFileDir)
    {
-      this.fileUploadTempFileDir = fileUploadTempFileDir;
+      this.fileUploadTempFileDir = fileUploadTempFileDir.toPath();
    }
 
    public HttpClient getHttpClient()
@@ -546,32 +546,11 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     */
    protected void cleanUpAfterExecute(final HttpRequestBase httpMethod)
    {
-      if (httpMethod != null && httpMethod instanceof HttpPost)
-      {
-         HttpPost postMethod = (HttpPost) httpMethod;
-         HttpEntity entity = postMethod.getEntity();
-         if (entity != null && entity instanceof FileExposingFileEntity)
-         {
-            File tempRequestFile = ((FileExposingFileEntity) entity).getFile();
-            try
-            {
-               boolean isDeleted = tempRequestFile.delete();
-               if (!isDeleted)
-               {
-                  handleFileNotDeletedError(tempRequestFile, null);
-               }
-            }
-            catch (Exception ex)
-            {
-               handleFileNotDeletedError(tempRequestFile, ex);
-            }
-         }
-      }
    }
 
    /**
     * Build the HttpEntity to be sent to the Service as part of (POST) request. Creates a off-memory
-    * {@link FileExposingFileEntity} or a regular in-memory {@link ByteArrayEntity} depending on if the request
+    * {@link FileEntity} or a regular in-memory {@link ByteArrayEntity} depending on if the request
     * OutputStream fit into memory when built by calling.
     *
     * @param request -
@@ -581,29 +560,19 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    protected HttpEntity buildEntity(final ClientInvocation request) throws IOException
    {
       AbstractHttpEntity entityToBuild = null;
-      DeferredFileOutputStream memoryManagedOutStream = writeRequestBodyToOutputStream(request);
+      try (EntityOutputStream entityStream = writeRequestBodyToOutputStream(request)) {
 
-      MediaType mediaType = request.getHeaders().getMediaType();
-
-      if (memoryManagedOutStream.isInMemory())
-      {
-         ByteArrayEntity entityToBuildByteArray = new ByteArrayEntity(memoryManagedOutStream.getData());
+         MediaType mediaType = request.getHeaders().getMediaType();
+         entityToBuild = entityStream.toEntity();
          if (mediaType != null) {
-            entityToBuildByteArray
+            entityToBuild
                     .setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
          }
-         entityToBuild = entityToBuildByteArray;
+         if (request.isChunked()) {
+            entityToBuild.setChunked(true);
+         }
       }
-      else
-      {
-         entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(),
-               mediaType == null ? null : mediaType.toString());
-      }
-      if (request.isChunked())
-      {
-         entityToBuild.setChunked(true);
-      }
-      return (HttpEntity) entityToBuild;
+      return entityToBuild;
    }
 
    /**
@@ -616,15 +585,14 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * @return - DeferredFileOutputStream with the ClientRequest written out per HTTP specification.
     * @throws IOException -
     */
-   private DeferredFileOutputStream writeRequestBodyToOutputStream(final ClientInvocation request) throws IOException
+   private EntityOutputStream writeRequestBodyToOutputStream(final ClientInvocation request) throws IOException
    {
-      DeferredFileOutputStream memoryManagedOutStream = new DeferredFileOutputStream(
-            this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(), getTempfilePrefix(), ".tmp",
-            this.fileUploadTempFileDir);
-      request.getDelegatingOutputStream().setDelegate(memoryManagedOutStream);
-      request.writeRequestBody(request.getEntityStream());
-      memoryManagedOutStream.close();
-      return memoryManagedOutStream;
+      try (EntityOutputStream entityStream = new EntityOutputStream(
+            this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(), this.fileUploadTempFileDir, this::getTempfilePrefix)) {
+         request.getDelegatingOutputStream().setDelegate(entityStream);
+         request.writeRequestBody(request.getEntityStream());
+         return entityStream;
+      }
    }
 
    /**
@@ -656,51 +624,6 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
             return 1024 * 1024 * 1024;
       }
       return 1;
-   }
-
-   /**
-    * Log that the file did not get deleted but prevent the request from failing by eating the exception.
-    * Register the file to be deleted on exit, so it will get deleted eventually.
-    *
-    * @param tempRequestFile -
-    * @param ex - a null may be passed in which case this param gets ignored.
-    */
-   private void handleFileNotDeletedError(File tempRequestFile, Exception ex)
-   {
-      LogMessages.LOGGER.warn(Messages.MESSAGES.couldNotDeleteFile(tempRequestFile.getAbsolutePath()), ex);
-      tempRequestFile.deleteOnExit();
-   }
-
-   /**
-    * We use {@link org.apache.http.entity.FileEntity} as the {@link HttpEntity} implementation when the request OutputStream has been
-    * saved to a File on disk (because it was too large to fit into memory see however, we have to delete
-    * the File supporting the <code>FileEntity</code>, otherwise the disk will soon run out of space - remember
-    * that there can be very huge files, in GB range, processed on a regular basis - and FileEntity exposes its
-    * content File as a protected field. For the enclosing parent class ( {@link ApacheHttpClient4Engine} ) to be
-    * able to get a handle to this content File and delete it, this class expose the content File.<br>
-    * This class is private scoped to prevent access to this content File outside of the parent class.
-    *
-    * @author <a href="mailto:stikoo@digitalriver.com">Sandeep Tikoo</a>
-    */
-   private static class FileExposingFileEntity extends FileEntity
-   {
-      /**
-       * @param pFile -
-       * @param pContentType -
-       */
-      @SuppressWarnings("deprecation")
-      FileExposingFileEntity(final File pFile, final String pContentType)
-      {
-         super(pFile, pContentType);
-      }
-
-      /**
-       * @return - the content File enclosed by this FileEntity.
-       */
-      File getFile()
-      {
-         return this.file;
-      }
    }
 
    protected HttpClient createDefaultHttpClient()
@@ -780,14 +703,14 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       closed = true;
    }
 
-   private static File getTempDir() {
+   private static Path getTempDir() {
       if (System.getSecurityManager() == null) {
          final Optional<String> value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class);
-         return value.map(File::new).orElseGet(() -> new File(System.getProperty("java.io.tmpdir")));
+         return value.map(Path::of).orElseGet(() -> Path.of(System.getProperty("java.io.tmpdir")));
       }
-      return AccessController.doPrivileged((PrivilegedAction<File>) () -> {
+      return AccessController.doPrivileged((PrivilegedAction<Path>) () -> {
          final Optional<String> value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class);
-         return value.map(File::new).orElseGet(() -> new File(System.getProperty("java.io.tmpdir")));
+         return value.map(Path::of).orElseGet(() -> Path.of(System.getProperty("java.io.tmpdir")));
       });
    }
 
