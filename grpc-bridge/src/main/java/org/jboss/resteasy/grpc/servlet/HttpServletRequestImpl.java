@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -40,8 +41,15 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
 
+/*
+ * The http servlet request implementation. This class is not thread safe.
+ *
+ * Much of it is borrowed from io.undertow.servlet.spec.HttpServletRequestImpl,
+ * written by Stuart Douglas.
+ */
 public class HttpServletRequestImpl implements HttpServletRequest {
 
    public static final String GRPC_RETURN_RESPONSE = "grpc-return-response";
@@ -58,6 +66,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    private volatile AsyncContext asyncContext;
    private boolean gotInputStream = false;
    private boolean gotReader = false;
+   private boolean readStarted;
 
    // servlet info
    private String characterEncoding;
@@ -66,11 +75,12 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    private int    clientPort;
 
    private Map<String, Object> attributes = new HashMap<String, Object>();
-   private Map<String, String[]> parameters = new HashMap<String, String[]>();
+   private Map<String, String[]> formParameters;
+   private Map<String, String[]> parameters;
 
    public HttpServletRequestImpl(final ServletResponse servletResponse, final ServletContext servletContext,
          final String uri, final String method, final ServletInputStream sis, final String retn, final Map<String, List<String>> headers,
-         final Cookie[] cookies) throws URISyntaxException {
+         final Cookie[] cookies, final Map<String, String[]> formParameters) throws URISyntaxException {
       this.servletResponse = servletResponse;
       this.servletContext = servletContext;
       this.uri = uri;
@@ -90,6 +100,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
          headers.put(GRPC_RETURN_RESPONSE, acceptList);
       }
       this.cookies = cookies;
+      this.formParameters = formParameters;
    }
 
    @Override
@@ -104,11 +115,29 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getCharacterEncoding() {
-      return characterEncoding;
+      if (characterEncoding != null) {
+         return characterEncoding;
+      }
+      String characterEncodingFromHeader = getCharacterEncodingFromHeader();
+      if (characterEncodingFromHeader != null) {
+         return characterEncodingFromHeader;
+      }
+      // next check, web-app context level default request encoding
+      if (servletContext.getRequestCharacterEncoding() != null) {
+         servletContext.getRequestCharacterEncoding();
+      }
+      //     // now check the container level default encoding (??)
+      //     if (servletContext.getDeployment().getDeploymentInfo().getDefaultEncoding() != null) {
+      //         return servletContext.getDeployment().getDeploymentInfo().getDefaultEncoding();
+      //     }
+      return null;
    }
 
    @Override
    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
+      if (readStarted) {
+         return;
+      }
       this.characterEncoding = env;
    }
 
@@ -130,14 +159,16 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    @Override
    public ServletInputStream getInputStream() throws IOException {
       if (gotReader) {
-         throw new IllegalStateException("Reader already returned");
+         throw new IllegalStateException(Messages.MESSAGES.readerAlreadyReturned());
       }
       gotInputStream = true;
+      readStarted = true;
       return sis;
    }
 
    @Override
    public String getParameter(String name) {
+      extractParameters();
       if (parameters.containsKey(name)) {
          return parameters.get(name)[0];
       }
@@ -146,16 +177,19 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public Enumeration<String> getParameterNames() {
+      extractParameters();
       return Collections.enumeration(parameters.keySet());
    }
 
    @Override
    public String[] getParameterValues(String name) {
-      return parameters.values().toArray(new String[parameters.size()]);
+      extractParameters();
+      return parameters.get(name);
    }
 
    @Override
    public Map<String, String[]> getParameterMap() {
+      extractParameters();
       return parameters;
    }
 
@@ -185,6 +219,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
          throw new IllegalStateException(Messages.MESSAGES.inputStreamAlreadyReturned());
       }
       gotReader = true;
+      readStarted = true;
       return new BufferedReader(new InputStreamReader(this.sis));
    }
 
@@ -516,6 +551,91 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("upgrade()"));
    }
 
+   private String getCharacterEncodingFromHeader() {
+      String contentType = headers.get(HttpHeaders.CONTENT_TYPE).get(0);
+      if (contentType == null) {
+          return null;
+      }
+      return extractQuotedValueFromHeader(contentType, "charset");
+  }
+
+   /**
+    * Extracts a quoted value from a header that has a given key. For instance if the header is
+    * <p>
+    * content-disposition=form-data; name="my field"
+    * and the key is name then "my field" will be returned without the quotes.
+    *
+    *
+    * @param header The header
+    * @param key    The key that identifies the token to extract
+    * @return The token, or null if it was not found
+    *
+    * @author Stuart Douglas
+    */
+   public static String extractQuotedValueFromHeader(final String header, final String key) {
+
+       int keypos = 0;
+       int pos = -1;
+       boolean whiteSpace = true;
+       boolean inQuotes = false;
+       for (int i = 0; i < header.length() - 1; ++i) { //-1 because we need room for the = at the end
+           //TODO: a more efficient matching algorithm
+           char c = header.charAt(i);
+           if (inQuotes) {
+               if (c == '"') {
+                   inQuotes = false;
+               }
+           } else {
+               if (key.charAt(keypos) == c && (whiteSpace || keypos > 0)) {
+                   keypos++;
+                   whiteSpace = false;
+               } else if (c == '"') {
+                   keypos = 0;
+                   inQuotes = true;
+                   whiteSpace = false;
+               } else {
+                   keypos = 0;
+                   whiteSpace = c == ' ' || c == ';' || c == '\t';
+               }
+               if (keypos == key.length()) {
+                   if (header.charAt(i + 1) == '=') {
+                       pos = i + 2;
+                       break;
+                   } else {
+                       keypos = 0;
+                   }
+               }
+           }
+
+       }
+       if (pos == -1) {
+           return null;
+       }
+
+       int end;
+       int start = pos;
+       if (header.charAt(start) == '"') {
+           start++;
+           for (end = start; end < header.length(); ++end) {
+               char c = header.charAt(end);
+               if (c == '"') {
+                   break;
+               }
+           }
+           return header.substring(start, end);
+
+       } else {
+           //no quotes
+           for (end = start; end < header.length(); ++end) {
+               char c = header.charAt(end);
+               if (c == ' ' || c == '\t' || c == ';') {
+                   break;
+               }
+           }
+           return header.substring(start, end);
+       }
+   }
+
    private UriInfo getUriInfo() {
       if (uriInfo == null) {
          synchronized (this) {
@@ -526,4 +646,25 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       }
       return uriInfo;
    }
+
+   private void extractParameters() {
+      if (parameters != null) {
+         return;
+      }
+      parameters = formParameters;
+      MultivaluedMap<String, String> queryParams = getUriInfo().getQueryParameters();
+      for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
+         if (parameters.containsKey(entry.getKey())) {
+            int formLength = parameters.get(entry.getKey()).length;
+            int queryLength = entry.getValue().size();
+            String[] array = Arrays.copyOf(parameters.get(entry.getKey()), formLength + queryLength);
+            System.arraycopy(entry.getValue().toArray(), 0, array, formLength, queryLength);
+            parameters.put(entry.getKey(), array);
+         } else {
+            String[] array = new String[entry.getValue().size()];
+            parameters.put(entry.getKey(), entry.getValue().toArray(array));
+         }
+      }
+   }
 }
+

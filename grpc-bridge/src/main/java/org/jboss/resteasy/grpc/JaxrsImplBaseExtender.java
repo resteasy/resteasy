@@ -161,6 +161,7 @@ public class JaxrsImplBaseExtender {
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;\n")
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gCookie;\n")
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;\n")
+        .append("import ").append(packageName).append(".").append(outerClassName).append(".FormValues;\n")
         .append("import ").append(packageName).append(".").append(outerClassName).append(".GeneralEntityMessage;\n")
         .append("import ").append(packageName).append(".").append(outerClassName).append(".GeneralReturnMessage;\n")
         ;
@@ -380,7 +381,7 @@ public class JaxrsImplBaseExtender {
         .append("      Map<String, List<String>> headers = convertHeaders(param.getHeadersMap());\n")
         .append("      Cookie[] cookies = convertCookies(param.getCookiesList());\n")
         .append("      ServletContext servletContext = ").append(root).append("_Server.getContext();\n")
-        .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, url, verb, msis, type, headers, cookies);\n")
+        .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, url, verb, msis, type, headers, cookies, extractFormData(param));\n")
         .append("      ").append(pkg).append(".").append(root).append("_proto.ServletInfo servletInfo = param.getServletInfo();\n")
         .append("      if (servletInfo != null) {\n")
         .append("         if (servletInfo.getCharacterEncoding() != null) {\n")
@@ -413,6 +414,40 @@ public class JaxrsImplBaseExtender {
         .append("      return cookieArray;\n")
         .append("   }\n\n")
         ;
+      sb.append("   private static Map<String, String[]> extractFormData(GeneralEntityMessage param) {\n")
+        .append("      if (!param.hasFormField()) {\n")
+        .append("         return null;\n")
+        .append("      }\n")
+        .append("      Map<String, String[]> formParams = new HashMap<String, String[]>();\n")
+        .append("      Map<String, FormValues> map = param.getFormField().getFormMapFieldMap();\n")
+        .append("      for (Map.Entry<String, FormValues> entry : map.entrySet()) {\n")
+        .append("         String[] values = new String[entry.getValue().getFormValuesFieldCount()];\n")
+        .append("         for (int i = 0; i < entry.getValue().getFormValuesFieldCount(); i++) {\n")
+        .append("            values[i] = entry.getValue().getFormValuesField(i);\n")
+        .append("         }\n")
+        .append("         formParams.put(entry.getKey(), values);\n")
+        .append("      }\n")
+        .append("      return formParams;\n")
+        .append("   }\n\n")
+        ;
+
+      /*
+   private static Map<String, String[]> extractFormData(GeneralEntityMessage param) {
+      if (!param.hasFormField()) {
+         return null;
+      }
+      Map<String, String[]> formParams = new HashMap<String, String[]>();
+      Map<String, FormValues> map = param.getFormField().getFormMapFieldMap();
+      for (Entry<String, FormValues> entry : map.entrySet()) {
+         String[] values = new String[entry.getValue().getFormValuesFieldCount()];
+         for (int i = 0; i < entry.getValue().getFormValuesFieldCount(); i++) {
+            values[i] = entry.getValue().getFormValuesField(i);
+         }
+         formParams.put(entry.getKey(), values);
+      }
+      return formParams;
+   }
+       */
       sb.append("   private static GeneralReturnMessage.Builder createGeneralReturnMessageBuilder(HttpServletResponseImpl response) {\n")
         .append("      GeneralReturnMessage.Builder grmBuilder = GeneralReturnMessage.newBuilder();\n")
         .append("      if (!response.getHeaderNames().isEmpty()) {\n")

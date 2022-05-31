@@ -375,7 +375,7 @@
             <artifactId>jaxrs.example.grpc</artifactId>
             <version>${version.jaxrs.example.grpc}</version>
             <type>jar</type>
-           <exclusions>
+            <exclusions>
                <exclusion>
                   <groupId>javax.inject</groupId>
                   <artifactId>javax.inject</artifactId>

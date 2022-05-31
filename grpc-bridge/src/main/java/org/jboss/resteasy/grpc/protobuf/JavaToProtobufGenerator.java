@@ -408,6 +408,12 @@ public class JavaToProtobufGenerator {
         .append("   string clientHost = ").append(counter++).append(";\n")
         .append("   int32  clientPort = ").append(counter++).append(";\n")
         .append("}");
+      sb.append("\n\nmessage FormValues {\n")
+        .append("   repeated string formValues_field = ").append(counter++).append(";\n")
+        .append("}");
+      sb.append("\n\nmessage FormMap {\n")
+        .append("   map<string, FormValues> formMap_field = ").append(counter++).append(";\n")
+        .append("}");
       sb.append("\n\nmessage GeneralEntityMessage {\n")
         .append("   ServletInfo servletInfo = ").append(counter++).append(";\n")
         .append("   string URL = ").append(counter++).append(";\n")
@@ -423,6 +429,7 @@ public class JavaToProtobufGenerator {
          .append(counter++)
          .append(";\n");
       }
+    sb.append("      FormMap form_field = ").append(counter++).append(";\n");
     sb.append("   }\n}\n");
    }
 

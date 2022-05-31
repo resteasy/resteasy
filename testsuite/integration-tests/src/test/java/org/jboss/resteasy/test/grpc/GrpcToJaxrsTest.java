@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.grpc;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,8 @@ import jakarta.ws.rs.core.Response;
 import jaxrs.example.CC1ServiceGrpc;
 import jaxrs.example.CC1_proto;
 import jaxrs.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import jaxrs.example.CC1_proto.FormMap;
+import jaxrs.example.CC1_proto.FormValues;
 import jaxrs.example.CC1_proto.GeneralEntityMessage;
 import jaxrs.example.CC1_proto.GeneralReturnMessage;
 import jaxrs.example.CC1_proto.ServletInfo;
@@ -127,7 +130,7 @@ public class GrpcToJaxrsTest
       if (i == 5) {
          throw new RuntimeException("can't connect to gRPC server");
       } else {
-    	  log.info("beforeClass() successful");
+         log.info("beforeClass() successful");
       }
    }
 
@@ -762,6 +765,38 @@ public class GrpcToJaxrsTest
          gHeader gh2 = gHeader.newBuilder().addValues("v2").build();
          Assert.assertEquals(gh2, headers.get("h2"));
          Assert.assertEquals("headers", response.getGStringField().getValue());
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testServletParams() throws Exception {
+      Map<String, FormValues> formMap = new HashMap<String, FormValues>();
+      FormValues.Builder formValuesBuilderP2 = FormValues.newBuilder();
+      formValuesBuilderP2.addFormValuesField("f2a").addFormValuesField("f2b");
+      formMap.put("p2", formValuesBuilderP2.build());
+
+      FormValues.Builder formValuesBuilderP3 = FormValues.newBuilder();
+      formValuesBuilderP3.addFormValuesField("f3a").addFormValuesField("f3b");
+      formMap.put("p3", formValuesBuilderP3.build());
+
+      FormMap.Builder formMapBuilder = FormMap.newBuilder();
+      formMapBuilder.putAllFormMapField(formMap);
+      GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+      messageBuilder.setFormField(formMapBuilder.build());
+
+      messageBuilder.setURL("http://localhost:8080/p/servletParams?p1=q1&p2=q2");
+      GeneralEntityMessage gem = messageBuilder.build();
+      GeneralReturnMessage response;
+      try {
+         response = blockingStub.servletParams(gem);
+         String s = response.getGStringField().getValue();
+         Assert.assertTrue(s.startsWith("q1|q2|f2a|f3a"));
+         Assert.assertTrue(s.contains("p1->q1"));
+         Assert.assertTrue(s.contains("p2->f2af2bq2"));
+         Assert.assertTrue(s.contains("p3->f3af3b"));
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;

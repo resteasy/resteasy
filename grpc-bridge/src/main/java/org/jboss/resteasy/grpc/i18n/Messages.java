@@ -42,10 +42,13 @@ public interface Messages
    @Message(id = BASE + 40, value = "No suitable message body writer for class : %s")
    String notFoundMBW(String className);
 
-   @Message(id = BASE + 45, value = "Request %s was not original or a wrapper")
+   @Message(id = BASE + 45, value = "Reader already returned")
+   IllegalArgumentException readerAlreadyReturned();
+
+   @Message(id = BASE + 50, value = "Request %s was not original or a wrapper")
    IllegalArgumentException requestWasNotOriginalOrWrapper(ServletRequest request);
 
-   @Message(id = BASE + 50, value = "Response %s was not original or a wrapper")
+   @Message(id = BASE + 55, value = "Response %s was not original or a wrapper")
    IllegalArgumentException responseWasNotOriginalOrWrapper(ServletResponse response);
 
 }

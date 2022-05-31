@@ -174,7 +174,10 @@ public class JavabufTranslatorGenerator {
                  || "GeneralReturnMessage".equals(simpleName)
                  || "ServletInfo".equals(simpleName)
                  || "gCookie".equals(simpleName)
-                 || "gHeader".equals(simpleName)) {
+                 || "gHeader".equals(simpleName)
+                 || "FormMap".equals(simpleName)
+                 || "FormValues".equals(simpleName)
+               ) {
             continue;
          } else {
             sb.append("import ")
@@ -215,7 +218,10 @@ public class JavabufTranslatorGenerator {
                || "GeneralReturnMessage".equals(simpleName)
                || "ServletInfo".equals(simpleName)
                || "gCookie".equals(simpleName)
-               || "gHeader".equals(simpleName)) {
+               || "gHeader".equals(simpleName)
+               || "FormMap".equals(simpleName)
+               || "FormValues".equals(simpleName)
+               ) {
             continue;
          }
          int i = simpleName.lastIndexOf("___");
@@ -369,7 +375,10 @@ public class JavabufTranslatorGenerator {
       if ("gEmpty".equals(clazz.getSimpleName())
             || "gCookie".equals(clazz.getSimpleName())
             || "gHeader".equals(clazz.getSimpleName())
-            || "ServletInfo".equals(clazz.getSimpleName())) {
+            || "ServletInfo".equals(clazz.getSimpleName())
+            || "FormMap".equals(clazz.getSimpleName())
+            || "FormValues".equals(clazz.getSimpleName())
+            ) {
          return;
       }
       sb.append("   static class ")
@@ -418,7 +427,10 @@ public class JavabufTranslatorGenerator {
       if ("AbstractMessage".equals(clazz.getSimpleName())
             || "gCookie".equals(clazz.getSimpleName())
             || "gHeader".equals(clazz.getSimpleName())
-            || "ServletInfo".equals(clazz.getSimpleName())) {
+            || "ServletInfo".equals(clazz.getSimpleName())
+            || "FormMap".equals(clazz.getSimpleName())
+            || "FormValues".equals(clazz.getSimpleName())
+            ) {
          return;
       }
       sb.append("   static class ")

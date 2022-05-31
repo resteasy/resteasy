@@ -93,7 +93,10 @@ public class ReaderWriterGenerator {
                  || "GeneralReturnMessage".equals(clazz.getSimpleName())
                  || "ServletInfo".equals(clazz.getSimpleName())
                  || "gCookie".equals(clazz.getSimpleName())
-                 || "gHeader".equals(clazz.getSimpleName())) {
+                 || "gHeader".equals(clazz.getSimpleName())
+                 || "FormMap".equals(clazz.getSimpleName())
+                 || "FormValues".equals(clazz.getSimpleName())
+               ) {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
          } else {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
@@ -163,7 +166,6 @@ public class ReaderWriterGenerator {
       boolean startElse = false;
       for (int i = 0; i < subclasses.length; i++) {
          if (subclasses[i].isInterface()) {
-//         if (subclasses[i].isInterface() || subclasses[i].getName().endsWith("_Extension") || "MessageExtension".equals(subclasses[i].getSimpleName())) {
             continue;
          }
          if (startElse) {
@@ -191,7 +193,6 @@ public class ReaderWriterGenerator {
       sb.append("   private static GeneratedMessageV3 unpackMessage(Class<?> clazz, Any any) throws IOException {\n");
       for (int i = 0; i < subclasses.length; i++) {
          if (subclasses[i].isInterface()) {
-//         if (subclasses[i].isInterface() || subclasses[i].getName().endsWith("_Extension") || "MessageExtension".equals(subclasses[i].getSimpleName())) {
             continue;
          }
          if (startElse) {
