@@ -22,7 +22,8 @@
         <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.1.0</version.jakarta.mail>
-        <version.org.glassfish.jaxb.jaxb>2.3.3-b02</version.org.glassfish.jaxb.jaxb>
+        <version.org.glassfish.jaxb>4.0.0</version.org.glassfish.jaxb>
+        <version.com.sun.istack>4.1.0</version.com.sun.istack>
         <version.com.sun.xml.fastinfoset>1.2.17</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.11.0</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.15</version.commons-codec.commons-codec>
@@ -205,9 +206,9 @@
             </dependency>
             <!-- JAXB Implementation -->
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${version.jakarta.xml.bind.bind-api}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>codemodel</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -216,9 +217,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
+                <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-core</artifactId>
-                <version>${version.jakarta.xml.bind.bind-api}</version>
+                <version>${version.org.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -226,6 +227,105 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-jxc</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>txw2</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>xsom</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>istack-commons-runtime</artifactId>
+                <version>${version.com.sun.istack}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>istack-commons-tools</artifactId>
+                <version>${version.com.sun.istack}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind.external</groupId>
+                <artifactId>relaxng-datatype</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind.external</groupId>
+                <artifactId>rngom</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>relaxngDatatype</groupId>
+                        <artifactId>relaxngDatatype</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.xml.bind.external</groupId>
+                        <artifactId>relaxng-datatype</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- End JAXB Implementation -->
 
             <dependency>
                 <groupId>jakarta.transaction</groupId>

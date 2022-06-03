@@ -26,7 +26,7 @@
     </resources>
 
     <dependencies>
-        <module name="com.sun.xml.bind"/>
+        <module name="org.glassfish.jaxb"/>
         <module name="java.xml"/>
         <module name="jakarta.enterprise.api"/>
         <module name="jakarta.servlet.api"/>

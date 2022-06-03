@@ -36,7 +36,6 @@ import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
-import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -304,7 +303,7 @@ public class MapProvider implements MessageBodyReader<Object>, AsyncBufferedMess
          }
 
          JAXBElement<JaxbMap> jaxbMap = new JAXBElement<JaxbMap>(new QName(namespaceURI, mapName, prefix), JaxbMap.class, map);
-         Marshaller marshaller = RiHacks.createMarshaller(ctx);
+         Marshaller marshaller = ctx.createMarshaller();
          marshaller = AbstractJAXBProvider.decorateMarshaller(valueType, annotations, mediaType, marshaller);
          marshaller.marshal(jaxbMap, entityStream);
       }

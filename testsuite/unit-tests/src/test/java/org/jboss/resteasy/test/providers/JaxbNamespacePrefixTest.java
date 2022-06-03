@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper;
-import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixItems;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixPurchaseOrderType;
@@ -44,12 +43,12 @@ public class JaxbNamespacePrefixTest {
       jaxbNameSpacePrefixItem.setUSPrice(new BigDecimal(13.99));
       jaxbNameSpacePrefixItems.getJaxbNameSpacePrefixItem().add(jaxbNameSpacePrefixItem);
       po.setJaxbNameSpacePrefixItems(jaxbNameSpacePrefixItems);
-      Marshaller marshaller = RiHacks.createMarshaller(ctx);
+      Marshaller marshaller = ctx.createMarshaller();
       XmlSchema xmlSchema = JaxbNameSpacePrefixPurchaseOrderType.class.getPackage().getAnnotation(XmlSchema.class);
       Assert.assertNotNull("Couldn't create xml schema for JaxbNameSpacePrefixPurchaseOrderType class", xmlSchema);
       XmlNamespacePrefixMapper mapper = new XmlNamespacePrefixMapper(xmlSchema.xmlns());
       try {
-         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);
       } catch (PropertyException e) {
          logger.error(e.getMessage(), e);
       }
