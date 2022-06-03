@@ -71,6 +71,7 @@
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
         <version.jakarta.servlet.servlet-api>5.0.0</version.jakarta.servlet.servlet-api>
         <version.jakarta.transaction.transaction-api>2.0.0</version.jakarta.transaction.transaction-api>
+        <version.org.glassfish.jaxb>3.0.2</version.org.glassfish.jaxb>
         <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
         <version.org.mockito>3.11.0</version.org.mockito>
         <version.org.slf4j>1.7.30</version.org.slf4j>
@@ -205,9 +206,9 @@
             </dependency>
             <!-- JAXB Implementation -->
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${version.jakarta.xml.bind.bind-api}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -216,9 +217,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${version.jakarta.xml.bind.bind-api}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
