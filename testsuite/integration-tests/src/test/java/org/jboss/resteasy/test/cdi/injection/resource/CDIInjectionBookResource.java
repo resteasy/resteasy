@@ -404,7 +404,7 @@ public class CDIInjectionBookResource {
    public Collection<CDIInjectionBook> getBooksMDB() throws InterruptedException {
       log.info("entering getBooksMDB()");
       log.info("getBooksMDB(): waiting on latch");
-      latch.await();
+      latch.await(2, TimeUnit.SECONDS);
       log.info("this.theSecret(): " + this.theSecret());
       Collection<CDIInjectionBook> books = collection.getBooks();
       log.info("getBooksMDB(): " + books);

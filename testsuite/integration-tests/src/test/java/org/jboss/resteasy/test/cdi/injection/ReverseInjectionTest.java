@@ -45,8 +45,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -75,6 +75,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.PropertyPermission;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.LoggingPermission;
 
 import static junit.framework.TestCase.assertEquals;
@@ -282,9 +283,8 @@ public class ReverseInjectionTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Ignore("RESTEASY-2962")
    public void testMDB() throws Exception {
-      String destinationName = "queue/test";
+      String destinationName = "jms/queue/test";
       Context ic;
       ConnectionFactory cf;
       Connection connection = null;
@@ -304,6 +304,7 @@ public class ReverseInjectionTest {
          message = session.createTextMessage(book2.getName());
          producer.send(message);
          log.info("Message sent to to the JMS Provider: " + book2.getName());
+         TimeUnit.SECONDS.sleep(2);
          WebTarget base = client.target(generateURL("/mdb/books"));
          Response response = base.request().get();
          log.info("status: " + response.getStatus());
@@ -319,7 +320,7 @@ public class ReverseInjectionTest {
       } catch (Exception exc) {
          StringWriter errors = new StringWriter();
          exc.printStackTrace(new PrintWriter(errors));
-         log.error(errors.toString());
+         Assert.fail(exc.getMessage());
       } finally {
          if (connection != null) {
             try {
