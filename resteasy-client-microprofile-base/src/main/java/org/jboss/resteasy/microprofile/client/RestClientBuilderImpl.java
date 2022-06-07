@@ -452,7 +452,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             }
         }
         if (disabled) {
-            LOGGER.warnf("The default ResponseExceptionMapper has been disabled");
+            LOGGER.debug("The default ResponseExceptionMapper has been disabled");
         }
         return disabled;
     }
