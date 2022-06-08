@@ -35,6 +35,7 @@
         <jdk.min.version>${maven.compiler.source}</jdk.min.version>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args}</surefire.system.args>
+        <additionalJvmArgs/>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.org.wildfly.jar.plugin>2.0.0.Beta8</version.org.wildfly.jar.plugin>
@@ -184,6 +185,18 @@
             </activation>
             <properties>
                 <modular.jdk.args>--add-opens=java.base/java.lang=ALL-UNNAMED</modular.jdk.args>
+            </properties>
+        </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true ${modular.jdk.args}</surefire.system.args>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
             </properties>
         </profile>
     </profiles>
