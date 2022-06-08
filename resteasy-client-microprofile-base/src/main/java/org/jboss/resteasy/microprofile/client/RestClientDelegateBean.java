@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class RestClientDelegateBean implements Bean<Object>, PassivationCapable {
+    private static final Logger LOGGER = Logger.getLogger(RestClientDelegateBean.class);
 
     public static final String REST_URL_FORMAT = "%s/mp-rest/url";
 
@@ -283,6 +285,13 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
 
     @Override
     public void destroy(Object instance, CreationalContext<Object> creationalContext) {
+        if (instance instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) instance).close();
+            } catch (Exception e) {
+                LOGGER.debugf(e, "Failed to close client %s", instance);
+            }
+        }
     }
 
     @Override

@@ -38,6 +38,7 @@
         <javadoc.additional.params>--release=8</javadoc.additional.params>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
+        <additionalJvmArgs/>
         <skip.java8.tests>false</skip.java8.tests>
 
         <maven.test.skip>false</maven.test.skip>
@@ -215,6 +216,18 @@
               </plugins>
           </build>
       </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
+            </properties>
+        </profile>
       <profile>
           <id>jboss-repository</id>
           <repositories>
