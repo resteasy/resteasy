@@ -885,4 +885,7 @@ public interface Messages
 
    @Message(id = BASE + 2075, value = "Could no load default SSL context")
    IllegalStateException couldNotLoadSslContext(@Context Throwable cause);
+
+   @Message(id = BASE + 2076, value = "A ResteasyDeployment object required")
+   IllegalArgumentException deploymentRequired();
 }
