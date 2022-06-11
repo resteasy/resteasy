@@ -193,7 +193,7 @@ public class JaxrsImplBaseExtender {
       String syncType = scanner.next();
       String rpc = scanner.findWithinHorizon(" rpc ", 0);
       while (rpc != null) {
-         rpc(scanner, root, path, actualEntityClass, actualReturnClass, httpMethod, syncType, sbHeader, sbBody);
+         rpc(scanner, root, "/" + path, actualEntityClass, actualReturnClass, httpMethod, syncType, sbHeader, sbBody);
          scanner.nextLine();
          if (!scanner.hasNext("//")) {
             break;
@@ -311,7 +311,9 @@ public class JaxrsImplBaseExtender {
         .append("         responseObserver.onError(e);\n")
         .append("      } finally {\n")
         .append("         responseObserver.onCompleted();\n")
-        .append("         cdiContext.dissociate(request);\n")
+        .append("         if (cdiContext != null) {\n")
+        .append("            cdiContext.dissociate(request);\n")
+        .append("         }\n")
         .append("      }\n");
    }
 
@@ -375,13 +377,13 @@ public class JaxrsImplBaseExtender {
         .append("   }\n\n")
         ;
       sb.append("   private static HttpServletRequest getHttpServletRequest(").append(pkg).append(".").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {\n")
-        .append("      String url = param.getURL() == \"\" ? \"http://localhost:8080/\" + path : param.getURL();\n")
+        .append("      String url = param.getURL() == \"\" ? \"http://localhost:8080\" + path : param.getURL();\n")
         .append("      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());\n")
         .append("      MockServletInputStream msis = new MockServletInputStream(bais);\n")
         .append("      Map<String, List<String>> headers = convertHeaders(param.getHeadersMap());\n")
         .append("      Cookie[] cookies = convertCookies(param.getCookiesList());\n")
         .append("      ServletContext servletContext = ").append(root).append("_Server.getContext();\n")
-        .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, url, verb, msis, type, headers, cookies, extractFormData(param));\n")
+        .append("      HttpServletRequestImpl request = new HttpServletRequestImpl(response, servletContext, url, path, verb, msis, type, headers, cookies, extractFormData(param));\n")
         .append("      ").append(pkg).append(".").append(root).append("_proto.ServletInfo servletInfo = param.getServletInfo();\n")
         .append("      if (servletInfo != null) {\n")
         .append("         if (servletInfo.getCharacterEncoding() != null) {\n")

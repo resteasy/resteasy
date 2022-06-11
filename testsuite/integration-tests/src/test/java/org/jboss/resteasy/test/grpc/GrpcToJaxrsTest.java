@@ -651,7 +651,7 @@ public class GrpcToJaxrsTest
       }
    }
 
-   //      //@Test
+   //      @Test
    //      public void testSSE() throws Exception {
    //         jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
    //         messageBuilder.setURL("http://localhost:8080/p/sse");
@@ -768,6 +768,67 @@ public class GrpcToJaxrsTest
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
+      }
+   }
+
+   @Test
+   public void testServletPath() throws Exception {
+      String contextPath;
+      {
+         GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+         GeneralEntityMessage gem = messageBuilder.build();
+         GeneralReturnMessage response;
+         try {
+            response = blockingStub.servletPath(gem);
+            String result = response.getGStringField().getValue();
+
+            // get context path
+            int i = result.indexOf('|');
+            contextPath = result.substring(0, i);
+
+            // servlet path
+            int j = result.indexOf('|', i + 1);
+            Assert.assertEquals("", result.substring(i + 1, j));
+
+            // path
+            i = j + 1;
+            j = result.indexOf('|', i);
+            Assert.assertEquals(result.substring(i, j), "/p/servletPath");
+
+            // HttpServletRequest.getPathTranslated()
+            Assert.assertTrue(result.substring(j + 1).contains("testsuite/integration-tests/target"));
+         } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+         }
+      }
+      {
+         GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+         GeneralEntityMessage gem = messageBuilder.setURL("http://localhost:8080" + contextPath + "/root/p/servletPath").build();
+         GeneralReturnMessage response;
+         try {
+            response = blockingStub.servletPath(gem);
+            String result = response.getGStringField().getValue();
+
+            // context path
+            int i = result.indexOf('|');
+            Assert.assertEquals(contextPath, result.substring(0, i));
+
+            // servlet path
+            int j = result.indexOf('|', i + 1);
+            Assert.assertEquals("/root", result.substring(i + 1, j));
+
+            // path
+            i = j + 1;
+            j = result.indexOf('|', i);
+            Assert.assertEquals(result.substring(i, j), "/p/servletPath");
+
+            // HttpServletRequest.getPathTranslated()
+            Assert.assertTrue(result.substring(j + 1).contains("testsuite/integration-tests/target"));
+         } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+         }
       }
    }
 

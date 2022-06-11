@@ -49,6 +49,8 @@ import jakarta.ws.rs.core.UriInfo;
  *
  * Much of it is borrowed from io.undertow.servlet.spec.HttpServletRequestImpl,
  * written by Stuart Douglas.
+ *
+ * NOT IMPLEMENTED: Currently, methods related to sessions and security are not implemented.
  */
 public class HttpServletRequestImpl implements HttpServletRequest {
 
@@ -56,7 +58,10 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    private ServletResponse servletResponse;
    private String uri;
+   private String contextPath;
+   private String path;
    private UriInfo uriInfo;
+   private String servletPath;
    private String method;
    private ServletInputStream sis;
    private Map<String, List<String>> headers;
@@ -79,11 +84,13 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    private Map<String, String[]> parameters;
 
    public HttpServletRequestImpl(final ServletResponse servletResponse, final ServletContext servletContext,
-         final String uri, final String method, final ServletInputStream sis, final String retn, final Map<String, List<String>> headers,
+         final String uri, final String path, final String method, final ServletInputStream sis, final String retn, final Map<String, List<String>> headers,
          final Cookie[] cookies, final Map<String, String[]> formParameters) throws URISyntaxException {
       this.servletResponse = servletResponse;
       this.servletContext = servletContext;
       this.uri = uri;
+      this.contextPath = servletContext.getContextPath();
+      this.path = path;
       this.method = method;
       this.sis = sis;
       this.headers = headers;
@@ -433,12 +440,12 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getPathInfo() {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getPathInfo()"));
+      return path;
    }
 
    @Override
    public String getPathTranslated() {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getPathTranslated()"));
+      return getRealPath(getPathInfo());
    }
 
    @Override
@@ -483,7 +490,24 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getServletPath() {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getServletPath()"));
+      if (servletPath != null) {
+         return servletPath;
+      }
+      int i = uri.indexOf(contextPath);
+      if (i > -1) {
+         i += contextPath.length();
+         int j = uri.substring(i).indexOf(path);
+         servletPath = uri.substring(i, i + j);
+      } else {
+         String wholePath = getUriInfo().getPath();
+         int j = wholePath.indexOf(path);
+         if (j > -1) {
+            servletPath = wholePath.substring(0, j);
+         } else {
+            servletPath = "";
+         }
+      }
+      return servletPath;
    }
 
    @Override
@@ -572,7 +596,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     *
     * @author Stuart Douglas
     */
-   public static String extractQuotedValueFromHeader(final String header, final String key) {
+   private static String extractQuotedValueFromHeader(final String header, final String key) {
 
        int keypos = 0;
        int pos = -1;
@@ -638,7 +662,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    private UriInfo getUriInfo() {
       if (uriInfo == null) {
-         synchronized (this) {
+         synchronized (this) {// synchronize ?
             if (uriInfo == null) {
                uriInfo = new ResteasyUriInfo(uri, servletContext.getContextPath());
             }
