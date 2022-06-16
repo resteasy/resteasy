@@ -321,6 +321,7 @@ public class JavaToProtobufGenerator {
       sb.append("syntax = \"proto3\";\n");
       sb.append("package " + args[1].replace('-', '.') + ";\n");
       sb.append("import \"google/protobuf/any.proto\";\n");
+      sb.append("import \"google/protobuf/timestamp.proto\";\n");
       sb.append("option java_package = \"" + args[2] + "\";\n");
       sb.append("option java_outer_classname = \"" + args[3] + "_proto\";\n");
    }
@@ -402,6 +403,24 @@ public class JavaToProtobufGenerator {
         .append("   string path = ").append(counter++).append(";\n")
         .append("   string domain = ").append(counter++).append(";\n")
         .append("}");
+      sb.append("\n\nmessage gNewCookie {\n")
+        .append("   string name = ").append(counter++).append(";\n")
+        .append("   string value = ").append(counter++).append(";\n")
+        .append("   int32  version = ").append(counter++).append(";\n")
+        .append("   string path = ").append(counter++).append(";\n")
+        .append("   string domain = ").append(counter++).append(";\n")
+        .append("   string comment = ").append(counter++).append(";\n")
+        .append("   int32 maxAge = ").append(counter++).append(";\n")
+        .append("   google.protobuf.Timestamp expiry = ").append(counter++).append(";\n")
+        .append("   bool secure = ").append(counter++).append(";\n")
+        .append("   bool httpOnly = ").append(counter++).append(";\n\n")
+        .append("   enum SameSite {\n")
+        .append("      NONE   = 0;\n")
+        .append("      LAX    = 1;\n")
+        .append("      STRICT = 2;\n")
+        .append("   }\n\n")
+        .append("   SameSite sameSite = ").append(counter++).append(";\n")
+        .append("}");
       sb.append("\n\nmessage ServletInfo {\n")
         .append("   string characterEncoding = ").append(counter++).append(";\n")
         .append("   string clientAddress = ").append(counter++).append(";\n")
@@ -436,7 +455,8 @@ public class JavaToProtobufGenerator {
    private static void createGeneralReturnMessageType(StringBuilder sb) {
       sb.append("\nmessage GeneralReturnMessage {\n")
         .append("   map<string, gHeader> headers = ").append(counter++).append(";\n")
-        .append("   repeated gCookie cookies = ").append(counter++).append(";\n")
+        .append("   repeated gNewCookie cookies = ").append(counter++).append(";\n")
+        .append("   gInteger status = ").append(counter++).append(";\n")
         .append("   oneof messageType {\n");
     for (String messageType : returnMessageTypes) {
        sb.append("      ")

@@ -92,6 +92,7 @@ public class ReaderWriterGenerator {
          } else if ("GeneralEntityMessage".equals(clazz.getSimpleName())
                  || "GeneralReturnMessage".equals(clazz.getSimpleName())
                  || "ServletInfo".equals(clazz.getSimpleName())
+                 || "gNewCookie".equals(clazz.getSimpleName())
                  || "gCookie".equals(clazz.getSimpleName())
                  || "gHeader".equals(clazz.getSimpleName())
                  || "FormMap".equals(clazz.getSimpleName())

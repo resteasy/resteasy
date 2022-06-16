@@ -173,6 +173,7 @@ public class JavabufTranslatorGenerator {
          } else if ("GeneralEntityMessage".equals(simpleName)
                  || "GeneralReturnMessage".equals(simpleName)
                  || "ServletInfo".equals(simpleName)
+                 || "gNewCookie".equals(simpleName)
                  || "gCookie".equals(simpleName)
                  || "gHeader".equals(simpleName)
                  || "FormMap".equals(simpleName)
@@ -217,6 +218,7 @@ public class JavabufTranslatorGenerator {
                || "GeneralEntityMessage".equals(simpleName)
                || "GeneralReturnMessage".equals(simpleName)
                || "ServletInfo".equals(simpleName)
+               || "gNewCookie".equals(simpleName)
                || "gCookie".equals(simpleName)
                || "gHeader".equals(simpleName)
                || "FormMap".equals(simpleName)
@@ -376,6 +378,7 @@ public class JavabufTranslatorGenerator {
             || "gCookie".equals(clazz.getSimpleName())
             || "gHeader".equals(clazz.getSimpleName())
             || "ServletInfo".equals(clazz.getSimpleName())
+            || "gNewCookie".equals(clazz.getSimpleName())
             || "FormMap".equals(clazz.getSimpleName())
             || "FormValues".equals(clazz.getSimpleName())
             ) {
@@ -426,6 +429,7 @@ public class JavabufTranslatorGenerator {
       }
       if ("AbstractMessage".equals(clazz.getSimpleName())
             || "gCookie".equals(clazz.getSimpleName())
+            || "gNewCookie".equals(clazz.getSimpleName())
             || "gHeader".equals(clazz.getSimpleName())
             || "ServletInfo".equals(clazz.getSimpleName())
             || "FormMap".equals(clazz.getSimpleName())

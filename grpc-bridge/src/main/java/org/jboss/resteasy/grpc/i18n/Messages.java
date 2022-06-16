@@ -27,6 +27,12 @@ public interface Messages
    @Message(id = BASE + 15, value = "Expected Message, got %s")
    String expectedMessage(Class<?> clazz);
 
+   @Message(id = BASE + 17, value = "Cannot call getWriter(), getOutputStream() already called")
+   IllegalStateException getOutputStreamAlreadyCalled();
+
+   @Message(id = BASE + 18, value = "Cannot call getOutputStream(), getWriter() already called")
+   IllegalStateException getWriterAlreadyCalled();
+
    @Message(id = BASE + 20, value = "Header name was null")
    NullPointerException headerNameWasNull();
 

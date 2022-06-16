@@ -30,11 +30,19 @@ import jakarta.ws.rs.core.Response;
  * Based on io.undertow.servlet.spec.HttpServletResponseImpl
  * by Stuart Douglas and Richard Opalka
  *
+ * NOT IMPLEMENTED: Currently, methods related to URL encoding and redirection are not implemented.
+ *
  */
 public class HttpServletResponseImpl implements HttpServletResponse {
 
    public static final String GRPC_RETURN_RESPONSE = "grpc-return-response";
    public static final String GRPC_ASYNC = "grpc-async";
+
+   public enum ResponseState {
+      NONE,
+      STREAM,
+      WRITER
+   }
 
    private static final String RFC1123_PATTERN = "EEE, dd MMM yyyy HH:mm:ss z";
    private static final SimpleDateFormat SDF = new SimpleDateFormat(RFC1123_PATTERN, Locale.US);
@@ -50,6 +58,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
    private int statusCode;
    private Locale locale;
    private List<Cookie> cookies = new ArrayList<Cookie>();
+   private ResponseState responseState = ResponseState.NONE;
 
    public HttpServletResponseImpl(final String retn, final String async, final ServletContext servletContext, final GeneratedMessageV3.Builder<?> builder, final FieldDescriptor fd) {
       if ("com.google.protobuf.Any".equals(retn) || "Any".equals(retn)) {
@@ -90,12 +99,27 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
    @Override
    public ServletOutputStream getOutputStream() throws IOException {
+      if (responseState == ResponseState.WRITER) {
+         throw Messages.MESSAGES.getWriterAlreadyCalled();
+      }
+      responseState = ResponseState.STREAM;
       return msos;
    }
 
    @Override
    public PrintWriter getWriter() throws IOException {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getWriter()"));
+      if (writer == null) {
+         if (!charsetSet) {
+            //servet 5.5
+            setCharacterEncoding(getCharacterEncoding());
+         }
+         if (responseState == ResponseState.STREAM) {
+            throw Messages.MESSAGES.getOutputStreamAlreadyCalled();
+         }
+         responseState = ResponseState.WRITER;
+         writer = new PrintWriter(msos);
+      }
+      return writer;
    }
 
    @Override
@@ -139,22 +163,22 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
    @Override
    public void setBufferSize(int size) {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("setBufferSize()"));
+      // no-op
    }
 
    @Override
    public int getBufferSize() {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("getBufferSize()"));
+      return 0;
    }
 
    @Override
    public void flushBuffer() throws IOException {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("flushBuffer()"));
+      // no-op
    }
 
    @Override
    public void resetBuffer() {
-      throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("resetBuffer()"));
+      // no-op
    }
 
    @Override
@@ -165,8 +189,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
    @Override
    public void reset() {
+      msos.getDelegate().reset();
       writer = null;
       headers.clear();
+      responseState = ResponseState.NONE;
       statusCode = Response.Status.OK.getStatusCode();
    }
 

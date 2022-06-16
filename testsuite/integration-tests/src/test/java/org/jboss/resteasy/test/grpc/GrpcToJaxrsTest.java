@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.Timestamp;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -33,8 +34,8 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 import jaxrs.example.CC1ServiceGrpc;
-import jaxrs.example.CC1_proto;
 import jaxrs.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import jaxrs.example.CC1_proto;
 import jaxrs.example.CC1_proto.FormMap;
 import jaxrs.example.CC1_proto.FormValues;
 import jaxrs.example.CC1_proto.GeneralEntityMessage;
@@ -42,6 +43,7 @@ import jaxrs.example.CC1_proto.GeneralReturnMessage;
 import jaxrs.example.CC1_proto.ServletInfo;
 import jaxrs.example.CC1_proto.gCookie;
 import jaxrs.example.CC1_proto.gHeader;
+import jaxrs.example.CC1_proto.gNewCookie;
 import jaxrs.example.CC1_proto.gString;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC2;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC3;
@@ -734,10 +736,10 @@ public class GrpcToJaxrsTest
       GeneralReturnMessage response;
       try {
          response = blockingStub.serverCookies(gem);
-         List<gCookie> list = response.getCookiesList();
+         List<gNewCookie> list = response.getCookiesList();
          Assert.assertEquals(2, list.size());
-         gCookie c1 = gCookie.newBuilder().setDomain("d1").setName("n1").setPath("p1").setValue("v1").setVersion(13).build();
-         gCookie c2 = gCookie.newBuilder().setDomain("d2").setName("n2").setPath("p2").setValue("v2").setVersion(17).build();
+         gNewCookie c1 = gNewCookie.newBuilder().setComment("c1").setDomain("d1").setMaxAge(-1).setName("n1").setPath("p1").setValue("v1").setVersion(13).build();
+         gNewCookie c2 = gNewCookie.newBuilder().setComment("c2").setDomain("d2").setMaxAge(17).setName("n2").setPath("p2").setValue("v2").setVersion(17).setHttpOnly(true).setSecure(true).build();
          if ("n1".equals(list.get(0).getName())) {
             Assert.assertEquals(c1, list.get(0));
             Assert.assertEquals(c2, list.get(1));
@@ -860,6 +862,79 @@ public class GrpcToJaxrsTest
          Assert.assertTrue(s.contains("p3->f3af3b"));
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testJaxrsResponse() throws Exception {
+      GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = messageBuilder.build();
+      GeneralReturnMessage response;
+      try {
+         response = blockingStub.jaxrsResponse(gem);
+         Assert.assertEquals(2, response.getCookiesCount());
+         gNewCookie expectedCookie1 = gNewCookie.newBuilder().setDomain("d1").setName("n1").setPath("p1").setValue("v1").setVersion(7)
+               .setComment("c1").setMaxAge(11).setExpiry(Timestamp.newBuilder().setSeconds(111)).setHttpOnly(true).build();
+         gNewCookie expectedCookie2 = gNewCookie.newBuilder().setDomain("d2").setName("n2").setPath("p2").setValue("v2").setVersion(13)
+               .setComment("c2").setMaxAge(17).setExpiry(Timestamp.newBuilder().setSeconds(222)).setSecure(true).build();
+         Assert.assertTrue(expectedCookie1.equals(response.getCookies(0)) && expectedCookie2.equals(response.getCookies(1))
+                        || expectedCookie1.equals(response.getCookies(1)) && expectedCookie2.equals(response.getCookies(0)));
+         Map<String, CC1_proto.gHeader> headers = response.getHeadersMap();
+         Assert.assertEquals(1, headers.get("h1").getValuesCount());
+         Assert.assertEquals("v1",  headers.get("h1").getValues(0));
+         Assert.assertEquals(222, response.getStatus().getValue());
+         Assert.assertEquals(1, headers.get("Content-Type").getValuesCount());
+         Assert.assertEquals("x/y", headers.get("Content-Type").getValues(0));
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testServletResponse() throws Exception {
+      GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = messageBuilder.build();
+      GeneralReturnMessage response;
+      try {
+         response = blockingStub.servletResponse(gem);
+         Map<String, CC1_proto.gHeader> headers = response.getHeadersMap();
+
+         Assert.assertEquals(1, headers.get("d1").getValuesCount());
+         Assert.assertEquals(1, headers.get("h1").getValuesCount());
+         Assert.assertEquals(1, headers.get("i1").getValuesCount());
+
+         Assert.assertEquals(2, headers.get("d2").getValuesCount());
+         Assert.assertEquals(2, headers.get("h2").getValuesCount());
+         Assert.assertEquals(2, headers.get("i2").getValuesCount());
+
+         Assert.assertEquals(1, headers.get("d3").getValuesCount());
+         Assert.assertEquals(1, headers.get("h3").getValuesCount());
+         Assert.assertEquals(1, headers.get("i3").getValuesCount());
+
+         Assert.assertTrue(headers.get("d1").getValues(0).contains("02 Jan 1970"));
+         Assert.assertEquals("v1",  headers.get("h1").getValues(0));
+         Assert.assertEquals("13",  headers.get("i1").getValues(0));
+
+         Assert.assertTrue(headers.get("d2").getValues(0).contains("03 Jan 1970"));
+         Assert.assertTrue(headers.get("d2").getValues(1).contains("04 Jan 1970"));
+         Assert.assertEquals("v2a", headers.get("h2").getValues(0));
+         Assert.assertEquals("v2b", headers.get("h2").getValues(1));
+         Assert.assertEquals("19",  headers.get("i2").getValues(0));
+         Assert.assertEquals("29",  headers.get("i2").getValues(1));
+
+         Assert.assertTrue(headers.get("d3").getValues(0).contains("06 Jan 1970"));
+         Assert.assertEquals("v3b", headers.get("h3").getValues(0));
+         Assert.assertEquals("41",  headers.get("i3").getValues(0));
+
+         Assert.assertEquals(1, response.getCookiesCount());
+         gNewCookie expectedCookie = gNewCookie.newBuilder().setDomain("d1").setMaxAge(-1).setName("n1").setPath("p1").setValue("v1").setVersion(7).build();
+         Assert.assertEquals(expectedCookie, response.getCookies(0));
+
+         Assert.assertEquals(223, response.getStatus().getValue());
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail 2");
          return;
       }
    }
