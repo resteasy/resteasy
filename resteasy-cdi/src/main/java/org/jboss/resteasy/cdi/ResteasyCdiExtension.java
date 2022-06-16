@@ -21,6 +21,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AfterTypeDiscovery;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -38,6 +39,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -82,6 +84,7 @@ public class ResteasyCdiExtension implements Extension
 
    private Map<Class<?>, Type> sessionBeanInterface = new HashMap<Class<?>, Type>();
    private boolean generateClientBean = true;
+   private boolean addContextProducers = true;
 
    /**
     * Obtain BeanManager reference for future use.
@@ -92,8 +95,6 @@ public class ResteasyCdiExtension implements Extension
    public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager)
    {
       this.beanManager = beanManager;
-      final AnnotatedType<ContextProducers> producersAnnotatedType = beanManager.createAnnotatedType(ContextProducers.class);
-      event.addAnnotatedType(producersAnnotatedType, ContextProducers.class.getCanonicalName());
       active = true;
    }
 
@@ -126,6 +127,28 @@ public class ResteasyCdiExtension implements Extension
                  .scope(ApplicationScoped.class)
                  .produceWith(instance -> ClientBuilder.newClient(RegisterBuiltin.getClientInitializedResteasyProviderFactory(getClassLoader())))
                  .disposeWith((client, instance) -> client.close());
+      }
+   }
+
+   /**
+    * A simple observer to indicate the {@link ContextProducers} should not be dynamically registered.
+    *
+    * @param event the event
+    */
+   public void observeContextProducer(@Observes ProcessAnnotatedType<ContextProducers> event) {
+      addContextProducers = false;
+   }
+
+   /**
+    * If the {@link ContextProducers} were not discovered, we need to add the type for the producers.
+    *
+    * @param event       the event
+    * @param beanManager the bean manager
+    */
+   public void addContextProducer(@Observes final AfterTypeDiscovery event, final BeanManager beanManager) {
+      if (addContextProducers) {
+         final AnnotatedType<ContextProducers> producersAnnotatedType = beanManager.createAnnotatedType(ContextProducers.class);
+         event.addAnnotatedType(producersAnnotatedType, ContextProducers.class.getCanonicalName());
       }
    }
 
