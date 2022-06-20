@@ -299,11 +299,11 @@ public class ReverseInjectionTest {
          CDIInjectionBook book1 = new CDIInjectionBook("Dead Man Snoring");
          TextMessage message = session.createTextMessage(book1.getName());
          producer.send(message);
-         log.info("Message sent to to the JMS Provider: " + book1.getName());
+         log.info("Message sent to the JMS Provider: " + book1.getName());
          CDIInjectionBook book2 = new CDIInjectionBook("Dead Man Drooling");
          message = session.createTextMessage(book2.getName());
          producer.send(message);
-         log.info("Message sent to to the JMS Provider: " + book2.getName());
+         log.info("Message sent to the JMS Provider: " + book2.getName());
          WebTarget base = client.target(generateURL("/mdb/books"));
          Response response = base.request().get();
          log.info("status: " + response.getStatus());
