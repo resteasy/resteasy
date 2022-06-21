@@ -84,6 +84,21 @@ public class RestClientProxyTest
       assertEquals("Hello", client.hello());
    }
 
+   // RESTEASY-3123
+   @Test
+   public void testGetClientWithConverter() throws Exception {
+      RestClientBuilder builder = RestClientBuilder.newBuilder();
+      RestClientBuilder resteasyBuilder = new BuilderResolver().newBuilder();
+      assertEquals(resteasyBuilder.getClass(), builder.getClass());
+      HelloClient client = builder
+              .baseUrl(new URL(generateURL("")))
+              .register(TestParamConverterProvider.class)
+              .build(HelloClient.class);
+
+      assertNotNull(client);
+      assertEquals("Hello", client.hello());
+   }
+
    @Test
    public void testGetSingle() throws Exception
    {
