@@ -87,6 +87,7 @@
         <version.org.jboss.jandex>2.4.2.Final</version.org.jboss.jandex>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
+        <version.io.reactivex.rxjava3-rxjava>3.1.5</version.io.reactivex.rxjava3-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
         <version.org.hibernate.validator>7.0.1.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
@@ -902,6 +903,11 @@
                 <groupId>io.reactivex.rxjava2</groupId>
                 <artifactId>rxjava</artifactId>
                 <version>${version.io.reactivex.rxjava2-rxjava}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex.rxjava3</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>${version.io.reactivex.rxjava3-rxjava}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.marshalling</groupId>

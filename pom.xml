@@ -153,6 +153,7 @@
                 <module>resteasy-servlet-initializer</module>
                 <module>resteasy-stats</module>
                 <module>resteasy-rxjava2</module>
+                <module>resteasy-rxjava3</module>
                 <module>resteasy-reactor</module>
                 <module>server-adapters</module>
                 <module>resteasy-wadl</module>

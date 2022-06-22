@@ -1,0 +1,10 @@
+org.jboss.resteasy.rxjava3.SingleProvider
+org.jboss.resteasy.rxjava3.SingleRxInvokerImpl
+org.jboss.resteasy.rxjava3.SingleRxInvokerProvider
+org.jboss.resteasy.rxjava3.ObservableProvider
+org.jboss.resteasy.rxjava3.ObservableRxInvokerImpl
+org.jboss.resteasy.rxjava3.ObservableRxInvokerProvider
+org.jboss.resteasy.rxjava3.FlowableProvider
+org.jboss.resteasy.rxjava3.FlowableRxInvokerImpl
+org.jboss.resteasy.rxjava3.FlowableRxInvokerProvider
+org.jboss.resteasy.rxjava3.propagation.RxJava3ContextPropagator
