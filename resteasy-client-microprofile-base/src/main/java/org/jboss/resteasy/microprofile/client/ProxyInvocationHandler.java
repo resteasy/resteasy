@@ -83,52 +83,54 @@ public class ProxyInvocationHandler implements InvocationHandler {
         Object[] argsReplacement = args != null ? new Object[args.length] : null;
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
-        for (Object p : providerInstances) {
-            if (p instanceof ParamConverterProvider) {
+        if (args != null) {
+            for (Object p : providerInstances) {
+                if (p instanceof ParamConverterProvider) {
 
-                int index = 0;
-                for (Object arg : args) {
-                    // ParamConverter's are not allowed to be passed null values. If we have a null value do not process
-                    // it through the provider.
-                    if (arg == null) {
-                        continue;
-                    }
+                    int index = 0;
+                    for (Object arg : args) {
+                        // ParamConverter's are not allowed to be passed null values. If we have a null value do not process
+                        // it through the provider.
+                        if (arg == null) {
+                            continue;
+                        }
 
-                    if (parameterAnnotations[index].length > 0) { // does a parameter converter apply?
-                        ParamConverter<?> converter = ((ParamConverterProvider) p).getConverter(arg.getClass(), null, parameterAnnotations[index]);
-                        if (converter != null) {
-                            Type[] genericTypes = getGenericTypes(converter.getClass());
-                            if (genericTypes.length == 1) {
+                        if (parameterAnnotations[index].length > 0) { // does a parameter converter apply?
+                            ParamConverter<?> converter = ((ParamConverterProvider) p).getConverter(arg.getClass(), null, parameterAnnotations[index]);
+                            if (converter != null) {
+                                Type[] genericTypes = getGenericTypes(converter.getClass());
+                                if (genericTypes.length == 1) {
 
-                                // minimum supported types
-                                switch (genericTypes[0].getTypeName()) {
-                                    case "java.lang.String":
-                                        @SuppressWarnings("unchecked")
-                                        ParamConverter<String> stringConverter = (ParamConverter<String>) converter;
-                                        argsReplacement[index] = stringConverter.toString((String) arg);
-                                        replacementNeeded = true;
-                                        break;
-                                    case "java.lang.Integer":
-                                        @SuppressWarnings("unchecked")
-                                        ParamConverter<Integer> intConverter = (ParamConverter<Integer>) converter;
-                                        argsReplacement[index] = intConverter.toString((Integer) arg);
-                                        replacementNeeded = true;
-                                        break;
-                                    case "java.lang.Boolean":
-                                        @SuppressWarnings("unchecked")
-                                        ParamConverter<Boolean> boolConverter = (ParamConverter<Boolean>) converter;
-                                        argsReplacement[index] = boolConverter.toString((Boolean) arg);
-                                        replacementNeeded = true;
-                                        break;
-                                    default:
-                                        continue;
+                                    // minimum supported types
+                                    switch (genericTypes[0].getTypeName()) {
+                                        case "java.lang.String":
+                                            @SuppressWarnings("unchecked")
+                                            ParamConverter<String> stringConverter = (ParamConverter<String>) converter;
+                                            argsReplacement[index] = stringConverter.toString((String) arg);
+                                            replacementNeeded = true;
+                                            break;
+                                        case "java.lang.Integer":
+                                            @SuppressWarnings("unchecked")
+                                            ParamConverter<Integer> intConverter = (ParamConverter<Integer>) converter;
+                                            argsReplacement[index] = intConverter.toString((Integer) arg);
+                                            replacementNeeded = true;
+                                            break;
+                                        case "java.lang.Boolean":
+                                            @SuppressWarnings("unchecked")
+                                            ParamConverter<Boolean> boolConverter = (ParamConverter<Boolean>) converter;
+                                            argsReplacement[index] = boolConverter.toString((Boolean) arg);
+                                            replacementNeeded = true;
+                                            break;
+                                        default:
+                                            continue;
+                                    }
                                 }
                             }
+                        } else {
+                            argsReplacement[index] = arg;
                         }
-                    } else {
-                        argsReplacement[index] = arg;
+                        index++;
                     }
-                    index++;
                 }
             }
         }
