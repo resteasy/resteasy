@@ -333,6 +333,11 @@ public class ChunkOutputStreamTest {
         public HttpVersion version() {
             return null;
         }
+
+        @Override
+        public HttpServerResponse trailerHeaders(Consumer<? super HttpHeaders> trailerHeaders) {
+            return null;
+        }
     }
 
     static class DiscardingHttpServerResponse extends TestHttpServerResponse {
