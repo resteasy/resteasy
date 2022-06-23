@@ -40,7 +40,7 @@ public class AsyncIOResource {
     @GET
     @Path("async-writer-on-worker-thread")
     public CompletionStage<AsyncWriterData> asyncWriterOnWorkerThread() {
-        return CompletableFuture.supplyAsync(() -> new AsyncWriterData(false, true));
+        return CompletableFuture.supplyAsync(() -> new AsyncWriterData(false, false));
     }
 
     @GET
