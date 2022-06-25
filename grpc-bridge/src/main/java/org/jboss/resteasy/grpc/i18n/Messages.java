@@ -26,7 +26,7 @@ public interface Messages
 
    @Message(id = BASE + 12, value = "Default Application class not implemented yet")
    String defaultApplicationNotImplemented();
-   
+
    @Message(id = BASE + 15, value = "Expected Message, got %s")
    String expectedMessage(Class<?> clazz);
 
