@@ -406,19 +406,6 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <fork-embedded>${galleon.fork.embedded}</fork-embedded>
-                            <task-properties>
-                                <jakarta.transform.artifacts>true</jakarta.transform.artifacts>
-                                <jakarta.transform.modules>false</jakarta.transform.modules>
-                                <jakarta.transform.artifacts.suffix>-ee9</jakarta.transform.artifacts.suffix>
-                            </task-properties>
-                            <jakarta-transform>true</jakarta-transform>
-                            <!--<jakarta-transform-verbose>true</jakarta-transform-verbose> -->
-                            <jakarta-transform-excluded-artifacts>
-                                <exclude>com.fasterxml.jackson.jaxrs:.*\z</exclude>
-                                <exclude>com.fasterxml.jackson.module:.*\z</exclude>
-                                <exclude>org.jboss.resteasy:.*\z</exclude>
-                                <exclude>org.jboss.spec.javax.ws.rs:.*\z</exclude>
-                            </jakarta-transform-excluded-artifacts>
                         </configuration>
                     </execution>
                 </executions>
