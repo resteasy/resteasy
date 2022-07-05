@@ -19,6 +19,10 @@
 
 package dev.resteasy.embedded.server;
 
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.spi.DelegateResteasyDeployment;
@@ -39,7 +43,9 @@ class CdiResteasyDeployment extends DelegateResteasyDeployment implements Restea
     @SuppressWarnings("unchecked")
     CdiResteasyDeployment() {
         super(null);
-        weld = new Weld("RESTEasy SE");
+        weld = new Weld("RESTEasy SE")
+                // Register these as bean defining annotations
+                .addBeanDefiningAnnotations(Path.class, Provider.class, ApplicationPath.class);
         delegate = new ResteasyDeploymentImpl();
     }
 
