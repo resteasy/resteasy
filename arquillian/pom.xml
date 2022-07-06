@@ -22,8 +22,6 @@
     <properties>
         <!-- Version properties -->
         <version.arquillian.jetty>1.0.0.CR3</version.arquillian.jetty>
-        <!-- Test properties -->
-        <additionalJvmArgs/>
         <!-- The Jakarta version of Jetty only supports Java 11 -->
         <skip.java8.tests>true</skip.java8.tests>
     </properties>
