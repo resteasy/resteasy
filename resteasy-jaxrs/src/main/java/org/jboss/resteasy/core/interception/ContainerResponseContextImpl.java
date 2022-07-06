@@ -127,6 +127,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    public void setEntity(Object entity)
    {
       //if (entity != null) logger.info("*** setEntity(Object) " + entity.toString());
+      if (entity != null && jaxrsResponse.getEntity() == null && jaxrsResponse.getStatusInfo().equals(Response.Status.NO_CONTENT)){
+         LogMessages.LOGGER.statusNotSet(Response.Status.NO_CONTENT.getStatusCode(), Response.Status.NO_CONTENT.getReasonPhrase());
+      }
       jaxrsResponse.setEntity(entity);
       // todo TCK does weird things in its testing of get length
       // it resets the entity in a response filter which results
@@ -139,6 +142,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
    {
       //if (entity != null) logger.info("*** setEntity(Object, Annotation[], MediaType) " + entity.toString() + ", " + mediaType);
+      if (entity != null && jaxrsResponse.getEntity() == null && jaxrsResponse.getStatusInfo().equals(Response.Status.NO_CONTENT)){
+         LogMessages.LOGGER.statusNotSet(Response.Status.NO_CONTENT.getStatusCode(), Response.Status.NO_CONTENT.getReasonPhrase());
+      }
       jaxrsResponse.setEntity(entity);
       jaxrsResponse.setAnnotations(annotations);
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
