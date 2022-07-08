@@ -23,10 +23,9 @@
             <name>org.wildfly:wildfly-preview-feature-pack</name>
             <packages inherit="true">
                 <!-- Exclude modules no longer provided by RESTEasy -->
-                <exclude name="org.jboss.resteasy.resteasy-yaml-provider"/>
-                <exclude name="org.jboss.resteasy.resteasy-jettison-provider"/>
                 <exclude name="org.jboss.resteasy.resteasy-spring"/>
             </packages>
+            <default-configs inherit="false"/>
         </dependency>
     </dependencies>
     <default-packages>
