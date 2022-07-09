@@ -406,6 +406,11 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <fork-embedded>${galleon.fork.embedded}</fork-embedded>
+                            <task-properties>
+                                <!-- Disable transforming -->
+                                <jakarta.transform.artifacts>false</jakarta.transform.artifacts>
+                                <jakarta.transform.modules>false</jakarta.transform.modules>
+                            </task-properties>
                         </configuration>
                     </execution>
                 </executions>

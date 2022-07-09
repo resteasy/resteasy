@@ -512,20 +512,14 @@
     </profiles>
 
     <repositories>
-        <!-- Required for PicketBox, once this is removed from WildFly this can be removed -->
+        <!-- Remove below repo after opensaml 4.2.0 is accessible from maven central repo-->
         <repository>
+            <id>opensaml-repo</id>
+            <name>opensaml</name>
+            <url>https://build.shibboleth.net/nexus/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
             </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            <id>jboss-enterprise-maven-repository</id>
-            <name>JBoss Enterprise Maven Repository</name>
-            <url>https://maven.repository.redhat.com/ga/</url>
-            <layout>default</layout>
         </repository>
     </repositories>
 
