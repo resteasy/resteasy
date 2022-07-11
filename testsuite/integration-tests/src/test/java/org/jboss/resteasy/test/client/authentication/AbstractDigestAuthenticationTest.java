@@ -238,7 +238,7 @@ public abstract class AbstractDigestAuthenticationTest {
             Assert.assertEquals(String.format("Expected username*=UTF-8''%s in %s", encodedUser, authHeader), "UTF-8''" + encodedUser, parseValue(authHeader, "username*"));
         }
         Assert.assertEquals(String.format("Expected qop=auth in %s", authHeader), "auth", parseValue(authHeader, "qop"));
-        Assert.assertEquals(String.format("Expected nc=%08x in %s", nc, authHeader), nc, Integer.parseInt(parseValue(authHeader, "nc")));
+        Assert.assertEquals(String.format("Expected nc=%08x in %s", nc, authHeader), nc, parseIntValue(authHeader, "nc"));
         Assert.assertEquals(String.format("Expected realm=\"%s\" in %s", TestAuth.REALM_NAME, authHeader), '"' + TestAuth.REALM_NAME + '"', parseValue(authHeader, "realm"));
         Assert.assertEquals(String.format("Expected algorithm=%s in %s", algorithm, authHeader), algorithm, parseValue(authHeader, "algorithm"));
     }
@@ -251,6 +251,16 @@ public abstract class AbstractDigestAuthenticationTest {
         }
         final int end = header.indexOf(',', start);
         return header.substring(start + key.length() + 1, end == -1 ? header.length() : end);
+    }
+
+    private static int parseIntValue(final String header, final String key) {
+        final String value = parseValue(header, key);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            Assert.fail(String.format("%s: key=%s in \"%s\" is not an integer", e.getMessage(), key, header));
+        }
+        return -1;
     }
 
 }
