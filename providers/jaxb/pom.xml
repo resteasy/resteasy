@@ -31,30 +31,52 @@
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
+        <!-- JAXB Implementation -->
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>codemodel</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
+            <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-core</artifactId>
         </dependency>
-        <!-- Required only for the RiHacks. This can be removed when RESTEASY-2959 is resolved. We do not want other
-             modules using this implementation. Therefore we define it here explicitly. The version is aligned with
-             what is in WildFly.
-         -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-jxc</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.3-b02</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>txw2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>xsom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind.external</groupId>
+            <artifactId>relaxng-datatype</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind.external</groupId>
+            <artifactId>rngom</artifactId>
+        </dependency>
+        <!-- End JAXB Implementation -->
        <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
