@@ -23,6 +23,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.core.ResourceCleaner;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.lang.ref.Cleaner;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -47,12 +49,36 @@ import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
  */
 public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEngine
 {
+   private static class CleanupAction implements Runnable {
+      private final AtomicBoolean closed;
+      private final CloseableHttpClient client;
+
+      private CleanupAction(final AtomicBoolean closed, final CloseableHttpClient client) {
+         this.closed = closed;
+         this.client = client;
+      }
+
+      @Override
+      public void run() {
+         if (closed.compareAndSet(false, true)) {
+            if (client != null) {
+               LogMessages.LOGGER.closingForYou(this.getClass());
+               try {
+                  client.close();
+               } catch (Exception e) {
+                  LogMessages.LOGGER.debugf(e, "Failed to close client %s", client);
+               }
+            }
+         }
+      }
+   }
 
    static final String FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY =
       "org.jboss.resteasy.client.jaxrs.engines.fileUploadInMemoryThreshold";
@@ -79,7 +105,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    protected final HttpClient httpClient;
 
-   protected boolean closed;
+   protected final AtomicBoolean closed;
+   private final Cleaner.Cleanable cleanable;
 
    protected final boolean allowClosingHttpClient;
 
@@ -161,6 +188,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       }
       this.httpContextProvider = httpContextProvider;
       this.allowClosingHttpClient = closeHttpClient;
+      closed = new AtomicBoolean(false);
+      this.cleanable = createCleanable(this, closeHttpClient, closed, this.httpClient);
       this.defaultProxy = defaultProxy;
 
       try
@@ -681,26 +710,20 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    public boolean isClosed()
    {
-      return closed;
+      return closed.get();
    }
 
-   public void close()
-   {
-      if (closed)
-         return;
+   @Override
+   public void close() {
+      cleanable.clean();
+   }
 
-      if (allowClosingHttpClient && httpClient != null)
-      {
-         try
-         {
-            ((CloseableHttpClient) httpClient).close();
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
+   private static Cleaner.Cleanable createCleanable(final ManualClosingApacheHttpClient43Engine engine, final boolean allowClose,
+                                                    final AtomicBoolean closed, final HttpClient client) {
+      if (allowClose && client instanceof CloseableHttpClient) {
+         return ResourceCleaner.register(engine, new CleanupAction(closed, (CloseableHttpClient) client));
       }
-      closed = true;
+      return () -> closed.set(true);
    }
 
    private static Path getTempDir() {

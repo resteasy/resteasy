@@ -65,7 +65,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-      engine.finalize();
+      engine.close();
       HttpClient httpClient = engine.getHttpClient();
       HttpPost post = new HttpPost(generateURL("/test"));
       try {
@@ -114,7 +114,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-      engine.finalize();
+      engine.close();
       Assert.assertEquals("Original httpclient and engine httpclient are not the same instance",
             httpClient, engine.getHttpClient());
       HttpPost post = new HttpPost(generateURL("/test"));
