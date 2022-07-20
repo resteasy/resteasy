@@ -986,11 +986,6 @@
                 <version>${version.weld}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-shaded</artifactId>
-                <version>${version.weld}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.weld.servlet</groupId>
                 <artifactId>weld-servlet-core</artifactId>
                 <version>${version.weld}</version>
