@@ -6,7 +6,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>6.0.2-SNAPSHOT</version>
+        <version>6.0.3.Final</version>
     </parent>
 
     <artifactId>resteasy-jsapi</artifactId>
