@@ -115,7 +115,8 @@ public class GrpcToJaxrsTest
       Response response = client.target(generateURL("/root/grpcserver/start")).request().get();
       log.info("status: " + response.getStatus());
       log.info("response: " + response.readEntity(String.class));
-      response = client.target(generateURL("/root/grpcserver/context")).request().get();
+//      response = client.target(generateURL("/root/grpcserver/context")).request().get();
+      response = client.target(generateURL("/grpcToJaxrs/p/ready")).request().get();
       Assert.assertEquals(200, response.getStatus());
       channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
       blockingStub = CC1ServiceGrpc.newBlockingStub(channel);
@@ -137,11 +138,9 @@ public class GrpcToJaxrsTest
    }
 
    static void ready() {
-      log.info("in ready()");
       jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/ready").build();
       blockingStub.ready(gem);
-      log.info("ready");
    }
 
    @Before

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -422,7 +423,7 @@ public class JavabufTranslatorGenerator {
       sb.append("   }\n\n");
    }
 
-   private static void createTranslatorFromJavabuf(Class<?> clazz, StringBuilder sb) {
+   private static void createTranslatorFromJavabuf(Class<?> clazz, StringBuilder sb) throws ClassNotFoundException {
       String originalName = originalSimpleName(clazz.getName());
       if ("gEmpty".equals(originalName)) {
          return;
@@ -478,9 +479,19 @@ public class JavabufTranslatorGenerator {
            .append("            assignList.add(fromJavabuf(").append(originalName).append(".class, descriptor.findFieldByName(name)));\n")
            .append("         }\n")
            .append("      }\n\n")
-           .append("      public ").append(originalName).append(" assignFromJavabuf(Message message) {\n")
-           .append("         ").append(originalName).append(" obj = new ").append(originalName).append("();\n")
-           .append("         for (AssignFromJavabuf assignFrom : assignList) {\n")
+           .append("      public ").append(originalName).append(" assignFromJavabuf(Message message) {\n");
+           int n = findConstructor(clazz, originalName);
+           if (n == 0) {
+              sb.append("         ").append(originalName).append(" obj = new ").append(originalName).append("();\n");
+           }
+           else {
+              sb.append("         ").append(originalName).append(" obj = new ").append(originalName).append("(");
+              for (int i = 0; i < n - 1; i++) {
+                 sb.append("null, ");
+              }
+              sb.append("null);\n");
+           }
+         sb.append("         for (AssignFromJavabuf assignFrom : assignList) {\n")
            .append("            try {\n")
            .append("               assignFrom.assign(message, obj);\n")
            .append("            } catch (Exception e) {\n")
@@ -556,5 +567,36 @@ public class JavabufTranslatorGenerator {
       j = j < 0 ? s.length() : j;
       String pkg = s.substring(i + 1, j).replace('_', '.');
       return pkg + "." + originalSimpleName(s);
+   }
+
+   private static int findConstructor(Class<?> clazz, String simpleName) throws ClassNotFoundException {
+//      int n = clazz.getName().lastIndexOf(".");
+//      String className = n < 0 ? simpleName : clazz.getName().substring(0, n + 1) + simpleName;
+      String className = javabufToJava(clazz.getName(), simpleName);
+      Class<?> originalClazz = Class.forName(className);
+      Constructor<?>[] cons = originalClazz.getConstructors();
+      Constructor<?> con = cons[0];
+      if (cons.length > 1) {
+         for (int i = 1; i < cons.length; i++) {
+            if (cons[i].getParameterCount() < con.getParameterCount()) {
+               con = cons[i];
+            }
+         }
+      }
+      return con.getParameterCount();
+   }
+
+   private static String javabufToJava(String javabufName, String simpleName) {
+      String tmp = javabufName;
+      int n = tmp.lastIndexOf("$");
+      if (n >= 0) {
+         tmp = tmp.substring(n + 1);
+      }
+      n = tmp.lastIndexOf("___");
+      if (n >= 0) {
+         tmp = tmp.substring(0, n);
+      }
+      tmp = tmp.replace("_", ".");
+      return tmp + "." + simpleName;
    }
 }
