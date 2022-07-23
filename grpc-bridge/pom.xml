@@ -4,7 +4,7 @@
    <parent>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
+      <version>6.1.0.Final-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
    <artifactId>grpc-bridge</artifactId>
@@ -21,7 +21,7 @@
       <maven.compiler.target>11</maven.compiler.target>
    </properties>
 
-   <!--dependencyManagement>
+   <dependencyManagement>
       <dependencies>
          <dependency>
             <groupId>io.grpc</groupId>
@@ -31,7 +31,7 @@
             <scope>import</scope>
          </dependency>
       </dependencies>
-   </dependencyManagement-->
+   </dependencyManagement>
 
    <dependencies>
       <dependency>
