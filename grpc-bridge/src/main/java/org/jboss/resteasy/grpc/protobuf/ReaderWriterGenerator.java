@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.grpc.servlet.HttpServletResponseImpl;
+import org.jboss.resteasy.grpc.servlet.runtime.HttpServletResponseImpl;
 
 public class ReaderWriterGenerator {
 
@@ -77,11 +77,11 @@ public class ReaderWriterGenerator {
         .append("import com.google.protobuf.CodedInputStream;\n")
         .append("import com.google.protobuf.CodedOutputStream;\n")
         .append("import ").append("jakarta.servlet.http.HttpServletResponse;\n")
-        .append("import ").append("org.jboss.resteasy.grpc.servlet.AsyncMockServletOutputStream;\n")
+        .append("import ").append("org.jboss.resteasy.grpc.servlet.runtime.AsyncMockServletOutputStream;\n")
         .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";\n")
         .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;\n")
         .append("import org.jboss.resteasy.core.ResteasyContext;\n")
-        .append("import org.jboss.resteasy.grpc.servlet.ServletConfigWrapper;\n")
+        .append("import org.jboss.resteasy.grpc.servlet.runtime.ServletConfigWrapper;\n")
         ;
       for (Class<?> clazz : wrapperClass.getClasses()) {
          if (clazz.isInterface()) {

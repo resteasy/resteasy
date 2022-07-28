@@ -155,6 +155,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>grpc-bridge</module>
+                <module>grpc-bridge-runtime</module>
                 <module>galleon-feature-pack</module>
                 <module>arquillian</module>
                 <module>profiling-tests</module>

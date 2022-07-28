@@ -1,0 +1,71 @@
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective settings
+[WARNING] 'profiles.profile.id' must be unique but found duplicate profile with id jboss-public-repository @ /home/rsigal/.m2/settings.xml
+[WARNING] 'profiles.profile.id' must be unique but found duplicate profile with id redhat-quarkus-repository @ /home/rsigal/.m2/settings.xml
+[WARNING] 
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------< org.jboss.resteasy:grpc-bridge-runtime >---------------
+[INFO] Building RESTEasy gRPC to JAX-RS bridge runtime 6.1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ grpc-bridge-runtime ---
+[INFO] org.jboss.resteasy:grpc-bridge-runtime:jar:6.1.0-SNAPSHOT
+[INFO] +- org.jboss.resteasy:resteasy-core-spi:jar:6.1.0-SNAPSHOT:provided
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.0:compile
+[INFO] |  +- jakarta.ws.rs:jakarta.ws.rs-api:jar:3.1.0:provided
+[INFO] |  +- jakarta.xml.bind:jakarta.xml.bind-api:jar:3.0.1:provided
+[INFO] |  +- org.reactivestreams:reactive-streams:jar:1.0.3:provided
+[INFO] |  \- jakarta.validation:jakarta.validation-api:jar:3.0.0:provided
+[INFO] +- org.jboss.weld.se:weld-se-core:jar:5.0.0.CR2:compile
+[INFO] |  +- org.jboss.weld.environment:weld-environment-common:jar:5.0.0.CR2:compile
+[INFO] |  |  \- org.jboss.weld:weld-core-impl:jar:5.0.0.CR2:compile
+[INFO] |  |     +- org.jboss.weld:weld-api:jar:5.0.CR2:compile
+[INFO] |  |     +- org.jboss.weld:weld-spi:jar:5.0.CR2:compile
+[INFO] |  |     \- jakarta.el:jakarta.el-api:jar:4.0.0:compile
+[INFO] |  +- org.jboss.weld:weld-lite-extension-translator:jar:5.0.0.CR2:compile
+[INFO] |  +- org.jboss.weld.probe:weld-probe-core:jar:5.0.0.CR2:compile
+[INFO] |  +- jakarta.enterprise:jakarta.enterprise.cdi-api:jar:4.0.0-RC5:provided
+[INFO] |  |  +- jakarta.enterprise:jakarta.enterprise.lang-model:jar:4.0.0-RC5:provided
+[INFO] |  |  \- jakarta.inject:jakarta.inject-api:jar:2.0.0:provided
+[INFO] |  \- org.jboss.classfilewriter:jboss-classfilewriter:jar:1.2.5.Final:compile
+[INFO] +- org.jboss.resteasy:resteasy-cdi:jar:6.1.0-SNAPSHOT:provided
+[INFO] |  +- jakarta.interceptor:jakarta.interceptor-api:jar:2.0.0:compile
+[INFO] |  \- org.jboss.resteasy:resteasy-core:jar:6.1.0-SNAPSHOT:provided
+[INFO] |     +- org.jboss:jandex:jar:2.4.2.Final:provided
+[INFO] |     +- jakarta.activation:jakarta.activation-api:jar:2.1.0:provided
+[INFO] |     +- org.eclipse.angus:angus-activation:jar:1.0.0:provided
+[INFO] |     \- com.ibm.async:asyncutil:jar:0.1.0:provided
+[INFO] +- jakarta.servlet:jakarta.servlet-api:jar:5.0.0:compile
+[INFO] +- com.google.protobuf:protobuf-java:jar:3.17.3:compile
+[INFO] +- io.grpc:grpc-api:jar:1.39.0:compile
+[INFO] |  +- io.grpc:grpc-context:jar:1.39.0:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
+[INFO] |  +- com.google.guava:guava:jar:31.0.1-jre:compile
+[INFO] |  \- com.google.errorprone:error_prone_annotations:jar:2.4.0:runtime
+[INFO] +- io.grpc:grpc-core:jar:1.39.0:compile
+[INFO] |  +- com.google.code.gson:gson:jar:2.8.6:runtime
+[INFO] |  +- com.google.android:annotations:jar:4.1.1.4:runtime
+[INFO] |  +- org.codehaus.mojo:animal-sniffer-annotations:jar:1.19:runtime
+[INFO] |  \- io.perfmark:perfmark-api:jar:0.23.0:runtime
+[INFO] +- io.grpc:grpc-stub:jar:1.39.0:compile
+[INFO] +- io.grpc:grpc-netty-shaded:jar:1.39.0:compile
+[INFO] +- io.undertow:undertow-servlet-jakarta:jar:2.2.14.Final:compile
+[INFO] |  \- io.undertow:undertow-core:jar:2.2.14.Final:compile
+[INFO] |     +- org.jboss.xnio:xnio-api:jar:3.8.4.Final:compile
+[INFO] |     |  +- org.wildfly.common:wildfly-common:jar:1.5.4.Final:provided (optional) 
+[INFO] |     |  \- org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile
+[INFO] |     +- org.jboss.xnio:xnio-nio:jar:3.8.4.Final:runtime
+[INFO] |     \- org.jboss.threads:jboss-threads:jar:2.3.3.Final:compile
+[INFO] +- org.jboss.logging:jboss-logging:jar:3.4.2.Final:compile
+[INFO] +- org.jboss.logging:jboss-logging-annotations:jar:2.2.1.Final:provided
+[INFO] +- org.jboss.logging:jboss-logging-processor:jar:2.2.1.Final:provided
+[INFO] |  \- org.jboss.jdeparser:jdeparser:jar:2.0.3.Final:provided
+[INFO] \- junit:junit:jar:4.13.1:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.799 s
+[INFO] Finished at: 2022-07-26T19:37:32-04:00
+[INFO] ------------------------------------------------------------------------

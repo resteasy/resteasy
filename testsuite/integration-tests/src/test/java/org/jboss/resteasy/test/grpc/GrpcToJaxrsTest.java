@@ -72,9 +72,9 @@ public class GrpcToJaxrsTest
 //            + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
       + "Dependencies: com.google.guava services\n"));
       war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.2-SNAPSHOT")));
-      TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge:jar:6.1.0-SNAPSHOT");
-      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-symbol-solver-core:jar:3.24.0");
-      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-core:jar:3.24.0");
+      TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.1.0-SNAPSHOT");
+//      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-symbol-solver-core:jar:3.24.0");
+//      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-core:jar:3.24.0");
       TestUtil.addOtherLibrary(war, "org.wildfly:wildfly-weld-jakarta:jar:26.1.0.Final");
       TestUtil.addOtherLibrary(war, "org.wildfly:wildfly-weld-common-jakarta:jar:26.1.0.Final");
       TestUtil.addOtherLibrary(war, "org.wildfly.core:wildfly-server:jar:18.1.0.Final");
@@ -90,6 +90,7 @@ public class GrpcToJaxrsTest
       TestUtil.addOtherLibrary(war, "org.jboss.weld.se:weld-se-core:jar:5.0.0.CR2");
       TestUtil.addOtherLibrary(war, "org.jboss.weld.environment:weld-environment-common:jar:5.0.0.CR2");
       TestUtil.addOtherLibrary(war, "com.google.guava:failureaccess:jar:1.0.1");
+      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:30.1-android");
       WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
       log.info(archive.toString(true));
       archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
@@ -805,7 +806,7 @@ public class GrpcToJaxrsTest
       }
       {
          GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
-         GeneralEntityMessage gem = messageBuilder.setURL("http://localhost:8080" + contextPath + "/root/p/servletPath").build();
+         GeneralEntityMessage gem = messageBuilder.setURL("http://localhost:8080" + contextPath + "/grpcToJaxrs/p/servletPath").build();
          GeneralReturnMessage response;
          try {
             response = blockingStub.servletPath(gem);
@@ -817,7 +818,7 @@ public class GrpcToJaxrsTest
 
             // servlet path
             int j = result.indexOf('|', i + 1);
-            Assert.assertEquals("/root", result.substring(i + 1, j));
+            Assert.assertEquals("/grpcToJaxrs", result.substring(i + 1, j));
 
             // path
             i = j + 1;

@@ -7,9 +7,9 @@
       <version>6.1.0-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
-   <artifactId>grpc-bridge</artifactId>
+   <artifactId>grpc-bridge-runtime</artifactId>
    <packaging>jar</packaging>
-   <name>RESTEasy gRPC to JAX-RS bridge</name>
+   <name>RESTEasy gRPC to JAX-RS bridge runtime</name>
    <url>http://maven.apache.org</url>
 
    <properties>
@@ -41,13 +41,6 @@
          <scope>provided</scope>
       </dependency>
 
-      <dependency>
-         <groupId>org.jboss.resteasy</groupId>
-         <artifactId>grpc-bridge-runtime</artifactId>
-         <version>${project.version}</version>
-         <scope>provided</scope>
-      </dependency>
-      
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-core</artifactId>
@@ -110,10 +103,10 @@
          <artifactId>grpc-netty-shaded</artifactId>
       </dependency>
 
-      <dependency>
+      <!--dependency>
          <groupId>com.github.javaparser</groupId>
          <artifactId>javaparser-symbol-solver-core</artifactId>
-      </dependency>
+      </dependency-->
 
       <dependency>
          <groupId>io.undertow</groupId>
