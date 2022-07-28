@@ -90,7 +90,8 @@ public class GrpcToJaxrsTest
       TestUtil.addOtherLibrary(war, "org.jboss.weld.se:weld-se-core:jar:5.0.0.CR2");
       TestUtil.addOtherLibrary(war, "org.jboss.weld.environment:weld-environment-common:jar:5.0.0.CR2");
       TestUtil.addOtherLibrary(war, "com.google.guava:failureaccess:jar:1.0.1");
-      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:30.1-android");
+//      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:30.1-android");
+      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:31.0.1-jre");
       WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
       log.info(archive.toString(true));
       archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
