@@ -4,6 +4,7 @@
    <parent>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs-all</artifactId>
+      <!--version>6.1.0-SNAPSHOT</version-->
       <version>6.1.0.Final-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
@@ -51,7 +52,7 @@
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-core</artifactId>
-                <version>5.0.0.CR2</version>
+                <version>5.0.0.SP2</version>
             </dependency>
             
       <dependency>
