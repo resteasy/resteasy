@@ -58,10 +58,12 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 {
    private static class CleanupAction implements Runnable {
       private final AtomicBoolean closed;
+      private final AtomicBoolean autoClosed;
       private final CloseableHttpClient client;
 
-      private CleanupAction(final AtomicBoolean closed, final CloseableHttpClient client) {
+      private CleanupAction(final AtomicBoolean closed, final AtomicBoolean autoClosed, final CloseableHttpClient client) {
          this.closed = closed;
+         this.autoClosed = autoClosed;
          this.client = client;
       }
 
@@ -69,7 +71,9 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       public void run() {
          if (closed.compareAndSet(false, true)) {
             if (client != null) {
-               LogMessages.LOGGER.closingForYou(this.getClass());
+               if (autoClosed.get()) {
+                  LogMessages.LOGGER.closingForYou(this.getClass());
+               }
                try {
                   client.close();
                } catch (Exception e) {
@@ -106,6 +110,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    protected final HttpClient httpClient;
 
    protected final AtomicBoolean closed;
+   private final AtomicBoolean autoClosed;
    private final Cleaner.Cleanable cleanable;
 
    protected final boolean allowClosingHttpClient;
@@ -189,7 +194,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       this.httpContextProvider = httpContextProvider;
       this.allowClosingHttpClient = closeHttpClient;
       closed = new AtomicBoolean(false);
-      this.cleanable = createCleanable(this, closeHttpClient, closed, this.httpClient);
+      autoClosed = new AtomicBoolean(true);
+      this.cleanable = createCleanable(this, closeHttpClient, closed, autoClosed, this.httpClient);
       this.defaultProxy = defaultProxy;
 
       try
@@ -715,13 +721,14 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
    @Override
    public void close() {
+      autoClosed.set(false);
       cleanable.clean();
    }
 
    private static Cleaner.Cleanable createCleanable(final ManualClosingApacheHttpClient43Engine engine, final boolean allowClose,
-                                                    final AtomicBoolean closed, final HttpClient client) {
+                                                    final AtomicBoolean closed, final AtomicBoolean autoClosed, final HttpClient client) {
       if (allowClose && client instanceof CloseableHttpClient) {
-         return ResourceCleaner.register(engine, new CleanupAction(closed, (CloseableHttpClient) client));
+         return ResourceCleaner.register(engine, new CleanupAction(closed, autoClosed, (CloseableHttpClient) client));
       }
       return () -> closed.set(true);
    }
