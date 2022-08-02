@@ -270,7 +270,7 @@ public class ObjectWriterModifierFilter implements Filter {
                     <tbody>
                         <row>
                             <entry>
-                                resteasy.jackson.deserialization.whitelist.allowIfBaseType
+                                resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix
                             </entry>
                             <entry>
                                 Method for appending matcher that will allow all subtypes in cases where nominal base type's class name starts with specific prefix. "*" can be used for allowing any class.
@@ -278,7 +278,7 @@ public class ObjectWriterModifierFilter implements Filter {
                         </row>
                         <row>
                             <entry>
-                                resteasy.jackson.deserialization.whitelist.allowIfSubType
+                                resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix
                             </entry>
                             <entry>
                                 Method for appending matcher that will allow specific subtype (regardless of declared base type) in cases where subclass name starts with specified prefix. "*" can be used for allowing any class.
