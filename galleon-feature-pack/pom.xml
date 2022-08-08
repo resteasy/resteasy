@@ -47,23 +47,8 @@
         <!-- Feature pack dependencies -->
         <dependency>
             <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-preview-feature-pack</artifactId>
+            <artifactId>wildfly-ee-galleon-pack</artifactId>
             <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.xml.ws</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.glassfish.jaxb</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.wildfly.galleon-plugins</groupId>
-            <artifactId>transformer</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Other dependencies -->
