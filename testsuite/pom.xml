@@ -143,7 +143,7 @@
                     <feature-packs>
                         <feature-pack>
                             <groupId>org.wildfly</groupId>
-                            <artifactId>wildfly-preview-feature-pack</artifactId>
+                            <artifactId>wildfly-ee-galleon-pack</artifactId>
                             <version>${version.org.wildfly}</version>
                             <inherit-configs>false</inherit-configs>
                             <included-configs>
