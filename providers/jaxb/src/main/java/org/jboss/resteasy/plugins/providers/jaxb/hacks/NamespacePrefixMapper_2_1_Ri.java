@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source.
  *
- * Copyright 2022 Red Hat, Inc., and individual contributors
+ * Copyright 2021 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,22 +17,25 @@
  * limitations under the License.
  */
 
-package dev.resteasy.embedded.server;
+package org.jboss.resteasy.plugins.providers.jaxb.hacks;
 
-import jakarta.ws.rs.SeBootstrap;
+import java.util.function.BiFunction;
 
-import org.jboss.jandex.Index;
-import org.jboss.resteasy.core.se.ConfigurationOption;
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-class TestEnvironment {
-    static final int TIMEOUT = Integer.parseInt(System.getProperty("dev.resteasy.embedded.startup.timeout", "120"));
+class NamespacePrefixMapper_2_1_Ri extends NamespacePrefixMapper {
+    private final BiFunction<String, String, String> prefix;
 
-    static SeBootstrap.Configuration createConfig(final Index index) {
-        return SeBootstrap.Configuration.builder()
-                .property(ConfigurationOption.JANDEX_INDEX.key(), index)
-                .build();
+    NamespacePrefixMapper_2_1_Ri(
+            final BiFunction<String, String, String> prefix) {
+        this.prefix = prefix;
+    }
+
+    @Override
+    public String getPreferredPrefix(final String namespaceUri, final String suggestion, final boolean requirePrefix) {
+        return prefix.apply(namespaceUri, suggestion);
     }
 }

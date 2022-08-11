@@ -14,7 +14,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>6.1.1.Final-SNAPSHOT</version>
+    <version>6.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -24,9 +24,9 @@
         <dep.arquillian-bom.version>1.7.0.Alpha10</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
-        <server.version>27.0.0.Alpha4</server.version>
+        <server.version>26.1.0.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
-        <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha3</version.org.wildfly.arquillian.wildfly-arquillian>
+        <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha1</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
         <!-- print logs to file by default -->
@@ -54,13 +54,9 @@
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
-        <version.org.jboss.galleon>5.0.5.Final</version.org.jboss.galleon>
-        <version.org.wildfly.galleon-plugins>5.2.11.Final</version.org.wildfly.galleon-plugins>
+        <version.org.jboss.galleon>4.2.8.Final</version.org.jboss.galleon>
+        <version.org.wildfly.galleon-plugins>5.2.2.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
-        <version.surefire.plugin>3.0.0-M7</version.surefire.plugin>
-
-        <!-- Test options -->
-        <additionalJvmArgs/>
     </properties>
 
     <url>https://jboss.org/resteasy</url>
@@ -184,7 +180,7 @@
                     </dependency>
                     <dependency>
                         <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-ee-galleon-pack</artifactId>
+                        <artifactId>wildfly-preview-feature-pack</artifactId>
                         <version>${version.org.wildfly}</version>
                         <type>zip</type>
                     </dependency>
@@ -199,9 +195,54 @@
                         <artifactId>wildfly-config-gen</artifactId>
                         <version>${version.org.wildfly.galleon-plugins}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>transformer</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>*</groupId>
+                                <artifactId>*</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+
                 </dependencies>
             </dependencyManagement>
         </profile>
+      <profile>
+          <id>github-actions</id>
+          <activation>
+              <property>
+                  <name>github.actions</name>
+              </property>
+          </activation>
+
+          <dependencies>
+              <!-- Add explicit dependency to force download of the dependency -->
+              <dependency>
+                  <groupId>org.apache.maven.surefire</groupId>
+                  <artifactId>surefire-junit47</artifactId>
+                  <version>${version.surefire.plugin}</version>
+                  <scope>test</scope>
+              </dependency>
+          </dependencies>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-surefire-plugin</artifactId>
+                      <dependencies>
+                          <dependency>
+                              <groupId>org.apache.maven.surefire</groupId>
+                              <artifactId>surefire-junit47</artifactId>
+                              <version>${version.surefire.plugin}</version>
+                          </dependency>
+                      </dependencies>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
         <profile>
             <id>release</id>
             <activation>
@@ -237,18 +278,6 @@
                     </plugin>
                 </plugins>
             </reporting>
-        </profile>
-        <profile>
-            <id>Windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
-                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
-            </properties>
         </profile>
     </profiles>
 

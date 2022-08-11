@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.providers;
 
-import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.atom.Content;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
@@ -8,6 +7,7 @@ import org.jboss.resteasy.plugins.providers.atom.Feed;
 import org.jboss.resteasy.plugins.providers.atom.Link;
 import org.jboss.resteasy.plugins.providers.atom.Person;
 import org.jboss.resteasy.plugins.providers.atom.Text;
+import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.test.providers.resource.AtomProviderModelCustomerAtom;
 import org.junit.Test;
 
@@ -81,16 +81,6 @@ public class AtomProviderModelTest {
                "     </entry>\n" +
                "   </feed>";
 
-   private static final NamespacePrefixMapper PREFIX_MAPPER = new NamespacePrefixMapper() {
-      @Override
-      public String getPreferredPrefix(final String namespaceUri, final String suggestion, final boolean requirePrefix) {
-         if ("http://www.w3.org/2005/Atom".equals(namespaceUri)) {
-            return "atom";
-         }
-         return suggestion;
-      }
-   };
-
    /**
     * @tpTestDetails Test JAXB content - text form
     * @tpSince RESTEasy 3.0.16
@@ -126,13 +116,14 @@ public class AtomProviderModelTest {
       content.setJAXBObject(new AtomProviderModelCustomerAtom("bill"));
       JAXBContext ctx = JAXBContext.newInstance(Content.class, AtomProviderModelCustomerAtom.class);
 
-      Marshaller marshaller = ctx.createMarshaller();
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
 
-      marshaller.setProperty("org.glassfish.jaxb.indentString", "   ");
+      marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       StringWriter writer = new StringWriter();
+      final Object mapper = RiHacks.createAtomNamespacePrefixMapper();
 
-      marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", PREFIX_MAPPER);
+      marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
       marshaller.marshal(content, writer);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       PrintStream ps = new PrintStream(baos);
@@ -181,9 +172,10 @@ public class AtomProviderModelTest {
       JAXBContext ctx = JAXBContext.newInstance(Feed.class);
 
 
-      Marshaller marshaller = ctx.createMarshaller();
-      marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", PREFIX_MAPPER);
-      marshaller.setProperty("org.glassfish.jaxb.indentString", "   ");
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
+      final Object mapper = RiHacks.createAtomNamespacePrefixMapper();
+      marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+      marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter writer = new StringWriter();
@@ -207,9 +199,9 @@ public class AtomProviderModelTest {
    public void testRFC() throws Exception {
       JAXBContext ctx = JAXBContext.newInstance(Feed.class);
       Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(new StringReader(RFC_COMPLEX_XML));
-      Marshaller marshaller = ctx.createMarshaller();
+      Marshaller marshaller = RiHacks.createMarshaller(ctx);
 
-      marshaller.setProperty("org.glassfish.jaxb.indentString", "   ");
+      marshaller.setProperty("com.sun.xml.bind.indentString", "   ");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();

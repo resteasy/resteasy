@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.multipart;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInputImpl;
@@ -35,7 +36,7 @@ public class Base64EncoderMultiPartTest {
 
         for (InputPart part : multipart.getParts()) {
             InputStream inputStream = ((MultipartInputImpl.PartImpl) part).getBody();
-            byte[] bytes = inputStream.readAllBytes();
+            byte[] bytes = IOUtils.toByteArray(inputStream);
             String base64bytes = Base64.getEncoder().encodeToString(bytes);
             Assert.assertEquals(body, base64bytes);
         }

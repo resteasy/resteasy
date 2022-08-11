@@ -171,6 +171,7 @@ public class SimpleResource
         <listitem><para><code>HtmlRenderableWriter</code>, which is tied to servlet APIs</para></listitem>
         <listitem><para><code>ReaderProvider</code></para></listitem>
         <listitem><para><code>StreamingOutputProvider</code>: use <code>AsyncStreamingOutput</code> instead</para></listitem>
+        <listitem><para><code>GZIPEncodingInterceptor</code></para></listitem>
       </itemizedlist>
       <para>
          Async IO will be preferred if the following conditions are met:

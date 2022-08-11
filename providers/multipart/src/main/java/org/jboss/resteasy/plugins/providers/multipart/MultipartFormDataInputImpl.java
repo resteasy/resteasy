@@ -86,4 +86,9 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
 
       return currPart;
    }
+
+   protected void finalize() throws Throwable
+   {
+      close();
+   }
 }

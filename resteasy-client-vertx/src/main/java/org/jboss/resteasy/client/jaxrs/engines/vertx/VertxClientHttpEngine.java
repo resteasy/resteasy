@@ -104,27 +104,14 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
                                            final ExecutorService executorService) {
         return submit(request).thenCompose(response -> {
             CompletableFuture<T> tmp = new CompletableFuture<>();
-            if (executorService == null) {
-                vertx.executeBlocking(promise -> {
-                    try {
-                        T result = extractor.extractResult(response);
-                        tmp.complete(result);
-                    } catch (Exception e) {
-                        tmp.completeExceptionally(e);
-                    }
-                }, ar -> {
-                    //
-                });
-            } else {
-                executorService.execute(() -> {
-                    try {
-                        T result = extractor.extractResult(response);
-                        tmp.complete(result);
-                    } catch (Exception e) {
-                        tmp.completeExceptionally(e);
-                    }
-                });
-            }
+            executorService.execute(() -> {
+                try {
+                    T result = extractor.extractResult(response);
+                    tmp.complete(result);
+                } catch (Exception e) {
+                    tmp.completeExceptionally(e);
+                }
+            });
             return tmp;
         });
     }

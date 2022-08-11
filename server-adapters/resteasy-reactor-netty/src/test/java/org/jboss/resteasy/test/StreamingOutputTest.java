@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.jboss.resteasy.spi.AsyncStreamingOutput;
@@ -91,7 +92,7 @@ public class StreamingOutputTest
       @Path("/largeContent")
       @Produces(MediaType.TEXT_PLAIN)
       public StreamingOutput largeContent(final InputStream in) {
-         return in::transferTo;
+         return out -> IOUtils.copy(in, out);
       }
 
       @POST
@@ -100,7 +101,7 @@ public class StreamingOutputTest
       public AsyncStreamingOutput asyncLargeContent(final InputStream in) {
          final BiConsumer<InputStream, OutputStream> writeFunction = (input, output) -> {
             try {
-               input.transferTo(output);
+               IOUtils.copy(input, output);
             } catch (final IOException e) {
                throw new RuntimeException(e);
             }

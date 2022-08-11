@@ -22,6 +22,7 @@ package org.jboss.resteasy.core.scanner;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystem;
@@ -40,11 +41,8 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
@@ -60,9 +58,7 @@ import org.jboss.jandex.Indexer;
  * A scanner for locating resources.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
- * @since 6.1
  */
-@SuppressWarnings("unused")
 public class ResourceScanner {
     private static final DotName JAKARTA = DotName.createComponentized(null, "jakarta");
 
@@ -81,11 +77,15 @@ public class ResourceScanner {
     private static final DotName PROVIDER = DotName.createComponentized(EXT, "Provider");
 
     private final IndexView index;
-    private final Map<DotName, Set<String>> scanned;
+    private final Set<String> applications;
+    private final Set<String> providers;
+    private final Set<String> resources;
 
     private ResourceScanner(final IndexView index) {
         this.index = index;
-        scanned = new ConcurrentHashMap<>();
+        applications = new LinkedHashSet<>();
+        providers = new LinkedHashSet<>();
+        resources = new LinkedHashSet<>();
     }
 
     /**
@@ -179,15 +179,17 @@ public class ResourceScanner {
      * @return applications found in the index
      */
     public Set<String> getApplications() {
-        final Set<String> applications = scanned.computeIfAbsent(APPLICATION_PATH, (annotation) -> {
-            final List<ClassInfo> apps = new ArrayList<>();
-            apps.addAll(resolveTypeFromAnnotation(annotation));
-            apps.addAll(index.getAllKnownSubclasses(APPLICATION));
-            apps.sort(PrioritySorter.INSTANCE);
-            return apps.stream()
-                    .map(classInfo -> classInfo.name().toString())
-                    .collect(Collectors.toSet());
-        });
+        if (applications.isEmpty()) {
+            synchronized (applications) {
+                if (applications.isEmpty()) {
+                    final List<ClassInfo> apps = new ArrayList<>();
+                    apps.addAll(resolveTypeFromAnnotation(APPLICATION_PATH));
+                    apps.addAll(index.getAllKnownImplementors(APPLICATION));
+                    apps.sort(PrioritySorter.INSTANCE);
+                    apps.forEach(classInfo -> applications.add(classInfo.name().toString()));
+                }
+            }
+        }
         return Collections.unmodifiableSet(applications);
     }
 
@@ -197,7 +199,14 @@ public class ResourceScanner {
      * @return all providers found
      */
     public Set<String> getProviders() {
-        return getTypesAnnotatedWith(PROVIDER);
+        if (providers.isEmpty()) {
+            synchronized (providers) {
+                if (providers.isEmpty()) {
+                    providers.addAll(resolveFromAnnotation(PROVIDER));
+                }
+            }
+        }
+        return Collections.unmodifiableSet(providers);
     }
 
     /**
@@ -206,18 +215,14 @@ public class ResourceScanner {
      * @return all the resources found
      */
     public Set<String> getResources() {
-        return getTypesAnnotatedWith(PATH);
-    }
-
-    /**
-     * Returns the types with the provided annotation.
-     *
-     * @param annotation the annotation used to scan fort the types
-     *
-     * @return all the types found for the annotation
-     */
-    public Set<String> getTypesAnnotatedWith(final DotName annotation) {
-        return Collections.unmodifiableSet(scanned.computeIfAbsent(annotation, this::resolveFromAnnotation));
+        if (resources.isEmpty()) {
+            synchronized (resources) {
+                if (resources.isEmpty()) {
+                    resources.addAll(resolveFromAnnotation(PATH));
+                }
+            }
+        }
+        return Collections.unmodifiableSet(resources);
     }
 
     private Set<String> resolveFromAnnotation(final DotName annotation) {
@@ -231,7 +236,12 @@ public class ResourceScanner {
         for (AnnotationInstance instance : index.getAnnotations(annotation)) {
             final AnnotationTarget target = instance.target();
             if (target instanceof ClassInfo) {
-                results.add((ClassInfo) target);
+                final ClassInfo classInfo = (ClassInfo) target;
+                if (Modifier.isInterface(classInfo.flags())) {
+                    results.addAll(index.getAllKnownImplementors(classInfo.name()));
+                } else {
+                    results.add(classInfo);
+                }
             }
         }
         results.sort(PrioritySorter.INSTANCE);

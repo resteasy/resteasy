@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.i18n;
 
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 
@@ -149,10 +148,4 @@ public interface Messages
 
    @Message(id = BASE + 191, value = "Unable to load ClientConfigProvider configuration because uri is null")
    String unableToLoadClientConfigProviderConfiguration();
-
-   @Message(id = BASE + 192, value = "Stream has not been closed. Cannot create input stream from %s.")
-   IllegalStateException streamNotClosed(OutputStream out);
-
-   @Message(id = BASE + 193, value = "The stream has already been exported.")
-   IllegalStateException alreadyExported();
 }

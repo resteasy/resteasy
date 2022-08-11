@@ -2,11 +2,9 @@ package org.jboss.resteasy.plugins.server.netty.cdi;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.jandex.Index;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
-import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -41,7 +39,7 @@ public class SeCdiNettyTest {
 
    @SuppressWarnings("unchecked")
    @Before
-   public void init() throws Exception {
+   public void init() {
       while (port < 8000)
          this.port = (int) ((new Random().nextDouble() * 8000) + 1000);
       SeContainerInitializer initializer = SeContainerInitializer.newInstance();
@@ -49,12 +47,12 @@ public class SeCdiNettyTest {
       SeContainer container = initializer.disableDiscovery().addBeanClasses(EchoResource.class)
          .addBeanClasses(DefaultExceptionMapper.class).addExtensions(ResteasyCdiExtension.class).initialize();
 
-      final ResourceScanner scanner = ResourceScanner.of(Index.of(EchoResource.class, DefaultExceptionMapper.class));
+      ResteasyCdiExtension cdiExtension = container.select(ResteasyCdiExtension.class).get();
       CdiNettyJaxrsServer netty = new CdiNettyJaxrsServer(container);
       ResteasyDeployment rd = new ResteasyDeploymentImpl();
-      rd.getResourceClasses().addAll(scanner.getResources());
+      rd.setActualResourceClasses(cdiExtension.getResources());
       rd.setInjectorFactory(new CdiInjectorFactory(container.getBeanManager()));
-      rd.getProviderClasses().addAll(scanner.getProviders());
+      rd.getActualProviderClasses().addAll(cdiExtension.getProviders());
       netty.setDeployment(rd);
       netty.setPort(port);
       netty.setRootResourcePath("/api");

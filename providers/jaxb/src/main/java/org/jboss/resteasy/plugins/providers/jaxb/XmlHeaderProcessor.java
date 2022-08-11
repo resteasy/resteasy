@@ -22,7 +22,7 @@ public class XmlHeaderProcessor implements DecoratorProcessor<Marshaller, XmlHea
       String h = StringContextReplacement.replace(annotation.value());
       try
       {
-         target.setProperty("org.glassfish.jaxb.xmlHeaders", h);
+         target.setProperty("com.sun.xml.bind.xmlHeaders", h);
       }
       catch (PropertyException e)
       {

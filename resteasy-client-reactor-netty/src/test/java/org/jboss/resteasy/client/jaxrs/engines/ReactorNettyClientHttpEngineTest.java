@@ -52,7 +52,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -325,11 +324,7 @@ public class ReactorNettyClientHttpEngineTest {
 
                             @Override
                             public void failed(Throwable throwable) {
-                                if (throwable instanceof CompletionException) {
-                                    entity.set(throwable.getCause().getClass().getName());
-                                } else {
-                                    entity.set(throwable.getClass().getName());
-                                }
+                                entity.set(throwable.getClass().getName());
                             }
                         });
 

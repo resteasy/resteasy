@@ -39,7 +39,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 /**
  * @tpSubChapter Interceptors
@@ -168,7 +167,7 @@ public class JsonBindingDebugLoggingTest {
       MatcherAssert.assertThat("RESTEasy exception should be logged",
               resteasyExceptionLog.count(), is(1));
       MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
-              jsonbExceptionLog.count(), greaterThanOrEqualTo(1));
+              jsonbExceptionLog.count(), is(1));
 
       MatcherAssert.assertThat("There shouldn't be any error logs in server",
               errorStringLog.count(), is(0));
@@ -224,7 +223,7 @@ public class JsonBindingDebugLoggingTest {
       MatcherAssert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
       MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
-              jsonbExceptionLog.count(), greaterThanOrEqualTo(1));
+              jsonbExceptionLog.count(), is(1));
       MatcherAssert.assertThat("There shouldn't be any error logs in client",
          errorStringLog.count(), is(0));
    }

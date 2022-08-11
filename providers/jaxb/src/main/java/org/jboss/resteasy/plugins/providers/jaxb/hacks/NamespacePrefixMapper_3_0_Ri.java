@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source.
  *
- * Copyright 2022 Red Hat, Inc., and individual contributors
+ * Copyright 2021 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,21 +17,25 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.plugins.providers.atom;
+package org.jboss.resteasy.plugins.providers.jaxb.hacks;
+
+import java.util.function.BiFunction;
 
 import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-class AtomNamespacePrefixMapper extends NamespacePrefixMapper {
+class NamespacePrefixMapper_3_0_Ri extends NamespacePrefixMapper {
+    private final BiFunction<String, String, String> prefix;
 
-    static AtomNamespacePrefixMapper INSTANCE = new AtomNamespacePrefixMapper();
+    NamespacePrefixMapper_3_0_Ri(
+            final BiFunction<String, String, String> prefix) {
+        this.prefix = prefix;
+    }
+
     @Override
     public String getPreferredPrefix(final String namespaceUri, final String suggestion, final boolean requirePrefix) {
-        if ("http://www.w3.org/2005/Atom".equals(namespaceUri)) {
-            return "atom";
-        }
-        return suggestion;
+        return prefix.apply(namespaceUri, suggestion);
     }
 }

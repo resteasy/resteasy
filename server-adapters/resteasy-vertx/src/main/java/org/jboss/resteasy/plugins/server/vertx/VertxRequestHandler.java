@@ -26,16 +26,11 @@ public class VertxRequestHandler implements Handler<HttpServerRequest>
    protected final RequestDispatcher dispatcher;
    private final String servletMappingPrefix;
 
-   public VertxRequestHandler(final Vertx vertx, final RequestDispatcher dispatcher, final String servletMappingPrefix)
-   {
-     this.vertx = vertx;
-     this.dispatcher = dispatcher;
-     this.servletMappingPrefix = servletMappingPrefix;
-   }
-
    public VertxRequestHandler(final Vertx vertx, final ResteasyDeployment deployment, final String servletMappingPrefix, final SecurityDomain domain)
    {
-      this(vertx, new RequestDispatcher((SynchronousDispatcher) deployment.getDispatcher(), deployment.getProviderFactory(), domain), servletMappingPrefix);
+      this.vertx = vertx;
+      this.dispatcher = new RequestDispatcher((SynchronousDispatcher) deployment.getDispatcher(), deployment.getProviderFactory(), domain);
+      this.servletMappingPrefix = servletMappingPrefix;
    }
 
    public VertxRequestHandler(final Vertx vertx, final ResteasyDeployment deployment, final String servletMappingPrefix)

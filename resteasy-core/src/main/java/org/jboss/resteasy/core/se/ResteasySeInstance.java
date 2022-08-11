@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -38,8 +39,9 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
-import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
@@ -79,25 +81,30 @@ public class ResteasySeInstance implements Instance {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 final Configuration config = ResteasySeConfiguration.from(configuration);
-                final EmbeddedServer server = EmbeddedServers.findServer(config);
-                final ResteasyDeployment deployment = server.getDeployment();
-                deployment.setRegisterBuiltin(ConfigurationOption.REGISTER_BUILT_INS.getValue(config));
-                deployment.setApplication(application);
-                try {
-                    scanForResources(deployment, application, config);
-                } catch (IOException e) {
-                    throw Messages.MESSAGES.failedToScanResources(e);
+                final Optional<EmbeddedServer> optional = findServer(config);
+                if (optional.isPresent()) {
+                    EmbeddedServer server = optional.get();
+                    final ResteasyDeployment deployment = server.getDeployment();
+                    deployment.setRegisterBuiltin(ConfigurationOption.REGISTER_BUILT_INS.getValue(config));
+                    deployment.setApplication(application);
+                    try {
+                        scanForResources(deployment, application, config);
+                    } catch (IOException e) {
+                        throw Messages.MESSAGES.failedToScanResources(e);
+                    }
+                    deployment.start();
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debugf("Application %s used for %s", deployment.getApplication(), server);
+                        deployment.getResourceClasses()
+                                .forEach(name -> LOGGER.debugf("Resource %s found for %s", name, server));
+                        deployment.getProviderClasses()
+                                .forEach(name -> LOGGER.debugf("Provider %s found for %s", name, server));
+                    }
+                    server.start(config);
+                    return new ResteasySeInstance(server, config);
+                } else {
+                    throw Messages.MESSAGES.noImplementationFound(EmbeddedServer.class.getName());
                 }
-                deployment.start();
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debugf("Application %s used for %s", deployment.getApplication(), server);
-                    deployment.getResourceClasses()
-                            .forEach(name -> LOGGER.debugf("Resource %s found for %s", name, server));
-                    deployment.getProviderClasses()
-                            .forEach(name -> LOGGER.debugf("Provider %s found for %s", name, server));
-                }
-                server.start(config);
-                return new ResteasySeInstance(server, config);
             } catch (Throwable t) {
                 throw new CompletionException(t);
             }
@@ -125,29 +132,34 @@ public class ResteasySeInstance implements Instance {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 final Configuration config = ResteasySeConfiguration.from(configuration);
-                final EmbeddedServer server = EmbeddedServers.findServer(config);
-                final ResteasyDeployment deployment = server.getDeployment();
-                deployment.setRegisterBuiltin(ConfigurationOption.REGISTER_BUILT_INS.getValue(config));
-                // First we need to check how the application was passed
-                deployment.setApplicationClass(applicationClass.getName());
-                deployment.start();
-                final Application application = deployment.getApplication();
-                try {
-                    scanForResources(deployment, application, config);
-                    // We need to re-run the registration of resources
-                    deployment.registration();
-                } catch (IOException e) {
-                    throw Messages.MESSAGES.failedToScanResources(e);
+                final Optional<EmbeddedServer> optional = findServer(config);
+                if (optional.isPresent()) {
+                    EmbeddedServer server = optional.get();
+                    final ResteasyDeployment deployment = server.getDeployment();
+                    deployment.setRegisterBuiltin(ConfigurationOption.REGISTER_BUILT_INS.getValue(config));
+                    // First we need to check how the application was passed
+                    deployment.setApplicationClass(applicationClass.getName());
+                    deployment.start();
+                    final Application application = deployment.getApplication();
+                    try {
+                        scanForResources(deployment, application, config);
+                        // We need to re-run the registration of resources
+                        deployment.registration();
+                    } catch (IOException e) {
+                        throw Messages.MESSAGES.failedToScanResources(e);
+                    }
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debugf("Application %s used for %s", deployment.getApplication(), server);
+                        deployment.getResourceClasses()
+                                .forEach(name -> LOGGER.debugf("Resource %s found for %s", name, server));
+                        deployment.getProviderClasses()
+                                .forEach(name -> LOGGER.debugf("Provider %s found for %s", name, server));
+                    }
+                    server.start(config);
+                    return new ResteasySeInstance(server, config);
+                } else {
+                    throw Messages.MESSAGES.noImplementationFound(EmbeddedServer.class.getName());
                 }
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debugf("Application %s used for %s", deployment.getApplication(), server);
-                    deployment.getResourceClasses()
-                            .forEach(name -> LOGGER.debugf("Resource %s found for %s", name, server));
-                    deployment.getProviderClasses()
-                            .forEach(name -> LOGGER.debugf("Provider %s found for %s", name, server));
-                }
-                server.start(config);
-                return new ResteasySeInstance(server, config);
             } catch (Throwable t) {
                 throw new CompletionException(t);
             }
@@ -185,6 +197,22 @@ public class ResteasySeInstance implements Instance {
             return nativeClass.cast(server);
         }
         return null;
+    }
+
+    private static Optional<EmbeddedServer> findServer(final Configuration configuration) {
+        if (configuration.hasProperty(ConfigurationOption.EMBEDDED_SERVER.key())) {
+            final Object instance = ConfigurationOption.EMBEDDED_SERVER.getValue(configuration);
+            if (instance instanceof EmbeddedServer) {
+                return Optional.of((EmbeddedServer) instance);
+            }
+            LogMessages.LOGGER.invalidPropertyType(instance, ConfigurationOption.EMBEDDED_SERVER.key(), EmbeddedServer.class.getName());
+        }
+        if (System.getSecurityManager() == null) {
+            return PriorityServiceLoader.load(EmbeddedServer.class)
+                    .first();
+        }
+        return AccessController.doPrivileged((PrivilegedAction<Optional<EmbeddedServer>>) () -> PriorityServiceLoader.load(EmbeddedServer.class)
+                .first());
     }
 
     @SuppressWarnings("deprecation")

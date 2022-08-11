@@ -34,18 +34,19 @@ import org.jboss.resteasy.util.GetRestful;
 public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 {
 
-   private final InjectionTarget<T> delegate;
-   private final Class<T> clazz;
+   private InjectionTarget<T> delegate;
+   private Class<T> clazz;
    private PropertyInjector propertyInjector;
+   private GeneralValidatorCDI validator;
 
-   private final boolean hasPostConstruct;
+   private boolean hasPostConstruct;
 
    private static final Function<Method, Boolean> validatePostConstructParameters
       = (Method m) -> {if (m.getParameterCount() == 0) return true;
-                       else return m.getParameterCount() == 1
-              && InvocationContext.class.equals(m.getParameterTypes()[0])
-              && m.getAnnotation(AroundInvoke.class) != null;
-   };
+                       else if (m.getParameterCount() == 1
+                             && InvocationContext.class.equals(m.getParameterTypes()[0])
+                             && m.getAnnotation(AroundInvoke.class) != null) return true;
+                       else return false;};
 
    public JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz)
    {
@@ -54,7 +55,6 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       hasPostConstruct = Types.hasPostConstruct(clazz, validatePostConstructParameters);
    }
 
-   @Override
    public void inject(T instance, CreationalContext<T> ctx)
    {
       delegate.inject(instance, ctx);
@@ -88,7 +88,6 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       }
    }
 
-   @Override
    public void postConstruct(T instance)
    {
       delegate.postConstruct(instance);
@@ -106,25 +105,21 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       }
    }
 
-   @Override
    public void preDestroy(T instance)
    {
       delegate.preDestroy(instance);
    }
 
-   @Override
    public void dispose(T instance)
    {
       delegate.dispose(instance);
    }
 
-   @Override
    public Set<InjectionPoint> getInjectionPoints()
    {
       return delegate.getInjectionPoints();
    }
 
-   @Override
    public T produce(CreationalContext<T> ctx)
    {
       return delegate.produce(ctx);
@@ -141,7 +136,6 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       {
          ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
          ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
-         GeneralValidatorCDI validator = null;
          if (resolver != null)
          {
             validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE).getContext(null);

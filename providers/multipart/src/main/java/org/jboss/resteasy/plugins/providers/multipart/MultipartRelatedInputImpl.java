@@ -39,7 +39,7 @@ public class MultipartRelatedInputImpl extends MultipartInputImpl implements
    @Override
    public void parse(InputStream is) throws IOException {
       super.parse(is);
-      ContentTypeField contentTypeField = (ContentTypeField) getMimeMessage()
+      ContentTypeField contentTypeField = (ContentTypeField) mimeMessage
             .getHeader().getField(FieldName.CONTENT_TYPE);
       start = contentTypeField.getParameter("start");
       startInfo = contentTypeField.getParameter("start-info");

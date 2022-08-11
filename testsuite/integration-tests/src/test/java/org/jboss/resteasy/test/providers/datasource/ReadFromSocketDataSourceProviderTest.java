@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import jakarta.ws.rs.core.MediaType;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.ConnectionConfig;
@@ -73,9 +74,13 @@ public class ReadFromSocketDataSourceProviderTest {
       CloseableHttpClient client = HttpClients.custom().setDefaultConnectionConfig(connConfig).build();
       HttpGet httpGet = new HttpGet(generateURL("/"));
       CloseableHttpResponse response = client.execute(httpGet);
-      try (InputStream inputStream = response.getEntity().getContent()) {
+      InputStream inputStream = null;
+      try {
+         inputStream = response.getEntity().getContent();
          DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
          Assert.assertEquals("The input stream was not read entirely", 0, findSizeOfRemainingDataInStream(inputStream));
+      } finally {
+         IOUtils.closeQuietly(inputStream);
       }
    }
 

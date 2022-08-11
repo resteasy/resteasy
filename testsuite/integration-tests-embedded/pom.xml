@@ -6,7 +6,7 @@
    <parent>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-testsuite</artifactId>
-      <version>6.1.1.Final-SNAPSHOT</version>
+      <version>6.1.0-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
@@ -33,11 +33,6 @@
          <artifactId>resteasy-undertow</artifactId>
          <version>${version.resteasy.testsuite}</version>
       </dependency>
-       <dependency>
-           <groupId>org.jboss.resteasy</groupId>
-           <artifactId>resteasy-undertow-cdi</artifactId>
-           <version>${version.resteasy.testsuite}</version>
-       </dependency>
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-vertx</artifactId>
@@ -127,28 +122,12 @@
                         <id>default-test</id>
                     </execution>
                     <execution>
-                        <id>undertow-cdi</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <classpathDependencyExcludes>
-                                <exclude>${project.groupId}:resteasy-undertow</exclude>
-                                <exclude>${project.groupId}:resteasy-netty4</exclude>
-                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
-                                <exclude>${project.groupId}:resteasy-vertx</exclude>
-                            </classpathDependencyExcludes>
-                        </configuration>
-                    </execution>
-
-                    <execution>
                         <id>Undertow</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
                         <configuration>
                             <classpathDependencyExcludes>
-                                <exclude>${project.groupId}:resteasy-undertow-cdi</exclude>
                                 <exclude>${project.groupId}:resteasy-netty4</exclude>
                                 <exclude>${project.groupId}:resteasy-jdk-http</exclude>
                                 <exclude>${project.groupId}:resteasy-vertx</exclude>
@@ -165,7 +144,6 @@
                         <configuration>
                             <classpathDependencyExcludes>
                                 <exclude>${project.groupId}:resteasy-undertow</exclude>
-                                <exclude>${project.groupId}:resteasy-undertow-cdi</exclude>
                                 <exclude>${project.groupId}:resteasy-jdk-http</exclude>
                                 <exclude>${project.groupId}:resteasy-vertx</exclude>
                             </classpathDependencyExcludes>
@@ -186,7 +164,6 @@
                             </excludes>
                             <classpathDependencyExcludes>
                                 <exclude>${project.groupId}:resteasy-undertow</exclude>
-                                <exclude>${project.groupId}:resteasy-undertow-cdi</exclude>
                                 <exclude>${project.groupId}:resteasy-jdk-http</exclude>
                                 <exclude>${project.groupId}:resteasy-netty4</exclude>
                             </classpathDependencyExcludes>

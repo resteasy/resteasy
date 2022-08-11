@@ -213,10 +213,6 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 196, value = "Component of type %s can't be dynamically bound to a resource method as a %s provider.")
    void providerCantBeDynamicallyBoundToMethod(Class<?> componentClass, Class<?> providerType);
 
-   @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 197, value = "The previous response status was {0} {1}. The status should be changed before the entity is set.", format = Format.MESSAGE_FORMAT)
-   void statusNotSet(int statusCode, String reasonPhrase);
-
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

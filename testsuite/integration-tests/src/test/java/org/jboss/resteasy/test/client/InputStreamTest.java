@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -72,7 +73,7 @@ public class InputStreamTest extends ClientTestBase{
    @Test
    public void testInputStream() throws Exception {
       InputStream is = client.target(generateURL("/test")).request().get(InputStream.class);
-      byte[] buf = is.readAllBytes();
+      byte[] buf = IOUtils.toByteArray(is);
       String str = new String(buf);
       Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
       logger.info("Text from inputstream: " + str);
@@ -89,7 +90,7 @@ public class InputStreamTest extends ClientTestBase{
    public void testInputStreamProxy() throws Exception {
       InputStreamInterface proxy = client.target(generateURL("/")).proxy(InputStreamInterface.class);
       InputStream is = proxy.get();
-      byte[] buf = is.readAllBytes();
+      byte[] buf = IOUtils.toByteArray(is);
       String str = new String(buf);
       Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
       is.close();
