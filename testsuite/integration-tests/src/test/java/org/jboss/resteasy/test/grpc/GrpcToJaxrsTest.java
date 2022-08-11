@@ -73,8 +73,8 @@ public class GrpcToJaxrsTest
       + "Dependencies: com.google.guava services\n"));
       war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.2-SNAPSHOT")));
       TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge:jar:6.1.0-SNAPSHOT");
-      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-symbol-solver-core:jar:3.24.0");
-      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-core:jar:3.24.0");
+      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-symbol-solver-core:jar:3.18.0");
+      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-core:jar:3.18.0");
       TestUtil.addOtherLibrary(war, "org.wildfly:wildfly-weld-jakarta:jar:26.1.0.Final");
       TestUtil.addOtherLibrary(war, "org.wildfly:wildfly-weld-common-jakarta:jar:26.1.0.Final");
       TestUtil.addOtherLibrary(war, "org.wildfly.core:wildfly-server:jar:18.1.0.Final");
