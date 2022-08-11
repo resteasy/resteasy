@@ -38,19 +38,19 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.spi.config.Configuration;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.SanitizedResponseHolder;
 
 /**
  * An interface which allows a {@link WebApplicationException} to be unwrapped.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public interface WebApplicationExceptionWrapper<T extends WebApplicationException> {
+public interface WebApplicationExceptionWrapper<T extends WebApplicationException> extends SanitizedResponseHolder {
 
     /**
      * If the {@code resteasy.original.webapplicationexception.behavior} is set to {@code true} or the request is
      * determined to not be a server side request, then the {@link WebApplicationException} passed in will be returned.
-     * If the property is not set to {@code true} and this is a server side request then the exception is wrapped and
-     * the response is {@linkplain #sanitize(Response) sanitized}.
+     * If the property is not set to {@code true} and this is a server side request then the exception is wrapped.
      *
      * @param e the exception to possibly wrapped
      *
@@ -123,7 +123,7 @@ public interface WebApplicationExceptionWrapper<T extends WebApplicationExceptio
     }
 
     /**
-     * Sanitizes the response by creating a new response with only the status code, allowed methods, entity and the
+     * Sanitizes the response by creating a new response with only the status code, allowed methods and the
      * media type. All other information is removed.
      *
      * @param response the response to sanitize.

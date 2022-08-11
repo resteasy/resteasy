@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.SanitizedResponseHolder;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -29,6 +30,7 @@ import java.util.Set;
  */
 public class ExceptionHandler
 {
+
    protected ResteasyProviderFactoryImpl providerFactory;
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean mapperExecuted;
@@ -175,7 +177,8 @@ public class ExceptionHandler
          Response response = wae.getResponse();
          if (response != null) {
             try {
-               if (response.getEntity() != null) return response;
+               if (response.getEntity() != null)
+                  return wae instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) wae).getSanitizedResponse() : wae.getResponse();
             }
             catch(IllegalStateException ise) {
                // IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
@@ -228,7 +231,7 @@ public class ExceptionHandler
       LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(),
               request.getUri().getPath(), e);
 
-      Response response = e.getResponse();
+      Response response = e instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) e).getSanitizedResponse() : e.getResponse();
 
       if (response != null)
       {
@@ -295,7 +298,7 @@ public class ExceptionHandler
       {
          LogMessages.LOGGER.failedToExecute(wae);
       }
-      Response response = wae.getResponse();
+      Response response = wae instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) wae).getSanitizedResponse() : wae.getResponse();
       return response;
    }
 
@@ -329,7 +332,13 @@ public class ExceptionHandler
             WebApplicationException wae = (WebApplicationException) e;
             if (wae.getResponse() != null && wae.getResponse().getEntity() != null)
             {
-               jaxrsResponse = wae.getResponse();
+               if (wae instanceof SanitizedResponseHolder)
+               {
+                  jaxrsResponse = ((SanitizedResponseHolder) wae).getSanitizedResponse();
+               } else
+               {
+                  jaxrsResponse = wae.getResponse();
+               }
             } else
             {
                // look at exception's subClass tree for possible mappers
@@ -378,4 +387,5 @@ public class ExceptionHandler
       }
       return jaxrsResponse;
    }
+
 }

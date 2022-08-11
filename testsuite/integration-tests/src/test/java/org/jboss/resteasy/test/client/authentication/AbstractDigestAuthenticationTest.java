@@ -27,6 +27,8 @@ import static org.jboss.resteasy.test.client.authentication.TestAuth.USER_2;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import jakarta.json.JsonObject;
@@ -231,26 +233,56 @@ public abstract class AbstractDigestAuthenticationTest {
         Assert.assertEquals(username, json.getString("username"));
         final String authHeader = json.getString("authHeader");
         Assert.assertEquals(String.format("Expected header to start with \"Digest\" but was \"%s\"", authHeader), "Digest ", authHeader.substring(0, 7));
+        // Remove "Digest " from header values
+        final Map<String, String> values = parseHeader(authHeader.substring(7));
         if (username.matches("\\p{ASCII}+")) {
-            Assert.assertEquals(String.format("Expected username=\"%s\" in %s", username, authHeader), '"' + username + '"', parseValue(authHeader, "username"));
+            Assert.assertEquals(String.format("Expected username=\"%s\" in %s", username, authHeader), '"' + username + '"', values.get("username"));
         } else {
             final String encodedUser = URLEncoder.encode(username, StandardCharsets.UTF_8);
-            Assert.assertEquals(String.format("Expected username*=UTF-8''%s in %s", encodedUser, authHeader), "UTF-8''" + encodedUser, parseValue(authHeader, "username*"));
+            Assert.assertEquals(String.format("Expected username*=UTF-8''%s in %s", encodedUser, authHeader), "UTF-8''" + encodedUser, values.get("username*"));
         }
-        Assert.assertEquals(String.format("Expected qop=auth in %s", authHeader), "auth", parseValue(authHeader, "qop"));
-        Assert.assertEquals(String.format("Expected nc=%08x in %s", nc, authHeader), nc, Integer.parseInt(parseValue(authHeader, "nc")));
-        Assert.assertEquals(String.format("Expected realm=\"%s\" in %s", TestAuth.REALM_NAME, authHeader), '"' + TestAuth.REALM_NAME + '"', parseValue(authHeader, "realm"));
-        Assert.assertEquals(String.format("Expected algorithm=%s in %s", algorithm, authHeader), algorithm, parseValue(authHeader, "algorithm"));
+        Assert.assertEquals(String.format("Expected qop=auth in %s", authHeader), "auth", values.get("qop"));
+        int parsedNc = -1;
+        try {
+            parsedNc = Integer.parseInt(values.getOrDefault("nc", "-1"));
+        } catch (NumberFormatException e) {
+            Assert.fail(String.format("Failed to parse nc; %s - header=%s", e.getMessage(), authHeader));
+        }
+        Assert.assertEquals(String.format("Expected nc=%08x in %s", nc, authHeader), nc, parsedNc);
+        Assert.assertEquals(String.format("Expected realm=\"%s\" in %s", TestAuth.REALM_NAME, authHeader), '"' + TestAuth.REALM_NAME + '"', values.get("realm"));
+        Assert.assertEquals(String.format("Expected algorithm=%s in %s", algorithm, authHeader), algorithm, values.get("algorithm"));
     }
 
-    private static String parseValue(final String header, final String key) {
-        // Find the nc value
-        final int start = header.indexOf(key + "=");
-        if (start == -1) {
-            return "";
+    private Map<String, String> parseHeader(final String header) {
+        final Map<String, String> result = new HashMap<>();
+        final StringBuilder key = new StringBuilder();
+        final StringBuilder value = new StringBuilder();
+        boolean inKey = true;
+        boolean endQuoteReq = false;
+        // Remove the "Digest " from the start
+        for (char c : header.toCharArray()) {
+            if (c == ',' && !endQuoteReq) {
+                inKey = true;
+                result.put(key.toString(), value.toString());
+                key.setLength(0);
+                value.setLength(0);
+                continue;
+            }
+            if (c == '=') {
+                inKey = false;
+                continue;
+            }
+            if (c == '"') {
+                endQuoteReq = !endQuoteReq;
+            }
+            if (inKey) {
+                key.append(c);
+            } else {
+                value.append(c);
+            }
         }
-        final int end = header.indexOf(',', start);
-        return header.substring(start + key.length() + 1, end == -1 ? header.length() : end);
+        result.put(key.toString(), value.toString());
+        return result;
     }
 
 }

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
 import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
-import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
@@ -35,7 +34,7 @@ public class FastinfoSetMarshaller implements Marshaller
    public FastinfoSetMarshaller(final JAXBContext context) throws JAXBException
    {
       this.context = context;
-      marshaller = RiHacks.createMarshaller(context);
+      marshaller = context.createMarshaller();
    }
 
 

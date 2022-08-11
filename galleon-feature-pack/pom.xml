@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>6.1.0-SNAPSHOT</version>
+        <version>6.1.1.Final-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -47,13 +47,8 @@
         <!-- Feature pack dependencies -->
         <dependency>
             <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-preview-feature-pack</artifactId>
+            <artifactId>wildfly-ee-galleon-pack</artifactId>
             <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wildfly.galleon-plugins</groupId>
-            <artifactId>transformer</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Other dependencies -->
@@ -408,18 +403,10 @@
                         <configuration>
                             <fork-embedded>${galleon.fork.embedded}</fork-embedded>
                             <task-properties>
-                                <jakarta.transform.artifacts>true</jakarta.transform.artifacts>
+                                <!-- Disable transforming -->
+                                <jakarta.transform.artifacts>false</jakarta.transform.artifacts>
                                 <jakarta.transform.modules>false</jakarta.transform.modules>
-                                <jakarta.transform.artifacts.suffix>-ee9</jakarta.transform.artifacts.suffix>
                             </task-properties>
-                            <jakarta-transform>true</jakarta-transform>
-                            <!--<jakarta-transform-verbose>true</jakarta-transform-verbose> -->
-                            <jakarta-transform-excluded-artifacts>
-                                <exclude>com.fasterxml.jackson.jaxrs:.*\z</exclude>
-                                <exclude>com.fasterxml.jackson.module:.*\z</exclude>
-                                <exclude>org.jboss.resteasy:.*\z</exclude>
-                                <exclude>org.jboss.spec.javax.ws.rs:.*\z</exclude>
-                            </jakarta-transform-excluded-artifacts>
                         </configuration>
                     </execution>
                 </executions>

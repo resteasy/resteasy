@@ -15,7 +15,6 @@ import jakarta.ws.rs.WebApplicationException;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -27,8 +26,8 @@ import java.util.Set;
  */
 public class CdiConstructorInjector implements ConstructorInjector
 {
-   private BeanManager manager;
-   private Type type;
+   private final BeanManager manager;
+   private final Type type;
 
    public CdiConstructorInjector(final Type type, final BeanManager manager)
    {
@@ -43,19 +42,11 @@ public class CdiConstructorInjector implements ConstructorInjector
 
       if (beans.size() > 1)
       {
-         Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
-         modifiableBeans.addAll(beans);
+         Set<Bean<?>> modifiableBeans = new HashSet<>(beans);
          // Ambiguous dependency may occur if a resource has subclasses
          // Therefore we remove those beans
-         for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();)
-         {
-            Bean<?> bean = iterator.next();
-            if (!bean.getBeanClass().equals(type) && !bean.isAlternative())
-            {
-               // remove Beans that have clazz in their type closure but not as a base class
-               iterator.remove();
-            }
-         }
+         // remove Beans that have clazz in their type closure but not as a base class
+         modifiableBeans.removeIf(bean -> !bean.getBeanClass().equals(type) && !bean.isAlternative());
          beans = modifiableBeans;
       }
 

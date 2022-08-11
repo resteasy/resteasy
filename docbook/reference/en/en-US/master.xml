@@ -65,6 +65,7 @@
                 <!ENTITY XML-BIND-API "Jakarta XML Binding">
                 <!ENTITY ENTERPRISE-BEANS "Jakarta Enterprise Beans">
                 <!ENTITY GRPC-BRIDGE SYSTEM "modules/GrpcBridge.xml">
+                <!ENTITY SPRING-VERSION "6.0.0-M3">
                 ]>
 
 <book>
@@ -72,7 +73,7 @@
    <bookinfo>
       <title>RESTEasy</title>
       <subtitle>Jakarta RESTFul Web Services</subtitle>
-      <releaseinfo>6.1.0-SNAPSHOT</releaseinfo>
+      <releaseinfo>6.1.1.Final-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>

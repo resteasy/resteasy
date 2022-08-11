@@ -74,7 +74,7 @@ public class RequestDispatcher
          SecurityContext securityContext;
          if (domain != null)
          {
-            securityContext = basicAuthentication(vertxReq, vertxResp);
+            securityContext = authenticate(vertxReq, vertxResp);
             if (securityContext == null) // not authenticated
             {
                return;
@@ -113,7 +113,7 @@ public class RequestDispatcher
       }
    }
 
-   private SecurityContext basicAuthentication(HttpRequest request, HttpResponse response) throws IOException
+   protected SecurityContext authenticate(HttpRequest request, HttpResponse response) throws IOException
    {
       List<String> headers = request.getHttpHeaders().getRequestHeader(HttpHeaderNames.AUTHORIZATION);
       if (!headers.isEmpty())

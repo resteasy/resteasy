@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source.
  *
- * Copyright 2021 Red Hat, Inc., and individual contributors
+ * Copyright 2022 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,24 +17,17 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.plugins.providers.jaxb.hacks;
+package dev.resteasy.embedded.server;
+
+import org.jboss.resteasy.bootstrap.test.SeBootstrapTest;
+import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-class PropertyResolver {
-    private static final String RI_2_1_PREFIX = "com.sun.xml.bind";
-    private static final String RI_3_0_PREFIX = "org.glassfish.jaxb";
-
-    static String resolveProperty(final String name) {
-        final int i = name.lastIndexOf('.');
-        if (i > 0) {
-            if (name.startsWith(RI_2_1_PREFIX)) {
-                return RI_3_0_PREFIX + name.substring(i);
-            } else if (name.startsWith(RI_3_0_PREFIX)) {
-                return RI_2_1_PREFIX + name.substring(i);
-            }
-        }
-        return null;
+public class UndertowBootstrapTest extends SeBootstrapTest {
+    @Override
+    protected Class<? extends EmbeddedServer> getEmbeddedServerClass() {
+        return UndertowCdiEmbeddedServer.class;
     }
 }

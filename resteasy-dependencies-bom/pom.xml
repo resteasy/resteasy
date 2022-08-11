@@ -4,13 +4,13 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>38</version>
+        <version>39</version>
         <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-dependencies</artifactId>
-    <version>6.1.0-SNAPSHOT</version>
+    <version>6.1.1.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
@@ -22,35 +22,36 @@
         <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.1.0</version.jakarta.mail>
-        <version.org.glassfish.jaxb.jaxb>2.3.3-b02</version.org.glassfish.jaxb.jaxb>
+        <version.org.glassfish.jaxb>4.0.0</version.org.glassfish.jaxb>
+        <version.com.sun.istack>4.1.0</version.com.sun.istack>
         <version.com.sun.xml.fastinfoset>1.2.17</version.com.sun.xml.fastinfoset>
-        <version.commons-io.commons-io>2.9.0</version.commons-io.commons-io>
+        <version.commons-io.commons-io>2.11.0</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.15</version.commons-codec.commons-codec>
         <version.hamcrest>1.3</version.hamcrest>
-        <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
-        <version.io.netty.netty4>4.1.65.Final</version.io.netty.netty4>
-        <version.io.vertx>4.1.0</version.io.vertx>
-        <version.io.undertow>2.2.14.Final</version.io.undertow>
+        <version.io.netty.netty4>4.1.78.Final</version.io.netty.netty4>
+        <version.io.vertx>4.3.2</version.io.vertx>
+        <version.io.undertow>2.2.18.Final</version.io.undertow>
         <version.jakarta.activation>2.1.0</version.jakarta.activation>
-        <version.jakarta.enterprise.cdi-api>4.0.0-RC5</version.jakarta.enterprise.cdi-api>
+        <version.jakarta.enterprise.cdi-api>4.0.0</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.0</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>2.1.0</version.jakarta.json-api>
         <version.jakarta.json.bind-api>3.0.0</version.jakarta.json.bind-api>
         <version.jakarta.validation-api>3.0.0</version.jakarta.validation-api>
+        <version.org.junit>5.8.2</version.org.junit>
         <version.junit>4.13.1</version.junit>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.13</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.14</version.org.apache.httpcomponents.httpcore>
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
-        <version.org.apache.james.apache-mime4j>0.8.3</version.org.apache.james.apache-mime4j>
+        <version.org.apache.james.apache-mime4j>0.8.7</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
         <version.org.bouncycastle>1.71</version.org.bouncycastle>
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.angus.angus-activation>1.0.0</version.org.eclipse.angus.angus-activation>
         <version.org.eclipse.angus.angus-mail>1.0.0</version.org.eclipse.angus.angus-mail>
-        <version.org.eclipse.jetty>11.0.7</version.org.eclipse.jetty>
+        <version.org.eclipse.jetty>11.0.11</version.org.eclipse.jetty>
         <version.org.eclipse.parsson>1.1.0</version.org.eclipse.parsson>
-        <version.org.eclipse.yasson>3.0.0-RC1</version.org.eclipse.yasson>
+        <version.org.eclipse.yasson>3.0.0</version.org.eclipse.yasson>
         <version.com.github.tomakehurst.wiremock>2.20.0</version.com.github.tomakehurst.wiremock>
         <version.org.glassfish.jakarta.el>4.0.0</version.org.glassfish.jakarta.el>
         <version.jakarta.persistence.persistence-api>3.0.0</version.jakarta.persistence.persistence-api>
@@ -78,8 +79,8 @@
         <version.org.wildfly.core.wildfly-cli>15.0.1.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.security>1.18.3.Final</version.org.wildfly.security>
-        <version.weld.api>5.0.CR2</version.weld.api>
-        <version.weld>5.0.0.CR2</version.weld>
+        <version.weld.api>5.0.Final</version.weld.api>
+        <version.weld>5.0.0.SP2</version.weld>
         <version.com.github.java-json-tools.btf>1.3</version.com.github.java-json-tools.btf>
         <version.com.github.java-json-tools.jackson-coreutils>2.0</version.com.github.java-json-tools.jackson-coreutils>
         <version.com.github.java-json-tools.json-patch>1.13</version.com.github.java-json-tools.json-patch>
@@ -91,7 +92,6 @@
         <version.org.hibernate.validator>7.0.1.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
-        <version.org.springframework>5.3.7</version.org.springframework>
         <version.io.projectreactor>2020.0.8</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
@@ -211,9 +211,9 @@
             </dependency>
             <!-- JAXB Implementation -->
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${version.jakarta.xml.bind.bind-api}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>codemodel</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -222,9 +222,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
+                <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-core</artifactId>
-                <version>${version.jakarta.xml.bind.bind-api}</version>
+                <version>${version.org.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -232,6 +232,105 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-jxc</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>txw2</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>xsom</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>istack-commons-runtime</artifactId>
+                <version>${version.com.sun.istack}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>istack-commons-tools</artifactId>
+                <version>${version.com.sun.istack}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind.external</groupId>
+                <artifactId>relaxng-datatype</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind.external</groupId>
+                <artifactId>rngom</artifactId>
+                <version>${version.org.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>relaxngDatatype</groupId>
+                        <artifactId>relaxngDatatype</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.xml.bind.external</groupId>
+                        <artifactId>relaxng-datatype</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- End JAXB Implementation -->
 
             <dependency>
                 <groupId>jakarta.transaction</groupId>
@@ -380,18 +479,71 @@
 
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty</artifactId>
-                <version>${version.io.netty.netty}</version>
+                <artifactId>netty-common</artifactId>
+                <version>${version.io.netty.netty4}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler-proxy</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http2</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-epoll</artifactId>
+                <version>${version.io.netty.netty4}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-kqueue</artifactId>
+                <version>${version.io.netty.netty4}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver</artifactId>
+                <version>${version.io.netty.netty4}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver-dns</artifactId>
                 <version>${version.io.netty.netty4}</version>
             </dependency>
             <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-core</artifactId>
                 <version>${version.io.vertx}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.vertx</groupId>
@@ -400,6 +552,12 @@
                 <classifier>tests</classifier>
                 <scope>test</scope>
                 <type>test-jar</type>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.undertow</groupId>
@@ -503,6 +661,13 @@
                 <groupId>org.apache.james</groupId>
                 <artifactId>apache-mime4j-storage</artifactId>
                 <version>${version.org.apache.james.apache-mime4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.org.junit}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -887,14 +1052,15 @@
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-core</artifactId>
                 <version>${version.weld}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld.servlet</groupId>
+                <artifactId>weld-servlet-core</artifactId>
+                <version>${version.weld}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.inject</groupId>
-                        <artifactId>javax.inject</artifactId>
+                        <groupId>org.jboss.weld.module</groupId>
+                        <artifactId>weld-jsf</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -981,26 +1147,6 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${version.org.mockito}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${version.org.springframework}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${version.org.springframework}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${version.org.springframework}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${version.org.springframework}</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
