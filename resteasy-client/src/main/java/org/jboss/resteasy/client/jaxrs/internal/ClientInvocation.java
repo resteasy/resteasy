@@ -51,6 +51,7 @@ import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor;
 import org.jboss.resteasy.client.jaxrs.engines.ReactiveClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
@@ -161,6 +162,9 @@ public class ClientInvocation implements Invocation
          {
             if (response.getMediaType() == null)
             {
+               if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                  throw Messages.MESSAGES.noContentTypeFound(response);
+               }
                return null;
             }
             else
@@ -190,6 +194,9 @@ public class ClientInvocation implements Invocation
 
             }
             throw wae;
+         }
+         catch (ResponseProcessingException e) {
+            throw e;
          }
          catch (Throwable throwable)
          {
