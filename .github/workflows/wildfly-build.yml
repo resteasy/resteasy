@@ -32,7 +32,7 @@ jobs:
         run: echo "::set-output name=wildfly-version::$(mvn -B help:evaluate -Dexpression=project.version -pl . | grep -v '^\[')"
       - name: Archive the repository
         run: tar -czf maven-repository.tgz -C ~ .m2/repository
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: maven-repository
           path: maven-repository.tgz
@@ -65,13 +65,13 @@ jobs:
       - name: Build with Maven Java ${{ matrix.java }}
         run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
       - name: Upload surefire reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/*.txt'
       - name: Upload server logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
