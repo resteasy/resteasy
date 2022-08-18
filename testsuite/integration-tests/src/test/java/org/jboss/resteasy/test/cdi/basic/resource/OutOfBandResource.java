@@ -15,13 +15,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 @Path("timer")
 @Stateless
 public class OutOfBandResource implements OutOfBandResourceIntf {
-   private static final Logger log = LoggerFactory.getLogger(OutOfBandResource.class);
+   private static final Logger log = Logger.getLogger(OutOfBandResource.class);
    private static final String TIMER_INFO = "timerInfo";
    private static CountDownLatch latch = new CountDownLatch(1);
    private static boolean timerExpired;
