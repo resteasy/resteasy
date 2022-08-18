@@ -5,8 +5,6 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - '**'
     branches-ignore:
       - 'dependabot/**'
   pull_request:
