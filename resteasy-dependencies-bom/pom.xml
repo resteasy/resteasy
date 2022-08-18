@@ -83,7 +83,7 @@
         <version.org.jboss.jandex>2.4.3.Final</version.org.jboss.jandex>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
-        <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
+        <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
         <version.org.hibernate.validator>7.0.5.Final</version.org.hibernate.validator>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.io.projectreactor>2020.0.8</version.io.projectreactor>
