@@ -58,10 +58,8 @@
         <version.org.jboss.logging.jboss-logging>3.4.2.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.logmanager>2.1.18.Final</version.org.jboss.logmanager>
-        <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
         <version.org.jboss.resteasy.tracing.api>1.0.0.Final</version.org.jboss.resteasy.tracing.api>
         <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
-        <version.org.jboss.threads>2.3.3.Final</version.org.jboss.threads>
         <version.jakarta.annotation.jakarta-annotation-api>2.1.0</version.jakarta.annotation.jakarta-annotation-api>
         <version.jakarta.el.el-api>4.0.0</version.jakarta.el.el-api>
         <version.jakarta.ejb.ejb-api>4.0.0</version.jakarta.ejb.ejb-api>
@@ -70,10 +68,8 @@
         <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
         <version.jakarta.servlet.servlet-api>5.0.0</version.jakarta.servlet.servlet-api>
-        <version.jakarta.transaction.transaction-api>2.0.0</version.jakarta.transaction.transaction-api>
         <version.org.jboss.shrinkwrap.resolver>2.2.7</version.org.jboss.shrinkwrap.resolver>
         <version.org.mockito>4.7.0</version.org.mockito>
-        <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
         <version.org.wildfly.core.wildfly-cli>18.1.1.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
@@ -89,7 +85,6 @@
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
         <version.org.hibernate.validator>7.0.1.Final</version.org.hibernate.validator>
-        <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.io.projectreactor>2020.0.8</version.io.projectreactor>
 
@@ -98,32 +93,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${version.org.slf4j}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-jdk14</artifactId>
-                <version>${version.org.slf4j}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${version.org.slf4j}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${version.org.slf4j}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-nop</artifactId>
-                <version>${version.org.slf4j}</version>
-            </dependency>
             <dependency>
                 <groupId>com.fasterxml</groupId>
                 <artifactId>classmate</artifactId>
@@ -178,12 +147,6 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-tracing-api</artifactId>
                 <version>${version.org.jboss.resteasy.tracing.api}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.threads</groupId>
-                <artifactId>jboss-threads</artifactId>
-                <version>${version.org.jboss.threads}</version>
             </dependency>
 
             <dependency>
@@ -327,12 +290,6 @@
             <!-- End JAXB Implementation -->
 
             <dependency>
-                <groupId>jakarta.transaction</groupId>
-                <artifactId>jakarta.transaction-api</artifactId>
-                <version>${version.jakarta.transaction.transaction-api}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${version.jakarta.ws.rs}</version>
@@ -358,19 +315,6 @@
                     <exclusion>
                         <groupId>*</groupId>
                         <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.stream</groupId>
-                <artifactId>sjsxp</artifactId>
-                <version>1.0.1</version>
-                <exclusions>
-                    <!-- This results in duplicate stax-api jars. This is the older
-            one. A newer is brought in by org.glassfish.jaxb -->
-                    <exclusion>
-                        <groupId>stax</groupId>
-                        <artifactId>stax-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -753,11 +697,6 @@
                 <classifier>jakarta</classifier>
             </dependency>
             <dependency>
-                <groupId>org.jboss.marshalling</groupId>
-                <artifactId>jboss-marshalling-osgi</artifactId>
-                <version>${version.org.jboss.marshalling.jboss-marshalling-osgi}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
                 <version>${version.org.bouncycastle}</version>
@@ -1057,16 +996,6 @@
                 <groupId>io.reactivex.rxjava2</groupId>
                 <artifactId>rxjava</artifactId>
                 <version>${version.io.reactivex.rxjava2-rxjava}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.marshalling</groupId>
-                <artifactId>jboss-marshalling</artifactId>
-                <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.marshalling</groupId>
-                <artifactId>jboss-marshalling-river</artifactId>
-                <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
