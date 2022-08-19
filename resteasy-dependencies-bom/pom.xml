@@ -58,8 +58,7 @@
         <version.org.jboss.logging.jboss-logging>3.5.0.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.logmanager>2.1.18.Final</version.org.jboss.logmanager>
-        <version.org.jboss.resteasy.tracing.api>1.1.0.Final</version.org.jboss.resteasy.tracing.api>
-        <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
+        <version.org.jboss.resteasy.extensions>1.1.0.Final</version.org.jboss.resteasy.extensions>
         <version.jakarta.annotation.jakarta-annotation-api>2.1.1</version.jakarta.annotation.jakarta-annotation-api>
         <version.jakarta.el.el-api>4.0.0</version.jakarta.el.el-api>
         <version.jakarta.ejb.ejb-api>4.0.1</version.jakarta.ejb.ejb-api>
@@ -139,13 +138,13 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-eagledns-fork</artifactId>
-                <version>${version.org.jboss.resteasy.eagledns}</version>
+                <version>${version.org.jboss.resteasy.extensions}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-tracing-api</artifactId>
-                <version>${version.org.jboss.resteasy.tracing.api}</version>
+                <version>${version.org.jboss.resteasy.extensions}</version>
             </dependency>
 
             <dependency>
