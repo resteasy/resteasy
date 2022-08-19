@@ -3,8 +3,12 @@ package org.jboss.resteasy.test.validation;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -43,8 +47,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import io.restassured.path.json.JsonPath;
 
 /**
  * @tpSubChapter Validation
@@ -199,9 +201,16 @@ public class ValidationJaxbTest {
    }
 
    private void assertValidationReport(Response response)  {
-      JsonPath jsonPath = new JsonPath(response.readEntity(String.class));
-      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.constraintType"), Matchers.hasItem("PROPERTY"));
-      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("s"));
+      ViolationReport report = response.readEntity(ViolationReport.class);
+      final List<ResteasyConstraintViolation> propertyViolations = report.getPropertyViolations();
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, resolveValues(propertyViolations, (r) -> r.getConstraintType().name()), Matchers.hasItem("PROPERTY"));
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, resolveValues(propertyViolations, ResteasyConstraintViolation::getPath), Matchers.hasItem("s"));
+   }
+
+   private static <T> Collection<String> resolveValues(final Collection<T> c, final Function<T, String> mapper) {
+      return c.stream()
+              .map(mapper)
+              .collect(Collectors.toList());
    }
 }
 

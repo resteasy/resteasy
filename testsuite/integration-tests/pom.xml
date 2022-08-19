@@ -346,11 +346,6 @@
             <artifactId>jboss-logging-annotations</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>json-path</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

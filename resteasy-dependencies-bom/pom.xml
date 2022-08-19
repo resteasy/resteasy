@@ -85,7 +85,6 @@
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
         <version.org.hibernate.validator>7.0.5.Final</version.org.hibernate.validator>
-        <version.rest-assured>3.3.0</version.rest-assured>
         <version.io.projectreactor>2020.0.8</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
@@ -611,12 +610,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${version.junit}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.rest-assured</groupId>
-                <artifactId>json-path</artifactId>
-                <version>${version.rest-assured}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
