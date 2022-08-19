@@ -60,7 +60,7 @@
                         <groupId>org.jboss.pressgang</groupId>
                         <artifactId>pressgang-jdocbook-style</artifactId>
                         <type>jdocbook-style</type>
-                        <version>2.0.2</version>
+                        <version>3.1.4</version>
                     </dependency>
                 </dependencies>
 
