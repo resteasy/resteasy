@@ -4,11 +4,15 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 
+import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
+import org.jboss.logging.annotations.Param;
+import org.jboss.logging.annotations.Signature;
 
 /**
  *
@@ -155,4 +159,8 @@ public interface Messages
 
    @Message(id = BASE + 193, value = "The stream has already been exported.")
    IllegalStateException alreadyExported();
+
+   @Message(id = BASE + 194, value = "No content type found in response. Cannot extract the response value.")
+   @Signature(messageIndex = 1, value = {Response.class, String.class})
+   ResponseProcessingException noContentTypeFound(@Param Response response);
 }
