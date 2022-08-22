@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.crypto;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
@@ -30,14 +31,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.hamcrest.MatcherAssert;
 
-import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.ResponseProcessingException;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -63,7 +64,7 @@ public class SigningTest {
    public static PrivateKey badKey;
    private static ResteasyClient client;
 
-   protected final Logger logger = Logger.getLogger(PKCS7SignatureSmokeTest.class.getName());
+   protected final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
 
    private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
    static final String testJksPath;
