@@ -23,12 +23,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.FilePermission;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -159,7 +159,7 @@ public class JsonBindingDebugLoggingTest {
               response.readEntity(String.class), allOf(
                       containsString("RESTEASY008200: JSON Binding deserialization error"),
                       containsString(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
-                      containsString("javax.json.bind.JsonbException: ")
+                      containsString("jakarta.json.bind.JsonbException: ")
               ));
 
       // assert log messages after request
@@ -191,6 +191,7 @@ public class JsonBindingDebugLoggingTest {
       LogCounter resteasyExceptionLog = new LogCounter(
               ".*DEBUG .* RESTEASY002340.*", true,
               ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+
 
       LogCounter jsonbExceptionLog = new LogCounter(
               "Caused by: jakarta.json.bind.JsonbException",
