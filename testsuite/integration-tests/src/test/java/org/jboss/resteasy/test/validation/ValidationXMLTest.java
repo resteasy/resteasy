@@ -10,9 +10,10 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
+import io.restassured.path.json.JsonPath;
+
 import jakarta.ws.rs.client.ClientBuilder;
+
 
 import org.jboss.resteasy.test.validation.resource.ValidationXMLClassConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLClassValidator;
