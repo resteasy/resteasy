@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.grpc.servlet.runtime.HttpServletResponseImpl;
+import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
 
 public class ReaderWriterGenerator {
 

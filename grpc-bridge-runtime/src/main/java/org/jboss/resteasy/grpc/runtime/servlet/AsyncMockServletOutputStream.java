@@ -1,4 +1,4 @@
-package org.jboss.resteasy.grpc.servlet.runtime;
+package org.jboss.resteasy.grpc.runtime.servlet;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;

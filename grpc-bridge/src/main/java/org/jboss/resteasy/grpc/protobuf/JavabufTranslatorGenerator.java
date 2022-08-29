@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.grpc.protobuf.runtime.AssignFromJavabuf;
-import org.jboss.resteasy.grpc.protobuf.runtime.AssignToJavabuf;
-import org.jboss.resteasy.grpc.protobuf.runtime.TranslateFromJavabuf;
-import org.jboss.resteasy.grpc.protobuf.runtime.TranslateToJavabuf;
-import org.jboss.resteasy.grpc.servlet.runtime.HttpServletResponseImpl;
+import org.jboss.resteasy.grpc.runtime.protobuf.AssignFromJavabuf;
+import org.jboss.resteasy.grpc.runtime.protobuf.AssignToJavabuf;
+import org.jboss.resteasy.grpc.runtime.protobuf.TranslateFromJavabuf;
+import org.jboss.resteasy.grpc.runtime.protobuf.TranslateToJavabuf;
+import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;

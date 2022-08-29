@@ -71,12 +71,8 @@ public class GrpcToJaxrsTest
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
 //            + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
       + "Dependencies: com.google.guava services\n"));
-      war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.12")));
+      war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.13")));
       TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.1.0-SNAPSHOT");
-//      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-symbol-solver-core:jar:3.24.0");
-//      TestUtil.addOtherLibrary(war, "com.github.javaparser:javaparser-core:jar:3.24.0");
-      TestUtil.addOtherLibrary(war, "org.wildfly:wildfly-weld-jakarta:jar:26.1.0.Final");
-      TestUtil.addOtherLibrary(war, "org.wildfly:wildfly-weld-common-jakarta:jar:26.1.0.Final");
       TestUtil.addOtherLibrary(war, "org.wildfly.core:wildfly-server:jar:18.1.0.Final");
       TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
       TestUtil.addOtherLibrary(war, "io.grpc:grpc-api:1.39.0");
@@ -87,8 +83,6 @@ public class GrpcToJaxrsTest
       TestUtil.addOtherLibrary(war, "io.grpc:grpc-protobuf-lite:1.39.0");
       TestUtil.addOtherLibrary(war, "io.grpc:grpc-stub:1.39.0");
       TestUtil.addOtherLibrary(war, "io.perfmark:perfmark-api:0.23.0");
-      TestUtil.addOtherLibrary(war, "org.jboss.weld.se:weld-se-core:jar:5.0.0.CR2");
-      TestUtil.addOtherLibrary(war, "org.jboss.weld.environment:weld-environment-common:jar:5.0.0.CR2");
       TestUtil.addOtherLibrary(war, "com.google.guava:failureaccess:jar:1.0.1");
 //      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:30.1-android");
       TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:31.0.1-jre");
@@ -799,7 +793,7 @@ public class GrpcToJaxrsTest
             Assert.assertEquals(result.substring(i, j), "/p/servletPath");
 
             // HttpServletRequest.getPathTranslated()
-            Assert.assertTrue(result.substring(j + 1).contains("testsuite/integration-tests/target"));
+            Assert.assertTrue(result.substring(j + 1).contains("/p/servletPath"));
          } catch (StatusRuntimeException e) {
             Assert.fail("fail");
             return;
@@ -827,7 +821,7 @@ public class GrpcToJaxrsTest
             Assert.assertEquals(result.substring(i, j), "/p/servletPath");
 
             // HttpServletRequest.getPathTranslated()
-            Assert.assertTrue(result.substring(j + 1).contains("testsuite/integration-tests/target"));
+            Assert.assertTrue(result.substring(j + 1).contains("/p/servletPath"));
          } catch (StatusRuntimeException e) {
             Assert.fail("fail");
             return;
@@ -930,7 +924,7 @@ public class GrpcToJaxrsTest
          Assert.assertEquals("41",  headers.get("i3").getValues(0));
 
          Assert.assertEquals(1, response.getCookiesCount());
-         gNewCookie expectedCookie = gNewCookie.newBuilder().setDomain("d1").setMaxAge(-1).setName("n1").setPath("p1").setValue("v1").setVersion(7).build();
+         gNewCookie expectedCookie = gNewCookie.newBuilder().setDomain("d1").setMaxAge(3).setName("n1").setPath("p1").setValue("v1").setVersion(7).build();
          Assert.assertEquals(expectedCookie, response.getCookies(0));
 
          Assert.assertEquals(223, response.getStatus().getValue());

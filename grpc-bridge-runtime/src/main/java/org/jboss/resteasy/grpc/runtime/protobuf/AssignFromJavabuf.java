@@ -1,4 +1,4 @@
-package org.jboss.resteasy.grpc.protobuf.runtime;
+package org.jboss.resteasy.grpc.runtime.protobuf;
 
 import com.google.protobuf.Message;
 

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.grpc.servlet.runtime;
+package org.jboss.resteasy.grpc.runtime.servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -63,7 +63,8 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    private UriInfo uriInfo;
    private String servletPath;
    private String method;
-   private ServletInputStream sis;
+   private ServletInputStream inputStream;
+   private String returnType;
    private Map<String, List<String>> headers;
    private Cookie[] cookies;
    private ServletContext servletContext;
@@ -92,8 +93,11 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       this.contextPath = servletContext.getContextPath();
       this.path = path;
       this.method = method;
-      this.sis = sis;
-      this.headers = headers;
+      this.inputStream = sis;
+      this.returnType = retn;
+      this.headers = headers == null ? new HashMap<String, List<String>>() : headers;
+      this.cookies = cookies;
+      this.formParameters = formParameters;
       List<String> acceptList = new ArrayList<String>();
       acceptList.add("application/grpc-jaxrs");
       acceptList.add("*/*;grpc-jaxrs=true");
@@ -108,6 +112,17 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       }
       this.cookies = cookies;
       this.formParameters = formParameters;
+   }
+
+   public HttpServletRequestImpl() {
+      List<String> acceptList = new ArrayList<String>();
+      acceptList.add("application/grpc-jaxrs");
+      acceptList.add("*/*;grpc-jaxrs=true");
+      headers = new HashMap<String, List<String>>();
+      headers.put("Accept", acceptList);
+      List<String> contentTypeList = new ArrayList<String>();
+      contentTypeList.add("*/*;grpc-jaxrs=true");
+      headers.put("Content-Type", contentTypeList);
    }
 
    @Override
@@ -170,7 +185,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       }
       gotInputStream = true;
       readStarted = true;
-      return sis;
+      return inputStream;
    }
 
    @Override
@@ -227,7 +242,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
       }
       gotReader = true;
       readStarted = true;
-      return new BufferedReader(new InputStreamReader(this.sis));
+      return new BufferedReader(new InputStreamReader(this.inputStream));
    }
 
    @Override
@@ -573,6 +588,163 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    @Override
    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
       throw new NotSupportedException(Messages.MESSAGES.isNotImplemented("upgrade()"));
+   }
+
+   public ServletResponse getServletResponse() {
+      return servletResponse;
+   }
+
+   public void setServletResponse(ServletResponse servletResponse) {
+      this.servletResponse = servletResponse;
+   }
+
+   public String getUri() {
+      return uri;
+   }
+
+   public void setUri(String uri) {
+      this.uri = uri;
+   }
+
+   public String getPath() {
+      return path;
+   }
+
+   public void setPath(String path) {
+      this.path = path;
+   }
+
+   public void setInputStream(ServletInputStream sis) {
+      this.inputStream = sis;
+   }
+
+   public Map<String, List<String>> getHeaders() {
+      return headers;
+   }
+
+   public void setHeaders(Map<String, List<String>> headers) {
+      this.headers.putAll(headers);
+   }
+
+   public boolean isGotInputStream() {
+      return gotInputStream;
+   }
+
+   public void setGotInputStream(boolean gotInputStream) {
+      this.gotInputStream = gotInputStream;
+   }
+
+   public boolean isGotReader() {
+      return gotReader;
+   }
+
+   public void setGotReader(boolean gotReader) {
+      this.gotReader = gotReader;
+   }
+
+   public boolean isReadStarted() {
+      return readStarted;
+   }
+
+   public void setReadStarted(boolean readStarted) {
+      this.readStarted = readStarted;
+   }
+
+   public String getClientAddr() {
+      return clientAddr;
+   }
+
+   public void setClientAddr(String clientAddr) {
+      this.clientAddr = clientAddr;
+   }
+
+   public String getClientHost() {
+      return clientHost;
+   }
+
+   public void setClientHost(String clientHost) {
+      this.clientHost = clientHost;
+   }
+
+   public int getClientPort() {
+      return clientPort;
+   }
+
+   public void setClientPort(int clientPort) {
+      this.clientPort = clientPort;
+   }
+
+   public Map<String, Object> getAttributes() {
+      return attributes;
+   }
+
+   public void setAttributes(Map<String, Object> attributes) {
+      this.attributes = attributes;
+   }
+
+   public Map<String, String[]> getFormParameters() {
+      return formParameters;
+   }
+
+   public void setFormParameters(Map<String, String[]> formParameters) {
+      this.formParameters = formParameters;
+   }
+
+   public Map<String, String[]> getParameters() {
+      return parameters;
+   }
+
+   public void setParameters(Map<String, String[]> parameters) {
+      this.parameters = parameters;
+   }
+
+   public static String getGrpcReturnResponse() {
+      return GRPC_RETURN_RESPONSE;
+   }
+
+   public void setContextPath(String contextPath) {
+      this.contextPath = contextPath;
+   }
+
+   public void setUriInfo(UriInfo uriInfo) {
+      this.uriInfo = uriInfo;
+   }
+
+   public void setServletPath(String servletPath) {
+      this.servletPath = servletPath;
+   }
+
+   public void setMethod(String method) {
+      this.method = method;
+   }
+
+   public void setCookies(Cookie[] cookies) {
+      this.cookies = cookies;
+   }
+
+   public void setServletContext(ServletContext servletContext) {
+      this.servletContext = servletContext;
+   }
+
+   public void setAsyncStarted(boolean asyncStarted) {
+      this.asyncStarted = asyncStarted;
+   }
+
+   public void setAsyncContext(AsyncContext asyncContext) {
+      this.asyncContext = asyncContext;
+   }
+
+   public String getReturnType() {
+      return returnType;
+   }
+
+   public void setReturnType(String returnType) {
+      this.returnType = returnType;
+      if ("com.google.protobuf.Any".equals(returnType)) {
+         List<String> list = new ArrayList<String>();
+         list.add("true");
+         headers.put(GRPC_RETURN_RESPONSE, list);
+      }
    }
 
    private String getCharacterEncodingFromHeader() {
