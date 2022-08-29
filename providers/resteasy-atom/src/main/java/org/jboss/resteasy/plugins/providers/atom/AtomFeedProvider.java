@@ -1,12 +1,11 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
-import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
-import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashSet;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
@@ -22,12 +21,12 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashSet;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -113,9 +112,8 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, AsyncBufferedM
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, set.toArray(new Class[set.size()]));
-         Marshaller marshaller = RiHacks.createMarshaller(ctx);
-         final Object mapper = RiHacks.createAtomNamespacePrefixMapper();
-         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+         Marshaller marshaller = ctx.createMarshaller();
+         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", AtomNamespacePrefixMapper.INSTANCE);
 
          marshaller.marshal(feed, entityStream);
       }

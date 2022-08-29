@@ -11,6 +11,7 @@ import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.stream.Field;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.core.ResourceCleaner;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -29,6 +30,7 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.lang.ref.Cleaner;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -43,9 +45,21 @@ import java.util.Map;
  */
 public class MultipartInputImpl implements MultipartInput, ProvidersContextRetainer
 {
+   private static class CleanupAction implements Runnable {
+      private volatile Message mimeMessage;
+
+      @Override
+      public void run() {
+         final Message message = mimeMessage;
+         if (message != null) {
+            message.dispose();
+         }
+      }
+   }
    protected MediaType contentType;
    protected Providers workers;
-   protected Message mimeMessage;
+   private final CleanupAction cleanupAction;
+   private final Cleaner.Cleanable cleanable;
    protected List<InputPart> parts = new ArrayList<InputPart>();
    protected static final Annotation[] empty = {};
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
@@ -56,6 +70,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    {
       this.contentType = contentType;
       this.workers = workers;
+      this.cleanupAction = new CleanupAction();
+      cleanable = ResourceCleaner.register(this, cleanupAction);
       HttpRequest httpRequest = ResteasyContext.getContextData(HttpRequest.class);
       if (httpRequest != null)
       {
@@ -80,6 +96,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    {
       this.contentType = contentType;
       this.workers = workers;
+      this.cleanupAction = new CleanupAction();
+      cleanable = ResourceCleaner.register(this, cleanupAction);
       if (defaultPartContentType != null) this.defaultPartContentType = defaultPartContentType;
       this.defaultPartCharset = defaultPartCharset;
       if (defaultPartCharset != null)
@@ -97,11 +115,13 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          }
       }
       this.workers = workers;
+      this.cleanupAction = new CleanupAction();
+      cleanable = ResourceCleaner.register(this, cleanupAction);
    }
 
    public void parse(InputStream is) throws IOException
    {
-      mimeMessage = Mime4JWorkaround.parseMessage(addHeaderToHeadlessStream(is));
+      cleanupAction.mimeMessage = Mime4JWorkaround.parseMessage(addHeaderToHeadlessStream(is));
       extractParts();
    }
 
@@ -121,7 +141,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
    public String getPreamble()
    {
-      return ((Multipart) mimeMessage.getBody()).getPreamble();
+      return ((Multipart) getMimeMessage().getBody()).getPreamble();
    }
 
    public List<InputPart> getParts()
@@ -131,7 +151,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
    protected void extractParts() throws IOException
    {
-      Multipart multipart = (Multipart) mimeMessage.getBody();
+      Multipart multipart = (Multipart) getMimeMessage().getBody();
       for (Entity entity : multipart.getBodyParts()) {
          if (entity instanceof BodyPart)
          {
@@ -143,6 +163,10 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    protected InputPart extractPart(BodyPart bodyPart) throws IOException
    {
       return new PartImpl(bodyPart);
+   }
+
+   protected Message getMimeMessage() {
+      return cleanupAction.mimeMessage;
    }
 
    public class PartImpl implements InputPart
@@ -339,22 +363,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    @Override
    public void close()
    {
-      if (mimeMessage != null)
-      {
-         try
-         {
-            mimeMessage.dispose();
-         }
-         catch (Exception e)
-         {
-
-         }
-      }
-   }
-
-   protected void finalize() throws Throwable
-   {
-      close();
+      cleanable.clean();
    }
 
    protected String getCharset(MediaType mediaType)

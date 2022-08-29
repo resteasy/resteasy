@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.exception;
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
 import java.net.URI;
+
 import jakarta.ws.rs.RedirectionException;
 import jakarta.ws.rs.core.Response;
 
@@ -15,10 +16,12 @@ public class ResteasyRedirectionException extends RedirectionException implement
 
    private static final long serialVersionUID = 8815768802777099877L;
    private final RedirectionException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyRedirectionException(final RedirectionException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()));
+        super(wrapped.getMessage(), wrapped.getResponse());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
@@ -29,5 +32,10 @@ public class ResteasyRedirectionException extends RedirectionException implement
     @Override
     public RedirectionException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

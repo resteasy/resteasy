@@ -14,6 +14,7 @@ public class ResteasyWebApplicationException extends WebApplicationException imp
 
    private static final long serialVersionUID = -8805699073882024461L;
    private final WebApplicationException wrapped;
+   private final Response sanitizedResponse;
 
     /**
      * Creates a new exception based on the wrapped exception. The response will be
@@ -22,12 +23,18 @@ public class ResteasyWebApplicationException extends WebApplicationException imp
      * @param wrapped the exception to wrap
      */
     public ResteasyWebApplicationException(final WebApplicationException wrapped) {
-        super(wrapped.getMessage(), wrapped.getCause(), sanitize(wrapped.getResponse()));
+        super(wrapped.getMessage(), wrapped.getCause(), wrapped.getResponse());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public WebApplicationException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

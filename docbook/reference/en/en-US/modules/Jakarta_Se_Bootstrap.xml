@@ -8,9 +8,14 @@
     <section id="sebootstrap-overview">
         <title>Overview</title>
         <para>
-            It&apos;s suggested by default that the <code>org.jboss.resteasy:resteasy-undertow</code> implementation be
+            It&apos;s suggested by default that the <code>org.jboss.resteasy:resteasy-undertow-cdi</code> implementation be
             used. However, the other <classname>org.jboss.resteasy.plugins.server.embedded.EmbeddedServer</classname>
             will work excluding the <code>org.jboss.resteasy:resteasy-jdk-http</code>.
+        </para>
+        <para>
+            The <code>org.jboss.resteasy:resteasy-undertow-cdi</code> implementation also uses Weld to create a CDI
+            container. This allows you to use CDI in the SE environment. If CDI is not required or desired the
+            <code>org.jboss.resteasy:resteasy-undertow</code> implementation could be used instead.
         </para>
         <para>
             Example POM Dependencies:
@@ -30,7 +35,7 @@
     &lt;/dependency&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-        &lt;artifactId&gt;resteasy-undertow&lt;/artifactId&gt;
+        &lt;artifactId&gt;resteasy-undertow-cdi&lt;/artifactId&gt;
     &lt;/dependency&gt;
 &lt;/dependencies&gt;
             </programlisting>

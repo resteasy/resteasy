@@ -23,8 +23,8 @@ import java.util.concurrent.CompletionStage;
  */
 public class CdiPropertyInjector implements PropertyInjector
 {
-   private PropertyInjector delegate;
-   private Class<?> clazz;
+   private final PropertyInjector delegate;
+   private final Class<?> clazz;
    private boolean injectorEnabled = true;
 
    public CdiPropertyInjector(final PropertyInjector delegate, final Class<?> clazz, final Map<Class<?>, Type> sessionBeanInterface, final BeanManager manager)

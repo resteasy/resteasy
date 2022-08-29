@@ -38,7 +38,7 @@ import static io.undertow.servlet.Servlets.servlet;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Priority(100)
+@Priority(150)
 public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsServer>
 {
    protected final PathHandler root = new PathHandler();

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.exception;
 
-
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
 import jakarta.ws.rs.ClientErrorException;
@@ -15,14 +14,21 @@ public class ResteasyClientErrorException extends ClientErrorException implement
 
    private static final long serialVersionUID = 6839671465938091898L;
    private final ClientErrorException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyClientErrorException(final ClientErrorException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public ClientErrorException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

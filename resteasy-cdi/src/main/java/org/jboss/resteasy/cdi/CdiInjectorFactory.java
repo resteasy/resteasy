@@ -37,11 +37,12 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 public class CdiInjectorFactory implements InjectorFactory
 {
    public static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
-   private BeanManager manager;
-   private InjectorFactory delegate = new InjectorFactoryImpl();
-   private ResteasyCdiExtension extension;
-   private Map<Class<?>, Type> sessionBeanInterface;
+   private final BeanManager manager;
+   private final InjectorFactory delegate = new InjectorFactoryImpl();
+   private final ResteasyCdiExtension extension;
+   private final Map<Class<?>, Type> sessionBeanInterface;
 
+   @SuppressWarnings("unused")
    public CdiInjectorFactory()
    {
       this.manager = lookupBeanManager();
@@ -141,7 +142,7 @@ public class CdiInjectorFactory implements InjectorFactory
     */
    protected BeanManager lookupBeanManager()
    {
-      BeanManager beanManager = null;
+      BeanManager beanManager;
 
       // Do a lookup for BeanManager in JNDI (this is the only *portable* way)
       beanManager = lookupBeanManagerInJndi("java:comp/BeanManager");

@@ -14,14 +14,21 @@ public class ResteasyNotAllowedException extends NotAllowedException implements 
 
    private static final long serialVersionUID = -6319306078354018353L;
    private final NotAllowedException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyNotAllowedException(final NotAllowedException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public NotAllowedException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

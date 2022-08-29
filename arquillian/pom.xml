@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>6.1.0-SNAPSHOT</version>
+        <version>6.1.1.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Misc Arquillian-based tests</name>
@@ -21,9 +21,7 @@
 
     <properties>
         <!-- Version properties -->
-        <version.arquillian.jetty>1.0.0.CR3</version.arquillian.jetty>
-        <!-- Test properties -->
-        <additionalJvmArgs/>
+        <version.arquillian.jetty>1.0.0.Final</version.arquillian.jetty>
     </properties>
 
     <dependencyManagement>

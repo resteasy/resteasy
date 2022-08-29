@@ -14,14 +14,21 @@ public class ResteasyBadRequestException extends BadRequestException implements 
 
    private static final long serialVersionUID = -6250430572164780061L;
    private final BadRequestException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyBadRequestException(final BadRequestException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public BadRequestException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

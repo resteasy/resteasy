@@ -24,7 +24,6 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.hacks.RiHacks;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -173,7 +172,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T> 
       try
       {
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, false);
-         Marshaller marshaller = RiHacks.createMarshaller(jaxb);
+         Marshaller marshaller = jaxb.createMarshaller();
          setCharset(mediaType, marshaller);
          // Pretty Print the XML response.
          Object formatted = mediaType.getParameters().get("formatted");

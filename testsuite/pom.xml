@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>6.1.0-SNAPSHOT</version>
+        <version>6.1.1.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -20,7 +20,6 @@
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
-        <additionalJvmArgs/>
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
@@ -80,19 +79,6 @@
 
     <build>
         <plugins>
-            <!-- rls test
-            <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-help-plugin</artifactId>
-                    <version>3.2.0</version>
-            </plugin>
--->
-            <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-help-plugin</artifactId>
-                    <version>3.2.0</version>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -143,9 +129,9 @@
                     </plugin-options>
                     <feature-packs>
                         <feature-pack>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>galleon-feature-pack</artifactId>
-                            <version>${project.version}</version>
+                            <groupId>org.wildfly</groupId>
+                            <artifactId>wildfly-ee-galleon-pack</artifactId>
+                            <version>${version.org.wildfly}</version>
                             <inherit-configs>false</inherit-configs>
                             <included-configs>
                                 <config>
@@ -163,6 +149,12 @@
                                 <name>appclient</name>
                                 <name>domain</name>
                             </excluded-packages>
+                        </feature-pack>
+                        <feature-pack>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>galleon-feature-pack</artifactId>
+                            <version>${project.version}</version>
+                            <inherit-configs>false</inherit-configs>
                         </feature-pack>
                     </feature-packs>
                 </configuration>
@@ -507,20 +499,14 @@
     </profiles>
 
     <repositories>
-        <!-- Required for PicketBox, once this is removed from WildFly this can be removed -->
+        <!-- Remove below repo after opensaml 4.2.0 is accessible from maven central repo-->
         <repository>
+            <id>opensaml-repo</id>
+            <name>opensaml</name>
+            <url>https://build.shibboleth.net/nexus/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
             </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            <id>jboss-enterprise-maven-repository</id>
-            <name>JBoss Enterprise Maven Repository</name>
-            <url>https://maven.repository.redhat.com/ga/</url>
-            <layout>default</layout>
         </repository>
     </repositories>
 
