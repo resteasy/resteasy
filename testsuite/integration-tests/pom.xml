@@ -47,10 +47,7 @@
         <container.qualifier.manual.ssl.sni>jbossas-manual-ssl-sni</container.qualifier.manual.ssl.sni>
         
         <!-- For grpc-bridge test -->
-        <version.jaxrs.example.grpc>0.0.13</version.jaxrs.example.grpc>
-        <version.org.wildfly.core>18.1.0.Final</version.org.wildfly.core>
-        <version.weld.environment>5.0.0.CR2</version.weld.environment>
-        <version.wildfly.weld>26.1.0.Final</version.wildfly.weld>
+        <version.jaxrs.example.grpc>0.0.14</version.jaxrs.example.grpc>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -333,12 +330,6 @@
             <groupId>org.wildfly.core</groupId>
             <artifactId>wildfly-cli</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-server</artifactId>
-            <version>${version.org.wildfly.core}</version>
-        </dependency>
 
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
@@ -357,11 +348,6 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>json-path</artifactId>
         </dependency>
 
         <dependency>
@@ -421,23 +407,6 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-        </dependency>
-
-        <dependency>
-           <groupId>org.wildfly</groupId>
-           <artifactId>wildfly-weld-jakarta</artifactId>
-           <version>${version.wildfly.weld}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.wildfly</groupId>
-           <artifactId>wildfly-weld-common-jakarta</artifactId>
-           <version>${version.wildfly.weld}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.weld.environment</groupId>
-            <artifactId>weld-environment-common</artifactId>
-            <version>${version.weld.environment}</version>
         </dependency>
 
         <dependency>
