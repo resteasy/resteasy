@@ -89,7 +89,7 @@ public class GrpcToJaxrsTest
       TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:31.0.1-jre");
       WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
       log.info(archive.toString(true));
-      archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
+//      archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
       return archive;
    }
 
