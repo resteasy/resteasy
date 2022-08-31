@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -797,10 +798,10 @@ public class GrpcToJaxrsTest
             // path
             i = j + 1;
             j = result.indexOf('|', i);
-            Assert.assertEquals(response.getGStringField().getValue(), result.substring(i, j), "/p/servletPath");
+            Assert.assertEquals(result.substring(i, j), "/p/servletPath");
 
             // HttpServletRequest.getPathTranslated()
-            Assert.assertTrue(response.getGStringField().getValue(), result.substring(j + 1).contains("/p/servletPath"));
+            Assert.assertTrue(result.substring(j + 1).contains(File.separator + "p" + File.separator + "servletPath"));
          } catch (StatusRuntimeException e) {
             Assert.fail("fail");
             return;
