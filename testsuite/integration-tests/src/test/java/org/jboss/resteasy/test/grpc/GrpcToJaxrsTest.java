@@ -800,7 +800,7 @@ public class GrpcToJaxrsTest
             Assert.assertEquals(response.getGStringField().getValue(), result.substring(i, j), "/p/servletPath");
 
             // HttpServletRequest.getPathTranslated()
-            Assert.assertTrue(result.substring(j + 1).contains("/p/servletPath"));
+            Assert.assertTrue(response.getGStringField().getValue(), result.substring(j + 1).contains("/p/servletPath"));
          } catch (StatusRuntimeException e) {
             Assert.fail("fail");
             return;
