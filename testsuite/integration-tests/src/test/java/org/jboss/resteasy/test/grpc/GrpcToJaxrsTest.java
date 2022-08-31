@@ -829,7 +829,7 @@ public class GrpcToJaxrsTest
             Assert.assertEquals(result.substring(i, j), "/p/servletPath");
 
             // HttpServletRequest.getPathTranslated()
-            Assert.assertTrue(result.substring(j + 1).contains("/p/servletPath"));
+            Assert.assertTrue(result.substring(j + 1).contains(File.separator + "p" + File.separator + "servletPath"));
          } catch (StatusRuntimeException e) {
             Assert.fail("fail");
             return;
