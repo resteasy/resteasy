@@ -797,7 +797,7 @@ public class GrpcToJaxrsTest
             // path
             i = j + 1;
             j = result.indexOf('|', i);
-            Assert.assertEquals(result.substring(i, j), "/p/servletPath");
+            Assert.assertEquals(response.getGStringField().getValue(), result.substring(i, j), "/p/servletPath");
 
             // HttpServletRequest.getPathTranslated()
             Assert.assertTrue(result.substring(j + 1).contains("/p/servletPath"));
