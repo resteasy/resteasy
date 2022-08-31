@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.jaxrs.i18n;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
+import java.util.function.Supplier;
 
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.core.MediaType;
@@ -158,7 +159,7 @@ public interface Messages
    IllegalStateException streamNotClosed(OutputStream out);
 
    @Message(id = BASE + 193, value = "The stream has already been exported.")
-   IllegalStateException alreadyExported();
+   Supplier<IllegalStateException> alreadyExported();
 
    @Message(id = BASE + 194, value = "No content type found in response. Cannot extract the response value.")
    @Signature(messageIndex = 1, value = {Response.class, String.class})

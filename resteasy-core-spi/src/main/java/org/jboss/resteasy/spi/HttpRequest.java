@@ -1,12 +1,16 @@
 package org.jboss.resteasy.spi;
 
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -60,6 +64,29 @@ public interface HttpRequest
    MultivaluedMap<String, String> getFormParameters();
 
    MultivaluedMap<String, String> getDecodedFormParameters();
+
+   /**
+    * Returns for {@linkplain  EntityPart entity parts} for a {@code multipart/form-data} request.
+    *
+    * @return the entity parts or an empty list
+    */
+   default List<EntityPart> getFormEntityParts() {
+      return Collections.emptyList();
+   }
+
+   /**
+    * Returns the optional {@linkplain  EntityPart entity part} for a {@code multipart/form-data} request.
+    *
+    * @param name the name of the entity part
+    *
+    * @return an optional entity part for the name
+    */
+   default Optional<EntityPart> getFormEntityPart(final String name) {
+      return getFormEntityParts()
+              .stream()
+              .filter((e) -> name.equals(e.getName()))
+              .findFirst();
+   }
 
    /**
     * Were form parameters read before marshalling to body?

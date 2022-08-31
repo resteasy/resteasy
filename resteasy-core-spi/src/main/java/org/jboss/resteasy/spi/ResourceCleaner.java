@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.core;
+package org.jboss.resteasy.spi;
 
 import java.lang.ref.Cleaner;
 

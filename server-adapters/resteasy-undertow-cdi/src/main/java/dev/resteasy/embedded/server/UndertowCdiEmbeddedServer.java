@@ -3,8 +3,11 @@ package dev.resteasy.embedded.server;
 import java.util.Map;
 
 import jakarta.annotation.Priority;
+import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.SeBootstrap.Configuration;
+import jakarta.ws.rs.core.Application;
 
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
@@ -165,6 +168,14 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
         }
         // Determine the context path
         final String contextPath = EmbeddedServers.checkContextPath(configuration.rootPath());
+
+        if (deploymentInfo.getDefaultMultipartConfig() == null) {
+            final Application application = deployment.getApplication();
+            final MultipartConfig multipartConfig = application.getClass().getAnnotation(MultipartConfig.class);
+            if (multipartConfig != null) {
+                deploymentInfo.setDefaultMultipartConfig(new MultipartConfigElement(multipartConfig));
+            }
+        }
         return deploymentInfo
                 // Set up deployment specific info
                 .setClassLoader(deployment.getApplication().getClass().getClassLoader())
