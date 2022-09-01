@@ -64,6 +64,7 @@
                 <!ENTITY REST-API "Jakarta RESTful Web Services">
                 <!ENTITY XML-BIND-API "Jakarta XML Binding">
                 <!ENTITY ENTERPRISE-BEANS "Jakarta Enterprise Beans">
+                <!ENTITY GRPC-BRIDGE SYSTEM "modules/GrpcBridge.xml">
                 <!ENTITY SPRING-VERSION "6.0.0-M3">
                 ]>
 
@@ -162,6 +163,7 @@ This one is short
    &Tracing_Feature;
    &Validation;
    &I18N;
+   &GRPC-BRIDGE;
    &Maven_and_RESTEasy;
    &Migration_from_older_versions;
    &Books;
