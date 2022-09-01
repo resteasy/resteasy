@@ -54,9 +54,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
    protected String root = "";
    protected SecurityDomain domain;
    private EventLoopGroup eventLoopGroup;
-   private EventLoopGroup eventExecutor;
+   private EventLoopGroup eventExecutor = null;
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
-   private int executorThreadCount = 16;
+   private int executorThreadCount = 0;
    private SSLContext sslContext;
    private SniConfiguration sniConfiguration;
    private int maxRequestSize = 1024 * 1024 * 10;
@@ -99,7 +99,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
       serverHelper.checkDeployment(deployment);
 
       eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
-      eventExecutor = new NioEventLoopGroup(executorThreadCount);
+      if (executorThreadCount > 0) {
+         eventExecutor = new NioEventLoopGroup(executorThreadCount);
+      }
 
       // dynamically set the root path (the user can rewrite it by calling setRootResourcePath)
       String appPath = serverHelper.checkAppDeployment(deployment);
@@ -141,7 +143,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
    {
       runtimePort = -1;
       eventLoopGroup.shutdownGracefully();
-      eventExecutor.shutdownGracefully();
+      if (eventExecutor != null) {
+         eventExecutor.shutdownGracefully();
+      }
 
       if (deployment != null) {
          deployment.stop();
@@ -399,7 +403,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
       channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
       channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), contextPath, protocol));
       channelPipeline.addLast(new RestEasyHttpResponseEncoder());
-      channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
+      if (eventExecutor == null) {
+         channelPipeline.addLast(new RequestHandler(dispatcher));
+      } else {
+         channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
+      }
    }
 
 }
