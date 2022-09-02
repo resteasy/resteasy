@@ -76,7 +76,7 @@
     <scm>
         <connection>scm:git:git://github.com/resteasy/Resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/Resteasy.git</developerConnection>
-        <url>https://github.com/resteasy/Resteasy/tree/master/</url>
+        <url>https://github.com/resteasy/Resteasy/tree/main/</url>
     </scm>
 
     <issueManagement>
