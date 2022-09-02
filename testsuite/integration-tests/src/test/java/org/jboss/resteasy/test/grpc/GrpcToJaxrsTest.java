@@ -67,28 +67,10 @@ public class GrpcToJaxrsTest
       WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
       war.addClass(io.grpc.netty.shaded.io.netty.channel.group.ChannelMatchers.class);
       war.addClass(com.google.common.util.concurrent.internal.InternalFutureFailureAccess.class);
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-//            + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
-      + "Dependencies: com.google.guava services\n"));
+      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"));
       war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.14")));
-//      TestUtil.addOtherLibrary(war, "jaxrs.example:jaxrs.example.grpc:jar:0.0.13");
-      TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.1.1.Final-SNAPSHOT");
-      TestUtil.addOtherLibrary(war, "org.wildfly.core:wildfly-server:jar:18.1.0.Final");
-      TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-api:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-context:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-core:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-protobuf:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-protobuf-lite:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-stub:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.perfmark:perfmark-api:0.23.0");
-      TestUtil.addOtherLibrary(war, "com.google.guava:failureaccess:jar:1.0.1");
-//      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:30.1-android");
-      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:31.0.1-jre");
       WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
       log.info(archive.toString(true));
-//      archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
       return archive;
    }
 
@@ -111,11 +93,9 @@ public class GrpcToJaxrsTest
       Response response = client.target(generateURL("/grpcToJaxrs/grpcserver/start")).request().get();
       log.info("status: " + response.getStatus());
       log.info("response: " + response.readEntity(String.class));
-//      response = client.target(generateURL("/root/grpcserver/context")).request().get();
       response = client.target(generateURL("/grpcToJaxrs/p/ready")).request().get();
       log.info("status 2: " + response.getStatus());
       log.info("response 2: " + response.readEntity(String.class));
-//      Assert.assertEquals(200, response.getStatus());
       channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
       blockingStub = CC1ServiceGrpc.newBlockingStub(channel);
       int i = 0;
