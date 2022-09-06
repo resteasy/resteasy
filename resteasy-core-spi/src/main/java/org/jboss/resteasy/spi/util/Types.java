@@ -378,8 +378,26 @@ public final class Types
       if (!(genericType instanceof ParameterizedType))
          return null;
       ParameterizedType parameterizedType = (ParameterizedType) genericType;
-      Class<?> typeArg = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-      return typeArg;
+      final Type[] genericTypes = parameterizedType.getActualTypeArguments();
+      return genericTypes.length == 0 ? Object.class : getRawType(genericTypes[0]);
+   }
+
+   /**
+    * Checks that the given class, {@code c}, is the generic type of the given type.
+    *
+    * @param c    the class the type is checked against
+    * @param type the type to check
+    *
+    * @return {@code true} if the type is not {@code null} and is assignable from the class
+    *
+    * @see Class#isAssignableFrom(Class)
+    */
+   public static boolean isGenericTypeInstanceOf(final Class<?> c, final Type type) {
+      if (type == null) {
+         return false;
+      }
+      final Class<?> typeArg = getTypeArgument(type);
+      return typeArg != null && c.isAssignableFrom(typeArg);
    }
 
    public static Class getCollectionBaseType(Class type, Type genericType)

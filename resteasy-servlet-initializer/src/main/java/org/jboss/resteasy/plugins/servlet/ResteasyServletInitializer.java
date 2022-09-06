@@ -6,11 +6,13 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.plugins.servlet.i18n.Messages;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 
+import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Application;
@@ -150,6 +152,10 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
       reg.setLoadOnStartup(1);
       reg.setAsyncSupported(true);
       reg.addMapping(mapping);
+      final MultipartConfig multipartConfig = applicationClass.getAnnotation(MultipartConfig.class);
+      if (multipartConfig != null) {
+         reg.setMultipartConfig(new MultipartConfigElement(multipartConfig));
+      }
 
       registerResourcesAndProviders(reg, providers, resources, applicationClass, prefix);
    }

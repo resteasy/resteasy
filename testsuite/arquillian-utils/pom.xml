@@ -68,6 +68,12 @@
         </dependency>
         <!-- END OF arquillian general -->
 
+        <!-- Used to create a web.xml in the TestUtil -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.io7m.xom</groupId>
             <artifactId>xom</artifactId>

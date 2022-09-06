@@ -21,11 +21,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -136,24 +140,7 @@ public class TestUtil {
       }
 
       if (contextParams != null && contextParams.size() > 0 && !war.contains("WEB-INF/web.xml")) {
-         StringBuilder webXml = new StringBuilder();
-         webXml.append("<web-app version=\"3.0\" xmlns=\"http://java.sun.com/xml/ns/javaee\" \n");
-         webXml.append(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n");
-         webXml.append(" xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd\"> \n");
-         for (Map.Entry<String, String> entry : contextParams.entrySet()) {
-            String paramName = entry.getKey();
-            String paramValue = entry.getValue();
-            logger.info("Context param " + paramName + " value " + paramValue);
-
-            webXml.append("<context-param>\n");
-            webXml.append("<param-name>" + paramName + "</param-name>\n");
-            webXml.append("<param-value>" + paramValue + "</param-value>\n");
-            webXml.append("</context-param>\n");
-         }
-
-         webXml.append("</web-app>\n");
-         Asset resource = new StringAsset(webXml.toString());
-         war.addAsWebInfResource(resource, "web.xml");
+         war.addAsWebInfResource(createWebXml(null, contextParams), "web.xml");
       }
 
       // prepare class list for getClasses function of TestApplication class
@@ -540,19 +527,25 @@ public class TestUtil {
       if (path == null || path.isEmpty()) {
          return base.toURI();
       }
-      final StringBuilder builder = new StringBuilder(base.toString());
-      if (builder.charAt(builder.length() - 1) == '/') {
-         if (path.charAt(0) == '/') {
-            builder.append(path.substring(1));
-         } else {
-            builder.append(path);
-         }
-      } else if (path.charAt(0) == '/') {
-         builder.append(path.substring(1));
-      } else {
-         builder.append('/').append(path);
+      return generateUri(base.toString(), path);
+   }
+
+   /**
+    * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+    *
+    * @param base the base URL
+    * @param path the path to append
+    *
+    * @return the newly create URI
+    *
+    * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+    * @see URI
+    */
+   public static URI generateUri(final URI base, final String path) throws URISyntaxException {
+      if (path == null || path.isEmpty()) {
+         return base;
       }
-      return new URI(builder.toString());
+      return generateUri(base.toString(), path);
    }
 
    /**
@@ -567,5 +560,126 @@ public class TestUtil {
               "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd\"\n" +
               "       version=\"3.0\" bean-discovery-mode=\"all\">\n" +
               "</beans>");
+   }
+
+   /**
+    * Creates a {@code web.xml} file.
+    * <p>
+    * If the application is non-null a servlet entry is added. If the given annotation is annotated with
+    * {@link MultipartConfig @MultiConfig} that entry is added to the {@code web.xml}. The
+    * {@code <async-supported>true</async-supported>} entry is also added. The servlet name will be the name of the
+    * application.
+    * </p>
+    *
+    * @param application   the application to add a servlet or {@code null} to use annotation scanning
+    * @param contextParams the optional context parameters to add
+    *
+    * @return a {@code web.xml} file
+    */
+   public static Asset createWebXml(final Class<? extends Application> application,
+                                    final Map<String, String> contextParams) {
+      final StringBuilder webXml = new StringBuilder()
+              .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+              .append("<web-app xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" \n")
+              .append("   xmlns:xsi=\"https://www.w3.org/2001/XMLSchema-instance\" \n")
+              .append("   xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd\"\n")
+              .append("   version=\"5.0\">\n");
+      for (Map.Entry<String, String> entry : contextParams.entrySet()) {
+         final String paramName = entry.getKey();
+         final String paramValue = entry.getValue();
+         logger.info("Context param " + paramName + " value " + paramValue);
+
+         webXml.append("    <context-param>\n")
+                 .append("        <param-name>").append(paramName).append("</param-name>\n")
+                 .append("        <param-value>").append(paramValue).append("</param-value>\n")
+                 .append("    </context-param>\n");
+      }
+
+      if (application != null) {
+         final String servletName = application.getName();
+         webXml.append("    <servlet>\n")
+                 .append("        <servlet-name>")
+                 .append(servletName)
+                 .append("</servlet-name>\n")
+                 .append("        <servlet-class>")
+                 .append(HttpServlet30Dispatcher.class.getName())
+                 .append("</servlet-class>\n")
+                 .append("        <init-param>\n")
+                 .append("            <param-name>")
+                 .append(Application.class.getName())
+                 .append("</param-name>\n")
+                 .append("            <param-value>")
+                 .append(application.getName())
+                 .append("</param-value>\n")
+                 .append("        </init-param>\n")
+                 .append("        <async-supported>true</async-supported>\n");
+         final MultipartConfig multipartConfig = application.getAnnotation(MultipartConfig.class);
+         final MultipartConfigElement multipartConfigElement;
+         if (multipartConfig != null) {
+            multipartConfigElement = new MultipartConfigElement(multipartConfig);
+         } else {
+            multipartConfigElement = null;
+         }
+         if (multipartConfigElement != null) {
+            webXml.append("        <multipart-config>\n")
+                    .append("            <max-file-size>")
+                    .append(multipartConfigElement.getMaxFileSize())
+                    .append("</max-file-size>\n")
+                    .append("            <max-request-size>")
+                    .append(multipartConfigElement.getMaxRequestSize())
+                    .append("</max-request-size>\n")
+                    .append("            <file-size-threshold>")
+                    .append(multipartConfigElement.getFileSizeThreshold())
+                    .append("</file-size-threshold>\n")
+                    .append("            <location>")
+                    .append(multipartConfigElement.getLocation())
+                    .append("</location>\n")
+                    .append("        </multipart-config>\n");
+         }
+         webXml.append("    </servlet>\n");
+
+         final ApplicationPath applicationPath = application.getAnnotation(ApplicationPath.class);
+         webXml.append("    <servlet-mapping>\n")
+                 .append("        <servlet-name>").append(servletName).append("</servlet-name>\n");
+         if (applicationPath != null) {
+            final String pattern = applicationPath.value();
+            webXml.append("        <url-pattern>")
+                    .append(pattern.endsWith("/") ? pattern + "*" : pattern + "/*")
+                    .append("</url-pattern>\n");
+         } else {
+            webXml.append("        <url-pattern>").append("/*").append("</url-pattern>\n");
+         }
+         webXml.append("    </servlet-mapping>\n");
+      }
+
+      webXml.append("</web-app>\n");
+      return new StringAsset(webXml.toString());
+   }
+
+   /**
+    * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+    *
+    * @param base the base URL
+    * @param path the path to append
+    *
+    * @return the newly create URI
+    *
+    * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+    * @see URI
+    */
+   private static URI generateUri(final String base, final String path) throws URISyntaxException {
+      final StringBuilder builder = new StringBuilder(base);
+      if (builder.charAt(builder.length() - 1) == '/') {
+         if (path.charAt(0) == '/') {
+            builder.append(path.substring(1));
+         } else {
+            builder.append(path);
+         }
+      } else if (path.charAt(0) == '/') {
+         builder.append(path.substring(1));
+      } else {
+         builder.append('/').append(path);
+      }
+      return new URI(builder.toString());
    }
 }

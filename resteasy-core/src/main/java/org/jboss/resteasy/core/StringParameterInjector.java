@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -398,15 +399,28 @@ public class StringParameterInjector
 
    public StringParameterInjector(final Class<?> type, final Type genericType, final String paramName, final Class<?> paramType, final String defaultValue, final AccessibleObject target, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
-      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory, Collections.emptyMap());
+   }
+
+   public StringParameterInjector(final Class<?> type, final Type genericType, final String paramName,
+                                  final Class<?> paramType, final String defaultValue, final AccessibleObject target,
+                                  final Annotation[] annotations, final ResteasyProviderFactory factory,
+                                  final Map<Class<? extends Annotation>, Collection<Class<?>>> ignoredTypes)
+   {
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory, ignoredTypes);
    }
 
    public boolean isCollectionOrArray()
    {
       return isCollection || isArray;
    }
+   protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory) {
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory, Collections.emptyMap());
+   }
 
-   protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory)
+   protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue,
+                             AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory,
+                             final Map<Class<? extends Annotation>, Collection<Class<?>>> ignoredTypes)
    {
       this.type = type;
       this.paramName = paramName;
@@ -415,6 +429,16 @@ public class StringParameterInjector
       this.target = target;
       baseType = type;
       baseGenericType = genericType;
+
+      // Check if the annotation contains types to ignore. Ignored types will need to be handled in the subtype.
+      if (ignoredTypes.containsKey(paramType)) {
+         // Check the types which are handled elsewhere
+         for (Class<?> c : ignoredTypes.get(paramType)) {
+            if (c.isAssignableFrom(type)) {
+               return;
+            }
+         }
+      }
 
       //Step 1: try to find a conversion mechanism using the type as it is
       if(initialize(annotations, factory))

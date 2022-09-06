@@ -63,4 +63,7 @@ public interface Messages
 
    @Message(id = BASE + 60, value = "java.net.URLEncoder does not support UTF-8 encoding")
    String urlEncoderDoesNotSupportUtf8();
+
+   @Message(id = BASE + 65, value = "Parameter %s is a required parameter and cannot be set to null.")
+   String nullParameter(String name);
 }
