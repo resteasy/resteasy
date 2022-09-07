@@ -38,7 +38,7 @@ public class JaxrsImplBaseExtender {
    public JaxrsImplBaseExtender(final String[] args) {
       servletName = args[1];
       if (args.length == 4) {
-         inWildFly = Boolean.valueOf(args[3]);
+         inWildFly = !"false".equals(args[3]);
       }
       parse(args[0], args[2]);
    }

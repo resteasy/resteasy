@@ -711,7 +711,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
 <section>
 <title>Automating the generation of the mediating classes</title>
 
-<section>
+<section id="building_bridge">
 <title>Building the bridge project</title>
    <para>
       There are a lot of moving parts in the generation of the classes that make up the gRPC to Jakarta
@@ -724,7 +724,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
       The gRPCtoJAXRS-archetype creates a maven project we call the <emphasis>bridge project</emphasis>,
       consisting, at first, mainly of a pom.xml that can build
       the intermediary classes. The archetype assumes the existence of a Jakarta REST project, called the
-      <emphasis>target project</emphasis>, whose source jar is available in an accessible repository.
+      <emphasis>target project</emphasis>, whose source JAR is available in an accessible repository.
       In this example, we assume the existence of org.greet:greet:0.0.1-SNAPSHOT.
       To generate a new project that will include the classes from the target project plus the
       intermediary classes, run
@@ -773,6 +773,7 @@ mvn archetype:generate -B \
 |     +- web.xml
 +- src/main/resources
 |  +- buildjar
+|  +- deployjar
 +- src/test/java
    +- org.jboss.resteasy.grpc.server
       +- Greet_Server.java 
@@ -786,7 +787,9 @@ mvn archetype:generate -B \
    <itemizedlist>
       <listitem>beans.xml: empty file</listitem>
       <listitem>web.xml: implements the Jakarta REST provider removal described above</listitem>
-      <listitem>buildjar: a bash script that produces a jar file (see ...)</listitem>
+      <listitem>buildjar: a bash script that produces a JAR file (See <xref linkend="output_products"/>.)</listitem>
+      <listitem>deployjar: a bash script that deploys the JAR built by buildjar to a maven repository
+                           (See <xref linkend="output_products"/>.)</listitem>
       <listitem><code>Greet_Server.java</code>: a Jakarta REST resource class that can turn on the gRPC server runtime</listitem>
    </itemizedlist>
    
@@ -807,7 +810,9 @@ mvn -Dservlet.name=GreetServlet clean install
    <itemizedlist>
       <listitem>extra.classes: classes not detected  by syntactic scanning</listitem>
       <listitem>release.type: deploy as a snapshot or otherwise. Defaults to "snapshot".</listitem>
-      <listitem>inWildfly: the generated WAR will be run in WildFly. Defaults to "true".</listitem>
+      <listitem>inWildFly: the generated WAR will be run in WildFly. Defaults to "true".
+                See <xref linkend="output_products"/> and <xref linkend="using_war"/>
+                for more information.</listitem>
    </itemizedlist>
    
    <para>
@@ -855,6 +860,7 @@ mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.E
 |     +- web.xml
 +- src/main/resources
 |  +- buildjar
+|  +- deployjar
 +- src/test/java
 |  +- org.jboss.resteasy.grpc.server
 |     +- Greet_Server.java 
@@ -871,7 +877,7 @@ mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.E
    </programlisting>
 </section>
 
-<section>
+<section id="output_products">
 <title>Output products</title>
 
    <para>
@@ -881,7 +887,7 @@ mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.E
    </para>
    
    <para>
-      Going a step further, mvn deploy can deploy the war and jar (where the deployjar bash script manages
+      Going a step further, mvn deploy can deploy the WAR and JAR (where the deployjar bash script manages
       the latter) to a remote repository. Note that deployjar hard codes the JBoss repositories as follows:
    </para>
    
@@ -895,22 +901,31 @@ fi
    
    <para>
       These presumably need to be modified. Maven repository configuration is beyond the scope of this document.
-   </para> 
+   </para>
+
+   <para>
+      Depending on the environment to which it will be deployed, the WAR's WEB-INF/lib directory can be 
+      populated with the protobuf, gRPC, and other JARs necessary for the intermediary classes to run.
+      For example, versions 25.0.0.Final and later of WildFly come supplied with those JARs, and setting
+      the maven property "inWildFly" to "true" (or, in fact, anything other than "false") when building
+      the bridge project will create an empty WEB-INF/lib directory. Setting it to "false" will populate
+      WEB-INF/lib appropriately.
+   </para>
 </section>
 </section>
 
-<section>
+<section id="using_war">
 <title>Using the generated WAR</title>
 
    <para>
-      If the WAR is deployed to an instance of WildFly running with the gRPC subsystem 
+      If the WAR is to be deployed to an instance of WildFly running with the gRPC subsystem 
       <ulink url="https://github.com/wildfly-extras/wildfly-grpc-feature-pack">
-      https://github.com/wildfly-extras/wildfly-grpc-feature-pack</ulink>, then, if the WAR was
-      built with parameter "inWildfly" set to "true", then the gRPC subsystem will recognize
-      the <code>org.wildfly.grpc.GrpcService</code> annotation on <code>GreetServiceGrpcImpl</code>
-      and install <code>GreetServiceGrpcImpl</code> with the gRPC runtime. Note that setting the 
-      "inWildfly" parameter to "true" causes <code>JaxrsImplBaseExtender</code> to emit the
-      <code>@GrpcService</code> annotation.
+      https://github.com/wildfly-extras/wildfly-grpc-feature-pack</ulink>, then, it should be
+      built with parameter "inWildFly" set to "true" (or anything other than "false"), which
+      will cause <code>JaxrsImplBaseExtender</code> to emit the <code>org.wildfly.grpc.GrpcService</code>
+      annotation on the <code>GreetServiceGrpcImpl</code> class. The gRPC subsystem will recognize
+      the <code>@GrpcService</code> annotation and install <code>GreetServiceGrpcImpl</code> with the
+      gRPC runtime.
    </para>
    
    <para>
