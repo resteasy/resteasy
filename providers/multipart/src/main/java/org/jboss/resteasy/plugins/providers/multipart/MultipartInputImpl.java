@@ -11,7 +11,7 @@ import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.stream.Field;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
-import org.jboss.resteasy.core.ResourceCleaner;
+import org.jboss.resteasy.spi.ResourceCleaner;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -269,6 +269,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          return getBody((Class<T>) type.getRawType(), type.getType());
       }
 
+      @Override
       public InputStream getBody() throws IOException
       {
          Body body = bodyPart.getBody();
@@ -301,6 +302,11 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       public String getBodyAsString() throws IOException
       {
          return getBody(String.class, null);
+      }
+
+      @Override
+      public String getFileName() {
+         return bodyPart.getFilename();
       }
 
       public MultivaluedMap<String, String> getHeaders()

@@ -23,8 +23,9 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
-import org.jboss.resteasy.core.ResourceCleaner;
+import org.jboss.resteasy.spi.ResourceCleaner;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
+import org.jboss.resteasy.spi.config.Threshold;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.net.ssl.HostnameVerifier;
@@ -135,7 +136,9 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * {@link #fileUploadTempFileDir}. <br>
     * <br>
     * Defaults to 1 MB
+    * @deprecated Use {@link #getFileUploadMemoryThreshold()} or {@link #setFileUploadMemoryThreshold(Threshold)}
     */
+   @Deprecated
    protected int fileUploadInMemoryThresholdLimit = 1;
 
    /**
@@ -144,7 +147,9 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * Defaults to MB.
     *
     * @see MemoryUnit
+    * @deprecated Use {@link #getFileUploadMemoryThreshold()} or {@link #setFileUploadMemoryThreshold(Threshold)}
     */
+   @Deprecated
    protected MemoryUnit fileUploadMemoryUnit = MemoryUnit.MB;
 
    /**
@@ -240,22 +245,54 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    /**
     * Based on memory unit
     * @return threshold limit
+    * @deprecated use {@link #getFileUploadMemoryThreshold()}
     */
+   @Deprecated
    public int getFileUploadInMemoryThresholdLimit()
    {
       return fileUploadInMemoryThresholdLimit;
    }
 
+   /**
+    * @deprecated use {@link #setFileUploadMemoryThreshold(Threshold)}
+    */
+   @Deprecated
    public void setFileUploadInMemoryThresholdLimit(int fileUploadInMemoryThresholdLimit)
    {
       this.fileUploadInMemoryThresholdLimit = fileUploadInMemoryThresholdLimit;
    }
 
+   /**
+    * Returns the memory threshold of the amount of data to hold in memory.
+    *
+    * @return the memory threshold
+    */
+   public Threshold getFileUploadMemoryThreshold() {
+      return Threshold.of(fileUploadInMemoryThresholdLimit, fileUploadMemoryUnit.toSizeUnit());
+   }
+
+   /**
+    * Sets the memory threshold for the amount of content to hold in memory before it offloads to offline storage.
+    *
+    * @param threshold the in memory threshold
+    */
+   public void setFileUploadMemoryThreshold(final Threshold threshold) {
+      fileUploadInMemoryThresholdLimit = (int) threshold.toBytes();
+      fileUploadMemoryUnit = MemoryUnit.of(threshold.sizeUnit());
+   }
+
+   /**
+    * @deprecated use {@link #getFileUploadMemoryThreshold()}
+    */
+   @Deprecated
    public MemoryUnit getFileUploadMemoryUnit()
    {
       return fileUploadMemoryUnit;
    }
-
+   /**
+    * @deprecated use {@link #setFileUploadMemoryThreshold(Threshold)}
+    */
+   @Deprecated
    public void setFileUploadMemoryUnit(MemoryUnit fileUploadMemoryUnit)
    {
       this.fileUploadMemoryUnit = fileUploadMemoryUnit;
@@ -595,7 +632,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    protected HttpEntity buildEntity(final ClientInvocation request) throws IOException
    {
       AbstractHttpEntity entityToBuild = null;
-      try (EntityOutputStream entityStream = writeRequestBodyToOutputStream(request)) {
+      try (ClientEntityOutputStream entityStream = writeRequestBodyToOutputStream(request)) {
 
          MediaType mediaType = request.getHeaders().getMediaType();
          entityToBuild = entityStream.toEntity();
@@ -620,10 +657,12 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * @return - DeferredFileOutputStream with the ClientRequest written out per HTTP specification.
     * @throws IOException -
     */
-   private EntityOutputStream writeRequestBodyToOutputStream(final ClientInvocation request) throws IOException
+   private ClientEntityOutputStream writeRequestBodyToOutputStream(final ClientInvocation request) throws IOException
    {
-      try (EntityOutputStream entityStream = new EntityOutputStream(
-            this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(), this.fileUploadTempFileDir, this::getTempfilePrefix)) {
+      try (
+              ClientEntityOutputStream entityStream = new ClientEntityOutputStream(
+                      Threshold.of(this.fileUploadInMemoryThresholdLimit, this.fileUploadMemoryUnit.toSizeUnit()),
+                      this.fileUploadTempFileDir, this::getTempfilePrefix)) {
          request.getDelegatingOutputStream().setDelegate(entityStream);
          request.writeRequestBody(request.getEntityStream());
          return entityStream;
@@ -639,26 +678,6 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    protected String getTempfilePrefix()
    {
       return processId;
-   }
-
-   /**
-    * @return - the constant to multiply {@link #fileUploadInMemoryThresholdLimit} with based on
-    *         {@link #fileUploadMemoryUnit} enumeration value.
-    */
-   private int getMemoryUnitMultiplier()
-   {
-      switch (this.fileUploadMemoryUnit)
-      {
-         case BY :
-            return 1;
-         case KB :
-            return 1024;
-         case MB :
-            return 1024 * 1024;
-         case GB :
-            return 1024 * 1024 * 1024;
-      }
-      return 1;
    }
 
    protected HttpClient createDefaultHttpClient()

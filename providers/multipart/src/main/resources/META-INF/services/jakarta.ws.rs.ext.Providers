@@ -1,3 +1,5 @@
+org.jboss.resteasy.plugins.providers.multipart.MultipartEntityPartWriter
+org.jboss.resteasy.plugins.providers.multipart.MultipartEntityPartReader
 org.jboss.resteasy.plugins.providers.multipart.MultipartReader
 org.jboss.resteasy.plugins.providers.multipart.ListMultipartReader
 org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataReader

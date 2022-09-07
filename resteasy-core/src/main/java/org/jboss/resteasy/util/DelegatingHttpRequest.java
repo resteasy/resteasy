@@ -3,6 +3,7 @@ package org.jboss.resteasy.util;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
@@ -10,6 +11,8 @@ import jakarta.ws.rs.core.UriInfo;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -88,6 +91,16 @@ public class DelegatingHttpRequest implements HttpRequest
    public MultivaluedMap<String, String> getDecodedFormParameters()
    {
       return delegate.getDecodedFormParameters();
+   }
+
+   @Override
+   public List<EntityPart> getFormEntityParts() {
+      return delegate.getFormEntityParts();
+   }
+
+   @Override
+   public Optional<EntityPart> getFormEntityPart(final String name) {
+      return delegate.getFormEntityPart(name);
    }
 
    @Override

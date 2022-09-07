@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterModifier;
 
 public class ResteasyObjectWriterInjector
 {

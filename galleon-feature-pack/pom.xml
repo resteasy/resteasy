@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>6.1.1.Final-SNAPSHOT</version>
+        <version>6.2.0.Final-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -73,9 +73,8 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-base</artifactId>
-            <classifier>jakarta</classifier>
+            <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+            <artifactId>jackson-jakarta-rs-base</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -84,9 +83,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <classifier>jakarta</classifier>
+            <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+            <artifactId>jackson-jakarta-rs-json-provider</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -96,8 +94,7 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <classifier>jakarta</classifier>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

@@ -18,6 +18,8 @@ import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
 import jakarta.annotation.Priority;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.SeBootstrap;
 import jakarta.servlet.ServletException;
 import jakarta.ws.rs.ApplicationPath;
@@ -274,7 +276,7 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
     */
    public UndertowJaxrsServer deploy(DeploymentInfo builder)
    {
-      manager = container.addDeployment(builder);
+      manager = container.addDeployment(configureDefaults(builder, getDeployment()));
       manager.deploy();
 
       try
@@ -358,5 +360,19 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
          }
       }
 
+   }
+
+   private DeploymentInfo configureDefaults(final DeploymentInfo deploymentInfo, final ResteasyDeployment deployment) {
+      // Check for a default multipart config. If not found and the application class is set, check there.
+      if (deploymentInfo.getDefaultMultipartConfig() == null) {
+         final Application application = deployment.getApplication();
+         if (application != null) {
+            final MultipartConfig multipartConfig = application.getClass().getAnnotation(MultipartConfig.class);
+            if (multipartConfig != null) {
+               deploymentInfo.setDefaultMultipartConfig(new MultipartConfigElement(multipartConfig));
+            }
+         }
+      }
+      return deploymentInfo;
    }
 }

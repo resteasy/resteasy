@@ -31,6 +31,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
@@ -84,9 +85,12 @@ import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -98,11 +102,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -1717,7 +1723,27 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    @Override
    public EntityPart.Builder createEntityPartBuilder(final String partName) throws IllegalArgumentException {
-      throw new UnsupportedOperationException("Pending implementation");
+      if (partName == null) {
+         throw new IllegalArgumentException(Messages.MESSAGES.nullParameter("partName"));
+      }
+      final Function<Class<? extends EntityPart.Builder>, EntityPart.Builder> constructor = builderClass -> {
+         try {
+            final Constructor<? extends EntityPart.Builder> c = builderClass.getConstructor(String.class);
+            return c.newInstance(partName);
+         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                  IllegalAccessException e) {
+            throw Messages.MESSAGES.failedToConstructClass(e, builderClass);
+         }
+      };
+      final Optional<EntityPart.Builder> found;
+      if (System.getSecurityManager() == null) {
+         found = PriorityServiceLoader.load(EntityPart.Builder.class, constructor)
+                 .first();
+      } else {
+         found = AccessController.doPrivileged((PrivilegedAction<Optional<EntityPart.Builder>>) () -> PriorityServiceLoader.load(EntityPart.Builder.class, constructor)
+                 .first());
+      }
+      return found.orElseThrow(() -> Messages.MESSAGES.noImplementationFound(EntityPart.Builder.class.getName()));
    }
 
    public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)

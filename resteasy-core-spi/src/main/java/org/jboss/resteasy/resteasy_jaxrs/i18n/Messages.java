@@ -9,9 +9,9 @@ import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionException;
+import java.util.function.Supplier;
 
 import jakarta.validation.ElementKind;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -21,6 +21,7 @@ import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.api.validation.ConstraintType;
+import org.jboss.resteasy.spi.config.Threshold;
 
 /**
  *
@@ -884,8 +885,15 @@ public interface Messages
    CompletionException noImplementationFound(String name);
 
    @Message(id = BASE + 2075, value = "Could no load default SSL context")
-   IllegalStateException couldNotLoadSslContext(@Context Throwable cause);
+   IllegalStateException couldNotLoadSslContext(@Cause Throwable cause);
 
    @Message(id = BASE + 2076, value = "A ResteasyDeployment object required")
    IllegalArgumentException deploymentRequired();
+
+   @Message(id = BASE + 2080, value = "The stream has already been exported.")
+   Supplier<IllegalStateException> alreadyExported();
+
+   @Message(id = BASE + 2081, value = "File limit of %s has been reached. The entity cannot be processed. Increase the " +
+           "size with the configuration property %s.")
+   IllegalStateException fileLimitReached(Threshold limit, String propertyName);
 }
