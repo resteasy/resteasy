@@ -48,7 +48,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build WildFly
-        run: 'mvn clean install -DskipTests -Dcheckstyle.skip=true -Denforcer.skip=true'
+        run: |
+          cd wildfly
+          mvn clean install -DskipTests -Dcheckstyle.skip=true -Denforcer.skip=true
       - id: version
         run: echo "::set-output name=wildfly-version::$(mvn -B help:evaluate -Dexpression=project.version -pl . | grep -v '^\[')"
       - name: Archive the repository
