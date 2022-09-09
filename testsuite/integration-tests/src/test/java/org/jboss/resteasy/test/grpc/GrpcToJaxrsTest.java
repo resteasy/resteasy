@@ -15,6 +15,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -29,6 +30,7 @@ import com.google.protobuf.Timestamp;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import io.grpc.netty.shaded.io.netty.channel.group.ChannelMatchers;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -64,22 +66,57 @@ public class GrpcToJaxrsTest
    @Deployment
    public static Archive<?> deploy()
    {
+	      WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
+	      war.addClass(io.grpc.netty.shaded.io.netty.channel.group.ChannelMatchers.class);
+	      war.addClass(com.google.common.util.concurrent.internal.InternalFutureFailureAccess.class);
+//	      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+////	            + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
+//	      + "Dependencies: com.google.guava services\n"));
+	      war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.14")));
+//	      TestUtil.addOtherLibrary(war, "jaxrs.example:jaxrs.example.grpc:jar:0.0.13");
+	      TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.1.1.Final-SNAPSHOT");
+	      TestUtil.addOtherLibrary(war, "org.wildfly.core:wildfly-server:jar:18.1.0.Final");
+	      TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-api:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-context:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-core:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-protobuf:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-protobuf-lite:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.grpc:grpc-stub:1.39.0");
+	      TestUtil.addOtherLibrary(war, "io.perfmark:perfmark-api:0.23.0");
+	      TestUtil.addOtherLibrary(war, "com.google.guava:failureaccess:jar:1.0.1");
+	      TestUtil.addOtherLibrary(war, "com.google.guava:guava:jar:31.0.1-jre");
+	      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+		      + "Dependencies: com.google.guava services\n"));
+	      WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+	      log.info(archive.toString(true));
+//	      archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
+	      return archive;
+   }
+
+   /*
+//	   io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder nsb;
+	   com.google.common.base.Preconditions p;
       WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
       war.addClass(io.grpc.netty.shaded.io.netty.channel.group.ChannelMatchers.class);
       war.addClass(com.google.common.util.concurrent.internal.InternalFutureFailureAccess.class);
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"));
+      TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.0.Final-SNAPSHOT");
+      TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
+//      TestUtil.addOtherLibrary(war, "io.grpc:grpc-api:jar:1.39.0");
+      TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:jar:1.39.0");
       war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.14")));
+      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+              + "Dependencies: org.jboss.resteasy.grpc-bridge-runtime export, io.grpc export, jakarta.enterprise.api export\n"));
       WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
       log.info(archive.toString(true));
+      archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
       return archive;
-   }
-
+    */
 //   private static String target = "localhost:9555";
    private static String target = "localhost:8082";
    private static CC1ServiceBlockingStub blockingStub;
    private static ManagedChannel channel;
-   org.jboss.weld.environment.se.WeldContainer x;
-   org.jboss.weld.environment.ContainerInstance y;
 
    private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, GrpcToJaxrsTest.class.getSimpleName());
