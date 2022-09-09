@@ -121,7 +121,7 @@ public class JavabufTranslatorGenerator {
    }
 
    public static void main(String[] args) {
-      if (args.length != 2) {
+      if (args == null || args.length != 2) {
          logger.info("need two args:");
          logger.info("  arg[0]: root directory");
          logger.info("  arg[1]: javabuf wrapper class name");

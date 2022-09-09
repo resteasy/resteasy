@@ -291,7 +291,7 @@ public class JavaToProtobufGenerator {
 
    public static void main(String[] args) throws IOException
    {
-      if (args.length != 4 && args.length != 5) {
+      if (args == null || (args.length != 4 && args.length != 5)) {
          logger.info("need four or five args");
          logger.info("  arg[0]: root directory");
          logger.info("  arg[1]: package to be used in .proto file");

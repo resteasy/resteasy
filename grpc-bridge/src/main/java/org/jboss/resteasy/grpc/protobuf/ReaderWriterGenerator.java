@@ -29,7 +29,7 @@ public class ReaderWriterGenerator {
    }
 
    public static void main(String[] args) {
-      if (args.length != 2) {
+      if (args == null || args.length != 2) {
          logger.info("need two args:");
          logger.info("  arg[0]: javabuf wrapper class name");
          logger.info("  arg[1]: .proto file prefix");

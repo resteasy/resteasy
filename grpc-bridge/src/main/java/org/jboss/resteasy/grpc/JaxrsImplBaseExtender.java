@@ -24,7 +24,7 @@ public class JaxrsImplBaseExtender {
    private Set<String> imports = new HashSet<String>();
 
    public static void main(String[] args) {
-      if (args.length != 3 && args.length != 4) {
+      if (args == null || (args.length != 3 && args.length != 4)) {
          logger.info("need three or four args:");
          logger.info("  arg[0]: .proto file prefix");
          logger.info("  arg[1]: servlet name");
@@ -37,7 +37,7 @@ public class JaxrsImplBaseExtender {
 
    public JaxrsImplBaseExtender(final String[] args) {
       servletName = args[1];
-      if (args.length == 4) {
+      if (args != null && args.length == 4) {
          inWildFly = !"false".equals(args[3]);
       }
       parse(args[0], args[2]);
