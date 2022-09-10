@@ -1,10 +1,11 @@
 package org.jboss.resteasy.grpc.protobuf;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -535,14 +536,8 @@ public class JavabufTranslatorGenerator {
             dir.mkdir();
          }
       }
-      File file = new File(root.append("/").append(translatorClass).append(".java").toString());
-      if (!file.exists()) {
-         file.createNewFile();
-      }
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      BufferedWriter bw = new BufferedWriter(fw);
-      bw.write(sb.toString());
-      bw.close();
+      Path path = Path.of(root.toString(), translatorClass + ".java");
+      Files.writeString(path, sb.toString(), StandardCharsets.UTF_8);
    }
 
    private static String fqnify(String s) {

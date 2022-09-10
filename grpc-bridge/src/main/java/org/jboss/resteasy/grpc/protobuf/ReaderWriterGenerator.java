@@ -1,14 +1,17 @@
 package org.jboss.resteasy.grpc.protobuf;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
+
+import static java.nio.file.StandardOpenOption.*;
 
 public class ReaderWriterGenerator {
 
@@ -224,25 +227,22 @@ public class ReaderWriterGenerator {
 
    private static void writeClass(Class<?> wrapperClass, String prefix, StringBuilder sbHeader, StringBuilder sbBody) throws IOException {
       String packageName = wrapperClass.getPackageName();
-      String path = "";
+      String p = "";
       for (String s : ("target/generated-sources/protobuf/grpc-java/" + packageName.replace(".", "/")).split("/")) {
-         path += s;
-         File dir = new File(path);
+         p += s;
+         File dir = new File(p);
          if(!dir.exists()){
             dir.mkdir();
          }
-         path += "/";
+         p += "/";
       }
-      File file = new File(path + prefix + "MessageBodyReaderWriter.java");
+      File file = new File(p + prefix + "MessageBodyReaderWriter.java");
       if (file.exists()) {
          return;
       }
-      file.createNewFile();
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      BufferedWriter bw = new BufferedWriter(fw);
-      bw.write(sbHeader.toString());
-      bw.write(sbBody.toString());
-      bw.close();
+      Path path = Path.of(p, prefix + "MessageBodyReaderWriter.java");
+      Files.writeString(path, sbHeader.toString(), StandardCharsets.UTF_8);
+      Files.writeString(path, sbBody.toString(), StandardCharsets.UTF_8, CREATE, APPEND, WRITE);
    }
 
    private static String javabufToJavaClass(String classname) {

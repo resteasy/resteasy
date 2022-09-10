@@ -134,7 +134,6 @@ public class JaxrsImplBaseExtender {
         .append("import org.jboss.resteasy.core.ResteasyContext;\n")
         .append("import org.jboss.resteasy.core.SynchronousDispatcher;\n")
         .append("import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;\n")
-        .append("import org.jboss.resteasy.grpc.runtime.GrpcCdiExtension;\n")
         .append("import org.jboss.resteasy.grpc.runtime.servlet.ServletConfigWrapper;\n")
 //        .append("import org.jboss.resteasy.plugins.grpc.sse.SseEvent;\n")
         .append("import org.jboss.resteasy.grpc.runtime.servlet.AsyncContextImpl;\n")

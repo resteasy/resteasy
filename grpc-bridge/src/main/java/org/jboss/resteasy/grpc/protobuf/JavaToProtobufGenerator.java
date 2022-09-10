@@ -1,11 +1,11 @@
 package org.jboss.resteasy.grpc.protobuf;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,10 +18,6 @@ import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import jakarta.ws.rs.container.AsyncResponse;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
 
@@ -59,6 +55,12 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.Log;
 import com.github.javaparser.utils.SourceRoot;
+
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Traverses a set of JAX-RS resources and creates a protobuf representation.
@@ -471,21 +473,17 @@ public class JavaToProtobufGenerator {
    }
 
    private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
-      String path = args[0];
+      String p = args[0];
       String generatedSources = "src/main/proto";
       for (String s : generatedSources.split("/")) {
-         path += "/" + s;
-         File dir = new File(path);
+         p += "/" + s;
+         File dir = new File(p);
          if(!dir.exists()){
             dir.mkdir();
          }
       }
-      File file = new File(path + "/" + args[3] + ".proto");
-      file.createNewFile();
-      FileWriter fw = new FileWriter(file.getAbsoluteFile());
-      BufferedWriter bw = new BufferedWriter(fw);
-      bw.write(sb.toString());
-      bw.close();
+      final Path path = Path.of(args[0], "src", "main", "proto", args[3] + ".proto");
+      Files.writeString(path, sb.toString(), StandardCharsets.UTF_8);
    }
 
    private static void createProtobufDirectory(String[] args) {

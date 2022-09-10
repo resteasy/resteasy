@@ -10,8 +10,8 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 public class ServletConfigWrapper implements ServletConfig {
 
    public static final String GRPC_JAXRS = "grpcJaxrs";
-   ServletConfig delegate;
-   String readerWriter;
+   private final ServletConfig delegate;
+   private final String readerWriter;
 
    public ServletConfigWrapper(final ServletConfig delegate, final String readerWriter) {
       this.delegate = delegate;

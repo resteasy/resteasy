@@ -3,7 +3,8 @@ package org.jboss.resteasy.grpc.runtime.servlet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.AsyncListener;
@@ -14,7 +15,7 @@ import jakarta.servlet.ServletResponse;
 
 public class AsyncContextImpl implements AsyncContext {
 
-   private static ExecutorService executorService = Executors.newCachedThreadPool();
+   private static ExecutorService executorService = ContextualExecutors.threadPool();
 
    private ServletRequest servletRequest;
    private ServletResponse servletResponse;
