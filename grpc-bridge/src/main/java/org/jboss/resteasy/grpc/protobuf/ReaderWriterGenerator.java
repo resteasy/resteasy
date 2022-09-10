@@ -84,7 +84,6 @@ public class ReaderWriterGenerator {
         .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";\n")
         .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;\n")
         .append("import org.jboss.resteasy.core.ResteasyContext;\n")
-        .append("import org.jboss.resteasy.grpc.runtime.servlet.ServletConfigWrapper;\n")
         ;
       for (Class<?> clazz : wrapperClass.getClasses()) {
          if (clazz.isInterface()) {

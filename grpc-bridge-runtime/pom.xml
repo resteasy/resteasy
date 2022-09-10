@@ -15,10 +15,6 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <version.io.grpc>1.39.0</version.io.grpc>
-      <version.undertow.servlet>2.2.14.Final</version.undertow.servlet>
-      <maven.compiler.release>11</maven.compiler.release>
-      <maven.compiler.source>11</maven.compiler.source>
-      <maven.compiler.target>11</maven.compiler.target>
    </properties>
 
    <dependencyManagement>
