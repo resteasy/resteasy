@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,8 +76,9 @@ public class ContextualExecutors {
      * Jakarta EE environment.
      * <p>
      * If executed in a Jakarta EE container which includes a default {@code ManagedExecutorService}, that executor
-     * is wrapped an said to be managed. If the default executor service cannot be found or if not being executed in a
-     * Jakarta EE container a new {@linkplain Executors#newCachedThreadPool() cached thread pool} will be wrapped.
+     * is wrapped and said to be managed. If the default executor service cannot be found or if not being executed in a
+     * Jakarta EE container the {@linkplain ForkJoinPool#commonPool()} common fork-join pool} will be wrapped and said
+     * to be managed.
      * </p>
      * <p>
      * In a Jakarta EE container the JNDI lookup name can be overridden with the {@code resteasy.async.executor.service.jndi}
@@ -87,12 +89,10 @@ public class ContextualExecutors {
      */
     public static ContextualExecutorService threadPool() {
         ExecutorService delegate = lookup(EXECUTOR_SERVICE_JNDI);
-        boolean managed = true;
         if (delegate == null) {
-            delegate = Executors.newCachedThreadPool(new ContextualThreadFactory("contextual-pool"));
-            managed = false;
+            delegate = ForkJoinPool.commonPool();
         }
-        return wrap(delegate, managed);
+        return wrap(delegate, true);
     }
 
     /**
