@@ -18,11 +18,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.jboss.resteasy.grpc.runtime.i18n.Messages;
-import org.jboss.resteasy.grpc.runtime.util.DateUtils;
-import org.jboss.resteasy.grpc.runtime.util.IteratorEnumeration;
-import org.jboss.resteasy.grpc.runtime.util.LocaleUtils;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
+import io.undertow.servlet.util.IteratorEnumeration;
+import io.undertow.util.DateUtils;
+import io.undertow.util.LocaleUtils;
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
