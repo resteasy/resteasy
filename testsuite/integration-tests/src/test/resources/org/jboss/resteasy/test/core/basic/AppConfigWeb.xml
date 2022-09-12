@@ -10,7 +10,7 @@
     </context-param>
 
     <context-param>
-        <param-name>javax.ws.rs.core.Application</param-name>
+        <param-name>jakarta.ws.rs.core.Application</param-name>
         <param-value>org.jboss.resteasy.test.core.basic.resource.AppConfigApplication</param-value>
     </context-param>
 

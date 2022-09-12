@@ -3,8 +3,8 @@ package org.jboss.resteasy.tracing.providers.jsonb;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingInfoFormat;
 import org.jboss.resteasy.tracing.api.providers.TextBasedRESTEasyTracingInfo;
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 
 public class JSONBJsonFormatRESTEasyTracingInfo extends TextBasedRESTEasyTracingInfo {
    private Jsonb mapper = JsonbBuilder.create();

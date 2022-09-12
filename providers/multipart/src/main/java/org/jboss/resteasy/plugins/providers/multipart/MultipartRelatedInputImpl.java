@@ -5,8 +5,8 @@ import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.dom.field.FieldName;
 import org.apache.james.mime4j.message.BodyPart;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -39,7 +39,7 @@ public class MultipartRelatedInputImpl extends MultipartInputImpl implements
    @Override
    public void parse(InputStream is) throws IOException {
       super.parse(is);
-      ContentTypeField contentTypeField = (ContentTypeField) mimeMessage
+      ContentTypeField contentTypeField = (ContentTypeField) getMimeMessage()
             .getHeader().getField(FieldName.CONTENT_TYPE);
       start = contentTypeField.getParameter("start");
       startInfo = contentTypeField.getParameter("start-info");

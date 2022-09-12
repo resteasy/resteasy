@@ -14,10 +14,16 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.EmbeddedServerHelper;
 import org.jboss.resteasy.util.PortProvider;
+import org.xnio.Options;
+import org.xnio.SslClientAuthMode;
 
-import javax.servlet.ServletException;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.annotation.Priority;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.servlet.ServletException;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +40,7 @@ import static io.undertow.servlet.Servlets.servlet;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Priority(150)
 public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsServer>
 {
    protected final PathHandler root = new PathHandler();
@@ -57,12 +64,41 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
    }
 
    @Override
+   public void start(final SeBootstrap.Configuration configuration) {
+      setHostname(configuration.host())
+              .setPort(configuration.port())
+              .setRootResourcePath(configuration.rootPath());
+      final Undertow.Builder builder = Undertow.builder()
+              .setHandler(root);
+      if ("HTTPS".equalsIgnoreCase(configuration.protocol())) {
+         builder.addHttpsListener(port, hostname, configuration.sslContext());
+      } else {
+         builder.addHttpListener(port, hostname);
+      }
+      switch (configuration.sslClientAuthentication()) {
+         case NONE:
+            builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.NOT_REQUESTED);
+            break;
+         case OPTIONAL:
+            builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUESTED);
+            return;
+         case MANDATORY:
+            builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUIRED);
+            break;
+      }
+      server = builder.build();
+      server.start();
+      // After the server starts we need to deploy
+      deploy();
+   }
+
+   @Override
    public UndertowJaxrsServer start()
    {
       server = Undertow.builder()
-         .addHttpListener(port, hostname)
-         .setHandler(root)
-         .build();
+              .addHttpListener(port, hostname)
+              .setHandler(root)
+              .build();
       server.start();
       return this;
    }
@@ -240,7 +276,7 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
     */
    public UndertowJaxrsServer deploy(DeploymentInfo builder)
    {
-      manager = container.addDeployment(builder);
+      manager = container.addDeployment(configureDefaults(builder, getDeployment()));
       manager.deploy();
 
       try
@@ -324,5 +360,19 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
          }
       }
 
+   }
+
+   private DeploymentInfo configureDefaults(final DeploymentInfo deploymentInfo, final ResteasyDeployment deployment) {
+      // Check for a default multipart config. If not found and the application class is set, check there.
+      if (deploymentInfo.getDefaultMultipartConfig() == null) {
+         final Application application = deployment.getApplication();
+         if (application != null) {
+            final MultipartConfig multipartConfig = application.getClass().getAnnotation(MultipartConfig.class);
+            if (multipartConfig != null) {
+               deploymentInfo.setDefaultMultipartConfig(new MultipartConfigElement(multipartConfig));
+            }
+         }
+      }
+      return deploymentInfo;
    }
 }

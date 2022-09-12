@@ -1,6 +1,6 @@
 package org.jboss.resteasy.links;
 
-import javax.el.ELContext;
+import jakarta.el.ELContext;
 
 /**
  * Implement this interface to wrap, modify or extend RESTEasy's ELContext with

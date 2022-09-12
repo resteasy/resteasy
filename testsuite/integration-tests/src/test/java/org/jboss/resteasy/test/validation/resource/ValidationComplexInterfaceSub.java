@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.constraints.Pattern;
-import javax.ws.rs.Path;
+import jakarta.validation.constraints.Pattern;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 @ValidationComplexClassInheritanceSubConstraint("[a-c]+")

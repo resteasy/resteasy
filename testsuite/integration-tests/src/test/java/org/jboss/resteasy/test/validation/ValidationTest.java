@@ -1,17 +1,16 @@
 package org.jboss.resteasy.test.validation;
 
 import java.util.Iterator;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
@@ -45,7 +44,7 @@ import org.junit.runner.RunWith;
 public class ValidationTest {
 
    static Client client;
-   protected final Logger logger = LogManager.getLogger(ValidationTest.class.getName());
+   protected final Logger logger = Logger.getLogger(ValidationTest.class.getName());
    private static final String ERR_ENTITY_MESSAGE = "The entity returned from the server is not the expected one";
    private static final String ERR_CONSTRAINT_MESSAGE = "The entity parameters are out of allowed values defined by validator";
    private static final String ERROR_HEADER_MESSAGE = "Header was null";

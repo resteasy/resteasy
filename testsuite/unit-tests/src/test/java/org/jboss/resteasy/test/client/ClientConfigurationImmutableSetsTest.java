@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.client;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.ext.Provider;
 
 import org.junit.AfterClass;
 import org.junit.Assert;

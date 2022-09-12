@@ -4,7 +4,7 @@ import org.jboss.logging.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class XmlJavaTypeAdapterAlienAdapter extends XmlAdapter<XmlJavaTypeAdapterHuman, XmlJavaTypeAdapterAlien> {
    public static AtomicInteger marshalCounter = new AtomicInteger(0);

@@ -2,7 +2,6 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -10,17 +9,18 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.SanitizedResponseHolder;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +30,7 @@ import java.util.Set;
  */
 public class ExceptionHandler
 {
+
    protected ResteasyProviderFactoryImpl providerFactory;
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean mapperExecuted;
@@ -103,6 +104,10 @@ public class ExceptionHandler
       }
       jaxrsResponse = unwrapException(request, e, logger);
       if (jaxrsResponse == null) {
+         jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e.getCause());
+      }
+      // This should never happen, but we need to be safe.
+      if (jaxrsResponse == null) {
          throw new UnhandledException(e.getCause());
       }
       return jaxrsResponse;
@@ -172,7 +177,8 @@ public class ExceptionHandler
          Response response = wae.getResponse();
          if (response != null) {
             try {
-               if (response.getEntity() != null) return response;
+               if (response.getEntity() != null)
+                  return wae instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) wae).getSanitizedResponse() : wae.getResponse();
             }
             catch(IllegalStateException ise) {
                // IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
@@ -225,23 +231,11 @@ public class ExceptionHandler
       LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(),
               request.getUri().getPath(), e);
 
-      Response response = e.getResponse();
+      Response response = e instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) e).getSanitizedResponse() : e.getResponse();
 
       if (response != null)
       {
-         BuiltResponse bResponse = (BuiltResponse)response;
-         if (bResponse.getStatus() == HttpResponseCodes.SC_BAD_REQUEST
-            || bResponse.getStatus() == HttpResponseCodes.SC_NOT_FOUND)
-         {
-            if (e.getMessage() != null)
-            {
-               Response.ResponseBuilder builder = bResponse.fromResponse(response);
-               builder.type(MediaType.TEXT_HTML).entity(e.getMessage());
-               return builder.build();
-            }
-         }
          return response;
-
       } else {
 
          Response.ResponseBuilder builder = Response.status(-1);
@@ -304,7 +298,7 @@ public class ExceptionHandler
       {
          LogMessages.LOGGER.failedToExecute(wae);
       }
-      Response response = wae.getResponse();
+      Response response = wae instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) wae).getSanitizedResponse() : wae.getResponse();
       return response;
    }
 
@@ -338,7 +332,13 @@ public class ExceptionHandler
             WebApplicationException wae = (WebApplicationException) e;
             if (wae.getResponse() != null && wae.getResponse().getEntity() != null)
             {
-               jaxrsResponse = wae.getResponse();
+               if (wae instanceof SanitizedResponseHolder)
+               {
+                  jaxrsResponse = ((SanitizedResponseHolder) wae).getSanitizedResponse();
+               } else
+               {
+                  jaxrsResponse = wae.getResponse();
+               }
             } else
             {
                // look at exception's subClass tree for possible mappers
@@ -378,8 +378,14 @@ public class ExceptionHandler
       }
 
       if (jaxrsResponse == null) {
+         // Get the default exception mapper if we've made it here
+         jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e);
+      }
+      // This should never happen, but we need to be safe.
+      if (jaxrsResponse == null) {
          throw new UnhandledException(e);
       }
       return jaxrsResponse;
    }
+
 }

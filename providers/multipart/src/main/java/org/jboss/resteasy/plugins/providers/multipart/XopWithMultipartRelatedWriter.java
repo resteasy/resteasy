@@ -6,11 +6,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
@@ -58,7 +58,7 @@ public class XopWithMultipartRelatedWriter extends
               workers);
       xopWithMultipartRelatedJAXBProvider.writeTo(t, type, genericType,
               annotations, mediaType, httpHeaders, xopPackage);
-      writeRelated(xopPackage, mediaType, httpHeaders, entityStream);
+      writeRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
    }
 
    @Override
@@ -73,6 +73,6 @@ public class XopWithMultipartRelatedWriter extends
        } catch (IOException e) {
            return ProviderHelper.completedException(e);
        }
-       return asyncWriteRelated(xopPackage, mediaType, httpHeaders, entityStream);
+       return asyncWriteRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
    }
 }

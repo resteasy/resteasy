@@ -3,18 +3,17 @@ package org.jboss.resteasy.test.cdi.extensions;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.enterprise.inject.spi.Extension;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBoston;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBostonBean;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBostonBeanExtension;
@@ -29,7 +28,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -46,7 +44,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class BeanExtensionTest {
-   protected static final Logger log = LogManager.getLogger(BeanExtensionTest.class.getName());
+   protected static final Logger log = Logger.getLogger(BeanExtensionTest.class.getName());
 
    @SuppressWarnings(value = "unchecked")
    @Deployment
@@ -55,7 +53,7 @@ public class BeanExtensionTest {
       war.addClasses(UtilityProducer.class, Utilities.class)
             .addClasses(CDIExtensionsBostonBeanExtension.class, CDIExtensionsBoston.class, CDIExtensionsBostonBean.class)
             .addClasses(CDIExtensionsResource.class, CDIExtensionsTestReader.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
             .addAsServiceProvider(Extension.class, CDIExtensionsBostonBeanExtension.class);
 
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClasses(CDIExtensionsBostonHolder.class, CDIExtensionsBostonlLeaf.class);

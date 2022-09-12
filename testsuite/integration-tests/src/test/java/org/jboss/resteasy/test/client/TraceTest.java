@@ -1,11 +1,10 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.dmr.ModelNode;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.client.resource.TraceResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
@@ -23,10 +22,10 @@ import org.wildfly.extras.creaper.core.online.operations.Address;
 import org.wildfly.extras.creaper.core.online.operations.Operations;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -43,7 +42,7 @@ public class TraceTest extends ClientTestBase{
 
    private static ModelNode origDisallowedMethodsValue;
    private static Address address = Address.subsystem("undertow").and("server", "default-server").and("http-listener", "default");
-   protected static final Logger logger = LogManager.getLogger(TraceTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(TraceTest.class.getName());
    private static Client client;
 
    @HttpMethod("TRACE")

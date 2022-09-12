@@ -4,8 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 public abstract class ResteasyUriBuilder extends UriBuilder
 {

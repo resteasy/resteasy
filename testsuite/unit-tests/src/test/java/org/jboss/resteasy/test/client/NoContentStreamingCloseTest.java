@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestFilter;
@@ -9,11 +8,12 @@ import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestRespon
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -44,7 +44,7 @@ public class NoContentStreamingCloseTest {
             .request() //
             .get(InputStream.class); // nowhere a response to close
       Assert.assertNotNull(NULL_STREAM_ERROR_MSG, is);
-      String str = new String(IOUtils.toByteArray(is));
+      String str = new String(is.readAllBytes(), StandardCharsets.UTF_8);
       is.close();
       Assert.assertEquals(RESPONSE_ERROR_MSG, expected, str);
       // the stream returned by the internal httpclient must be closed!
@@ -70,7 +70,7 @@ public class NoContentStreamingCloseTest {
             .request() //
             .get(InputStream.class);
       Assert.assertNotNull(NULL_STREAM_ERROR_MSG, is);
-      byte[] readden = IOUtils.toByteArray(is);
+      byte[] readden = is.readAllBytes();
       is.close();
       Assert.assertEquals(RESPONSE_ERROR_MSG, 0, readden.length);
       Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
@@ -95,7 +95,7 @@ public class NoContentStreamingCloseTest {
             .request() //
             .get(Reader.class);
       Assert.assertNotNull("Reader should not be null", in);
-      String readden = IOUtils.toString(in);
+      String readden = new String(testInputStream.readAllBytes(), StandardCharsets.UTF_8);
       in.close();
       Assert.assertEquals(RESPONSE_ERROR_MSG, 0, readden.length());
       Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
@@ -121,7 +121,7 @@ public class NoContentStreamingCloseTest {
             .get(DataSource.class);
       Assert.assertNotNull("DataSource should not be null", in);
       InputStream is = in.getInputStream();
-      Assert.assertEquals(RESPONSE_ERROR_MSG, 0, IOUtils.toByteArray(is).length);
+      Assert.assertEquals(RESPONSE_ERROR_MSG, 0, is.readAllBytes().length);
       is.close();
       Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
 
@@ -147,7 +147,7 @@ public class NoContentStreamingCloseTest {
             .get(Source.class);
       Assert.assertNotNull("Source should not be null", in);
       InputStream is = ((StreamSource) in).getInputStream();
-      Assert.assertEquals(RESPONSE_ERROR_MSG, 0, IOUtils.toByteArray(is).length);
+      Assert.assertEquals(RESPONSE_ERROR_MSG, 0, is.readAllBytes().length);
       is.close();
       Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
 

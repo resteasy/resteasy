@@ -1,11 +1,25 @@
 /*
- * JBoss, the OpenSource J2EE webOS
+ * JBoss, Home of Professional Open Source.
  *
- * Distributable under LGPL license.
- * See terms of license at gnu.org.
+ * Copyright 2022 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jboss.resteasy.core.providerfactory;
 
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.EntityPart;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
@@ -19,29 +33,29 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.RxInvoker;
-import javax.ws.rs.client.RxInvokerProvider;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.Link.Builder;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.Variant.VariantListBuilder;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.RxInvoker;
+import jakarta.ws.rs.client.RxInvokerProvider;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.Link.Builder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.Variant.VariantListBuilder;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -49,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 /**
  *
@@ -632,7 +647,39 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    }
 
    @Override
+   public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
+      return resteasyProviderFactoryDelegator.getThrowableExceptionMapper();
+   }
+
+   @Override
    protected boolean isOnServer() {
       return resteasyProviderFactoryDelegator.isOnServer();
+   }
+
+   @Override
+   public boolean hasProperty(final String name) {
+      return resteasyProviderFactoryDelegator.hasProperty(name);
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      return resteasyProviderFactoryDelegator.createConfigurationBuilder();
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Application application,
+                                                          final SeBootstrap.Configuration configuration) {
+      return resteasyProviderFactoryDelegator.bootstrap(application, configuration);
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Class<? extends Application> clazz,
+                                                          final SeBootstrap.Configuration configuration) {
+      return resteasyProviderFactoryDelegator.bootstrap(clazz, configuration);
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(final String partName) throws IllegalArgumentException {
+      return resteasyProviderFactoryDelegator.createEntityPartBuilder(partName);
    }
 }

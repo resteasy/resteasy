@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.core.basic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.InvalidMediaTypeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -17,8 +16,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -30,7 +29,7 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class InvalidMediaTypeTest {
 
-   protected static final Logger logger = LogManager.getLogger(InvalidMediaTypeTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(InvalidMediaTypeTest.class.getName());
 
    @Deployment
    public static Archive<?> deploy() {

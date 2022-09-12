@@ -32,9 +32,10 @@ import io.netty.handler.codec.http.DefaultHttpContent;
  *
  */
 public class ChunkOutputStream extends AsyncOutputStream {
-   final ByteBuf buffer;
-   final ChannelHandlerContext ctx;
-   final NettyHttpResponse response;
+   private final Object writeLock = new Object();
+   private final ByteBuf buffer;
+   private final ChannelHandlerContext ctx;
+   private final NettyHttpResponse response;
 
    ChunkOutputStream(final NettyHttpResponse response, final ChannelHandlerContext ctx, final int chunksize) {
       this.response = response;
@@ -47,16 +48,20 @@ public class ChunkOutputStream extends AsyncOutputStream {
 
    @Override
    public void write(int b) throws IOException {
-      if (buffer.maxWritableBytes() < 1) {
-         flush();
+      synchronized (writeLock) {
+         if (buffer.maxWritableBytes() < 1) {
+            flush();
+         }
+         buffer.writeByte(b);
       }
-      buffer.writeByte(b);
    }
 
    public void reset()
    {
       if (response.isCommitted()) throw new IllegalStateException(Messages.MESSAGES.responseIsCommitted());
-      buffer.clear();
+      synchronized (writeLock) {
+         buffer.clear();
+      }
    }
 
    @Override
@@ -76,15 +81,17 @@ public class ChunkOutputStream extends AsyncOutputStream {
       int dataToWriteOffset = off;
       int spaceLeftInCurrentChunk;
       MultiPromise mp = new MultiPromise(ctx, promise);
-      while ((spaceLeftInCurrentChunk = buffer.maxWritableBytes()) < dataLengthLeftToWrite) {
-         buffer.writeBytes(b, dataToWriteOffset, spaceLeftInCurrentChunk);
-         dataToWriteOffset = dataToWriteOffset + spaceLeftInCurrentChunk;
-         dataLengthLeftToWrite = dataLengthLeftToWrite - spaceLeftInCurrentChunk;
-         flush(mp.newPromise());
-      }
-      if (dataLengthLeftToWrite > 0) {
-         buffer.writeBytes(b, dataToWriteOffset, dataLengthLeftToWrite);
-         flush(mp.newPromise());
+      synchronized (writeLock) {
+         while ((spaceLeftInCurrentChunk = buffer.maxWritableBytes()) < dataLengthLeftToWrite) {
+            buffer.writeBytes(b, dataToWriteOffset, spaceLeftInCurrentChunk);
+            dataToWriteOffset = dataToWriteOffset + spaceLeftInCurrentChunk;
+            dataLengthLeftToWrite = dataLengthLeftToWrite - spaceLeftInCurrentChunk;
+            flush(mp.newPromise());
+         }
+         if (dataLengthLeftToWrite > 0) {
+            buffer.writeBytes(b, dataToWriteOffset, dataLengthLeftToWrite);
+            flush(mp.newPromise());
+         }
       }
       mp.readyToForward();
    }
@@ -95,14 +102,16 @@ public class ChunkOutputStream extends AsyncOutputStream {
    }
 
    private void flush(ChannelPromise promise) throws IOException {
-      int readable = buffer.readableBytes();
-      if (readable == 0) {
-         promise.setSuccess();
-         return;
+      synchronized (writeLock) {
+         int readable = buffer.readableBytes();
+         if (readable == 0) {
+            promise.setSuccess();
+            return;
+         }
+         if (!response.isCommitted()) response.prepareChunkStream();
+         ctx.writeAndFlush(new DefaultHttpContent(buffer.copy()), promise);
+         buffer.clear();
       }
-      if (!response.isCommitted()) response.prepareChunkStream();
-      ctx.writeAndFlush(new DefaultHttpContent(buffer.copy()), promise);
-      buffer.clear();
       super.flush();
    }
 

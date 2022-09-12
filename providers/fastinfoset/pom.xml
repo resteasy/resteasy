@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.7.0-SNAPSHOT</version>
-	    <relativePath>../../pom.xml</relativePath>
+        <artifactId>providers-pom</artifactId>
+        <version>6.2.0.Final-SNAPSHOT</version>
+	    <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-fastinfoset-provider</artifactId>
     <packaging>jar</packaging>
@@ -42,10 +42,16 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
+            <!-- This is a compile time only requirement -->
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
+            <!-- This is a compile time only requirement -->
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency> 
     </dependencies>
 

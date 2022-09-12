@@ -23,14 +23,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.SseEventSource;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -205,8 +205,8 @@ public class PublisherResponseTest {
       source.close();
       Assert.assertEquals(30, collector.size());
       Assert.assertEquals(0, errors.size());
-      Assert.assertEquals("0-1", collector.get(0));
-      Assert.assertEquals("1-1", collector.get(1));
+      Assert.assertEquals("0-2", collector.get(0));
+      Assert.assertEquals("1-2", collector.get(1));
    }
 
    /**

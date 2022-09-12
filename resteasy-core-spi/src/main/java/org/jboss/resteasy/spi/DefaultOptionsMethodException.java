@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * This exception is thrown when the client invokes HTTP OPTIONS operation and the JAX-RS resource

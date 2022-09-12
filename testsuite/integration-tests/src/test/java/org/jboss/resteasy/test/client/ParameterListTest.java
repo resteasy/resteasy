@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.test.client.resource.ParameterListInterface;
 import org.jboss.resteasy.test.client.resource.ParameterListResource;
@@ -19,9 +18,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -36,7 +35,7 @@ import java.util.TreeSet;
 @RunAsClient
 public class ParameterListTest extends ClientTestBase{
 
-   protected static final Logger logger = LogManager.getLogger(ParameterListTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ParameterListTest.class.getName());
 
    private static final String ERROR_MESSAGE = "Wrong parameters in response received";
    private static Client restClient;

@@ -7,8 +7,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.weld.proxy.WeldClientProxy;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.ws.rs.WebApplicationException;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.ws.rs.WebApplicationException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
@@ -23,8 +23,8 @@ import java.util.concurrent.CompletionStage;
  */
 public class CdiPropertyInjector implements PropertyInjector
 {
-   private PropertyInjector delegate;
-   private Class<?> clazz;
+   private final PropertyInjector delegate;
+   private final Class<?> clazz;
    private boolean injectorEnabled = true;
 
    public CdiPropertyInjector(final PropertyInjector delegate, final Class<?> clazz, final Map<Class<?>, Type> sessionBeanInterface, final BeanManager manager)

@@ -4,14 +4,16 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+import org.jboss.resteasy.concurrent.ContextualScheduledExecutorService;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.UriBuilder;
 
 import java.net.URI;
 import java.security.AccessController;
@@ -27,8 +29,8 @@ import java.util.concurrent.ScheduledExecutorService;
 public class ResteasyClientImpl implements ResteasyClient
 {
    protected final ClientHttpEngine httpEngine;
-   protected final ExecutorService asyncInvocationExecutor;
-   protected final ScheduledExecutorService scheduledExecutorService;
+   private final ExecutorService asyncInvocationExecutor;
+   private final ContextualScheduledExecutorService scheduledExecutorService;
    protected ClientConfiguration configuration;
    protected boolean closed;
    protected boolean cleanupExecutor;
@@ -36,6 +38,13 @@ public class ResteasyClientImpl implements ResteasyClient
 
    protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor,
                                 final ScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration)
+   {
+      this(httpEngine, asyncInvocationExecutor, cleanupExecutor, ContextualExecutors.wrap(scheduledExecutorService), configuration);
+   }
+
+
+   protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor,
+                                final ContextualScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration)
    {
       this.cleanupExecutor = cleanupExecutor;
       this.httpEngine = httpEngine;
@@ -46,7 +55,7 @@ public class ResteasyClientImpl implements ResteasyClient
 
    protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor, final boolean cleanupExecutor, final ClientConfiguration configuration)
    {
-      this(httpEngine, asyncInvocationExecutor, cleanupExecutor, null, configuration);
+      this(httpEngine, asyncInvocationExecutor, cleanupExecutor, ContextualExecutors.scheduledThreadPool(), configuration);
    }
 
    public ClientHttpEngine httpEngine()
@@ -101,6 +110,18 @@ public class ResteasyClientImpl implements ResteasyClient
                   }
                });
             }
+         }
+         if (System.getSecurityManager() == null) {
+            if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
+               scheduledExecutorService.shutdown();
+            }
+         } else {
+            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+               if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
+                  scheduledExecutorService.shutdown();
+               }
+               return null;
+            });
          }
       }
       catch (Exception e)

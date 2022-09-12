@@ -1,10 +1,35 @@
 package org.jboss.resteasy.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -19,44 +44,36 @@ import org.wildfly.extras.creaper.core.online.ModelNodeResult;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
 
-import javax.ws.rs.core.Application;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.MalformedInputException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Base util class for RESTEasy testing.
  */
 public class TestUtil {
 
-   protected static Logger logger;
+   protected static final Logger logger = Logger.getLogger(TestUtil.class.getName());
 
    private static String baseResourcePath = new StringBuilder()
          .append("src").append(File.separator)
          .append("test").append(File.separator)
          .append("resources").append(File.separator).toString();
+
+   private static final boolean MODULAR_JVM;
+
    /**
     * Try to initialize logger. This is unsuccessful on EAP deployment, because EAP do not contain log4j.
     * Logger is not necessary for this class. Some methods could be used without it.
     */
    static {
-      try {
-         logger = LogManager.getLogger(TestUtil.class.getName());
-      } catch (NoClassDefFoundError e) {
-         // unable to initialize logger, finishContainerPrepare method could not be used
+
+      // Shouldn't happen, but we'll assume we're not a modular environment
+      final String javaSpecVersion = System.getProperty("java.specification.version");
+      boolean modularJvm = false;
+      if (javaSpecVersion != null) {
+         final Matcher matcher = Pattern.compile("^(?:1\\.)?(\\d+)$").matcher(javaSpecVersion);
+         if (matcher.find()) {
+            modularJvm = Integer.parseInt(matcher.group(1)) >= 9;
+         }
       }
+      MODULAR_JVM = modularJvm;
    }
    /**
     * Initialize deployment.
@@ -123,24 +140,7 @@ public class TestUtil {
       }
 
       if (contextParams != null && contextParams.size() > 0 && !war.contains("WEB-INF/web.xml")) {
-         StringBuilder webXml = new StringBuilder();
-         webXml.append("<web-app version=\"3.0\" xmlns=\"http://java.sun.com/xml/ns/javaee\" \n");
-         webXml.append(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n");
-         webXml.append(" xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd\"> \n");
-         for (Map.Entry<String, String> entry : contextParams.entrySet()) {
-            String paramName = entry.getKey();
-            String paramValue = entry.getValue();
-            logger.info("Context param " + paramName + " value " + paramValue);
-
-            webXml.append("<context-param>\n");
-            webXml.append("<param-name>" + paramName + "</param-name>\n");
-            webXml.append("<param-value>" + paramValue + "</param-value>\n");
-            webXml.append("</context-param>\n");
-         }
-
-         webXml.append("</web-app>\n");
-         Asset resource = new StringAsset(webXml.toString());
-         war.addAsWebInfResource(resource, "web.xml");
+         war.addAsWebInfResource(createWebXml(null, contextParams), "web.xml");
       }
 
       // prepare class list for getClasses function of TestApplication class
@@ -175,10 +175,40 @@ public class TestUtil {
       return war;
    }
 
+   /**
+    * Returns the host name defined by the {@code wildfly.management.host} system property, {@code node} system property
+    * or {@code localhost} by default.
+    *
+    * @return the management host name
+    */
+   public static String getManagementHost() {
+      return System.getProperty("wildfly.management.host", PortProviderUtil.getHost());
+   }
+
+   /**
+    * Returns the management port defined by the {@code wildfly.management.port} or {@code 9990} by default.
+    *
+    * @return the management port
+    */
+   public static int getManagementPort() {
+      return Integer.parseInt(System.getProperty("wildfly.management.port", "9990"));
+   }
+
+   /**
+    * Returns the management port by the {@code wildfly.management.port} or {@code 9990} by default plus the offset.
+    *
+    * @param offset the offset for the default port
+    *
+    * @return the offset management port
+    */
+   public static int getManagementPort(final int offset) {
+      return getManagementPort() + offset;
+   }
+
    public static OnlineManagementClient clientInit() throws IOException {
       OnlineOptions onlineOptions = OnlineOptions
                .standalone()
-               .hostAndPort(PortProviderUtil.getHost(), 9990) // 9990 is default port for EAP 7
+               .hostAndPort(PortProviderUtil.getHost(), getManagementPort()) // 9990 is default port for EAP 7
                .connectionTimeout(120000)
                .build();
       return ManagementClient.online(onlineOptions);
@@ -187,7 +217,7 @@ public class TestUtil {
    public static OnlineManagementClient clientInit(int portOffset) throws IOException {
       OnlineOptions onlineOptions = OnlineOptions
             .standalone()
-            .hostAndPort("localhost", 9990 + portOffset) // 9990 is default port for EAP 7
+            .hostAndPort("localhost", getManagementPort(portOffset)) // 9990 is default port for EAP 7
             .connectionTimeout(120000)
             .build();
       return ManagementClient.online(onlineOptions);
@@ -315,6 +345,15 @@ public class TestUtil {
 
    public static boolean isIbmJdk() {
       return System.getProperty("java.vendor").toLowerCase().contains("ibm");
+   }
+
+   /**
+    * Indicates whether or not the current JVM is a modular (Java 9+) JVM.
+    *
+    * @return {@code true} if this is a modular JVM, otherwise {@code false}
+    */
+   public static boolean isModularJvm() {
+      return MODULAR_JVM;
    }
 
    /**
@@ -471,5 +510,176 @@ public class TestUtil {
          Assert.fail("Can't get the operating system name");
       }
       return (osName.indexOf("Windows") > -1) || (osName.indexOf("windows") > -1);
+   }
+
+   /**
+    * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+    *
+    * @param base the base URL
+    * @param path the path to append
+    *
+    * @return the newly create URI
+    *
+    * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+    * @see URI
+    */
+   public static URI generateUri(final URL base, final String path) throws URISyntaxException {
+      if (path == null || path.isEmpty()) {
+         return base.toURI();
+      }
+      return generateUri(base.toString(), path);
+   }
+
+   /**
+    * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+    *
+    * @param base the base URL
+    * @param path the path to append
+    *
+    * @return the newly create URI
+    *
+    * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+    * @see URI
+    */
+   public static URI generateUri(final URI base, final String path) throws URISyntaxException {
+      if (path == null || path.isEmpty()) {
+         return base;
+      }
+      return generateUri(base.toString(), path);
+   }
+
+   /**
+    * Creates a {@code beans.xml} file which uses a {@code bean-discovery-mode} of "all".
+    *
+    * @return a {@code beans.xml} asset
+    */
+   public static Asset createBeansXml() {
+      return new StringAsset("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+              "<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\"\n" +
+              "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+              "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd\"\n" +
+              "       version=\"3.0\" bean-discovery-mode=\"all\">\n" +
+              "</beans>");
+   }
+
+   /**
+    * Creates a {@code web.xml} file.
+    * <p>
+    * If the application is non-null a servlet entry is added. If the given annotation is annotated with
+    * {@link MultipartConfig @MultiConfig} that entry is added to the {@code web.xml}. The
+    * {@code <async-supported>true</async-supported>} entry is also added. The servlet name will be the name of the
+    * application.
+    * </p>
+    *
+    * @param application   the application to add a servlet or {@code null} to use annotation scanning
+    * @param contextParams the optional context parameters to add
+    *
+    * @return a {@code web.xml} file
+    */
+   public static Asset createWebXml(final Class<? extends Application> application,
+                                    final Map<String, String> contextParams) {
+      final StringBuilder webXml = new StringBuilder()
+              .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+              .append("<web-app xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" \n")
+              .append("   xmlns:xsi=\"https://www.w3.org/2001/XMLSchema-instance\" \n")
+              .append("   xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd\"\n")
+              .append("   version=\"5.0\">\n");
+      for (Map.Entry<String, String> entry : contextParams.entrySet()) {
+         final String paramName = entry.getKey();
+         final String paramValue = entry.getValue();
+         logger.info("Context param " + paramName + " value " + paramValue);
+
+         webXml.append("    <context-param>\n")
+                 .append("        <param-name>").append(paramName).append("</param-name>\n")
+                 .append("        <param-value>").append(paramValue).append("</param-value>\n")
+                 .append("    </context-param>\n");
+      }
+
+      if (application != null) {
+         final String servletName = application.getName();
+         webXml.append("    <servlet>\n")
+                 .append("        <servlet-name>")
+                 .append(servletName)
+                 .append("</servlet-name>\n")
+                 .append("        <servlet-class>")
+                 .append(HttpServlet30Dispatcher.class.getName())
+                 .append("</servlet-class>\n")
+                 .append("        <init-param>\n")
+                 .append("            <param-name>")
+                 .append(Application.class.getName())
+                 .append("</param-name>\n")
+                 .append("            <param-value>")
+                 .append(application.getName())
+                 .append("</param-value>\n")
+                 .append("        </init-param>\n")
+                 .append("        <async-supported>true</async-supported>\n");
+         final MultipartConfig multipartConfig = application.getAnnotation(MultipartConfig.class);
+         final MultipartConfigElement multipartConfigElement;
+         if (multipartConfig != null) {
+            multipartConfigElement = new MultipartConfigElement(multipartConfig);
+         } else {
+            multipartConfigElement = null;
+         }
+         if (multipartConfigElement != null) {
+            webXml.append("        <multipart-config>\n")
+                    .append("            <max-file-size>")
+                    .append(multipartConfigElement.getMaxFileSize())
+                    .append("</max-file-size>\n")
+                    .append("            <max-request-size>")
+                    .append(multipartConfigElement.getMaxRequestSize())
+                    .append("</max-request-size>\n")
+                    .append("            <file-size-threshold>")
+                    .append(multipartConfigElement.getFileSizeThreshold())
+                    .append("</file-size-threshold>\n")
+                    .append("            <location>")
+                    .append(multipartConfigElement.getLocation())
+                    .append("</location>\n")
+                    .append("        </multipart-config>\n");
+         }
+         webXml.append("    </servlet>\n");
+
+         final ApplicationPath applicationPath = application.getAnnotation(ApplicationPath.class);
+         webXml.append("    <servlet-mapping>\n")
+                 .append("        <servlet-name>").append(servletName).append("</servlet-name>\n");
+         if (applicationPath != null) {
+            final String pattern = applicationPath.value();
+            webXml.append("        <url-pattern>")
+                    .append(pattern.endsWith("/") ? pattern + "*" : pattern + "/*")
+                    .append("</url-pattern>\n");
+         } else {
+            webXml.append("        <url-pattern>").append("/*").append("</url-pattern>\n");
+         }
+         webXml.append("    </servlet-mapping>\n");
+      }
+
+      webXml.append("</web-app>\n");
+      return new StringAsset(webXml.toString());
+   }
+
+   /**
+    * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+    *
+    * @param base the base URL
+    * @param path the path to append
+    *
+    * @return the newly create URI
+    *
+    * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+    * @see URI
+    */
+   private static URI generateUri(final String base, final String path) throws URISyntaxException {
+      final StringBuilder builder = new StringBuilder(base);
+      if (builder.charAt(builder.length() - 1) == '/') {
+         if (path.charAt(0) == '/') {
+            builder.append(path.substring(1));
+         } else {
+            builder.append(path);
+         }
+      } else if (path.charAt(0) == '/') {
+         builder.append(path.substring(1));
+      } else {
+         builder.append('/').append(path);
+      }
+      return new URI(builder.toString());
    }
 }

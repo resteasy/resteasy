@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.cdi.injection.resource.FinalMethodSuperclass;
 import org.jboss.resteasy.test.cdi.injection.resource.NonProxyableProviderResource;
@@ -25,10 +24,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class NonProxyableProviderTest {
 
-   protected static final Logger logger = LogManager.getLogger(
+   protected static final Logger logger = Logger.getLogger(
       NonProxyableProviderTest.class.getName());
 
    Client client;

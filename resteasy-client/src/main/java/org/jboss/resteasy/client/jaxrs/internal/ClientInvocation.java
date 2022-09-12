@@ -8,46 +8,50 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotAcceptableException;
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.RedirectionException;
-import javax.ws.rs.ServerErrorException;
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.NotAcceptableException;
+import jakarta.ws.rs.NotAllowedException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.RedirectionException;
+import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.ServiceUnavailableException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.InvocationCallback;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor;
+import org.jboss.resteasy.client.jaxrs.engines.ReactiveClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
@@ -158,6 +162,9 @@ public class ClientInvocation implements Invocation
          {
             if (response.getMediaType() == null)
             {
+               if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                  throw Messages.MESSAGES.noContentTypeFound(response);
+               }
                return null;
             }
             else
@@ -187,6 +194,9 @@ public class ClientInvocation implements Invocation
 
             }
             throw wae;
+         }
+         catch (ResponseProcessingException e) {
+            throw e;
          }
          catch (Throwable throwable)
          {
@@ -559,8 +569,21 @@ public class ClientInvocation implements Invocation
    private <T> Future<T> doSubmit(boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
       if (client.httpEngine() instanceof AsyncClientHttpEngine)
       {
-         return asyncSubmit(getFutureExtractorFunction(buffered, callback), extractor,
-               getAsyncAbortedFunction(callback), getAsyncExceptionFunction(callback));
+         return submitRequest(extractor, buffered)
+                 .whenComplete((response, error) -> {
+                    if (callback != null) {
+                       if (error != null) {
+                          callback.failed(error);
+                       } else {
+                          try {
+                             callback.completed(response);
+                          } catch (Throwable t) {
+                             LogMessages.LOGGER.exceptionIgnored(t);
+                          }
+                       }
+                    }
+                 })
+                 .toCompletableFuture();
       }
       else
       {
@@ -572,36 +595,14 @@ public class ClientInvocation implements Invocation
        return client.asyncInvocationExecutor();
    }
 
-   private <T> Function<ResultExtractor<T>, CompletableFuture<T>> getCompletableFutureExtractorFunction(boolean buffered) {
+   private <T> Function<ResultExtractor<T>, Publisher<T>> getPublisherExtractorFunction(boolean buffered) {
       final ClientHttpEngine httpEngine = client.httpEngine();
-      return (httpEngine instanceof AsyncClientHttpEngine)
-            ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, ext, asyncInvocationExecutor()) : null;
-   }
-
-   private <T> Function<ResultExtractor<T>, Future<T>> getFutureExtractorFunction(boolean buffered, InvocationCallback<T> callback) {
-      final ClientHttpEngine httpEngine = client.httpEngine();
-      return (httpEngine instanceof AsyncClientHttpEngine)
-            ? ext -> ((AsyncClientHttpEngine) httpEngine).submit(this, buffered, callback, ext) : null;
-   }
-
-   private static <T> Function<T, Future<T>> getAsyncAbortedFunction(InvocationCallback<T> callback) {
-      return result -> {
-         callCompletedNoThrow(callback, result);
-         return CompletableFuture.completedFuture(result);
-      };
-   }
-
-   private static <T> Function<Exception, Future<T>> getAsyncExceptionFunction(InvocationCallback<T> callback) {
-      return ex -> {
-         callFailedNoThrow(callback, ex);
-         CompletableFuture<T> completableFuture = new CompletableFuture<>();
-         completableFuture.completeExceptionally(new ExecutionException(ex));
-         return completableFuture;
-      };
+      return (httpEngine instanceof ReactiveClientHttpEngine)
+          ? ext -> ((ReactiveClientHttpEngine) httpEngine).submitRx(this, buffered, ext) : null;
    }
 
    @SuppressWarnings("unchecked")
-   private static <T> ResultExtractor<T> getGenericTypeExtractor(GenericType<T> responseType) {
+   protected static <T> ResultExtractor<T> getGenericTypeExtractor(GenericType<T> responseType) {
       return response -> {
          if (responseType.getRawType().equals(Response.class))
             return (T) response;
@@ -610,7 +611,7 @@ public class ClientInvocation implements Invocation
    }
 
    @SuppressWarnings("unchecked")
-   private static <T> ResultExtractor<T> getResponseTypeExtractor(Class<T> responseType) {
+   protected static <T> ResultExtractor<T> getResponseTypeExtractor(Class<T> responseType) {
       return response -> {
          if (Response.class.equals(responseType))
             return (T) response;
@@ -636,19 +637,85 @@ public class ClientInvocation implements Invocation
    private <T> CompletableFuture<T> doSubmit(ResultExtractor<T> extractor, boolean buffered) {
       if (client.httpEngine() instanceof AsyncClientHttpEngine)
       {
-         return asyncSubmit(getCompletableFutureExtractorFunction(buffered),
-               extractor,
-               result -> CompletableFuture.completedFuture(result),
-               ex -> {
-                  CompletableFuture<T> completableFuture = new CompletableFuture<>();
-                  completableFuture.completeExceptionally(new ExecutionException(ex));
-                  return completableFuture;
-               });
+         return submitRequest(extractor, buffered)
+                 .toCompletableFuture();
       }
       else
       {
          return executorSubmit(asyncInvocationExecutor(), null, extractor);
       }
+   }
+
+   class ReactiveInvocation {
+      private final ReactiveClientHttpEngine reactiveEngine;
+
+      ReactiveInvocation(final ReactiveClientHttpEngine reactiveEngine) {
+         this.reactiveEngine = reactiveEngine;
+      }
+
+      public Publisher<Response> submit()
+      {
+         return doSubmitRx(response -> response, false);
+      }
+
+      public <T> Publisher<T> submit(final Class<T> responseType)
+      {
+         return doSubmitRx(getResponseTypeExtractor(responseType), true);
+      }
+
+      public <T> Publisher<T> submit(final GenericType<T> responseType)
+      {
+         return doSubmitRx(getGenericTypeExtractor(responseType), true);
+      }
+
+      private <T> Publisher<T> doSubmitRx(ResultExtractor<T> extractor, boolean buffered) {
+         return rxSubmit(
+             reactiveEngine,
+             getPublisherExtractorFunction(buffered),
+             extractor
+         );
+      }
+
+      private <T> Publisher<T> rxSubmit(
+          final ReactiveClientHttpEngine reactiveEngine,
+          final Function<ResultExtractor<T>, Publisher<T>> asyncHttpEngineSubmitFn,
+          final ResultExtractor<T> extractor
+      ) {
+         final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(ClientInvocation.this);
+         try(CloseableContext ctx = pushProvidersContext())
+         {
+            ClientResponse aborted = filterRequest(requestContext);
+            if (aborted != null)
+            {
+               // spec requires that aborted response go through filter/interceptor chains.
+               aborted = filterResponse(requestContext, aborted);
+               T result = extractor.extractResult(aborted);
+               return reactiveEngine.just(result);
+            }
+         }
+         catch (Exception ex)
+         {
+            return reactiveEngine.error(ex);
+         }
+
+         return asyncHttpEngineSubmitFn.apply(response -> {
+            try(CloseableContext ctx = pushProvidersContext())
+            {
+               return extractor.extractResult(filterResponse(requestContext, response));
+            }
+         });
+      }
+   }
+
+   /**
+    * If the client's HTTP engine implements {@link ReactiveClientHttpEngine} then you can access
+    * the latter's {@link Publisher} via this method.
+    */
+   public Optional<ReactiveInvocation> reactive() {
+      if (client.httpEngine() instanceof ReactiveClientHttpEngine) {
+         return Optional.of(new ReactiveInvocation((ReactiveClientHttpEngine)client.httpEngine()));
+      }
+      return Optional.empty();
    }
 
    @Override
@@ -731,35 +798,27 @@ public class ClientInvocation implements Invocation
       return response;
    }
 
-   private <Q extends Future<T>, T> Q asyncSubmit(
-           final Function<ResultExtractor<T>, Q> asyncHttpEngineSubmitFn,
-           final ResultExtractor<T> extractor,
-           final Function<T, Q> abortedFn,
-           final Function<Exception, Q> exceptionFn)
-   {
+   private <T> CompletionStage<T> submitRequest(final ResultExtractor<T> extractor, final boolean buffered) {
       final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
-      try(CloseableContext ctx = pushProvidersContext())
-      {
-         ClientResponse aborted = filterRequest(requestContext);
-         if (aborted != null)
-         {
-            // spec requires that aborted response go through filter/interceptor chains.
-            aborted = filterResponse(requestContext, aborted);
-            T result = extractor.extractResult(aborted);
-            return abortedFn.apply(result);
-         }
-      }
-      catch (Exception ex)
-      {
-         exceptionFn.apply(ex);
-      }
-
-      return asyncHttpEngineSubmitFn.apply(response -> {
-         try(CloseableContext ctx = pushProvidersContext())
-         {
-            return extractor.extractResult(filterResponse(requestContext, response));
-         }
-      });
+      return CompletableFuture.supplyAsync(() -> {
+                 try (CloseableContext ctx = pushProvidersContext()) {
+                    ClientResponse aborted = filterRequest(requestContext);
+                    if (aborted != null) {
+                       // spec requires that aborted response go through filter/interceptor chains.
+                       aborted = filterResponse(requestContext, aborted);
+                       return extractor.extractResult(aborted);
+                    }
+                 }
+                 return null;
+              }
+      , asyncInvocationExecutor())
+              .thenCompose(aborted -> {
+                 if (aborted != null) {
+                    return CompletableFuture.completedFuture(aborted);
+                 }
+                 final ResultExtractor<T> wrapped = (response) -> extractor.extractResult(filterResponse(requestContext, response));
+                 return ((AsyncClientHttpEngine) client.httpEngine()).submit(ClientInvocation.this, buffered, wrapped);
+              });
    }
 
    private <T> CompletableFuture<T> executorSubmit(ExecutorService executor, final InvocationCallback<T> callback,

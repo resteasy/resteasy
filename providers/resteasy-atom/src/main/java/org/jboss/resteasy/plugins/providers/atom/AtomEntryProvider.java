@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
@@ -9,19 +7,19 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
 import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,16 +107,8 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, AsyncBuffere
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, set.toArray(new Class[set.size()]));
          Marshaller marshaller = ctx.createMarshaller();
-         NamespacePrefixMapper mapper = new NamespacePrefixMapper()
-         {
-            public String getPreferredPrefix(String namespace, String s1, boolean b)
-            {
-               if (namespace.equals("http://www.w3.org/2005/Atom")) return "atom";
-               else return s1;
-            }
-         };
 
-         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
+         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", AtomNamespacePrefixMapper.INSTANCE);
 
          marshaller.marshal(entry, entityStream);
       }

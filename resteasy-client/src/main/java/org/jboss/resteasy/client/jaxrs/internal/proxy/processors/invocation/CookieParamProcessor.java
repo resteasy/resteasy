@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProce
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Cookie;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -49,7 +49,10 @@ public class CookieParamProcessor implements InvocationProcessor
       {
          ClientConfiguration cc = invocation.getClientConfiguration();
          String s = (annotations != null && type != null) ? cc.toString(object, type, annotations) : cc.toString(object);
-         invocation.getHeaders().cookie(new Cookie(cookieName, s));
+         Cookie ck1 = new Cookie.Builder(cookieName)
+                 .value(s)
+                 .build();
+         invocation.getHeaders().cookie(ck1);
       }
    }
 }

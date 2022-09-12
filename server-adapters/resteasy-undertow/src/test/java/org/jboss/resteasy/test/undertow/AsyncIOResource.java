@@ -2,16 +2,16 @@ package org.jboss.resteasy.test.undertow;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.jboss.resteasy.plugins.providers.FileRange;
 
 @Path("async-io")
@@ -52,5 +52,33 @@ public class AsyncIOResource {
         rFile.setLength(size);
         rFile.close();
         return Response.ok(new FileRange(file, 0, size-1)).build();
+    }
+
+    private static class NullInputStream extends InputStream {
+        private final long size;
+        private int pos;
+
+        private NullInputStream(final long size) {
+            pos = 0;
+            this.size = size;
+        }
+
+        @Override
+        public void close() throws IOException {
+            synchronized (this) {
+                pos = 0;
+            }
+        }
+
+        @Override
+        public int read() throws IOException {
+            int result = 0;
+            synchronized (this) {
+                if (++pos > size) {
+                    result = -1;
+                }
+            }
+            return result;
+        }
     }
 }

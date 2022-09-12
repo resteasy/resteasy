@@ -2,12 +2,12 @@ package org.jboss.resteasy.test;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.junit.AfterClass;

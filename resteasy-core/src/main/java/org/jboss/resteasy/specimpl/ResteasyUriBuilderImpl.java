@@ -5,9 +5,9 @@ import org.jboss.resteasy.spi.ResteasyUriBuilder;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilderException;
 
 import java.lang.reflect.Method;
 import java.net.URI;

@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.providers.html.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.providers.html.View;
 
@@ -14,9 +14,12 @@ public class HeadersInViewResponseResource {
    @Path("get")
    public Response get()
    {
+      NewCookie cookie = new NewCookie.Builder("name1")
+              .value("value1")
+              .build();
       return Response.ok(new View("/test/view"))
             .header("abc", "123")
-            .cookie(new NewCookie("name1", "value1"))
+            .cookie(cookie)
             .build();
    }
 
@@ -24,9 +27,12 @@ public class HeadersInViewResponseResource {
    @Path("view")
    public Response view()
    {
+      NewCookie cookie = new NewCookie.Builder("name2")
+              .value("value2")
+              .build();
       return Response.ok()
             .header("xyz", "789")
-            .cookie(new NewCookie("name2", "value2"))
+            .cookie(cookie)
             .build();
    }
 }

@@ -4,10 +4,10 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.client.WebTarget;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class SubResourceInvoker implements MethodInvoker
       this.config = config;
       this.method = method;
       this.iface = method.getReturnType();
-      jaxParams = new Annotation[method.getParameterTypes().length];
+      jaxParams = new Annotation[method.getParameterCount()];
       for (int i = 0; i < jaxParams.length; i++)
       {
          Annotation[] paramAnnotations = method.getParameterAnnotations()[i];

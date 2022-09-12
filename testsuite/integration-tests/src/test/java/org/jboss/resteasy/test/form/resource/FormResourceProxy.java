@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.form.resource;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 @Path("/myform")
 public interface FormResourceProxy {

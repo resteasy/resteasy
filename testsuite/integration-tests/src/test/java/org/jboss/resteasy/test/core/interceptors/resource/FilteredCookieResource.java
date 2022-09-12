@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.core.interceptors.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 @Path("test")
 public class FilteredCookieResource {
@@ -18,7 +18,9 @@ public class FilteredCookieResource {
    @GET
    @Path("get")
    public Response getCookie() {
-      NewCookie cookie = new NewCookie(OLD_COOKIE_NAME, "value");
+      NewCookie cookie = new NewCookie.Builder(OLD_COOKIE_NAME)
+              .value("value")
+              .build();
       return Response.ok().cookie(cookie).build();
    }
 
@@ -28,8 +30,14 @@ public class FilteredCookieResource {
       Cookie oldCookie = headers.getCookies().get(OLD_COOKIE_NAME);
       Cookie newCookie = headers.getCookies().get(NEW_COOKIE_NAME);
       ResponseBuilder builder = Response.ok();
-      builder.cookie(new NewCookie(oldCookie.getName(), oldCookie.getValue()));
-      builder.cookie(new NewCookie(newCookie.getName(), newCookie.getValue()));
+      NewCookie nck1 = new NewCookie.Builder(oldCookie.getName())
+              .value(oldCookie.getValue())
+              .build();
+      NewCookie nck2 = new NewCookie.Builder(newCookie.getName())
+              .value(newCookie.getValue())
+              .build();
+      builder.cookie(nck1);
+      builder.cookie(nck2);
       return builder.build();
    }
 }

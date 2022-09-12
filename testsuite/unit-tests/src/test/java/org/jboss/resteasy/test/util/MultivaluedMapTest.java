@@ -3,17 +3,17 @@ package org.jboss.resteasy.test.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Vector;
 
 /**
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for javax.ws.rs.core.MultivaluedMap class
- *                    and javax.ws.rs.core.MultivaluedHashMap.
+ * @tpTestCaseDetails Test for jakarta.ws.rs.core.MultivaluedMap class
+ *                    and jakarta.ws.rs.core.MultivaluedHashMap.
  * @tpSince RESTEasy 3.0.16
  */
 public class MultivaluedMapTest {

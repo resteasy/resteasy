@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -8,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
@@ -25,12 +24,11 @@ import org.junit.AfterClass;
 import org.junit.Ignore;
 
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
 import org.jboss.logging.Logger;
@@ -197,9 +195,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
          logger.info("Received response");
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          InputStream in = response.readEntity(InputStream.class);
-         StringWriter writer = new StringWriter();
-         IOUtils.copy(in, writer, StandardCharsets.UTF_8);
-         String responseString = writer.toString();
+         String responseString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
          Assert.assertEquals(body, responseString);
          response.close();
          client.close();

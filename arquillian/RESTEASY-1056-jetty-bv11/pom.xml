@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <artifactId>resteasy-misc-arquillian-tests</artifactId>
+    <version>6.2.0.Final-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-1056-jetty-bv11</artifactId>
   <packaging>jar</packaging>
@@ -16,10 +16,23 @@
   </properties>
 
   <dependencies>
+      <dependency>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>jakarta.ws.rs</groupId>
+          <artifactId>jakarta.ws.rs-api</artifactId>
+      </dependency>
+
+    <!-- Test dependencies -->
     <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-jetty-embedded-9</artifactId>
-        <version>1.0.0.CR3</version>
         <scope>test</scope>
     </dependency>
 
@@ -45,34 +58,25 @@
     </dependency>
     <dependency>
         <groupId>org.jboss.arquillian.protocol</groupId>
-        <artifactId>arquillian-protocol-servlet</artifactId>
+        <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
         <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.spec.javax.ws.rs</groupId>
-        <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.spec.javax.xml.bind</groupId>
-        <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-core-spi</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.arquillian.junit</groupId>
@@ -80,22 +84,10 @@
       <scope>test</scope>
     </dependency>
       <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-simple</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
-      </dependency>
-      <dependency>
-      	  <groupId>org.jboss.resteasy</groupId>
-      	  <artifactId>resteasy-validator-provider</artifactId>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-validator-provider</artifactId>
           <version>${project.version}</version>
+          <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.hibernate.validator</groupId>
@@ -103,8 +95,8 @@
           <scope>test</scope>
       </dependency>
       <dependency>
-          <groupId>org.jboss.spec.javax.el</groupId>
-          <artifactId>jboss-el-api_3.0_spec</artifactId>
+          <groupId>jakarta.el</groupId>
+          <artifactId>jakarta.el-api</artifactId>
           <scope>test</scope>
       </dependency>
       <dependency>

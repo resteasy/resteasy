@@ -10,7 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.test.client.resource.ClientExecutorShutdownTestResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -21,9 +21,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.fail;
 
@@ -65,7 +65,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-      engine.finalize();
+      engine.close();
       HttpClient httpClient = engine.getHttpClient();
       HttpPost post = new HttpPost(generateURL("/test"));
       try {
@@ -114,7 +114,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-      engine.finalize();
+      engine.close();
       Assert.assertEquals("Original httpclient and engine httpclient are not the same instance",
             httpClient, engine.getHttpClient());
       HttpPost post = new HttpPost(generateURL("/test"));

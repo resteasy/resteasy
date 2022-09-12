@@ -1,11 +1,12 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoint;
@@ -22,8 +23,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -95,7 +96,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedString() throws Exception {
       String strResponse = requestHelper("string", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of String", strResponse, containsString("someString"));
+      MatcherAssert.assertThat("Wrong conversion of String", strResponse, containsString("someString"));
    }
 
    /**
@@ -105,17 +106,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedDate() throws Exception {
       String strResponse = requestHelper("date", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(true));
-   }
-
-   /**
-    * @tpTestDetails Check duration type without datatype supported
-    * @tpSince RESTEasy 3.1.0.CR3
-    */
-   @Test
-   public void testDatatypeNotSupportedDuration() throws Exception {
-      String strResponse = requestHelper("duration", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Duration", strResponse, not(containsString("PT5.000000006S")));
+      MatcherAssert.assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(true));
    }
 
    /**
@@ -125,7 +116,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedOptionalNull() throws Exception {
       String strResponse = requestHelper("optional/true", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Optional (null)", strResponse, not(containsString("null")));
+      MatcherAssert.assertThat("Wrong conversion of Optional (null)", strResponse, not(containsString("null")));
    }
 
    /**
@@ -135,7 +126,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeNotSupportedOptionalNotNull() throws Exception {
       String strResponse = requestHelper("optional/false", DEFAULT_DEPLOYMENT);
-      Assert.assertThat("Wrong conversion of Optional (not null)", strResponse, not(containsString("info@example.com")));
+      MatcherAssert.assertThat("Wrong conversion of Optional (not null)", strResponse, not(containsString("info@example.com")));
    }
 
    /**
@@ -145,7 +136,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedString() throws Exception {
       String strResponse = requestHelper("string", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of String", strResponse, containsString("someString"));
+      MatcherAssert.assertThat("Wrong conversion of String", strResponse, containsString("someString"));
    }
 
    /**
@@ -155,7 +146,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedDate() throws Exception {
       String strResponse = requestHelper("date", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(false));
+      MatcherAssert.assertThat("Wrong conversion of Date", strResponse.matches("^[0-9]*$"), is(false));
    }
 
    /**
@@ -165,7 +156,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedDuration() throws Exception {
       String strResponse = requestHelper("duration", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Duration", strResponse, containsString("5.000000006"));
+      MatcherAssert.assertThat("Wrong conversion of Duration", strResponse, containsString("5.000000006"));
    }
 
    /**
@@ -175,7 +166,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedOptionalNull() throws Exception {
       String strResponse = requestHelper("optional/true", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Optional (null)", strResponse, containsString("null"));
+      MatcherAssert.assertThat("Wrong conversion of Optional (null)", strResponse, containsString("null"));
    }
 
    /**
@@ -185,6 +176,6 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedOptionalNotNull() throws Exception {
       String strResponse = requestHelper("optional/false", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Optional (not null)", strResponse, containsString("info@example.com"));
+      MatcherAssert.assertThat("Wrong conversion of Optional (not null)", strResponse, containsString("info@example.com"));
    }
 }

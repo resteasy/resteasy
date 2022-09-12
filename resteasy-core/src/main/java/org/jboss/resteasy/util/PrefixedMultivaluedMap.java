@@ -1,12 +1,12 @@
 package org.jboss.resteasy.util;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * {@link javax.ws.rs.core.MultivaluedMap} implementation that wraps another instance and only returns values that are prefixed with the given {@link #prefixWithDot}.
+ * {@link jakarta.ws.rs.core.MultivaluedMap} implementation that wraps another instance and only returns values that are prefixed with the given {@link #prefixWithDot}.
  *
  * @param <V> The type of the values in the lists in the map.
  */

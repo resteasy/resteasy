@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.resource.basic.resource;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class RequestScopedObject

@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.providers.sse.client;
 
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+import org.jboss.resteasy.concurrent.ContextualScheduledExecutorService;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.concurrent.Executors;
@@ -45,9 +48,7 @@ class SseEventSourceScheduler
       }
    }
 
-   private final ScheduledExecutorService scheduledExecutorService;
-
-   private final boolean shutdownExecutorService;
+   private final ContextualScheduledExecutorService scheduledExecutorService;
 
    private final Phaser phaser;
 
@@ -56,9 +57,8 @@ class SseEventSourceScheduler
    SseEventSourceScheduler(final ScheduledExecutorService scheduledExecutorService, final String threadName)
    {
       this.scheduledExecutorService = scheduledExecutorService == null
-            ? Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(threadName))
-            : scheduledExecutorService;
-      this.shutdownExecutorService = scheduledExecutorService == null;
+            ? ContextualExecutors.scheduledThreadPool(1, new DaemonThreadFactory(threadName))
+            : ContextualExecutors.wrap(scheduledExecutorService, true);
       this.phaser = new Phaser(1);
       this.closed = new AtomicBoolean(false);
    }
@@ -105,7 +105,7 @@ class SseEventSourceScheduler
       }
       catch (RejectedExecutionException e)
       {
-         if (this.shutdownExecutorService && this.closed.get())
+         if (!scheduledExecutorService.isManaged() && this.closed.get())
          {
             // At this stage the RejectedExecutionException can be either a
             // normal consequence of the
@@ -143,7 +143,7 @@ class SseEventSourceScheduler
       if (this.closed.compareAndSet(false, true))
       {
          this.phaser.arriveAndDeregister();
-         if (this.shutdownExecutorService)
+         if (!scheduledExecutorService.isManaged())
          {
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
               @Override

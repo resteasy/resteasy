@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
-import javax.validation.constraints.Size;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
+import jakarta.validation.constraints.Size;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("/ejb")
 @Stateless

@@ -13,10 +13,10 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.ReadFromStream;
 
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -205,7 +205,9 @@ public class MockHttpRequest extends BaseHttpRequest
 
    public MockHttpRequest cookie(String name, String value)
    {
-      Cookie cookie = new Cookie(name, value);
+      Cookie cookie = new Cookie.Builder(name)
+           .value(value)
+           .build();
       httpHeaders.getMutableCookies().put(name, cookie);
       return this;
    }

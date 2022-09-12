@@ -24,13 +24,13 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.resources.ConnectionProvider;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
@@ -251,16 +251,13 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         final String connectionPoolName = "ReactorNettyClientHttpEngineByteBufReleaseTest-Connection-Pool";
 
         final HttpClient httpClient =
-                HttpClient.create(ConnectionProvider.fixed(connectionPoolName, CONNECTION_POOL_SIZE))
+                HttpClient.create(ConnectionProvider.create(connectionPoolName, CONNECTION_POOL_SIZE))
                         .protocol(HttpProtocol.HTTP11)
                         .keepAlive(true)
                         .baseUrl("http://localhost:" + mockServer.port())
-                        // On purpose setting to a high number
-                        .tcpConfiguration(tcpClient ->
-                                tcpClient
-                                        .doOnConnected(con ->
-                                                con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
-                                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000));
+                        .doOnConnected(con ->
+                                con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
+                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000);
 
         final ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(

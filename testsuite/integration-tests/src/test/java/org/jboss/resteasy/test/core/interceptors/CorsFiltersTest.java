@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.core.interceptors;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.CorsHeaders;
 import org.jboss.resteasy.test.core.interceptors.resource.CorsFiltersResource;
@@ -19,8 +20,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.util.ArrayList;
@@ -100,7 +101,7 @@ public class CorsFiltersTest {
       Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
       response.close();
 
-      Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+      MatcherAssert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
       CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
 
       corsFilter.getAllowedOrigins().add(testedURL);
@@ -129,7 +130,7 @@ public class CorsFiltersTest {
       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/test"));
 
-      Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+      MatcherAssert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
       CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
       corsFilter.getAllowedOrigins().add(testedURL);
 

@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.cdi.modules.resource;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 import java.util.logging.Logger;
 
 @Stateless

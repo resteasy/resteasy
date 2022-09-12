@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core;
 
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.ext.Providers;
 
 /**
  *

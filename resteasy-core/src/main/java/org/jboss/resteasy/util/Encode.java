@@ -2,7 +2,7 @@ package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

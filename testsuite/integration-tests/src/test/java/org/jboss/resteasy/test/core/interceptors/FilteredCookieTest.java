@@ -1,17 +1,18 @@
 package org.jboss.resteasy.test.core.interceptors;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieContainerRequestFilter;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieResource;
+import org.jboss.resteasy.utils.CookieUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,7 +36,8 @@ public class FilteredCookieTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName())
+              .addClass(CookieUtil.class);
       return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
    }
 

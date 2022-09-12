@@ -5,39 +5,38 @@ import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.CounterBinding;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.EJB;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.jms.DeliveryMode;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.ejb.EJB;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.jms.DeliveryMode;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Queue;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,7 +65,6 @@ public class CDIInjectionBookResource {
    public static final String COLLECTION = "collection";
    public static final String BOOK_BAG = "bookBag";
    public static final String NEW_BEAN_APPLICATION_SCOPED = "newBeanApplicationScoped";
-   public static final String NEW_BEAN_DEPENDENT_SCOPED = "newBeanDependentScoped";
    public static final String STEREOTYPED_APPLICATION_SCOPED = "stereotypedApplicationScoped";
    public static final String STEREOTYPED_DEPENDENT_SCOPED = "stereotypedDependentScoped";
 
@@ -106,9 +104,6 @@ public class CDIInjectionBookResource {
    private Queue bookQueue;
    @Inject
    private CDIInjectionNewBean newBean1;
-   @Inject
-   @New
-   private CDIInjectionNewBean newBean2;
    @Inject
    private CDIInjectionStereotypedApplicationScope stereotypeApplicationScoped;
    @Inject
@@ -191,7 +186,6 @@ public class CDIInjectionBookResource {
          store.put(COLLECTION, collection);
          store.put(BOOK_BAG, bookBag);
          store.put(NEW_BEAN_APPLICATION_SCOPED, newBean1);
-         store.put(NEW_BEAN_DEPENDENT_SCOPED, newBean2);
          store.put(STEREOTYPED_APPLICATION_SCOPED, stereotypeApplicationScoped);
          store.put(STEREOTYPED_DEPENDENT_SCOPED, stereotypedRequestScoped);
          return Response.ok().build();
@@ -223,8 +217,6 @@ public class CDIInjectionBookResource {
             store.get(COLLECTION).equals(collection) &&
             store.get(BOOK_BAG).equals(bookBag) &&
             store.get(NEW_BEAN_APPLICATION_SCOPED).equals(newBean1) &&
-            !store.get(NEW_BEAN_DEPENDENT_SCOPED).equals(newBean2) &&
-            !newBean1.equals(newBean2) &&
             store.get(STEREOTYPED_APPLICATION_SCOPED).equals(stereotypeApplicationScoped) &&
             !store.get(STEREOTYPED_DEPENDENT_SCOPED).equals(stereotypedRequestScoped)
       ) {

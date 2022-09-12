@@ -172,7 +172,7 @@
     <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
             &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
-            &lt;version&gt;4.7.0-SNAPSHOT&lt;/version&gt;
+            &lt;version&gt;6.2.0.Final-SNAPSHOT&lt;/version&gt;
         &lt;/dependency&gt;
 
 </programlisting></para>
@@ -432,8 +432,8 @@ public void post(String input) {...}
 import org.jboss.resteasy.security.doseta.KeyRepository;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Context;
 
 public class SignatureApplication extends Application
 {

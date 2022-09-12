@@ -7,7 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorEndPointCDI;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorEndPointEJB;
@@ -31,11 +31,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
+import org.hamcrest.MatcherAssert;
 
 import org.junit.runner.RunWith;
 
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -139,7 +140,7 @@ public class ResourceClassProcessorBasicTest {
    public void customClassDefaultMethodTestHelper(String warName) {
       Response response = client.target(PortProviderUtil.generateURL("/patched/pure", warName)).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat(response.getMediaType().toString(), containsString("text/plain"));
+      MatcherAssert.assertThat(response.getMediaType().toString(), containsString("text/plain"));
    }
 
 
@@ -175,7 +176,7 @@ public class ResourceClassProcessorBasicTest {
    public void customClassCustomMethodTestHelper(String warName) {
       Response response = client.target(PortProviderUtil.generateURL("/patched/custom", warName)).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat(response.getMediaType().toString(), containsString("application/xml"));
+      MatcherAssert.assertThat(response.getMediaType().toString(), containsString("application/xml"));
    }
 
 
@@ -212,7 +213,7 @@ public class ResourceClassProcessorBasicTest {
    public void defaultClassDefaultMethodTestHelper(String warName) {
       Response response = client.target(PortProviderUtil.generateURL("/pure/pure", warName)).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat(response.getMediaType().toString(), containsString("text/plain"));
+      MatcherAssert.assertThat(response.getMediaType().toString(), containsString("text/plain"));
    }
 
    /**
@@ -224,7 +225,7 @@ public class ResourceClassProcessorBasicTest {
    public void interfaceTest() {
       Response response = client.target(PortProviderUtil.generateURL("/proxy", WAR_NORMAL)).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertThat(response.getMediaType().toString(), containsString("application/xml"));
+      MatcherAssert.assertThat(response.getMediaType().toString(), containsString("application/xml"));
    }
 
    /**
@@ -242,7 +243,7 @@ public class ResourceClassProcessorBasicTest {
                                     .proxy(ResourceClassProcessorProxy.class);
       String response = proxy.custom();
       logger.info(String.format("Proxy response: %s", response));
-      Assert.assertThat("Proxy returns wrong response", response, is("<a></a>"));
+      MatcherAssert.assertThat("Proxy returns wrong response", response, is("<a></a>"));
 
       proxyClient.close();
    }

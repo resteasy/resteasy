@@ -7,16 +7,23 @@ import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.stream.Field;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.EntityPart;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Providers;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -87,8 +94,70 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
       return currPart;
    }
 
-   protected void finalize() throws Throwable
-   {
-      close();
+   /**
+    * Converts the {@link InputPart}'s to {@link EntityPart}'s.
+    *
+    * @return the converted list
+    */
+   List<EntityPart> toEntityParts() {
+      final List<EntityPart> result = new ArrayList<>();
+      for (Map.Entry<String, List<InputPart>> entry : getFormDataMap().entrySet()) {
+         final String name = entry.getKey();
+         for (InputPart part : entry.getValue()) {
+            result.add(new InputPartEntityPart(name, part));
+         }
+      }
+      return result;
+   }
+
+   private static class InputPartEntityPart implements EntityPart {
+      private final String name;
+      private final InputPart inputPart;
+
+      private InputPartEntityPart(final String name, final InputPart inputPart) {
+         this.name = name;
+         this.inputPart = inputPart;
+      }
+
+      @Override
+      public String getName() {
+         return name;
+      }
+
+      @Override
+      public Optional<String> getFileName() {
+         return Optional.ofNullable(inputPart.getFileName());
+      }
+
+      @Override
+      public InputStream getContent() {
+         try {
+            return inputPart.getBody();
+         } catch (IOException e) {
+            throw new UncheckedIOException(e);
+         }
+      }
+
+      @Override
+      public <T> T getContent(final Class<T> type)
+              throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
+         return inputPart.getBody(new GenericType<>(type));
+      }
+
+      @Override
+      public <T> T getContent(final GenericType<T> type)
+              throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
+         return inputPart.getBody(type);
+      }
+
+      @Override
+      public MultivaluedMap<String, String> getHeaders() {
+         return inputPart.getHeaders();
+      }
+
+      @Override
+      public MediaType getMediaType() {
+         return inputPart.getMediaType();
+      }
    }
 }

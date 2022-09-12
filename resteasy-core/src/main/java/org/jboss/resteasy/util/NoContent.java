@@ -1,8 +1,8 @@
 package org.jboss.resteasy.util;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NoContentException;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NoContentException;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
@@ -28,7 +28,7 @@ public class NoContent
       String contentLength = (String)httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (contentLength != null)
       {
-         long length = Long.parseLong(contentLength);
+         long length = Long.parseLong(contentLength.trim());
          if (length == 0) return true;
       }
       return false;

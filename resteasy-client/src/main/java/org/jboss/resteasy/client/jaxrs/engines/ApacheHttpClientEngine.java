@@ -3,12 +3,15 @@ package org.jboss.resteasy.client.jaxrs.engines;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.spi.config.SizeUnit;
 
 public interface ApacheHttpClientEngine extends ClientHttpEngine
 {
    /**
     * Enumeration to represent memory units.
+    * @deprecated use {@link SizeUnit} or {@link org.jboss.resteasy.spi.config.Threshold}
     */
+   @Deprecated
    enum MemoryUnit {
       /**
        * Bytes
@@ -28,6 +31,32 @@ public interface ApacheHttpClientEngine extends ClientHttpEngine
        * Giga Bytes
        */
       GB
+      ;
+      SizeUnit toSizeUnit() {
+         switch (this) {
+            case BY:
+               return SizeUnit.BYTE;
+            case KB:
+               return SizeUnit.KILOBYTE;
+            case MB:
+               return SizeUnit.MEGABYTE;
+            case GB:
+               return SizeUnit.GIGABYTE;
+         }
+         return SizeUnit.BYTE;
+      }
+      static MemoryUnit of(final SizeUnit unit) {
+         switch (unit) {
+            case KILOBYTE:
+               return KB;
+            case MEGABYTE:
+               return MB;
+            case GIGABYTE:
+               return GB;
+            default:
+               return BY;
+         }
+      }
    }
 
    static ApacheHttpClientEngine create()

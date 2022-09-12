@@ -4,7 +4,7 @@ import org.jboss.resteasy.annotations.LinkHeaderParam;
 import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.annotations.Status;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 import java.net.URI;
 
 @ResponseObject

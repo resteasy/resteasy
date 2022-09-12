@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.CollectionsFormAddress;
 import org.jboss.resteasy.test.form.resource.CollectionsFormPerson;
 import org.jboss.resteasy.test.form.resource.CollectionsFormResource;
@@ -18,10 +18,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Form tests
@@ -47,7 +47,7 @@ public class CollectionsFormTest {
     */
    @Test
    public void shouldSupportCollectionsInForm() throws Exception {
-      javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
+      jakarta.ws.rs.core.Form form = new jakarta.ws.rs.core.Form()
          .param("telephoneNumbers[0].countryCode", "31")
          .param("telephoneNumbers[0].number", "0612345678")
          .param("telephoneNumbers[1].countryCode", "91")

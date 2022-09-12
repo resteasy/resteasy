@@ -2,7 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.ext.WriterInterceptor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -3,10 +3,11 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
 public final class ResteasyContext
@@ -42,6 +43,39 @@ public final class ResteasyContext
          return null;
       }
       return (T) contextDataMap.get(type);
+   }
+
+   /**
+    * Gets the current context for the type. If not found in the current context a {@linkplain IllegalArgumentException}
+    * is thrown.
+    *
+    * @param type the type to lookup in the context map
+    * @param <T>  the type of the lookup
+    *
+    * @return the context data
+    *
+    * @throws IllegalArgumentException if the type is not found in the current context
+    */
+   public static <T> T getRequiredContextData(final Class<T> type) {
+      final T result = getContextData(type);
+      if (result == null) {
+         throw Messages.MESSAGES.requiredContextParameterNotFound();
+      }
+      return result;
+   }
+
+   /**
+    * Gets the current context for the type. If the context does not exist the value is resolved from the {@code newValue}
+    * supplier and pushed to the current context.
+    *
+    * @param type     the type to lookup in the context map
+    * @param newValue the new value if the value was not already setup in the value map
+    * @param <T>      the type to lookup
+    *
+    * @return the context data
+    */
+   public static <T> T computeIfAbsent(final Class<T> type, final Supplier<T> newValue) {
+      return (T) getContextDataMap().computeIfAbsent(type, (value) -> newValue.get());
    }
 
    public static <T> T popContextData(Class<T> type)

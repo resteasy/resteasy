@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,7 +20,7 @@ import java.util.TimeZone;
  * @tpSince RESTEasy 3.0.16
  */
 public class ResponseTest {
-   protected static final Logger logger = LogManager.getLogger(ResponseTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResponseTest.class.getName());
 
    /**
     * @tpTestDetails Test getLastModified method of response"

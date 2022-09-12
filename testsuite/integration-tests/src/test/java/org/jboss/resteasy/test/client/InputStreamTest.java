@@ -1,13 +1,11 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.InputStreamResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -18,9 +16,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import java.io.InputStream;
 
 
@@ -44,7 +42,7 @@ public class InputStreamTest extends ClientTestBase{
 
    }
 
-   protected static final Logger logger = LogManager.getLogger(InputStreamTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(InputStreamTest.class.getName());
 
    static ResteasyClient client;
 
@@ -74,7 +72,7 @@ public class InputStreamTest extends ClientTestBase{
    @Test
    public void testInputStream() throws Exception {
       InputStream is = client.target(generateURL("/test")).request().get(InputStream.class);
-      byte[] buf = IOUtils.toByteArray(is);
+      byte[] buf = is.readAllBytes();
       String str = new String(buf);
       Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
       logger.info("Text from inputstream: " + str);
@@ -91,7 +89,7 @@ public class InputStreamTest extends ClientTestBase{
    public void testInputStreamProxy() throws Exception {
       InputStreamInterface proxy = client.target(generateURL("/")).proxy(InputStreamInterface.class);
       InputStream is = proxy.get();
-      byte[] buf = IOUtils.toByteArray(is);
+      byte[] buf = is.readAllBytes();
       String str = new String(buf);
       Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
       is.close();

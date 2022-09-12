@@ -4,13 +4,13 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.ContextResolver;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
@@ -34,19 +34,18 @@ import org.jboss.resteasy.util.GetRestful;
 public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 {
 
-   private InjectionTarget<T> delegate;
-   private Class<T> clazz;
+   private final InjectionTarget<T> delegate;
+   private final Class<T> clazz;
    private PropertyInjector propertyInjector;
-   private GeneralValidatorCDI validator;
 
-   private boolean hasPostConstruct;
+   private final boolean hasPostConstruct;
 
    private static final Function<Method, Boolean> validatePostConstructParameters
       = (Method m) -> {if (m.getParameterCount() == 0) return true;
-                       else if (m.getParameterCount() == 1
-                             && InvocationContext.class.equals(m.getParameterTypes()[0])
-                             && m.getAnnotation(AroundInvoke.class) != null) return true;
-                       else return false;};
+                       else return m.getParameterCount() == 1
+              && InvocationContext.class.equals(m.getParameterTypes()[0])
+              && m.getAnnotation(AroundInvoke.class) != null;
+   };
 
    public JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz)
    {
@@ -55,6 +54,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       hasPostConstruct = Types.hasPostConstruct(clazz, validatePostConstructParameters);
    }
 
+   @Override
    public void inject(T instance, CreationalContext<T> ctx)
    {
       delegate.inject(instance, ctx);
@@ -88,6 +88,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       }
    }
 
+   @Override
    public void postConstruct(T instance)
    {
       delegate.postConstruct(instance);
@@ -105,21 +106,25 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       }
    }
 
+   @Override
    public void preDestroy(T instance)
    {
       delegate.preDestroy(instance);
    }
 
+   @Override
    public void dispose(T instance)
    {
       delegate.dispose(instance);
    }
 
+   @Override
    public Set<InjectionPoint> getInjectionPoints()
    {
       return delegate.getInjectionPoints();
    }
 
+   @Override
    public T produce(CreationalContext<T> ctx)
    {
       return delegate.produce(ctx);
@@ -136,6 +141,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       {
          ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
          ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
+         GeneralValidatorCDI validator = null;
          if (resolver != null)
          {
             validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE).getContext(null);

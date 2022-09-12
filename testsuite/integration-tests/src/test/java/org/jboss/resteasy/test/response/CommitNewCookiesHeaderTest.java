@@ -4,18 +4,18 @@ import java.lang.reflect.ReflectPermission;
 import java.util.Map;
 import java.util.PropertyPermission;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -42,9 +42,14 @@ public class CommitNewCookiesHeaderTest {
       @GET
       public Response echo(@QueryParam("msg") String msg) {
          // send cookie as a simple string
+         NewCookie nck2 = new NewCookie.Builder("Cookie 2")
+                 .value("Cookie 2 value")
+                 .build();
+         NewCookie nck3 = new NewCookie.Builder("Cookie 3")
+                 .value("Cookie 3 value")
+                 .build();
          return Response.ok(msg).header(HttpHeaders.SET_COOKIE, "Cookie 1=Cookie 1 value;Version=1;Path=/")
-                 .cookie(new NewCookie("Cookie 2", "Cookie 2 value"),
-                         new NewCookie("Cookie 3", "Cookie 3 value"))
+                 .cookie(nck2, nck3)
                  .build();
       }
 
@@ -53,6 +58,9 @@ public class CommitNewCookiesHeaderTest {
       @GET
       public Response echoTwo(@QueryParam("msg") String msg) {
          // Any class that provides a toString can be provided as a cookie
+         NewCookie nck1 = new NewCookie.Builder("Cookie 2")
+                 .value("Cookie 2 value")
+                 .build();
          return Response.ok().header(HttpHeaders.SET_COOKIE,
               new Object() {
                   @Override
@@ -60,7 +68,7 @@ public class CommitNewCookiesHeaderTest {
                      return "Cookie 1=Cookie 1 value;Version=1;Path=/";
                   }
                })
-         .cookie(new NewCookie("Cookie 2", "Cookie 2 value"))
+         .cookie(nck1)
          .build();
       }
 
@@ -69,8 +77,14 @@ public class CommitNewCookiesHeaderTest {
       @GET
       public Response echoThree(@QueryParam("msg") String msg) {
          // Cookie should really only be used with request but it is an object with a toString impl
-         return Response.ok(msg).header(HttpHeaders.SET_COOKIE,  new Cookie("Cookie 1", "Cookie 1 value"))
-                 .cookie(new NewCookie("Cookie 2", "Cookie 2 value"))
+         Cookie ck1 = new Cookie.Builder("Cookie 1")
+                 .value("Cookie 1 value")
+                 .build();
+         NewCookie nck1 = new NewCookie.Builder("Cookie 2")
+                 .value("Cookie 2 value")
+                 .build();
+         return Response.ok(msg).header(HttpHeaders.SET_COOKIE,ck1)
+                 .cookie(nck1)
                  .build();
       }
 

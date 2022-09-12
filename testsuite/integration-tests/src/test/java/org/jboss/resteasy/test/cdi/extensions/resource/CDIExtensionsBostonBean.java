@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.cdi.extensions.resource;
 
+import jakarta.enterprise.inject.spi.InjectionTargetFactory;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 
@@ -9,14 +10,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * A BostonBean is just like other beans, only much, much better.
@@ -36,10 +37,10 @@ public class CDIExtensionsBostonBean<T> implements Bean<T> {
    private Class<? extends Annotation> scope;
    private Set<InjectionPoint> injectionPoints;
 
-   public CDIExtensionsBostonBean(final Class<T> clazz, final InjectionTarget<T> injectionTarget) {
+   public CDIExtensionsBostonBean(final Class<T> clazz, final InjectionTargetFactory<T> factory) {
       this.clazz = clazz;
       this.className = clazz.getSimpleName();
-      this.injectionTarget = injectionTarget;
+      this.injectionTarget = factory.createInjectionTarget(this);
       types = Utilities.getTypeClosure(clazz);
       qualifiers = Utilities.getQualifiers(clazz);
       injectionPoints = injectionTarget.getInjectionPoints();
@@ -111,12 +112,6 @@ public class CDIExtensionsBostonBean<T> implements Bean<T> {
    @Override
    public boolean isAlternative() {
       log.info("BostonBean[" + className + "].isAlternative()");
-      return false;
-   }
-
-   @Override
-   public boolean isNullable() {
-      log.info("BostonBean[" + className + "].isNullable()");
       return false;
    }
 

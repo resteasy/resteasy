@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 
 @Path("/test")
 public class PrivateConstructorServiceResource {
@@ -12,7 +12,7 @@ public class PrivateConstructorServiceResource {
 
    }
 
-   public PrivateConstructorServiceResource(@Context final javax.servlet.ServletContext context, @Context final HttpServletRequest request) {
+   public PrivateConstructorServiceResource(@Context final jakarta.servlet.ServletContext context, @Context final HttpServletRequest request) {
 
    }
 

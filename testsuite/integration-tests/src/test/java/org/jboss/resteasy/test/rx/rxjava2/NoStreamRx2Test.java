@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.rx.rxjava2;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -35,7 +35,7 @@ public class NoStreamRx2Test
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.jboss.resteasy.resteasy-context-propagation services\n"));
+         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, NoStreamRx2Resource.class);
    }
 

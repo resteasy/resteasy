@@ -1,23 +1,52 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <!-- Use the jboss-parent as the parent. The org.jboss.resteasy:resteasy-jaxrs-all imports the
+         org.jboss.resteasy:resteasy-dependencies BOM which we do not want included in this BOM.
+    -->
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>35</version>
+        <version>39</version>
         <relativePath/>
-   </parent>
+    </parent>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-bom</artifactId>
+    <version>6.2.0.Final-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>RESTEasy Maven Import (BOM)</name>
     <description/>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-bom</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+
+    <url>https://resteasy.dev</url>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy/tree/main/</url>
+    </scm>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://issues.redhat.com/browse/RESTEASY</url>
+    </issueManagement>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jose-jwt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-atom-provider</artifactId>
@@ -25,37 +54,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-cache-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-guice</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-html</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-jaxb-provider</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-jackson2-provider</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-fastinfoset-provider</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-core-spi</artifactId>
+                <artifactId>resteasy-cdi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -65,22 +64,67 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-multipart-provider</artifactId>
+                <artifactId>resteasy-client-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-spring</artifactId>
+                <artifactId>resteasy-client-jetty</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-spring-web</artifactId>
+                <artifactId>resteasy-client-reactor-netty</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-json-p-provider</artifactId>
+                <artifactId>resteasy-client-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client-vertx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-core-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-crypto</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-fastinfoset-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-html</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jackson2-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jaxb-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jsapi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -90,7 +134,17 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-jdk-http</artifactId>
+                <artifactId>resteasy-json-p-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-links</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-multipart-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -105,32 +159,17 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-undertow</artifactId>
+                <artifactId>resteasy-reactor</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-crypto</artifactId>
+                <artifactId>resteasy-reactor-netty</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>jose-jwt</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-links</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-jsapi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-validator-provider</artifactId>
+                <artifactId>resteasy-rxjava2</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -140,53 +179,33 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-vertx</artifactId>
+                <artifactId>resteasy-undertow</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-reactor-netty</artifactId>
+                <artifactId>resteasy-undertow-cdi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-microprofile</artifactId>
+                <artifactId>resteasy-validator-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-jetty</artifactId>
+                <artifactId>resteasy-vertx</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client-api</artifactId>
+                <artifactId>resteasy-wadl</artifactId>
                 <version>${project.version}</version>
             </dependency>
-           <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-cdi</artifactId>
-                 <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-rxjava2</artifactId>
-                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-wadl</artifactId>
-                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-wadl-undertow-connector</artifactId>
-                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-vertx</artifactId>
-                 <version>${project.version}</version>
+                <artifactId>resteasy-wadl-undertow-connector</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

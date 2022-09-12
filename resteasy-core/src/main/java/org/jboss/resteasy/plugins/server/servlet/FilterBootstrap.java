@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +34,11 @@ public class FilterBootstrap extends ListenerBootstrap
    @Override
    public String getInitParameter(String name)
    {
-      return config.getInitParameter(name);
+      String value = config.getInitParameter(name);
+      if (value == null) {
+         value = super.getInitParameter(name);
+      }
+      return value;
    }
 
    @Override

@@ -1,13 +1,12 @@
 package org.jboss.resteasy.test.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 import org.jboss.resteasy.test.util.resource.UriBuilderResource;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class UriBuilderTest {
    private static final String ERROR_MSG = "UriBuilder works incorrectly";
-   protected static final Logger logger = LogManager.getLogger(UriBuilderTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(UriBuilderTest.class.getName());
 
    private static final Pattern uriPattern = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
 
@@ -101,7 +100,7 @@ public class UriBuilderTest {
          Assert.assertEquals(ERROR_MSG, template, "http://localhost/x/y/z?name=42");
 
          // RESTEASY-1878 - test if regex templates work
-         // see javax.ws.rs.core.UriBuilder class description for info about regex template parameters
+         // see jakarta.ws.rs.core.UriBuilder class description for info about regex template parameters
          builder = UriBuilder.fromUri("{id: [0-9]+}");
          Assert.assertEquals(new URI("123"), builder.build("123"));
 

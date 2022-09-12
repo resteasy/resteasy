@@ -1,36 +1,31 @@
 package org.jboss.resteasy.test.client.exception.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionTest;
+import org.jboss.resteasy.utils.PortProviderUtil;
 import org.junit.Assert;
 
 @Path("test")
 public class ClientWebApplicationExceptionResource {
 
    private static Client client = ClientBuilder.newClient();
-   private static WebTarget target = client.target(ClientWebApplicationExceptionTest.generateURL("/app/test/"));
 
-
-   /**
-    * Sets the System property ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR
-    * @param value value property is set to
-    */
-   @GET
-   @Path("behavior/{value}")
-   public void setBehavior(@PathParam("value") String value) {
-      System.setProperty(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR, value);
-   }
+   private static WebTarget oldBehaviorTarget = client.target(PortProviderUtil.generateURL(
+           "/app/test/", ClientWebApplicationExceptionTest.oldBehaviorDeploymentName)
+   );
+   private static WebTarget newBehaviorTarget = client.target(PortProviderUtil.generateURL(
+           "/app/test/", ClientWebApplicationExceptionTest.newBehaviorDeploymentName)
+   );
 
    /**
     * Throws an instance of WebApplicationException from oldExceptions table. The Response returned by
@@ -47,7 +42,8 @@ public class ClientWebApplicationExceptionResource {
 
    /**
     * Throws an instance of ResteasyWebApplicationException from newExceptions table.
-    * ResteasyWebApplicationException.getResponse() returns a sanitized response.
+    * ResteasyWebApplicationException.getResponse() will be used by the container to create a sanitized
+    * HTTP response.
     *
     * @param i determines element of newExceptions to be thrown
     * @throws Exception
@@ -60,30 +56,58 @@ public class ClientWebApplicationExceptionResource {
 
    /**
     * Uses a Client to call oldException() to get an HTTP response derived from a WebApplicationException.
-    * Based on that response, the Client will throw either a WebApplicationException or ResteasyWebApplicationException,
-    * depending on the value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR.
+    * Client will throw a WebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is true.
     *
     * @param i determines element of oldExceptions to be thrown by oldException()
     * @throws Exception
     */
    @GET
-   @Path("nocatch/old/{i}")
-   public String noCatchOld(@PathParam("i") int i) throws Exception {
-      return target.path("exception/old/" + i).request().get(String.class);
+   @Path("nocatch/old/old/{i}")
+   public String noCatchOldOld(@PathParam("i") int i) throws Exception {
+      return oldBehaviorTarget.path("exception/old/" + i).request().get(String.class);
+   }
+
+   /**
+    * Uses a Client to call oldException() to get an HTTP response derived from a WebApplicationException.
+    * Client will throw a ResteasyWebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is false.
+    *
+    * @param i determines element of oldExceptions to be thrown by oldException()
+    * @throws Exception
+    */
+   @GET
+   @Path("nocatch/new/old/{i}")
+   public String noCatchNewOld(@PathParam("i") int i) throws Exception {
+      return newBehaviorTarget.path("exception/old/" + i).request().get(String.class);
    }
 
    /**
     * Uses a Client to call newException() to get an HTTP response derived from a ResteasyWebApplicationException.
-    * Based on that response, the Client will throw either a WebApplicationException or ResteasyWebApplicationException,
-    * depending on the value of ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR.
+    * Client will throw a WebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is true.
     *
     * @param i determines element of newExceptions to be thrown by newException()
     * @throws Exception
     */
    @GET
-   @Path("nocatch/new/{i}")
-   public String noCatchNew(@PathParam("i") int i) throws Exception {
-      return target.path("exception/new/" + i).request().get(String.class);
+   @Path("nocatch/old/new/{i}")
+   public String noCatchOldNew(@PathParam("i") int i) throws Exception {
+      return oldBehaviorTarget.path("exception/new/" + i).request().get(String.class);
+   }
+
+   /**
+    * Uses a Client to call newException() to get an HTTP response derived from a ResteasyWebApplicationException.
+    * Client will throw a ResteasyWebApplicationException because
+    * ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR is false.
+    *
+    * @param i determines element of newExceptions to be thrown by newException()
+    * @throws Exception
+    */
+   @GET
+   @Path("nocatch/new/new/{i}")
+   public String noCatchNewNew(@PathParam("i") int i) throws Exception {
+      return newBehaviorTarget.path("exception/new/" + i).request().get(String.class);
    }
 
    /**
@@ -101,7 +125,7 @@ public class ClientWebApplicationExceptionResource {
    @Path("catch/old/old/{i}")
    public String catchOldOld(@PathParam("i") int i) throws Exception {
       try {
-         target.path("exception/old/" + i).request().get(String.class);
+         oldBehaviorTarget.path("exception/old/" + i).request().get(String.class);
          throw new Exception("expected exception");
       } catch (ResteasyWebApplicationException e) {
          throw new Exception("didn't expect ResteasyWebApplicationException");
@@ -131,7 +155,7 @@ public class ClientWebApplicationExceptionResource {
    @Path("catch/old/new/{i}")
    public String catchOldNew(@PathParam("i") int i) throws Exception {
       try {
-         target.path("exception/new/" + i).request().get(String.class);
+         oldBehaviorTarget.path("exception/new/" + i).request().get(String.class);
          throw new Exception("expected exception");
       } catch (ResteasyWebApplicationException e) {
          throw new Exception("didn't expect ResteasyWebApplicationException");
@@ -151,10 +175,10 @@ public class ClientWebApplicationExceptionResource {
     * It is assumed that ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR holds
     * "false" when this method is invoked.
     *
-    * Uses a Client to call oldException().  Since the new behavior is configured, the proxy will throw a
-    * WebApplicationExceptionWrapper, which is caught and examined. getResponse() should return a sanitized
-    * Response, but the unwrapped Response should match the WebApplicationException
-    * thrown by oldException(). That WebApplicationExceptionWrapper is then rethrown.
+    * Uses a Client to call oldException().  Since the new behavior is configured, the client will throw a
+    * WebApplicationExceptionWrapper, which is caught and examined. getResponse() and the unwrapped Response
+    * should match the WebApplicationException thrown by oldException().
+    * That WebApplicationExceptionWrapper is then rethrown.
     *
     * @param i determines element of oldExceptions to be thrown by oldException()
     * @throws Exception
@@ -163,19 +187,16 @@ public class ClientWebApplicationExceptionResource {
    @Path("catch/new/old/{i}")
    public String catchNewOld(@PathParam("i") int i) throws Exception {
       try {
-         target.path("exception/old/" + i).request().get(String.class);
+         newBehaviorTarget.path("exception/old/" + i).request().get(String.class);
          throw new Exception("expected exception");
       } catch (WebApplicationException e) {
-         Response sanitizedResponse = e.getResponse();
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), sanitizedResponse.getStatus());
-         Assert.assertNull(sanitizedResponse.getHeaderString("foo"));
-         Assert.assertFalse(sanitizedResponse.hasEntity());
-         Response originalResponse = WebApplicationExceptionWrapper.unwrap(e).getResponse();
-         Assert.assertNotNull(originalResponse);
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), originalResponse.getStatus());
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), originalResponse.getHeaderString("foo"));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getEntity(), originalResponse.readEntity(String.class));
-         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptionMap.get(originalResponse.getStatus()), e.getClass());
+         Response notSanitizedResponse = e.getResponse();
+         Assert.assertNotNull(notSanitizedResponse);
+         Assert.assertEquals(WebApplicationExceptionWrapper.unwrap(e).getResponse(), notSanitizedResponse);
+         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getStatus(), notSanitizedResponse.getStatus());
+         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getHeaderString("foo"), notSanitizedResponse.getHeaderString("foo"));
+         Assert.assertEquals(ClientWebApplicationExceptionTest.oldExceptions[i].getResponse().getEntity(), notSanitizedResponse.readEntity(String.class));
+         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptionMap.get(notSanitizedResponse.getStatus()), e.getClass());
          throw e;
       } catch (Exception e) {
          throw new Exception("expected WebApplicationException, not " + e.getClass());
@@ -186,10 +207,10 @@ public class ClientWebApplicationExceptionResource {
     * It is assumed that ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR holds
     * "false" when this method is invoked.
     *
-    * Uses a Client to call newException(). Since the new behavior is configured, the proxy will throw a
-    * WebApplicationExceptionWrapper, which is caught and examined. getResponse() should return a sanitized
-    * Response, but the unwrapped Response should match the WebApplicationException
-    * thrown by newException(). That WebApplicationExceptionWrapper is then rethrown.
+    * Uses a Client to call newException(). Since the new behavior is configured, the client will throw a
+    * WebApplicationExceptionWrapper, which is caught and examined. getResponse() and the unwrapped Response
+    * should a sanitized response.
+    * That WebApplicationExceptionWrapper is then rethrown.
     *
     * @param i determines element of newExceptions to be thrown by newException()
     * @throws Exception
@@ -198,19 +219,16 @@ public class ClientWebApplicationExceptionResource {
    @Path("catch/new/new/{i}")
    public String catchNewNew(@PathParam("i") int i) throws Exception {
       try {
-         target.path("exception/new/" + i).request().get(String.class);
+         newBehaviorTarget.path("exception/new/" + i).request().get(String.class);
          throw new Exception("expected exception");
       } catch (WebApplicationException e) {
          Response sanitizedResponse = e.getResponse();
+         Assert.assertNotNull(sanitizedResponse);
+         Assert.assertEquals(WebApplicationExceptionWrapper.unwrap(e).getResponse(), sanitizedResponse);
          Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), sanitizedResponse.getStatus());
          Assert.assertNull(sanitizedResponse.getHeaderString("foo"));
-         Assert.assertFalse(sanitizedResponse.hasEntity());
-         Response originalResponse = WebApplicationExceptionWrapper.unwrap(e).getResponse();
-         Assert.assertNotNull(originalResponse);
-         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getStatus(), originalResponse.getStatus());
-         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptions[i].getResponse().getHeaderString("foo"), originalResponse.getHeaderString("foo"));
-         Assert.assertTrue(originalResponse.readEntity(String.class).isEmpty());
-         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptionMap.get(originalResponse.getStatus()), e.getClass());
+         Assert.assertTrue(sanitizedResponse.readEntity(String.class).isEmpty());
+         Assert.assertEquals(ClientWebApplicationExceptionTest.newExceptionMap.get(sanitizedResponse.getStatus()), e.getClass());
          throw e;
       } catch (Exception e) {
          throw new Exception("expected WebApplicationException, not " + e.getClass());

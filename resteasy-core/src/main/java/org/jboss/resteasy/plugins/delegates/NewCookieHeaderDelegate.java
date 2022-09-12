@@ -4,8 +4,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ParameterParser;
 
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +21,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
    public static final NewCookieHeaderDelegate INSTANCE = new NewCookieHeaderDelegate();
    private static final String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
+   @Override
    public NewCookie fromString(String newCookie) throws IllegalArgumentException {
       if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
       String cookieName = null;
@@ -40,7 +41,11 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
       for (Map.Entry<String, String> entry : map.entrySet()) {
          String name = entry.getKey();
          String value = entry.getValue();
-         if (name.equalsIgnoreCase("Comment"))
+         // Cookie name is always the first attribute (https://datatracker.ietf.org/doc/html/rfc6265#section-4.1.1).
+         if (cookieName == null) {
+            cookieName = name;
+            cookieValue = value;
+         } else if (name.equalsIgnoreCase("Comment"))
             comment = value;
          else if (name.equalsIgnoreCase("Domain"))
             domain = value;
@@ -62,9 +67,6 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
             catch (ParseException e)
             {
             }
-         } else {
-            cookieName = name;
-            cookieValue = value;
          }
 
       }
@@ -74,8 +76,17 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
          cookieValue = "";
       }
 
-      return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
-
+      return new NewCookie.Builder(cookieName)
+              .value(cookieValue)
+              .path(path)
+              .domain(domain)
+              .version(version)
+              .comment(comment)
+              .maxAge(maxAge)
+              .expiry(expiry)
+              .secure(secure)
+              .httpOnly(httpOnly)
+              .build();
    }
 
    protected void quote(StringBuilder b, String value) {

@@ -83,7 +83,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       for (Method method : getDeclaredMethods(clazz))
       {
          if (!method.getName().startsWith("set")) continue;
-         if (method.getParameterTypes().length != 1) continue;
+         if (method.getParameterCount() != 1) continue;
 
          Annotation[] annotations = method.getAnnotations();
          if (annotations == null || annotations.length == 0) continue;

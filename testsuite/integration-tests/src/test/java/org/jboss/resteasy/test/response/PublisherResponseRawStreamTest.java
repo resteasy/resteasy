@@ -5,10 +5,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -83,8 +83,8 @@ public class PublisherResponseRawStreamTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertTrue(entity.startsWith("0-11-12-1"));
-      Assert.assertTrue(entity.endsWith("29-1"));
+      Assert.assertTrue(entity.startsWith("0-21-22-2"));
+      Assert.assertTrue(entity.endsWith("29-2"));
    }
 
    /**

@@ -5,9 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleGetResource;
-import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -19,9 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.Assert;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
@@ -30,7 +28,6 @@ import java.util.Map;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
@@ -78,13 +75,12 @@ public class MultipleGetResourceTest {
 
     @Test
     public void testFailFast() throws Exception {
-        LogCounter errorStringLog = new LogCounter("RESTEASY005042",
-                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
         WebTarget base = client.target(generateURL("/api"));
-        Response  response = base.request().get();
-        Assert.assertEquals(500, response.getStatus());
-        response.close();
-        Assert.assertThat(errorStringLog.count(), is(2));
+        try (Response  response = base.request().get()) {
+            Assert.assertEquals(500, response.getStatus());
+            final String error = response.readEntity(String.class);
+            Assert.assertTrue("RESTEASY005042 not found in: " + error, error.contains("RESTEASY005042"));
+        }
     }
 }

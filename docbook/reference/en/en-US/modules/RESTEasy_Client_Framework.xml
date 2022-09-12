@@ -2,8 +2,8 @@
     <title>RESTEasy Client API</title>
 
     <section>
-        <title>JAX-RS 2.0 Client API</title>
-        <para>JAX-RS 2.0 introduces a new client API so that you can make http requests to your remote RESTful web services.
+        <title>&REST-API; Client API</title>
+        <para>The &REST-API; includes a client API so that you can make http requests to your remote RESTful web services.
         It is a 'fluent' request building API with really 3 main classes:  Client, WebTarget, and Response.  The Client
         interface is a builder of WebTarget instances.  WebTarget represents a distinct URL or URL template from which
         you can build more sub-resource WebTargets or invoke requests on.</para>
@@ -25,7 +25,7 @@
         </programlisting>
         <para>
             RESTEasy will automatically load a set of default providers. (Basically all classes listed in all
-            META-INF/services/javax.ws.rs.ext.Providers files).  Additionally, you can manually register other providers,
+            META-INF/services/jakarta.ws.rs.ext.Providers files).  Additionally, you can manually register other providers,
             filters, and interceptors through the Configuration object provided by the method call Client.configuration().
             Configuration also lets you set various configuration properties that may be needed.
         </para>
@@ -61,7 +61,7 @@
         
         <para>
         Note that <classname>org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder</classname>,
-        unlike <classname>javax.ws.rs.client.Invocation.Builder</classname>, is a RESTEasy class.
+        unlike <classname>jakarta.ws.rs.client.Invocation.Builder</classname>, is a RESTEasy class.
         </para>
         
         <para>
@@ -75,7 +75,7 @@
 
 		<note>
 			<para>
-	          To follow REST principles and avoid introducing state management in applications, <classname>javax.ws.rs.client.Client</classname> instances do not provide support for cookie management by default.
+	          To follow REST principles and avoid introducing state management in applications, <classname>jakarta.ws.rs.client.Client</classname> instances do not provide support for cookie management by default.
 	          However, you can enable it if necessary using <classname>ResteasyClientBuilder</classname>:
 			</para>
 			<programlisting>
@@ -91,16 +91,16 @@
         <title>RESTEasy Proxy Framework</title>
     <para>
 
-        The RESTEasy Proxy  Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
-        JAX-RS annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
+        The RESTEasy Proxy  Framework is the mirror opposite of the &REST-API; server-side specification. Instead of using
+        &REST-API; annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
         HTTP request that it uses to invoke on a remote RESTful Web Service. This remote service does not have to be a
-        JAX-RS service and can be any web resource that accepts HTTP requests.
+        &REST-API; service and can be any web resource that accepts HTTP requests.
     </para>
     <para>
 
-        RESTEasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
+        RESTEasy has a client proxy framework that allows you to use &REST-API; annotations to invoke on a remote HTTP
         resource.
-        The way it works is that you write a Java interface and use JAX-RS annotations on methods and the interface. For
+        The way it works is that you write a Java interface and use &REST-API; annotations on methods and the interface. For
         example:
     </para>
     <para>
@@ -148,7 +148,7 @@ public interface SimpleClient
             ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
 
             SimpleClient simple = rtarget.proxy(SimpleClient.class);
-            client.putBasic("hello world");
+            simple.putBasic("hello world");
         </programlisting>
         Alternatively you can use the RESTEasy client extension interfaces directly:
         <programlisting>
@@ -156,21 +156,21 @@ public interface SimpleClient
             ResteasyWebTarget target = client.target("http://example.com/base/uri");
 
             SimpleClient simple = target.proxy(SimpleClient.class);
-            client.putBasic("hello world");
+            simple.putBasic("hello world");
         </programlisting>
 
     </para>
     <para>
 
         @CookieParam works the mirror opposite of its server-side counterpart and creates a cookie header to send to the
-        server. You do not need to use @CookieParam if you allocate your own javax.ws.rs.core.Cookie object and pass it
+        server. You do not need to use @CookieParam if you allocate your own jakarta.ws.rs.core.Cookie object and pass it
         as
         a parameter to a client proxy method. The client framework understands that you are passing a cookie to the
         server
         so no extra metadata is needed.
     </para>
     <para>
-     The framework also supports the JAX-RS locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
+     The framework also supports the &REST-API; locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
      will return a new proxy of the interface returned by that method.
     </para>
     <section id="Custom_client-side_responses">
@@ -187,7 +187,7 @@ public interface SimpleClient
         </para>
         <para>
 
-            You may return a javax.ws.rs.core.Response.Status enumeration from your method calls:
+            You may return a jakarta.ws.rs.core.Response.Status enumeration from your method calls:
         </para>
         <para>
 
@@ -211,7 +211,7 @@ public interface MyProxy {
         </para>
         <para>
 
-            If you are interested in everything, you can get it with the javax.ws.rs.core.Response class:
+            If you are interested in everything, you can get it with the jakarta.ws.rs.core.Response class:
         </para>
         <para>
 
@@ -231,10 +231,10 @@ public interface LibraryService {
         <para>
            A further extension implemented by the RESTEasy client proxy framework is the "response proxy facility",
            where a client proxy method returns an interface that represents the information
-           contained in a <classname>javax.ws.rs.core.Response</classname>. Such an interface must be annotated with
+           contained in a <classname>jakarta.ws.rs.core.Response</classname>. Such an interface must be annotated with
            <classname>@ResponseObject</classname> from package <classname>org.jboss.resteasy.annotations</classname>,
            and its methods may be further annotated with <classname>@Body</classname>, <classname>@LinkHeaderParam</classname>,
-           and <classname>@Status</classname> from the same package,  as well as <classname>javax.ws.rs.HeaderParam</classname>.
+           and <classname>@Status</classname> from the same package,  as well as <classname>jakarta.ws.rs.HeaderParam</classname>.
            Consider the following example.
         </para>
         
@@ -312,7 +312,7 @@ Content-Type: text/plain;charset=UTF-8
         <para>
            Note that there is one other method in <classname>TestResponseObject</classname>, <methodname>response()</methodname>,
            that has no annotation. When RESTEasy sees a method in an interface annotated with <classname>@ResponseObject</classname>
-           that returns a <classname>javax.ws.rs.core.Response</classname> (or a subclass thereof), it will return a
+           that returns a <classname>jakarta.ws.rs.core.Response</classname> (or a subclass thereof), it will return a
            <classname>org.jboss.resteasy.client.jaxrs.internal.ClientResponse</classname>. For example,
         </para>
         
@@ -324,7 +324,7 @@ Content-Type: text/plain;charset=UTF-8
         <para>
            Perhaps the most interesting piece of the response proxy facility is the treatment of methods 
            annotated with <classname>@LinkHeaderParam</classname>. Its simplest use is to assist in 
-           accessing a <classname>javax.ws.rs.core.Link</classname> returned by a resource method. For 
+           accessing a <classname>jakarta.ws.rs.core.Link</classname> returned by a resource method. For
            example, let's add
         </para>
         
@@ -501,7 +501,7 @@ name: b
         <title>Sharing an interface between client and server</title>
         <para>
             It is generally possible to share an interface between the client and server. In this scenario, you just
-            have your JAX-RS services implement an annotated interface
+            have your &REST-API; services implement an annotated interface
             and then reuse that same interface to create client proxies to invoke on the client-side.
         </para>
 
@@ -801,8 +801,8 @@ public ApacheHttpClient43Engine(HttpClient httpClient, boolean closeHttpClient) 
 
      <para>
          For more information about HttpClient (4.x), see the documentation
-         at <ulink url="http://hc.apache.org/httpcomponents-client-ga/tutorial/html/">
-         http://hc.apache.org/httpcomponents-client-ga/tutorial/html/</ulink>.
+         at <ulink url="https://hc.apache.org/index.html">
+         https://hc.apache.org/index.html/</ulink>.
      </para>
      
      <para>
@@ -874,7 +874,7 @@ response.close();
      </para>
 
     <para>
-        If your javax.ws.rs.client.Client class has created the engine automatically for you, you should
+        If your jakarta.ws.rs.client.Client class has created the engine automatically for you, you should
         call Client.close() and this will clean up any socket connections.
     </para>
 
@@ -1057,10 +1057,63 @@ ReactorNettyClientHttpEngine engine = new ReactorNettyClientHttpEngine(
 ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
    .clientEngine(engine).build();
         </programlisting>
+        <para>
+            When coupled with the MonoRxInvoker, this has several benefits.
+            It supports things like this:
+<programlisting>
+webTarget.path("/foo").get().rx(MonoRxInvoker.class).map(...).subscribe()
+</programlisting>
+
+        <para>
+            in order to achieve non-blocking HTTP client calls. This allows leveraging
+            some reactor features:
+        </para>
+<itemizedlist>
+    <listitem>the ability for a <code>Mono#timeout</code> set on the response to aggressively terminate the HTTP request;</listitem>
+    <listitem>the ability to pass a (reactor) context from client calls into <classname>ReactorNettyClientHttpEngine</classname>.</listitem>
+</itemizedlist>
+        </para>
+        
+        <para>
+        For some sample code, see 
+        <classname>org.jboss.resteasy.reactor.ReactorTest</classname> in the
+        RESTEasy module resteasy-reactor.
+        </para>
     </section>
 
    </section>
-   
+
+    <section id="client-utilities">
+        <title>Client Utilities</title>
+        <para>
+            The client utilities contain various client side helpers that can be registered on a client. These utilities
+            do not require RESTEasy and can be used with any Jakarta RESTful Web Services implementation.
+        </para>
+        <section id="client-utilities-auth">
+            <title>Client Authentication</title>
+            <para>
+                The client authentication utilities can be used on a client when an endpoint requires authentication.
+                Currently, BASIC and DIGEST authentication are supported.
+                <programlisting>
+try (
+        Client client = ClientBuilder.newBuilder()
+                .register(HttpAuthenticators.basic(UserCredentials.clear("user", new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'})))
+                .build()
+    ) {
+    final Response response = client.target("https://example.com/api/info")
+            .request(MediaType.APPLICATION_JSON_TYPE)
+            .get();
+}
+                </programlisting>
+                <programlisting>
+final Response response = client.target("https://example.com/api/info")
+        .register(HttpAuthenticators.digest(UserCredentials.clear("user", new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'})))
+        .request(MediaType.APPLICATION_JSON_TYPE)
+        .get();
+                </programlisting>
+            </para>
+        </section>
+    </section>
 
 </chapter>
 

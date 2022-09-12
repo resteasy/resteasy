@@ -12,11 +12,11 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
@@ -34,11 +34,12 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
-import com.fasterxml.jackson.jaxrs.util.ClassKey;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+import com.fasterxml.jackson.jakarta.rs.base.util.ClassKey;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterInjector;
+import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterModifier;
+import com.fasterxml.jackson.jakarta.rs.json.JsonEndpointConfig;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 /**
  * Only different from Jackson one is *+json in @Produces/@Consumes
@@ -49,7 +50,7 @@ import com.fasterxml.jackson.jaxrs.util.ClassKey;
 @Provider
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements AsyncBufferedMessageBodyWriter<Object>
+public class ResteasyJackson2Provider extends JacksonJsonProvider implements AsyncBufferedMessageBodyWriter<Object>
 {
 
    DecoratorMatcher decoratorMatcher = new DecoratorMatcher();
@@ -149,6 +150,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
 
    protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _readers
          = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
+   protected final ConcurrentHashMap<ClassAnnotationKey, Boolean> decorators
+         = new ConcurrentHashMap<ClassAnnotationKey, Boolean>();
 
    @Override
    public Object readFrom(Class<Object> type, final Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
@@ -160,7 +163,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
       endpoint = _readers.get(key);
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-         ObjectMapper mapper = locateMapper(type, mediaType);
+         ObjectMapper mapper = addDefaultModules(locateMapper(type, mediaType));
          PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
          //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
          //be sure to keep that in synch if changing anything here.
@@ -227,7 +230,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
 
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-         ObjectMapper mapper = locateMapper(type, mediaType);
+         ObjectMapper mapper = addDefaultModules(locateMapper(type, mediaType));
          PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
          //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
          //be sure to keep that in synch if changing anything here.
@@ -321,10 +324,24 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
          }
 
          // [RESTEASY-1317] Support Jackson in Atom links
-         if (decoratorMatcher.hasDecorator(DecoratedEntityContainer.class, annotations)) {
-            decoratorMatcher.decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations, mediaType);
+          Object hasDecorator = decorators.get(key);
+         if (hasDecorator == null) {
+            if (decoratorMatcher.hasDecorator(DecoratedEntityContainer.class, annotations))
+            {
+               decoratorMatcher
+                     .decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations,
+                           mediaType);
+               decorators.put(key, Boolean.TRUE);
+            } else {
+               decorators.put(key, Boolean.FALSE);
+            }
+         } else {
+            if ((Boolean)hasDecorator) {
+               decoratorMatcher
+                     .decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations,
+                           mediaType);
+            }
          }
-
          if (System.getSecurityManager() == null) {
             writer.writeValue(jg, value);
          } else {
@@ -344,5 +361,11 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements
       } finally {
          jg.close();
       }
+   }
+
+   private static ObjectMapper addDefaultModules(final ObjectMapper mapper) {
+      return mapper
+              // Register the mapping for Jakarta XML Binding Annotations for JSON Processing
+              .registerModule(new JakartaXmlBindAnnotationModule());
    }
 }

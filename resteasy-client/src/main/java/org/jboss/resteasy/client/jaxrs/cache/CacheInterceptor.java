@@ -5,14 +5,14 @@ import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -86,7 +86,7 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
    @Override
    public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException
    {
-      if (!request.getMethod().equalsIgnoreCase("GET") || request.getProperty("cached") != null) return;
+      if (!request.getMethod().equalsIgnoreCase("GET") || request.hasProperty("cached")) return;
       else if (response.getStatus() == 304)
       {
          BrowserCache.Entry entry = (BrowserCache.Entry)request.getProperty("expired.cache.entry");

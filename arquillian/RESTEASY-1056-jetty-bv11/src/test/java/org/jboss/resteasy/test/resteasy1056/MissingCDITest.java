@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.resteasy1056;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

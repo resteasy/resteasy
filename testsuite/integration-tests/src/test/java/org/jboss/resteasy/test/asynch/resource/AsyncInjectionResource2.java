@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.asynch.resource;
 
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
 
 @Path("/")
 public class AsyncInjectionResource2

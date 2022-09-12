@@ -2,9 +2,9 @@ package org.jboss.resteasy.test;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.Assert;
@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import io.netty.handler.codec.http.HttpHeaderValues;
 
-import javax.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.client.Invocation.Builder;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,7 +27,7 @@ public class JaxrsAsyncTest
    static String BASE_URI = generateURL("");
    static Client client;
 
-   static final int REQUEST_TIMEOUT = 1000;
+   static final int REQUEST_TIMEOUT = 4000;
 
    @BeforeClass
    public static void setupSuite() throws Exception

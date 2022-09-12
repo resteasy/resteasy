@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers.multipart;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ReflectPermission;
@@ -14,20 +13,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.util.AnnotationLiteral;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
@@ -60,7 +58,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1119.
- *      Unable to find contextual data of type: javax.ws.rs.ext.Providers if ClientBuilder.newClient is used.
+ *      Unable to find contextual data of type: jakarta.ws.rs.ext.Providers if ClientBuilder.newClient is used.
  * @tpSince RESTEasy 3.0.16
  */
 @SuppressWarnings("deprecation")
@@ -68,7 +66,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ContextProvidersTest {
 
-   protected final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
+   protected final Logger logger = Logger.getLogger(ContextProvidersTest.class.getName());
 
    public static final Annotation PART_TYPE_APPLICATION_XML = new S1() {
       private static final long serialVersionUID = 1L;
@@ -87,7 +85,7 @@ public class ContextProvidersTest {
    static final MediaType MULTIPART_MIXED = new MediaType("multipart", "mixed");
    static final MediaType MULTIPART_FORM_DATA = new MediaType("multipart", "form-data");
    static final MediaType MULTIPART_RELATED = new MediaType("multipart", "related");
-   static final javax.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new javax.ws.rs.core.GenericType<List<ContextProvidersName>>() {
+   static final jakarta.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new jakarta.ws.rs.core.GenericType<List<ContextProvidersName>>() {
    };
 
    @Deployment
@@ -106,7 +104,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Form data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -144,7 +142,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Mixed data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -175,7 +173,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails List data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -194,7 +192,7 @@ public class ContextProvidersTest {
             InputPart inputPart = it.next();
             customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
          }
-         Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
+         Assert.assertEquals("Wrong count of customers from response", 2, customers.size());
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
       } catch (Exception e) {
@@ -204,7 +202,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Map data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -229,7 +227,7 @@ public class ContextProvidersTest {
                customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
             }
          }
-         Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
+         Assert.assertEquals("Wrong count of customers from response", 2, customers.size());
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
          Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
       } catch (Exception e) {
@@ -239,7 +237,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Related data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -255,7 +253,7 @@ public class ContextProvidersTest {
          Map<String, InputPart> map = entity.getRelatedMap();
          Set<String> keys = map.keySet();
          Assert.assertEquals(2, keys.size());
-         Assert.assertThat("Wrong count of keys from response", new Integer(keys.size()), is(2));
+         Assert.assertEquals("Wrong count of keys from response", 2, keys.size());
          Assert.assertTrue(keys.contains("bill"));
          Assert.assertTrue(keys.contains("bob"));
          Assert.assertThat("Missing key from response", keys, hasItems("bill"));
@@ -273,7 +271,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Multipart form data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -299,7 +297,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Xop data in get request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -316,7 +314,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Mixed data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -340,7 +338,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Form data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -358,14 +356,14 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertEquals("Wrong count of customers from response", 2, names.size());
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
    }
 
    /**
     * @tpTestDetails List data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -382,14 +380,14 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertEquals("Wrong count of customers from response", 2, names.size());
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
    }
 
    /**
     * @tpTestDetails Map data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -406,14 +404,14 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertEquals("Wrong count of customers from response", 2, names.size());
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bill:Bill")));
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bob:Bob")));
    }
 
    /**
     * @tpTestDetails Related data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -431,14 +429,14 @@ public class ContextProvidersTest {
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
       names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertEquals("Wrong count of customers from response", 2, names.size());
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
       Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
    }
 
    /**
     * @tpTestDetails Multipart form data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -468,7 +466,7 @@ public class ContextProvidersTest {
 
    /**
     * @tpTestDetails Xop data in post request is used.
-    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpPassCrit RE should be able to find contextual data of type: jakarta.ws.rs.ext.Providers.
     * @tpSince RESTEasy 3.0.16
     */
    @Test

@@ -11,15 +11,15 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
@@ -88,7 +88,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
          if ((method.isAnnotationPresent(FormParam.class)
                  || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
                  && method.getName().startsWith("set")
-                 && method.getParameterTypes().length == 1)
+                 && method.getParameterCount() == 1)
          {
             FormParam param = method.getAnnotation(FormParam.class);
             String name;

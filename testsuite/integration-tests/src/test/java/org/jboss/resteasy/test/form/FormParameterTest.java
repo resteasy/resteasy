@@ -1,14 +1,14 @@
 package org.jboss.resteasy.test.form;
 
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.FormParameterResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -19,10 +19,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Form tests
@@ -70,10 +70,10 @@ public class FormParameterTest {
       Response response = client.target(generateURL("/put/noquery/")).request()
             .header("Content-Type", "application/x-www-form-urlencoded")
             .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
 
       response.bufferEntity();
-      assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
    }
 
    /**
@@ -89,9 +89,9 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
    }
 
    /**
@@ -107,9 +107,9 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
    }
 
    /**
@@ -125,9 +125,9 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
    }
 
    /**
@@ -144,9 +144,9 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
    }
 
    /**
@@ -163,9 +163,9 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
    }
 
    /**
@@ -181,9 +181,9 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
    }
 
    /**
@@ -199,8 +199,8 @@ public class FormParameterTest {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-      assertThat("Wrong response", response, notNullValue());
+      MatcherAssert.assertThat("Wrong response", response, notNullValue());
       response.bufferEntity();
-      assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
+      Assert.assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
    }
 }

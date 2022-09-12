@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -13,15 +14,14 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,9 +116,9 @@ public class PreferJacksonOverJsonBClientTest {
       LOG.info("Response: " + responseText);
 
       if (deployment.equals(WAR_WITH_JACKSON2)) {
-         Assert.assertThat("Jackson2 not used.", responseText.matches("^[0-9]*$"), is(true));
+         MatcherAssert.assertThat("Jackson2 not used.", responseText.matches("^[0-9]*$"), is(true));
       } else {
-         Assert.assertThat("Json-B not used.", responseText.matches("^[0-9]*$"), is(false));
+         MatcherAssert.assertThat("Json-B not used.", responseText.matches("^[0-9]*$"), is(false));
       }
    }
 }

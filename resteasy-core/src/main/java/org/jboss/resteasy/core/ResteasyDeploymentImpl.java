@@ -9,6 +9,7 @@ import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFa
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -21,15 +22,20 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.util.GetRestful;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Configurable;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.Providers;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -609,6 +615,12 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.
             useScanning = false;
          }
+         // Jakarta REST 3.1 section 4.1.2 requires Feature's and DynamicFeature's to use a service loader if the
+         // following property was not set on the Application.
+         if (isEnabled(application.getProperties(), "jakarta.ws.rs.loadServices")) {
+            actualProviderClasses.addAll(loadServices(Feature.class));
+            actualProviderClasses.addAll(loadServices(DynamicFeature.class));
+         }
       }
       return useScanning;
    }
@@ -1125,5 +1137,31 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    @Override
    public void setStatisticsEnabled(boolean statisticsEnabled) {
       this.statisticsEnabled = statisticsEnabled;
+   }
+
+   private static Set<Class<?>> loadServices(final Class<?> service) {
+      if (System.getSecurityManager() == null) {
+         final Set<Class<?>> results = new LinkedHashSet<>();
+         results.addAll(PriorityServiceLoader.load(service).getTypes());
+         results.addAll(PriorityServiceLoader.load(service, service.getClassLoader()).getTypes());
+         return results;
+      }
+      return AccessController.doPrivileged((PrivilegedAction<Set<Class<?>>>) () -> {
+         final Set<Class<?>> results = new LinkedHashSet<>();
+         results.addAll(PriorityServiceLoader.load(service).getTypes());
+         results.addAll(PriorityServiceLoader.load(service, service.getClassLoader()).getTypes());
+         return results;
+      });
+   }
+
+   private static boolean isEnabled(final Map<String, Object> properties, final String name) {
+      final Object value = properties.get(name);
+      if (value == null) {
+         return true;
+      }
+      if (value instanceof Boolean) {
+         return (Boolean) value;
+      }
+      return !String.valueOf(value).equalsIgnoreCase("false");
    }
 }

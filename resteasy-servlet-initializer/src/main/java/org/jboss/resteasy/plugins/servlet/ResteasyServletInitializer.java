@@ -6,15 +6,17 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.plugins.servlet.i18n.Messages;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.annotation.HandlesTypes;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +29,7 @@ import java.util.Set;
 public class ResteasyServletInitializer implements ServletContainerInitializer
 {
    private static final String RESTEASY_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
-   private static final String APPLICATION = "javax.ws.rs.Application";
+   private static final String APPLICATION = "jakarta.ws.rs.Application";
    static final Set<String> ignoredPackages = new HashSet<String>();
 
    static
@@ -150,6 +152,10 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
       reg.setLoadOnStartup(1);
       reg.setAsyncSupported(true);
       reg.addMapping(mapping);
+      final MultipartConfig multipartConfig = applicationClass.getAnnotation(MultipartConfig.class);
+      if (multipartConfig != null) {
+         reg.setMultipartConfig(new MultipartConfigElement(multipartConfig));
+      }
 
       registerResourcesAndProviders(reg, providers, resources, applicationClass, prefix);
    }

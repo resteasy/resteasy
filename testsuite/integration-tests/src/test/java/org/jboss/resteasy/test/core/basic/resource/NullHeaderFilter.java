@@ -1,19 +1,17 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
+import org.jboss.logging.Logger;
 
 @Provider
 public class NullHeaderFilter implements ClientRequestFilter {
 
-   private static final Logger LOG = LogManager.getLogger(NullHeaderFilter.class);
+   private static final Logger LOG = Logger.getLogger(NullHeaderFilter.class);
 
    @Override
    public void filter(ClientRequestContext requestContext) throws IOException {

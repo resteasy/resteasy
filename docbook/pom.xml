@@ -3,39 +3,68 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>39</version>
+        <relativePath/>
+    </parent>
 
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-reference-guide-${translation}</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <artifactId>resteasy-reference-guide</artifactId>
+    <version>6.2.0.Final-SNAPSHOT</version>
     <packaging>jdocbook</packaging>
-    <name>RESTEasy Reference Guide (${translation})</name>
+    <name>RESTEasy Reference Guide</name>
     <description/>
+
+    <url>https://resteasy.dev</url>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy/tree/main/</url>
+    </scm>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://issues.redhat.com/browse/RESTEASY</url>
+    </issueManagement>
+
     <repositories>
         <repository>
             <id>jboss</id>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
-        <!--
-       <repository>
-           <id>repo1.maven.org</id>
-           <url>https://repo1.maven.org/maven2</url>
-       </repository> -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>jboss</id>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </pluginRepository>
-        <!--
-        <pluginRepository>
-            <id>plugin repo1.maven.org</id>
-            <url>https://repo1.maven.org/maven2</url>
-        </pluginRepository>
-        -->
     </pluginRepositories>
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jboss.maven.plugins</groupId>
                 <artifactId>maven-jdocbook-plugin</artifactId>
@@ -59,9 +88,9 @@
                 <configuration>
                     <sourceDocumentName>master.xml</sourceDocumentName>
                     <masterTranslation>en-US</masterTranslation>
-                    <sourceDirectory>reference/en</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/reference/en</sourceDirectory>
                     <imageResource>
-                        <directory>reference/en</directory>
+                        <directory>${project.basedir}/reference/en</directory>
                         <includes>
                             <include>images/*</include>
                         </includes>
@@ -109,7 +138,5 @@
         </plugins>
     </build>
 
-    <properties>
-        <translation>en-US</translation>
-    </properties>
+
 </project>

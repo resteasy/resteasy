@@ -7,11 +7,11 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriBuilder;
 
 import java.lang.reflect.Method;
 import java.net.URI;

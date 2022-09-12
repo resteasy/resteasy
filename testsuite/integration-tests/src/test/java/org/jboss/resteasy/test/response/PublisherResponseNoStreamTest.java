@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.SseEventSource;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -78,8 +78,8 @@ public class PublisherResponseNoStreamTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertTrue(entity.startsWith("[\"0-1\",\"1-1\""));
-      Assert.assertTrue(entity.endsWith(",\"29-1\"]"));
+      Assert.assertTrue(entity.startsWith("[\"0-2\",\"1-2\""));
+      Assert.assertTrue(entity.endsWith(",\"29-2\"]"));
 
       // make sure the completion callback was called with no error
       request = client.target(generateURL("/callback-called-no-error/text")).request();

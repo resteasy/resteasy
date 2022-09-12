@@ -1,8 +1,7 @@
 package org.jboss.resteasy.utils.maven;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.jboss.logging.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,7 +11,7 @@ import java.io.StringWriter;
  */
 class ConsoleErrorHandler extends DefaultServiceLocator.ErrorHandler {
 
-   protected static final Logger logger = LogManager.getLogger(ConsoleErrorHandler.class.getName());
+   protected static final Logger logger = Logger.getLogger(ConsoleErrorHandler.class.getName());
 
    @Override
    public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {

@@ -36,20 +36,20 @@ import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.Produces;
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.WriterInterceptor;
-import javax.ws.rs.sse.SseEventSink;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.sse.SseEventSink;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -567,7 +567,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          return null;
       }
-      if (rtn == null || method.getReturnType().equals(void.class))
+      if (!contextOutputStreamWrittenTo() && (rtn == null || method.getReturnType().equals(void.class)))
       {
          BuiltResponse build = (BuiltResponse) Response.noContent().build();
          build.addMethodAnnotations(getMethodAnnotations());
@@ -808,7 +808,22 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return MediaType.WILDCARD_TYPE;
    }
 
-
+   /**
+    * Checks if any bytes were written to a @Context HttpServletResponse
+    * @see ContextParameterInjector for details
+    * Fix for RESTEASY-1721
+    */
+   private boolean contextOutputStreamWrittenTo()
+   {
+      for (ValueInjector vi : methodInjector.getParams())
+      {
+         if (vi instanceof ContextParameterInjector)
+         {
+            return ((ContextParameterInjector) vi).isOutputStreamWasWritten();
+         }
+      }
+      return false;
+   }
 
 
    public Set<String> getHttpMethods()

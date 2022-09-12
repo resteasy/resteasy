@@ -2,8 +2,8 @@ package org.jboss.resteasy.client.exception;
 
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link BadRequestException} with a {@linkplain #sanitize(Response) sanitized} response.
@@ -14,14 +14,21 @@ public class ResteasyBadRequestException extends BadRequestException implements 
 
    private static final long serialVersionUID = -6250430572164780061L;
    private final BadRequestException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyBadRequestException(final BadRequestException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public BadRequestException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

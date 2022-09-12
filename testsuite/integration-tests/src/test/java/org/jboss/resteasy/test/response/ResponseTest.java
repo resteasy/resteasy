@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.ResponseAnnotatedClass;
 import org.jboss.resteasy.test.response.resource.ResponseDateReaderWriter;
 import org.jboss.resteasy.test.response.resource.ResponseResource;
@@ -21,12 +20,12 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -44,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunAsClient
 public class ResponseTest {
 
-   protected static final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(VariantsTest.class.getName());
 
    @Rule
    public ExpectedException thrown = ExpectedException.none();

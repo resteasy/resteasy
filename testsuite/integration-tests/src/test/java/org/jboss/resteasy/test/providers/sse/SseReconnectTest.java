@@ -1,10 +1,26 @@
 package org.jboss.resteasy.test.providers.sse;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import jakarta.ws.rs.ServiceUnavailableException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.sse.SseEvent;
+import jakarta.ws.rs.sse.SseEventSource;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.providers.sse.resource.SseReconnectResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.providers.sse.resource.SseReconnectResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -12,21 +28,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEvent;
-import javax.ws.rs.sse.SseEventSource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -92,7 +93,6 @@ public class SseReconnectTest {
    @Test
    public void testSseEndpointUnavailable() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
-      final AtomicInteger errors = new AtomicInteger(0);
       final List<String> results = new ArrayList<String>();
       Client client = ClientBuilder.newBuilder().build();
       try {
@@ -103,16 +103,46 @@ public class SseReconnectTest {
                results.add(event.readData(String.class));
                latch.countDown();
             }, ex -> {
-                  errors.incrementAndGet();
-                  Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
                });
             eventSource.open();
 
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertEquals(1, errors.get());
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          }
          Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+      } finally {
+         client.close();
+      }
+   }
+
+   /**
+    * @tpTestDetails SseEventSource receives HTTP 503 + "Retry-After"
+    * from the SSE endpoint. Endpoint does retries but still does not succeed
+    * @tpInfo RESTEASY-2854
+    * @tpSince RESTEasy 4.7.0
+    */
+   @Test
+   public void testSseEndpointUnavailableAfterRetry() throws Exception {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final AtomicInteger errors = new AtomicInteger(0);
+      final List<String> results = new ArrayList<String>();
+      Client client = ClientBuilder.newBuilder().build();
+      try {
+         WebTarget target = client.target(generateURL("/reconnect/unavailableAfterRetry"));
+         SseEventSource msgEventSource = SseEventSource.target(target).build();
+         try (SseEventSource eventSource = msgEventSource) {
+            eventSource.register(event -> {
+               results.add(event.readData(String.class));
+               latch.countDown();
+            }, ex -> {
+               errors.incrementAndGet();
+               Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
+            });
+            eventSource.open();
+
+            boolean waitResult = latch.await(15, TimeUnit.SECONDS);
+            Assert.assertEquals(1, errors.get());
+         }
       } finally {
          client.close();
       }
@@ -137,6 +167,7 @@ public class SseReconnectTest {
                .build();
          sseEventSource.register(event -> {
             results.add(event);
+            latch.countDown();
          }, error -> {
             if (error instanceof WebApplicationException)
             {
@@ -146,8 +177,6 @@ public class SseReconnectTest {
                }
             }
             errorCount.incrementAndGet();
-         }, () -> {
-            latch.countDown();
          });
          try (SseEventSource eventSource = sseEventSource)
          {
@@ -155,10 +184,67 @@ public class SseReconnectTest {
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
             Assert.assertEquals(0, errorCount.get());
-            Assert.assertEquals(2, results.size());
+            Assert.assertEquals(1, results.size());
             Assert.assertTrue(results.get(0).isReconnectDelaySet());
             Assert.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
-            Assert.assertFalse(results.get(1).isReconnectDelaySet());
+         }
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testReconnect() throws Exception
+   {
+      CountDownLatch latch = new CountDownLatch(1);
+      List<InboundSseEvent> results = new ArrayList<>();
+      Client client = ClientBuilder.newBuilder().build();
+      try
+      {
+         WebTarget target = client.target(generateURL("/reconnect/sselost"));
+         SseEventSource sseEventSource = SseEventSource.target(target).reconnectingEvery(2000, TimeUnit.MILLISECONDS)
+                 .build();
+         sseEventSource.register(event -> {
+            results.add(event);
+            latch.countDown();
+         });
+         try (SseEventSource eventSource = sseEventSource)
+         {
+            eventSource.open();
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            Assert.assertEquals(1, results.size());
+         }
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testEventSourceIsOpen() throws Exception
+   {
+      CountDownLatch latch = new CountDownLatch(1);
+      List<InboundSseEvent> results = new ArrayList<>();
+      Client client = ClientBuilder.newBuilder().build();
+      try
+      {
+         WebTarget target = client.target(generateURL("/reconnect/data"));
+         SseEventSource sseEventSource = SseEventSource.target(target).build();
+         sseEventSource.register(event -> {
+            results.add(event);
+            latch.countDown();
+         });
+         try (SseEventSource eventSource = sseEventSource)
+         {
+            eventSource.open();
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            Assert.assertEquals(1, results.size());
+            Assert.assertTrue("SseEventSource#isOpen returns false", eventSource.isOpen());
          }
       }
       finally

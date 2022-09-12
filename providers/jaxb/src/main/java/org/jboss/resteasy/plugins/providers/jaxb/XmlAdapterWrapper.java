@@ -3,8 +3,8 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.spi.util.Types;

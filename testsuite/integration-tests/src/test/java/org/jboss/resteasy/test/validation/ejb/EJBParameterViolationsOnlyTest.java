@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.validation.ejb;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +93,7 @@ public class EJBParameterViolationsOnlyTest {
     */
    @Test
    public void testStateless() throws Exception {
+      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       doValidationTest(client.target(generateURL("/app/stateless")));
    }
 
@@ -110,6 +112,7 @@ public class EJBParameterViolationsOnlyTest {
     */
    @Test
    public void testSingleton() throws Exception {
+      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       doValidationTest(client.target(generateURL("/app/singleton")));
    }
 

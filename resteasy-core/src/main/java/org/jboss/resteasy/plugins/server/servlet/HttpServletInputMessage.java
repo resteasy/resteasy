@@ -12,20 +12,26 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.util.Encode;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.EntityPart;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Abstraction for an inbound http request on the server, or a response from a server to a client
@@ -141,6 +147,31 @@ public class HttpServletInputMessage extends BaseHttpRequest
       }
       formParameters = Encode.encode(getDecodedFormParameters());
       return formParameters;
+   }
+
+   @Override
+   public List<EntityPart> getFormEntityParts() {
+      try {
+         final Collection<Part> parts = request.getParts();
+         return parts.stream().map((p) -> {
+            try {
+               final EntityPart.Builder builder = EntityPart.withName(p.getName())
+                       .content(p.getInputStream())
+                       .fileName(p.getSubmittedFileName())
+                       .mediaType(p.getContentType());
+               final MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+               for (String name : p.getHeaderNames()) {
+                  headers.addAll(name, List.copyOf(p.getHeaders(name)));
+               }
+               builder.headers(headers);
+               return builder.build();
+            } catch (IOException e) {
+               throw new UncheckedIOException(e);
+            }
+         }).collect(Collectors.toList());
+      } catch (ServletException | IOException e) {
+         throw new RuntimeException(e);
+      }
    }
 
    @Override

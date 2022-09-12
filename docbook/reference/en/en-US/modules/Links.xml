@@ -26,7 +26,7 @@
 		client, via auto-discovery.
 		</para>
 		<warning>
-			<para>This is only available when using the Jackson2 or JAXB providers (for JSON and XML).</para>
+			<para>This is only available when using the Jackson2 or &XML-BIND-API; providers (for JSON and XML).</para>
 		</warning>
 		<para>
 		The main advantage over Link headers is that you can have any number of Atom links directly over the
@@ -52,7 +52,7 @@
 					<tr>
 						<td>org.jboss.resteasy</td>
 						<td>resteasy-links</td>
-						<td>4.7.0-SNAPSHOT</td>
+						<td>6.2.0.Final-SNAPSHOT</td>
 					</tr>
 				</tbody>
 			</table>
@@ -65,7 +65,7 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-					Annotate the JAX-RS method with <classname>@AddLinks</classname> to indicate that you want
+					Annotate the &REST-API; method with <classname>@AddLinks</classname> to indicate that you want
 					Atom links injected in your response entity.
 					</para>
 				</listitem>
@@ -77,7 +77,7 @@
 				</listitem>
 				<listitem>
 					<para>
-					Annotate the JAX-RS methods you want Atom links for with <classname>@LinkResource</classname>,
+					Annotate the &REST-API; methods you want Atom links for with <classname>@LinkResource</classname>,
 					so that RESTEasy knows which links to create for which resources.
 					</para>
 				</listitem>
@@ -168,13 +168,13 @@ public class Book {
 		<section>
 			<title>Customising how the Atom links are serialised</title>
 			<para>
-			Because the <classname>RESTServiceDiscovery</classname> is in fact a JAXB type which inherits from
-			<classname>List</classname> you are free to annotate it as you want to customise the JAXB serialisation,
+			Because the <classname>RESTServiceDiscovery</classname> is in fact a &XML-BIND-API; type which inherits from
+			<classname>List</classname> you are free to annotate it as you want to customise the &XML-BIND-API; serialisation,
 			or just rely on the default with <classname>@XmlElementRef</classname>.
 			</para>
 		</section>
 		<section>
-			<title>Specifying which JAX-RS methods are tied to which resources</title>
+			<title>Specifying which &REST-API; methods are tied to which resources</title>
 			<para>
 			This is all done by annotating the methods with the <classname>@LinkResource</classname> annotation.
 			It supports the following optional parameters:
@@ -249,8 +249,8 @@ public class Book {
 				<title>Loading URI template values from the entity</title>
 				<para>
 					URI template values are extracted from the entity from fields or Java Bean properties
-					annotated with <classname>@ResourceID</classname>, JAXB's <classname>@XmlID</classname> or
-					JPA's <classname>@Id</classname>. If there are more than one URI template
+					annotated with <classname>@ResourceID</classname>, &XML-BIND-API;'s <classname>@XmlID</classname> or
+					Jakarta Persistence's <classname>@Id</classname>. If there are more than one URI template
 					value to find in a given entity, you can annotate your entity with <classname>@ResourceIDs</classname>
 					to list the names of fields or properties that make up this entity's Id. If there are other
 					URI template values required from a parent entity, we try to find that parent in a field or
@@ -413,7 +413,7 @@ public interface BookStore {
 			</para>
 			<para>
 			Security restrictions can either be specified on the <classname>@LinkResource</classname> annotation,
-			or using RESTEasy and EJB's security annotation <classname>@RolesAllowed</classname> on the JAX-RS
+			or using RESTEasy and &ENTERPRISE-BEANS; security annotation <classname>@RolesAllowed</classname> on the &REST-API;
 			method.
 			</para>
 			<table>
@@ -432,7 +432,7 @@ public interface BookStore {
 						<td><classname>String</classname></td>
 						<td>A UEL expression which must evaluate to true to inject this method's link in the
 						response entity.</td>
-						<td>Defaults to using <classname>@RolesAllowed</classname> from the JAX-RS method.</td>
+						<td>Defaults to using <classname>@RolesAllowed</classname> from the &REST-API; method.</td>
 					</tr>
 				</tbody>
 			</table>
@@ -446,7 +446,7 @@ public interface BookStore {
 			</para>
 			<para>
 			If you want to add more variables or functions in this
-			context, you can by adding a <classname>@LinkELProvider</classname> annotation on the JAX-RS method,
+			context, you can by adding a <classname>@LinkELProvider</classname> annotation on the &REST-API; method,
 			its class, or its package. This annotation's value should point to a class that implements the
 			<classname>ELProvider</classname> interface, which wraps the default <classname>ELContext</classname>
 			in order to add any missing functions.
@@ -464,10 +464,10 @@ import org.jboss.resteasy.links.*;]]></programlisting>
 			</para>
 			<programlisting language="Java"><![CDATA[package org.jboss.resteasy.links.test;
 
-import javax.el.ELContext;
-import javax.el.ELResolver;
-import javax.el.FunctionMapper;
-import javax.el.VariableMapper;
+import jakarta.el.ELContext;
+import jakarta.el.ELResolver;
+import jakarta.el.FunctionMapper;
+import jakarta.el.VariableMapper;
 
 import org.jboss.seam.el.SeamFunctionMapper;
 

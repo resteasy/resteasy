@@ -1,18 +1,19 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.util.StringToPrimitive;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -33,6 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -397,15 +399,28 @@ public class StringParameterInjector
 
    public StringParameterInjector(final Class<?> type, final Type genericType, final String paramName, final Class<?> paramType, final String defaultValue, final AccessibleObject target, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
-      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory, Collections.emptyMap());
+   }
+
+   public StringParameterInjector(final Class<?> type, final Type genericType, final String paramName,
+                                  final Class<?> paramType, final String defaultValue, final AccessibleObject target,
+                                  final Annotation[] annotations, final ResteasyProviderFactory factory,
+                                  final Map<Class<? extends Annotation>, Collection<Class<?>>> ignoredTypes)
+   {
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory, ignoredTypes);
    }
 
    public boolean isCollectionOrArray()
    {
       return isCollection || isArray;
    }
+   protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory) {
+      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory, Collections.emptyMap());
+   }
 
-   protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory)
+   protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue,
+                             AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory,
+                             final Map<Class<? extends Annotation>, Collection<Class<?>>> ignoredTypes)
    {
       this.type = type;
       this.paramName = paramName;
@@ -414,6 +429,16 @@ public class StringParameterInjector
       this.target = target;
       baseType = type;
       baseGenericType = genericType;
+
+      // Check if the annotation contains types to ignore. Ignored types will need to be handled in the subtype.
+      if (ignoredTypes.containsKey(paramType)) {
+         // Check the types which are handled elsewhere
+         for (Class<?> c : ignoredTypes.get(paramType)) {
+            if (c.isAssignableFrom(type)) {
+               return;
+            }
+         }
+      }
 
       //Step 1: try to find a conversion mechanism using the type as it is
       if(initialize(annotations, factory))
@@ -535,7 +560,7 @@ public class StringParameterInjector
          {
             for (Annotation ann : baseType.getAnnotations())
             {
-               if (ann.annotationType().getName().equals("javax.xml.bind.annotation.XmlEnum"))
+               if (ann.annotationType().getName().equals("jakarta.xml.bind.annotation.XmlEnum"))
                {
                   valueOf = fromValue;
                }
@@ -688,8 +713,9 @@ public class StringParameterInjector
          } catch (WebApplicationException wae) {
              throw wae;
          } catch (Exception pce) {
+            LogMessages.LOGGER.unableToExtractParameter(pce, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-                    getParamSignature(), strVal, target), pce);
+                    getParamSignature(), strVal), pce);
          }
       }
       if (unmarshaller != null)
@@ -699,8 +725,9 @@ public class StringParameterInjector
          } catch (WebApplicationException wae) {
              throw wae;
          } catch (Exception ue) {
+            LogMessages.LOGGER.unableToExtractParameter(ue, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-                    getParamSignature(), strVal, target), ue);
+                    getParamSignature(), strVal), ue);
          }
       }
       else if (delegate != null)
@@ -710,8 +737,9 @@ public class StringParameterInjector
          } catch (WebApplicationException wae) {
              throw wae;
          } catch (Exception pce) {
+            LogMessages.LOGGER.unableToExtractParameter(pce, getParamSignature(), strVal, target);
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
-                    getParamSignature(), strVal, target), pce);
+                    getParamSignature(), strVal), pce);
          }
       }
       else if (constructor != null)
@@ -722,11 +750,13 @@ public class StringParameterInjector
          }
          catch (InstantiationException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
          }
          catch (InvocationTargetException e)
          {
@@ -735,7 +765,8 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), targetException);
          }
       }
       else if (valueOf != null)
@@ -746,7 +777,8 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+            LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
          }
          catch (InvocationTargetException e)
          {
@@ -755,7 +787,8 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
+            LogMessages.LOGGER.unableToExtractParameter(targetException, getParamSignature(), strVal, target);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), targetException);
          }
       }
       try
@@ -764,7 +797,8 @@ public class StringParameterInjector
       }
       catch (Exception e)
       {
-         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
+         LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)), e);
       }
       return null;
    }

@@ -1,8 +1,9 @@
 package org.jboss.resteasy.resteasy_jaxrs.i18n;
 
+import java.lang.reflect.AccessibleObject;
 import java.net.URL;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
@@ -77,6 +78,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 41, value = "Failed to get the patch/merge target for request {0}", format = Format.MESSAGE_FORMAT)
    void errorPatchTarget(String requestURI);
 
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 50, value = "The set instance of %s for property %s is not a valid %s.")
+   void invalidPropertyType(Object instance, String name, String type);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  WARN                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +139,7 @@ public interface LogMessages extends BasicLogger
 
    @LogMessage(level = Level.WARN)
    @Message(id = BASE
-         + 140, value = "JAX-RS annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format = Format.MESSAGE_FORMAT)
+         + 140, value = "Qualifying annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format = Format.MESSAGE_FORMAT)
    void JAXRSAnnotationsFoundAtNonPublicMethod(String className, String method);
 
    @LogMessage(level = Level.WARN)
@@ -178,7 +183,7 @@ public interface LogMessages extends BasicLogger
 
    @LogMessage(level = Level.WARN)
    @Message(id = BASE
-         + 175, value = "The use of %s is deprecated, please use javax.ws.rs.Application as a context-param instead")
+         + 175, value = "The use of %s is deprecated, please use jakarta.ws.rs.Application as a context-param instead")
    void useOfApplicationClass(String className);
 
    @LogMessage(level = Level.WARN)
@@ -207,6 +212,10 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 196, value = "Component of type %s can't be dynamically bound to a resource method as a %s provider.")
    void providerCantBeDynamicallyBoundToMethod(Class<?> componentClass, Class<?> providerType);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 197, value = "The previous response status was {0} {1}. The status should be changed before the entity is set.", format = Format.MESSAGE_FORMAT)
+   void statusNotSet(int statusCode, String reasonPhrase);
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
@@ -299,6 +308,24 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 340, value = "Client receive processing failure.")
    void clientReceiveProcessingFailure(@Cause Throwable cause);
+
+   @LogMessage(level = Level.DEBUG)
+   @Message("Unable to extract parameter from http request: %s value is '%s' for %s")
+   void unableToExtractParameter(@Cause Throwable cause, String paramSignature, String strVal, AccessibleObject target);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 350, value = "Failed to reset the context on thread: %s")
+   void unableToResetThreadContext(@Cause Throwable cause, String threadName);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 360, value = "Failed to look up JNDI resource \"%s\". Using a default ExecutorService.")
+   void failedToLookupManagedExecutorService(@Cause Throwable cause, String name);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 370, value = "Failed to load: %s")
+   void failedToLoad(@Cause Throwable cause, String resourceName);
+
+
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  TRACE                                                //

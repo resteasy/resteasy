@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,9 +29,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET;
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER;
@@ -244,6 +245,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
    @Test
    public void testTrustedServerWithClientConfigProvider() throws IOException, InterruptedException {
+      Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
       String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithSSL();
       File clientTruststore = new File(CLIENT_TRUSTSTORE_PATH);
       Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(

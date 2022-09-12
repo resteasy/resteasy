@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
 import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
 import org.apache.maven.repository.internal.DefaultVersionResolver;
@@ -48,6 +46,7 @@ import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.VersionScheme;
+import org.jboss.logging.Logger;
 
 /**
  * This class was originally written by Kabir Khan to download old maven artifact in wildfly-core.
@@ -56,7 +55,7 @@ import org.eclipse.aether.version.VersionScheme;
  */
 public class MavenUtil {
 
-   protected static final Logger logger = LogManager.getLogger(MavenUtil.class.getName());
+   protected static final Logger logger = Logger.getLogger(MavenUtil.class.getName());
 
    private static final String AETHER_API_NAME = File.separatorChar == '/' ? "/org/eclipse/aether/aether-api/" : "\\org\\eclipse\\aether\\aether-api\\";
 
@@ -231,13 +230,6 @@ public class MavenUtil {
          repository2.setProxy(httpProxy);
       }
       remoteRepositories.add(repository2.build());
-
-      // always add spring repository
-      RemoteRepository.Builder repository1 = new RemoteRepository.Builder("maven1", "default", "https://repo.spring.io/libs-milestone/");
-      if (httpProxy != null) {
-         repository1.setProxy(httpProxy);
-      }
-      remoteRepositories.add(repository1.build());
 
       return remoteRepositories;
    }

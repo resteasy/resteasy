@@ -16,16 +16,15 @@ import java.util.function.Supplier;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.InvocationCallback;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.ContentTooLongException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -108,7 +107,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    {
       if (closeHttpClient)
       {
-         IOUtils.closeQuietly(client);
+         safeClose(client);
       }
    }
 
@@ -420,7 +419,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          if (sharedStream != null)
          {
             sharedStream.setException(ioException(ex));
-            IOUtils.closeQuietly(sharedStream);
+            safeClose(sharedStream);
          }
          releaseResources();
       }
@@ -433,7 +432,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          if (sharedStream != null)
          {
             sharedStream.setException(new IOException("cancelled"));
-            IOUtils.closeQuietly(sharedStream);
+            safeClose(sharedStream);
          }
          releaseResources();
          return true;
@@ -730,7 +729,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
             {
                if (thrown)
                {
-                  IOUtils.closeQuietly(connection);
+                  safeClose(connection);
                }
                else
                {
@@ -876,6 +875,14 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
 
    private static IOException ioException(Exception ex) {
       return (ex instanceof IOException) ? (IOException) ex : new IOException(ex);
+   }
+
+   private static void safeClose(final Closeable closeable) {
+      if (closeable != null) {
+         try {
+            closeable.close();
+         } catch (IOException ignore){}
+      }
    }
 
 }

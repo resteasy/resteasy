@@ -1,16 +1,15 @@
 package org.jboss.resteasy.test.request;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -27,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class ContainerRequestContextTest {
 
    private HttpRequest request;
-   protected static final Logger logger = LogManager.getLogger(ContainerRequestContextTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ContainerRequestContextTest.class.getName());
 
    @Before
    public void before() throws URISyntaxException {

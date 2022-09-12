@@ -1,22 +1,23 @@
 package org.jboss.resteasy.test.providers.sse.resource;
 
-import org.junit.Assert;
-
-import javax.ejb.Singleton;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
 import java.util.concurrent.TimeUnit;
+
+import jakarta.ejb.Singleton;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
+
+import org.junit.Assert;
 
 @Singleton
 @Path("/reconnect")
@@ -93,6 +94,47 @@ public class SseReconnectResource {
                sendEvent(s, sse, "0", TimeUnit.SECONDS.toMillis(3));
             }
             break;
+      }
+   }
+
+   static int tryCount = 1;
+   @GET
+   @Path("sselost")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sseLost(@Context SseEventSink sink, @Context Sse sse) {
+         if (tryCount != 0) {
+            tryCount--;
+            sink.close();
+         } else {
+            try (SseEventSink s = sink) {
+               s.send(sse.newEvent("MESSAGE"));
+            }
+         }
+   }
+   @GET
+   @Path("data")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sendData(@Context SseEventSink sink, @Context Sse sse) {
+      try (SseEventSink s = sink) {
+         s.send(sse.newEventBuilder().data("sse message sample").mediaType(MediaType.TEXT_HTML_TYPE)
+                 .build());
+      }
+   }
+
+   static int retry_cnt = 2;
+   @GET
+   @Path("/unavailableAfterRetry")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void failAfterRetry(@Context SseEventSink sink, @Context Sse sse)
+   {
+      if (retry_cnt <= 0) {
+         startTime = System.currentTimeMillis();
+         throw new WebApplicationException(Response.status(503)
+                 .build());
+      } else {
+         throw new WebApplicationException(Response.status(503)
+                 .header(HttpHeaders.RETRY_AFTER, String.valueOf(retry_cnt--))
+                 .build());
       }
    }
 

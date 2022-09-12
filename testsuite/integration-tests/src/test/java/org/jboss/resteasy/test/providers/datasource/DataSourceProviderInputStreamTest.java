@@ -6,14 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.activation.DataSource;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.activation.DataSource;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -102,13 +101,9 @@ public class DataSourceProviderInputStreamTest {
       HttpClient httpClient = HttpClientBuilder.create().setDefaultConnectionConfig(config).build();
       HttpGet httpGet = new HttpGet(generateURL("/"));
       HttpResponse response = httpClient.execute(httpGet);
-      InputStream inputStream = null;
-      try {
-         inputStream = response.getEntity().getContent();
+      try (InputStream inputStream = response.getEntity().getContent()) {
          DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
          assertEquals("DataSourceProvider does not properly read InputStream", 0, findSizeOfRemainingDataInStream(inputStream));
-      } finally {
-         IOUtils.closeQuietly(inputStream);
       }
    }
 

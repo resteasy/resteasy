@@ -2,7 +2,7 @@
 <title>Resources metadata configuration</title>
 
 <para>
-When processing JAX-RS deployments, RESTEasy relies on <emphasis>ResourceBuilder</emphasis> to create metadata for each JAX-RS resource. Such metadata is defined using the metadata SPI in package <emphasis>org.jboss.resteasy.spi.metadata</emphasis>, in particular the <emphasis>ResourceClass</emphasis> interface:
+When processing &REST-API; deployments, RESTEasy relies on <emphasis>ResourceBuilder</emphasis> to create metadata for each &REST-API; resource. Such metadata is defined using the metadata SPI in package <emphasis>org.jboss.resteasy.spi.metadata</emphasis>, in particular the <emphasis>ResourceClass</emphasis> interface:
 <programlisting>
 package org.jboss.resteasy.spi.metadata;
 
@@ -92,7 +92,7 @@ public interface ResourceClassProcessor
 }
 </programlisting>
 
-The processors are meant to be, and are resolved as, regular JAX-RS annotated providers. They allow for wrapping resource metadata classes with custom versions that can be used for various advanced scenarios like
+The processors are meant to be, and are resolved as, regular &REST-API; annotated providers. They allow for wrapping resource metadata classes with custom versions that can be used for various advanced scenarios like
 <itemizedlist>
 <listitem>
 adding additional resource method/locators to the resource

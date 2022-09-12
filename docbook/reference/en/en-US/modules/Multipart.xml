@@ -129,9 +129,9 @@ public interface MultipartInput {
 <![CDATA[
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -147,7 +147,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultContentType")
     * String as key. It should be done in a
-    * {@link javax.ws.rs.container.ContainerRequestFilter}.
+    * {@link jakarta.ws.rs.container.ContainerRequestFilter}.
     */
    String DEFAULT_CONTENT_TYPE_PROPERTY =
     "resteasy.provider.multipart.inputpart.defaultContentType";
@@ -160,7 +160,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultCharset")
     * String as key. It should be done in a
-    * {@link javax.ws.rs.container.ContainerRequestFilter}.
+    * {@link jakarta.ws.rs.container.ContainerRequestFilter}.
     */
    String DEFAULT_CHARSET_PROPERTY =
     "resteasy.provider.multipart.inputpart.defaultCharset";
@@ -205,10 +205,10 @@ public interface InputPart {
 <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlRootElement(name = "soup")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -398,10 +398,10 @@ public class Soup {
             <![CDATA[
     package org.jboss.resteasy.test.providers.multipart.resource;
 
-    import javax.xml.bind.annotation.XmlAccessType;
-    import javax.xml.bind.annotation.XmlAccessorType;
-    import javax.xml.bind.annotation.XmlElement;
-    import javax.xml.bind.annotation.XmlRootElement;
+    import jakarta.xml.bind.annotation.XmlAccessType;
+    import jakarta.xml.bind.annotation.XmlAccessorType;
+    import jakarta.xml.bind.annotation.XmlElement;
+    import jakarta.xml.bind.annotation.XmlRootElement;
 
     @XmlRootElement(name = "customer")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -492,7 +492,7 @@ public class Soup {
          <![CDATA[
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class MultipartRelatedOutput extends MultipartOutput {
    private String startInfo;
@@ -537,7 +537,7 @@ public class MultipartRelatedOutput extends MultipartOutput {
          <![CDATA[
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class MultipartRelatedOutput extends MultipartOutput {
    private String startInfo;
@@ -631,7 +631,7 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
          <title>XML-binary Optimized Packaging (XOP)</title>
          <para>RESTEasy supports XOP messages packaged as multipart/related messages
             (<link linkend="http://www.w3.org/TR/xop10/">http://www.w3.org/TR/xop10/</link>).
-            A JAXB annotated POJO that also holds binary content can be transmitted using XOP.
+            A &XML-BIND-API; annotated POJO that also holds binary content can be transmitted using XOP.
             XOP allows the binary data to skip going through the XML serializer because
             binary data can be serialized differently from text and this can result in faster
             transport time.
@@ -642,7 +642,7 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
          </para>
          <para>RESTEasy highly recommends, if you know the exact mime type of the POJO's
             binary data, tag the field with annotation @XmlMimeType.  This annotation tells
-            JAXB the mime type of the binary content, however this is not required in order
+            &XML-BIND-API; the mime type of the binary content, however this is not required in order
             to do XOP packaging.
          </para>
       </section>
@@ -659,11 +659,11 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
             <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlMimeType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -757,6 +757,148 @@ Response response = target.request().post(entity);
          except that each inlined piece of content has a name associated with it.
       </para>
 
+       <section id="entity_part">
+           <title>Multipart/form-data with EntityPart&apos;s</title>
+           <para>
+               In &REST-API; 3.1 the <code>jakarta.ws.rs.core.EntityPart</code> API was introduced. This can be used
+               to read and write <code>multipart/form-data</code> with a standardized API.
+           </para>
+           <para>
+               The content of the <code>EntityPart</code> has two definable size limits. These can be set as system
+               properties, servlet context properties or a MicroProfile Config compatible value.
+               <table>
+                   <tgroup cols="4" rowsep="1" colsep="1">
+                       <thead>
+                           <row>
+                               <entry>Property Name</entry>
+                               <entry>Description</entry>
+                               <entry>Default Value</entry>
+                               <entry>Example</entry>
+                           </row>
+                       </thead>
+                       <tbody>
+                           <row>
+                               <entry><code>dev.resteasy.entity.memory.threshold</code></entry>
+                               <entry>The threshold to use for the amount of data to store in memory for entities.</entry>
+                               <entry>5MB</entry>
+                               <entry>&quot;512MB&quot; is equivalent to 512 Megabytes</entry>
+                           </row>
+                           <row>
+                               <entry><code>dev.resteasy.entity.file.threshold</code></entry>
+                               <entry>The threshold to use for the amount of data that can be stored in a file for
+                                   entities. If the threshold is reached an <code>IllegalStateException</code> will be
+                                   thrown. A value of -1 means no limit.
+                               </entry>
+                               <entry>50MB</entry>
+                               <entry>&quot;1GB&quot; is equivalent to 1 Gigabyte</entry>
+                           </row>
+                       </tbody>
+                   </tgroup>
+               </table>
+           </para>
+
+           <para>
+               You can read, write and inject (with <code>@FormParam</code>) an <code>EntityPart</code> in the following
+               forms;
+               <itemizedlist>
+                   <listitem><code>EntityPart</code></listitem>
+                   <listitem><code>List&lt;EntityPart&gt;</code></listitem>
+                   <listitem><code>InputStream</code></listitem>
+               </itemizedlist>
+
+               Example reading data:
+               <programlisting>
+try (Client client = ClientBuilder.newClient()) {
+    final List&lt;EntityPart&gt; multipart = new ArrayList&lt;&gt;();
+    multipart.add(
+            EntityPart.withName("content")
+                    .content("Example Content")
+                    .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                    .build()
+    );
+    try (
+            Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/injected"))
+                    .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                    .post(Entity.entity(new GenericEntity&lt;&gt;(multipart) {
+                    }, MediaType.MULTIPART_FORM_DATA))
+    ) {
+        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        final List&lt;EntityPart&gt; entityParts = response.readEntity(new GenericType&lt;&gt;() {
+        });
+    }
+}
+               </programlisting>
+
+               Example receiving and writing data.
+               <programlisting>
+@POST
+@Consumes(MediaType.MULTIPART_FORM_DATA)
+@Produces(MediaType.MULTIPART_FORM_DATA)
+@Path("/injected")
+public List&lt;EntityPart&gt; injected(@FormParam("content") final String string,
+                         @FormParam("content") final EntityPart entityPart,
+                         @FormParam("content") final InputStream in) throws IOException {
+    final List&lt;EntityPart&gt; multipart = new ArrayList&lt;&gt;();
+    multipart.add(
+            EntityPart.withName("received-entity-part")
+                    .content(entityPart.getContent(String.class))
+                    .mediaType(entityPart.getMediaType())
+                    .fileName(entityPart.getFileName().orElse(null))
+                    .build()
+    );
+    multipart.add(
+            EntityPart.withName("received-input-stream")
+                    .content(MultipartEntityPartProviderTest.toString(in).getBytes(StandardCharsets.UTF_8))
+                    .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                    .build()
+    );
+    multipart.add(
+            EntityPart.withName("received-string")
+                    .content(string)
+                    .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                    .build()
+    );
+    return multipart;
+}
+            </programlisting>
+           </para>
+
+           <para>
+               Currently <code>multipart/form-data</code> requests only work in the provided servlet containers. You
+               must configure the servlet's multipart-config as well. If you use one of the RESTEasy Undertow embedded
+               servers or the <code>resteasy-servlet-initializer</code>, then you can annotate your application with
+               <code>@MultipartConfig</code>. For other cases you need to specify the configuration. Below is an example
+               <code>web.xml</code> configuration.
+               <programlisting>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+   xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+   version="5.0"&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;RESTEasy&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;jakarta.ws.rs.core.Application&lt;/param-name&gt;
+            &lt;param-value&gt;dev.resteasy.resource.EntityApplication&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;async-supported&gt;true&lt;/async-supported&gt;
+        &lt;multipart-config&gt;
+            &lt;max-file-size&gt;-1&lt;/max-file-size&gt;
+            &lt;max-request-size&gt;-1&lt;/max-request-size&gt;
+            &lt;file-size-threshold&gt;0&lt;/file-size-threshold&gt;
+            &lt;location&gt;&lt;/location&gt;
+        &lt;/multipart-config&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;RESTEasy&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+
+               </programlisting>
+           </para>
+       </section>
 
    <section id="Writing_multipart_formData">
       <title>Writing multipart/form-data messages</title>
@@ -805,7 +947,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 
 public interface MultipartFormDataInput extends MultipartInput {
    /**
@@ -832,10 +974,10 @@ public interface MultipartFormDataInput extends MultipartInput {
          <![CDATA[
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "name")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -1006,7 +1148,7 @@ public class ContextProvidersName {
          <para>If you have an exact knowledge of your multipart/form-data packets,
             you can map them to and from a POJO class using the annotation
             <code>@org.jboss.resteasy.annotations.providers.multipart.MultipartForm</code>
-            and the JAX-RS <code>@FormParam</code> annotation. Simply define a POJO with
+            and the &REST-API; <code>@FormParam</code> annotation. Simply define a POJO with
             at least a default constructor and annotate its fields and/or properties
             with <code>@FormParams</code>. These <code>@FormParams</code> must
             also be annotated with
@@ -1102,10 +1244,10 @@ public class JsonUser {
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class JsonFormResource {
@@ -1151,9 +1293,9 @@ public class JsonFormResource {
             <![CDATA[
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public interface JsonForm {
@@ -1208,7 +1350,7 @@ String name = proxy.putMultipartForm(new JsonFormResource
            request.  They send them only for the file parts.  This can cause
            character encoding and unmarshalling errors on the server side. To correct
            this there is an option to define an other, non-rfc compliant fallback value.
-           This can be done dynamically per request with the filter facility of JAX-RS
+           This can be done dynamically per request with the filter facility of &REST-API;
            3.0. In the following example we will set
            <code>"*/*; charset=UTF-8"</code> as the new default fallback:
             <programlisting>

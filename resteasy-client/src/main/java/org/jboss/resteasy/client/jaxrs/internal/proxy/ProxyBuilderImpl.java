@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ProxyConfig;

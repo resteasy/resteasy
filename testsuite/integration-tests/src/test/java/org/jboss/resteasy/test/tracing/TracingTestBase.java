@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.tracing;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -9,6 +7,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.TracingRequired;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -18,11 +18,12 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,10 +32,11 @@ import static org.jboss.resteasy.test.ContainerConstants.TRACING_CONTAINER_QUALI
 
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(TracingRequired.class)
 public abstract class TracingTestBase {
    protected static final String WAR_BASIC_TRACING_FILE = "war_basic_tracing";
    protected static final String WAR_ON_DEMAND_TRACING_FILE = "war_on_demand_tracing";
-   private static final Logger LOG = LogManager.getLogger(TracingTestBase.class);
+   private static final Logger LOG = Logger.getLogger(TracingTestBase.class);
 
    @ArquillianResource
    protected ContainerController containerController;

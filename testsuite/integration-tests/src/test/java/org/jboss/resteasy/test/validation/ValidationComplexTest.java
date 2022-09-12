@@ -8,7 +8,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexA;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexArrayOfStrings;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexB;
@@ -69,14 +69,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.util.ArrayList;
@@ -604,7 +604,11 @@ public class ValidationComplexTest {
       url += ";m=mmm";                        // matrix param
       url += "?q=qqq";                        // query param
       Form form = new Form().param("f", "fff");
-      response = client.target(url).request().header("h", "hhh").cookie(new Cookie("c", "ccc")).post(Entity.form(form));
+      Cookie ck1 = new Cookie.Builder("c")
+              .value("ccc")
+              .build();
+      response = client.target(url).request().header("h", "hhh")
+              .cookie(ck1).post(Entity.form(form));
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
       response.close();
 
@@ -613,7 +617,11 @@ public class ValidationComplexTest {
       url += ";m=mmmm";                        // matrix param
       url += "?q=qqqq";                        // query param
       form = new Form().param("f", "ffff");
-      response = client.target(url).request().header("h", "hhhh").cookie(new Cookie("c", "cccc")).post(Entity.form(form));
+      Cookie ck2 = new Cookie.Builder("c")
+              .value("cccc")
+              .build();
+      response = client.target(url).request().header("h", "hhhh")
+              .cookie(ck2).post(Entity.form(form));
       Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       entity = response.readEntity(String.class);
       r = new ViolationReport(String.class.cast(entity));

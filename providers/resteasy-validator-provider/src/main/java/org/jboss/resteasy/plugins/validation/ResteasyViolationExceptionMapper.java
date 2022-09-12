@@ -3,16 +3,16 @@ package org.jboss.resteasy.plugins.validation;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.ConstraintDeclarationException;
-import javax.validation.ConstraintDefinitionException;
-import javax.validation.GroupDefinitionException;
-import javax.validation.ValidationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintDefinitionException;
+import jakarta.validation.GroupDefinitionException;
+import jakarta.validation.ValidationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;

@@ -75,14 +75,14 @@ public final class TypeConverter
       }
       if (Character.class.equals(targetType))
       {
-         if (source.length() == 0) return targetType.cast(new Character('\0'));
-         return targetType.cast(new Character(source.charAt(0)));
+         if (source.length() == 0) return targetType.cast('\0');
+         return targetType.cast(source.charAt(0));
       }
       if (char.class.equals(targetType))
       {
          Character c = null;
-         if (source.length() == 0)c = new Character('\0');
-         else c = new Character(source.charAt(0));
+         if (source.length() == 0)c = Character.valueOf('\0');
+         else c = Character.valueOf(source.charAt(0));
          try
          {
             return (T)Character.class.getMethod("charValue").invoke(c);

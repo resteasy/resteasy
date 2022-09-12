@@ -3,23 +3,22 @@ package org.jboss.resteasy.test.core.interceptors;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
@@ -52,14 +51,14 @@ import org.junit.runner.RunWith;
 public class GzipTest {
 
    static ResteasyClient client;
-   protected static final Logger logger = LogManager.getLogger(GzipTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(GzipTest.class.getName());
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
       WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
       war.addClasses(GzipIGZIP.class, Pair.class);
       // Activate gzip compression:
-      war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+      war.addAsManifestResource("org/jboss/resteasy/test/client/jakarta.ws.rs.ext.Providers", "services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
    }
 

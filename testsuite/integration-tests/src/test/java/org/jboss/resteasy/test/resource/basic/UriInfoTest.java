@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedQueryResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedTemplateResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEscapedMatrParamResource;
@@ -24,11 +23,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ import java.util.PropertyPermission;
 @RunAsClient
 public class UriInfoTest {
 
-   protected final Logger logger = LogManager.getLogger(UriInfoTest.class.getName());
+   protected final Logger logger = Logger.getLogger(UriInfoTest.class.getName());
 
    private static Client client;
 

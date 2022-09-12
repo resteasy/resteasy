@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  * @tpSince RESTEasy 3.0.16
  */
 public class GenericTypeCryptoTest {
-   protected static final Logger logger = LogManager.getLogger(GenericTypeCryptoTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(GenericTypeCryptoTest.class.getName());
 
    /**
     * @tpTestDetails Check GenerycType class on ArrayList

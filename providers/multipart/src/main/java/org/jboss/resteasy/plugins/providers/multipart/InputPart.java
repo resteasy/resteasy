@@ -1,10 +1,14 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Represents one part of a multipart message.
@@ -21,7 +25,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultContentType")
     * String as key. It should be done in a
-    * {@link javax.ws.rs.container.ContainerRequestFilter}.
+    * {@link jakarta.ws.rs.container.ContainerRequestFilter}.
     * </p>
     */
    String DEFAULT_CONTENT_TYPE_PROPERTY = "resteasy.provider.multipart.inputpart.defaultContentType";
@@ -34,7 +38,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultCharset")
     * String as key. It should be done in a
-    * {@link javax.ws.rs.container.ContainerRequestFilter}.
+    * {@link jakarta.ws.rs.container.ContainerRequestFilter}.
     * </p>
     */
    String DEFAULT_CHARSET_PROPERTY = "resteasy.provider.multipart.inputpart.defaultCharset";
@@ -49,6 +53,30 @@ public interface InputPart {
    <T> T getBody(Class<T> type, Type genericType) throws IOException;
 
    <T> T getBody(GenericType<T> type) throws IOException;
+
+   /**
+    * Returns the body content as an input stream.
+    *
+    * @return the body content
+    *
+    * @throws IOException if an error occurs reading the content
+    */
+   default InputStream getBody() throws IOException {
+      final String value = getBodyAsString();
+      if (value == null) {
+         return InputStream.nullInputStream();
+      }
+      return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
+   }
+
+   /**
+    * Returns the filename parameter of the content disposition of this Entity.
+    *
+    * @return the filename or {@code null} if one does not exist
+    */
+   default String getFileName() {
+      return null;
+   }
 
    /**
     * @return "Content-Type" of this part

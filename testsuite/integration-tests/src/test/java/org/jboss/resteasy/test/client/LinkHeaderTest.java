@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.LinkHeaderService;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -57,7 +57,7 @@ public class LinkHeaderTest extends ClientTestBase{
       {
          Response response = client.target(generateURL("/linkheader/str")).request().header("Link",
             "<http://example.com/TheBook/chapter2>; rel=\"previous\"; title=\"previous chapter\"").post(Entity.text(new String()));
-         javax.ws.rs.core.Link link = response.getLink("previous");
+         jakarta.ws.rs.core.Link link = response.getLink("previous");
          Assert.assertNotNull(link);
          Assert.assertEquals("Wrong link", "previous chapter", link.getTitle());
          Assert.assertEquals("Wrong link", "http://example.com/TheBook/chapter2", link.getUri().toString());

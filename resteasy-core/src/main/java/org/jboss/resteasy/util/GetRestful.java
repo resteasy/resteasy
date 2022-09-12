@@ -1,7 +1,7 @@
 package org.jboss.resteasy.util;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

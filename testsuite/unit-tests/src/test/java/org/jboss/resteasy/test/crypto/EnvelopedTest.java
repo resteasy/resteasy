@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedDataStreamGenerator;
 import org.bouncycastle.cms.CMSException;
@@ -19,15 +17,16 @@ import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OutputEncryptor;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -51,7 +50,7 @@ import java.util.Base64;
  */
 public class EnvelopedTest {
 
-   protected static final Logger logger = LogManager.getLogger(EnvelopedTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(EnvelopedTest.class.getName());
    private static String python_smime = "MIIBagYJKoZIhvcNAQcDoIIBWzCCAVcCAQAxgewwgekCAQAwUjBFMQswCQYDVQQG\n" +
          "EwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lk\n" +
          "Z2l0cyBQdHkgTHRkAgkA7oW81OriflAwDQYJKoZIhvcNAQEBBQAEgYA1AWIoRMsb\n" +

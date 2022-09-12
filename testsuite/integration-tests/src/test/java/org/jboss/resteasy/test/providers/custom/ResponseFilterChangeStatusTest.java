@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.providers.custom;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterChangeStatusResource;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterChangeStatusResponseFilter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -20,11 +19,11 @@ import org.junit.Assert;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -35,7 +34,7 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ResponseFilterChangeStatusTest {
 
-   protected static final Logger logger = LogManager.getLogger(ResponseFilterChangeStatusTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResponseFilterChangeStatusTest.class.getName());
 
    @Rule
    public ExpectedException thrown = ExpectedException.none();

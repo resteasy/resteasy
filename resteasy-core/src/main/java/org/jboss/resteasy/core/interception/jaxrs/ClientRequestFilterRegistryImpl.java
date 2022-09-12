@@ -3,8 +3,8 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.container.PreMatching;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.container.PreMatching;
 
 public class ClientRequestFilterRegistryImpl extends JaxrsInterceptorRegistryImpl<ClientRequestFilter> {
 

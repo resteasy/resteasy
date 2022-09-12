@@ -1,6 +1,6 @@
 package org.jboss.resteasy.reactor;
 
-import javax.ws.rs.client.RxInvoker;
+import jakarta.ws.rs.client.RxInvoker;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;

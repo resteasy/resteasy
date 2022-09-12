@@ -5,13 +5,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.ReaderInterceptorContext;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.ext.ReaderInterceptorContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.security.doseta.i18n.LogMessages;
@@ -30,8 +30,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
-      Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
-      if (verifier == null)
+      if (!context.hasProperty(Verifier.class.getName()))
       {
          return context.proceed();
       }
@@ -64,6 +63,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
          context.setInputStream(stream);
          Object rtn = context.proceed();
          byte[] body = stream.toByteArray();
+         Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
 
          if (verifier.getRepository() == null)
          {

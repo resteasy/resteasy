@@ -18,7 +18,7 @@ public class CaseInsentiveMapTest {
     */
    @Test
    public void testMap() {
-      CaseInsensitiveMap<String> map = new CaseInsensitiveMap<String>();
+      CaseInsensitiveMap<String> map = new CaseInsensitiveMap<>();
       map.add("Cache-Control", "nocache");
       Assert.assertEquals("key of map should be case insensitive", "nocache", map.getFirst("caChe-CONTROL"));
    }

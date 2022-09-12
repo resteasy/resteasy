@@ -19,15 +19,15 @@ import org.jboss.resteasy.util.CommitHeaderOutputStream.CommitCallback;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
-import javax.ws.rs.NotAcceptableException;
-import javax.ws.rs.Produces;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.NotAcceptableException;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -113,7 +113,16 @@ public class ServerResponseWriter
          Class type = jaxrsResponse.getEntityClass();
          Type generic = jaxrsResponse.getGenericType();
          Annotation[] annotations = jaxrsResponse.getAnnotations();
-         final MediaType mt = jaxrsResponse.getMediaType();
+         MediaType mt = jaxrsResponse.getMediaType();
+         // A filter could set the entity without setting the media type. While the java doc for Response.setEntity(Object)
+         // states "The existing entity annotations and media type are preserved.", we need the media type for the
+         // writer. We'll go ahead and set a default.
+         if (mt == null) {
+            mt = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
+            if (mt != null) {
+               jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt);
+            }
+         }
          MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
                type, generic, annotations, mt);
          if (writer!=null)
@@ -511,7 +520,7 @@ public class ServerResponseWriter
                }
                else
                {
-                  response.getOutputHeaders().add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, next);
+                  response.getOutputHeaders().add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, next);
                   it.remove();
                }
             }

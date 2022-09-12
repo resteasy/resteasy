@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 @Stateless
 public class UserManager {

@@ -2,12 +2,12 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import org.junit.Assert;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 
 @Path("/")
 public class ParamConverterDefaultIntegerResource {

@@ -3,38 +3,67 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>35</version>
+        <version>39</version>
         <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>RESTEasy JAX-RS</name>
+    <name>RESTEasy</name>
     <description>Resteasy</description>
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Dependency versions -->
+        <dep.arquillian-bom.version>1.7.0.Alpha12</dep.arquillian-bom.version>
+        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
+        <server.version>27.0.0.Alpha4</server.version>
+        <version.org.wildfly>${server.version}</version.org.wildfly>
+        <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha5</version.org.wildfly.arquillian.wildfly-arquillian>
+
         <jboss.home/>
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-        <!-- Modularized JDK support (various workarounds) - activated via profile -->
-        <modular.jdk.args/>
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.2.5</maven.min.version>
-        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+
+        <!-- Require at least Java 11 to compile -->
+        <jdk.min.version>11</jdk.min.version>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args}</surefire.system.args>
+        <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
+
+        <maven.test.skip>false</maven.test.skip>
+        <skipTests>${maven.test.skip}</skipTests>
+        <wildfly.skip>${skipTests}</wildfly.skip>
+
+        <!-- Galleon -->
+        <galleon.fork.embedded>true</galleon.fork.embedded>
+        <galleon.log.time>true</galleon.log.time>
+        <galleon.offline>false</galleon.offline>
+        <galleon.skip>${skipTests}</galleon.skip>
+
         <!-- Plugins versions -->
-        <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
-        <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
-        <version.compiler.plugin>3.8.0-jboss-2</version.compiler.plugin>
+        <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
+        <version.org.jacoco.plugin>0.8.8</version.org.jacoco.plugin>
+        <version.org.jboss.galleon>5.0.5.Final</version.org.jboss.galleon>
+        <version.org.wildfly.galleon-plugins>6.0.0.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>3.0.2.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <version.surefire.plugin>3.0.0-M7</version.surefire.plugin>
+
+        <!-- Test options -->
+        <additionalJvmArgs/>
     </properties>
 
-    <url>http://rest-easy.org</url>
+    <url>https://resteasy.dev</url>
 
     <licenses>
         <license>
@@ -45,22 +74,14 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/resteasy/Resteasy.git</connection>
-        <developerConnection>scm:git:git@github.com:resteasy/Resteasy.git</developerConnection>
-        <url>https://github.com/resteasy/Resteasy/tree/master/</url>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy/tree/main/</url>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>jboss-releases-repository</id>
-            <name>JBoss Releases Repository</name>
-            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <issueManagement>
         <system>JIRA</system>
-        <url>https://jira.jboss.com/jira/browse/RESTEASY</url>
+        <url>https://issues.redhat.com/browse/RESTEASY</url>
     </issueManagement>
 
     <developers>
@@ -86,6 +107,27 @@
         </developer>
     </developers>
 
+    <repositories>
+        <!-- Required for provisioning WildFly. Not all dependencies currently exist on Maven Central. This is also
+             useful for when we want to test with versions releases that have not yet been synchronized to Maven Central
+             from JBoss Nexus.
+         -->
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
     <profiles>
         <profile>
             <id>resteasy-default</id>
@@ -100,33 +142,28 @@
                 <module>resteasy-core</module>
                 <module>resteasy-client-api</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client-microprofile-base</module>
-                <module>resteasy-client-microprofile</module>
                 <module>resteasy-client-jetty</module>
                 <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
+                <module>resteasy-client-utils</module>
                 <module>providers</module>
-                <module>resteasy-bom</module>
-                <module>resteasy-cache</module>
-                <module>resteasy-guice</module>
                 <module>security</module>
                 <module>resteasy-links</module>
-                <module>resteasy-spring</module>
-                <module>resteasy-spring-web</module>
                 <module>resteasy-jsapi</module>
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>resteasy-stats</module>
-                <module>resteasy-reactive-context</module>
                 <module>resteasy-rxjava2</module>
                 <module>resteasy-reactor</module>
                 <module>server-adapters</module>
-                <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
+                <module>galleon-feature-pack</module>
                 <module>arquillian</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
+                <!-- Build this last -->
+                <module>resteasy-bom</module>
             </modules>
             <dependencyManagement>
                 <dependencies>
@@ -137,48 +174,75 @@
                         <type>pom</type>
                         <scope>import</scope>
                     </dependency>
+
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-ee-galleon-pack</artifactId>
+                        <version>${version.org.wildfly}</version>
+                        <type>zip</type>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-galleon-plugins</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-config-gen</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
                 </dependencies>
             </dependencyManagement>
         </profile>
         <profile>
-            <id>travis</id>
+            <id>release</id>
             <activation>
                 <property>
-                    <name>travis</name>
+                    <name>release</name>
                 </property>
             </activation>
-            <build>
+            <modules>
+                <module>docbook</module>
+                <module>distribution</module>
+            </modules>
+            <reporting>
+                <excludeDefaults>true</excludeDefaults>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <executions>
-                         <!-- default test execution -->
-                            <execution>
-                                <id>default-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                 <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                     <!--Temporarily exclude the tests only failed on Travis-->
-                                     <excludes combine.children="append">
-                                     </excludes>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <reportSets>
+                            <reportSet>
+                                <id>aggregate</id>
+                                <inherited>false</inherited>
+                                <reports>
+                                    <report>aggregate-no-fork</report>
+                                </reports>
+                            </reportSet>
+                            <reportSet>
+                                <id>default</id>
+                                <reports>
+                                    <report>javadoc</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
                     </plugin>
                 </plugins>
-            </build>
-      </profile>
-      <profile>
-          <id>jboss-repository</id>
-          <repositories>
-              <repository>
-                  <id>jboss</id>
-                  <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-              </repository>
-          </repositories>
-      </profile>
+            </reporting>
+        </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
+            </properties>
+        </profile>
     </profiles>
 
     <contributors>
@@ -189,14 +253,25 @@
             <name>Martin Algesten</name>
         </contributor>
     </contributors>
-
-    <repositories>
-    </repositories>
-    <pluginRepositories>
-    </pluginRepositories>
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <release>11</release>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -210,9 +285,9 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${version.javadoc.plugin}</version>
                     <configuration>
-                        <source>8</source>
+                        <additionalJOption>--no-module-directories</additionalJOption>
+                        <doclint>none</doclint>
                         <minmemory>128m</minmemory>
                         <maxmemory>1024m</maxmemory>
                         <quiet>false</quiet>
@@ -220,6 +295,11 @@
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
+                        <header><![CDATA[<b>${project.name} ${project.version}</b>
+                            <br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.
+                            <br>References in this document to JAXB refer to the Jakarta XML Binding unless otherwise noted.
+                            ]]>
+                        </header>
                     </configuration>
                       <executions>
                         <execution>
@@ -239,6 +319,23 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${version.org.jacoco.plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jboss.galleon</groupId>
+                    <artifactId>galleon-maven-plugin</artifactId>
+                    <version>${version.org.jboss.galleon}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.wildfly.galleon-plugins</groupId>
+                    <artifactId>wildfly-galleon-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.galleon-plugins}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -275,13 +372,20 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${version.checkstyle.plugin}</version>
                 <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>resteasy-checkstyle/checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/*$logger.java,**/*$bundle.java</excludes>
                     <useFile/>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss.resteasy.checkstyle</groupId>
+                        <artifactId>resteasy-checkstyle-config</artifactId>
+                        <version>${version.org.jboss.resteasy.checkstyle}</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>check-style</id>
@@ -336,20 +440,6 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence></dependencyConvergence>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>use-java-8-for-release</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[1.8,9)</version>
-                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>

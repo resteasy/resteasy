@@ -1,6 +1,6 @@
 package org.jboss.resteasy.links.test;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 

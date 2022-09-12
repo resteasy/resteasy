@@ -5,19 +5,12 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
   </parent>
   <artifactId>resteasy-reactor</artifactId>
-  <name>RESTEasy Spring Reactor integration</name>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+  <name>RESTEasy Reactor integration</name>
+
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
@@ -25,35 +18,8 @@
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-netty4</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jackson2-provider</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxb-provider</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-core-spi</artifactId>
         <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-context-propagation</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>jakarta.enterprise</groupId>
-        <artifactId>jakarta.enterprise.cdi-api</artifactId>
     </dependency>
     <dependency>
         <groupId>io.projectreactor</groupId>
@@ -66,10 +32,33 @@
     <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-annotations</artifactId>
+        <!-- This is a compile time only requirement -->
+        <scope>provided</scope>
+        <optional>true</optional>
     </dependency>
     <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-processor</artifactId>
+        <!-- This is a compile time only requirement -->
+        <scope>provided</scope>
+        <optional>true</optional>
+    </dependency>
+      <dependency>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-netty4</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client-reactor-netty</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 

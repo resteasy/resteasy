@@ -2,7 +2,7 @@ package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.spi.HttpRequest;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 public class PrefixedFormFieldsHttpRequest extends DelegatingHttpRequest {
 

@@ -3,15 +3,20 @@ package org.jboss.resteasy.test.validation;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -42,8 +47,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import io.restassured.path.json.JsonPath;
 
 /**
  * @tpSubChapter Validation
@@ -193,14 +196,21 @@ public class ValidationJaxbTest {
       Assert.assertNotNull("Validation header is missing", header);
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       String report = response.readEntity(String.class);
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
       response.close();
    }
 
    private void assertValidationReport(Response response)  {
-      JsonPath jsonPath = new JsonPath(response.readEntity(String.class));
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.constraintType"), Matchers.hasItem("PROPERTY"));
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("s"));
+      ViolationReport report = response.readEntity(ViolationReport.class);
+      final List<ResteasyConstraintViolation> propertyViolations = report.getPropertyViolations();
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, resolveValues(propertyViolations, (r) -> r.getConstraintType().name()), Matchers.hasItem("PROPERTY"));
+      MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, resolveValues(propertyViolations, ResteasyConstraintViolation::getPath), Matchers.hasItem("s"));
+   }
+
+   private static <T> Collection<String> resolveValues(final Collection<T> c, final Function<T, String> mapper) {
+      return c.stream()
+              .map(mapper)
+              .collect(Collectors.toList());
    }
 }
 

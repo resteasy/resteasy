@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.validation.i18n;
 
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ValidatorFactory;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;

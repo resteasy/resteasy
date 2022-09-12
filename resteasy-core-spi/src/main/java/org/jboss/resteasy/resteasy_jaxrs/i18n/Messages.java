@@ -1,21 +1,27 @@
 package org.jboss.resteasy.resteasy_jaxrs.i18n;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletionException;
+import java.util.function.Supplier;
 
-import javax.validation.ElementKind;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.validation.ElementKind;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
+import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.api.validation.ConstraintType;
+import org.jboss.resteasy.spi.config.Threshold;
 
 /**
  *
@@ -86,7 +92,7 @@ public interface Messages
    @Message(id = BASE + 00, value = "SelfExpandingBufferredInputStream is always marked at index 0.")
    String alwaysMarkedAtIndex0();
 
-   @Message(id = BASE + 05, value = "Ambiguous inherited JAX-RS annotations applied to method: %s")
+   @Message(id = BASE + 05, value = "Ambiguous inherited qualifying annotations applied to method: %s")
    String ambiguousInheritedAnnotations(Method method);
 
    @Message(id = BASE + 10, value = "annotations param was null")
@@ -619,7 +625,7 @@ public interface Messages
          + 810, value = "Stream wrapped by Signature, cannot reset the stream without destroying signature")
    String streamWrappedBySignature();
 
-   @Message(id = BASE + 815, value = "Subresource for target class has no jax-rs annotations.: %s")
+   @Message(id = BASE + 815, value = "Subresource for target class has no qualifying annotations.: %s")
    String subresourceHasNoJaxRsAnnotations(String className);
 
    @Message(id = BASE + 820, value = "tClass parameter is null")
@@ -652,9 +658,8 @@ public interface Messages
    @Message(id = BASE + 865, value = "Unable to determine base class from Type")
    String unableToDetermineBaseClass();
 
-   @Message(id = BASE
-         + 870, value = "Unable to extract parameter from http request: {0} value is \''{1}\'' for {2}", format = Format.MESSAGE_FORMAT)
-   String unableToExtractParameter(String paramSignature, String strVal, AccessibleObject target);
+   @Message(id = BASE + 870, value = "Unable to extract parameter from http request: %s value is '%s'")
+   String unableToExtractParameter(String paramSignature, String strVal);
 
    @Message(id = BASE
          + 875, value = "Unable to find a constructor that takes a String param or a valueOf() or fromString() method for {0} on {1} for basetype: {2}", format = Format.MESSAGE_FORMAT)
@@ -666,7 +671,7 @@ public interface Messages
    @Message(id = BASE + 885, value = "Unable to find InjectorFactory implementation.")
    String unableToFindInjectorFactory();
 
-   @Message(id = BASE + 890, value = "Unable to find JAX-RS resource associated with path: %s.")
+   @Message(id = BASE + 890, value = "Unable to find resource associated with path: %s.")
    String unableToFindJaxRsResource(String path);
 
    @Message(id = BASE + 895, value = "Unable to find a public constructor for class %s")
@@ -851,4 +856,44 @@ public interface Messages
 
    @Message(id = BASE + 2044, value = "Property %s not found")
    NoSuchElementException propertyNotFound(String name);
+
+   @Message(id = BASE + 2050, value = "The executor has been shutdown and is no longer available.")
+   IllegalStateException executorShutdown();
+
+   @Message(id = BASE + 2051, value = "Required context value not found.")
+   IllegalArgumentException requiredContextParameterNotFound();
+
+   @Message(id = BASE + 2060, value = "Failed to load services for type %s")
+   UncheckedIOException failedToLoadService(@Cause IOException e, Class<?> type);
+
+   @Message(id = BASE + 2061, value ="Failed to construct type %s")
+   RuntimeException failedToConstructClass(@Cause Throwable cause, Class<?> type);
+
+   @Message(id = BASE + 2070, value = "Invalid protocol %s. Only protocols %s are allowed.")
+   IllegalArgumentException invalidProtocol(String protocol, String... values);
+
+   @Message(id = BASE + 2071, value = "Invalid argument %s for property %s. Require type is %s.")
+   IllegalArgumentException invalidArgumentType(String propertyName, Object value, Class<?> expected);
+
+   @Message(id = BASE + 2072, value = "Parameter %s is a required parameter and cannot be set to null.")
+   String nullParameter(String name);
+
+   @Message(id = BASE + 2073, value = "Failed to scan for resources.")
+   UncheckedIOException failedToScanResources(@Cause IOException cause);
+
+   @Message(id = BASE + 2074, value = "No implementation of %s was found.")
+   CompletionException noImplementationFound(String name);
+
+   @Message(id = BASE + 2075, value = "Could no load default SSL context")
+   IllegalStateException couldNotLoadSslContext(@Cause Throwable cause);
+
+   @Message(id = BASE + 2076, value = "A ResteasyDeployment object required")
+   IllegalArgumentException deploymentRequired();
+
+   @Message(id = BASE + 2080, value = "The stream has already been exported.")
+   Supplier<IllegalStateException> alreadyExported();
+
+   @Message(id = BASE + 2081, value = "File limit of %s has been reached. The entity cannot be processed. Increase the " +
+           "size with the configuration property %s.")
+   IllegalStateException fileLimitReached(Threshold limit, String propertyName);
 }

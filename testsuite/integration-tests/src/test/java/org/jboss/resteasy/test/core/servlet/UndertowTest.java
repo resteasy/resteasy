@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.core.servlet;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.servlet.resource.FilterForwardServlet;
@@ -62,7 +63,7 @@ public class UndertowTest {
       conn.connect();
       byte[] b = new byte[16];
       conn.getInputStream().read(b);
-      Assert.assertThat("Wrong content of response", new String(b), CoreMatchers.startsWith("forward"));
+      MatcherAssert.assertThat("Wrong content of response", new String(b), CoreMatchers.startsWith("forward"));
       Assert.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
       conn.disconnect();
    }

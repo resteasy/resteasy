@@ -5,7 +5,7 @@ import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -74,7 +74,7 @@ public class RequestDispatcher
          SecurityContext securityContext;
          if (domain != null)
          {
-            securityContext = basicAuthentication(vertxReq, vertxResp);
+            securityContext = authenticate(vertxReq, vertxResp);
             if (securityContext == null) // not authenticated
             {
                return;
@@ -113,7 +113,7 @@ public class RequestDispatcher
       }
    }
 
-   private SecurityContext basicAuthentication(HttpRequest request, HttpResponse response) throws IOException
+   protected SecurityContext authenticate(HttpRequest request, HttpResponse response) throws IOException
    {
       List<String> headers = request.getHttpHeaders().getRequestHeader(HttpHeaderNames.AUTHORIZATION);
       if (!headers.isEmpty())

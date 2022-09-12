@@ -53,9 +53,6 @@ To run the testsuite with failing tests included for testing purposes:
 ### Single test
 > mvn surefire:test@default-test -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
 
-When running `microprofile-tck` tests, use the following in order to activate WireMock:
-> mvn wiremock:run -Dparams="--port=8765" -Ddir="target/classes" surefire:test@default-test -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
-
 ### Speciality single test JsonBindingTest and JsonBindingAnnotationsJacksonTest
 To run test JsonBindingTest requires the use of a speciality surefire syntax.
 > mvn surefire:test@jsonb-test  -Dserver.home=PATH_TO_WIDLFLY_HOME -Dtest=JsonBindingTest -fn
@@ -86,20 +83,6 @@ Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.
 To redirect to standard output (console) use ``-Dmaven.test.redirectTestOutputToFile=false``.
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dmaven.test.redirectTestOutputToFile=false
-
-### Set security subsystem for the tests (PicketBox/Elytron)
-The testsuite can run in **two modes**, which differ by security subsystem configuration and by subsystem used in the tests,
-which require security domain defined.
-
-The tests which require security domain configuration are extending ``org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup``
-which implements ServerSetupTask.
-
-#### Default (PicketBox) security configuration is used, Elytron is not enabled
-Tests run with PicketBox security domain. This is the default.
-  
-#### Elytron security subsystems are enabled
-Tests run with Elytron security domain. Activate this mode by:
-> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Delytron
 
 ## Jacoco test coverage
 You can generate Jacoco test coverage report with the following steps.

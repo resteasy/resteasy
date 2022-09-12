@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class ServletBootstrap extends ListenerBootstrap
 {
-   private ServletConfig config;
+   private final ServletConfig config;
 
    public ServletBootstrap(final ServletConfig config)
    {
@@ -34,7 +34,11 @@ public class ServletBootstrap extends ListenerBootstrap
    @Override
    public String getInitParameter(String name)
    {
-      return config.getInitParameter(name);
+      String value = config.getInitParameter(name);
+      if (value == null) {
+         value = super.getInitParameter(name);
+      }
+      return value;
    }
 
    @Override

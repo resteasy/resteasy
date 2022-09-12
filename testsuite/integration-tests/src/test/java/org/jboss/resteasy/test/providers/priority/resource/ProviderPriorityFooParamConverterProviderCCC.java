@@ -3,10 +3,10 @@ package org.jboss.resteasy.test.providers.priority.resource;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.annotation.Priority;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverterProvider;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 @Priority(10)

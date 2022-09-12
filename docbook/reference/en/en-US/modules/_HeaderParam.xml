@@ -56,9 +56,9 @@ with <classname>@HeaderParam</classname> have another option: implementations of
     /**
      * Defines the contract for a delegate that is responsible for
      * converting between the String form of a HTTP header and
-     * the corresponding JAX-RS type {@code T}.
+     * the corresponding &REST-API; type {@code T}.
      *
-     * @param &lt;T&gt; a JAX-RS type that corresponds to the value of a HTTP header.
+     * @param &lt;T&gt; a &REST-API; type that corresponds to the value of a HTTP header.
      */
     public static interface HeaderDelegate&lt;T&gt; {
 
@@ -87,20 +87,20 @@ with <classname>@HeaderParam</classname> have another option: implementations of
 <para>
 <classname>HeaderDelegate</classname> is similar to <classname>ParamConverter</classname>, but it is not
 very convenient to register a <classname>HeaderDelegate</classname> since, unlike, for example,
-<classname>ParamConverterProvider</classname>, it is not treated by the JAX-RS specification as a provider.
-The class <classname>javax.ws.rs.core.Configurable</classname>, which is subclassed by, for example,
+<classname>ParamConverterProvider</classname>, it is not treated by the &REST-API; specification as a provider.
+The class <classname>jakarta.ws.rs.core.Configurable</classname>, which is subclassed by, for example,
 <classname>org.jboss.resteasy.spi.ResteasyProviderFactory</classname> has methods like
 </para>
 
 <programlisting>
     /**
-     * Register a class of a custom JAX-RS component (such as an extension provider or
-     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * Register a class of a custom &REST-API; component (such as an extension provider or
+     * a {@link jakarta.ws.rs.core.Feature feature} meta-provider) to be instantiated
      * and used in the scope of this configurable context.
      *
      * ...
      *
-     * @param componentClass JAX-RS component class to be configured in the scope of this
+     * @param componentClass &REST-API; component class to be configured in the scope of this
      *                       configurable context.
      * @return the updated configurable context.
      */

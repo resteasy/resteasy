@@ -8,7 +8,7 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceImpl;
 import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceLocal;
 import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceParent;
@@ -20,11 +20,10 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,7 +35,6 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore("RESTEASY-2601") //FIXME
 public class ValidationSessionBeanTest {
    @SuppressWarnings(value = "unchecked")
    @Deployment

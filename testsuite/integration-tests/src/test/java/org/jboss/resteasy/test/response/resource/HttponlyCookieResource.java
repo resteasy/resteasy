@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.response.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 
 @Path("cookie")
 public class HttponlyCookieResource {
@@ -11,14 +11,26 @@ public class HttponlyCookieResource {
    @GET
    @Path("true")
    public Response getTrue() {
-      NewCookie cookie = new NewCookie("meaning", "42", null, null, NewCookie.DEFAULT_VERSION, null, NewCookie.DEFAULT_MAX_AGE, null, false, true);
+      NewCookie cookie = new NewCookie.Builder("meaning")
+              .value("42")
+              .path(null)
+              .domain(null)
+              .version(NewCookie.DEFAULT_VERSION)
+              .comment(null)
+              .maxAge(NewCookie.DEFAULT_MAX_AGE)
+              .expiry(null)
+              .secure(false)
+              .httpOnly(true)
+              .build();
       return Response.ok().cookie(cookie).build();
    }
 
    @GET
    @Path("default")
    public Response getDefault() {
-      NewCookie cookie = new NewCookie("meaning", "42");
+      NewCookie cookie = new NewCookie.Builder("meaning")
+              .value("42")
+              .build();
       return Response.ok().cookie(cookie).build();
    }
 }

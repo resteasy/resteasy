@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.cdi.injection;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
@@ -42,28 +43,28 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Queue;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
@@ -93,7 +94,8 @@ import static org.junit.Assert.assertTrue;
  * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
-public class ReverseInjectionTest extends AbstractInjectionTestBase {
+@ServerSetup(JmsTestQueueSetupTask.class)
+public class ReverseInjectionTest {
    private static Logger log = Logger.getLogger(ReverseInjectionTest.class);
 
    Client client;
@@ -128,9 +130,8 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
 
    @Deployment
    public static Archive<?> createTestArchive() throws Exception {
-      initQueue();
       WebArchive war = TestUtil.prepareArchive("resteasy-reverse-injection-test")
-            .addClasses(AbstractInjectionTestBase.class, ReverseInjectionTest.class, PortProviderUtil.class)
+            .addClasses(ReverseInjectionTest.class, PortProviderUtil.class)
             .addClasses(Constants.class, PersistenceUnitProducer.class, UtilityProducer.class, Utilities.class)
             .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class)
             .addClasses(CDIInjectionResourceBinding.class, CDIInjectionResourceProducer.class)
@@ -146,7 +147,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
             .addClasses(ReverseInjectionEJBHolderRemote.class, ReverseInjectionEJBHolderLocal.class, ReverseInjectionEJBHolder.class)
             .addClasses(ReverseInjectionResource.class)
             .addClasses(CDIInjectionNewBean.class, CDIInjectionStereotypedApplicationScope.class, CDIInjectionStereotypedDependentScope.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
             .addAsResource(ReverseInjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
@@ -281,6 +282,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Ignore("RESTEASY-2962")
    public void testMDB() throws Exception {
       String destinationName = "queue/test";
       Context ic;
@@ -297,11 +299,11 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
          CDIInjectionBook book1 = new CDIInjectionBook("Dead Man Snoring");
          TextMessage message = session.createTextMessage(book1.getName());
          producer.send(message);
-         log.info("Message sent to to the JMS Provider: " + book1.getName());
+         log.info("Message sent to the JMS Provider: " + book1.getName());
          CDIInjectionBook book2 = new CDIInjectionBook("Dead Man Drooling");
          message = session.createTextMessage(book2.getName());
          producer.send(message);
-         log.info("Message sent to to the JMS Provider: " + book2.getName());
+         log.info("Message sent to the JMS Provider: " + book2.getName());
          WebTarget base = client.target(generateURL("/mdb/books"));
          Response response = base.request().get();
          log.info("status: " + response.getStatus());

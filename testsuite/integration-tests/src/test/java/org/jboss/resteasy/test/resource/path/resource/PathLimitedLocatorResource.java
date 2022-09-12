@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.resource.path.resource;
 
 import org.junit.Assert;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 
 @Path("/")
 public class PathLimitedLocatorResource {

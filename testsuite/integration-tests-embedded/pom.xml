@@ -6,7 +6,7 @@
    <parent>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-testsuite</artifactId>
-      <version>4.7.0-SNAPSHOT</version>
+      <version>6.2.0.Final-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
@@ -15,13 +15,6 @@
    </description>
    <artifactId>integration-tests-embedded</artifactId>
    <name>RESTEasy Main testsuite: Embedded Server tests</name>
-
-
-   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <maven.compiler.source>1.8</maven.compiler.source>
-      <maven.compiler.target>1.8</maven.compiler.target>
-   </properties>
 
    <dependencies>
       <dependency>
@@ -40,6 +33,11 @@
          <artifactId>resteasy-undertow</artifactId>
          <version>${version.resteasy.testsuite}</version>
       </dependency>
+       <dependency>
+           <groupId>org.jboss.resteasy</groupId>
+           <artifactId>resteasy-undertow-cdi</artifactId>
+           <version>${version.resteasy.testsuite}</version>
+       </dependency>
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-vertx</artifactId>
@@ -61,12 +59,6 @@
          <groupId>org.jboss.resteasy</groupId>
          <artifactId>resteasy-core-spi</artifactId>
          <version>${version.resteasy.testsuite}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.microprofile.config</groupId>
-               <artifactId>microprofile-config-api</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
@@ -79,18 +71,18 @@
          <version>${version.resteasy.testsuite}</version>
       </dependency>
       <dependency>
-         <groupId>org.jboss.spec.javax.servlet</groupId>
-         <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.jboss.spec.javax.annotation</groupId>
-         <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+          <groupId>jakarta.annotation</groupId>
+          <artifactId>jakarta.annotation-api</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.jboss.spec.javax.ws.rs</groupId>
-         <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-      </dependency>
+       <dependency>
+           <groupId>jakarta.ws.rs</groupId>
+           <artifactId>jakarta.ws.rs-api</artifactId>
+       </dependency>
       <dependency>
          <groupId>org.jboss.logging</groupId>
          <artifactId>jboss-logging</artifactId>
@@ -106,7 +98,6 @@
       <dependency>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>arquillian-utils</artifactId>
-          <version>${project.version}</version>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -119,123 +110,91 @@
       </dependency>
    </dependencies>
 
-   <build>
-      <plugins>
-
-         <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>default-test</id>
-                  <goals>
-                     <goal>test</goal>
-                  </goals>
-
-                  <configuration>
-                     <includes>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
                         <include>**/*Test.java</include>
-                     </includes>
-                     <excludes></excludes>
-                     <!-- since 2.5 -->
-                     <!--
-                     <systemPropertyVariables>
-                       <fileName>${fileName}</fileName>
-                     </systemPropertyVariables>
-                     -->
-                     <!-- deprecated -->
-                     <systemProperties>
-                        <property>
-                           <name>fileName</name>
-                           <value>org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer</value>
-                        </property>
-                     </systemProperties>
-                  </configuration>
-               </execution>
+                    </includes>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                    </execution>
+                    <execution>
+                        <id>undertow-cdi</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-undertow</exclude>
+                                <exclude>${project.groupId}:resteasy-netty4</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-vertx</exclude>
+                            </classpathDependencyExcludes>
+                        </configuration>
+                    </execution>
 
-               <execution>
-                  <id>NettyJaxrsServer</id>
-                  <goals>
-                     <goal>test</goal>
-                  </goals>
+                    <execution>
+                        <id>Undertow</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-undertow-cdi</exclude>
+                                <exclude>${project.groupId}:resteasy-netty4</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-vertx</exclude>
+                            </classpathDependencyExcludes>
+                        </configuration>
+                    </execution>
 
-                  <configuration>
-                     <includes>
-                        <include>**/*Test.java</include>
-                     </includes>
-                     <excludes></excludes>
-                     <!-- since 2.5 -->
-                     <!--
-                     <systemPropertyVariables>
-                       <fileName>${fileName}</fileName>
-                     </systemPropertyVariables>
-                     -->
-                     <!-- deprecated -->
-                     <systemProperties>
-                        <property>
-                           <name>fileName</name>
-                           <value>org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer</value>
-                        </property>
-                     </systemProperties>
-                  </configuration>
-               </execution>
+                    <execution>
+                        <id>Netty</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
 
-               <execution>
-                  <id>SunHttpJaxrsServer</id>
-                  <goals>
-                     <goal>test</goal>
-                  </goals>
+                        <configuration>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-undertow</exclude>
+                                <exclude>${project.groupId}:resteasy-undertow-cdi</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-vertx</exclude>
+                            </classpathDependencyExcludes>
+                        </configuration>
+                    </execution>
 
-                  <configuration>
-                     <includes>
-                        <include>**/*Test.java</include>
-                     </includes>
-                     <excludes></excludes>
-                     <!-- since 2.5 -->
-                     <!--
-                     <systemPropertyVariables>
-                       <fileName>${fileName}</fileName>
-                     </systemPropertyVariables>
-                     -->
-                     <!-- deprecated -->
-                     <systemProperties>
-                        <property>
-                           <name>fileName</name>
-                           <value>org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer</value>
-                        </property>
-                     </systemProperties>
-                  </configuration>
-               </execution>
+                    <execution>
+                        <id>Vert.x</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
 
-               <execution>
-                  <id>VertxJaxrsServer</id>
-                  <goals>
-                     <goal>test</goal>
-                  </goals>
-
-                  <configuration>
-                     <includes>
-                        <include>**/*Test.java</include>
-                     </includes>
-                     <excludes></excludes>
-                     <!-- since 2.5 -->
-                     <!--
-                     <systemPropertyVariables>
-                       <fileName>${fileName}</fileName>
-                     </systemPropertyVariables>
-                     -->
-                     <!-- deprecated -->
-                     <systemProperties>
-                        <property>
-                           <name>fileName</name>
-                           <value>org.jboss.resteasy.plugins.server.vertx.VertxJaxrsServer</value>
-                        </property>
-                     </systemProperties>
-                  </configuration>
-               </execution>
-
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
+                        <configuration>
+                            <!-- This test was previously only executed on the UndertowJaxrsServer. It does not seem to
+                                 work with Vert.x, so we'll just skip it. -->
+                            <excludes>
+                                <exclude>**/NonCDIValidatorFactoryTest</exclude>
+                            </excludes>
+                            <classpathDependencyExcludes>
+                                <exclude>${project.groupId}:resteasy-undertow</exclude>
+                                <exclude>${project.groupId}:resteasy-undertow-cdi</exclude>
+                                <exclude>${project.groupId}:resteasy-jdk-http</exclude>
+                                <exclude>${project.groupId}:resteasy-netty4</exclude>
+                            </classpathDependencyExcludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

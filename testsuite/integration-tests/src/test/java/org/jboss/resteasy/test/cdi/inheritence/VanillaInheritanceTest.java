@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.inheritence;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceBook;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceInheritanceResource;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceSelectBook;
@@ -13,16 +12,15 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,14 +33,14 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class VanillaInheritanceTest {
-   protected static final Logger log = LogManager.getLogger(SpecializedInheritanceTest.class.getName());
+   protected static final Logger log = Logger.getLogger(SpecializedInheritanceTest.class.getName());
 
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(VanillaInheritanceTest.class.getSimpleName());
       war.addClasses(UtilityProducer.class, CDIInheritenceBook.class, CDIInheritenceSelectBook.class, CDIInheritenceInheritanceResource.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 

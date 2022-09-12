@@ -55,7 +55,7 @@ public interface ResteasyContextParameters {
    String RESTEASY_TRACING_TYPE_ON_DEMAND = "ON_DEMAND";
 
    /**
-    * Set level o tracing information.
+    * Set level of tracing information.
     * <p>
     * The property allows to set application default level o diagnostic information.
     * Tracing level can be changed for each request by specifying request HTTP header {@code X-RESTEasy-Tracing-Threshold}.
@@ -93,6 +93,7 @@ public interface ResteasyContextParameters {
 
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
    String RESTEASY_PATCH_FILTER_DISABLED = "resteasy.patchfilter.disabled";
+   String RESTEASY_PATCH_FILTER_LEGACY = "resteasy.patchfilter.legacy";
 
     String RESTEASY_STATISTICS_ENABLED = "resteasy.statistics.enabled";
 
@@ -100,4 +101,8 @@ public interface ResteasyContextParameters {
     String RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING = "resteasy.fail.fast.on.multiple.resources.matching";
     String RESTEASY_MATCH_CACHE_ENABLED = "resteasy.match.cache.enabled";
     String RESTEASY_MATCH_CACHE_SIZE = "resteasy.match.cache.size";
+
+    // Added for non-quarkus servers - to enable generated proxies to implement all interfaces of delegate object.
+    String RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES = "resteasy.proxy.implement.all.interfaces"; // default is false
+
 }

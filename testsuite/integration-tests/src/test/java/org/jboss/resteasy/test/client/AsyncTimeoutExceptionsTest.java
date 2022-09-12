@@ -1,21 +1,20 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsResource;
 import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsSticker;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.InvocationCallback;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +42,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class AsyncTimeoutExceptionsTest extends ClientTestBase{
 
-   protected static final Logger logger = LogManager.getLogger(AsyncTimeoutExceptionsTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(AsyncTimeoutExceptionsTest.class.getName());
 
    public Client client;
 

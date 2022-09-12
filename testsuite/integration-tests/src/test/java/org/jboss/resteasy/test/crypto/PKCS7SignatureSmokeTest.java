@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.test.crypto.resource.PKCS7SignatureSmokeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -17,10 +16,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ import java.util.List;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class PKCS7SignatureSmokeTest {
-   protected static final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(PKCS7SignatureSmokeTest.class.getName());
    static Client client;
 
    @BeforeClass

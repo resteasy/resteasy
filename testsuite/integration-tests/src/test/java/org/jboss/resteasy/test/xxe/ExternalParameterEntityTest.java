@@ -2,18 +2,17 @@ package org.jboss.resteasy.test.xxe;
 
 import java.io.File;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.ExternalParameterEntityResource;
 import org.jboss.resteasy.test.xxe.resource.ExternalParameterEntityWrapper;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -41,7 +40,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 @RunAsClient
 public class ExternalParameterEntityTest {
 
-   protected final Logger logger = LogManager.getLogger(ExternalParameterEntityTest.class.getName());
+   protected final Logger logger = Logger.getLogger(ExternalParameterEntityTest.class.getName());
    static ResteasyClient client;
 
    private static final String EXPAND = "war_expand";

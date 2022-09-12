@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.delegates;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.DateUtil;
 
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import java.util.Date;
 

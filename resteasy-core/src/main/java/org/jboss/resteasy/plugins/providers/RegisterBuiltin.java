@@ -8,8 +8,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.ext.Providers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -168,6 +168,10 @@ public class RegisterBuiltin
             String line;
             while ((line = reader.readLine()) != null)
             {
+               int commentIdx = line.indexOf('#');
+               if (commentIdx >= 0) {
+                  line = line.substring(0, commentIdx);
+               }
                line = line.trim();
                if (line.equals("")) continue;
                origins.put(line, url);

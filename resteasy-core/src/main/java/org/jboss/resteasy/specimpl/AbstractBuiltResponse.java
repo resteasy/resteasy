@@ -9,15 +9,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -321,7 +321,7 @@ public abstract class AbstractBuiltResponse extends Response
       Object obj = metadata.getFirst(HttpHeaders.CONTENT_LANGUAGE);
       if (obj == null) return null;
       if (obj instanceof Locale) return (Locale) obj;
-      return new LocaleDelegate().fromString(toHeaderString(obj));
+      return LocaleDelegate.INSTANCE.fromString(toHeaderString(obj));
    }
 
    @Override
@@ -357,8 +357,7 @@ public abstract class AbstractBuiltResponse extends Response
          }
          else
          {
-            String str = toHeaderString(obj);
-            NewCookie cookie = NewCookie.valueOf(str);
+            NewCookie cookie = createHeader(NewCookie.class, obj);
             cookies.put(cookie.getName(), cookie);
          }
       }
@@ -371,7 +370,7 @@ public abstract class AbstractBuiltResponse extends Response
       Object d = metadata.getFirst(HttpHeaders.ETAG);
       if (d == null) return null;
       if (d instanceof EntityTag) return (EntityTag) d;
-      return EntityTag.valueOf(toHeaderString(d));
+      return createHeader(EntityTag.class, d);
    }
 
    @Override
@@ -424,6 +423,18 @@ public abstract class AbstractBuiltResponse extends Response
    {
       if (header instanceof String) return (String)header;
       return getHeaderValueProcessor().toHeaderString(header);
+   }
+
+   private <T> T createHeader(final Class<T> type, final Object header) {
+      final String value;
+      if (header instanceof String) {
+         value = (String) header;
+      } else {
+         value = getHeaderValueProcessor().toHeaderString(header);
+      }
+      return ResteasyProviderFactory.getInstance()
+              .createHeaderDelegate(type)
+              .fromString(value);
    }
 
    @Override

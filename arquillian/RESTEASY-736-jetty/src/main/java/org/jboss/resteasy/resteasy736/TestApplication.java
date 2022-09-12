@@ -1,7 +1,7 @@
 package org.jboss.resteasy.resteasy736;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 import java.util.HashSet;
 import java.util.Set;
 

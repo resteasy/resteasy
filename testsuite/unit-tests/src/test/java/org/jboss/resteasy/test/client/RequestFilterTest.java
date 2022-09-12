@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.client.resource.ClientCustomException;
 import org.jboss.resteasy.test.client.resource.RequestFilterAbortWith;
 import org.jboss.resteasy.test.client.resource.RequestFilterAcceptLanguage;
@@ -15,13 +14,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
 import java.util.Locale;
 
@@ -32,7 +31,7 @@ import java.util.Locale;
  */
 public class RequestFilterTest {
 
-   protected static final Logger logger = LogManager.getLogger(RequestFilterTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(RequestFilterTest.class.getName());
 
    static Client client;
    String dummyUrl = "dummyUrl";

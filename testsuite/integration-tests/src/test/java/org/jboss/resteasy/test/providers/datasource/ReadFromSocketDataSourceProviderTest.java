@@ -3,8 +3,7 @@ package org.jboss.resteasy.test.providers.datasource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.ws.rs.core.MediaType;
-import org.apache.commons.io.IOUtils;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.ConnectionConfig;
@@ -15,7 +14,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.ReadFromSocketDataSourceProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -74,13 +73,9 @@ public class ReadFromSocketDataSourceProviderTest {
       CloseableHttpClient client = HttpClients.custom().setDefaultConnectionConfig(connConfig).build();
       HttpGet httpGet = new HttpGet(generateURL("/"));
       CloseableHttpResponse response = client.execute(httpGet);
-      InputStream inputStream = null;
-      try {
-         inputStream = response.getEntity().getContent();
+      try (InputStream inputStream = response.getEntity().getContent()) {
          DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
          Assert.assertEquals("The input stream was not read entirely", 0, findSizeOfRemainingDataInStream(inputStream));
-      } finally {
-         IOUtils.closeQuietly(inputStream);
       }
    }
 

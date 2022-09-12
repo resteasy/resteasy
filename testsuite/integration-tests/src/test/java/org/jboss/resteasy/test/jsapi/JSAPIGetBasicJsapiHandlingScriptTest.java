@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.jsapi;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -19,8 +18,8 @@ import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Jsapi
@@ -32,7 +31,7 @@ import javax.ws.rs.core.Response;
 public class JSAPIGetBasicJsapiHandlingScriptTest {
 
    static ResteasyClient client;
-   protected static final Logger logger = LogManager.getLogger(JSAPIGetBasicJsapiHandlingScriptTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(JSAPIGetBasicJsapiHandlingScriptTest.class.getName());
 
    @Deployment
    public static Archive<?> deploy() {

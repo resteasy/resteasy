@@ -2,8 +2,8 @@ package org.jboss.resteasy.client.exception;
 
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
-import javax.ws.rs.ServerErrorException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link ServerErrorException} with a {@linkplain #sanitize(Response) sanitized} response.
@@ -14,14 +14,21 @@ public class ResteasyServerErrorException extends ServerErrorException implement
 
    private static final long serialVersionUID = 8591476266091129117L;
    private final ServerErrorException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyServerErrorException(final ServerErrorException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public ServerErrorException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

@@ -12,19 +12,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.validation.Constraint;
-import javax.validation.ConstraintDeclarationException;
-import javax.validation.ConstraintDefinitionException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.GroupDefinitionException;
-import javax.validation.MessageInterpolator;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableType;
-import javax.validation.executable.ValidateOnExecution;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.validation.Constraint;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintDefinitionException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.GroupDefinitionException;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableType;
+import jakarta.validation.executable.ValidateOnExecution;
 
 import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
@@ -169,7 +169,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
-      if (method.getParameterTypes().length == 0)
+      if (method.getParameterCount() == 0)
       {
          checkViolations(request);
          return;
@@ -400,7 +400,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return false;
       }
-      if (m.getParameterTypes().length > 0)
+      if (m.getParameterCount() > 0)
       {
          return false;
       }
@@ -493,7 +493,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          return false;
       }
 
-      if (subTypeMethod.getParameterTypes().length != superTypeMethod.getParameterTypes().length)
+      if (subTypeMethod.getParameterCount() != superTypeMethod.getParameterCount())
       {
          return false;
       }
@@ -511,7 +511,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
     */
    protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
    {
-      if (subTypeMethod.getParameterTypes().length == 0)
+      if (subTypeMethod.getParameterCount() == 0)
       {
          return true;
       }
@@ -789,7 +789,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
 
    private static boolean hasEJBScope(Class<?> clazz)
    {
-      return classHasAnnotations(clazz, new String[] {"javax.ejb.Stateless", "javax.ejb.Stateful", "javax.ejb.Singleton"});
+      return classHasAnnotations(clazz, new String[] {"jakarta.ejb.Stateless", "jakarta.ejb.Stateful", "jakarta.ejb.Singleton"});
    }
 
    private static boolean classHasAnnotations(Class<?> clazz, String[] names)

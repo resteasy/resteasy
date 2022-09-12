@@ -1,0 +1,47 @@
+# This workflow is for a nightly run against WildFly upstream
+
+name: Manual RESTEasy Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: "Runner OS"
+        required: true
+        default: "ubuntu-latest"
+        type: string
+      javaVersion:
+        description: "Java Version"
+        required: true
+        default: "11"
+        type: choice
+        options:
+          - "11"
+          - "17"
+
+jobs:
+  build:
+    runs-on: ${{ inputs.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK ${{ inputs.javaVersion }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ inputs.javaVersion }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build on ${{ inputs.os }} with Java ${{ inputs.javaVersion }}
+        run: mvn clean install
+      - name: Upload surefire reports
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: surefire-reports
+          path: '**/surefire-reports/*.txt'
+      - name: Upload server logs
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: server-logs
+          path: '**/*.log'

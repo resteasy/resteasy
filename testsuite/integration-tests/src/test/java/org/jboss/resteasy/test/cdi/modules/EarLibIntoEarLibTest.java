@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.cdi.modules;
 
-import org.apache.logging.log4j.LogManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectable;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableBinder;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
@@ -14,20 +15,22 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
+
+import java.net.URL;
 
 /**
  * @tpSubChapter CDI
@@ -38,18 +41,21 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EarLibIntoEarLibTest {
-   protected static final org.apache.logging.log4j.Logger log = LogManager.getLogger(EarLibIntoEarLibTest.class.getName());
+   protected static final Logger log = Logger.getLogger(EarLibIntoEarLibTest.class.getName());
+
+   @ArquillianResource
+   private URL url;
 
    @Deployment
    public static Archive<?> createTestArchive() {
       JavaArchive fromJar = ShrinkWrap.create(JavaArchive.class, "from.jar")
             .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       JavaArchive toJar = ShrinkWrap.create(JavaArchive.class, "to.jar")
             .addClasses(UtilityProducer.class)
             .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
             .addClasses(TestApplication.class, PortProviderUtil.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
             .addAsLibrary(fromJar)
             .addAsLibrary(toJar);
@@ -68,7 +74,7 @@ public class EarLibIntoEarLibTest {
       log.info("starting testModules()");
 
       Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(PortProviderUtil.generateURL("/modules/test/", "test"));
+      WebTarget base = client.target(url + "/modules/test/");
       Response response = base.request().get();
       log.info("Status: " + response.getStatus());
       assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

@@ -12,12 +12,12 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartFilename;
@@ -49,7 +49,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
    public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
 
-      write(getMultipart(obj, type), mediaType, httpHeaders, entityStream);
+      write(getMultipart(obj, type), mediaType, httpHeaders, entityStream, annotations);
 
    }
 
@@ -67,7 +67,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
        {
           if ((method.isAnnotationPresent(FormParam.class)
                   || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
-                  && method.getName().startsWith("get") && method.getParameterTypes().length == 0
+                  && method.getName().startsWith("get") && method.getParameterCount() == 0
                   && method.isAnnotationPresent(PartType.class))
           {
              FormParam param = method.getAnnotation(FormParam.class);
@@ -106,7 +106,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
    public CompletionStage<Void> asyncWriteTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                                              MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
        try {
-           return asyncWrite(getMultipart(obj, type), mediaType, httpHeaders, entityStream);
+           return asyncWrite(getMultipart(obj, type), mediaType, httpHeaders, entityStream, annotations);
        } catch (IOException e) {
            return ProviderHelper.completedException(e);
        }

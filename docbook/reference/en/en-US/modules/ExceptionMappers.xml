@@ -11,22 +11,22 @@
    <para>
 
       <programlisting>
-         package javax.ws.rs.ext;
+         package jakarta.ws.rs.ext;
 
-         import javax.ws.rs.core.Response;
+         import jakarta.ws.rs.core.Response;
 
          /**
          * Contract for a provider that maps Java exceptions to
-         * {@link javax.ws.rs.core.Response}. An implementation of this interface must
+         * {@link jakarta.ws.rs.core.Response}. An implementation of this interface must
          * be annotated with {@link Provider}.
          *
          * @see Provider
-         * @see javax.ws.rs.core.Response
+         * @see jakarta.ws.rs.core.Response
          */
          public interface ExceptionMapper&lt;E&gt;
          {
             /**
-            * Map an exception to a {@link javax.ws.rs.core.Response}.
+            * Map an exception to a {@link jakarta.ws.rs.core.Response}.
             *
             * @param exception the exception to map to a response
             * @return a response mapped from the supplied exception
@@ -37,7 +37,7 @@
    </para>
    <para>
 
-      When an application exception is thrown it will be caught by the JAX-RS runtime. JAX-RS will then scan registered
+      When an application exception is thrown it will be caught by the &REST-API; runtime. &REST-API; will then scan registered
       ExceptionMappers to see which one support marshalling the exception type thrown. Here is an example of
       ExceptionMapper
    </para>
@@ -46,7 +46,7 @@
       <programlisting>
 
          @Provider
-         public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
+         public class EJBExceptionMapper implements ExceptionMapper&lt;jakarta.ejb.EJBException&gt;
          {
             public Response toResponse(EJBException exception) {
                return Response.status(500).build();
@@ -60,6 +60,16 @@
       annotated classes, or programmatically through the
       ResteasyProviderFactory class.
    </para>
+      <para>
+         As of RESTEasy 6.1 if a default <code>ExceptionMapper</code> is registered. This handles all uncaught
+         exceptions and returns a response with the exceptions message and a status of 500. If the exception is a
+         <code>WebApplicationException</code> the response from the exception is returned.
+      </para>
+      <para>
+         The default <code>ExceptionMapper</code> will also log the exception at a debug level for debugging purposes.
+         The logger name is <code>org.jboss.resteasy.core.providerfactory.DefaultExceptionMapper</code> which can be
+         used to enabled/disable debug logging.
+      </para>
    <para>
 
 
@@ -95,12 +105,12 @@ wrapped exception or if the exception isn't a WebApplicationException, then rest
 <row>
 <entry>o.j.r.plugins.providers.jaxb.JAXBUnmarshalException</entry>
 <entry>400</entry>
-<entry>The JAXB providers throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
+<entry>The &XML-BIND-API; providers throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
 </row>
 <row>
 <entry>o.j.r.plugins.providers.jaxb.JAXBMarshalException</entry>
 <entry>500</entry>
-<entry>The JAXB providers throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
+<entry>The &XML-BIND-API; providers throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
 </row>
 <row>
 <entry>ApplicationException</entry>
@@ -121,7 +131,7 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 <row>
 <entry>DefaultOptionsMethodException</entry>
 <entry>N/A</entry>
-<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, RESTEasy provides a default behavior by throwing this exception</entry>
+<entry>If the user invokes HTTP OPTIONS and no &REST-API; method for it, RESTEasy provides a default behavior by throwing this exception</entry>
 </row>
 <row>
 <entry>UnrecognizedPropertyExceptionHandler</entry>
@@ -144,16 +154,16 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
    }
    </programlisting>
    <para>If the call to http://third.party.com returns a status code 3xx, 4xx, or 5xx, then the 
-   <classname>Client</classname> is obliged by the JAX-RS
+   <classname>Client</classname> is obliged by the &REST-API;
    specification to throw a <classname>WebApplicationException</classname>. Moreover, if the
    <classname>WebApplicationException</classname> contains a <classname>Response</classname>, which
-   it normally would in RESTEasy, the server runtime is obliged by the JAX-RS specification to return that
+   it normally would in RESTEasy, the server runtime is obliged by the &REST-API; specification to return that
    <classname>Response</classname>.
    As a result, information from the server at third.party.com, e.g., headers and body, will get sent back to
    local.com. The problem is that that information could be, at best, meaningless to the client
    and, at worst, a security breach.</para>
 
-   <para>RESTEasy has a solution that works around the problem and still conforms to the JAX-RS specification.
+   <para>RESTEasy has a solution that works around the problem and still conforms to the &REST-API; specification.
    In particular, for each <classname>WebApplicationException</classname> it defines a new subclass:</para>
 
 <programlisting>

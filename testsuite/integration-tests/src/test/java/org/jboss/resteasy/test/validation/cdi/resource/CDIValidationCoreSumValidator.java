@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 @ApplicationScoped
 public class CDIValidationCoreSumValidator implements ConstraintValidator<CDIValidationCoreSumConstraint, CDIValidationCoreResource> {

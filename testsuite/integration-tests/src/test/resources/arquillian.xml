@@ -3,14 +3,14 @@
             xsi:schemaLocation="
         http://jboss.org/schema/arquillian
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
-    <defaultProtocol type="Servlet 3.0" />
+    <defaultProtocol type="Servlet 5.0" />
     <group qualifier="integration-tests" default="true">
         <container qualifier="${container.qualifier.managed}" default="true">
             <configuration>
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
+                <property name="javaVmArguments">${debugJvmArgs} -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
                 </property>
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.managed}</property>
@@ -21,7 +21,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.gzip} -Dresteasy.allowGzip=true -Djboss.server.base.dir=${container.base.dir.manual.gzip}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.gzip} -Dresteasy.allowGzip=true -Djboss.server.base.dir=${container.base.dir.manual.gzip}
                 </property>
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.manual.gzip}</property>
@@ -32,7 +32,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">standalone-tracing.xml</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.tracing} -Djboss.server.base.dir=${container.base.dir.manual.tracing}</property>
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.tracing} -Djboss.server.base.dir=${container.base.dir.manual.tracing}</property>
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.manual.tracing}</property>
             </configuration>
@@ -42,7 +42,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl} -Djboss.server.base.dir=${container.base.dir.manual.ssl}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl} -Djboss.server.base.dir=${container.base.dir.manual.ssl}
                 </property>
                 <property name="managementAddress">localhost</property>
                 <property name="managementPort">${container.management.port.manual.ssl}</property>
@@ -53,7 +53,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl.wrong} -Djboss.server.base.dir=${container.base.dir.manual.ssl.wrong}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl.wrong} -Djboss.server.base.dir=${container.base.dir.manual.ssl.wrong}
                 </property>
                 <property name="managementAddress">localhost</property>
                 <property name="managementPort">${container.management.port.manual.ssl.wrong}</property>
@@ -64,7 +64,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl.wildcard} -Djboss.server.base.dir=${container.base.dir.manual.ssl.wildcard}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl.wildcard} -Djboss.server.base.dir=${container.base.dir.manual.ssl.wildcard}
                 </property>
                 <property name="managementAddress">localhost</property>
                 <property name="managementPort">${container.management.port.manual.ssl.wildcard}</property>
@@ -75,7 +75,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl.sni} -Djboss.server.base.dir=${container.base.dir.manual.ssl.sni}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=localhost -Djboss.bind.address.management=localhost -Dnode=localhost -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.ssl.sni} -Djboss.server.base.dir=${container.base.dir.manual.ssl.sni}
                 </property>
                 <property name="managementAddress">localhost</property>
                 <property name="managementPort">${container.management.port.manual.ssl.sni}</property>
@@ -87,7 +87,7 @@
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
                 <!-- Forcing file.encoding=us-ascii in order to test RESTEASY-2171 -->
-                <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed.encoding} -Djboss.server.base.dir=${container.base.dir.managed.encoding}
+                <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed.encoding} -Djboss.server.base.dir=${container.base.dir.managed.encoding}
                 </property>
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.managed.encoding}</property>

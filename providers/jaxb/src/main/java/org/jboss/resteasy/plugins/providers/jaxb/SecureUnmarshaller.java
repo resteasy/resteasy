@@ -12,14 +12,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.UnmarshallerHandler;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.UnmarshallerHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -93,8 +93,17 @@ public class SecureUnmarshaller implements Unmarshaller {
          SAXParserFactory f = factories[index];
          if (f == null)
          {
-            f = SAXParserFactory.newInstance();
-            configureParserFactory(f, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
+            // Get the current context class loader
+            final ClassLoader current = SecurityActions.getContextClassLoader();
+            try {
+               // Set the current context class loader to the class loader for this type
+               SecurityActions.setContextClassLoader();
+               f = SAXParserFactory.newInstance();
+               configureParserFactory(f, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
+            } finally {
+               // Reset the current context class loader
+               SecurityActions.setContextClassLoader(current);
+            }
             factories[index] = f;
          }
          SAXParser sp = f.newSAXParser();

@@ -4,8 +4,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)

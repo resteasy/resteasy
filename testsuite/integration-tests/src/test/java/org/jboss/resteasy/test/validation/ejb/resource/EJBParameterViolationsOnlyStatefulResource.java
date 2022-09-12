@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.ejb.resource;
 
-import javax.ejb.Stateful;
-import javax.ws.rs.Path;
+import jakarta.ejb.Stateful;
+import jakarta.ws.rs.Path;
 
 @Stateful
 @Path("stateful")

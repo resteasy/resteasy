@@ -13,9 +13,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.SseBroadcaster;
-import javax.ws.rs.sse.SseEventSink;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.SseBroadcaster;
+import jakarta.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -50,31 +50,35 @@ public class SseBroadcasterImpl implements SseBroadcaster
    }
 
    @Override
-   public void close()
+   public void close() {
+      close(true);
+   }
+
+   @Override
+   public void close(final boolean cascading)
    {
       if (!closed.compareAndSet(false, true))
       {
          return;
       }
-      writeLock.lock();
-      try
-      {
-         //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
-         //is it necessay to close the subsribed SseEventSink ?
-         outputQueue.forEach(eventSink -> {
-            eventSink.close();
-            try {
+      if (cascading) {
+         writeLock.lock();
+         try {
+            //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
+            //is it necessay to close the subsribed SseEventSink ?
+            outputQueue.forEach(eventSink -> {
                eventSink.close();
-            } catch (RuntimeException e) {
-               LogMessages.LOGGER.debug(e.getLocalizedMessage());
-            } finally {
-               notifyOnCloseListeners(eventSink);
-            }
-         });
-      }
-      finally
-      {
-         writeLock.unlock();
+               try {
+                  eventSink.close();
+               } catch (RuntimeException e) {
+                  LogMessages.LOGGER.debug(e.getLocalizedMessage());
+               } finally {
+                  notifyOnCloseListeners(eventSink);
+               }
+            });
+         } finally {
+            writeLock.unlock();
+         }
       }
    }
 
@@ -174,5 +178,4 @@ public class SseBroadcasterImpl implements SseBroadcaster
       }
       return ret;
    }
-
 }

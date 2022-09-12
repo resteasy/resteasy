@@ -3,11 +3,11 @@ package org.jboss.resteasy.test.exception.resource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 public class ExceptionMapperInjectionNotFoundMapper implements
       ExceptionMapper<NotFoundException> {

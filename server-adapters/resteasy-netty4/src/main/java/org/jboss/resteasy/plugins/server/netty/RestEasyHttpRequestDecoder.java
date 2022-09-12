@@ -32,26 +32,26 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
    private final String servletMappingPrefix;
    private final String proto;
 
+   @Deprecated
    public enum Protocol
    {
       HTTPS,
       HTTP
    }
 
+   @Deprecated
    public RestEasyHttpRequestDecoder(final SynchronousDispatcher dispatcher, final String servletMappingPrefix, final Protocol protocol)
+   {
+      this(dispatcher, servletMappingPrefix, protocol == Protocol.HTTP ? "http" : "https");
+   }
+
+
+   public RestEasyHttpRequestDecoder(final SynchronousDispatcher dispatcher, final String servletMappingPrefix, final String protocol)
    {
       this.dispatcher = dispatcher;
       this.servletMappingPrefix = servletMappingPrefix;
-      if (protocol == Protocol.HTTP)
-      {
-         proto = "http";
-      }
-      else
-      {
-         proto = "https";
-      }
+      this.proto = protocol;
    }
-
    @Override
    protected void decode(ChannelHandlerContext ctx, io.netty.handler.codec.http.HttpRequest request, List<Object> out) throws Exception
    {

@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.concurrent.ContextualExecutorService;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -13,15 +15,15 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.security.SecureRandom;
@@ -115,7 +117,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       }
    }
 
-   protected ExecutorService executor;
+   private ContextualExecutorService executor;
    private int threadPoolSize = 100;
    private Map<String, Future<MockHttpResponse>> jobs;
    private Cache cache;
@@ -185,20 +187,22 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
     */
    public void setExecutor(ExecutorService executor)
    {
-      this.executor = executor;
+      this.executor = ContextualExecutors.wrap(executor, true);
    }
 
    public void start()
    {
       cache = new Cache(maxCacheSize);
       jobs = Collections.synchronizedMap(cache);
-      if (executor == null) executor = Executors.newFixedThreadPool(threadPoolSize);
+      if (executor == null) executor = ContextualExecutors.wrap(Executors.newFixedThreadPool(threadPoolSize), false);
       registry.addSingletonResource(this, basePath);
    }
 
    public void stop()
    {
-      executor.shutdown();
+      if (!executor.isManaged()) {
+         executor.shutdown();
+      }
    }
 
    @Path("{job-id}")

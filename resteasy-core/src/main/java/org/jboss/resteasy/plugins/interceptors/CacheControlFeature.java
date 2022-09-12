@@ -2,11 +2,11 @@ package org.jboss.resteasy.plugins.interceptors;
 
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
-import javax.ws.rs.GET;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.FeatureContext;
 import java.lang.reflect.Method;
 
 /**

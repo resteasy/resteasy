@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.RangeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -18,10 +17,10 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.FilePermission;
 import java.text.ParseException;
@@ -39,7 +38,7 @@ import java.util.TimeZone;
 @RunAsClient
 public class RangeTest {
 
-   protected final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+   protected final Logger logger = Logger.getLogger(VariantsTest.class.getName());
 
    static Client client;
 

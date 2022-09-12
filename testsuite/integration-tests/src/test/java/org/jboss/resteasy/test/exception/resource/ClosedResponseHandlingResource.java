@@ -1,35 +1,21 @@
 package org.jboss.resteasy.test.exception.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotSupportedException;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-
-import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
-import static javax.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
+import static jakarta.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
+import static jakarta.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
 
 @Path("")
 public class ClosedResponseHandlingResource {
-
-   /**
-    * Sets the System property ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR
-    * @param value value property is set to
-    */
-   @GET
-   @Path("behavior/{value}")
-   public void setBehavior(@PathParam("value") String value) {
-      System.setProperty(ResteasyContextParameters.RESTEASY_ORIGINAL_WEBAPPLICATIONEXCEPTION_BEHAVIOR, value);
-   }
-
    @Path("/testNotAcceptable/406")
    @GET
    public Response errorNotAcceptable() {

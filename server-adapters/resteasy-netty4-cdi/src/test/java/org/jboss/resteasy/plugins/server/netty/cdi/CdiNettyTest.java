@@ -2,9 +2,10 @@ package org.jboss.resteasy.plugins.server.netty.cdi;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.jandex.Index;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
-import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
+import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -15,9 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.spi.CDI;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 import java.util.Random;
 
 /**
@@ -40,20 +40,20 @@ public class CdiNettyTest {
             .addPackage(CdiRequestDispatcher.class.getPackage())
             .addClasses(EchoResource.class, DefaultExceptionMapper.class)
             .addAsManifestResource(new StringAsset("org.jboss.resteasy.cdi.ResteasyCdiExtension"),
-                  "services/javax.enterprise.inject.spi.Extension")
+                  "services/jakarta.enterprise.inject.spi.Extension")
             .addAsManifestResource(new StringAsset(beans), "beans.xml");
    }
 
    @Before
-   public void init() {
+   public void init() throws Exception {
       while (port < 8000)
          this.port = (int) ((new Random().nextDouble() * 8000) + 1000);
-      ResteasyCdiExtension cdiExtension = CDI.current().select(ResteasyCdiExtension.class).get();
       CdiNettyJaxrsServer netty = new CdiNettyJaxrsServer();
       ResteasyDeployment rd = new ResteasyDeploymentImpl();
-      rd.setActualResourceClasses(cdiExtension.getResources());
+      final ResourceScanner scanner = ResourceScanner.of(Index.of(EchoResource.class, DefaultExceptionMapper.class));
+      rd.getResourceClasses().addAll(scanner.getResources());
       rd.setInjectorFactoryClass(CdiInjectorFactory.class.getName());
-      rd.getActualProviderClasses().addAll(cdiExtension.getProviders());
+      rd.getProviderClasses().addAll(scanner.getProviders());
       netty.setDeployment(rd);
       netty.setPort(port);
       netty.setRootResourcePath("/api");

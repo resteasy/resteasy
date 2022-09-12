@@ -2,26 +2,25 @@ package org.jboss.resteasy.test.cdi.basic.resource;
 
 import java.util.concurrent.CountDownLatch;
 
-import javax.annotation.Resource;
-import javax.ejb.Schedule;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerService;
-import javax.interceptor.AroundTimeout;
-import javax.interceptor.InvocationContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.Resource;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.SessionContext;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.Timeout;
+import jakarta.ejb.Timer;
+import jakarta.ejb.TimerService;
+import jakarta.interceptor.AroundTimeout;
+import jakarta.interceptor.InvocationContext;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 @Path("timer")
 @Stateless
 public class OutOfBandResource implements OutOfBandResourceIntf {
-   private static final Logger log = LoggerFactory.getLogger(OutOfBandResource.class);
+   private static final Logger log = Logger.getLogger(OutOfBandResource.class);
    private static final String TIMER_INFO = "timerInfo";
    private static CountDownLatch latch = new CountDownLatch(1);
    private static boolean timerExpired;

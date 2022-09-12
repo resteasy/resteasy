@@ -2,12 +2,11 @@ package org.jboss.resteasy.test.validation;
 
 import java.util.Iterator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
@@ -30,10 +29,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
@@ -46,7 +45,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 @RunAsClient
 public class ResteasyViolationExceptionRepresentationTest {
 
-   protected static final Logger logger = LogManager.getLogger(ResteasyViolationExceptionRepresentationTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResteasyViolationExceptionRepresentationTest.class.getName());
    static Client client;
 
    private static final String TEST_VIOLATIONS_BEFORE_RETURN_VALUE = "violations_test";

@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.cdi.modules;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectable;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableBinder;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
@@ -16,17 +15,16 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,21 +37,21 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EarLibIntoWarLibTest {
-   protected static final Logger log = LogManager.getLogger(EarLibIntoWarLibTest.class.getName());
+   protected static final Logger log = Logger.getLogger(EarLibIntoWarLibTest.class.getName());
 
 
    @Deployment
    public static Archive<?> createTestArchive() {
       JavaArchive fromJar = ShrinkWrap.create(JavaArchive.class, "from.jar")
             .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       JavaArchive toJar = ShrinkWrap.create(JavaArchive.class, "to.jar")
             .addClasses(EarLibIntoWarLibTest.class, UtilityProducer.class)
             .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
-            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+            .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
       WebArchive war = TestUtil.prepareArchive(EarLibIntoWarLibTest.class.getSimpleName())
             .addAsLibrary(toJar)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
             .addAsLibrary(fromJar)
             .addAsModule(war);

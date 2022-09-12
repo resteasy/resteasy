@@ -1,14 +1,11 @@
 package org.jboss.resteasy.test.security;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Hashtable;
 
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -37,6 +34,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -326,6 +324,7 @@ public class BasicAuthTest {
      */
     @Test
     public void testClientConfigProviderCredentials() throws IOException {
+        Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
         String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithBASIC();
 
         Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
@@ -349,12 +348,9 @@ public class BasicAuthTest {
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
 
-      @Override
-      public void setConfigurationPath() throws URISyntaxException {
-         Path filepath= Paths.get(BasicAuthTest.class.getResource("users.properties").toURI());
-         Path parent = filepath.getParent();
-         createPropertiesFiles(new File(parent.toUri()));
-      }
+        SecurityDomainSetup() {
+            super(BasicAuthTest.class.getResource("users.properties"), BasicAuthTest.class.getResource("roles.properties"));
+        }
 
    }
 }

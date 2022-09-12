@@ -11,14 +11,14 @@ import org.jboss.resteasy.test.cdi.basic.resource.EJBEventsProcessRead;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBEventsProcessReadWrite;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PermissionUtil;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 import java.util.logging.Logger;
@@ -47,7 +47,7 @@ public class EJBEventsTest {
             .addClasses(EJBEventsSource.class, EJBEventsSourceImpl.class)
             .addClasses(EJBEventsProcessRead.class, EJBEventsProcessReadWrite.class)
             .setWebXML(EJBEventsTest.class.getPackage(), "ejbtest_web.xml")
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),

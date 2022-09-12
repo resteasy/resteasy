@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 
 @Remote
 public interface EJBRemoteResource extends EJBResourceParent {

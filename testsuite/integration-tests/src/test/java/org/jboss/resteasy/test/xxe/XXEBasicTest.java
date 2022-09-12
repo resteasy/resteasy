@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.xxe;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.xxe.resource.XXEBasicResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -20,8 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +47,7 @@ public class XXEBasicTest {
    }
 
    static ResteasyClient client;
-   protected final Logger logger = LogManager.getLogger(XXEBasicTest.class.getName());
+   protected final Logger logger = Logger.getLogger(XXEBasicTest.class.getName());
 
    public static Archive<?> deploy(String expandEntityReferences) {
       WebArchive war = TestUtil.prepareArchive(expandEntityReferences);

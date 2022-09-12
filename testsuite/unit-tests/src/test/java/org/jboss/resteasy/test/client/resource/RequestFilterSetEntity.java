@@ -2,9 +2,9 @@ package org.jboss.resteasy.test.client.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.MediaType;
 import java.io.IOException;
 
 public class RequestFilterSetEntity implements ClientRequestFilter {

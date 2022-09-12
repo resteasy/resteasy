@@ -16,11 +16,11 @@
    <sect1>
       <title>Using the <code>@Suspended</code> annotation</title>
       <para>
-         The JAX-RS 2.0 specification has added asynchronous HTTP support via two classes.  The <code>@Suspended</code> annotation,
+         The &REST-API; specification includes asynchronous HTTP support via two classes. The <code>@Suspended</code> annotation,
          and AsyncResponse interface.
       </para>
       <para>
-          Injecting an AsynchronousResponse as a parameter to your jax-rs methods tells RESTEasy that the HTTP request/response should be detached from the currently
+          Injecting an AsyncResponse as a parameter to your &REST-API; methods tells RESTEasy that the HTTP request/response should be detached from the currently
          executing thread and that the current thread should not try to automatically process the response.
       </para>
       <para>
@@ -30,8 +30,8 @@
       </para>
    
       <programlisting>
-import javax.ws.rs.Suspend;
-import javax.ws.rs.core.AsynchronousResponse;
+import jakarta.ws.rs.Suspend;
+import jakarta.ws.rs.container.AsyncResponse;
 
 @Path("/")
 public class SimpleResource
@@ -67,16 +67,16 @@ public class SimpleResource
       </para>
       <para>
          <emphasis role="bold">NOTE:</emphasis> The old RESTEasy proprietary API for async http has been deprecated and may be removed as soon as RESTEasy 3.1.
-         In particular, the RESTEasy @Suspend annotation is replaced by <classname>javax.ws.rs.container.Suspended</classname>, and
+         In particular, the RESTEasy @Suspend annotation is replaced by <classname>jakarta.ws.rs.container.Suspended</classname>, and
          <classname>org.jboss.resteasy.spi.AsynchronousResponse</classname> is replaced by
-         <classname>javax.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
+         <classname>jakarta.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
          which represented a timeout limit. Instead, <methodname>AsyncResponse.setTimeout()</methodname> may be called.
       </para>
    </sect1>
    <sect1>
       <title>Using Reactive return types</title>
       <para id="CompletionStage">
-          The JAX-RS 2.1 specification adds support for declaring asynchronous resource methods by
+          The &REST-API; 2.1 specification adds support for declaring asynchronous resource methods by
           returning a <code>CompletionStage</code> instead of using the <code>@Suspended</code>
           annotation.
       </para>
@@ -91,8 +91,8 @@ public class SimpleResource
           Here is an example of asynchronous processing using <code>CompletionStage</code>:
       </para>
       <programlisting>
-import javax.ws.rs.Suspend;
-import javax.ws.rs.core.AsynchronousResponse;
+import jakarta.ws.rs.Suspend;
+import jakarta.ws.rs.container.AsyncResponse;
 
 @Path("/")
 public class SimpleResource
@@ -150,11 +150,11 @@ public class SimpleResource
       <para>
          Some backends have what is called an "Event Loop Thread", which is a thread responsible for doing all IO operations. Those
          backends require the Event Loop Thread to never be blocked, because it does IO for every other thread. Those backends
-         typically require JAX-RS endpoints to be invoked on worker threads, to make sure they never block the Event Loop Thread.
+         typically require &REST-API; endpoints to be invoked on worker threads, to make sure they never block the Event Loop Thread.
       </para>
       <para>
-         Sometimes, with Async programming, it is possible for asynchronous JAX-RS requests to be resumed from the Event Loop Thread.
-         As a result, JAX-RS will attempt to serialise the response and send it to the client. But JAX-RS is written using "Blocking IO"
+         Sometimes, with Async programming, it is possible for asynchronous &REST-API; requests to be resumed from the Event Loop Thread.
+         As a result, &REST-API; will attempt to serialise the response and send it to the client. But &REST-API; is written using "Blocking IO"
          mechanics, such as <code>OutputStream</code> (used by <code>MessageBodyWriter</code> and <code>WriterInterceptor</code>), which
          means that sending the response will block the current thread until the response is received. This would work on a worker thread,
          but if it happens on the Event Loop Thread it will block it and prevent it from sending the response, resulting in a deadlock.
@@ -171,7 +171,6 @@ public class SimpleResource
         <listitem><para><code>HtmlRenderableWriter</code>, which is tied to servlet APIs</para></listitem>
         <listitem><para><code>ReaderProvider</code></para></listitem>
         <listitem><para><code>StreamingOutputProvider</code>: use <code>AsyncStreamingOutput</code> instead</para></listitem>
-        <listitem><para><code>GZIPEncodingInterceptor</code></para></listitem>
       </itemizedlist>
       <para>
          Async IO will be preferred if the following conditions are met:

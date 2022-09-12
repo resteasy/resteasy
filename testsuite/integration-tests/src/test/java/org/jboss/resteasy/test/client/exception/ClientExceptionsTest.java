@@ -27,13 +27,13 @@ import org.junit.Assert;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
@@ -197,7 +197,7 @@ public class ClientExceptionsTest extends ClientTestBase {
       } catch (ResponseProcessingException ex) {
          Assert.assertEquals(ClientExceptionsCustomException.class.getCanonicalName() + ": custom message", ex.getMessage());
       } catch (Throwable ex) {
-         Assert.fail("The exception thrown by client was not instance of javax.ws.rs.client.ResponseProcessingException");
+         Assert.fail("The exception thrown by client was not instance of jakarta.ws.rs.client.ResponseProcessingException");
       }
    }
 
@@ -216,7 +216,7 @@ public class ClientExceptionsTest extends ClientTestBase {
       } catch (ProcessingException ex) {
          Assert.assertEquals(ClientExceptionsCustomException.class.getCanonicalName() + ": custom message", ex.getMessage());
       } catch (Throwable ex) {
-         Assert.fail("The exception thrown by client was not instance of javax.ws.rs.ProcessingException");
+         Assert.fail("The exception thrown by client was not instance of jakarta.ws.rs.ProcessingException");
       }
    }
 

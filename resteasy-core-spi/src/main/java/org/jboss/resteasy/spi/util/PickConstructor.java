@@ -2,7 +2,7 @@ package org.jboss.resteasy.spi.util;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Context;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -40,9 +40,9 @@ public final class PickConstructor
             continue;
          }
 
-         if (con.getParameterTypes().length >= numParameters)
+         if (con.getParameterCount() >= numParameters)
          {
-            if (con.getParameterTypes().length > numParameters) {
+            if (con.getParameterCount() > numParameters) {
                potentialConflict = false;
             }
             boolean noContextAnnotation = false;
@@ -57,10 +57,10 @@ public final class PickConstructor
                }
             }
             if (noContextAnnotation) continue;
-            if (con.getParameterTypes().length == numParameters && numParameters != 0) {
+            if (con.getParameterCount() == numParameters && numParameters != 0) {
                potentialConflict = true;
             }
-            numParameters = con.getParameterTypes().length;
+            numParameters = con.getParameterCount();
             pick = con;
 
          }
@@ -94,9 +94,9 @@ public final class PickConstructor
          {
             continue;
          }
-         if (con.getParameterTypes().length >= numParameters)
+         if (con.getParameterCount() >= numParameters)
          {
-            if (con.getParameterTypes().length > numParameters) {
+            if (con.getParameterCount() > numParameters) {
                potentialConflict = false;
             }
 
@@ -112,10 +112,10 @@ public final class PickConstructor
                }
             }
             if (noContextAnnotation) continue;
-            if (con.getParameterTypes().length == numParameters && numParameters != 0) {
+            if (con.getParameterCount() == numParameters && numParameters != 0) {
                potentialConflict = true;
             }
-            numParameters = con.getParameterTypes().length;
+            numParameters = con.getParameterCount();
             pick = con;
          }
       }

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.jose;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSHeader;
@@ -21,13 +20,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.StringWriter;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import org.hamcrest.MatcherAssert;
 
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -41,7 +41,7 @@ import org.hamcrest.CoreMatchers;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JWSTest {
-   protected static final Logger logger = LogManager.getLogger(JWSTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(JWSTest.class.getName());
    private static final String HEADER_ERROR_MSG = "Wrong algorithm header";
    private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
    private static final String VERIFY_ERROR_MSG = "Wrong verification";
@@ -58,13 +58,13 @@ public class JWSTest {
       JWSHeader header = new JWSHeader(Algorithm.HS256, null, null);
       String val = header.toString();
       logger.info(val);
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
       header = mapper.readValue(val, JWSHeader.class);
       val = mapper.writeValueAsString(header);
       logger.info(val);
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-      Assert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
+      MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
    }
 
    /**
@@ -88,7 +88,7 @@ public class JWSTest {
 
    }
 
-   /**
+   /**SseSmokeTest
     * @tpTestDetails RSA with content type test
     * @tpSince RESTEasy 3.0.16
     */
@@ -150,7 +150,7 @@ public class JWSTest {
               .rsa256(keyPair.getPrivate());
 
       logger.info(encoded);
-      Assert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
+      MatcherAssert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
 
       JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
       String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);

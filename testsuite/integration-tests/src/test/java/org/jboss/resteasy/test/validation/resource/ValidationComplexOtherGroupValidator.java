@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ValidationComplexOtherGroupValidator implements ConstraintValidator<ValidationComplexOtherGroupConstraint, ValidationComplexResourceWithOtherGroups> {
    public void initialize(ValidationComplexOtherGroupConstraint constraintAnnotation) {

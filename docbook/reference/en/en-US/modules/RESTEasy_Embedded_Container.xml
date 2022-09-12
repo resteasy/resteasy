@@ -1,5 +1,11 @@
 <chapter id="RESTEasy_Embedded_Container">
 <title>Embedded Containers</title>
+    <para>
+        <emphasis role="bold">NOTE:</emphasis> The <classname>org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer</classname>
+        is deprecated and replaced by <classname>org.jboss.resteasy.plugins.server.embedded.EmbeddedServer</classname>
+        and <classname>jakarta.ws.rs.SeBootstrap.Instance</classname>. The preference should be to use the
+        <link linkend="Se_Bootstrap">SeBootstrap API</link>
+    </para>
 
     <para>RESTEasy has a few different plugins for different embedabble HTTP and/or Servlet containers if use RESTEasy in
     a test environment, or within an environment where you do not want a Servlet engine dependency.</para>
@@ -7,7 +13,7 @@
         <title>Undertow</title>
         <para>
             Undertow is a new Servlet Container that is used by WildFly (JBoss Community Server).  You can embed
-            Undertow as you wish.  Here's a a test that shows it in action.
+            Undertow as you wish.  Here's a test that shows it in action.
 <programlisting><![CDATA[
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
@@ -17,13 +23,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -113,6 +119,9 @@ public class UndertowTest
     <section>
         <title>Sun JDK HTTP Server</title>
         <para>
+            <emphasis>NOTE:</emphasis> This module is deprecated and should not be used.
+        </para>
+        <para>>
             The Sun JDK comes with a simple HTTP server implementation (com.sun.net.httpserver.HttpServer) which you
             can run RESTEasy on top of.
         </para>
@@ -138,7 +147,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jdk-http</artifactId>
-      <version>4.7.0-SNAPSHOT</version>
+      <version>6.2.0.Final-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
 
@@ -167,7 +176,40 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-netty4</artifactId>
-      <version>4.7.0-SNAPSHOT</version>
+      <version>6.2.0.Final-SNAPSHOT</version>
+  </dependency>
+]]></programlisting>
+
+    </section>
+    <section>
+        <title>Reactor-Netty</title>
+        <para>
+            RESTEasy integrates with the reactor-netty project. This
+            server adapter was created to pair with our reactor-netty
+            based &REST-API; client integration. Ultimately, if using
+            reactor-netty for both the server and server-contained
+            clients you will be able to do things like share the same
+            event loop for both server and client calls.
+        </para>
+    <programlisting> <![CDATA[
+   public static void start(ResteasyDeployment deployment) throws Exception
+   {
+      ReactorNettyJaxrsServer server =  new ReactorNettyJaxrsServer();
+      server.setDeployment(new ResteasyDeploymentImpl());
+      server.setDeployment(deployment);
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("");
+      server.setSecurityDomain(null);
+      server.start();
+   }
+    ]]></programlisting>
+
+    <para>Maven project you must include is:</para>
+<programlisting> <![CDATA[
+  <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-reactor-netty</artifactId>
+      <version>6.2.0.Final-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
 
@@ -194,7 +236,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-vertx</artifactId>
-      <version>4.7.0-SNAPSHOT</version>
+      <version>6.2.0.Final-SNAPSHOT</version>
   </dependency>
     ]]></programlisting>
 
@@ -213,7 +255,7 @@ public class UndertowTest
     <para>The per instance binding scope caches the same resource instance for each event loop providing the same
     concurrency model than a verticle deployed multiple times.</para>
 
-    <para>Vert.x can also embed a RESTEasy deployment, making easy to use Jax-RS annotated controller in Vert.x applications: </para>
+    <para>Vert.x can also embed a RESTEasy deployment, making easy to use &REST-API; annotated controller in Vert.x applications: </para>
     <programlisting> <![CDATA[
   Vertx vertx = Vertx.vertx();
   HttpServer server = vertx.createHttpServer();

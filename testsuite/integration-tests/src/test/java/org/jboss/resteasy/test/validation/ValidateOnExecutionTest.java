@@ -1,23 +1,22 @@
 package org.jboss.resteasy.test.validation;
 
-import javax.validation.ValidationException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.validation.ValidationException;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Class;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Interface;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorTwoLevels_Class;
@@ -54,7 +53,7 @@ public class ValidateOnExecutionTest {
 
    static ResteasyClient client;
 
-   protected static final Logger logger = LogManager.getLogger(ValidateOnExecutionTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ValidateOnExecutionTest.class.getName());
 
    private static final String MAIN = "main";
    private static final String INVALID_ONE_LEVEL_CLASS = "one_class";
@@ -288,8 +287,8 @@ public class ValidateOnExecutionTest {
       } catch (ValidationException ve) {
          // OK
       } catch (Exception e) {
-         if (e.getMessage().contains("Caused by: javax.validation.ValidationException") ||
-               (e.getCause() != null && e.getCause().getMessage().contains("Caused by: javax.validation.ValidationException"))) {
+         if (e.getMessage().contains("Caused by: jakarta.validation.ValidationException") ||
+               (e.getCause() != null && e.getCause().getMessage().contains("Caused by: jakarta.validation.ValidationException"))) {
             // OK
             return;
          }

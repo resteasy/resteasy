@@ -1,8 +1,8 @@
 package org.jboss.resteasy.specimpl;
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;

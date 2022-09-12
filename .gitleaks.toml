@@ -1,0 +1,5 @@
+[allowlist]
+    description = "Allowed info"
+    regexes = [
+        '''resteasy\-(user|staff)\.12345'''
+    ]

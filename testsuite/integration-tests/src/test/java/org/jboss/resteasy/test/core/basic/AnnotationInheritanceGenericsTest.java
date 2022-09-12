@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.core.basic;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -18,15 +19,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
 import java.util.Collection;
 
 /**
@@ -79,7 +80,7 @@ public class AnnotationInheritanceGenericsTest {
       );
 
       Assert.assertNotNull("Response entity list must not be null", entityList);
-      Assert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
+      MatcherAssert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
 
       final AnnotationInheritanceGenericsEntity entity = entityList.iterator().next();
       Assert.assertEquals(

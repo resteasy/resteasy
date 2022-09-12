@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.annotation.PostConstruct;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
 @Interceptor
 public class PostConstructInjectionEJBInterceptor {

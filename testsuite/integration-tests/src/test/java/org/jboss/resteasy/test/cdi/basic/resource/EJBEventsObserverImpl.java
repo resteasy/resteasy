@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import javax.ejb.Stateful;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import jakarta.ejb.Stateful;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 

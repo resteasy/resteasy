@@ -13,14 +13,14 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -125,6 +125,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    public void setEntity(Object entity)
    {
       //if (entity != null) logger.info("*** setEntity(Object) " + entity.toString());
+      if (entity != null && jaxrsResponse.getEntity() == null && jaxrsResponse.getStatusInfo().equals(Response.Status.NO_CONTENT)){
+         LogMessages.LOGGER.statusNotSet(Response.Status.NO_CONTENT.getStatusCode(), Response.Status.NO_CONTENT.getReasonPhrase());
+      }
       jaxrsResponse.setEntity(entity);
       // todo TCK does weird things in its testing of get length
       // it resets the entity in a response filter which results
@@ -137,6 +140,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
    {
       //if (entity != null) logger.info("*** setEntity(Object, Annotation[], MediaType) " + entity.toString() + ", " + mediaType);
+      if (entity != null && jaxrsResponse.getEntity() == null && jaxrsResponse.getStatusInfo().equals(Response.Status.NO_CONTENT)){
+         LogMessages.LOGGER.statusNotSet(Response.Status.NO_CONTENT.getStatusCode(), Response.Status.NO_CONTENT.getReasonPhrase());
+      }
       jaxrsResponse.setEntity(entity);
       jaxrsResponse.setAnnotations(annotations);
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mediaType);

@@ -11,9 +11,9 @@
     <section id="resteasy_modules_in_wildfly">
         <title>RESTEasy modules in WildFly</title>
         <para>
-            In WildFly, RESTEasy and the JAX-RS API are automatically loaded into your deployment's classpath
-            if and only if you are deploying a JAX-RS application (as determined by the presence
-            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1.
+            In WildFly, RESTEasy and the &REST-API; API are automatically loaded into your deployment's classpath
+            if and only if you are deploying a &REST-API; application (as determined by the presence
+            of &REST-API; annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1.
             If you need any of those libraries which are not loaded automatically, you'll have to bring them in
             with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:
         </para>
@@ -21,15 +21,15 @@
 <jboss-deployment-structure>
     <deployment>
         <dependencies>
-            <module name="org.jboss.resteasy.resteasy-jackson-provider" services="import"/>
+            <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
         </dependencies>
     </deployment>
 </jboss-deployment-structure>]]></programlisting>
         <para>The <literal>services</literal> attribute must be set to "import" for modules that have default providers
-            in a META-INF/services/javax.ws.rs.ext.Providers file.
+            in a META-INF/services/jakarta.ws.rs.ext.Providers file.
         </para>
         <para>
-            To get an idea of which RESTEasy modules are loaded by default when JAX-RS services are deployed, please
+            To get an idea of which RESTEasy modules are loaded by default when &REST-API; services are deployed, please
             see the table below, which refers to a recent WildFly ditribution patched with the current RESTEasy
             distribution. Clearly, future and unpatched WildFly distributions might differ a bit in terms of modules
             enabled by default, as the container actually controls this too.
@@ -87,17 +87,6 @@
                 </row>
                 <row>
                     <entry>
-                        org.jboss.resteasy.resteasy-jackson-provider
-                    </entry>
-                    <entry>
-                        no
-                    </entry>
-                    <entry>
-                        Integration with the JSON parser and object mapper Jackson (deprecated)
-                    </entry>
-                </row>
-                <row>
-                    <entry>
                         org.jboss.resteasy.resteasy-jackson2-provider
                     </entry>
                     <entry>
@@ -115,19 +104,29 @@
                         yes
                     </entry>
                     <entry>
-                        XML JAXB integration.
+                        &XML-BIND-API; integration.
                     </entry>
                 </row>
                 <row>
                     <entry>
-                        org.jboss.resteasy.resteasy-jaxrs
+                        org.jboss.resteasy.resteasy-core
                     </entry>
                     <entry>
                         yes
                     </entry>
                     <entry>
-                        Core RESTEasy libraries for server and client.  You will need to include this in your deployment
-                        if you are only using JAX-RS client.
+                        Core RESTEasy libraries for server.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-client
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Core RESTEasy libraries for client.
                     </entry>
                 </row>
                 <row>
@@ -176,7 +175,7 @@
                 </row>
                 <row>
                     <entry>
-                        javax.json.bind-api
+                        jakarta.json.bind-api
                     </entry>
                     <entry>
                         yes
@@ -247,56 +246,63 @@
 	    <section id="upgrading-wildfly">
 	        <title>Upgrading RESTEasy within WildFly</title>
 	        <para>
-	            RESTEasy is bundled with WildFly, but you may want to upgrade RESTEasy in WildFly to the latest version.  The RESTEasy
-                distribution comes with a zip file called <code><![CDATA[resteasy-jboss-modules-4.7.0-SNAPSHOT.zip]]></code>.  Unzip this file
-	            within the <![CDATA[modules/system/layers/base/]]> directory of the WildFly distribution.  This will configure WildFly
-	            to use new versions of the modules listed in <xref linkend="resteasy_modules_in_wildfly"/>.
+                RESTEasy is bundled with WildFly. However you may wish to upgrade to the latest version. With
+                <ulink url="https://docs.wildfly.org/24/Galleon_Guide.html">Galleon</ulink> this makes upgrading RESTEasy
+                in WildFly quite easy.
 	        </para>
             <para>
-                To build the <code><![CDATA[resteasy-jboss-modules-4.7.0-SNAPSHOT.zip]]></code>, enter the <code>jboss-modules</code>
-                directory of the project, and run the following Maven command:
-                <programlisting><![CDATA[$ mvn install]]></programlisting>
-                It will start to build the modules and finally it will produce the zip file inside "target" directory:
-                <programlisting><![CDATA[$ pwd
-resteasy/jboss-modules
-$ ls target/*.zip
-target/resteasy-jboss-modules-4.7.0-SNAPSHOT-mavenized.zip
-target/resteasy-jboss-modules-4.7.0-SNAPSHOT.zip
-]]></programlisting>
-            </para>
-            <para>
-                To use the zip file, you need to copy it into Wildfly's "modules" directory:
-                <programlisting><![CDATA[$ pwd
-wildfly
-$ ls
-LICENSE.txt       bin               domain            standalone
-README.txt        copyright.txt     jboss-modules.jar welcome-content
-appclient         docs              modules
+                The first requirement is the WildFly installation is provisioned with Galleon. The simplest way to do
+                this for a local installation is with <ulink url="https://docs.wildfly.org/galleon/#_galleon_cli_tool">Galleon CLI</ulink>.
+                <programlisting><![CDATA[$ galleon.sh install wildfly:current]]></programlisting>
 
-]]></programlisting>
+                To install the RESTEasy upgrade on top of that you simply need to use the tool again with the Maven GAV:
+                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:6.2.0.Final-SNAPSHOT]]></programlisting>
             </para>
             <para>
-                Use the following step to copy and extract the modules zip into Wildfly modules directory:
+                If you are using Maven to provision WildFly you can simply add the feature pack to your plugin configuration.
                 <programlisting><![CDATA[
-$ cp ~/works/resteasy/jboss-modules/target/resteasy-jboss-modules-4.7.0-SNAPSHOT.zip \
-modules/system/layers/base/
-$ cd modules/system/layers/base
-$ unzip resteasy-jboss-modules-4.7.0-SNAPSHOT.zip
-...]]></programlisting>
-                With the above process, the RESTEasy modules are upgraded inside Wildfly.
+<plugin>
+    <groupId>org.jboss.galleon</groupId>
+    <artifactId>galleon-maven-plugin</artifactId>
+    <configuration>
+        <install-dir>${jboss.home}</install-dir>
+        <record-state>true</record-state>
+        <log-time>true</log-time>
+        <offline>false</offline>
+        <feature-packs>
+            <feature-pack>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-ee-galleon-pack</artifactId>
+                <version>${version.org.wildfly}</version>
+            </feature-pack>
+            <feature-pack>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>galleon-feature-pack</artifactId>
+                <version>6.2.0.Final-SNAPSHOT</version>
+            </feature-pack>
+        </feature-packs>
+    </configuration>
+    <executions>
+        <execution>
+            <id>server-provisioning</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+                <goal>provision</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>]]>
+                </programlisting>
             </para>
 	    </section>
     </section>
     <section>
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
-            RESTEasy is bundled with WildFly and completely integrated as per the requirements of Java EE.
-            You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your JAX-RS services and providers.
-            All you have to provide is your JAX-RS service and provider classes packaged
-            within a WAR either as POJOs, CDI beans, or EJBs.
-            A simple way to configure an application is by simply providing an empty web.xml file.
-            You can of course deploy any custom servlet, filter
-            or security constraint you want to within your web.xml, but none of them are required:
+            RESTEasy is bundled with WildFly and completely integrated as per the requirements of Jakarta EE.
+            A &REST-API; application can contain &ENTERPRISE-BEANS; and CDI.
+            WildFly scans the WAR file for the &REST-API; services and provider classes packaged in the
+            WAR either as POJOs, CDI beans, or &ENTERPRISE-BEANS;.
         </para>
         <para>
             <programlisting><![CDATA[
@@ -306,19 +312,20 @@ $ unzip resteasy-jboss-modules-4.7.0-SNAPSHOT.zip
 </web-app>]]></programlisting>
         </para>
         <para>
-            Also, web.xml can supply to RESTEasy init-params and context-params (see <xref linkend="configuration_switches"/>)
+            The web.xml can supply to RESTEasy init-params and context-params (see <xref linkend="configuration_switches"/>)
             if you want to tweak or turn on/off any specific RESTEasy feature.
         </para>
         <para>
-            Since we're not using a &lt;servlet-mapping&gt; element, we must define a
-            <classname>javax.ws.rs.core.Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>) that is annotated with
-            the <classname>javax.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
-            which is the behavior inherited from <classname>Application</classname>, your WAR will
-            be scanned for resource and provider classes as indicated by the presence of JAX-RS annotations.
+            When a &lt;servlet-mapping&gt; element is not declared in the web.xml, then a class must be provided
+            that implements
+            <classname>jakarta.ws.rs.core.Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>).
+            This class must be annotated with the <classname>jakarta.ws.rs.ApplicationPath</classname> annotation.
+            If this implementation class returns an empty set for classes and singletons, the WAR will
+            be scanned for resource and provider classes as indicated by the presence of &REST-API; annotations.
         </para>
         <programlisting>
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/root-path")
 public class MyApplication extends Application
@@ -326,21 +333,21 @@ public class MyApplication extends Application
 }       </programlisting>
 
         <para>
-            <emphasis role="bold">Note.</emphasis> Actually, if the application jar contains an
+            <emphasis role="bold">Note.</emphasis> If the application WAR contains an
             <classname>Application</classname> class (or a subclass thereof)
-            which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
-            Of course, even in this case it can be used to specify additional information such as context parameters.
-            If there is an <classname>Application</classname> class but it doesn't have an
-            <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
-            &lt;servlet-mapping&gt; element is required.
+            which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml
+            file is not required.
+            If the application WAR contains an <classname>Application</classname> class but the
+            class doesn't have an declare a <classname>@ApplicationPath</classname> annotation, then
+            the web.xml must at least a declare a &lt;servlet-mapping&gt; element.
         </para>
 
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
             not all RESTEasy modules are bundled with WildFly. For example,
             resteasy-fastinfoset-provider and resteasy-wadl are not included among the
-            modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If you want
-            to use them in your application, you can include them in your WAR as you would if you were
+            modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If they are required by
+            the application, they can be included in the WAR as is done if you were
             deploying outside of WildFly. See <xref linkend="standalone_resteasy"/> for more information.
         </para>
 
@@ -350,7 +357,7 @@ public class MyApplication extends Application
         <para>
             If you are using RESTEasy outside of WildFly, in a standalone servlet container like Tomcat or Jetty, for example,
             you will need to include the appropriate RESTEasy jars in your WAR file.  You will need the core classes
-            in the resteasy-jaxrs module, and you may need additional facilities like the resteasy-jaxb-provider module.
+            in the resteasy-core and resteasy-client modules, and you may need additional facilities like the resteasy-jaxb-provider module.
             We strongly suggest that you use Maven to build your WAR files as RESTEasy is split into
             a bunch of different modules:
         </para>
@@ -358,12 +365,17 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-client</artifactId>
+    <version>6.2.0.Final-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxb-provider</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
         <para>
@@ -373,9 +385,9 @@ public class MyApplication extends Application
         <para>
             If you are not using Maven, you can include the necessary jars by hand. If you download
             RESTEasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
-            for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.
+            for example) you will get a file like resteasy-&lt;version&gt;-all.zip.
             If you unzip it you will see a lib/ directory that contains the libraries needed by RESTEasy.
-            Copy these, as needed, into your /WEB-INF/lib directory. Place your JAX-RS annotated class resources and providers
+            Copy these, as needed, into your /WEB-INF/lib directory. Place your &REST-API; annotated class resources and providers
             within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
         </para>
 
@@ -396,7 +408,7 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-servlet-initializer</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
         </section>
@@ -406,7 +418,7 @@ public class MyApplication extends Application
         <para>
             The <literal>resteasy-servlet-initializer</literal> artifact will not work in Servlet versions older than
             3.0.  You'll then have to manually declare the RESTEasy servlet in your WEB-INF/web.xml file of your WAR project,
-            and you'll have to use an <classname>Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>)
+            and you'll have to use an <classname>Application</classname> class (see <xref linkend="jakarta.ws.rs.core.Application"/>)
             which explicitly lists resources and providers. For example:
         </para>
         <para>
@@ -420,7 +432,7 @@ public class MyApplication extends Application
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </servlet>
@@ -675,6 +687,22 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                 If an application is running inside Wildfly, then all of the dependencies are automatically available. Outside of
                 Wildfly, an application will need the Eclipse MicroProfile API at compile time. In maven, for example, use
             </para>
+
+            <para>
+                As of RESTEasy 5.0 you will first need to add the RESTEasy MicroProfile Config dependency.
+            </para>
+
+            <programlisting>
+        &lt;dependency&gt;
+          &lt;groupId&gt;org.jboss.resteasy.microprofile&lt;/groupId&gt;
+          &lt;artifactId&gt;microprofile-config&lt;/artifactId&gt;
+          &lt;scope&gt;compile&lt;/scope&gt;
+        &lt;/dependency&gt;
+            </programlisting>
+
+            <para>
+                You will also need the MicroProfile Config API and an Implementation, in our case SmallRye.
+            </para>
             
             <programlisting>
         &lt;dependency&gt;
@@ -683,10 +711,6 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
             &lt;scope&gt;compile&lt;/scope&gt;
         &lt;/dependency&gt;
             </programlisting>
-            
-            <para>
-                It will also need the implementation, smallrye-config, at runtime:
-            </para>
             
             <programlisting>
         &lt;dependency&gt;
@@ -888,7 +912,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 no default
                             </entry>
                             <entry>
-                                A comma delimited list of fully qualified JAX-RS resource class names you want to
+                                A comma delimited list of fully qualified &REST-API; resource class names you want to
                                 register
                             </entry>
                         </row>
@@ -901,12 +925,12 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 A comma delimited list of JNDI names which reference objects you want to register as
-                                JAX-RS resources
+                                &REST-API; resources
                             </entry>
                         </row>
                         <row>
                             <entry>
-                                javax.ws.rs.Application
+                                jakarta.ws.rs.Application
                             </entry>
                             <entry>
                                 no default
@@ -926,7 +950,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 Replaces the need for an Accept header by mapping file name extensions (like .xml or
                                 .txt) to a media type. Used when the client
                                 is unable to use an Accept header to choose a representation (i.e. a browser). See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta_REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -940,7 +964,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 Replaces the need for an Accept-Language header by mapping file name extensions (like
                                 .en or .fr) to a language. Used when the client
                                 is unable to use an Accept-Language header to choose a language (i.e. a browser). See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta_REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -953,7 +977,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             <entry>
                                 Names a query parameter that can be set to an acceptable media type,
                                 enabling content negotiation without an Accept header. See
-                                <xref linkend="JAX-RS_Content_Negotiation"/> for more details.
+                                <xref linkend="Jakarta_REST_Content_Negotiation"/> for more details.
                             </entry>
                         </row>
                         <row>
@@ -964,7 +988,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 false
                             </entry>
                             <entry>
-                                Enables role based security. See <xref linkend="Securing_JAX-RS_and_RESTeasy"/>
+                                Enables role based security. See <xref linkend="Securing_Jakarta_REST_and_RESTeasy"/>
                                 for more details.
                             </entry>
                         </row>
@@ -977,7 +1001,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 Expand external entities in org.w3c.dom.Document documents
-                                and JAXB object representations
+                                and &XML-BIND-API; object representations
                             </entry>
                         </row>
                         <row>
@@ -989,7 +1013,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 Impose security constraints in processing org.w3c.dom.Document documents
-                                and JAXB object representations
+                                and &XML-BIND-API; object representations
                             </entry>
                         </row>
                         <row>
@@ -1001,7 +1025,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 Prohibit DTDs in org.w3c.dom.Document documents
-                                and JAXB object representations
+                                and &XML-BIND-API; object representations
                             </entry>
                         </row>
                         <row>
@@ -1012,7 +1036,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                                 false
                             </entry>
                             <entry>
-                                Turns off the JAX-RS spec defined class-level expression filtering and instead
+                                Turns off the &REST-API; spec defined class-level expression filtering and instead
                                 tries to match version every method's full path.
                             </entry>
                         </row>
@@ -1117,6 +1141,19 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                         </row>
                         <row>
                             <entry>
+                                resteasy.patchfilter.legacy
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Set this value to false, the jsonp provider will be activated to provide
+                                PatchFilter for Json patch or Json Merge patch functionalities. By default(true value),
+                                the Jackson provider will be used.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
                                 resteasy.original.webapplicationexception.behavior
                             </entry>
                             <entry>
@@ -1124,7 +1161,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                             </entry>
                             <entry>
                                 When set to "true", this parameter will restore the original behavior in which
-                                a Client running in a resource method will throw a JAX-RS WebApplicationException
+                                a Client running in a resource method will throw a &REST-API; WebApplicationException
                                 instead of a Resteasy version with a sanitized <classname>Response</classname>. For more information,
                                 see section <link linkend='ResteasyWebApplicationException'>Resteasy WebApplicationExceptions</link>
                             </entry>
@@ -1155,69 +1192,62 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
 &lt;param-value&gt;/restful-services&lt;/param-value&gt;
 &lt;/context-param&gt;</programlisting>
         </para>
+
+        <para>
+            Resteasy internally uses a cache to find the resource invoker for the request url. This cache
+            size and enablement can be controlled with these system properties.
+        </para>
+        <para>
+            <table frame="topbot">
+                <tgroup cols="3" rowsep="1" colsep="1">
+                    <thead>
+                        <row>
+                            <entry>
+                                System Property Name
+                            </entry>
+                            <entry>
+                                Default Value
+                            </entry>
+                            <entry>
+                                Description
+                            </entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                resteasy.match.cache.enabled
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                If the match cache is enabled or not
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.match.cache.size
+                            </entry>
+                            <entry>
+                                2048
+                            </entry>
+                            <entry>
+                                The size of this match cache
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </para>
     </section>
-    <section id="javax.ws.rs.core.Application">
-        <title>javax.ws.rs.core.Application</title>
+    <section id="jakarta.ws.rs.core.Application">
+        <title>jakarta.ws.rs.core.Application</title>
 
         <para>
 
-            The <classname>javax.ws.rs.core.Application</classname> class is a standard JAX-RS class that you may implement to provide
-            information on your deployment. It is simply a class the lists all JAX-RS root resources and providers.
-        </para>
-        <para>
-
-            <programlisting>
-/**
-* Defines the components of a JAX-RS application and supplies additional
-* metadata. A JAX-RS application or implementation supplies a concrete
-* subclass of this abstract class.
-*/
-public abstract class Application
-{
-    private static final Set&lt;Object&gt; emptySet = Collections.emptySet();
-
-    /**
-    * Get a set of root resource and provider classes. The default lifecycle
-    * for resource class instances is per-request. The default lifecycle for
-    * providers is singleton.
-    * &lt;p/&gt;
-    * &lt;p&gt;Implementations should warn about and ignore classes that do not
-    * conform to the requirements of root resource or provider classes.
-    * Implementations should warn about and ignore classes for which
-    * {@link #getSingletons()} returns an instance. Implementations MUST
-    * NOT modify the returned set.&lt;/p&gt;
-    *
-    * @return a set of root resource and provider classes. Returning null
-    * is equivalent to returning an empty set.
-    */
-    public abstract Set&lt;Class&lt;?&gt;&gt; getClasses();
-
-    /**
-    * Get a set of root resource and provider instances. Fields and properties
-    * of returned instances are injected with their declared dependencies
-    * (see {@link Context}) by the runtime prior to use.
-    * &lt;p/&gt;
-    * &lt;p&gt;Implementations should warn about and ignore classes that do not
-    * conform to the requirements of root resource or provider classes.
-    * Implementations should flag an error if the returned set includes
-    * more than one instance of the same class. Implementations MUST
-    * NOT modify the returned set.&lt;/p&gt;
-    * &lt;p/&gt;
-    * &lt;p&gt;The default implementation returns an empty set.&lt;/p&gt;
-    *
-    * @return a set of root resource and provider instances. Returning null
-    * is equivalent to returning an empty set.
-    */
-    public Set&lt;Object&gt; getSingletons()
-    {
-        return emptySet;
-    }
-
-}            </programlisting>
-        </para>
-        <para>
-
-
+            The <classname>jakarta.ws.rs.core.Application</classname> class is a standard &REST-API; class that you may implement to provide
+            information on your deployment. It is simply a class the lists all &REST-API; root resources and providers.
         </para>
 
         <para>
@@ -1279,7 +1309,7 @@ public abstract class Application
             you are and read the configuration section above on installing in Servlet 3.0.
             The downside of running RESTEasy as a Servlet is that you cannot have static resources like .html and .jpeg
             files in the
-            same path as your JAX-RS services. RESTEasy allows you to run as a Filter instead. If a JAX-RS resource is
+            same path as your &REST-API; services. RESTEasy allows you to run as a Filter instead. If a &REST-API; resource is
             not
             found under the URL requested, RESTEasy will delegate back to the base servlet container to resolve URLs.
         </para>
@@ -1292,7 +1322,7 @@ public abstract class Application
             org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
         </filter-class>
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
+            <param-name>jakarta.ws.rs.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </filter>
@@ -1309,7 +1339,7 @@ public abstract class Application
     <title>Client side</title>
 
     <para>
-        JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
+        &REST-API; conforming implementations, such as RESTEasy, support a client side framework which simplifies
         communicating with restful applications. In RESTEasy, the minimal set of modules needed for the client framework
         consists of resteasy-core and resteasy-client. You can access them by way of maven:
     </para>
@@ -1318,12 +1348,12 @@ public abstract class Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-client</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>6.2.0.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
 

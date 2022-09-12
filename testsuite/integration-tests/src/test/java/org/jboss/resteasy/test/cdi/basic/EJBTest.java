@@ -19,23 +19,24 @@ import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.security.SecurityPermission;
@@ -72,12 +73,12 @@ public class EJBTest {
       // test needs to use special annotations in Application class, TestApplication class could not be used
       war.addClass(EJBApplication.class);
       war.addClass(PortProviderUtil.class);
-      war.addClasses(EJBBook.class, Constants.class, Counter.class, UtilityProducer.class, Utilities.class)
+      war.addClasses(EJBBook.class, Constants.class, Counter.class, UtilityProducer.class, Utilities.class, TestUtil.class)
          .addClasses(EJBBookReader.class, EJBBookReaderImpl.class)
          .addClasses(EJBBookWriterImpl.class)
          .addClasses(EJBResourceParent.class, EJBLocalResource.class, EJBRemoteResource.class, EJBBookResource.class)
          .setWebXML(EJBTest.class.getPackage(), "ejbtest_web.xml")
-         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+         .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
             new LoggingPermission("control", ""),
@@ -144,6 +145,7 @@ public class EJBTest {
     */
    @Test
    public void testVerifyScopesRemoteEJB() throws Exception {
+      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       log.info("starting testVerifyScopesRemoteEJB()");
 
       // Get proxy to JAX-RS resource as EJB.
@@ -188,6 +190,7 @@ public class EJBTest {
     */
    @Test
    public void testVerifyInjectionRemoteEJB() throws Exception {
+      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       log.info("starting testVerifyInjectionRemoteEJB()");
 
       // Get proxy to JAX-RS resource as EJB.
@@ -301,6 +304,7 @@ public class EJBTest {
     */
    @Test
    public void testAsRemoteEJB() throws Exception {
+         Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
       log.info("entering testAsRemoteEJB()");
 
       // Get proxy to JAX-RS resource as EJB.

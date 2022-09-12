@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.engines.vertx;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -19,12 +21,12 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.InvocationCallback;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,14 +104,27 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
                                            final ExecutorService executorService) {
         return submit(request).thenCompose(response -> {
             CompletableFuture<T> tmp = new CompletableFuture<>();
-            executorService.execute(() -> {
-                try {
-                    T result = extractor.extractResult(response);
-                    tmp.complete(result);
-                } catch (Exception e) {
-                    tmp.completeExceptionally(e);
-                }
-            });
+            if (executorService == null) {
+                vertx.executeBlocking(promise -> {
+                    try {
+                        T result = extractor.extractResult(response);
+                        tmp.complete(result);
+                    } catch (Exception e) {
+                        tmp.completeExceptionally(e);
+                    }
+                }, ar -> {
+                    //
+                });
+            } else {
+                executorService.execute(() -> {
+                    try {
+                        T result = extractor.extractResult(response);
+                        tmp.complete(result);
+                    } catch (Exception e) {
+                        tmp.completeExceptionally(e);
+                    }
+                });
+            }
             return tmp;
         });
     }
@@ -136,22 +151,50 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
         URI uri = request.getUri();
         options.setHost(uri.getHost());
-        options.setPort(uri.getPort());
+
+
+        if (-1 == uri.getPort()) {
+            if ("http".equals(uri.getScheme())) {
+                options.setPort(80);
+            } else if ("https".equals(uri.getScheme())) {
+                options.setPort(443);
+            }
+        } else {
+            options.setPort(uri.getPort());
+        }
+
         options.setURI(uri.getRawPath());
 
-        Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
-        if (timeout != null) {
-            long timeoutMs = unwrapTimeout(timeout);
+        if (request.getConfiguration().hasProperty(REQUEST_TIMEOUT_MS)) {
+            long timeoutMs = unwrapTimeout(
+                    request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS));
             if (timeoutMs > 0) {
                 options.setTimeout(timeoutMs);
             }
         }
 
-        return httpClient.request(options)
-                .compose(httpClientRequest -> body != null ? httpClientRequest.send(body) : httpClientRequest.send())
-                .map(httpClientResponse -> toRestEasyResponse(request.getClientConfiguration(), httpClientResponse))
-                .toCompletionStage()
-                .toCompletableFuture();
+        final CompletableFuture<ClientResponse> futureResponse = new CompletableFuture<>();
+        httpClient.request(options)
+                .map(httpClientRequest -> {
+                    final Handler<AsyncResult<HttpClientResponse>> handler = event -> {
+                        if (event.succeeded()) {
+                            final HttpClientResponse response = event.result();
+                            response.pause();
+                            futureResponse.complete(toRestEasyResponse(request.getClientConfiguration(), response));
+                            response.resume();
+                        } else {
+                            futureResponse.completeExceptionally(event.cause());
+                        }
+                    };
+                    if (body != null) {
+                        httpClientRequest.send(body, handler);
+                    } else {
+                        httpClientRequest.send(handler);
+                    }
+                    return null;
+                })
+                .onFailure(futureResponse::completeExceptionally);
+        return futureResponse;
     }
 
     private long unwrapTimeout(final Object timeout) {

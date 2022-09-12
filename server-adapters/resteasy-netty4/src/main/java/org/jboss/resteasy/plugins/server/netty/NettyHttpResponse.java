@@ -5,8 +5,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -36,12 +36,12 @@ public class NettyHttpResponse implements HttpResponse
    private static final int EMPTY_CONTENT_LENGTH = 0;
    private int status = 200;
    private OutputStream os;
-   private MultivaluedMap<String, Object> outputHeaders;
+   private final MultivaluedMap<String, Object> outputHeaders;
    private final ChannelHandlerContext ctx;
    private boolean committed;
-   private boolean keepAlive;
-   private ResteasyProviderFactory providerFactory;
-   private HttpMethod method;
+   private final boolean keepAlive;
+   private final ResteasyProviderFactory providerFactory;
+   private final HttpMethod method;
 
    public NettyHttpResponse(final ChannelHandlerContext ctx, final boolean keepAlive, final ResteasyProviderFactory providerFactory)
    {
@@ -91,7 +91,7 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void addNewCookie(NewCookie cookie)
    {
-      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+      outputHeaders.add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
    @Override
@@ -156,7 +156,6 @@ public class NettyHttpResponse implements HttpResponse
       {
          throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
       }
-      outputHeaders.clear();
       outputHeaders.clear();
    }
 

@@ -1,0 +1,29 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: 'jakarta.el:jakarta.el-api'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'org.glassfish:jakarta.el'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'jakarta.persistence:jakarta.persistence-api'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'jakarta.servlet:jakarta.servlet-api'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'jakarta.xml.bind:jakarta.xml.bind-api'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+    open-pull-requests-limit: 10
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the
+    # default location of `.github/workflows`
+    directory: "/"
+    schedule:
+      interval: "daily"

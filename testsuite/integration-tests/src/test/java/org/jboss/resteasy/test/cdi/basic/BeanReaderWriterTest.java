@@ -15,9 +15,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
 
 
 /**
@@ -35,7 +35,7 @@ public class BeanReaderWriterTest {
       war.addClasses(BeanReaderWriterConfigBean.class,
             BeanReaderWriterService.class, BeanReaderWriterXFormat.class, BeanReaderWriterXFormatProvider.class);
 
-      war.addAsWebInfResource(BeanReaderWriterTest.class.getPackage(), "BeanReaderWriterBeans.xml", "beans.xml");
+      war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
 
       return war;
    }

@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.core.logging;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingEndPoint;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingReaderInterceptorCustom;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingWriterInterceptorCustom;
@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
@@ -46,7 +46,7 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
 public class DebugLoggingTest {
 
    static ResteasyClient client;
-   protected static final Logger logger = LogManager.getLogger(DebugLoggingTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(DebugLoggingTest.class.getName());
 
    private static final String BUILD_IN = "build-in";
    private static final String CUSTOM = "custom";
@@ -71,7 +71,7 @@ public class DebugLoggingTest {
       // enable RESTEasy debug logging
       TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=ALL)");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:add(level=ALL)");
+      TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:add(level=ALL)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:add(level=ALL)");
 
       client.close();
@@ -84,7 +84,7 @@ public class DebugLoggingTest {
       // enable RESTEasy debug logging
       TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=INFO)");
       TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
-      TestUtil.runCmd(client, "/subsystem=logging/logger=javax.xml.bind:remove()");
+      TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:remove()");
       TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:remove()");
 
       client.close();
@@ -120,10 +120,10 @@ public class DebugLoggingTest {
       Assert.assertEquals("Wrong response", "data", strResponse);
 
       // assert log messages after request
-      Assert.assertThat("Correct body reader was not used/logged", bodyReaderStringLog.count(), greaterThan(0));
-      Assert.assertThat("Correct body writer was not used/logged", bodyWriterStringLog.count(), greaterThan(0));
-      Assert.assertThat("Correct reader interceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
-      Assert.assertThat("Correct writer interceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct body reader was not used/logged", bodyReaderStringLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct body writer was not used/logged", bodyWriterStringLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct reader interceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct writer interceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
    }
 
    /**
@@ -150,12 +150,12 @@ public class DebugLoggingTest {
       Assert.assertEquals("Wrong response", "wi_datadata", strResponse);
 
       // assert log messages after request
-      Assert.assertThat("Incorrect body reader was used/logged", bodyReaderStringLog.count(), is(0));
-      Assert.assertThat("Incorrect body writer was used/logged", bodyWriterStringLog.count(), is(0));
-      Assert.assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
-      Assert.assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
-      Assert.assertThat("Correct body reader was not used/logged", bodyReaderCustomLog.count(), greaterThan(0));
-      Assert.assertThat("Correct body writer was not used/logged", bodyWriterCustomLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Incorrect body reader was used/logged", bodyReaderStringLog.count(), is(0));
+      MatcherAssert.assertThat("Incorrect body writer was used/logged", bodyWriterStringLog.count(), is(0));
+      MatcherAssert.assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct body reader was not used/logged", bodyReaderCustomLog.count(), greaterThan(0));
+      MatcherAssert.assertThat("Correct body writer was not used/logged", bodyWriterCustomLog.count(), greaterThan(0));
    }
 
 }

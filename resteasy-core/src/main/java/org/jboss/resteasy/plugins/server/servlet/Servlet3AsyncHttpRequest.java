@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -12,16 +13,16 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.RunnableWithException;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.AsyncEvent;
+import jakarta.servlet.AsyncListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.ServiceUnavailableException;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.util.Date;
@@ -39,7 +40,6 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
-   protected ScheduledExecutorService asyncScheduler; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
    public Servlet3AsyncHttpRequest(final HttpServletRequest httpServletRequest, final HttpServletResponse response, final ServletContext servletContext, final HttpResponse httpResponse, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uriInfo, final String s, final SynchronousDispatcher synchronousDispatcher)
    {
@@ -60,7 +60,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       protected volatile boolean done;
       protected volatile boolean cancelled;
       protected volatile boolean wasSuspended;
-      protected Servle3AsychronousResponse asynchronousResponse;
+      protected Servlet3AsynchronousResponse asynchronousResponse;
 
       Servlet3ExecutionContext(final ServletRequest servletRequest)
       {
@@ -68,14 +68,16 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          this.servletRequest = servletRequest;
       }
 
-      private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
+      private class Servlet3AsynchronousResponse extends AbstractAsynchronousResponse implements AsyncListener, AutoCloseable
       {
-         private Object responseLock = new Object();
+         private final ScheduledExecutorService asyncScheduler;
+         private final Object responseLock = new Object();
          protected ScheduledFuture<?> timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
-         private Servle3AsychronousResponse()
+         private Servlet3AsynchronousResponse()
          {
             super(Servlet3ExecutionContext.this.dispatcher, Servlet3ExecutionContext.this.request, Servlet3ExecutionContext.this.response);
+            asyncScheduler = ContextualExecutors.scheduledThreadPool();
          }
 
          @Override
@@ -87,7 +89,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
                done = true;
-               return internalResume(entity, t -> asyncContext.complete());
+               return internalResume(entity, t -> {
+                  try {
+                     asyncContext.complete();
+                  } finally {
+                     close();
+                  }
+               });
             }
 
          }
@@ -99,9 +107,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             {
                if (done) return;
                if (cancelled) return;
-               AsyncContext asyncContext = getAsyncContext();
-               done = true;
-               asyncContext.complete();
+               try {
+                  AsyncContext asyncContext = getAsyncContext();
+                  done = true;
+                  asyncContext.complete();
+               } finally {
+                  close();
+               }
             }
 
          }
@@ -115,7 +127,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
                done = true;
-               return internalResume(exc, t -> asyncContext.complete());
+               return internalResume(exc, t -> {
+                  try {
+                     asyncContext.complete();
+                  } finally {
+                     close();
+                  }
+               });
             }
          }
 
@@ -173,7 +191,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
                LogMessages.LOGGER.debug(Messages.MESSAGES.cancellingWith503());
-               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> asyncContext.complete());
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> {
+                  try {
+                     asyncContext.complete();
+                  } finally {
+                     close();
+                  }
+               });
             }
          }
 
@@ -188,7 +212,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
                return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                  t -> asyncContext.complete());
+                  t -> {
+                  try {
+                     asyncContext.complete();
+                  } finally {
+                     close();
+                  }
+                  });
             }
          }
 
@@ -203,7 +233,13 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
                return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                  t -> asyncContext.complete());
+                  t -> {
+                  try {
+                     asyncContext.complete();
+                  } finally {
+                     close();
+                  }
+                  });
             }
          }
 
@@ -233,6 +269,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             synchronized (responseLock)
             {
                done = true;
+               close();
             }
          }
 
@@ -252,11 +289,15 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          protected void handleTimeout()
          {
             if (done) return;
-            if (timeoutHandler != null)
-            {
-               timeoutHandler.handleTimeout(this);
+            try {
+               if (timeoutHandler != null) {
+                  timeoutHandler.handleTimeout(this);
+                  return;
+               }
+               resume(new ServiceUnavailableException());
+            } finally {
+               close();
             }
-            resume(new ServiceUnavailableException());
          }
 
          @Override
@@ -266,12 +307,18 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             {
                cancelled = true;
                done = true;
+               close();
             }
          }
 
          @Override
          public void onStartAsync(AsyncEvent asyncEvent) throws IOException
          {
+         }
+
+         @Override
+         public void close() {
+            asyncScheduler.shutdown();
          }
       }
 
@@ -312,7 +359,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          {
             throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
          }
-         asynchronousResponse = new Servle3AsychronousResponse();
+         asynchronousResponse = new Servlet3AsynchronousResponse();
          AsyncContext asyncContext = servletRequest.startAsync();
          asyncContext.addListener(asynchronousResponse);
          wasSuspended = true;

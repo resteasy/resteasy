@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("")
 public class MultiInterfaceResLocatorSubresource implements MultiInterfaceResLocatorIntf1, MultiInterfaceResLocatorIntf2 {

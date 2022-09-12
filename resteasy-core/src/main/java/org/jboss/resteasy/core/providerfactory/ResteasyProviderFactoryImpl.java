@@ -1,8 +1,12 @@
 package org.jboss.resteasy.core.providerfactory;
 
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.EntityPart;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.se.ResteasySeConfiguration;
+import org.jboss.resteasy.core.se.ResteasySeInstance;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
@@ -27,9 +31,12 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.concurrent.ThreadContext;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
@@ -42,45 +49,48 @@ import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.snapshot.SnapshotMap;
 import org.jboss.resteasy.util.snapshot.SnapshotSet;
 
-import javax.ws.rs.ConstrainedTo;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.Produces;
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.RxInvoker;
-import javax.ws.rs.client.RxInvokerProvider;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.ConstrainedTo;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.RxInvoker;
+import jakarta.ws.rs.client.RxInvokerProvider;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.Configurable;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.EntityTag;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.Variant;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverterProvider;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,11 +102,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -230,7 +242,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          addHeaderDelegateIfAbsent(CacheControl.class, CacheControlDelegate.INSTANCE);
          addHeaderDelegateIfAbsent(Locale.class, LocaleDelegate.INSTANCE);
          addHeaderDelegateIfAbsent(LinkHeader.class, LinkHeaderDelegate.INSTANCE);
-         addHeaderDelegateIfAbsent(javax.ws.rs.core.Link.class, LinkDelegate.INSTANCE);
+         addHeaderDelegateIfAbsent(jakarta.ws.rs.core.Link.class, LinkDelegate.INSTANCE);
          addHeaderDelegateIfAbsent(Date.class, DateDelegate.INSTANCE);
       }
 
@@ -911,6 +923,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          addHeaderDelegate(provider);
       }
+      if (Utils.isA(provider, ThreadContext.class, contracts)) {
+         ResteasyContext.computeIfAbsent(ThreadContexts.class, ThreadContexts::new)
+            .add(createProviderInstance((Class<? extends ThreadContext>) provider));
+      }
    }
 
    public void addHeaderDelegate(Class provider) {
@@ -1081,6 +1097,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             addHeaderDelegate(headerClass, (HeaderDelegate) provider);
          }
       }
+      if (Utils.isA(provider, ThreadContext.class, contracts)) {
+         ResteasyContext.computeIfAbsent(ThreadContexts.class, ThreadContexts::new)
+                 .add((ThreadContext<?>) provider);
+      }
    }
 
    @Override
@@ -1090,7 +1110,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       SortedKey<ExceptionMapper> mapper = null;
       Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getSortedExceptionMappers();
       if (mappers == null) {
-         return null;
+         return (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
       }
       while (mapper == null)
       {
@@ -1100,7 +1120,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          if (mapper == null)
             exceptionType = exceptionType.getSuperclass();
       }
-      return mapper != null ? mapper.getObj() : null;
+      return mapper != null ? mapper.getObj() : (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
    }
 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapperForClass(Class<T> type)
@@ -1677,6 +1697,55 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       return Utils.createLinkBuilder();
    }
 
+   @Override
+   public boolean hasProperty(final String name) {
+      return properties.containsKey(name);
+   }
+
+   @Override
+   public SeBootstrap.Configuration.Builder createConfigurationBuilder() {
+      return ResteasySeConfiguration.builder();
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Application application,
+                                                          final SeBootstrap.Configuration configuration) {
+      return ResteasySeInstance.create(Objects.requireNonNull(application, Messages.MESSAGES.nullParameter("application")),
+              configuration);
+   }
+
+   @Override
+   public CompletionStage<SeBootstrap.Instance> bootstrap(final Class<? extends Application> clazz,
+                                                          final SeBootstrap.Configuration configuration) {
+      return ResteasySeInstance.create(Objects.requireNonNull(clazz, Messages.MESSAGES.nullParameter("clazz")),
+              configuration);
+   }
+
+   @Override
+   public EntityPart.Builder createEntityPartBuilder(final String partName) throws IllegalArgumentException {
+      if (partName == null) {
+         throw new IllegalArgumentException(Messages.MESSAGES.nullParameter("partName"));
+      }
+      final Function<Class<? extends EntityPart.Builder>, EntityPart.Builder> constructor = builderClass -> {
+         try {
+            final Constructor<? extends EntityPart.Builder> c = builderClass.getConstructor(String.class);
+            return c.newInstance(partName);
+         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                  IllegalAccessException e) {
+            throw Messages.MESSAGES.failedToConstructClass(e, builderClass);
+         }
+      };
+      final Optional<EntityPart.Builder> found;
+      if (System.getSecurityManager() == null) {
+         found = PriorityServiceLoader.load(EntityPart.Builder.class, constructor)
+                 .first();
+      } else {
+         found = AccessController.doPrivileged((PrivilegedAction<Optional<EntityPart.Builder>>) () -> PriorityServiceLoader.load(EntityPart.Builder.class, constructor)
+                 .first());
+      }
+      return found.orElseThrow(() -> Messages.MESSAGES.noImplementationFound(EntityPart.Builder.class.getName()));
+   }
+
    public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
    {
       for (Entry<Class<?>, Map<Class<?>, Integer>> entry : classContracts.entrySet())
@@ -1741,6 +1810,12 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public StatisticsController getStatisticsController() {
       return statisticsController;
+   }
+
+   @Override
+   public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
+      final ExceptionMapper<Throwable> result = getExceptionMapperForClass(Throwable.class);
+      return result != null ? result : DefaultExceptionMapper.INSTANCE;
    }
 
    @Override

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.util.resource.TypesGenericBar;
 import org.jboss.resteasy.test.util.resource.TypesGenericFooBar;
 import org.jboss.resteasy.test.util.resource.TypesGenericSubClass;
@@ -26,7 +25,7 @@ import java.lang.reflect.Type;
  */
 public class TypesGenericTest {
 
-   protected final Logger logger = LogManager.getLogger(TypesGenericTest.class.getName());
+   protected final Logger logger = Logger.getLogger(TypesGenericTest.class.getName());
 
    /**
     * @tpTestDetails Check findParameterizedTypes method of Types class for corrected parametrized type.

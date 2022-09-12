@@ -6,9 +6,9 @@ import org.jboss.resteasy.test.providers.resource.ContractsDataReaderWriter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -2,8 +2,8 @@ package org.jboss.resteasy.client.exception;
 
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.NotAllowedException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Wraps a {@link NotAllowedException} with a {@linkplain #sanitize(Response) sanitized} response.
@@ -14,14 +14,21 @@ public class ResteasyNotAllowedException extends NotAllowedException implements 
 
    private static final long serialVersionUID = -6319306078354018353L;
    private final NotAllowedException wrapped;
+   private final Response sanitizedResponse;
 
     ResteasyNotAllowedException(final NotAllowedException wrapped) {
-        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
+        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
         this.wrapped = wrapped;
+        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public NotAllowedException unwrap() {
         return wrapped;
+    }
+
+    @Override
+    public Response getSanitizedResponse() {
+        return sanitizedResponse;
     }
 }

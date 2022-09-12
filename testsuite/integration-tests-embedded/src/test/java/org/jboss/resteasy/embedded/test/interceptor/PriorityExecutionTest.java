@@ -1,10 +1,9 @@
 package org.jboss.resteasy.embedded.test.interceptor;
 
+import jakarta.ws.rs.core.Application;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
+import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter1;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter2;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter3;
@@ -26,17 +25,17 @@ import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionCo
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionContainerResponseFilterMax;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionContainerResponseFilterMin;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionResource;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
+
+import java.util.LinkedHashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.List;
+
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
@@ -45,22 +44,14 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @tpSince RESTEasy 4.1.0
  * @tpTestCaseDetails Regression test for RESTEASY-1294
  */
-public class PriorityExecutionTest extends EmbeddedServerTestBase {
+public class PriorityExecutionTest extends AbstractBootstrapTest {
    public static volatile Queue<String> interceptors = new ConcurrentLinkedQueue<String>();
    public static Logger logger = Logger.getLogger(PriorityExecutionTest.class);
    private static final String WRONG_ORDER_ERROR_MSG = "Wrong order of interceptor execution";
-
-   static Client client;
-   private static EmbeddedJaxrsServer server;
-
    @Before
    public void setup() throws Exception {
-      client = ClientBuilder.newClient();
-
-      server = getServer();
-      ResteasyDeployment deployment = server.getDeployment();
-      deployment.getScannedResourceClasses().add(PriorityExecutionResource.class.getName());
-      List<Class> actualProviderClassList = deployment.getActualProviderClasses();
+      Set<Class<?>> actualProviderClassList = new LinkedHashSet<>();
+      actualProviderClassList.add(PriorityExecutionResource.class);
       actualProviderClassList.add(PriorityExecutionContainerResponseFilter2.class);
       actualProviderClassList.add(PriorityExecutionContainerResponseFilter1.class);
       actualProviderClassList.add(PriorityExecutionContainerResponseFilter3.class);
@@ -71,15 +62,14 @@ public class PriorityExecutionTest extends EmbeddedServerTestBase {
       actualProviderClassList.add(PriorityExecutionContainerRequestFilter3.class);
       actualProviderClassList.add(PriorityExecutionContainerRequestFilterMin.class);
       actualProviderClassList.add(PriorityExecutionContainerRequestFilterMax.class);
+      final Application application = new Application() {
+         @Override
+         public Set<Class<?>> getClasses() {
+            return actualProviderClassList;
+         }
+      };
 
-      server.start();
-      server.deploy();
-   }
-
-   @After
-   public void cleanup() {
-      client.close();
-      server.stop();
+      start(application);
    }
 
    /**

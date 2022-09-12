@@ -1,17 +1,20 @@
 package org.jboss.resteasy.test.security;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.as.controller.client.helpers.Operations;
+import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.ServerReload;
+import org.jboss.resteasy.utils.TestManagementClient;
 import org.jboss.resteasy.utils.TestUtil;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
+import org.junit.Assert;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import java.io.File;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.isIpv6;
@@ -20,8 +23,6 @@ import static org.jboss.resteasy.utils.PortProviderUtil.isIpv6;
  * Base class for SSL tests. Contains utility methods used in all ssl tests.
  */
 public abstract class SslTestBase {
-
-   private static final Logger LOG = LogManager.getLogger(SslTestBase.class);
 
    protected static Client client;
    protected static ResteasyClientBuilder resteasyClientBuilder;
@@ -81,16 +82,31 @@ public abstract class SslTestBase {
          serverKeystorePath = serverKeystorePath.replace("\\","\\\\");
       }
 
-      OnlineManagementClient client = TestUtil.clientInit(portOffset);
+      try (ModelControllerClient client = TestManagementClient.create(TestUtil.getManagementHost(), TestUtil.getManagementPort(portOffset))) {
+         final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
 
-      TestUtil.runCmd(client,"/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:remove(keystore-path, keystore-password, alias)");
-      TestUtil.runCmd(client, String.format("/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:add(keystore-path=%s, keystore-password=%s)", serverKeystorePath, PASSWORD));
+         final ModelNode ksAddress = Operations.createAddress("subsystem", "elytron", "key-store", "applicationKS");
+         builder.addStep(Operations.createWriteAttributeOperation(ksAddress, "path", serverKeystorePath));
+         builder.addStep(Operations.createUndefineAttributeOperation(ksAddress, "relative-to"));
 
-      // above changes request reload to take effect
-      Administration admin = new Administration(client, 240);
-      admin.reload();
+         final ModelNode password = new ModelNode();
+         password.get("clear-text").set(PASSWORD);
+         builder.addStep(Operations.createWriteAttributeOperation(ksAddress, "credential-reference", password));
 
-      client.close();
+         final ModelNode kmAddress = Operations.createAddress("subsystem", "elytron", "key-manager", "applicationKM");
+         builder.addStep(Operations.createWriteAttributeOperation(kmAddress, "credential-reference", password));
+
+         final ModelNode utAddress = Operations.createAddress("subsystem", "undertow", "server", "default-server", "https-listener", "https");
+         builder.addStep(Operations.createUndefineAttributeOperation(utAddress, "security-realm"));
+         builder.addStep(Operations.createWriteAttributeOperation(utAddress, "ssl-context", "applicationSSC"));
+
+         final ModelNode result = client.execute(builder.build());
+         if (!Operations.isSuccessfulOutcome(result)) {
+            Assert.fail("Failed to configure SSL context: " + Operations.getFailureDescription(result).asString());
+         }
+
+         ServerReload.reloadIfRequired(client);
+      }
    }
 
 }

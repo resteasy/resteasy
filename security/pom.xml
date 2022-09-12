@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.7.0-SNAPSHOT</version>
+        <version>6.2.0.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Security</name>
@@ -12,24 +12,8 @@
 
     <artifactId>security-pom</artifactId>
     <packaging>pom</packaging>
-
-    <profiles>
-        <profile>
-            <id>travis-ci</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>resteasy-crypto</module>
-                <module>jose-jwt</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>all</id>
-            <modules>
-                <module>resteasy-crypto</module>
-                <module>jose-jwt</module>
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>resteasy-crypto</module>
+        <module>jose-jwt</module>
+    </modules>
 </project>

@@ -10,6 +10,8 @@ import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+import org.jboss.resteasy.concurrent.ContextualExecutorService;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -17,9 +19,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.core.Configuration;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.core.Configuration;
 
 import java.security.AccessController;
 import java.security.KeyStore;
@@ -33,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -110,7 +111,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          this.providerFactory = new ResteasyProviderFactoryDelegate(providerFactory)
          {
             @Override
-            public javax.ws.rs.RuntimeType getRuntimeType()
+            public jakarta.ws.rs.RuntimeType getRuntimeType()
             {
                return RuntimeType.CLIENT;
             }
@@ -398,20 +399,20 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          config.property(entry.getKey(), entry.getValue());
       }
 
-      ExecutorService executor = asyncExecutor;
-
-      if (executor == null)
-      {
-         cleanupExecutor = true;
-         executor = Executors.newCachedThreadPool();
-      }
-
       boolean resetProxy = false;
       if (this.defaultProxy == null) {
          resetProxy = true;
          // check for proxy config parameters
          setProxyIfNeeded(config);
       }
+
+      for (Object p : getProviderFactory().getProviderInstances()) {
+         if (p instanceof ClientHttpEngine) {
+            httpEngine((ClientHttpEngine) p);
+            break;
+         }
+      }
+
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
       if (resetProxy) {
          this.defaultProxy = null;
@@ -420,7 +421,8 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       if (serviceLoaderIterator.hasNext()) {
          config.register(new ClientConfigProviderFilter(serviceLoaderIterator.next()), Priorities.AUTHENTICATION);
       }
-      return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
+      final ContextualExecutorService executor = getExecutorService();
+      return createResteasyClient(engine, executor, !executor.isManaged(), ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
 
    }
 
@@ -430,16 +432,19 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     */
    private void setProxyIfNeeded(ClientConfiguration clientConfig) {
       try {
-         Object proxyHostProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST);
-         if (proxyHostProp != null) {
-            Object proxyPortProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT);
-            // default if the port is not set or if it is not string or number
+         if (clientConfig.hasProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST)) {
+            Object proxyHostProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST);
             Integer proxyPort = -1;
-            if (proxyPortProp != null && proxyPortProp instanceof Number) {
-               proxyPort = ((Number) proxyPortProp).intValue();
-            } else if (proxyPortProp != null && proxyPortProp instanceof String) {
-               proxyPort = Integer.parseInt((String) proxyPortProp);
+            if (clientConfig.hasProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT)) {
+               // default if the port is not set or if it is not string or number
+               Object proxyPortProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT);
+               if (proxyPortProp instanceof Number) {
+                  proxyPort = ((Number) proxyPortProp).intValue();
+               } else if (proxyPortProp instanceof String) {
+                  proxyPort = Integer.parseInt((String) proxyPortProp);
+               }
             }
+
             Object proxySchemeProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME);
             defaultProxy((String)proxyHostProp, proxyPort, (String)proxySchemeProp);
          }
@@ -450,7 +455,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    }
 
    protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
-      return new ResteasyClientImpl(engine, executor, cleanupExecutor, scheduledExecutorService, config);
+      return new ResteasyClientImpl(engine, executor, cleanupExecutor, ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
    }
 
    @Override
@@ -725,5 +730,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public boolean isFollowRedirects() {
       return followRedirects;
+   }
+
+   private ContextualExecutorService getExecutorService() {
+      if (asyncExecutor != null) {
+         return ContextualExecutors.wrap(asyncExecutor, !cleanupExecutor);
+      }
+      return ContextualExecutors.threadPool();
    }
 }

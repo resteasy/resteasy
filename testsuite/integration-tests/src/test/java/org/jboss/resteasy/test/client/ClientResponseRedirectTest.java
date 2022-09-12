@@ -1,13 +1,12 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.ClientResponseRedirectIntf;
 import org.jboss.resteasy.test.client.resource.ClientResponseRedirectResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -22,8 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.PropertyPermission;
@@ -38,7 +37,7 @@ import java.util.PropertyPermission;
 public class ClientResponseRedirectTest extends ClientTestBase{
 
 
-   protected static final Logger logger = LogManager.getLogger(ClientResponseRedirectTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ClientResponseRedirectTest.class.getName());
    static ResteasyClient client;
 
    @Deployment

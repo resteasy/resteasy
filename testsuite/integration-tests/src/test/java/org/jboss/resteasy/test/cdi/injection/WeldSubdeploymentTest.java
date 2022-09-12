@@ -1,15 +1,14 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentApplicationResource;
 import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentCdiJpaInjectingBean;
 import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentRequestResource;
@@ -18,9 +17,9 @@ import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentStateless
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class WeldSubdeploymentTest {
 
-   protected static final Logger logger = LogManager.getLogger(WeldSubdeploymentTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(WeldSubdeploymentTest.class.getName());
 
    private static final String WAR_DEPLOYMENT_NAME = "simple";
 
@@ -57,7 +56,7 @@ public class WeldSubdeploymentTest {
       war.addClasses(WeldSubdeploymentTest.class, WeldSubdeploymentCdiJpaInjectingBean.class, TestApplication.class);
       war.addClasses(WeldSubdeploymentRequestResource.class, WeldSubdeploymentApplicationResource.class,
             WeldSubdeploymentStatefulResource.class, WeldSubdeploymentStatelessResource.class);
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "util.jar");
       jar.addAsManifestResource(WeldSubdeploymentTest.class.getPackage(), "persistence_subdeployment.xml", "persistence.xml");
       war.addAsLibrary(jar);

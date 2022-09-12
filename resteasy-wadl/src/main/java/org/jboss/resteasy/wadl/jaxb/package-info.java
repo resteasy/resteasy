@@ -5,5 +5,5 @@
 // Generated on: 2015.06.18 at 10:10:02 PM CST
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://wadl.dev.java.net/2009/02", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://wadl.dev.java.net/2009/02", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.jboss.resteasy.wadl.jaxb;

@@ -3,11 +3,11 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 
 import org.jboss.resteasy.test.cdi.util.Utilities;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Stateful;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateful;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.logging.Logger;
 

@@ -2,7 +2,7 @@ package org.jboss.resteasy.links.test;
 
 import org.jboss.logging.Logger;
 
-import javax.el.FunctionMapper;
+import jakarta.el.FunctionMapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class SeamFunctionMapper extends FunctionMapper
          {
             for (Method m : methods)
             {
-               if (m.getParameterTypes().length == paramCount) return m;
+               if (m.getParameterCount() == paramCount) return m;
             }
          }
 

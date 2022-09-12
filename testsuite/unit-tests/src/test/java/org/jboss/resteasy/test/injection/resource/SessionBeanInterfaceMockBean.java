@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.injection.resource;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -45,10 +45,6 @@ public class SessionBeanInterfaceMockBean<T> implements Bean<T> {
    }
 
    public boolean isAlternative() {
-      return false;
-   }
-
-   public boolean isNullable() {
       return false;
    }
 

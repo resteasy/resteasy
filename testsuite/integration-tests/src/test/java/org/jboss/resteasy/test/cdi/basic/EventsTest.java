@@ -22,7 +22,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -30,11 +29,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.swing.text.Utilities;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,7 +58,7 @@ public class EventsTest {
             .addClasses(EventResource.class)
             .addClasses(EventsRead.class, EventsReadIntercept.class)
             .addClasses(EventsUnused.class, EventsWrite.class, EventsWriteIntercept.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return war;
    }
 

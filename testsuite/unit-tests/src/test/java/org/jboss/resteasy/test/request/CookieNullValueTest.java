@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.request;
 
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import org.hamcrest.MatcherAssert;
 
 /**
  * @tpSubChapter Requests
@@ -24,7 +24,7 @@ public class CookieNullValueTest {
       NewCookieHeaderDelegate delegate = new NewCookieHeaderDelegate();
       Object o = delegate.fromString("a=");
       String stringCookie = o.toString();
-      Assert.assertThat(errorMessage, stringCookie, containsString("a="));
-      Assert.assertThat(errorMessage, stringCookie, containsString("Version="));
+      MatcherAssert.assertThat(errorMessage, stringCookie, containsString("a="));
+      MatcherAssert.assertThat(errorMessage, stringCookie, containsString("Version="));
    }
 }

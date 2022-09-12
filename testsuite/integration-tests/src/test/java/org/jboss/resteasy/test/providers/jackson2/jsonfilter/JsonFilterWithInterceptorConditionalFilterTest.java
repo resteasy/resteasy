@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Resource;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilterModifierConditionalWriterInterceptor;
@@ -20,8 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Jackson2 provider

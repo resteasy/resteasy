@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
@@ -10,6 +8,7 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.DerUtils;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.utils.TestUtil;
@@ -17,11 +16,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -40,7 +39,7 @@ import java.security.cert.X509Certificate;
  */
 public class SignedTest {
 
-   protected static final Logger logger = LogManager.getLogger(SignedTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(SignedTest.class.getName());
    private static X509Certificate cert;
    private static PrivateKey privateKey;
    private static PrivateKey badKey;

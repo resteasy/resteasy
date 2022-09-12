@@ -2,20 +2,20 @@ package org.jboss.resteasy.test.cdi.injection;
 
 import java.net.SocketPermission;
 import java.net.URI;
-import javax.annotation.Resource;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.Resource;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -42,7 +42,6 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -60,18 +59,17 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class MDBInjectionTest extends AbstractInjectionTestBase {
-   protected static final Logger log = LogManager.getLogger(MDBInjectionTest.class.getName());
+@ServerSetup(JmsTestQueueSetupTask.class)
+public class MDBInjectionTest {
+   protected static final Logger log = Logger.getLogger(MDBInjectionTest.class.getName());
 
    static Client client;
 
    @SuppressWarnings(value = "unchecked")
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() throws Exception {
-      initQueue();
       WebArchive war = TestUtil.prepareArchive(MDBInjectionTest.class.getSimpleName());
-      war.addClass(AbstractInjectionTestBase.class)
-            .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class)
+      war.addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class)
             .addClasses(Counter.class, CDIInjectionBookCollection.class, CDIInjectionBookReader.class, CDIInjectionBookWriter.class)
             .addClasses(CDIInjectionDependentScoped.class, CDIInjectionStatefulEJB.class, CDIInjectionUnscopedResource.class)
             .addClasses(CDIInjectionBookBagLocal.class, CDIInjectionBookBag.class)
@@ -80,7 +78,7 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
             .addClasses(CDIInjectionScopeStereotype.class, CDIInjectionScopeInheritingStereotype.class)
             .addClasses(CDIInjectionStereotypedApplicationScope.class, CDIInjectionStereotypedDependentScope.class)
             .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
             .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
       String host = PortProviderUtil.getHost();
       if (PortProviderUtil.isIpv6()) {

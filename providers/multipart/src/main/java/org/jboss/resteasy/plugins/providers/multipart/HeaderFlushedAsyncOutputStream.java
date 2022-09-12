@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.spi.AsyncOutputStream;
 

@@ -8,10 +8,10 @@ import java.util.PropertyPermission;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.sse.SseEventSource;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.sse.SseEventSource;
 
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -103,8 +103,8 @@ public class AnotherPublisherResponseTest {
          future.get(5000, TimeUnit.SECONDS);
          Assert.assertEquals(30, collector.size());
          Assert.assertEquals(0, errors.size());
-         Assert.assertTrue(collector.contains("0-1"));
-         Assert.assertTrue(collector.contains("1-1"));
+         Assert.assertTrue(collector.contains("0-2"));
+         Assert.assertTrue(collector.contains("1-2"));
       }
       client.close();
    }

@@ -9,7 +9,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.config.DefaultConfiguration;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.core.Application;
 import java.util.Arrays;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -69,7 +69,7 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       if (applicationConfig == null)
       {
          // stupid spec doesn't use FQN of Application class name
-         applicationConfig = getParameter("javax.ws.rs.Application");
+         applicationConfig = getParameter("jakarta.ws.rs.Application");
       }
       else
       {
@@ -88,7 +88,7 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
       if (resteasySecurity != null) {
          boolean useResteasySecurity = parseBooleanParam(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY, resteasySecurity);
-         deployment.setSecurityEnabled(Boolean.valueOf(useResteasySecurity));
+         deployment.setSecurityEnabled(useResteasySecurity);
       }
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
@@ -251,6 +251,19 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       {
          deployment.setStatisticsEnabled(Boolean.valueOf(statisticsEnabled));
       }
+
+      String proxiesImplAllInterfaces = getParameter(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES);
+      if (proxiesImplAllInterfaces != null)
+      {
+         boolean b = parseBooleanParam(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES,
+               proxiesImplAllInterfaces);
+         deployment.setProperty(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES, b);
+      }
+      else
+      {
+         deployment.setProperty(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES, false);
+      }
+
       return deployment;
    }
 
@@ -262,7 +275,6 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
          return false;
       } else {
          throw new RuntimeException(Messages.MESSAGES.keyCouldNotBeParsed(key));
-
       }
    }
 

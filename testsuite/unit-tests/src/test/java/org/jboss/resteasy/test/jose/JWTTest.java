@@ -1,15 +1,13 @@
 package org.jboss.resteasy.test.jose;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.jwt.JsonWebToken;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
-
+import org.hamcrest.MatcherAssert;
 
 /**
  * @tpSubChapter Jose tests
@@ -18,7 +16,7 @@ import static org.hamcrest.core.Is.is;
  * @tpSince RESTEasy 3.0.16
  */
 public class JWTTest {
-   protected static final Logger logger = LogManager.getLogger(JWTTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(JWTTest.class.getName());
    private static final String ERROR_MSG = "Wrong JsonWebToken conversion";
 
    /**
@@ -31,10 +29,10 @@ public class JWTTest {
       String json = JsonSerialization.toString(token, true);
       logger.info(String.format("JSON: %s", json));
 
-      Assert.assertThat(ERROR_MSG, json, containsString("jti"));
-      Assert.assertThat(ERROR_MSG, json, containsString("123"));
+      MatcherAssert.assertThat(ERROR_MSG, json, containsString("jti"));
+      MatcherAssert.assertThat(ERROR_MSG, json, containsString("123"));
       token = JsonSerialization.fromString(JsonWebToken.class, json);
       logger.info(String.format("id: %s", token.getId()));
-      Assert.assertThat(ERROR_MSG, token.getId(), is("123"));
+      MatcherAssert.assertThat(ERROR_MSG, token.getId(), is("123"));
    }
 }

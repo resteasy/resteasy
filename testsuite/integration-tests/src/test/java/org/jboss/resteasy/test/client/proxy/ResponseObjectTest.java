@@ -1,13 +1,12 @@
 package org.jboss.resteasy.test.client.proxy;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectBasicObjectIntf;
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectClientIntf;
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectHateoasObject;
@@ -23,7 +22,7 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
+import jakarta.ws.rs.ProcessingException;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -34,7 +33,7 @@ import javax.ws.rs.ProcessingException;
 @RunAsClient
 public class ResponseObjectTest {
 
-   protected static final Logger logger = LogManager.getLogger(ResponseObjectTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResponseObjectTest.class.getName());
    static ResteasyClient client;
    ResponseObjectClientIntf responseObjectClientIntf;
 

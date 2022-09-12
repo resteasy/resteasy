@@ -6,20 +6,20 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
@@ -145,9 +145,9 @@ public class DynamicFeatureContextDelegateTest
       ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
       DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
       featureContext.register(new CustomExceptionMapper());
-      Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
+      Assert.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(), CustomExceptionMapper.class);
       featureContext.register(CustomExceptionMapper.class);
-      Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
+      Assert.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(), CustomExceptionMapper.class);
    }
 
    @Test

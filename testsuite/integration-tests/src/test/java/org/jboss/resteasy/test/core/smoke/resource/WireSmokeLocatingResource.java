@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.core.smoke.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class WireSmokeLocatingResource {

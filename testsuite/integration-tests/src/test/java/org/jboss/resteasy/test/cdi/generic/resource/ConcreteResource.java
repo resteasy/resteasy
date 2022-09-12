@@ -2,11 +2,11 @@ package org.jboss.resteasy.test.cdi.generic.resource;
 
 import org.jboss.logging.Logger;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 
 @Path("concrete")

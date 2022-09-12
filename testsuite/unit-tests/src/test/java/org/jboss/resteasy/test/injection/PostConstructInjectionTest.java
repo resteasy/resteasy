@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.injection;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.jboss.resteasy.spi.util.Types;
 import org.junit.Assert;

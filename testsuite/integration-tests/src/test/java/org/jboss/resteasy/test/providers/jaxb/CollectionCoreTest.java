@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.CollectionCustomer;
 import org.jboss.resteasy.test.providers.jaxb.resource.CollectionNamespacedResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.CollectionResource;
@@ -22,9 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 @RunAsClient
 public class CollectionCoreTest {
    private static final String WRONG_RESPONSE = "Response contains wrong data";
-   protected static final Logger logger = LogManager.getLogger(CollectionCoreTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(CollectionCoreTest.class.getName());
 
    static ResteasyClient client;
 
@@ -124,7 +124,7 @@ public class CollectionCoreTest {
       response = request.put(Entity.entity(str, "application/xml"));
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
       response.close();
-      Assert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+      MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
    }
 
    /**
@@ -142,7 +142,7 @@ public class CollectionCoreTest {
       response = request.put(Entity.entity(str, "application/xml"));
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
       response.close();
-      Assert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+      MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
    }
 
    /**
@@ -157,7 +157,7 @@ public class CollectionCoreTest {
       String str = response.readEntity(String.class);
       logger.info(String.format("Response: %s", str));
       response.close();
-      Assert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+      MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
    }
 
 }

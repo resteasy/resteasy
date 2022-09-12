@@ -1,10 +1,10 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
@@ -38,13 +38,13 @@ public class MultipartWriter extends AbstractMultipartWriter implements AsyncMes
 
    public void writeTo(MultipartOutput multipartOutput, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
-      write(multipartOutput, mediaType, httpHeaders, entityStream);
+      write(multipartOutput, mediaType, httpHeaders, entityStream, annotations);
    }
 
    @Override
    public CompletionStage<Void> asyncWriteTo(MultipartOutput multipartOutput, Class<?> type, Type genericType, Annotation[] annotations,
                                              MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
                                              AsyncOutputStream entityStream) {
-       return asyncWrite(multipartOutput, mediaType, httpHeaders, entityStream);
+       return asyncWrite(multipartOutput, mediaType, httpHeaders, entityStream, annotations);
    }
 }

@@ -1,15 +1,16 @@
 <chapter id="json-p">
-    <title>JSON Support via Java EE 7 JSON-P API</title>
-    <para>No, this is not the JSONP you are thinking of!  JSON-P is a new Java EE 7 JSON parsing API.  Horrible name for
+    <title>JSON Support via Jakarta EE JSON-P API</title>
+    <para>No, this is not the JSONP you are thinking of! JSON-P is a Jakarta EE parsing API.
+        Horrible name for
         a new JSON parsing API!  What were they thinking?  Anyways, RESTEasy has
-        a provider for it.  If you are using WildFly, it is required by Java EE 7 so you will have it automatically bundled.
+        a provider for it.  If you are using WildFly, it is required by Jakarta EE so you will have it automatically bundled.
         Otherwise, use this maven dependency.
     </para>
     <programlisting><![CDATA[
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-json-p-provider</artifactId>
-   <version>4.7.0-SNAPSHOT</version>
+   <version>6.2.0.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
     <para>
@@ -17,3 +18,4 @@
         not conflict with Jackson if you have that in your path too.
     </para>
 </chapter>
+

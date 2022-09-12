@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jsonb.basic.resource;
 
-import javax.json.bind.annotation.JsonbPropertyOrder;
+import jakarta.json.bind.annotation.JsonbPropertyOrder;
 
 /**
  * Created by tterem.

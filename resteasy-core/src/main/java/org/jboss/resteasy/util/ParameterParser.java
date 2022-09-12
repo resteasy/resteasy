@@ -1,6 +1,6 @@
 package org.jboss.resteasy.util;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -227,7 +227,7 @@ public class ParameterParser
    {
       if (str == null)
       {
-         return new HashMap<String, String>();
+         return new LinkedHashMap<>();
       }
       return parse(str.toCharArray(), separator);
    }
@@ -245,7 +245,7 @@ public class ParameterParser
    {
       if (chars == null)
       {
-         return new HashMap<String, String>();
+         return new LinkedHashMap<>();
       }
       return parse(chars, 0, chars.length, separator);
    }
@@ -270,9 +270,9 @@ public class ParameterParser
 
       if (chars == null)
       {
-         return new HashMap<String, String>();
+         return new LinkedHashMap<>();
       }
-      HashMap<String, String> params = new HashMap<String, String>();
+      Map<String, String> params = new LinkedHashMap<>();
       this.chars = chars;
       this.pos = offset;
       this.len = length;

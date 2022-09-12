@@ -9,7 +9,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * Used for component jndi-based resources like EJBs.
+ * Used for component jndi-based resources like enterprise beans.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $

@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -30,6 +33,8 @@ import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.stream.BodyDescriptorBuilder;
 import org.apache.james.mime4j.stream.MimeConfig;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
+import org.jboss.resteasy.spi.config.Configuration;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
@@ -37,6 +42,9 @@ import org.jboss.resteasy.spi.config.ConfigurationFactory;
  * Alter said code to use Mime4JWorkaroundBinaryEntityBuilder instead of EntityBuilder.
  */
 public class Mime4JWorkaround {
+   static final String MEM_THRESHOLD_PROPERTY = "org.jboss.resteasy.plugins.providers.multipart.memoryThreshold";
+   static final int DEFAULT_MEM_THRESHOLD = 1024;
+
     /**
      * This is a rough copy of DefaultMessageBuilder.parseMessage() modified to use a Mime4JWorkaround as the contentHandler instead
      * of an EntityBuilder.
@@ -61,7 +69,7 @@ public class Mime4JWorkaround {
                 storageProvider = DefaultStorageProvider.getInstance();
             } else {
                 StorageProvider backend = new CustomTempFileStorageProvider();
-                storageProvider = new ThresholdStorageProvider(backend, 1024);
+                storageProvider = new ThresholdStorageProvider(backend, getMemThreshold());
             }
             BodyFactory bf = new StorageBodyFactory(storageProvider, mon);
 
@@ -79,6 +87,25 @@ public class Mime4JWorkaround {
         }
     }
 
+    static int getMemThreshold()
+    {
+       try
+       {
+          Configuration cfg = ConfigurationFactory.getInstance().getConfiguration();
+          int threshold = Integer.parseInt(cfg.getOptionalValue(MEM_THRESHOLD_PROPERTY, String.class).orElse(
+                Integer.toString(DEFAULT_MEM_THRESHOLD)));
+          if (threshold > -1)
+          {
+             return threshold;
+          }
+          LogMessages.LOGGER.debugf("Negative threshold, %s, specified. Using default value", threshold);
+       }
+       catch (Exception e)
+       {
+          LogMessages.LOGGER.debug("Exception caught parsing memory threshold. Using default value.", e);
+       }
+       return DEFAULT_MEM_THRESHOLD;
+    }
 
     /**
      * A custom TempFileStorageProvider that do no set deleteOnExit on temp files,
@@ -116,9 +143,45 @@ public class Mime4JWorkaround {
 
         public StorageOutputStream createStorageOutputStream() throws IOException
         {
-            File file = File.createTempFile(prefix, suffix, directory);
+            return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory));
+        }
 
-            return new TempFileStorageOutputStream(file);
+        private static File createTempFile(String prefix, String suffix, File directory) throws IOException
+        {
+            boolean java2SecurityEnabled = System.getSecurityManager() != null;
+            if (java2SecurityEnabled)
+            {
+                try {
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<File>) () ->
+                        File.createTempFile(prefix, suffix, directory));
+                } catch (PrivilegedActionException pae) {
+                    Throwable cause = pae.getCause();
+                    if (cause instanceof IOException)
+                    {
+                        throw (IOException) cause;
+                    } else throw new RuntimeException(cause);
+                }
+            }
+            return File.createTempFile(prefix, suffix, directory);
+        }
+
+        private static FileOutputStream createFileOutputStream(File file) throws IOException
+        {
+            boolean java2SecurityEnabled = System.getSecurityManager() != null;
+            if (java2SecurityEnabled)
+            {
+                try {
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<FileOutputStream>) () ->
+                        new FileOutputStream(file));
+                } catch (PrivilegedActionException pae) {
+                    Throwable cause = pae.getCause();
+                    if (cause instanceof IOException)
+                    {
+                        throw (IOException) cause;
+                    } else throw new RuntimeException(cause);
+                }
+            }
+            return new FileOutputStream(file);
         }
 
         private static final class TempFileStorageOutputStream extends StorageOutputStream
@@ -130,7 +193,7 @@ public class Mime4JWorkaround {
             TempFileStorageOutputStream(final File file) throws IOException
             {
                 this.file = file;
-                this.out = new FileOutputStream(file);
+                this.out = createFileOutputStream(file);
             }
 
             @Override

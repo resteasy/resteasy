@@ -10,15 +10,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status.Family;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEventSource;
+import jakarta.ws.rs.ServiceUnavailableException;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status.Family;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
@@ -337,9 +337,13 @@ public class SseEventSourceImpl implements SseEventSource
                onConnection();
                eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                //if 200<= response code <300 and response contentType is null, fail the connection.
-               if (eventInput == null && !alwaysReconnect)
+               if (eventInput == null)
                {
-                  internalClose();
+                  if (!alwaysReconnect) {
+                     internalClose();
+                  } else {
+                     reconnect(this.reconnectDelay);
+                  }
                   return;
                }
             }
@@ -359,9 +363,6 @@ public class SseEventSourceImpl implements SseEventSource
                onConnection();
                Date requestTime = new Date();
                long localReconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
-               onErrorConsumers.forEach(consumer -> {
-                  consumer.accept(ex);
-               });
                reconnect(localReconnectDelay);
             }
             else
@@ -379,9 +380,12 @@ public class SseEventSourceImpl implements SseEventSource
          final Providers providers = (ClientConfiguration) target.getConfiguration();
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
-            if (eventInput == null || eventInput.isClosed())
-            {
-               reconnect(reconnectDelay);
+            if (eventInput != null && eventInput.isClosed()) {
+               if (alwaysReconnect) {
+                   reconnect(reconnectDelay);
+               } else {
+                  internalClose();
+               }
                break;
             }
             try
@@ -390,12 +394,6 @@ public class SseEventSourceImpl implements SseEventSource
                if (event != null)
                {
                   onEvent(event);
-               }
-               //event sink closed
-               else if (!alwaysReconnect)
-               {
-                  internalClose();
-                  break;
                }
             }
             catch (IOException e)
@@ -469,6 +467,4 @@ public class SseEventSourceImpl implements SseEventSource
          sseEventSourceScheduler.schedule(processor, delay, TimeUnit.MILLISECONDS);
       }
    }
-
-
 }

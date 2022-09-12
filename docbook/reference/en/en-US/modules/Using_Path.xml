@@ -57,11 +57,11 @@ Let's say you have the RESTEasy servlet configured and reachable at a root path 
 </para>
 <para>
 
-The @javax.ws.rs.Path annotation must exist on either the class and/or a resource method.  If it exists on both the class and method, the relative path to the resource method is a concatenation of the class and method.
+The @jakarta.ws.rs.Path annotation must exist on either the class and/or a resource method.  If it exists on both the class and method, the relative path to the resource method is a concatenation of the class and method.
 </para>
 <para>
 
-In the @javax.ws.rs package there are annotations for each HTTP method.  @GET, @POST, @PUT, @DELETE, and @HEAD.  You place these on public methods that you want to map to that certain kind of HTTP method.  As long as there is a @Path annotation on the class, you do not have to have a @Path annotation on the method you are mapping.  You can have more than one HTTP method as long as they can be distinguished from other methods.
+In the @jakarta.ws.rs package there are annotations for each HTTP method.  @GET, @POST, @PUT, @DELETE, and @HEAD.  You place these on public methods that you want to map to that certain kind of HTTP method.  As long as there is a @Path annotation on the class, you do not have to have a @Path annotation on the method you are mapping.  You can have more than one HTTP method as long as they can be distinguished from other methods.
 </para>
 <para>
 

@@ -15,13 +15,6 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../jboss-modules/target</directory>
-            <includes>
-                <include>*.zip</include>
-            </includes>
-            <outputDirectory></outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>../target/site/apidocs</directory>
             <outputDirectory>docs/javadocs</outputDirectory>
         </fileSet>
@@ -40,8 +33,6 @@
                 <include>org.jboss.resteasy:resteasy-client-api</include>
                 <include>org.jboss.resteasy:resteasy-client</include>
                 <include>org.jboss.resteasy:resteasy-client-jetty</include>
-                <include>org.jboss.resteasy:resteasy-client-microprofile</include>
-                <include>org.jboss.resteasy:resteasy-client-microprofile-base</include>
                 <include>org.jboss.resteasy:resteasy-servlet-initializer</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
@@ -50,14 +41,10 @@
                 <include>org.jboss.resteasy:resteasy-json-p-provider</include>
                 <include>org.jboss.resteasy:resteasy-json-binding-provider</include>
                 <include>org.jboss.resteasy:resteasy-jackson2-provider</include>
-                <include>org.jboss.resteasy:resteasy-spring</include>
-                <include>org.jboss.resteasy:resteasy-guice</include>
-                <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>
                 <include>org.jboss.resteasy:resteasy-jsapi</include>
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
-                <include>org.jboss.resteasy:resteasy-rxjava2</include>
                 <include>org.jboss.resteasy:jose-jwt</include>
                 <include>org.jboss.resteasy:resteasy-validator-provider</include>
             </includes>
@@ -71,7 +58,7 @@
                 <include>org.jboss.resteasy:resteasy-netty4</include>
                 <include>org.jboss.resteasy:resteasy-vertx</include>
                 <include>org.jboss.resteasy:resteasy-jdk-http</include>
-                <include>org.jboss.spec.javax.servlet:jboss-servlet-api_4.0_spec</include>
+                <include>jakarta.servlet:jakarta.servlet-api</include>
             </includes>
             <outputDirectory>embedded-lib</outputDirectory>
         </dependencySet>

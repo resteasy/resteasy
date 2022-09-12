@@ -1,20 +1,25 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.util.Types;
 
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
+
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,7 +27,9 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -32,13 +39,37 @@ import java.util.concurrent.CompletionStage;
 @SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector
 {
-   private Class rawType;
-   private Class proxy;
+   private static Constructor<?> constructor;
+
+   private Class<?> rawType;
+   private Class<?> proxy;
    private ResteasyProviderFactory factory;
    private Type genericType;
    private Annotation[] annotations;
+   private volatile boolean outputStreamWasWritten = false;
 
-   public ContextParameterInjector(final Class proxy, final Class rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
+   static
+   {
+      constructor = AccessController.doPrivileged(new PrivilegedAction<Constructor<?>>()
+      {
+         @Override
+         public Constructor<?> run()
+         {
+            try
+            {
+               Class.forName("jakarta.servlet.http.HttpServletResponse", false, Thread.currentThread().getContextClassLoader());
+               Class<?> clazz = Class.forName("org.jboss.resteasy.core.ContextServletOutputStream");
+               return clazz.getDeclaredConstructor(ContextParameterInjector.class, OutputStream.class);
+            }
+            catch (Exception e)
+            {
+               return null;
+            }
+         }
+      });
+   }
+
+   public ContextParameterInjector(final Class<?> proxy, final Class<?> rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       this.rawType = rawType;
       this.genericType = genericType;
@@ -61,7 +92,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          return new SseImpl();
       } else if (rawType == CompletionStage.class) {
-         return new CompletionStageHolder((CompletionStage)createProxy());
+         return new CompletionStageHolder((CompletionStage<?>)createProxy());
       }
       return createProxy();
    }
@@ -94,7 +125,7 @@ public class ContextParameterInjector implements ValueInjector
          }
          return (CompletionStage<Object>) contextData;
       } else if (rawType == CompletionStage.class && contextData instanceof CompletionStage) {
-         return new CompletionStageHolder((CompletionStage)contextData);
+         return new CompletionStageHolder((CompletionStage<?>)contextData);
       } else if (!unwrapAsync && rawType != CompletionStage.class && contextData instanceof CompletionStage) {
          throw new LoggableFailure(Messages.MESSAGES.shouldBeUnreachable());
       }
@@ -122,6 +153,15 @@ public class ContextParameterInjector implements ValueInjector
                   return method.invoke(factory, objects);
                }
                throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
+            }
+            // Fix for RESTEASY-1721
+            if ("jakarta.servlet.http.HttpServletResponse".equals(rawType.getName()))
+            {
+               if ("getOutputStream".equals(method.getName()))
+               {
+                  OutputStream sos = (OutputStream) method.invoke(delegate, objects);
+                  return wrapServletOutputStream(sos);
+               }
             }
             return method.invoke(delegate, objects);
          }
@@ -158,11 +198,11 @@ public class ContextParameterInjector implements ValueInjector
          if (delegate != null) return unwrapIfRequired(null, delegate, unwrapAsync);
          else throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       } else if (rawType == CompletionStage.class) {
-         return new CompletionStageHolder((CompletionStage)createProxy());
+         return new CompletionStageHolder((CompletionStage<?>)createProxy());
       }
 
       return createProxy();
-  }
+   }
 
    protected Object createProxy()
    {
@@ -179,20 +219,72 @@ public class ContextParameterInjector implements ValueInjector
       }
       else
       {
-         Class[] intfs = {rawType};
+         Object delegate = factory.getContextData(rawType, genericType, annotations, false);
+         Class<?>[] intfs = computeInterfaces(delegate, rawType);
          ClassLoader clazzLoader = null;
          final SecurityManager sm = System.getSecurityManager();
          if (sm == null) {
-            clazzLoader = rawType.getClassLoader();
+            clazzLoader = delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
          } else {
             clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
                @Override
                public ClassLoader run() {
-                  return rawType.getClassLoader();
+                  return delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
                }
             });
          }
          return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
       }
+   }
+
+   protected Class<?>[] computeInterfaces(Object delegate, Class<?> cls)
+   {
+      ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
+      if (deployment != null
+         && Boolean.TRUE.equals(deployment.getProperty(ResteasyContextParameters.RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES)))
+      {
+         Set<Class<?>> set = new HashSet<>();
+         set.add(cls);
+         if (delegate != null) {
+            Class<?> delegateClass = delegate.getClass();
+            while (delegateClass != null) {
+               for (Class<?> intf : delegateClass.getInterfaces()) {
+                  set.add(intf);
+                  for (Class<?> superIntf : intf.getInterfaces()) {
+                     set.add(superIntf);
+                  }
+               }
+               delegateClass = delegateClass.getSuperclass();
+            }
+         }
+         return set.toArray(new Class<?>[]{});
+      }
+      return new Class<?>[]{cls};
+   }
+
+   OutputStream wrapServletOutputStream(OutputStream os)
+   {
+      if (constructor != null)
+      {
+         try
+         {
+            return (OutputStream) constructor.newInstance(this, os);
+         }
+         catch (Exception e)
+         {
+            return os;
+         }
+      }
+      return os;
+   }
+
+   boolean isOutputStreamWasWritten()
+   {
+      return outputStreamWasWritten;
+   }
+
+   void setOutputStreamWasWritten(boolean outputStreamWasWritten)
+   {
+      this.outputStreamWasWritten = outputStreamWasWritten;
    }
 }

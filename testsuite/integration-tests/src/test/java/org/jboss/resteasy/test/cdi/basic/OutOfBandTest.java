@@ -2,10 +2,10 @@ package org.jboss.resteasy.test.cdi.basic;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -16,7 +16,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +33,7 @@ public class OutOfBandTest {
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive("RESTEASY-1008")
-            .addClasses(OutOfBandResourceIntf.class, OutOfBandResource.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addClasses(OutOfBandResourceIntf.class, OutOfBandResource.class);
       return war;
    }
 

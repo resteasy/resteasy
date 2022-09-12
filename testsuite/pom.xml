@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.7.0-SNAPSHOT</version>
+        <version>6.2.0.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -15,35 +15,75 @@
 
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
-        <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
+        <additional.surefire.excluded.groups/>
+        <additional.surefire.exclude.tracing.tests/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
-        <jacoco.agent></jacoco.agent>
-        <additionalJvmArgs></additionalJvmArgs>
-        <ipv6ArquillianSettings></ipv6ArquillianSettings>
+        <jacoco.agent/>
+        <ipv6ArquillianSettings/>
+        <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
-        <security.provider>picketbox</security.provider>
+        <test.java.home>${java.home}</test.java.home>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${dep.arquillian-bom.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-embedded</artifactId>
+                <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
+            </dependency>
+            <!-- Placed here to be resolved for other sub-modules -->
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>arquillian-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-arquillian-container-managed</artifactId>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-arquillian-container-bootable</artifactId>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jboss.sasl</groupId>
+                        <artifactId>jboss-sasl</artifactId>
+                    </exclusion>
+                    <!-- TODO remove this exclusion once this depends on Jakarta Inject -->
+                    <!-- superseded by jakarta.inject:jakarta.inject-api -->
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
-            <!-- rls test
-            <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-help-plugin</artifactId>
-                    <version>3.2.0</version>
-            </plugin>
--->
-            <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-help-plugin</artifactId>
-                    <version>3.2.0</version>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <jvm>${test.java.home}/bin/java</jvm>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <securityManagerArg>${securityManagerArg}</securityManagerArg>
@@ -55,30 +95,8 @@
                         <project.version>${project.version}</project.version>
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
-                        <security.provider>${security.provider}</security.provider>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}</excludedGroups>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <skipIfEmpty>true</skipIfEmpty>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -95,6 +113,59 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jboss.galleon</groupId>
+                <artifactId>galleon-maven-plugin</artifactId>
+                <configuration>
+                    <install-dir>${jboss.home}</install-dir>
+                    <skip>${galleon.skip}</skip>
+                    <record-state>false</record-state>
+                    <log-time>${galleon.log.time}</log-time>
+                    <offline>${galleon.offline}</offline>
+                    <plugin-options>
+                        <!--<jboss-maven-dist/> -->
+                        <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
+                        <jboss-jakarta-transform-artifacts>true</jboss-jakarta-transform-artifacts>
+                    </plugin-options>
+                    <feature-packs>
+                        <feature-pack>
+                            <groupId>org.wildfly</groupId>
+                            <artifactId>wildfly-ee-galleon-pack</artifactId>
+                            <version>${version.org.wildfly}</version>
+                            <inherit-configs>false</inherit-configs>
+                            <included-configs>
+                                <config>
+                                    <model>standalone</model>
+                                    <name>standalone-full.xml</name>
+                                </config>
+                                <config>
+                                    <model>standalone</model>
+                                    <name>standalone.xml</name>
+                                </config>
+                            </included-configs>
+                            <excluded-packages>
+                                <name>product.conf</name>
+                                <name>docs.schema</name>
+                                <name>appclient</name>
+                                <name>domain</name>
+                            </excluded-packages>
+                        </feature-pack>
+                        <feature-pack>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>galleon-feature-pack</artifactId>
+                            <version>${project.version}</version>
+                            <inherit-configs>false</inherit-configs>
+                        </feature-pack>
+                    </feature-packs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <configuration>
+                    <skip>${wildfly.skip}</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -110,10 +181,7 @@
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
                 <module>integration-tests</module>
-                <module>integration-tests-spring</module>
-                <module>integration-tests-spring-web</module>
                 <module>integration-tests-embedded</module>
-                <module>microprofile-tck</module>
             </modules>
         </profile>
         <profile>
@@ -125,17 +193,6 @@
             </activation>
             <properties>
                 <jboss.home>${server.home}</jboss.home>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version</id>
-            <activation>
-              <property>
-                <name>!server.version</name>
-              </property>
-            </activation>
-            <properties>
-                <server.version>21.0.1.Final</server.version>
             </properties>
         </profile>
         <profile>
@@ -196,20 +253,6 @@
             </activation>
             <properties>
                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
-            </properties>
-        </profile>
-
-        <!-- https://issues.jboss.org/browse/MODULES-372 - JDK 11 - module not found java.se -->
-        <profile>
-            <id>modular-jdk</id>
-            <activation>
-                <jdk>[9,)</jdk>
-            </activation>
-            <properties>
-                <modular.jdk.args>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED
-                    --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
-                    --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED
-                    --add-modules=java.se</modular.jdk.args>
             </properties>
         </profile>
 
@@ -378,6 +421,7 @@
                                 <goals><goal>run</goal></goals>
                                 <inherited>false</inherited>
                                 <configuration>
+                                    <skip>${skipTests}</skip>
                                     <target>
                                         <property name="result.report.dir" location="target/jacoco-report"/>
                                         <taskdef name="report" classname="org.jacoco.ant.ReportTask">
@@ -426,7 +470,45 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>debug</id>
+            <activation>
+                <property>
+                    <name>debug</name>
+                </property>
+            </activation>
+            <properties>
+                <debug.port>8787</debug.port>
+                <debugJvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${debug.port}</debugJvmArgs>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>skip-wildfly-provisioning</id>
+            <activation>
+                <property>
+                    <name>skip.provisioning</name>
+                </property>
+            </activation>
+            <properties>
+                <galleon.skip>true</galleon.skip>
+                <wildfly.skip>true</wildfly.skip>
+            </properties>
+        </profile>
     </profiles>
+
+    <repositories>
+        <!-- Remove below repo after opensaml 4.2.0 is accessible from maven central repo-->
+        <repository>
+            <id>opensaml-repo</id>
+            <name>opensaml</name>
+            <url>https://build.shibboleth.net/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
 </project>
 

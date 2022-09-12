@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Type;
 
 /**
