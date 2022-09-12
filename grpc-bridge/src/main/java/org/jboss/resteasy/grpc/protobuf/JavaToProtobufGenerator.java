@@ -473,17 +473,8 @@ public class JavaToProtobufGenerator {
    }
 
    private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
-      String p = args[0];
-      String generatedSources = "src/main/proto";
-      for (String s : generatedSources.split("/")) {
-         p += "/" + s;
-         File dir = new File(p);
-         if(!dir.exists()){
-            dir.mkdir();
-         }
-      }
-      final Path path = Path.of(args[0], "src", "main", "proto", args[3] + ".proto");
-      Files.writeString(path, sb.toString(), StandardCharsets.UTF_8);
+      Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
+      Files.writeString(path.resolve(args[3] + ".proto"), sb.toString(), StandardCharsets.UTF_8);
    }
 
    private static void createProtobufDirectory(String[] args) {

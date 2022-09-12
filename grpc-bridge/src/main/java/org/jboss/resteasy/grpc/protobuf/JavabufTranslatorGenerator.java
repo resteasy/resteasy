@@ -523,21 +523,9 @@ public class JavabufTranslatorGenerator {
    }
 
    private static void writeTranslatorClass(String[] args, String translatorClass, StringBuilder sb) throws IOException {
-      StringBuilder root = new StringBuilder("target/generated-sources/protobuf/grpc-java/");
-      File dir = new File(root.toString());
-      if(!dir.exists()) {
-         dir.mkdir();
-      }
-      String pkg = args[1].lastIndexOf(".") < 0 ? "" : args[1].substring(0, args[1].lastIndexOf("."));
-      for (String s : pkg.split("\\.")) {
-         dir = new File(root.append("/").append(s).toString());
-         if (!dir.exists())
-         {
-            dir.mkdir();
-         }
-      }
-      Path path = Path.of(root.toString(), translatorClass + ".java");
-      Files.writeString(path, sb.toString(), StandardCharsets.UTF_8);
+      String pkgPath = args[1].lastIndexOf(".") < 0 ? "" : args[1].substring(0, args[1].lastIndexOf(".")).replace(".", File.separator);
+      Path path = Files.createDirectories(Path.of(args[0], pkgPath));
+      Files.writeString(path.resolve(translatorClass + ".java"), sb.toString(), StandardCharsets.UTF_8);
    }
 
    private static String fqnify(String s) {

@@ -32,21 +32,22 @@ public class ReaderWriterGenerator {
    }
 
    public static void main(String[] args) {
-      if (args == null || args.length != 2) {
-         logger.info("need two args:");
-         logger.info("  arg[0]: javabuf wrapper class name");
-         logger.info("  arg[1]: .proto file prefix");
+      if (args == null || args.length != 3) {
+         logger.info("need three args:");
+         logger.info("  arg[0]: root directory");
+         logger.info("  arg[1]: javabuf wrapper class name");
+         logger.info("  arg[2]: .proto file prefix");
          return;
       }
       try  {
-         String readerWriterClass = args[1] + "_MessageBodyReaderWriter";
-         Class<?> wrapperClass = Class.forName(args[0], true, Thread.currentThread().getContextClassLoader());
+         String readerWriterClass = args[2] + "_MessageBodyReaderWriter";
+         Class<?> wrapperClass = Class.forName(args[1], true, Thread.currentThread().getContextClassLoader());
          StringBuilder sbHeader = new StringBuilder();
          StringBuilder sbBody = new StringBuilder();
          classHeader(args, readerWriterClass, wrapperClass, sbHeader);
          classBody(args, wrapperClass, sbBody);
          finishClass(sbBody);
-         writeClass(wrapperClass, args[1], sbHeader, sbBody);
+         writeClass(wrapperClass, args, sbHeader, sbBody);
       } catch (Exception e) {
          logger.error(e);
       }
@@ -54,7 +55,7 @@ public class ReaderWriterGenerator {
 
    private static void classHeader(String[] args, String readerWriterClass, Class<?> wrapperClass, StringBuilder sb) {
       sb.append("package ").append(wrapperClass.getPackage().getName()).append(";\n\n");
-      imports(wrapperClass, args[1], sb);
+      imports(wrapperClass, args[2], sb);
    }
 
    private static void imports(Class<?> wrapperClass, String rootClass, StringBuilder sb) {
@@ -115,10 +116,10 @@ public class ReaderWriterGenerator {
         .append("@Produces(\"*/*;grpc-jaxrs=true\")\n")
         .append("@Priority(Integer.MIN_VALUE)\n")
         .append("@SuppressWarnings(\"rawtypes\")\n")
-        .append("public class ").append(args[1]).append("MessageBodyReaderWriter implements MessageBodyReader<Object>, MessageBodyWriter<Object> {\n\n")
+        .append("public class ").append(args[2]).append("MessageBodyReaderWriter implements MessageBodyReader<Object>, MessageBodyWriter<Object> {\n\n")
         .append("   @Override\n")
         .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {\n")
-        .append("      return ").append(args[1]).append("_JavabufTranslator.handlesFromJavabuf(type);\n")
+        .append("      return ").append(args[2]).append("_JavabufTranslator.handlesFromJavabuf(type);\n")
         .append("   }\n\n")
         .append("   @SuppressWarnings(\"unchecked\")\n")
         .append("   @Override\n")
@@ -129,7 +130,7 @@ public class ReaderWriterGenerator {
         .append("         return Any.parseFrom(CodedInputStream.newInstance(entityStream));\n")
         .append("      } else {\n")
         .append("         GeneratedMessageV3 message = getMessage(type, entityStream);\n")
-        .append("         return ").append(args[1]).append("_JavabufTranslator.translateFromJavabuf(message);\n")
+        .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(message);\n")
         .append("      }\n")
         .append("      } catch (Exception e) {\n")
         .append("         throw new RuntimeException(e);\n")
@@ -137,14 +138,12 @@ public class ReaderWriterGenerator {
         .append("   }\n\n")
         .append("   @Override\n")
         .append("   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {\n")
-//        .append("      ServletConfig servletConfig = ResteasyContext.getContextData(ServletConfig.class);\n")
-//        .append("      return servletConfig != null && servletConfig.getInitParameter(ServletConfigWrapper.GRPC_JAXRS) != null && CC1_JavabufTranslator.handlesToJavabuf(type);\n")
-        .append("      return ").append(args[1]).append("_JavabufTranslator.handlesToJavabuf(type);\n")
+        .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);\n")
         .append("   }\n\n")
         .append("   @Override\n")
         .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType,\n")
         .append("      MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {\n")
-        .append("      Message message = ").append(args[1]).append("_JavabufTranslator.translateToJavabuf(t);\n")
+        .append("      Message message = ").append(args[2]).append("_JavabufTranslator.translateToJavabuf(t);\n")
         .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);\n")
         .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
         .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);\n")
@@ -224,22 +223,9 @@ public class ReaderWriterGenerator {
       sb.append("}\n");
    }
 
-   private static void writeClass(Class<?> wrapperClass, String prefix, StringBuilder sbHeader, StringBuilder sbBody) throws IOException {
-      String packageName = wrapperClass.getPackageName();
-      String p = "";
-      for (String s : ("target/generated-sources/protobuf/grpc-java/" + packageName.replace(".", "/")).split("/")) {
-         p += s;
-         File dir = new File(p);
-         if(!dir.exists()){
-            dir.mkdir();
-         }
-         p += "/";
-      }
-      File file = new File(p + prefix + "MessageBodyReaderWriter.java");
-      if (file.exists()) {
-         return;
-      }
-      Path path = Path.of(p, prefix + "MessageBodyReaderWriter.java");
+   private static void writeClass(Class<?> wrapperClass, String[] args, StringBuilder sbHeader, StringBuilder sbBody) throws IOException {
+      Path path = Files.createDirectories(Path.of(args[0], wrapperClass.getPackageName().replace(".", "/")));
+      path = path.resolve(args[2] + "MessageBodyReaderWriter.java");
       Files.writeString(path, sbHeader.toString(), StandardCharsets.UTF_8);
       Files.writeString(path, sbBody.toString(), StandardCharsets.UTF_8, CREATE, APPEND, WRITE);
    }
