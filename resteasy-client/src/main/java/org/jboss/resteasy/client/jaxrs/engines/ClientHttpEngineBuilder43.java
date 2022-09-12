@@ -8,7 +8,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +84,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       {
          SSLConnectionSocketFactory sslsf = null;
          SSLContext theContext = that.getSSLContext();
-          Iterator clientConfigProviderIterator = ServiceLoader.load(ClientConfigProvider.class).iterator();
+         final ClientConfigProvider clientConfigProvider = findFirstService(ClientConfigProvider.class);
 
          if (that.isTrustManagerDisabled())
          {
@@ -142,10 +141,9 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                   }
                }
             };
-         } else if (clientConfigProviderIterator.hasNext())
+         } else if (clientConfigProvider != null)
          {
             // delegate creation of socket to ClientConfigProvider implementation
-            final ClientConfigProvider configProvider = ((ClientConfigProvider) clientConfigProviderIterator.next());
             sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), verifier) {
                @Override
                public Socket createSocket(HttpContext context) throws IOException {
@@ -153,7 +151,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                      String targetHostUri = context.getAttribute(
                              HttpCoreContext.HTTP_TARGET_HOST).toString();
                      if (targetHostUri != null) {
-                        return configProvider.getSSLContext(new URI(targetHostUri)).getSocketFactory().createSocket();
+                        return clientConfigProvider.getSSLContext(new URI(targetHostUri)).getSocketFactory().createSocket();
                      } else {
                         throw new RuntimeException("URI is not known");
                      }
@@ -270,4 +268,22 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       engine.setFollowRedirects(that.isFollowRedirects());
       return engine;
    }
+   private static <T> T findFirstService(final Class<T> service) {
+      ClassLoader cl = Thread.currentThread().getContextClassLoader();
+      if (System.getSecurityManager() == null) {
+         final ServiceLoader<T> loader = ServiceLoader.load(service, cl);
+         if (loader.iterator().hasNext()) {
+            return loader.iterator().next();
+         }
+         return null;
+      }
+      return AccessController.doPrivileged((PrivilegedAction<T>) () -> {
+         final ServiceLoader<T> loader = ServiceLoader.load(service, cl);
+         if (loader.iterator().hasNext()) {
+            return loader.iterator().next();
+         }
+         return null;
+      });
+   }
+
 }
