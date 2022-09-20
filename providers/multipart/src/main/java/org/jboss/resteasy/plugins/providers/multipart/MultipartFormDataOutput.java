@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.providers.multipart;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,16 +14,13 @@ import java.util.Map;
  */
 public class MultipartFormDataOutput extends MultipartOutput
 {
+   @Deprecated(forRemoval = true)
    protected Map<String, OutputPart> formData = new LinkedHashMap<String, OutputPart>();
-   protected Map<String, List<OutputPart>> formDataMap = new HashMap<String, List<OutputPart>>();
+   @Deprecated(forRemoval = true)
+   protected Map<String, List<OutputPart>> formDataMap = new LinkedHashMap<>();
 
    private void addFormDataMap(String key, OutputPart part) {
-      List<OutputPart> list = getFormDataMap().get(key);
-      if (list == null) {
-         list = new LinkedList<OutputPart>();
-         formDataMap.put(key, list);
-      }
-      list.add(part);
+      getFormDataMap().computeIfAbsent(key, (ignore) -> new LinkedList<>()).add(part);
    }
 
    public Map<String, List<OutputPart>> getFormDataMap() {
@@ -94,6 +90,7 @@ public class MultipartFormDataOutput extends MultipartOutput
       return part;
    }
 
+   @Deprecated(forRemoval = true)
    public Map<String, OutputPart> getFormData()
    {
       return formData;
