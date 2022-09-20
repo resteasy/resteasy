@@ -56,9 +56,14 @@ public class SizeUnitTestCase {
                 Assert.assertEquals(1024, SizeUnit.KILOBYTE.convert(1L, unit), 0);
                 continue;
             }
-            final long size = r.nextInt(128);
+            final long size = createSize(r);
             Assert.assertEquals(String.format("Failed to convert %d from %s to %s", size, parent, unit),
                     size, parent.convert((size * 1024L), unit), 0);
         }
+    }
+
+    private static long createSize(final Random r) {
+        final int result = r.nextInt(128);
+        return result < 1 ? 1L : result;
     }
 }
