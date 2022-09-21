@@ -142,6 +142,13 @@ public class RequiredInjectableContextTest {
     }
 
     @Test
+    public void resourceInfo() throws Exception {
+        final Response response = get("resourceInfo");
+        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assert.assertEquals(response.readEntity(String.class), "resourceInfo");
+    }
+
+    @Test
     public void securityContext() throws Exception {
         final Response response = get("securityContext");
         Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
