@@ -31,6 +31,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.Context;
@@ -68,6 +69,8 @@ public class RequiredInjectableContextResource {
     Request request;
     @Inject
     ResourceContext resourceContext;
+    @Inject
+    ResourceInfo resourceInfo;
     @Inject
     SecurityContext securityContext;
     @Inject
@@ -116,6 +119,12 @@ public class RequiredInjectableContextResource {
     @Path("resourceContext")
     public Response resourceContext() {
         return Response.ok(resourceContext.getResource(getClass()).getClass().getCanonicalName()).build();
+    }
+
+    @GET
+    @Path("resourceInfo")
+    public Response resourceInfo() {
+        return Response.ok(resourceInfo.getResourceMethod().getName()).build();
     }
 
     @GET
