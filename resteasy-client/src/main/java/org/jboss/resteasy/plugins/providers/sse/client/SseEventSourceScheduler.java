@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.providers.sse.client;
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.concurrent.ContextualScheduledExecutorService;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -142,7 +144,14 @@ class SseEventSourceScheduler
          this.phaser.arriveAndDeregister();
          if (!scheduledExecutorService.isManaged())
          {
-            this.scheduledExecutorService.shutdownNow();
+            if (System.getSecurityManager() == null) {
+               this.scheduledExecutorService.shutdownNow();
+            } else {
+               AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                  scheduledExecutorService.shutdownNow();
+                  return null;
+               });
+            }
          }
       }
    }
