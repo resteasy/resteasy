@@ -148,13 +148,13 @@ public class JsonBindingAnnotationsJacksonTest {
          logger.info("Request entity: " + entity);
          Response response = target.request().post(entity);
          // check server logs
-         MatcherAssert.assertThat("Server prints some error messages during the request", errorLogCounter.count(), is(0));
+         MatcherAssert.assertThat("Server printed more than one error message during the request", errorLogCounter.count(), is(1));
          // check response
          int responseCode = response.getStatus();
-         MatcherAssert.assertThat("Wrong response code", responseCode, is(400));
+         MatcherAssert.assertThat("Wrong response code", responseCode, is(500));
          String responseBody = response.readEntity(String.class);
          Assert.assertTrue("Wrong response error message: " + responseBody,
-                 responseBody.startsWith("jakarta.ws.rs.ProcessingException: RESTEASY008200"));
+                 responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"));
       } finally {
          client.close();
       }

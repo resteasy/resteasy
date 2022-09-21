@@ -136,11 +136,7 @@ public class JsonBindingDebugLoggingTest {
     */
    @Test
    public void exceptionDuringServerReceive() throws Exception {
-
-      // count log messages before request
-      LogCounter errorStringLog = new LogCounter("ERROR", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-
-      LogCounter resteasyExceptionLog = new LogCounter(".*DEBUG .* RESTEASY002305.*", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+      LogCounter resteasyExceptionLog = new LogCounter(".*ERROR .* RESTEASY002375.*", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
       LogCounter jsonbExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
       LogCounter applicationExcpetionLog = new LogCounter(
@@ -169,9 +165,6 @@ public class JsonBindingDebugLoggingTest {
               resteasyExceptionLog.count(), is(1));
       MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
               jsonbExceptionLog.count(), greaterThanOrEqualTo(1));
-
-      MatcherAssert.assertThat("There shouldn't be any error logs in server",
-              errorStringLog.count(), is(0));
    }
 
    /**

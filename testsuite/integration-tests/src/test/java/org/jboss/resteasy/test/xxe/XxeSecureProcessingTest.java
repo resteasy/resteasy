@@ -3,9 +3,12 @@ package org.jboss.resteasy.test.xxe;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import jakarta.ws.rs.client.ClientBuilder;
+
+import org.jboss.resteasy.setup.DisableDefaultExceptionMapperSetupTask;
 import org.jboss.resteasy.test.xxe.resource.XxeSecureProcessingFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.XxeSecureProcessingMovieResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -31,6 +34,7 @@ import java.util.Map;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(DisableDefaultExceptionMapperSetupTask.class)
 public class XxeSecureProcessingTest {
 
    private ResteasyClient client;

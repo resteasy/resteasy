@@ -21,7 +21,6 @@ package org.jboss.resteasy.test.core.basic;
 
 import java.net.URL;
 
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.ConstrainedTo;
@@ -34,58 +33,34 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.Providers;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.setup.DisableDefaultExceptionMapperSetupTask;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
 import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
+ * Tests that the default {@link ExceptionMapper} is disabled.
+ *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
-@RequestScoped
-public class DefaultProvidersTest {
+@ServerSetup(DisableDefaultExceptionMapperSetupTask.class)
+public abstract class DisabledDefaultExceptionMapperTest {
 
     @Inject
-    private Providers providers;
+    protected Providers providers;
     @Inject
-    private Client client;
+    protected Client client;
     @ArquillianResource
-    private URL url;
+    protected URL url;
 
-    @Deployment
-    public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class, DefaultProvidersTest.class.getSimpleName() + ".war")
-                .addClasses(
-                        TestApplication.class,
-                        ExceptionResource.class,
-                        UnsupportedOperationExceptionMapper.class,
-                        TestUtil.class
-                )
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    }
-
-    @Test
-    public void defaultExceptionMapper() {
-        Assert.assertNotNull("Expected a default exception mapper", providers.getExceptionMapper(RuntimeException.class));
-    }
-
-    @Test
-    public void defaultException() throws Exception {
-        final Response response = client.target(TestUtil.generateUri(url, "exception"))
-                .request()
-                .get();
-        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
-        Assert.assertEquals(ExceptionResource.EXCEPTION_MESSAGE, response.readEntity(String.class));
-    }
-
+    /**
+     * Tests we end up with the response and status code from the WAE we threw.
+     *
+     * @throws Exception if an exception occurs
+     */
     @Test
     public void waeException() throws Exception {
         final Response response = client.target(TestUtil.generateUri(url, "/exception/wae"))
@@ -95,6 +70,12 @@ public class DefaultProvidersTest {
         Assert.assertEquals(ExceptionResource.WAE_RESPONSE.readEntity(String.class), response.readEntity(String.class));
     }
 
+
+    /**
+     * Tests that a defined exception mapper is used
+     *
+     * @throws Exception if an exception occurs
+     */
     @Test
     public void defaultExceptionMapperNotUsed() throws Exception {
         final ExceptionMapper<UnsupportedOperationException> mapper = providers.getExceptionMapper(UnsupportedOperationException.class);

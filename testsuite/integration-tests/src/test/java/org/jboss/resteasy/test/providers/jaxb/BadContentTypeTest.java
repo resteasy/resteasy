@@ -67,8 +67,9 @@ public class BadContentTypeTest {
    public void testBadRequest() throws Exception {
       ResteasyWebTarget target = client.target(generateURL("/test"));
       Response response = target.request().post(Entity.entity("<junk", "application/xml"));
+      // As of Jakarta REST 3.1 a default exception mapper is required and the default response code is 500.
       Assert.assertEquals("The returned response status is not the expected one",
-            Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
    }
 
    /**
@@ -108,8 +109,9 @@ public class BadContentTypeTest {
    public void testBadRequestAfterHtmlError() throws Exception {
       ResteasyWebTarget target = client.target(generateURL("/test"));
       Response response = target.request().post(Entity.entity("<junk", "application/xml"));
+      // As of Jakarta REST 3.1 a default exception mapper is required and the default response code is 500.
       Assert.assertEquals("The returned response status is not the expected one",
-            Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
       response.close();
 
       response = target.request().header("Accept", "text/html").get();

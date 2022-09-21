@@ -34,6 +34,13 @@ import org.jboss.resteasy.spi.util.Functions;
 public class Options<T> {
 
     /**
+     * An option for enabling or disabling the default exception mapper. By default the default exception mapper is
+     * enabled.
+     */
+    public static final Options<Boolean> ENABLE_DEFAULT_EXCEPTION_MAPPER = new Options<>("dev.resteasy.exception.mapper",
+            Boolean.class, Functions.singleton(() -> true));
+
+    /**
      * An option for the threshold of the {@link org.jboss.resteasy.spi.EntityOutputStream}. The threshold
      * is used to determine when to offload an entity to a file out of memory.
      * <p>
