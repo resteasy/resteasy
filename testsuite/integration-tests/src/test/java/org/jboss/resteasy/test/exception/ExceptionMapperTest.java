@@ -8,7 +8,6 @@ import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomExcepti
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomSubException;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperResource;
-import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebAppExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.NotFoundExceptionMapper;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.util.Types;
@@ -43,7 +42,7 @@ public class ExceptionMapperTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ExceptionMapperTest.class.getSimpleName());
       war.addClasses(ExceptionMapperAbstractExceptionMapper.class);
-      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperResource.class, ExceptionMapperWebAppExceptionMapper.class,
+      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperResource.class,
             ExceptionMapperMyCustomExceptionMapper.class, ExceptionMapperMyCustomException.class,
             ExceptionMapperMyCustomSubException.class, NotFoundExceptionMapper.class);
    }

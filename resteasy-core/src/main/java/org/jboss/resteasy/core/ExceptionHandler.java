@@ -101,7 +101,8 @@ public class ExceptionHandler
          return jaxrsResponse;
       }
       jaxrsResponse = unwrapException(request, e, logger);
-      if (jaxrsResponse == null) {
+      if (jaxrsResponse == null && providerFactory.isDefaultExceptionManagerEnabled()) {
+         // No user defined ExceptionMapper was found, and we want to use the default exception mapper.
          jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e.getCause());
       }
       // This should never happen, but we need to be safe.
@@ -199,6 +200,12 @@ public class ExceptionHandler
             return unwrapException(request, unwrappedException, logger);
          }
          else {
+            // As of Jakarta REST 3.1 a default exception mapper is required. However, we do allow users to disable this to
+            // get the previous behavior if they prefer that.
+            if (providerFactory.isDefaultExceptionManagerEnabled()) {
+               // Use the default exception mapper
+               return providerFactory.getThrowableExceptionMapper().toResponse(unwrappedException);
+            }
             return null;
          }
       }
@@ -368,7 +375,7 @@ public class ExceptionHandler
          }
       }
 
-      if (jaxrsResponse == null) {
+      if (jaxrsResponse == null && providerFactory.isDefaultExceptionManagerEnabled()) {
          // Get the default exception mapper if we've made it here
          jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e);
       }
