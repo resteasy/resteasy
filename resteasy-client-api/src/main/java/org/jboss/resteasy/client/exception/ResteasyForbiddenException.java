@@ -14,21 +14,14 @@ public class ResteasyForbiddenException extends ForbiddenException implements We
 
    private static final long serialVersionUID = -581285336820307590L;
    private final ForbiddenException wrapped;
-   private final Response sanitizedResponse;
 
     ResteasyForbiddenException(final ForbiddenException wrapped) {
-        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
+        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
         this.wrapped = wrapped;
-        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public ForbiddenException unwrap() {
         return wrapped;
-    }
-
-    @Override
-    public Response getSanitizedResponse() {
-        return sanitizedResponse;
     }
 }

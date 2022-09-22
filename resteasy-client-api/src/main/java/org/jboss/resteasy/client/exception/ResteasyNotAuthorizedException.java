@@ -4,7 +4,6 @@ import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper
 
 import java.util.Collections;
 import java.util.List;
-
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.core.Response;
 
@@ -17,12 +16,10 @@ public class ResteasyNotAuthorizedException extends NotAuthorizedException imple
 
    private static final long serialVersionUID = 7034604450379314101L;
    private final NotAuthorizedException wrapped;
-   private final Response sanitizedResponse;
 
     ResteasyNotAuthorizedException(final NotAuthorizedException wrapped) {
-        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
+        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
         this.wrapped = wrapped;
-        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
@@ -33,10 +30,5 @@ public class ResteasyNotAuthorizedException extends NotAuthorizedException imple
     @Override
     public NotAuthorizedException unwrap() {
         return wrapped;
-    }
-
-    @Override
-    public Response getSanitizedResponse() {
-        return sanitizedResponse;
     }
 }
