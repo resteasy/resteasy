@@ -14,21 +14,14 @@ public class ResteasyNotSupportedException extends NotSupportedException impleme
 
    private static final long serialVersionUID = 6195843283913647466L;
    private final NotSupportedException wrapped;
-   private final Response sanitizedResponse;
 
     ResteasyNotSupportedException(final NotSupportedException wrapped) {
-        super(wrapped.getMessage(), wrapped.getResponse(), wrapped.getCause());
+        super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());
         this.wrapped = wrapped;
-        this.sanitizedResponse = sanitize(wrapped.getResponse());
     }
 
     @Override
     public NotSupportedException unwrap() {
         return wrapped;
-    }
-
-    @Override
-    public Response getSanitizedResponse() {
-        return sanitizedResponse;
     }
 }
