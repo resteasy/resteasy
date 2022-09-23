@@ -44,6 +44,7 @@ public class TestFacadeLinks
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
       ResteasyDeployment deployment = server.getDeployment();
+      deployment.getActualProviderClasses().add(ObjectMapperProvider.class);
       deployment.start();
       dispatcher = deployment.getDispatcher();
       server.start();

@@ -14,6 +14,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResourceWithJacksonAnnotation;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResourceWithJAXB;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.providers.jackson2.resource.JaxbJsonObjectMapperProvider;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -80,7 +81,8 @@ public class Jackson2Test {
       war.addAsResource(Jackson2Test.class.getPackage(), "jakarta.ws.rs.ext.Providers", "META-INF/services/jakarta.ws.rs.ext.Providers");
       return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
-            Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
+            Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class,
+              JaxbJsonObjectMapperProvider.class);
    }
 
    @Deployment(name = "JSONPenabled")
