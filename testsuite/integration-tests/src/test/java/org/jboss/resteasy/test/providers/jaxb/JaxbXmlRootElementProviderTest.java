@@ -13,6 +13,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.test.providers.jackson2.resource.JaxbJsonObjectMapperProvider;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbJsonXmlRootElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbXmlRootElementClient;
@@ -66,12 +67,14 @@ public class JaxbXmlRootElementProviderTest {
       war.addClass(Child.class);
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-      return TestUtil.finishContainerPrepare(war, contextParams, JaxbXmlRootElementProviderResource.class);
+      return TestUtil.finishContainerPrepare(war, contextParams, JaxbXmlRootElementProviderResource.class, JaxbJsonObjectMapperProvider.class);
    }
 
    @Before
    public void init() {
-      client = (ResteasyClient)ClientBuilder.newClient();
+      client = (ResteasyClient)ClientBuilder.newBuilder()
+              .register(JaxbJsonObjectMapperProvider.class)
+              .build();
       jaxbClient = ProxyBuilder.builder(JaxbXmlRootElementClient.class, client.target(JAXB_URL)).build();
       jaxbElementClient = ProxyBuilder.builder(JaxbElementClient.class, client.target(JAXB_URL)).build();
       jsonClient = ProxyBuilder.builder(JaxbJsonXmlRootElementClient.class, client.target(JAXB_URL)).build();

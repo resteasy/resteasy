@@ -21,6 +21,31 @@
 ]]></programlisting>
     </sect1>
     <sect1>
+        <title>&XML-BIND-API; Annotations</title>
+        <para>
+            In Jackson 2.13+ you must register the <code>com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule</code>
+            in order to use XML binding annotations for Jackson to marshall/unmarshall them in JSON. To do this you
+            must provide an <code>com.fasterxml.jackson.databind.ObjectMapper</code> via a
+            <code>jakarta.ws.rs.ext.ContextResolver</code>.
+        </para>
+        <para>
+            An example <code>jakarta.ws.rs.ext.ContextResolver</code>:
+            <programlisting><![CDATA[
+@Provider
+public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
+    static final JsonMapper MAPPER = JsonMapper.builder()
+            .addModule(new JakartaXmlBindAnnotationModule())
+            .build();
+
+    @Override
+    public ObjectMapper getContext(final Class<?> type) {
+        return MAPPER;
+    }
+}
+            ]]></programlisting>
+        </para>
+    </sect1>
+    <sect1>
         <title>Using Jackson 2 Inside WildFly 9 and above</title>
         <para>If you're deploying RESTEasy with WildFly 9 or above,
         there's nothing you need to do except to make sure

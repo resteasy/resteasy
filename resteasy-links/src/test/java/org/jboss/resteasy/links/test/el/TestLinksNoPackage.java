@@ -13,6 +13,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
+import org.jboss.resteasy.links.test.ObjectMapperProvider;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
@@ -47,6 +48,7 @@ public class TestLinksNoPackage
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
       ResteasyDeployment deployment = server.getDeployment();
+      deployment.getActualProviderClasses().add(ObjectMapperProvider.class);
       deployment.start();
       dispatcher = deployment.getDispatcher();
       server.start();
