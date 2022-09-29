@@ -3,7 +3,7 @@
     <para>
         Pluggable Asynchronous Injection, also referred to as Asynch Injection, is a
         feature that allows users to create custom injectable asynchronous types.
-        For example it is now possible to declare an injector for <classname>Single&lt;Foo&gt;</classname>
+        For example, it is possible to declare an injector for <classname>Single&lt;Foo&gt;</classname>
         and inject it into an endpoint as a class variable or as a method parameter using
         <classname>@Context Foo</classname>.  The response will be made asynchronous automatically and
         the resource method will only be invoked once the <classname>Single&lt;Foo&gt;</classname> object is

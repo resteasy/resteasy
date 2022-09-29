@@ -3,7 +3,7 @@
 
 <para>
 
-&REST-API; allows you to get encoded or decoded @*Params and specify path definitions and parameter names using encoded or decoded strings.
+&REST-API; allows encoded or decoded @*Params, the specification of path definitions and parameter names using encoded or decoded strings.
 </para>
 <para>
 
@@ -30,8 +30,7 @@ public class MyResource {
 In the above example, the value of the @PathParam injected into the param of the get() method will be URL encoded.  Adding the @Encoded annotation as a paramater annotation triggers this affect.
 </para>
 <para>
-
-You may also use the @Encoded annotation on the entire method and any combination of @QueryParam or @PathParam's values will be encoded.
+    The @Encoded annotation may also be used on the entire method and any combination of @QueryParam or @PathParam's values will be encoded.
 </para>
 <para>
 
@@ -52,7 +51,7 @@ In the above example, the values of the &quot;foo&quot; query param and &quot;pa
 </para>
 <para>
 
-You can also set the default to be encoded for the entire class.
+The default can also be encoded for the entire class.
 <programlisting>
 @Path("/")
 @Encoded
@@ -69,7 +68,11 @@ public class ClassEncoded {
 </para>
 <para>
 
-The @Path annotation has an attribute called encode.  Controls whether the literal part of the supplied value (those characters that are not part of a template variable) are URL encoded. If true, any characters in the URI template that are not valid URI character will be automatically encoded. If false then all characters must be valid URI characters.  By default this is set to true.  If you want to encoded the characters yourself, you may.
+The @Path annotation has an attribute called encode.  It controls whether the literal part of the
+    supplied value (those characters that are not part of a template variable) are URL encoded.
+    If true, any characters in the URI template that are not valid URI character will automatically
+    be encoded. If false, all characters must be valid URI characters.  By default, this is set to true.
+    If you want to encode the characters yourself, you may.
 </para>
 <para>
 

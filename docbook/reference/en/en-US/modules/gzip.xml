@@ -31,7 +31,7 @@ public interface MyProxy {
 }
 </programlisting>
    <para>In the above example, we tag the outgoing message body, order, to
-   be gzip compressed.  You can use the same annotation to tag server responses
+   be gzip compressed.  The same annotation can be used to tag server responses
    </para>
 <programlisting>
 @Path("/")
@@ -111,7 +111,7 @@ public class MyService {
    <title>Client side configuration</title>
    
    <para>
-   The interceptors may be enabled by registering them with, for example, a
+   The interceptors may be enabled by registering them with a
    <classname>Client</classname> or <classname>WebTarget</classname>. For example,
    </para>
    
@@ -124,7 +124,7 @@ Client client = ClientBuilder.newBuilder() // Activate gzip compression on clien
 </programlisting>
 
    <para>
-   The upper limit on deflated files may configured by creating an instance of
+   The upper limit on deflated files may be configured by creating an instance of
    <classname>GZIPDecodingInterceptor</classname> with a specific value:
    </para>
    
@@ -149,7 +149,7 @@ Client client = ClientBuilder.newBuilder() // Activate gzip compression on clien
    
    <para>
    The designation of a compressible entity by the use of the <classname>@GZIP</classname> annotation is a
-   built in, specific instance of a more general facility supported by RESTEasy.  There are three components
+   built-in, specific instance of a more general facility supported by RESTEasy.  There are three components
    to this facility.
    </para>
    

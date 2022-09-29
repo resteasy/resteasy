@@ -373,10 +373,11 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
 </programlisting>
 
        <para>
-          Alternatively, you can use RESTEasy's support of 
-          <ulink url="https://github.com/eclipse/microprofile-context-propagation">MicroProfile Context Propagation</ulink> by using <code>ThreadContext.contextualRunnable</code>
-          around your <code>Runnable</code>, which will take care of capturing and restoring all 
-          registered contexts (you will need to import the <code>org.jboss.resteasy.microprofile:microprofile-context-propagation</code> module):
+          Alternatively, RESTEasy's support of
+          <ulink url="https://github.com/eclipse/microprofile-context-propagation">MicroProfile Context Propagation</ulink>
+           can be used by using <code>ThreadContext.contextualRunnable</code>
+          around a <code>Runnable</code>, which will take care of capturing and restoring all
+          registered contexts (the <code>org.jboss.resteasy.microprofile:microprofile-context-propagation</code> module will need to be imported):
        </para>
        
 <programlisting>
@@ -410,7 +411,7 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
 </programlisting>
 
        <para>
-           As another alternative you can use the RESTEasy SPI's <code>ContextualExecutor</code> if the MicroProfile
+           As another alternative the RESTEasy SPI's <code>ContextualExecutor</code> can be used if the MicroProfile
            Context Propagation is not available. This requires a dependency on <code>org.jboss.resteasy:resteasy-core</code>.
        </para>
 
@@ -527,14 +528,14 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
        it holds at most one potential value. <classname>Flowable</classname> implements 
        <classname>io.reactivex.Publisher</classname>, and <classname>Observable</classname> is very
        similar to <classname>Flowable</classname> except that it doesn't support backpressure.
-       So, if you import <code>resteasy-rxjava2</code>, you can just start returning these reactive types from your
+       If importing <code>resteasy-rxjava2</code>, you can start returning these reactive types from your
        resource methods on the server side and receiving them on the client side.
     </para>
     
     <note>
        <para>
-          When you use RESTEasy's modules for RxJava, the reactive contexts are automatically propagated
-          to all supported RxJava types, which means you don't need to worry about <code>@Context</code>
+          When useing RESTEasy's modules for RxJava, the reactive contexts are automatically propagated
+          to all supported RxJava types, which means there is no need to worry about <code>@Context</code>
           injection not working within RxJava lambdas, contrary to <code>CompletionStage</code> (as previously
           noted).
        </para>
@@ -594,7 +595,7 @@ static Flowable&lt;List&lt;Thing&gt;&gt; buildFlowableThingList(String s, int li
 </programlisting>
 
     <para>
-       The somewhat imposing method <methodname>buildFlowableThingList()</methodname> probably deserves
+       The method <methodname>buildFlowableThingList()</methodname> deserves
        some explanation. First,
     </para>
     
@@ -708,7 +709,7 @@ public &lt;T extends RxInvoker&gt; T rx(Class&lt;T&gt; clazz);
    </orderedlist>
    
    <para>
-      which allow accessing <classname>Single</classname>s, <classname>Observable</classname>s, and
+      which allows accessing <classname>Single</classname>s, <classname>Observable</classname>s, and
       <classname>Flowable</classname>s on the client side.
    </para>
    

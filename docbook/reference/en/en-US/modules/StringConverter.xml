@@ -52,7 +52,7 @@ public void testQuery() throws Exception {
    <title>ParamConverter</title>
    
    <para>
-   What if you have a class where <methodname>valueOf()</methodname>or this string constructor don't exist or are inappropriate
+   What if you have a class where <methodname>valueOf()</methodname>or this string constructor don't exist or is inappropriate
    for an HTTP request? &REST-API; has the <classname>jakarta.ws.rs.ext.ParamConverterProvider</classname> to help
    in this situation.
    </para>

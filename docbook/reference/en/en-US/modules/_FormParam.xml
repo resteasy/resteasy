@@ -9,7 +9,8 @@
 
 <para>
 
-When the input request body is of the type &quot;application/x-www-form-urlencoded&quot;, a.k.a. an HTML Form, you can inject individual form parameters from the request body into method parameter values.
+When the input request body is of the type &quot;application/x-www-form-urlencoded&quot;, a.k.a. an HTML Form,
+   individual form parameters can be injected from the request body into method parameter values.
 </para>
 <para>
 
@@ -25,7 +26,7 @@ Last name:
 </para>
 <para>
 
-If you post through that form, this is what the service might look like:
+If posted through that form, this is what the service might look like:
 </para>
 <para>
 
@@ -41,7 +42,7 @@ public class NameRegistry {
 </para>
 <para>
 
-You cannot combine @FormParam with the default &quot;application/x-www-form-urlencoded&quot; that unmarshalls to a MultivaluedMap&lt;String, String&gt;.  i.e. This is illegal:
+A @FormParam cannot be combined with the default &quot;application/x-www-form-urlencoded&quot; that unmarshalls to a MultivaluedMap&lt;String, String&gt;.  i.e. This is illegal:
 </para>
 <para>
 

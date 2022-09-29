@@ -30,7 +30,7 @@ public class Library {
    </para>
    <para>
 
-      When a client makes a request, &REST-API; first finds all methods that match the path, then, it sorts things based on
+      When a client makes a request, &REST-API; first finds all methods that match the path, then, it those matches based on
       the content-type header sent by the client.
       So, if a client sent:
    </para>
@@ -103,7 +103,7 @@ Accept: application/json
 
       @Consumes and @Produces can list multiple media types that they support. The client's Accept header can also send
       multiple types it might like to receive. More specific media types are chosen first. The client Accept header or
-      @Produces @Consumes can also specify weighted preferences that are used to match up requests with resource
+      @Produces @Consumes can also specify weighted preferences that are used to match requests with resource
       methods. This is best explained by RFC 2616 section 14.1 . RESTEasy supports this complex way of doing content
       negotiation.
    </para>
@@ -122,9 +122,10 @@ Accept: application/json
 <title>URL-based negotiation</title>
 <para>
 Some clients, like browsers, cannot use the Accept and Accept-Language headers to negotiation the representation's media type
-or language.  RESTEasy allows you to map file name suffixes like (.xml, .txt, .en, .fr) to media types and languages.  These file name suffixes
-take the place and override any Accept header sent by the client.  You configure this using the resteasy.media.type.mappings and resteasy.language.mappings
-parameters. If configured within your web.xml, it would look like:
+or language.  RESTEasy allows the mapping of file name suffixes like (.xml, .txt, .en, .fr) to media types and languages.
+   These file name suffixes take the place and override any Accept header sent by the client.
+   They are configured using the <code>resteasy.media.type.mappings</code> and <code>resteasy.language.mappings</code>
+parameters. If configured within the application's web.xml, it would look like:
 </para>
 <programlisting><![CDATA[
 <web-app>
@@ -146,7 +147,9 @@ parameters. If configured within your web.xml, it would look like:
 <para>See <xref linkend="microprofile_config"/> for more information about application configuration. </para>
 
 <para>
-Mappings are a comma delimited list of suffix/mediatype or suffix/language mappings.  Each mapping is delimited by a ':'.  So, if you invoked GET /foo/bar.xml.en, this would be equivalent to invoking the following request:
+Mappings are a comma delimited list of suffix/mediatype or suffix/language mappings.  Each mapping is
+   delimited by a ':'.  If GET /foo/bar.xml.en is invoked , this would be equivalent to invoking the
+   following request:
 </para>
 <programlisting>
 GET /foo/bar
@@ -161,8 +164,9 @@ The mapped file suffixes are stripped from the target URL path before the reques
 <sect1 id="param_media_mappings">
 <title>Query String Parameter-based negotiation</title>
 <para>
-RESTEasy can do content negotiation based in a parameter in query string. To enable this, the parameter resteasy.media.type.param.mapping
-can be configured. In web.xml, it would look like the following:
+RESTEasy can do content negotiation based in a parameter in the query string. To enable this, the
+   parameter <code>resteasy.media.type.param.mapping</code>
+should be configured in the web.xml file.  It would look like the following:
 </para>
 <programlisting><![CDATA[
 <web-app>
@@ -181,7 +185,7 @@ can be configured. In web.xml, it would look like the following:
 <para>The param-value is the name of the query string parameter that RESTEasy will use in the place of the Accept header.</para>
 <para>Invoking http://service.foo.com/resouce?someName=application/xml, will give the application/xml media type the highest priority in the content negotiation.</para>
 <para>In cases where the request contains both the parameter and the Accept header, the parameter will be more relevant.</para>
-<para>It is possible to left the param-value empty, what will cause the processor to look for a parameter named 'accept'.</para>
+<para>It is possible to leave the param-value empty, that will cause the processor to look for a parameter named 'accept'.</para>
 </sect1>
 
 </chapter>

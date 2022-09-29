@@ -136,11 +136,10 @@ public class TempFileDeletionResource
 
       <para>
 
-         The &REST-API; specification allows you to plug in your own request/response body reader and writers. To do this,
-         you annotate a class
-         with @Provider and specify the @Produces types for a writer and @Consumes types for a reader. You must
-         also implement
-         a MessageBodyReader/Writer interface respectively. Here is an example:
+         The &REST-API; specification allows the user to plug in their own request/response body reader and writers.
+         To do this, the user annotates a class
+         with @Provider and specify the @Produces types for a writer and @Consumes types for a reader.
+         The user must also implement a MessageBodyReader/Writer interface respectively. Here is an example:
       </para>
 
       <programlisting>
@@ -184,8 +183,8 @@ public class TempFileDeletionResource
          }
       </programlisting>
       <para>
-        Note that in order to support <link linkend="Asynchronous_IO">Async IO</link>, you need to implement the
-        <code>AsyncMessageBodyWriter</code> interface, which requires you to implement this extra method:
+        Note that in order to support <link linkend="Asynchronous_IO">Async IO</link>, the user must implement the
+        <code>AsyncMessageBodyWriter</code> interface, which requires the implementation of this extra method:
       </para>
       <programlisting>
          @Provider
@@ -205,8 +204,8 @@ public class TempFileDeletionResource
       <para>
 
 
-         The RESTEasy ServletContextLoader will automatically scan your WEB-INF/lib and classes directories for classes
-         annotated with @Provider or you can manually configure them in web.xml. See Installation/Configuration.
+         The RESTEasy ServletContextLoader will automatically scan the application's WEB-INF/lib and classes directories for classes
+         annotated with @Provider or the user can manually configure them in web.xml. See Installation/Configuration.
       </para>
       <para>
 

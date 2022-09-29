@@ -6,19 +6,20 @@
     <sect1>
         <title>Server Side Filters</title>
     <para>
-        On the server-side you have two different types of filters.  ContainerRequestFilters
-        run before your &REST-API; resource method is invoked.  ContainerResponseFilters run after your &REST-API; resource method
+        On the server-side there are two different types of filters.  ContainerRequestFilters
+        run before a &REST-API; resource method is invoked.  ContainerResponseFilters run after a &REST-API; resource method
         is invoked.  As an added caveat, ContainerRequestFilters come in two flavors:  pre-match and post-matching.  Pre-matching
         ContainerRequestFilters are designated with the @PreMatching annotation and will execute before the &REST-API; resource
         method is matched with the incoming HTTP request.  Pre-matching filters often are used to modify request attributes
-        to change how it matches to a specific resource method (i.e. strip .xml and add an Accept header).  ContainerRequestFilters can abort the request by calling ContainerRequestContext.abortWith(Response).  A filter
+        to change how it matches to a specific resource method (i.e. strip .xml and add an Accept header).
+        ContainerRequestFilters can abort the request by calling ContainerRequestContext.abortWith(Response).  A filter
         might want to abort if it implements a custom authentication protocol.
     </para>
     <para>
           After the resource class method is executed, &REST-API; will run all ContainerResponseFilters.  These filters
-        allow you to modify the outgoing response before it is marshalling and sent to the client.
-        So given all that, here's some pseudo
-        code to give some understanding of how things work.
+        allow the outgoing response to be modified before it is marshalling and sent to the client.
+        Here is some pseudocode
+        to give some understanding of how it works.
     </para>
     <programlisting>
         // execute pre match filters
@@ -52,21 +53,21 @@
     <sect2>
         <title id="Asynchronous_Filter">Asynchronous filters</title>
         <para>
-            It is possible to turn filters into asynchronous filters, if you need to suspend execution of your filter
-            until a certain resource has become available. This turns the request asynchronous, but requires no change
-            to your resource method declaration. In particular, <link linkend="Asynchronous_HTTP_Request_Processing">synchronous
+            It is possible to turn filters into asynchronous filters, if it is needed to suspend execution of the filter
+            until a certain resource has become available. This makes the request asynchronous, but requires no change
+            to the resource method declaration. In particular, <link linkend="Asynchronous_HTTP_Request_Processing">synchronous
             and asynchronous resource methods</link> continue
-            to work as specified, regardless of whether or not a filter turned the request asynchronous. Similarly,
-            one filter turning the request asynchronous requires no change in the declaration of further filters.
+            to work as specified, regardless of whether a filter has made the request asynchronous. Similarly,
+            one filter making the request asynchronous requires no change in the declaration of other filters.
         </para>
         <para>
-            In order to turn a filter's execution asynchronous, you need to cast the <code>ContainerRequestContext</code> into
-            a <code>SuspendableContainerRequestContext</code> (for pre/post request filters), or cast the <code>ContainerResponseContext</code> into
+            In order to make a filter's execution asynchronous, <code>ContainerRequestContext</code> must be cast to
+            a <code>SuspendableContainerRequestContext</code> (for pre/post request filters), or cast the <code>ContainerResponseContext</code> to
             a <code>SuspendableContainerResponseContext</code> (for response filters). 
         </para>
         <para>
-            These context objects can turn the current filter's execution to asynchronous by calling the <code>suspend()</code>
-            method. Once asynchronous, the filter chain is suspended, and will only resume after one of the following method
+            These context objects can make the current filter's execution asynchronous by calling the <code>suspend()</code>
+            method. Once asynchronous, the filter chain is suspended, and will only resume after one of the following methods
             is called on the context object:
         </para>
         <variablelist>
@@ -87,21 +88,21 @@
             </varlistentry>
         </variablelist>
         <para>
-            You can also do async processing inside your <code>AsyncWriterInterceptor</code> (if you are using
+            Async processing can be done inside an <code>AsyncWriterInterceptor</code> (if using
             <link linkend="Asynchronous_IO">Async IO</link>), which is the asynchronous-supporting equivalent to
-            <code>WriterInterceptor</code>. In this case, you don't need to manually suspend or resume the request.
+            <code>WriterInterceptor</code>. In this case, there is no need to manually suspend or resume the request.
         </para>
     </sect2>
     </sect1>
     <sect1>
         <title>Client Side Filters</title>
         <para>
-            On the client side you also have two types of filters: ClientRequestFilter and ClientResponseFilter.
-            ClientRequestFilters run before your HTTP request is sent over the wire to the server.  ClientResponseFilters
+            The client side also has two types of filters: ClientRequestFilter and ClientResponseFilter.
+            ClientRequestFilters run before an HTTP request is sent over the wire to the server.  ClientResponseFilters
             run after a response is received from the server, but before the response body is unmarshalled.  ClientRequestFilters
-            are also allowed to abort the execute of the request and provide a canned response without going over the
-            wire to the server.  ClientResponseFilters can modfiy the Response object before it is handed back to
-            application code.  Here's some pseudo code to illustrate things.
+            are allowed to abort the execution of the request and provide a canned response without going over the
+            wire to the server.  ClientResponseFilters can modify the Response object before it is handed back to
+            application code.  Here's pseudocode to illustrate this.
         </para>
         <programlisting>
             // execute request filters
@@ -131,20 +132,20 @@
             to post or pre-process a Java object model before or after it is marshalled.
         </para>
         <para>
-            Note that in order to support Async IO, you can implement <code>AsyncWriterInterceptor</code>, which is a subtype of
+            Note that in order to support Async IO, <code>AsyncWriterInterceptor</code> can be implemented, which is a subtype of
             <code>WriterInterceptor</code>.
         </para>
     </sect1>
     <sect1>
         <title>Per Resource Method Filters and Interceptors</title>
         <para>
-            Sometimes you want a filter or interceptor to only run for a specific resource method.  You can do this in two different
+            Sometimes it is desired to have a filter or interceptor only run for a specific resource method.  This can be done in two different
             ways:  register an implementation of DynamicFeature or use the @NameBinding annotation.  The DynamicFeature
-            interface is executed at deployment time for each resource method.  You just use the Configurable interface
-            to register the filters and interceptors you want for the specific resource method.  @NameBinding works a lot
-            like CDI interceptors.  You annotate a custom annotation with @NameBinding and then apply that custom annotation
-            to your filter and resource method. The custom annotation must use @Retention(RetentionPolicy.RUNTIME) in order for the
-            attribute to be picked up by the RESTEasy runtime code when it is deployed.
+            interface is executed at deployment time for each resource method.  Use the Configurable interface
+            to register the filters and interceptors wanted for the specific resource method.  @NameBinding works a lot
+            like CDI interceptors.  Annotate a custom annotation with @NameBinding and then apply that custom annotation
+            to the filter and resource method. The custom annotation must use @Retention(RetentionPolicy.RUNTIME) in order for the
+            attribute to be picked up by the RESTEasy runtime when it is deployed.
         </para>
         <programlisting>
             @NameBinding
@@ -166,7 +167,7 @@
     <sect1>
         <title>Ordering</title>
         <para>
-            Ordering is accomplished by using the @BindingPriority annotation on your filter or interceptor class.
+            Ordering is accomplished by using the @BindingPriority annotation on the filter or interceptor classes.
         </para>
     </sect1>
 

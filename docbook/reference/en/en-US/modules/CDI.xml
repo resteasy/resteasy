@@ -1,58 +1,26 @@
 <chapter id="CDI">
     <title>CDI Integration</title>
-    <para>This module provides integration with JSR-299 (Contexts and
-        Dependency Injection for the Jakarta EE platform)
+    <para>This module provides integration with <ulink url="https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html">(Contexts and Dependency Injection for the Jakarta EE platform)</ulink>
     </para>
     <section>
         <title>Using CDI beans as &REST-API; components</title>
         <para>
-            Both the &REST-API; and CDI specifications introduce their own
-            component
+            Both the &REST-API; and CDI specifications introduce their own component
             model. On the one hand, every class placed in a CDI archive that
-            fulfills a set of basic constraints is implicitly a CDI bean. On
-            the
-            other hand, explicit decoration of your Java class with
-            <code>@Path</code>
-            or
-            <code>@Provider</code>
-            is required for it to become a &REST-API; component.
-            Without the
-            integration code, annotating a class suitable for being a CDI bean
-            with
+            fulfills a set of basic constraints is implicitly a CDI bean. On the
+            other hand, explicit decoration of a Java class with
+            <code>@Path</code> or <code>@Provider</code>
+            is required for it to become a &REST-API; component.  Without the
+            integration code, annotating a class suitable for being a CDI bean with
             &REST-API; annotations leads into a faulty result (&REST-API; component
-            not managed by CDI)
-            The
-            resteasy-cdi module is a bridge that
-            allows
-            RESTEasy
-            to work with class
-            instances obtained from the CDI
-            container.
+            not managed by CDI).  The resteasy-cdi module is a bridge that allows
+            RESTEasy to work with class instances obtained from the CDI container.
         </para>
         <para>
-            During a
-            web
-            service
-            invocation, resteasy-cdi asks the CDI
-            container
-            for the
-            managed
-            instance
-            of a &REST-API; component. Then, this
-            instance is
-            passed
-            to
-            RESTEasy.
-            If a
-            managed instance is not available for
-            some
-            reason (the
-            class is
-            placed
-            in a jar which is not a bean deployment
-            archive),
-            RESTEasy
-            falls back to
+            During a web service invocation, resteasy-cdi asks the CDI container for the
+            managed instance of a &REST-API; component. Then, this instance is passed to
+            RESTEasy.  If a managed instance is not available for some reason (the class is
+            placed in a jar which is not a bean deployment archive), RESTEasy falls back to
             instantiating the class itself.
         </para>
         <para>
@@ -65,37 +33,25 @@
         <title>Default scopes</title>
         <para>
             A CDI bean that does not explicitly define a scope is
-            <code>@Dependent</code>
-            scoped by default.
-            This pseudo scope means that the bean adapts to the
-            lifecycle of
-            the bean it is
-            injected into. Normal scopes (request,
-            session,
+            <code>@Dependent</code> scoped by default.
+            This pseudo scope means that the bean adapts to the lifecycle of
+            the bean it is injected into. Normal scopes (request, session,
             application) are more suitable for &REST-API; components as they
             designate component's lifecycle boundaries explicitly. Therefore, the
-            resteasy-cdi
-            module alters the default
-            scoping in
-            the following way:
+            resteasy-cdi module alters the default scoping in the following way:
         </para>
         <itemizedlist>
             <listitem>
                 <para>
                     If a &REST-API; root resource does not define a scope
-                    explicitly,
-                    it is
-                    bound to the Request scope.
+                    explicitly, it is bound to the Request scope.
                 </para>
             </listitem>
             <listitem>
                 <para>
-                    If a &REST-API; Provider or
-                    <code>jakarta.ws.rs.Application</code>
-                    subclass
-                    does not define a scope explicitly, it is bound to the
-                    Application
-                    scope.
+                    If a &REST-API; Provider or <code>jakarta.ws.rs.Application</code>
+                    subclass does not define a scope explicitly, it is bound to the
+                    Application scope.
                 </para>
             </listitem>
         </itemizedlist>
@@ -105,16 +61,9 @@
                 modified by resteasy-cdi, this affects session beans as well. As a
                 result, a conflict occurs if the scope of a stateless session bean
                 or singleton is changed automatically as the spec prohibits these
-                components to
-                be @RequestScoped.
-                Therefore, you
-                need to explicitly
-                define a scope
-                when using stateless session
-                beans or singletons. This
-                requirement is likely to
-                be removed in
-                future releases.
+                components to be @RequestScoped.  Therefore, you need to explicitly
+                define a scope when using stateless session beans or singletons. This
+                requirement is likely to be removed in future releases.
             </para>
         </warning>
     </section>
@@ -127,17 +76,10 @@
     <section>
         <title>Configuration with different distributions</title>
         <para>
-            Provided you have an
-            existing RESTEasy application, all that needs to
-            be done is to
-            add the
-            resteasy-cdi jar into your project's
-            <code>WEB-INF/lib</code>
-            directory.
-            When using
-            maven, this can be achieve by defining the
-            following
-            dependency.
+            Provided there is an existing RESTEasy application, all that needs to
+            be done is to add the resteasy-cdi jar into the project's
+            <code>WEB-INF/lib</code> directory.  When using maven, this can be achieved by defining the
+            following dependency.
             <programlisting><![CDATA[<dependency>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-cdi</artifactId>
@@ -147,8 +89,7 @@
         <para>
             Furthermore, when running a pre-Servlet 3 container, the
             following context parameter needs to be specified in web.xml. (This
-            is done
-            automatically via web-fragment in a Servlet 3 environment)
+            is done automatically via web-fragment in a Servlet 3 environment)
         </para>
         <programlisting language="xml"><![CDATA[<context-param>
 	<param-name>resteasy.injector.factory</param-name>

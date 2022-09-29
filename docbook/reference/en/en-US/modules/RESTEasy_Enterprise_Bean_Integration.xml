@@ -2,16 +2,9 @@
 <title>&ENTERPRISE-BEANS; Integration</title>
 
 <para>
-
-To integrate with &ENTERPRISE-BEANS; you must first modify your beans published interfaces.  RESTEasy currently only has simple portable integration with &ENTERPRISE-BEANS; so you must also manually configure your RESTEasy WAR.
-</para>
-<para>
-
-
-</para>
-<para>
-
-RESTEasy currently only has simple integration with &ENTERPRISE-BEANS;.  To make a bean a &REST-API; resource, you must annotate an SLSB's @Remote or @Local interface with &REST-API; annotations:
+RESTEasy currently only has simple integration with &ENTERPRISE-BEANS;.  To make a bean a &REST-API;
+    resource, an SLSB's @Remote or @Local interface must be annotated with &REST-API; annotations.
+    Also the application's beans must be configured in web.xml.
 </para>
 <para>
 
@@ -42,7 +35,7 @@ public class LibraryBean implements Library {
 </para>
 <para>
 
-Next, in RESTEasy's web.xml file you must manually register the bean with RESTEasy using the resteasy.jndi.resources &lt;context-param&gt;
+Next, in RESTEasy's web.xml file manually register the bean with RESTEasy using the resteasy.jndi.resources &lt;context-param&gt;
 </para>
 <para>
 
@@ -60,9 +53,9 @@ Next, in RESTEasy's web.xml file you must manually register the bean with RESTEa
 </para>
 <para>
 
-This is the only portable way we can offer &ENTERPRISE-BEANS; integration.  Future versions of RESTEasy will have tighter integration
-    with WildFly so you do not have to do any manual registrations or modifications to web.xml.  For right now though,
-    we're focusing on portability.
+This is the only portable way RESTEasy offers &ENTERPRISE-BEANS; integration.  Future versions of RESTEasy
+    will have tighter integration
+    with Wildfly, thus eliminating manual registrations or modifications to web.xml.
 </para>
 <para>
 
@@ -90,15 +83,8 @@ my-ear.ear
 </programlisting>
 </para>
 <para>
-
-From the distribution, remove all libraries from WEB-INF/lib and place them in a common EAR lib.  OR.  Just place the RESTEasy jar dependencies in your application server's system classpath.  (i.e. In JBoss put them in server/default/lib)
+From the distribution, remove all libraries from WEB-INF/lib and place them in a common EAR lib or
+    place the RESTEasy jar dependencies in the application server's system classpath.
 </para>
-<para>
 
-An example EAR project is available from our testsuite here.
-</para>
-<para>
-
-
-</para>
 </chapter>

@@ -3,7 +3,10 @@
 
 <para>
 
-This is a RESTEasy specific annotation that allows you to re-use any @*Param annotation within an injected class.  RESTEasy will instantiate the class and inject values into any annotated @*Param or @Context property.  This is useful if you have a lot of parameters on your method and you want to condense them into a value object.
+@Form is a RESTEasy specific annotation that allows the re-use of any @*Param annotation within
+    an injected class.  RESTEasy will instantiate the class and inject values into any annotated
+    @*Param or @Context property.  This is useful when there are a lot of parameters on a method
+    and it is wanted to condense them into a value object.
 </para>
 <para>
 
@@ -37,8 +40,10 @@ When somebody posts to /myservice, RESTEasy will instantiate an instance of MyFo
 
 </para>
 <para>
-Also, @Form has some expanded @FormParam features.  If you specify a prefix within the Form param, this will prepend a prefix to any form parameter lookup.  For example,
-    let's say you have one Address class, but want to reference invoice and shipping addresses from the same set of form parameters:
+@Form has some expanded @FormParam features.  If a prefix is specified within the Form param,
+    this will prepend a prefix to any form parameter lookup.  For example,
+    say you have one Address class, but want to reference invoice and shipping addresses
+    from the same set of form parameters:
 </para>
 <programlisting>
 public static class Person
@@ -80,7 +85,7 @@ invoice.street=xxx
 shipping.street=yyy
 </programlisting>
     <para>
-        The Person.invoice and Person.shipping fields would be populated appropriately. Also, prefix mappings also support lists and maps:
+        The Person.invoice and Person.shipping fields would be populated appropriately. Note, prefix mappings also support lists and maps:
     </para>
 <programlisting>
 <![CDATA[public static class Person {
