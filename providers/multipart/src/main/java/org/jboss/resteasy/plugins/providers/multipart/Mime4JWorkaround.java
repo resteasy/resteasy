@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.james.mime4j.MimeException;
@@ -34,7 +36,6 @@ import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.stream.BodyDescriptorBuilder;
 import org.apache.james.mime4j.stream.MimeConfig;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
-import org.jboss.resteasy.spi.config.Configuration;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
@@ -65,7 +66,8 @@ public class Mime4JWorkaround {
             BodyDescriptorBuilder bdb = new DefaultBodyDescriptorBuilder(null, strict ? DefaultFieldParser.getParser() : LenientFieldParser.getParser(), mon);
 
             StorageProvider storageProvider;
-            if (ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class).orElse(null) != null) {
+            final Optional<String> value = getProperty(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class);
+            if (value.isPresent()) {
                 storageProvider = DefaultStorageProvider.getInstance();
             } else {
                 StorageProvider backend = new CustomTempFileStorageProvider();
@@ -91,9 +93,7 @@ public class Mime4JWorkaround {
     {
        try
        {
-          Configuration cfg = ConfigurationFactory.getInstance().getConfiguration();
-          int threshold = Integer.parseInt(cfg.getOptionalValue(MEM_THRESHOLD_PROPERTY, String.class).orElse(
-                Integer.toString(DEFAULT_MEM_THRESHOLD)));
+          int threshold = getProperty(MEM_THRESHOLD_PROPERTY, int.class).orElse(DEFAULT_MEM_THRESHOLD);
           if (threshold > -1)
           {
              return threshold;
@@ -105,6 +105,19 @@ public class Mime4JWorkaround {
           LogMessages.LOGGER.debug("Exception caught parsing memory threshold. Using default value.", e);
        }
        return DEFAULT_MEM_THRESHOLD;
+    }
+
+    private static <T> Optional<T> getProperty(final String name, final Class<T> type) {
+        if (System.getSecurityManager() == null) {
+            return ConfigurationFactory.getInstance()
+                    .getConfiguration()
+                    .getOptionalValue(name, type);
+        }
+        return AccessController.doPrivileged((PrivilegedAction<Optional<T>>) () ->
+                ConfigurationFactory.getInstance()
+                        .getConfiguration()
+                        .getOptionalValue(name, type)
+        );
     }
 
     /**

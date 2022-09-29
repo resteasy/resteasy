@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.StringTokenizer;
 
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
@@ -16,10 +18,7 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
 
    public WhiteListPolymorphicTypeValidatorBuilder() {
       super();
-      Configuration c = ConfigurationFactory.getInstance().getConfiguration();
-      String allowIfBaseType = c.getOptionalValue(BASE_TYPE_PROP, String.class)
-              .or(() -> c.getOptionalValue(BASE_TYPE_PROP + ".prefix", String.class))
-              .orElse(null);
+      String allowIfBaseType = getProperty(BASE_TYPE_PROP);
       if (allowIfBaseType != null) {
          StringTokenizer st = new StringTokenizer(allowIfBaseType, ",", false);
          while (st.hasMoreTokens()) {
@@ -27,9 +26,7 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
             allowIfBaseType("*".equals(t) ? "" : t);
          }
       }
-      String allowIfSubType = c.getOptionalValue(SUB_TYPE_PROP, String.class)
-              .or(() -> c.getOptionalValue(SUB_TYPE_PROP + ".prefix", String.class))
-              .orElse(null);
+      String allowIfSubType = getProperty(SUB_TYPE_PROP);
       if (allowIfSubType != null) {
          StringTokenizer st = new StringTokenizer(allowIfSubType, ",", false);
          while (st.hasMoreTokens()) {
@@ -37,5 +34,20 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
             allowIfSubType("*".equals(t) ? "" : t);
          }
       }
+   }
+
+   private static String getProperty(final String name) {
+      if (System.getSecurityManager() == null) {
+         final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
+         return config.getOptionalValue(name, String.class)
+                 .or(() -> config.getOptionalValue(name + ".prefix", String.class))
+                 .orElse(null);
+      }
+      return AccessController.doPrivileged((PrivilegedAction<String>) () -> {
+         final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
+         return config.getOptionalValue(name, String.class)
+                 .or(() -> config.getOptionalValue(name + ".prefix", String.class))
+                 .orElse(null);
+      });
    }
 }

@@ -34,6 +34,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -42,7 +43,6 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.concurrent.ThreadContext;
 import org.jboss.resteasy.spi.concurrent.ThreadContexts;
-import org.jboss.resteasy.spi.config.Configuration;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
@@ -115,9 +115,7 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualScheduledExecutorService scheduledThreadPool() {
-        final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
-        final int poolSize = config.getOptionalValue("resteasy.async.timeout.scheduler.min.pool.size", Integer.class)
-                .orElse(1);
+        final int poolSize = getConfigValue("resteasy.async.timeout.scheduler.min.pool.size", Integer.class, () -> 1);
         return scheduledThreadPool(poolSize, new ContextualThreadFactory("contextual-scheduled-pool"));
     }
 
@@ -332,7 +330,8 @@ public class ContextualExecutors {
             });
         }
         // Load any registered providers
-        final ThreadContexts threadContexts = ResteasyProviderFactory.getInstance().getContextData(ThreadContexts.class);
+        final ThreadContexts threadContexts = ResteasyProviderFactory.getInstance()
+                .getContextData(ThreadContexts.class);
         if (threadContexts != null) {
             for (ThreadContext<Object> context : threadContexts.getThreadContexts()) {
                 contexts.put(context, context.capture());
@@ -383,6 +382,20 @@ public class ContextualExecutors {
             JNDI_LOOKUPS.put(jndiName, Boolean.FALSE);
         }
         return null;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static <T> T getConfigValue(final String name, final Class<T> type, final Supplier<T> dft) {
+        if (System.getSecurityManager() == null) {
+            return ConfigurationFactory.getInstance().getConfiguration()
+                    .getOptionalValue(name, type)
+                    .orElseGet(dft);
+        }
+        return AccessController.doPrivileged((PrivilegedAction<T>) () ->
+                ConfigurationFactory.getInstance().getConfiguration()
+                        .getOptionalValue(name, type)
+                        .orElseGet(dft)
+        );
     }
 
     private static class ContextualThreadFactory implements ThreadFactory {
