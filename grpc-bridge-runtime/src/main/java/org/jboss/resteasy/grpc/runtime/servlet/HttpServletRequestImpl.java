@@ -55,6 +55,7 @@ import jakarta.ws.rs.core.UriInfo;
 public class HttpServletRequestImpl implements HttpServletRequest {
 
    public static final String GRPC_RETURN_RESPONSE = "grpc-return-response";
+   public static final String LOCATOR = "LOCATOR";
 
    private ServletResponse servletResponse;
    private String uri;
@@ -450,7 +451,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    @Override
    public String getMethod() {
-      return method;
+      return LOCATOR.equals(method) ? null : method;
    }
 
    @Override
@@ -740,7 +741,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
    public void setReturnType(String returnType) {
       this.returnType = returnType;
-      if ("com.google.protobuf.Any".equals(returnType)) {
+      if ("com.google.protobuf.Any".equals(returnType) || "Any".equals(returnType)) {
          List<String> list = new ArrayList<String>();
          list.add("true");
          headers.put(GRPC_RETURN_RESPONSE, list);

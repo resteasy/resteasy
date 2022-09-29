@@ -126,7 +126,9 @@ public class ReaderWriterGenerator {
         .append("        MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {\n")
         .append("      try {\n")
         .append("      if (httpHeaders.getFirst(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
-        .append("         return Any.parseFrom(CodedInputStream.newInstance(entityStream));\n")
+        .append("         Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));\n")
+        .append("         Message m = any.unpack(").append(args[2]).append("_JavabufTranslator.translateToJavabufClass(type));\n")
+        .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(m);\n")
         .append("      } else {\n")
         .append("         GeneratedMessageV3 message = getMessage(type, entityStream);\n")
         .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(message);\n")
@@ -137,7 +139,7 @@ public class ReaderWriterGenerator {
         .append("   }\n\n")
         .append("   @Override\n")
         .append("   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {\n")
-        .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);\n")
+       .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);\n")
         .append("   }\n\n")
         .append("   @Override\n")
         .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType,\n")
@@ -240,12 +242,20 @@ public class ReaderWriterGenerator {
 
    private static String originalSimpleName(String s) {
       int i = s.lastIndexOf("___");
-      return i < 0 ? s : s.substring(i + 3);
+      if (i >= 0) {
+         return s.substring(i + "___".length());
+      }
+      i = s.indexOf("_INNER_");
+      if (i >= 0) {
+         return s.substring(i + "_INNER_".length());
+      }
+      return s;
    }
 
    private static String originalClassName(String s) {
       int i = s.indexOf("$");
       int j = s.lastIndexOf("___");
+      j = j < 0 ? s.indexOf("_INNER_") : j;
       j = j < 0 ? s.length() : j;
       String pkg = s.substring(i + 1, j).replace('_', '.');
       return pkg + "." + originalSimpleName(s);

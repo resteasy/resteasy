@@ -188,8 +188,11 @@ public class JavabufTranslatorGenerator {
             continue;
          } else {
             sb.append("import ")
-            .append(originalClassName(clazz.getName()))
-            .append(";\n");
+              .append(originalClassName(clazz.getName()))
+              .append(";\n");
+            sb.append("import ")
+              .append(clazz.getName().replace("$", "."))
+              .append(";\n");
          }
       }
       sb.append("\n");
@@ -233,11 +236,8 @@ public class JavabufTranslatorGenerator {
             continue;
          }
          int i = simpleName.lastIndexOf("___");
-         String originalClassName
-            = i >= 0 ? simpleName.substring(i + 3)
-                     : (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName) ? simpleName.substring(1) : simpleName);
          sb.append("      toJavabufMap.put(")
-           .append(originalClassName)
+           .append(originalClassName(simpleName))
            .append(".class, new ")
            .append(simpleName)
            .append("_ToJavabuf());\n");
@@ -246,6 +246,9 @@ public class JavabufTranslatorGenerator {
            .append(", new ")
            .append(simpleName)
            .append("_FromJavabuf());\n");
+         sb.append("      toJavabufClassMap.put(")
+           .append(originalClassName(simpleName) + ".class, ")
+           .append(simpleName + ".class);\n");
       }
       sb.append("   }\n\n");
    }
@@ -263,6 +266,10 @@ public class JavabufTranslatorGenerator {
         .append("         throw new RuntimeException(o.getClass() + \" is not recognized\");\n")
         .append("      }\n")
         .append("      return ttj.assignToJavabuf(o);\n")
+        .append("   }\n\n")
+        .append("   @SuppressWarnings(\"rawtypes\")\n")
+        .append("   public static Class translateToJavabufClass(Class<?> clazz) {\n")
+        .append("      return toJavabufClassMap.get(clazz);\n")
         .append("   }\n\n")
         .append("   public static Object translateFromJavabuf(Message message) {\n")
         .append("      String s = null;\n")
@@ -288,6 +295,8 @@ public class JavabufTranslatorGenerator {
    private static void privateVariables(StringBuilder sb) {
       sb.append("   private static Map<Class<?>, TranslateToJavabuf> toJavabufMap = new HashMap<Class<?>, TranslateToJavabuf>();\n");
       sb.append("   private static Map<String, TranslateFromJavabuf> fromJavabufMap = new HashMap<String, TranslateFromJavabuf>();\n\n");
+      sb.append("   @SuppressWarnings(\"rawtypes\")\n");
+      sb.append("   private static Map<Class<?>, Class> toJavabufClassMap = new HashMap<Class<?>, Class>();\n");
    }
 
    private static void privateMethods(StringBuilder sb) {
@@ -429,6 +438,9 @@ public class JavabufTranslatorGenerator {
    }
 
    private static void createTranslatorFromJavabuf(Class<?> clazz, StringBuilder sb) throws ClassNotFoundException {
+      if (clazz.isInterface()) {
+         return;
+      }
       String originalName = originalSimpleName(clazz.getName());
       if ("gEmpty".equals(originalName)) {
          return;
@@ -537,6 +549,11 @@ public class JavabufTranslatorGenerator {
       if (i >= 0) {
          return s.substring(i + 3).replace('$', '.');
       }
+      // inner class
+      i = s.indexOf("_INNER_");
+      if (i >= 0) {
+         return s.substring(i + "_INNER_".length());
+      }
       // primitive class
       i = s.lastIndexOf("$");
       if (i >= 0) {
@@ -549,16 +566,25 @@ public class JavabufTranslatorGenerator {
    }
 
    private static String originalClassName(String s) {
+      if (PRIMITIVE_WRAPPER_TYPES.containsKey(s)) {
+         return s.substring(1);
+      }
       int i = s.indexOf("$");
+      if (i >= 0) {
+         s = s.substring(i + 1);
+      }
       int j = s.lastIndexOf("___");
-      j = j < 0 ? s.length() : j;
-      String pkg = s.substring(i + 1, j).replace('_', '.');
-      return pkg + "." + originalSimpleName(s);
+      if (j < 0) {
+         j = s.indexOf("_INNER_");
+      }
+      if (j >= 0) {
+         String pkg = s.substring(0, j).replace('_', '.');
+         return pkg + "." + originalSimpleName(s);
+      }
+      return s;
    }
 
    private static int findConstructor(Class<?> clazz, String simpleName) throws ClassNotFoundException {
-//      int n = clazz.getName().lastIndexOf(".");
-//      String className = n < 0 ? simpleName : clazz.getName().substring(0, n + 1) + simpleName;
       String className = javabufToJava(clazz.getName(), simpleName);
       Class<?> originalClazz = Class.forName(className);
       Constructor<?>[] cons = originalClazz.getConstructors();
@@ -582,6 +608,17 @@ public class JavabufTranslatorGenerator {
       n = tmp.lastIndexOf("___");
       if (n >= 0) {
          tmp = tmp.substring(0, n);
+      } else {
+         n = tmp.indexOf("_INNER_");
+         if (n >= 0) {
+            tmp = tmp.substring(0, n);
+            n = simpleName.indexOf("_INNER_");
+            if (n >= 0) {
+               tmp += "$" + simpleName.substring(n + "_INNER_".length());
+            }
+            tmp = tmp.replace("_", ".");
+            return tmp;
+         }
       }
       tmp = tmp.replace("_", ".");
       return tmp + "." + simpleName;

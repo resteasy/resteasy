@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
@@ -42,6 +43,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.declarations.ResolvedClassDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -51,6 +53,7 @@ import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.reflectionmodel.ReflectionClassDeclaration;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.Log;
@@ -199,6 +202,7 @@ public class JavaToProtobufGenerator {
    private static List<ResolvedReferenceTypeDeclaration> resolvedTypes = new CopyOnWriteArrayList<ResolvedReferenceTypeDeclaration>();
    private static Set<String> entityMessageTypes = new HashSet<String>();
    private static Set<String> returnMessageTypes = new HashSet<String>();
+   private static Set<String> jars;
    private static Set<String> additionalClasses;// = new CopyOnWriteArraySet<String>();
    private static Set<String> visited = new HashSet<String>();
    private static JavaSymbolSolver symbolSolver;
@@ -293,18 +297,25 @@ public class JavaToProtobufGenerator {
 
    public static void main(String[] args) throws IOException
    {
-      if (args == null || (args.length != 4 && args.length != 5)) {
-         logger.info("need four or five args");
+      if (args == null || (args.length != 4)) {
+         logger.info("need four args");
          logger.info("  arg[0]: root directory");
          logger.info("  arg[1]: package to be used in .proto file");
          logger.info("  arg[2]: java package to be used in .proto file");
          logger.info("  arg[3]: java outer classname to be generated from .proto file");
-         logger.info("  arg[4]: comma separated of addition classes [optional]");
+         logger.info("  -Djars: comma separated of jars [optional]");
+         logger.info("  -Dclasses: comma separated of addition classes [optional]");
          return;
       }
       prefix = args[3];
-      additionalClasses = args[4] == null ? new CopyOnWriteArraySet<String>()
-                                          : new CopyOnWriteArraySet<String>(Arrays.asList(args[4].split(",")));
+      String s = System.getProperty("jars", "default");
+      jars = "default".equals(s) || "".equals(s)
+            ? new CopyOnWriteArraySet<String>()
+            : new CopyOnWriteArraySet<String>(Arrays.asList(s.split(",")));
+      s = System.getProperty("classes", "default");
+      additionalClasses = "default".equals(s) || "".equals(s)
+            ? new CopyOnWriteArraySet<String>()
+            : new CopyOnWriteArraySet<String>(Arrays.asList(s.split(",")));
       StringBuilder sb = new StringBuilder();
       protobufHeader(args, sb);
       new JavaToProtobufGenerator().processClasses(args, sb);
@@ -342,6 +353,10 @@ public class JavaToProtobufGenerator {
       CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
       combinedTypeSolver.add(reflectionTypeSolver);
       combinedTypeSolver.add(javaParserTypeSolver);
+      for (Iterator<String> it = jars.iterator(); it.hasNext(); ) {
+         String s = it.next();
+         combinedTypeSolver.add(new JarTypeSolver(s));
+      }
       symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
       sourceRoot.getParserConfiguration().setSymbolResolver(symbolSolver);
       List<ParseResult<CompilationUnit>> list = sourceRoot.tryToParseParallelized();
@@ -356,8 +371,7 @@ public class JavaToProtobufGenerator {
 
    /****************************************************************************/
    /****************************** primary methods *****************************
-   /
-    * @throws FileNotFoundException ****************************************************************************/
+   /*****************************************************************************/
 
    private static void processAdditionalClasses(JavaSymbolSolver symbolSolver, StringBuilder sb) throws FileNotFoundException {
       StaticJavaParser.getConfiguration().setSymbolResolver(symbolSolver);
@@ -440,12 +454,13 @@ public class JavaToProtobufGenerator {
         .append("   string URL = ").append(counter++).append(";\n")
         .append("   map<string, gHeader> headers = ").append(counter++).append(";\n")
         .append("   repeated gCookie cookies = ").append(counter++).append(";\n")
+        .append("   string httpMethod = ").append(counter++).append(";\n")
         .append("   oneof messageType {\n");
       for (String messageType : entityMessageTypes) {
          sb.append("      ")
          .append(messageType)
          .append(" ")
-         .append(messageType).append("_field")
+         .append(namify(messageType)).append("_field")
          .append(" = ")
          .append(counter++)
          .append(";\n");
@@ -514,7 +529,7 @@ public class JavaToProtobufGenerator {
          for (BodyDeclaration<?> bd : subClass.getMembers()) {
             if (bd instanceof MethodDeclaration) {
                MethodDeclaration md = (MethodDeclaration) bd;
-               if (!isResourceMethod(md)) {
+               if (!isResourceOrLocatorMethod(md)) {
                   continue;
                }
                String methodPath = "";
@@ -528,16 +543,19 @@ public class JavaToProtobufGenerator {
                // Add service with a method for each resource method in class.
                if (!started) {
                   sb.append("\nservice ")
-//                  .append(fqnify(subClass.getNameAsString()))
                   .append(prefix)
                   .append("Service {\n");
                   started = true;
                }
-               String entityType = getEntityParameter(md);
-               String returnType = getReturnType(md);
+               String entityType = getEntityParameter(md, httpMethod);
+               String returnType = getReturnType(md, httpMethod);
                String syncType = isSuspended(md) ? "suspended" : (isCompletionStage(md) ? "completionStage" : (isSSE(md) ? "sse" : "sync"));
                isSuspended(md);
-               sb.append("// ").append(classPath).append("/").append(methodPath).append(" ")
+               sb.append("// ");
+               if (!("".equals(classPath))) {
+                  sb.append(classPath).append("/");
+               }
+               sb.append(methodPath).append(" ")
                  .append(entityType).append(" ")
                  .append(returnType).append(" ")
                  .append(httpMethod).append(" ")
@@ -583,6 +601,9 @@ public class JavaToProtobufGenerator {
        */
       public void visit(ResolvedReferenceTypeDeclaration clazz, StringBuilder sb) {
          resolvedTypes.remove(clazz);
+         if (clazz.isInterface()) {
+            return;
+         }
          if (clazz.getPackageName().startsWith("java")) {
             return;
          }
@@ -599,7 +620,7 @@ public class JavaToProtobufGenerator {
          visited.add(fqn);
 
          // Begin protobuf message definition.
-         sb.append("\nmessage ").append(fqnifyClass(fqn)).append(" {\n");
+         sb.append("\nmessage ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {\n");
 
          // Scan all variables in class.
          for (ResolvedFieldDeclaration rfd: clazz.getDeclaredFields()) {
@@ -621,7 +642,7 @@ public class JavaToProtobufGenerator {
                   if (!visited.contains(fqn)) {
                      resolvedTypes.add(ct.asReferenceType().getTypeDeclaration().get());
                   }
-                  type = "repeated " + fqnifyClass(fqn);
+                  type = "repeated " + fqnifyClass(fqn, isInnerClass(ct.asReferenceType().getTypeDeclaration().get()));
                }
             } else { // Defined type
                if (rfd.getType().isReferenceType()) {
@@ -630,7 +651,7 @@ public class JavaToProtobufGenerator {
                   if (!visited.contains(fqn)) {
                      resolvedTypes.add(rrtd);
                   }
-                  type = fqnifyClass(fqn);
+                  type = fqnifyClass(fqn, isInnerClass(rrtd));
                } else if (rfd.getType().isTypeVariable()) {
                   type = "bytes ";
                }
@@ -653,7 +674,7 @@ public class JavaToProtobufGenerator {
                if (Object.class.getName().equals(rcd.getQualifiedName())) {
                   continue;
                }
-               fqn = fqnifyClass(rcd.getPackageName() + "." + rcd.getName());
+               fqn = fqnifyClass(rcd.getPackageName() + "." + rcd.getName(), isInnerClass(rrt.getTypeDeclaration().get()));
                if (!visited.contains(fqn)) {
                   resolvedTypes.add(rcd);
                }
@@ -677,7 +698,7 @@ public class JavaToProtobufGenerator {
                if (!visited.contains(fqn)) {
                   resolvedTypes.add(rcd);
                }
-               fqn = fqnifyClass(fqn);
+               fqn = fqnifyClass(fqn, isInnerClass(rrt.getTypeDeclaration().get()));
                String superClassName = rcd.getName();
                String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0))).concat(superClassName.substring(1)) + "___super";
                sb.append("  ")
@@ -723,7 +744,7 @@ public class JavaToProtobufGenerator {
          visited.add(fqn);
 
          // Begin protobuf message definition.
-         sb.append("\nmessage ").append(fqnifyClass(fqn)).append(" {\n");
+         sb.append("\nmessage ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {\n");
 
          // Scan all variables in class.
          for (FieldDeclaration fd: clazz.getFields()) {
@@ -740,13 +761,13 @@ public class JavaToProtobufGenerator {
                   typeName = "repeated " + typeName;
                } else {
                   fqn = type.describe();
-                     additionalClasses.add(dir + ":" + fqn);
-                  typeName = "repeated " + fqnifyClass(fqn);
+                  additionalClasses.add(dir + ":" + fqn);
+                  typeName = "repeated " + fqnifyClass(fqn, isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
                }
             } else { // Defined type
                fqn = type.describe();
                additionalClasses.add(dir + ":" + fqn);
-               typeName = fqnifyClass(type.describe());
+               typeName = fqnifyClass(type.describe(), isInnerClass(type.asReferenceType().getTypeDeclaration().get()));
             }
             if (type != null) {
                sb.append("  ")
@@ -774,7 +795,7 @@ public class JavaToProtobufGenerator {
                if (!visited.contains(fqn)) { // should fqn be fqnifyed?
                   additionalClasses.add(dir + ":" + fqn);   // add to additionalClasses
                }
-               fqn = fqnifyClass(fqn);
+               fqn = fqnifyClass(fqn, isInnerClass(rcd));
                String superClassName = rcd.getName();
                String superClassVariableName = Character.toString(Character.toLowerCase(superClassName.charAt(0))).concat(superClassName.substring(1)) + "___super";
                sb.append("  ")
@@ -803,8 +824,11 @@ public class JavaToProtobufGenerator {
 
    /****************************************************************************/
    /****************************** utility methods *****************************
-   /****************************************************************************/
-   private static String getEntityParameter(MethodDeclaration md) {
+   /*****************************************************************************/
+   private static String getEntityParameter(MethodDeclaration md, String httpMethod) {
+      if (HttpServletRequestImpl.LOCATOR.equals(httpMethod)) {
+         return "google.protobuf.Any";
+      }
       for (Parameter p : md.getParameters()) {
          if (isEntity(p)) {
             String rawType = p.getTypeAsString();
@@ -816,7 +840,7 @@ public class JavaToProtobufGenerator {
             resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
             String type = rt.describe();
             int n = type.lastIndexOf(".");
-            return fqnify(type.substring(0, n)) + "___" + type.substring(n + 1);
+            return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
          }
       }
       needEmpty = true;
@@ -836,8 +860,8 @@ public class JavaToProtobufGenerator {
       return true;
    }
 
-   private static String getReturnType(MethodDeclaration md) {
-      if (isSuspended(md)) {
+   private static String getReturnType(MethodDeclaration md, String httpMethod) {
+      if (isSuspended(md) || HttpServletRequestImpl.LOCATOR.equals(httpMethod)) {
          return "google.protobuf.Any";
       }
       if (isSSE(md)) {
@@ -870,7 +894,7 @@ public class JavaToProtobufGenerator {
             ResolvedType rt = ((Type) node).resolve();
             resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
             String type = ((Type) node).resolve().describe();
-            return fqnifyClass(type);
+            return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
          }
       }
       needEmpty = true;
@@ -935,10 +959,9 @@ public class JavaToProtobufGenerator {
       return false;
    }
 
-   // @Path() ???
-   private static boolean isResourceMethod(MethodDeclaration md) {
+   private static boolean isResourceOrLocatorMethod(MethodDeclaration md) {
       for (AnnotationExpr ae : md.getAnnotations()) {
-         if (HTTP_VERBS.contains(ae.getNameAsString().toUpperCase())) {
+         if (HTTP_VERBS.contains(ae.getNameAsString().toUpperCase()) || "Path".equals(ae.getNameAsString())) {
             return true;
          }
       }
@@ -953,14 +976,29 @@ public class JavaToProtobufGenerator {
       return classType.substring(0, left);
    }
 
-   private static String fqnify(String s) {
-      return s.replace(".", "_");
+   private static boolean isInnerClass(ResolvedReferenceTypeDeclaration clazz) {
+      try {
+         Optional<?> opt = clazz.containerType();
+         if (opt.isEmpty()) {
+            return false;
+         }
+         ResolvedTypeDeclaration rtd = clazz.containerType().get();
+         return rtd.isClass();
+      } catch (Exception e) {
+         return false;
+      }
    }
 
-   private static String fqnifyClass(String s) {
-      String t = s.replace(".", "_");
-      int i = t.lastIndexOf("_");
-      return t.substring(0, i) + "__" + t.substring(i);
+   private static boolean isInnerClass(ClassOrInterfaceDeclaration clazz) {
+      return clazz.isNestedType();
+   }
+
+   private static String fqnifyClass(String s, boolean isInnerClass) {
+      int l = s.lastIndexOf(".");
+      String sPackage = s.substring(0, l).replace(".", "_");
+      String separator = isInnerClass ? "_INNER_" : "___";
+      String className = s.substring(l + 1);
+      return sPackage + separator + className;
    }
 
    private static String namify(String s) {
@@ -977,12 +1015,18 @@ public class JavaToProtobufGenerator {
       if (!md.getAnnotationByName("HEAD").isEmpty()) {
          return "HEAD";
       }
+      if (!md.getAnnotationByName("OPTIONS").isEmpty()) {
+          return "OPTIONS";
+      }
+      if (!md.getAnnotationByName("PATCH").isEmpty()) {
+         return "PATCH";
+      }
       if (!md.getAnnotationByName("POST").isEmpty()) {
          return "POST";
       }
       if (!md.getAnnotationByName("PUT").isEmpty()) {
          return "PUT";
       }
-      return "";
+      return HttpServletRequestImpl.LOCATOR;
    }
 }
