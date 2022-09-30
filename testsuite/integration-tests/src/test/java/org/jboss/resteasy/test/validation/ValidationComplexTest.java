@@ -143,6 +143,7 @@ public class ValidationComplexTest {
             new PropertyPermission("ipv6", "read"),
             new PropertyPermission("node", "read"),
             new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new RuntimePermission("getenv.RESTEASY_PORT"),

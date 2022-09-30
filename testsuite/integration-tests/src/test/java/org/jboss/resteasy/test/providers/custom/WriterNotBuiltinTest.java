@@ -20,11 +20,9 @@ import org.junit.runner.RunWith;
 import jakarta.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
-import java.security.SecurityPermission;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Providers
@@ -42,23 +40,18 @@ public class WriterNotBuiltinTest {
       WebArchive war = TestUtil.prepareArchive(WriterNotBuiltinTest.class.getSimpleName());
       war.addClass(ReaderWriterCustomer.class);
       war.addClass(PortProviderUtil.class);
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new RuntimePermission("accessDeclaredMembers"),
-            new ReflectPermission("suppressAccessChecks")
-      ), "permissions.xml");
       Map<String, String> contextParams = new HashMap<>();
       contextParams.put("resteasy.use.builtin.providers", "false");
       // Arquillian in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new LoggingPermission("control", ""),
             new PropertyPermission("arquillian.*", "read"),
             new PropertyPermission("ipv6", "read"),
             new PropertyPermission("node", "read"),
             new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
-            new SecurityPermission("insertProvider"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, contextParams, WriterNotBuiltinTestWriter.class, ReaderWriterResource.class);

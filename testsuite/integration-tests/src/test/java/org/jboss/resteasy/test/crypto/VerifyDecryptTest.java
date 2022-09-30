@@ -74,6 +74,10 @@ public class VerifyDecryptTest {
       war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycert.pem", "mycert.pem");
       war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycertPrivate.pem", "mycert-private.pem");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            // Can be removed when WFLY-17061 is resolved
+            PermissionUtil.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
+            // Can be removed when WFLY-17061 is resolved
+            new RuntimePermission("getClassLoader"),
             new RuntimePermission("getenv.org.apache.james.mime4j.defaultStorageProvider"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers")

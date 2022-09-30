@@ -71,6 +71,7 @@ public class JsonBindingDebugLoggingTest {
               new PropertyPermission("ipv6", "read"),
               new RuntimePermission("getenv.RESTEASY_PORT"),
               new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("quarkus.tester", "read"),
               new PropertyPermission("jboss.server.base.dir", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);

@@ -34,6 +34,8 @@ public class DeploymentTest {
       WebArchive war = TestUtil.prepareArchiveWithApplication(DeploymentTest.class.getSimpleName(), WadlTestApplication.class);
       war.addPackages(true, "org.jboss.resteasy.wadl");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              // Can be removed when WFLY-17065 is resolved
+              PermissionUtil.addModuleFilePermission("org.glassfish.jaxb"),
               new RuntimePermission("getClassLoader"),
               new ReflectPermission("suppressAccessChecks"),
               new RuntimePermission("accessDeclaredMembers")

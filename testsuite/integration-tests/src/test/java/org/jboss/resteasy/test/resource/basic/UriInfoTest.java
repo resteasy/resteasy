@@ -69,7 +69,8 @@ public class UriInfoTest {
             new PropertyPermission("node", "read"),
             new PropertyPermission("ipv6", "read"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
-            new PropertyPermission("org.jboss.resteasy.port", "read")
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
    }
@@ -91,7 +92,8 @@ public class UriInfoTest {
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
             new PropertyPermission("ipv6", "read"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
-            new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read")), "permissions.xml");
       List<Class<?>> singletons = new ArrayList<>();
       singletons.add(UriInfoSimpleSingletonResource.class);
       return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);

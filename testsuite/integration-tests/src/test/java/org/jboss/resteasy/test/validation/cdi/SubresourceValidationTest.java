@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -12,6 +13,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationQuer
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationResource;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationSubResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,6 +39,7 @@ public class SubresourceValidationTest {
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(SubresourceValidationTest.class.getSimpleName())
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(HibernateValidatorPermission.ACCESS_PRIVATE_MEMBERS), "permissions.xml")
             .addClasses(SubresourceValidationResource.class, SubresourceValidationSubResource.class, SubresourceValidationQueryBeanParam.class)
             .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, SubresourceValidationResource.class);

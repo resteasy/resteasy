@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.client.exception;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PropertyPermission;
 
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ClientErrorException;
@@ -41,6 +42,7 @@ import org.jboss.resteasy.client.exception.ResteasyServiceUnavailableException;
 import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionApplication;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -170,7 +172,14 @@ public class ClientWebApplicationExceptionTest {
 
    @Deployment(name = newBehaviorDeploymentName)
    public static Archive<?> deployNewBehavior() {
-      WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName);
+      WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName)
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("ipv6", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("quarkus.tester", "read"),
+              new PropertyPermission("node", "read")
+      ), "permissions.xml");
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionApplication.class);
       war.addClass(ClientWebApplicationExceptionResource.class);
@@ -181,7 +190,14 @@ public class ClientWebApplicationExceptionTest {
 
    @Deployment(name = oldBehaviorDeploymentName)
    public static Archive<?> deployOldBehaviour() {
-      WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName);
+      WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName)
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("ipv6", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("quarkus.tester", "read"),
+              new PropertyPermission("node", "read")
+      ), "permissions.xml");
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionApplication.class);
       war.addClass(ClientWebApplicationExceptionResource.class);

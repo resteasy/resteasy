@@ -16,6 +16,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -51,9 +52,11 @@ public class CustomJackson2ProviderTest {
             new RuntimePermission("getProtectionDomain"),
             new RuntimePermission("accessDeclaredMembers"),
             new ReflectPermission("suppressAccessChecks"),
-            new PropertyPermission("org.jboss.resteasy.max_mediatype_cache_size", "read"),
-            new PropertyPermission("resteasy.allowGzip", "read"),
-            new PropertyPermission("resteasy.server.tracing.*", "read")
+            // Allow reading all properties and environment variables from the deployment since RESTEasy is in the
+            // deployment.
+            new ConfigPropertyPermission("*"),
+            new PropertyPermission("*", "read"),
+            new RuntimePermission("getenv.*")
       ), "permissions.xml");
       MavenUtil mavenUtil;
       mavenUtil = MavenUtil.create(true);

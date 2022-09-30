@@ -21,8 +21,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
-import java.io.File;
-import java.io.FilePermission;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +50,8 @@ public class RangeTest {
       WebArchive war = TestUtil.prepareArchive(RangeTest.class.getSimpleName());
       // Deployment creates file in the filesystem
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new FilePermission(File.separator + "tmp" + File.separator + "-", "read,write,delete")), "permissions.xml");
+              PermissionUtil.createTempDirPermission("read,write,delete")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, RangeResource.class);
    }
 

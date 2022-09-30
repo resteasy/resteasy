@@ -60,7 +60,7 @@
         <version.surefire.plugin>3.0.0-M7</version.surefire.plugin>
 
         <!-- Test options -->
-        <additionalJvmArgs/>
+        <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
     </properties>
 
     <url>https://resteasy.dev</url>
@@ -240,7 +240,7 @@
             </activation>
             <properties>
                 <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
-                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true -Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
             </properties>
         </profile>
     </profiles>

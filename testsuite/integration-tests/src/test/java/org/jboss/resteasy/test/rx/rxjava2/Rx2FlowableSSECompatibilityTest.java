@@ -20,6 +20,7 @@ import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableableSSECompatibilityResource;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableableSSECompatibilityResourceImpl;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -59,7 +60,11 @@ public class Rx2FlowableSSECompatibilityTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Rx2FlowableSSECompatibilityTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(Rx2FlowableSSECompatibilityTest.class.getSimpleName())
+              .addAsManifestResource(
+                      // Required until WFLY-17051 is resolved
+                      PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")),
+                      "permissions.xml");
       war.addClass(Thing.class);
       war.addClass(Rx2FlowableableSSECompatibilityResource.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"

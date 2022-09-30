@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers.datasource;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FilePermission;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,9 +50,10 @@ public class ReadDataSourceTwiceCountTempFileTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ReadDataSourceTwiceCountTempFileResource.class.getSimpleName());
       // DataSource provider creates tmp file in the filesystem
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read"),
-            new PropertyPermission("java.io.tmpdir", "read"),
-            new FilePermission("/tmp", "read")), "permissions.xml");
+      war.addAsManifestResource(PermissionUtil.Builder.create()
+              .add(new PropertyPermission("java.io.tmpdir", "read"))
+              .add(PermissionUtil.createTempDirPermission("read"))
+              .build(), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, ReadDataSourceTwiceCountTempFileResource.class);
    }
 

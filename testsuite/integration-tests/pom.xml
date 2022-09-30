@@ -45,6 +45,8 @@
         <container.qualifier.manual.ssl.wrong>jbossas-manual-ssl-wrong</container.qualifier.manual.ssl.wrong>
         <container.qualifier.manual.ssl.wildcard>jbossas-manual-ssl-wildcard</container.qualifier.manual.ssl.wildcard>
         <container.qualifier.manual.ssl.sni>jbossas-manual-ssl-sni</container.qualifier.manual.ssl.sni>
+
+        <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -473,6 +475,14 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <TEST_ENV_VAR>test-env-value</TEST_ENV_VAR>
+                    </environmentVariables>
+                    <systemPropertyVariables>
+                        <module.jar.path>${module.jar.path}</module.jar.path>
+                    </systemPropertyVariables>
+                </configuration>
                     <executions>
 
                         <!-- Re-evaluate https://issues.jboss.org/browse/RESTEASY-1884 in case we find ourselves

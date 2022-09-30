@@ -19,6 +19,7 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseNoStreamResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -45,7 +46,14 @@ public class PublisherResponseNoStreamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PublisherResponseNoStreamTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(PublisherResponseNoStreamTest.class.getSimpleName())
+              .addAsManifestResource(
+                      // Required until WFLY-17051 is resolved
+                      PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson"),
+                              // Required for RxJava SingleScheduler which in a static block creates and shuts down an executor
+                              new RuntimePermission("modifyThread")
+                              ),
+                      "permissions.xml");
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseNoStreamResource.class,
