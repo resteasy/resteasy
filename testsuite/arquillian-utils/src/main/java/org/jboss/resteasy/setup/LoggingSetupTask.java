@@ -50,9 +50,14 @@ public class LoggingSetupTask extends SnapshotServerSetupTask implements ServerS
         }
         for (Map.Entry<String, Set<String>> entry : getLogLevels().entrySet()) {
             for (String logger : entry.getValue()) {
-                final ModelNode address = Operations.createAddress("subsystem", "logging", "logger", logger);
+                final ModelNode address;
+                if (logger.isBlank()) {
+                    address = Operations.createAddress("subsystem", "logging", "root-logger", "ROOT");
+                } else {
+                    address = Operations.createAddress("subsystem", "logging", "logger", logger);
+                }
                 final ModelNode op;
-                if (loggerExists(client.getControllerClient(), logger)) {
+                if (loggerExists(client.getControllerClient(), address)) {
                     op = Operations.createWriteAttributeOperation(address, "level", entry.getKey());
                 } else {
                     op = Operations.createAddOperation(address);
@@ -64,8 +69,8 @@ public class LoggingSetupTask extends SnapshotServerSetupTask implements ServerS
         executeOp(client.getControllerClient(), builder.build());
     }
 
-    private boolean loggerExists(final ModelControllerClient client, final String loggerName) throws IOException {
-        final ModelNode op = Operations.createReadResourceOperation(Operations.createAddress("subsystem", "logging", "logger", loggerName));
+    private boolean loggerExists(final ModelControllerClient client, final ModelNode address) throws IOException {
+        final ModelNode op = Operations.createReadResourceOperation(address);
         final ModelNode result = client.execute(op);
         return Operations.isSuccessfulOutcome(result);
     }

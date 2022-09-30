@@ -44,6 +44,7 @@ public class UndertowTest {
             new PropertyPermission("ipv6", "read"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read"),
             new SocketPermission("[" + PortProviderUtil.getHost() + "]", "connect,resolve")), "permissions.xml");
       return war;
    }

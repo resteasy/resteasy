@@ -19,6 +19,9 @@
 
 package org.jboss.resteasy.test.core.basic;
 
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -26,6 +29,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -51,7 +55,17 @@ public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends Disable
                         ExceptionResource.class,
                         TestUtil.class
                 )
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                // These can be removed if WFARQ-118 is resolved
+                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                                // Required for Arquillian
+                                new ReflectPermission("suppressAccessChecks"),
+                                new PropertyPermission("arquillian.*", "read"),
+                                new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+                                // Required for JUnit
+                                new RuntimePermission("accessDeclaredMembers")
+                        ),
+                        "permissions.xml");
     }
 
     /**

@@ -19,13 +19,18 @@
 
 package org.jboss.resteasy.test.cdi.injection;
 
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.cdi.injection.resource.RequiredInjectableContextResource;
 import org.jboss.resteasy.test.cdi.injection.resource.RootApplication;
 import org.jboss.resteasy.test.cdi.injection.resource.TestProducer;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -47,7 +52,16 @@ public class OverriddenInjectableContextTest {
     public static Archive<?> deployment() {
         return ShrinkWrap.create(WebArchive.class, RequiredInjectableContextTest.class.getSimpleName() + ".war")
                 .addClasses(RequiredInjectableContextResource.class, RootApplication.class, TestProducer.class)
-                .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
+                .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
+                // This can be removed if WFARQ-118 is resolved
+                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                                // Required for Arquillian
+                                new ReflectPermission("suppressAccessChecks"),
+                                new PropertyPermission("arquillian.debug", "read"),
+                                // Required for JUnit
+                                new RuntimePermission("accessDeclaredMembers")
+                        ),
+                        "permissions.xml");
     }
 
     @Test

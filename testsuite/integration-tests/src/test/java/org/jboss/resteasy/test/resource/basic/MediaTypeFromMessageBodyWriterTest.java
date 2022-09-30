@@ -19,6 +19,7 @@ import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyW
 import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyWriterListAsXML;
 import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyWriterResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -74,7 +75,11 @@ public class MediaTypeFromMessageBodyWriterTest {
 
    @Deployment(name = "multiple")
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName())
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                      // Required for MediaTypeFromMessageBodyWriterResource.hello
+                      new RuntimePermission("accessDeclaredMembers")
+              ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null,
               MediaTypeFromMessageBodyWriterListAsText.class,
               MediaTypeFromMessageBodyWriterListAsXML.class,

@@ -20,6 +20,7 @@ import org.jboss.resteasy.rxjava2.ObservableRxInvoker;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2ObservableSSECompatibilityResource;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2ObservableSSECompatibilityResourceImpl;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -59,7 +60,11 @@ public class Rx2ObservableSSECompatibilityTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Rx2ObservableSSECompatibilityTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(Rx2ObservableSSECompatibilityTest.class.getSimpleName())
+              .addAsManifestResource(
+                      // Required until WFLY-17051 is resolved
+                      PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")),
+                      "permissions.xml");
       war.addClass(Thing.class);
       war.addClass(Rx2ObservableSSECompatibilityResource.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"

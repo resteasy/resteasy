@@ -53,7 +53,8 @@ public class ReponseInfoTest {
             new PropertyPermission("node", "read"),
             new PropertyPermission("ipv6", "read"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
-            new PropertyPermission("org.jboss.resteasy.port", "read")
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
    }

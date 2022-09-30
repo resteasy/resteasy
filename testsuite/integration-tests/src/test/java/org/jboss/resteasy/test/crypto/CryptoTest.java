@@ -19,6 +19,7 @@ import org.jboss.resteasy.test.crypto.resource.CryptoEncryptedSignedResource;
 import org.jboss.resteasy.test.crypto.resource.CryptoPkcs7SignedResource;
 import org.jboss.resteasy.test.crypto.resource.CryptoSignedResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -78,7 +79,14 @@ public class CryptoTest {
 
    @Deployment
    public static Archive<?> deploy() throws IOException {
-      WebArchive war = TestUtil.prepareArchive(CryptoTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(CryptoTest.class.getSimpleName())
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                              // Can be removed when WFLY-17061 is resolved
+                              PermissionUtil.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
+                              // Can be removed when WFLY-17061 is resolved
+                              new RuntimePermission("getClassLoader")
+                      ),
+                      "permissions.xml");
       try {
          BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
          Security.addProvider(bouncyCastleProvider);

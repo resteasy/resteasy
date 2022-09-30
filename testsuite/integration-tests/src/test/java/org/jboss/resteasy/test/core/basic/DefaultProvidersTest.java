@@ -19,7 +19,9 @@
 
 package org.jboss.resteasy.test.core.basic;
 
+import java.lang.reflect.ReflectPermission;
 import java.net.URL;
+import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -38,6 +40,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -69,7 +72,17 @@ public class DefaultProvidersTest {
                         UnsupportedOperationExceptionMapper.class,
                         TestUtil.class
                 )
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                // This can be removed if WFARQ-118 is resolved
+                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                                // Required for Arquillian
+                                new ReflectPermission("suppressAccessChecks"),
+                                new PropertyPermission("arquillian.*", "read"),
+                                new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+                                // Required for JUnit
+                                new RuntimePermission("accessDeclaredMembers")
+                        ),
+                        "permissions.xml");
     }
 
     @Test

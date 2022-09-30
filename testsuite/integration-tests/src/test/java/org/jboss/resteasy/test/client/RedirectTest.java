@@ -43,6 +43,7 @@ public class RedirectTest extends ClientTestBase
               new PropertyPermission("ipv6", "read"),
               new RuntimePermission("getenv.RESTEASY_PORT"),
               new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("quarkus.tester", "read"),
               new PropertyPermission("node", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, RedirectResource.class);

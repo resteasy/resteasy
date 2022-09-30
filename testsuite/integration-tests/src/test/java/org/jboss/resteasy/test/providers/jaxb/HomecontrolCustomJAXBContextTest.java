@@ -63,6 +63,8 @@ public class HomecontrolCustomJAXBContextTest {
               ErrorMessageType.class
       );
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              // Can be removed when WFLY-17065 is resolved
+              PermissionUtil.addModuleFilePermission("org.glassfish.jaxb"),
               new ReflectPermission("suppressAccessChecks"),
               new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");

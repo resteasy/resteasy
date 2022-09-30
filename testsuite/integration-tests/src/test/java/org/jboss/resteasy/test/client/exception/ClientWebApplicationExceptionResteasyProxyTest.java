@@ -1,17 +1,22 @@
 package org.jboss.resteasy.test.client.exception;
 
+import java.util.PropertyPermission;
+
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionProxyResourceInterface;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionResteasyProxyApplication;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionResteasyProxyResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,6 +36,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(LoggingSetupTask.class)
 public class ClientWebApplicationExceptionResteasyProxyTest {
 
    public static final String oldBehaviorDeploymentName = "OldBehaviorClientWebApplicationExceptionResteasyProxyTest";
@@ -49,7 +55,14 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
 
    @Deployment(name = oldBehaviorDeploymentName)
    public static Archive<?> deployOldBehaviour() {
-      WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName);
+      WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName)
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                      new PropertyPermission("ipv6", "read"),
+                      new RuntimePermission("getenv.RESTEASY_PORT"),
+                      new PropertyPermission("org.jboss.resteasy.port", "read"),
+                      new PropertyPermission("quarkus.tester", "read"),
+                      new PropertyPermission("node", "read")
+              ), "permissions.xml");
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionResteasyProxyApplication.class);
       war.addClass(ClientWebApplicationExceptionResteasyProxyResource.class);
@@ -62,7 +75,14 @@ public class ClientWebApplicationExceptionResteasyProxyTest {
 
    @Deployment(name = newBehaviorDeploymentName)
    public static Archive<?> deployNewBehavior() {
-      WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName);
+      WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName)
+              .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                      new PropertyPermission("ipv6", "read"),
+                      new RuntimePermission("getenv.RESTEASY_PORT"),
+                      new PropertyPermission("org.jboss.resteasy.port", "read"),
+                      new PropertyPermission("quarkus.tester", "read"),
+                      new PropertyPermission("node", "read")
+              ), "permissions.xml");
       war.addClass(ClientWebApplicationExceptionTest.class);
       war.addClass(ClientWebApplicationExceptionResteasyProxyApplication.class);
       war.addClass(ClientWebApplicationExceptionResteasyProxyResource.class);

@@ -49,8 +49,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
@@ -205,9 +205,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
       try
       {
-         int threshold = Integer.parseInt(ConfigurationFactory.getInstance().getConfiguration()
-               .getOptionalValue(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY, String.class)
-               .orElse("1"));
+         int threshold = getProperty(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY, Integer.class, () -> 1);
          if (threshold > -1)
          {
             this.fileUploadInMemoryThresholdLimit = threshold;
@@ -753,14 +751,15 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    }
 
    private static Path getTempDir() {
+      return Path.of(getProperty("java.io.tmpdir", String.class, () -> System.getProperty("java.io.tmpdir")));
+   }
+
+   private static <T> T getProperty(final String name, final Class<T> type, final Supplier<T> dft) {
       if (System.getSecurityManager() == null) {
-         final Optional<String> value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class);
-         return value.map(Path::of).orElseGet(() -> Path.of(System.getProperty("java.io.tmpdir")));
+         return ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(name, type).orElseGet(dft);
       }
-      return AccessController.doPrivileged((PrivilegedAction<Path>) () -> {
-         final Optional<String> value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("java.io.tmpdir", String.class);
-         return value.map(Path::of).orElseGet(() -> Path.of(System.getProperty("java.io.tmpdir")));
-      });
+      return AccessController.doPrivileged((PrivilegedAction<T>) () -> ConfigurationFactory.getInstance()
+              .getConfiguration().getOptionalValue(name, type).orElseGet(dft));
    }
 
 }
