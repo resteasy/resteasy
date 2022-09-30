@@ -215,8 +215,9 @@ public void greet(org.greet.Greet_proto.gString request, StreamObserver&lt;org.g
    <para>
       The class <code>org.jboss.resteasy.grpc.protobuf.JavaToProtobufGenerator</code> traverses,
       with the help of the Java parser <ulink url="https://github.com/javaparser/javaparser">https://github.com/javaparser/javaparser</ulink>,
-      the Jakarta REST resource classes. For each class that appears as a resource method entity type or a return type,  
-      <code>JavaToProtobufGenerator</code> generates a protobuf message. For each resource method, it generates an rpc entry.
+      a set of Jakarta REST resource classes. For each class that appears as an entity type or a return type of a resource method 
+      or resource locator, <code>JavaToProtobufGenerator</code> generates a protobuf message. For each resource 
+      method or resource locator, it generates an rpc entry.
    </para>
    
    <para>
@@ -376,7 +377,7 @@ message GeneralReturnMessage {
          "/greet gString org_greet___Greeting POST sync" means: 
          <itemizedlist>
             <listitem>the path to the <code>greet()</code> method is "/greet"</listitem>
-            <listitem>the type of the entity parameter is <code>gSting</code></listitem>
+            <listitem>the type of the entity parameter is <code>gString</code></listitem>
             <listitem>the type of the response entity is <code>org_greet___Greeting</code></listitem>
             <listitem>the HTTP verb on the resource method is POST</listitem>
             <listitem>the resource method is synchronous</listitem>
@@ -740,7 +741,7 @@ mvn archetype:generate -B \
    -Dversion=0.0.1-SNAPSHOT \
    -Dgenerate-prefix=Greet \
    -Dgenerate-package=org.greet \
-   -Dresteasy-version=6.1.0-SNAPSHOT
+   -Dresteasy-version=6.2.0.Final
    </programlisting>
    
    <para>
@@ -808,7 +809,7 @@ mvn -Dservlet.name=GreetServlet clean install
    </para>
    
    <itemizedlist>
-      <listitem>extra.classes: classes not detected  by syntactic scanning</listitem>
+      <listitem>classes: additional classes not detected by syntactic scanning</listitem>
       <listitem>release.type: deploy as a snapshot or otherwise. Defaults to "snapshot".</listitem>
       <listitem>inWildFly: the generated WAR will be run in WildFly. Defaults to "true".
                 See <xref linkend="output_products"/> and <xref linkend="using_war"/>
@@ -954,5 +955,287 @@ http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJaxrs/grpcserver/start
    <para>
       will initiate the gRPC server runtime.
    </para>
+</section>
+
+<section id="human_intervention">
+<title>Human intervention</title>
+
+   <para>
+      As much as possible, grpc-bridge and grpc-bridge-runtime automate the conversion back and forth between
+      the gRPC and Jakarta REST worlds, but there are some situations in which manual intervention is required,
+      for one reason or another.
+   </para>
+   
+<section id="servlet_environment">
+<title>Servlet environment</title>
+
+   <para>
+      Although the Jakarta REST specification does not mandate its use, a servlet container is a common environment
+      for running Jakarta REST applications, and, in that case, the spec mandates the availability by injection of
+      certain servlet related types:
+   </para>
+   
+   <programlisting>
+The <code>@Context</code> annotation can be used to indicate a dependency on a Servlet-defined resource.
+A Servlet-based implementation MUST support injection of the following Servlet-defined types:
+<code>ServletConfig</code>, <code>ServletContext</code>, <code>HttpServletRequest</code>, and <code>HttpServletResponse</code>.
+   </programlisting>
+   
+   <para>
+      Accordingly, grpc-bridge creates a servlet environment for Jakarta REST resources to execute in.
+      A Jakarta REST "native" call on a servlet in the target project will result in the creation of a
+      <code>ServletContext</code> and a <code>ServletConfig</code> which can be adopted by the grpc-bridge
+      runtime. In particular, for a servlet configured to run
+      <code>org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher</code>, <code>GrpcHttpServletDispatcher</code>
+      will capture the servlet so that it can be called by the code in <code>GreetServiceGrpcImpl</code>.
+      For example, from the Greeting project discussed above, the archetype will generate a web.xml with the lines
+   </para>
+   
+   <programlisting>
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GreetServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;
+            org.jboss.resteasy.grpc.servlet.GrpcHttpServletDispatcher
+        &lt;/servlet-class&gt;
+    &lt;/servlet>
+
+    &lt;context-param>
+        &lt;param-name>resteasy.servlet.mapping.prefix&lt;/param-name>
+        &lt;param-value>/grpcToJaxrs&lt;/param-value>
+    &lt;/context-param>
+
+    &lt;servlet-mapping>
+        &lt;servlet-name>GreetServlet&lt;/servlet-name>
+        &lt;url-pattern>/grpcToJaxrs/*&lt;/url-pattern>
+    &lt;/servlet-mapping>
+   </programlisting>
+
+   <para>
+      and will create the Jakarta REST resource class <code>org.jboss.resteasy.grpc.server.Greet_Server</code>
+      in src/test/java of the bridge project. A call to &lt;context-path&gt;/grpcToJaxrs/grpcserver/ready,
+      for example, will capture GreetServlet, with its <code>ServletContext</code> and <code>ServletConfig</code>.
+      The <code>ServletContext</code> applies to all servlets in the WAR, but note that the
+      <code>ServletConfig</code> is specific to GreetServlet. If there's only one configured servlet, then that
+      is fine, but suppose we have
+   </para>
+   
+   <programlisting>
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GreetServlet1&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;
+            org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher
+        &lt;/servlet-class&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+           &lt;param-value&gt;/grpcToJaxrs1&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;param1&lt;/param-name&gt;
+           &lt;param-value&gt;value1&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GreetServlet2&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;
+            org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher
+        &lt;/servlet-class&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+           &lt;param-value&gt;/grpcToJaxrs2&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;param2&lt;/param-name&gt;
+           &lt;param-value&gt;value2&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GreetServlet1&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/grpcToJaxrs1/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+    
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GreetServlet2&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/grpcToJaxrs2/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+   </programlisting>
+   
+   <para>
+      Then a call to &lt;context-path&gt;/grpcToJaxrs1/grpcserver/ready will result in a different
+      <code>ServletConfig</code> than a call to &lt;context-path&gt;/grpcToJaxrs2/grpcserver/ready.
+      The archetype will generate a web.xml with a single servlet, and <code>JaxrsImplBaseExtender</code>
+      will generate calls to that servlet. In more complex circumstances, though, some manual
+      intervention may be called for.
+   </para>
+
+   <para>
+   The other two injectable classes, <code>HttpServletRequest</code> and <code>HttpServletResponse</code>,
+   are supplied by the grpc-bridge runtime. Normally, those classes would be created by a servlet container
+   which has an actual HTTP network connection from which information like URLs, headers, and addresses
+   can be obtained, but for the grpc-bridge runtime, the HTTP connection is hidden by the gRPC runtime.
+   Some information can be derived or approximated; for example, in the absence of path parameters, the path
+   can be derived from the <code>@Path</code> annotation(s). In many cases, though, <code>HttpServletRequest</code>
+   relies on the client to spell out any information needed for a given computation. Recall that
+   <code>GeneralEntityMessage</code> has slots for all kinds of information:
+   </para>
+   
+   <programlisting>
+message GeneralEntityMessage {
+   ServletInfo servletInfo = 45;
+   string URL = 46;
+   map&lt;string, gHeader&gt; headers = 47;
+   repeated gCookie cookies = 48;
+   string httpMethod = 49;
+   oneof messageType {
+   ...
+   }
+}
+   </programlisting>
+   
+   <para>
+      Some of these fields, e.g., cookies and headers, are naturally supplied by the client. On the other hand,
+      the information in 
+   </para>
+   
+   <programlisting>
+message ServletInfo {
+   string characterEncoding = 39;
+   string clientAddress = 40;
+   string clientHost = 41;
+   int32  clientPort = 42;
+}
+   </programlisting>
+   
+   <para>
+      would normally come from the network connection.
+   </para>
+</section>
+
+<section id="runtime_information">
+<title>Runtime information</title>
+
+   <para>
+      Consider the resource method
+   </para>
+   
+   <programlisting>
+public Response m() {
+   if (test()) {
+      return Response.ok(new X()).build();
+   } else {
+      Response.ok(new Y()).build();
+   }
+}
+   </programlisting>
+   
+   <para>
+      Will it return an <code>X</code> or a <code>Y</code>? If <code>test()</code> is
+   </para>
+   
+   <programlisting>
+public boolean test() {
+   return true;
+}
+   </programlisting>
+   
+   <para>
+      it's clear that <code>m()</code> will return an <code>X</code>, and, moreover, that can be determined
+      statically at compile time. But it's a well known fact in theoretical computer science, first proved by Alan Turing
+      [see, for example, <ulink url="https://en.wikipedia.org/wiki/Halting_problem">https://en.wikipedia.org/wiki/Halting_problem</ulink>],
+      that not all questions can be answered algorithmically.
+   </para>
+   
+   <para>
+      We can't tell if <code>m()</code> returns an <code>X</code> or a <code>Y</code>, but we know it returns
+      an <code>Object</code>. Protobuf has an analogous universal type called <code>google.protobuf.Any</code>,
+      or, in Java, <code>com.google.protobuf.Any</code>, which consists of a byte array filled with an object in
+      protobuf format plus a URL in string form that indicates the type of the object. For example, the code
+   </para>
+   
+   <programlisting>
+gString gs = gString.newBuilder().setValue("abc").build();
+Any any = Any.pack(gs);
+System.out.println(any);
+if (any.is(gString.class));{
+   gString gs2 = any.unpack(gString.class);
+   Assert.assertEquals("abc", gs2.getValue());
+}
+   </programlisting>
+   
+   <para>
+      outputs
+   </para>
+   
+   <programlisting>
+type_url: "type.googleapis.com/jaxrs.example.gString"
+value: "\222\001\003abc"
+   </programlisting>
+   
+   <para>
+      Now, suppose we have the resource method
+   </para>
+   
+   <programlisting>
+public Response getResponse() {
+   return Response.ok("abc").build();
+}
+   </programlisting>
+   
+   <para>
+      Together, <code>GreetMessageBodyReaderWriter</code> and <code>Greet_JavabufTranslator</code>
+      turn "abc" into a <code>gString</code> and then pack it into an <code>Any</code>.
+      Then we might have the following on the client side:
+   </para>
+
+   <programlisting>
+@Test
+public void testResponse() throws Exception {
+   GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+   GeneralEntityMessage gem = messageBuilder.build();
+   try {
+      GeneralReturnMessage grm = blockingStub.getResponse(gem);
+      gString gs = gString.newBuilder().setValue("abc").build();
+      Any any = grm.getGoogleProtobufAnyField();
+      Assert.assertEquals(gs, any.unpack(gString.class));
+   } catch (StatusRuntimeException e) {
+      Assert.fail("fail");
+      return;
+   } 
+}
+   </programlisting>
+   
+   <para>
+   Another case in which we can't statically determine the return type is when an asynchronous
+   resource method uses the <code>@Suspended</code> annotation:
+   </para>
+   
+   <programlisting>
+@GET
+@Path("suspend")
+public void suspend(@Suspended final AsyncResponse response) {
+   Thread t = new Thread() {
+   @Override
+      public void run() {
+         try {
+            response.resume("suspend");
+         } catch (Exception e) {
+            response.resume(e);
+         }
+      }
+   };
+   t.start();
+}
+   </programlisting>
+   
+   <para>
+      Similar unpacking would happen on the client side.
+   </para>
+</section>
+</section>
+
+<section id="todo">
+<title>TODO</title>
+
 </section>
 </chapter>

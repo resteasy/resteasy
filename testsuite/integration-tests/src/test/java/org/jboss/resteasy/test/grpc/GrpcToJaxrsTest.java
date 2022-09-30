@@ -49,6 +49,7 @@ import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC2;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC3;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC4;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC5;
+import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC7;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -70,7 +71,7 @@ public class GrpcToJaxrsTest
 //         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
 ////               + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
 //         + "Dependencies: com.google.guava services\n"));
-         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.19")));
+         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.20")));
 //         TestUtil.addOtherLibrary(war, "jaxrs.example:jaxrs.example.grpc:jar:0.0.19");
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.0.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
@@ -624,6 +625,22 @@ public class GrpcToJaxrsTest
    }
 
    @Test
+   public void testResponse() throws Exception {
+      GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = messageBuilder.build();
+      try {
+         GeneralReturnMessage response = blockingStub.getResponse(gem);
+         org_jboss_resteasy_example___CC3 cc3 = org_jboss_resteasy_example___CC3.newBuilder().setS("cc7").build();
+         org_jboss_resteasy_example___CC7 cc7 = org_jboss_resteasy_example___CC7.newBuilder().setM(11).setCC3Super(cc3).build();
+         Any any = response.getGoogleProtobufAnyField();
+         Assert.assertEquals(cc7, any.unpack(org_jboss_resteasy_example___CC7.class));
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
    public void testSuspend() throws Exception {
       jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080/p/suspend");
@@ -655,14 +672,44 @@ public class GrpcToJaxrsTest
    }
 
    @Test
-   public void testServletContext() throws Exception {
+   public void testServletContextPath() throws Exception {
       GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080/p/context");
       GeneralEntityMessage gem = messageBuilder.build();
       GeneralReturnMessage response;
       try {
-         response = blockingStub.context(gem);
-         Assert.assertEquals("/" + GrpcToJaxrsTest.class.getSimpleName(), response.getGStringField().getValue());
+         response = blockingStub.contextPath(gem);
+         Assert.assertEquals("/grpcToJaxrs", response.getGStringField().getValue());
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testServletContextInitParam() throws Exception {
+      GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+      messageBuilder.setURL("http://localhost:8080/p/servletContext");
+      GeneralEntityMessage gem = messageBuilder.build();
+      GeneralReturnMessage response;
+      try {
+         response = blockingStub.servletContext(gem);
+         Assert.assertEquals("/grpcToJaxrs", response.getGStringField().getValue());
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testServletConfigServletName() throws Exception {
+      GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+      messageBuilder.setURL("http://localhost:8080/p/servletConfig");
+      GeneralEntityMessage gem = messageBuilder.build();
+      GeneralReturnMessage response;
+      try {
+         response = blockingStub.servletConfig(gem);
+         Assert.assertEquals("CC1Servlet", response.getGStringField().getValue());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
