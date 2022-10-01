@@ -21,6 +21,7 @@ import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2ListNoStreamResource;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2ObservableResourceNoStreamImpl;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -73,7 +74,12 @@ public class Rx2ObservableProxyServerAsyncTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(Rx2ObservableProxyServerAsyncTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(Rx2ObservableProxyServerAsyncTest.class.getSimpleName())
+              .addAsManifestResource(
+                      // Required until WFLY-17051 is resolved
+                      PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")
+                      ),
+                      "permissions.xml");
       war.addClass(Thing.class);
       war.addClass(Bytes.class);
       war.addClass(TRACE.class);

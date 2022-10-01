@@ -75,6 +75,12 @@ public class MimeMultipartProviderTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(MimeMultipartProviderTest.class.getSimpleName());
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              // Can be removed when WFLY-17061 is resolved
+              PermissionUtil.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
+              // Can be removed when WFLY-17061 is resolved
+              new RuntimePermission("getClassLoader"),
+              // Can be removed when WFLY-17061 is resolved
+              new RuntimePermission("accessDeclaredMembers"),
             new ReflectPermission("suppressAccessChecks")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, MimeMultipartProviderResource.class, MimeMultipartProviderCustomer.class);

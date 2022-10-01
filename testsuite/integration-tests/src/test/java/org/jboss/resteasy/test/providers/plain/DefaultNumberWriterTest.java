@@ -45,6 +45,7 @@ public class DefaultNumberWriterTest {
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
             new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("quarkus.tester", "read"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new PropertyPermission("ipv6", "read"),
             new PropertyPermission("node", "read"),

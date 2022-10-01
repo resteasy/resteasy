@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.SanitizedResponseHolder;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -30,7 +29,6 @@ import java.util.Set;
  */
 public class ExceptionHandler
 {
-
    protected ResteasyProviderFactoryImpl providerFactory;
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean mapperExecuted;
@@ -103,7 +101,8 @@ public class ExceptionHandler
          return jaxrsResponse;
       }
       jaxrsResponse = unwrapException(request, e, logger);
-      if (jaxrsResponse == null) {
+      if (jaxrsResponse == null && providerFactory.isDefaultExceptionManagerEnabled()) {
+         // No user defined ExceptionMapper was found, and we want to use the default exception mapper.
          jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e.getCause());
       }
       // This should never happen, but we need to be safe.
@@ -177,8 +176,7 @@ public class ExceptionHandler
          Response response = wae.getResponse();
          if (response != null) {
             try {
-               if (response.getEntity() != null)
-                  return wae instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) wae).getSanitizedResponse() : wae.getResponse();
+               if (response.getEntity() != null) return response;
             }
             catch(IllegalStateException ise) {
                // IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
@@ -202,6 +200,12 @@ public class ExceptionHandler
             return unwrapException(request, unwrappedException, logger);
          }
          else {
+            // As of Jakarta REST 3.1 a default exception mapper is required. However, we do allow users to disable this to
+            // get the previous behavior if they prefer that.
+            if (providerFactory.isDefaultExceptionManagerEnabled()) {
+               // Use the default exception mapper
+               return providerFactory.getThrowableExceptionMapper().toResponse(unwrappedException);
+            }
             return null;
          }
       }
@@ -231,7 +235,7 @@ public class ExceptionHandler
       LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(),
               request.getUri().getPath(), e);
 
-      Response response = e instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) e).getSanitizedResponse() : e.getResponse();
+      Response response = e.getResponse();
 
       if (response != null)
       {
@@ -298,7 +302,7 @@ public class ExceptionHandler
       {
          LogMessages.LOGGER.failedToExecute(wae);
       }
-      Response response = wae instanceof SanitizedResponseHolder ? ((SanitizedResponseHolder) wae).getSanitizedResponse() : wae.getResponse();
+      Response response = wae.getResponse();
       return response;
    }
 
@@ -332,13 +336,7 @@ public class ExceptionHandler
             WebApplicationException wae = (WebApplicationException) e;
             if (wae.getResponse() != null && wae.getResponse().getEntity() != null)
             {
-               if (wae instanceof SanitizedResponseHolder)
-               {
-                  jaxrsResponse = ((SanitizedResponseHolder) wae).getSanitizedResponse();
-               } else
-               {
-                  jaxrsResponse = wae.getResponse();
-               }
+               jaxrsResponse = wae.getResponse();
             } else
             {
                // look at exception's subClass tree for possible mappers
@@ -377,7 +375,7 @@ public class ExceptionHandler
          }
       }
 
-      if (jaxrsResponse == null) {
+      if (jaxrsResponse == null && providerFactory.isDefaultExceptionManagerEnabled()) {
          // Get the default exception mapper if we've made it here
          jaxrsResponse = providerFactory.getThrowableExceptionMapper().toResponse(e);
       }
@@ -387,5 +385,4 @@ public class ExceptionHandler
       }
       return jaxrsResponse;
    }
-
 }

@@ -325,6 +325,14 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 370, value = "Failed to load: %s")
    void failedToLoad(@Cause Throwable cause, String resourceName);
 
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 375, value = "Error processing unknown request.")
+   void defaultExceptionMapper(@Cause Throwable cause);
+
+   @LogMessage(level = Level.ERROR)
+   @Message("Error processing request %s")
+   void defaultExceptionMapper(@Cause Throwable cause, CharSequence resourceInfo);
+
 
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

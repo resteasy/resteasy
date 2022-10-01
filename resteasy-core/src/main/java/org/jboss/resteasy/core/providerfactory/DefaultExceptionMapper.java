@@ -20,11 +20,16 @@
 package org.jboss.resteasy.core.providerfactory;
 
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * The default {@link ExceptionMapper} for RESTEasy.
@@ -32,7 +37,7 @@ import org.jboss.resteasy.spi.ApplicationException;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
-    private static final Logger LOGGER = Logger.getLogger(DefaultExceptionMapper.class);
+    private static final LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, DefaultExceptionMapper.class.getName());
     static final DefaultExceptionMapper INSTANCE = new DefaultExceptionMapper();
 
     @Override
@@ -48,12 +53,48 @@ class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
     }
 
     private Response process(final Throwable exception) {
-        LOGGER.debug("Processing exception with the default exception mapper.", exception);
+        // Check the level to ignore logging if turned off.
+        if (LOGGER.isEnabled(Logger.Level.ERROR)) {
+            // Get the current context
+            final ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+            final Request request = providerFactory.getContextData(Request.class);
+            final ResourceInfo resourceInfo = providerFactory.getContextData(ResourceInfo.class);
+            final UriInfo uriInfo = providerFactory.getContextData(UriInfo.class);
+
+            final StringBuilder info = new StringBuilder();
+
+            // Add the method if available
+            if (request != null) {
+                info.append(request.getMethod());
+                if (uriInfo != null || resourceInfo != null) {
+                    info.append(' ');
+                }
+            }
+            // Add the request URI if available
+            if (uriInfo != null) {
+                info.append(uriInfo.getRequestUri().getPath());
+                if (resourceInfo != null) {
+                    info.append(" - ");
+                }
+            }
+            // Add the resource class and method
+            if (resourceInfo != null) {
+                info.append(resourceInfo.getResourceClass().getName())
+                        .append('.')
+                        .append(resourceInfo.getResourceMethod().getName());
+            }
+            if (info.length() == 0) {
+                LOGGER.defaultExceptionMapper(exception);
+            } else {
+                LOGGER.defaultExceptionMapper(exception, info);
+            }
+        }
+        // We must return the response from a WebApplicationException.
         if (exception instanceof WebApplicationException) {
             return ((WebApplicationException) exception).getResponse();
         }
         return Response.serverError()
-                .entity(exception.getMessage())
+                .entity(exception.getLocalizedMessage())
                 .build();
     }
 }

@@ -3,9 +3,12 @@ package org.jboss.resteasy.test.xxe;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import jakarta.ws.rs.client.ClientBuilder;
+
+import org.jboss.resteasy.setup.DisableDefaultExceptionMapperSetupTask;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingBar;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlRootElement;
@@ -42,6 +45,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(DisableDefaultExceptionMapperSetupTask.class)
 public class SecureProcessingTest {
 
    protected final Logger logger = Logger.getLogger(SecureProcessingTest.class.getName());

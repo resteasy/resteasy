@@ -23,6 +23,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -504,10 +506,7 @@ public class SegmentNode
       String[] mm = matchingMethods(sortList);
       if (mm != null)
       {
-         boolean isFailFast = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(
-                 ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, boolean.class)
-                 .orElse(false);
-         if(isFailFast) {
+         if(isFailFast()) {
             throw new RuntimeException(Messages.MESSAGES
                     .multipleMethodsMatchFailFast(requestToString(request), mm));
          } else {
@@ -569,5 +568,18 @@ public class SegmentNode
          return names;
       }
       return null;
+   }
+
+   private static boolean isFailFast() {
+      if (System.getSecurityManager() == null) {
+         return ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(
+                         ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, boolean.class)
+                 .orElse(false);
+      }
+      return AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+              ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(
+                      ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, boolean.class)
+              .orElse(false)
+      );
    }
 }

@@ -19,16 +19,15 @@
 
 package org.jboss.resteasy.test.core.basic;
 
+import java.lang.reflect.ReflectPermission;
 import java.net.URL;
+import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.ConstrainedTo;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.RuntimeType;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
@@ -40,6 +39,8 @@ import jakarta.ws.rs.ext.Providers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -71,7 +72,17 @@ public class DefaultProvidersTest {
                         UnsupportedOperationExceptionMapper.class,
                         TestUtil.class
                 )
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                // This can be removed if WFARQ-118 is resolved
+                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                                // Required for Arquillian
+                                new ReflectPermission("suppressAccessChecks"),
+                                new PropertyPermission("arquillian.*", "read"),
+                                new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+                                // Required for JUnit
+                                new RuntimePermission("accessDeclaredMembers")
+                        ),
+                        "permissions.xml");
     }
 
     @Test
@@ -85,7 +96,7 @@ public class DefaultProvidersTest {
                 .request()
                 .get();
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
-        Assert.assertEquals(ExceptionResource.RUNTIME_EXCEPTION.getMessage(), response.readEntity(String.class));
+        Assert.assertEquals(ExceptionResource.EXCEPTION_MESSAGE, response.readEntity(String.class));
     }
 
     @Test
@@ -111,31 +122,6 @@ public class DefaultProvidersTest {
     @ApplicationPath("/")
     public static class TestApplication extends Application {
 
-    }
-
-    @Path("/exception")
-    public static class ExceptionResource {
-        static final Response WAE_RESPONSE = Response.status(Response.Status.FORBIDDEN)
-                .entity("Not allowed from test")
-                .build();
-        static final RuntimeException RUNTIME_EXCEPTION = new RuntimeException("This is a test exception");
-
-        @GET
-        public Response throwException() {
-            throw RUNTIME_EXCEPTION;
-        }
-
-        @GET
-        @Path("/wae")
-        public Response throwWae() {
-            throw new WebApplicationException(WAE_RESPONSE);
-        }
-
-        @GET
-        @Path("/not-impl")
-        public Response notImpl() {
-            throw new UnsupportedOperationException("Messages should not be seen.");
-        }
     }
 
     @Provider

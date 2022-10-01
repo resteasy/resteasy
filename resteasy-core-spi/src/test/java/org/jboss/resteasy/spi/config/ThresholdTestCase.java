@@ -47,12 +47,17 @@ public class ThresholdTestCase {
         // Test each unit
         final Random r = new Random();
         for (SizeUnit unit : SizeUnit.values()) {
-            final long size = r.nextInt(512);
+            final long size = createSize(r);
             test(Threshold.of(size, unit), Threshold.valueOf(size + unit.abbreviation()));
         }
     }
 
     private void test(final Threshold expected, final Threshold tested) {
         Assert.assertEquals(String.format("Expected %s got %s", expected, tested), expected, tested);
+    }
+
+    private static long createSize(final Random r) {
+        final int result = r.nextInt(512);
+        return result < 1 ? 1L : result;
     }
 }

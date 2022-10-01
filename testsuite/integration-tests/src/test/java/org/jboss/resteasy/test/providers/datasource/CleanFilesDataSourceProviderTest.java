@@ -31,7 +31,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FilePermission;
 import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
 import java.util.PropertyPermission;
@@ -53,10 +52,9 @@ public class CleanFilesDataSourceProviderTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
       // DataSource provider creates tmp file in the filesystem
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new PropertyPermission("java.io.tmpdir", "read"),
-            new FilePermission("/tmp/-", "read"),
-            new FilePermission("/tmp", "read")), "permissions.xml");
+      war.addAsManifestResource(PermissionUtil.Builder.create()
+                      .add(new PropertyPermission("java.io.tmpdir", "read"))
+              .add(PermissionUtil.createTempDirPermission("read")).build(), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
    }
 

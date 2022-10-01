@@ -52,6 +52,7 @@ public class AnotherPublisherResponseNoStreamTest {
               new RuntimePermission("accessDeclaredMembers"),
               new ReflectPermission("suppressAccessChecks"),
               new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("quarkus.tester", "read"),
               new RuntimePermission("getenv.RESTEASY_PORT"),
               new PropertyPermission("ipv6", "read"),
               new PropertyPermission("node", "read")

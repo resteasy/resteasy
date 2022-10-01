@@ -7,6 +7,8 @@ on:
   push:
     branches-ignore:
       - 'dependabot/**'
+    paths-ignore:
+      - ".github/workflows/manual-*.yml"
   pull_request:
     branches:
       - '**'
@@ -21,7 +23,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['11', '17']
-        wildfly-version: ['27.0.0.Alpha4']
+        wildfly-version: ['27.0.0.Beta1']
 
     steps:
       - uses: actions/checkout@v3
@@ -35,6 +37,39 @@ jobs:
         run:  |
           echo "::group::Build Logs"
           mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
+          echo "::endgroup::"
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          path: '**/surefire-reports/*.txt'
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          path: '**/server.log'
+
+  test-with-security-manager:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['11']
+        wildfly-version: ['27.0.0.Beta1']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Security Manager Tests - JDK ${{ matrix.java }} - WildFly ${{ matrix.wildfly-version }}
+        run:  |
+          echo "::group::Build Logs"
+          mvn clean install -U -B -fae '-Dsecurity.manager' '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
           echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()

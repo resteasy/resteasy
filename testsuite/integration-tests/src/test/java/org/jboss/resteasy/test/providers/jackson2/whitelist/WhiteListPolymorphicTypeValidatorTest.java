@@ -98,7 +98,7 @@ public class WhiteListPolymorphicTypeValidatorTest {
         String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);
         Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
+        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_INTERNAL_SERVER_ERROR));
         Assert.assertTrue(response.contains("Configured `PolymorphicTypeValidator`") && response.contains("denied resolution"));
     }
 

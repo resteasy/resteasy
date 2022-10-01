@@ -14,7 +14,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>6.2.0.Final-SNAPSHOT</version>
+    <version>6.2.1.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -24,7 +24,7 @@
         <dep.arquillian-bom.version>1.7.0.Alpha12</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
-        <server.version>27.0.0.Alpha4</server.version>
+        <server.version>27.0.0.Beta1</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha5</version.org.wildfly.arquillian.wildfly-arquillian>
 
@@ -55,12 +55,12 @@
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.8</version.org.jacoco.plugin>
         <version.org.jboss.galleon>5.0.5.Final</version.org.jboss.galleon>
-        <version.org.wildfly.galleon-plugins>6.0.0.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>6.1.0.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>3.0.2.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
         <version.surefire.plugin>3.0.0-M7</version.surefire.plugin>
 
         <!-- Test options -->
-        <additionalJvmArgs/>
+        <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
     </properties>
 
     <url>https://resteasy.dev</url>
@@ -242,7 +242,7 @@
             </activation>
             <properties>
                 <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
-                <additionalJvmArgs>-Djdk.io.File.enableADS=true</additionalJvmArgs>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true -Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
             </properties>
         </profile>
     </profiles>

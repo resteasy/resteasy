@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 import com.fasterxml.jackson.jakarta.rs.base.util.ClassKey;
 import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jakarta.rs.cfg.ObjectWriterModifier;
@@ -163,7 +162,7 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
       endpoint = _readers.get(key);
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-         ObjectMapper mapper = addDefaultModules(locateMapper(type, mediaType));
+         ObjectMapper mapper = locateMapper(type, mediaType);
          PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
          //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
          //be sure to keep that in synch if changing anything here.
@@ -230,7 +229,7 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
 
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-         ObjectMapper mapper = addDefaultModules(locateMapper(type, mediaType));
+         ObjectMapper mapper = locateMapper(type, mediaType);
          PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
          //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
          //be sure to keep that in synch if changing anything here.
@@ -361,11 +360,5 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
       } finally {
          jg.close();
       }
-   }
-
-   private static ObjectMapper addDefaultModules(final ObjectMapper mapper) {
-      return mapper
-              // Register the mapping for Jakarta XML Binding Annotations for JSON Processing
-              .registerModule(new JakartaXmlBindAnnotationModule());
    }
 }

@@ -38,7 +38,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -81,15 +80,17 @@ public class JaxbMarshallingSoakTest {
       contextParam.put("resteasy.async.job.service.enabled", "true");
       // Arquillian in the deployment use if TimeoutUtil in the deployment
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            // Can be removed when WFLY-17065 is resolved
+            PermissionUtil.addModuleFilePermission("org.glassfish.jaxb"),
             new RuntimePermission("getClassLoader"),
             new RuntimePermission("modifyThread"),
             new ReflectPermission("suppressAccessChecks"),
-            new LoggingPermission("control", ""),
             new PropertyPermission("arquillian.*", "read"),
             new PropertyPermission("ipv6", "read"),
             new PropertyPermission("node", "read"),
             new PropertyPermission("org.jboss.resteasy.port", "read"),
             new PropertyPermission("ts.timeout.factor", "read"),
+            new PropertyPermission("quarkus.tester", "read"),
             new RuntimePermission("accessDeclaredMembers"),
             new RuntimePermission("getenv.RESTEASY_PORT"),
             new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")

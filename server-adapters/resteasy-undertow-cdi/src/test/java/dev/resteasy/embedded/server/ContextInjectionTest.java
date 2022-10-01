@@ -44,6 +44,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.Context;
@@ -155,6 +156,13 @@ public class ContextInjectionTest {
     }
 
     @Test
+    public void resourceInfo() {
+        final Response response = get("resourceInfo");
+        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assert.assertEquals(response.readEntity(String.class), "resourceInfo");
+    }
+
+    @Test
     public void securityContext() {
         final Response response = get("securityContext");
         Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -238,6 +246,8 @@ public class ContextInjectionTest {
         @Inject
         ResourceContext resourceContext;
         @Inject
+        ResourceInfo resourceInfo;
+        @Inject
         SecurityContext securityContext;
         @Inject
         Sse sse;
@@ -285,6 +295,12 @@ public class ContextInjectionTest {
         @Path("resourceContext")
         public Response resourceContext() {
             return Response.ok(resourceContext.getResource(getClass()).getClass().getCanonicalName()).build();
+        }
+
+        @GET
+        @Path("resourceInfo")
+        public Response resourceInfo() {
+            return Response.ok(resourceInfo.getResourceMethod().getName()).build();
         }
 
         @GET

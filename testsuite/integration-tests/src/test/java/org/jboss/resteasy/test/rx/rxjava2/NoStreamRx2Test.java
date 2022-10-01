@@ -9,6 +9,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.rx.rxjava2.resource.NoStreamRx2Resource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,7 +34,12 @@ public class NoStreamRx2Test
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName())
+              .addAsManifestResource(
+                      // Required until WFLY-17051 is resolved
+                      PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")
+                      ),
+                      "permissions.xml");
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, NoStreamRx2Resource.class);

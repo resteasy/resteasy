@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Ignore
 public class PublisherResponseTest {
 
    Client client;

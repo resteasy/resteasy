@@ -37,6 +37,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.concurrent.ThreadContext;
 import org.jboss.resteasy.spi.concurrent.ThreadContexts;
+import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
@@ -144,6 +145,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    protected boolean initialized = false;
    protected boolean lockSnapshots;
    protected StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
+
+   private final boolean defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
 
    public ResteasyProviderFactoryImpl()
    {
@@ -1109,7 +1112,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       Class exceptionType = type;
       SortedKey<ExceptionMapper> mapper = null;
       Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getSortedExceptionMappers();
-      if (mappers == null) {
+      if (mappers == null && defaultExceptionManagerEnabled) {
          return (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
       }
       while (mapper == null)
@@ -1120,7 +1123,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          if (mapper == null)
             exceptionType = exceptionType.getSuperclass();
       }
-      return mapper != null ? mapper.getObj() : (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
+      return mapper != null ? mapper.getObj() : (defaultExceptionManagerEnabled ? (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE : null);
    }
 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapperForClass(Class<T> type)
@@ -1821,5 +1824,21 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    @Override
    protected boolean isOnServer() {
       return ResteasyContext.searchContextData(Dispatcher.class) != null;
+   }
+
+   /**
+    * Indicates whether the default exception manager is enabled.
+    * @return {@code true} if the default exception is enabled, otherwise {@code false}
+    */
+   public boolean isDefaultExceptionManagerEnabled() {
+      return defaultExceptionManagerEnabled;
+   }
+
+   @SuppressWarnings("SameParameterValue")
+   private static <T> T getOptionValue(final Options<T> option) {
+      if (System.getSecurityManager() == null) {
+         return option.getValue();
+      }
+      return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
    }
 }

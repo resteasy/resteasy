@@ -26,7 +26,6 @@ import org.junit.Ignore;
 
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
-import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -84,11 +83,8 @@ public class EntityBufferingInFileTest extends ClientTestBase{
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
       war.addClass(EntityBufferingInFileTest.class);
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new FilePermission("/tmp/*", "read")
-            ), "permissions.xml");
       // DataSource provider creates tmp file in the filesystem
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read")), "permissions.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(PermissionUtil.createTempDirPermission("read")), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
    }
 

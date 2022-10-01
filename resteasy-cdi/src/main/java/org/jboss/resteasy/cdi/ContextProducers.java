@@ -24,6 +24,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Request;
@@ -31,6 +32,7 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Providers;
 import jakarta.ws.rs.sse.Sse;
+
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -77,6 +79,12 @@ public class ContextProducers {
     @Produces
     public ResourceContext resourceContext() {
         return getProviderFactory().getContextData(ResourceContext.class);
+    }
+
+    @RequestScoped
+    @Produces
+    public ResourceInfo resourceInfo() {
+        return getProviderFactory().getContextData(ResourceInfo.class);
     }
 
     @RequestScoped

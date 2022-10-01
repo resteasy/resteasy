@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.resource.basic.resource.ConstructedInjectionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -42,9 +43,17 @@ public class ConstructedInjectionTest {
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new PropertyPermission("node", "read"),
             new PropertyPermission("ipv6", "read"),
+            // Required for the PortProvider
             new RuntimePermission("getenv.RESTEASY_PORT"),
+            new ConfigPropertyPermission("RESTEASY_PORT"),
             new RuntimePermission("getenv.RESTEASY_HOST"),
-            new PropertyPermission("org.jboss.resteasy.port", "read")
+            new ConfigPropertyPermission("RESTEASY_HOST"),
+            new ConfigPropertyPermission("org.jboss.resteasy.host"),
+            new PropertyPermission("org.jboss.resteasy.host", "read"),
+            new RuntimePermission("getenv.org.jboss.resteasy.host", "read"),
+            new ConfigPropertyPermission("org.jboss.resteasy.port"),
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new RuntimePermission("getenv.org.jboss.resteasy.port", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, ConstructedInjectionResource.class);
    }
