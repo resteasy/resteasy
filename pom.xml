@@ -158,7 +158,7 @@
                 <module>server-adapters</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
-                <module>galleon-feature-pack</module>
+                <module>resteasy-feature-pack</module>
                 <module>arquillian</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
@@ -178,6 +178,12 @@
                     <dependency>
                         <groupId>org.wildfly</groupId>
                         <artifactId>wildfly-ee-galleon-pack</artifactId>
+                        <version>${version.org.wildfly}</version>
+                        <type>zip</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-preview-feature-pack</artifactId>
                         <version>${version.org.wildfly}</version>
                         <type>zip</type>
                     </dependency>
