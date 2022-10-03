@@ -17,7 +17,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<build xmlns="urn:wildfly:feature-pack-build:3.1" producer="org.jboss.resteasy:galleon-feature-pack">
+<build xmlns="urn:wildfly:feature-pack-build:3.3" producer="org.jboss.resteasy:galleon-feature-pack">
     <dependencies>
         <dependency group-id="org.wildfly" artifact-id="wildfly-ee-galleon-pack" translate-to-fpl="true">
             <name>org.wildfly:wildfly-ee-galleon-pack</name>
