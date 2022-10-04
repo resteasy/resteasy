@@ -34,7 +34,6 @@ import jakarta.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.PropertyPermission;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,7 +45,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore
 public class PublisherResponseTest {
 
    Client client;
@@ -60,8 +58,6 @@ public class PublisherResponseTest {
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write"),
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
 
