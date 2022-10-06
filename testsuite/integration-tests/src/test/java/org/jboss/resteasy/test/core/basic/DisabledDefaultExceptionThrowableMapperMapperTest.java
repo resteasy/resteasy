@@ -79,7 +79,6 @@ public class DisabledDefaultExceptionThrowableMapperMapperTest extends DisabledD
     @Test
     public void defaultExceptionMapper() {
         final ExceptionMapper<?> mapper = providers.getExceptionMapper(RuntimeException.class);
-        Assert.assertNotNull("Expected expected our default exception mapper", mapper);
         Assert.assertTrue(String.format("Expected mapper %s to be instance of %s.", mapper, ThrowableExceptionMapper.class),
                 mapper instanceof ThrowableExceptionMapper);
     }

@@ -23,14 +23,10 @@ import java.net.URL;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.ConstrainedTo;
-import jakarta.ws.rs.RuntimeType;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -70,39 +66,8 @@ public abstract class DisabledDefaultExceptionMapperTest {
         Assert.assertEquals(ExceptionResource.WAE_RESPONSE.readEntity(String.class), response.readEntity(String.class));
     }
 
-
-    /**
-     * Tests that a defined exception mapper is used
-     *
-     * @throws Exception if an exception occurs
-     */
-    @Test
-    public void defaultExceptionMapperNotUsed() throws Exception {
-        final ExceptionMapper<UnsupportedOperationException> mapper = providers.getExceptionMapper(UnsupportedOperationException.class);
-        Assert.assertTrue("Mapper was not an instance of UnsupportedOperationException: " + mapper, mapper instanceof UnsupportedOperationExceptionMapper);
-        final Response response = client.target(TestUtil.generateUri(url, "/exception/not-impl"))
-                .request()
-                .get();
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
-        Assert.assertEquals("Path /exception/not-impl was not found", response.readEntity(String.class));
-    }
-
     @ApplicationPath("/")
     public static class TestApplication extends Application {
 
-    }
-
-    @Provider
-    @ConstrainedTo(RuntimeType.SERVER)
-    public static class UnsupportedOperationExceptionMapper implements ExceptionMapper<UnsupportedOperationException> {
-        @Inject
-        private UriInfo uriInfo;
-
-        @Override
-        public Response toResponse(final UnsupportedOperationException exception) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(String.format("Path %s was not found", uriInfo.getPath()))
-                    .build();
-        }
     }
 }
