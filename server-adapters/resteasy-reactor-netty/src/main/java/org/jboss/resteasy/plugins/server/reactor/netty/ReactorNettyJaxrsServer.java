@@ -382,7 +382,7 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
          uriString = new StringBuilder(100)
              .append(req.scheme())
              .append("://")
-             .append(req.hostAddress().getHostString())
+             .append(req.hostAddress().getHostName())
              .append(":").append(req.hostAddress().getPort())
              .append(req.uri())
              .toString();

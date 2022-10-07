@@ -20,7 +20,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import reactor.netty.http.server.HttpServerRequest;
 
 public class UriInfoTest {
 
@@ -52,14 +51,6 @@ public class UriInfoTest {
         Assert.assertEquals(uri, test(uri));
     }
 
-    /**
-     * Verifies the uriInfo is correctly built in the case a partial uri (no scheme/host) is used to send the request.
-     * Since a partial uri is provided in this case, uriInfo's absolute uri will be constructed by the server given the
-     * incoming {@link HttpServerRequest#hostAddress()}. See {@link java.net.InetSocketAddress#getHostString()}. In this
-     * case, the constructed uri will either contains the hostname if available or the ip address.
-     *
-     * @throws Exception
-     */
     @Test
     public void testUriInfoUsingPartialUri() throws Exception
     {
@@ -69,8 +60,7 @@ public class UriInfoTest {
 
         final String absoluteUri = TestPortProvider.generateURL(uri);
         assertThat(response, CoreMatchers.either(CoreMatchers.is(absoluteUri))
-                .or(CoreMatchers.is(absoluteUri.replace(TestPortProvider.getHost(), "127.0.0.1"))));
-
+                .or(CoreMatchers.is(TestPortProvider.getHost())));
     }
 
     private String test(final String uri) throws UnknownHostException, IOException {
