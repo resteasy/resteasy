@@ -674,12 +674,11 @@ public class GrpcToJaxrsTest
    @Test
    public void testServletContextPath() throws Exception {
       GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
-      messageBuilder.setURL("http://localhost:8080/p/context");
       GeneralEntityMessage gem = messageBuilder.build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.contextPath(gem);
-         Assert.assertEquals("/grpcToJaxrs", response.getGStringField().getValue());
+         Assert.assertEquals("/" + GrpcToJaxrsTest.class.getSimpleName(), response.getGStringField().getValue());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
