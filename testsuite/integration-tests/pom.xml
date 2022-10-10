@@ -56,6 +56,9 @@
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
         <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
+
+        <!-- For grpc-bridge test -->
+        <version.jaxrs.example.grpc>0.0.20</version.jaxrs.example.grpc>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -373,6 +376,73 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>grpc-bridge-runtime</artifactId>
+            <version>${version.resteasy.testsuite}</version>
+        </dependency>
+
+       <dependency>
+            <groupId>jaxrs.example</groupId>
+            <artifactId>jaxrs.example.grpc</artifactId>
+            <version>${version.jaxrs.example.grpc}</version>
+            <type>jar</type>
+            <exclusions>
+               <exclusion>
+                  <groupId>javax.inject</groupId>
+                  <artifactId>javax.inject</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>jaxrs.example</groupId>
+                  <artifactId>jaxrs.example</artifactId>
+               </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>jaxrs.example</groupId>
+            <artifactId>jaxrs.example.grpc</artifactId>
+            <version>${version.jaxrs.example.grpc}</version>
+            <type>war</type>
+            <exclusions>
+               <exclusion>
+                  <groupId>javax.inject</groupId>
+                  <artifactId>javax.inject</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>jaxrs.example</groupId>
+                  <artifactId>jaxrs.example</artifactId>
+               </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.17.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+
+        <dependency>
+           <groupId>com.google.guava</groupId>
+           <artifactId>failureaccess</artifactId>
         </dependency>
     </dependencies>
 
