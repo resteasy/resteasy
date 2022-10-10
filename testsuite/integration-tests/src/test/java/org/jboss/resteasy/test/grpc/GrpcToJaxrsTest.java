@@ -73,7 +73,7 @@ public class GrpcToJaxrsTest
 //         + "Dependencies: com.google.guava services\n"));
          war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.20")));
 //         TestUtil.addOtherLibrary(war, "jaxrs.example:jaxrs.example.grpc:jar:0.0.19");
-         TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.0.Final-SNAPSHOT");
+         TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
 //         TestUtil.addOtherLibrary(war, "io.grpc:grpc-api:1.39.0");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-context:1.39.0");
