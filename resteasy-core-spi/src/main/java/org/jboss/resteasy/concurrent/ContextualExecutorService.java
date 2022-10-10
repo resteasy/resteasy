@@ -21,6 +21,8 @@ package org.jboss.resteasy.concurrent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -73,7 +75,11 @@ public class ContextualExecutorService implements ExecutorService {
                 // Clear the delegate as we're done with it
                 delegate = null;
             } else {
-                getDelegate().shutdown();
+                final ExecutorService delegate = getDelegate();
+                shutdownDelegate(() -> {
+                    delegate.shutdown();
+                    return null;
+                });
             }
         }
     }
@@ -85,7 +91,8 @@ public class ContextualExecutorService implements ExecutorService {
                 // Clear the delegate as we're done with it
                 delegate = null;
             } else {
-                return getDelegate().shutdownNow();
+                final ExecutorService delegate = getDelegate();
+                return shutdownDelegate(delegate::shutdownNow);
             }
         }
         return Collections.emptyList();
@@ -185,4 +192,10 @@ public class ContextualExecutorService implements ExecutorService {
         return delegate;
     }
 
+    private static <T> T shutdownDelegate(final PrivilegedAction<T> action) {
+        if (System.getSecurityManager() == null) {
+            return action.run();
+        }
+        return AccessController.doPrivileged(action);
+    }
 }
