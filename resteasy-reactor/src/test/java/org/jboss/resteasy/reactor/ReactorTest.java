@@ -297,7 +297,7 @@ public class ReactorTest
    public void testInjection()
    {
       Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
-      assertEquals((Integer)42, data);
+      assertEquals((Integer)24, data);
 
       data = client.target(generateURL("/injection-async")).request().get(Integer.class);
       assertEquals((Integer)42, data);
