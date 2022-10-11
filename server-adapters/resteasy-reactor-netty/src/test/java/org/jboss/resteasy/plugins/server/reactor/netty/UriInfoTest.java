@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
@@ -41,35 +41,32 @@ public class UriInfoTest {
     public void testUriInfoUsingFullUriWithHostname() throws Exception
     {
         final String uri = TestPortProvider.generateURL("/uriinfo");
-        Assert.assertEquals(uri, test(uri));
+        assertThat(uri, equalTo(test(uri)));
     }
 
     @Test
     public void testUriInfoUsingFullUriWithIp() throws Exception
     {
         final String uri = TestPortProvider.generateURL("/uriinfo").replace("localhost", "127.0.0.1");
-        Assert.assertEquals(uri, test(uri));
+        assertThat(uri, equalTo(test(uri)));
     }
 
     @Test
     public void testUriInfoUsingPartialUri() throws Exception
     {
         final String uri = "/uriinfo";
-
         final String response = test(uri);
-
         final String absoluteUri = TestPortProvider.generateURL(uri);
-        assertThat(response, CoreMatchers.either(CoreMatchers.is(absoluteUri))
-                .or(CoreMatchers.is(TestPortProvider.getHost())));
+        assertThat(response, equalTo(absoluteUri));
     }
 
     private String test(final String uri) throws UnknownHostException, IOException {
-
+        final String hostHeaderValue = TestPortProvider.getHost() + ":" + TestPortProvider.getPort();
         try (Socket client = new Socket(TestPortProvider.getHost(), TestPortProvider.getPort())) {
             try (PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                out.printf("GET %s HTTP/1.1\r\n", uri);
-               out.print("Host: \r\n");
+               out.printf("Host: %s\r\n", hostHeaderValue);
                out.print("Connection: close\r\n");
                out.print("\r\n");
                out.flush();

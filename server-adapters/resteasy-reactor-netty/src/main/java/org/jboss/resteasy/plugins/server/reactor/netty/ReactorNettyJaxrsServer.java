@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import javax.net.ssl.SSLContext;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -379,11 +380,14 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       if (uri.startsWith(req.scheme() + "://")) {
          uriString = uri;
       } else {
+         String host = req.requestHeaders().get(HttpHeaderNames.HOST);
+         if (host == null || "".equals(host.trim())) {
+            host = "unknown";
+         }
          uriString = new StringBuilder(100)
              .append(req.scheme())
              .append("://")
-             .append(req.hostAddress().getHostName())
-             .append(":").append(req.hostAddress().getPort())
+             .append(host)
              .append(req.uri())
              .toString();
       }
