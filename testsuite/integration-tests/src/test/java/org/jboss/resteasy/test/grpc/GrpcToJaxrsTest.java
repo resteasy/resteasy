@@ -91,7 +91,7 @@ public class GrpcToJaxrsTest
                + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export, org.jboss.as.weld export services \n"));
          WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
          log.info(archive.toString(true));
-         archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
+//         archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
          return archive;
    }
 
