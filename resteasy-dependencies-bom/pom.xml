@@ -53,7 +53,7 @@
         <version.io.netty.netty4>4.1.82.Final</version.io.netty.netty4>
         <version.io.vertx>4.3.4</version.io.vertx>
         <version.io.undertow>2.2.20.Final</version.io.undertow>
-        <version.jakarta.activation>2.1.0</version.jakarta.activation>
+        <version.jakarta.activation>2.1.1.jbossorg-1</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>4.0.1</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.1</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>2.1.1</version.jakarta.json-api>
