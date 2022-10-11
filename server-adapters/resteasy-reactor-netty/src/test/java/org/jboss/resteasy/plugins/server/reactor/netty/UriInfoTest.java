@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
-import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
@@ -59,17 +59,16 @@ public class UriInfoTest {
         final String response = test(uri);
 
         final String absoluteUri = TestPortProvider.generateURL(uri);
-        assertThat(response, CoreMatchers.either(CoreMatchers.is(absoluteUri))
-                .or(CoreMatchers.is(TestPortProvider.getHost())));
+        assertThat(response, equalTo(absoluteUri));
     }
 
     private String test(final String uri) throws UnknownHostException, IOException {
-
+        final String hostHeaderValue = TestPortProvider.getHost() + ":" + TestPortProvider.getPort();
         try (Socket client = new Socket(TestPortProvider.getHost(), TestPortProvider.getPort())) {
             try (PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                out.printf("GET %s HTTP/1.1\r\n", uri);
-               out.print("Host: \r\n");
+               out.printf("Host: %s\r\n", hostHeaderValue);
                out.print("Connection: close\r\n");
                out.print("\r\n");
                out.flush();

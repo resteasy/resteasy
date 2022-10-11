@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test;
 
-import static org.hamcrest.CoreMatchers.either;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -77,13 +74,8 @@ public class HeaderEmptyHostTest
             final String response = maybeResp.get();
 
             final String actualAbsoluteUri = response.subSequence(RESPONSE_PREFIX.length(), response.length()).toString();
-
-            final String expectedAbsoluteUri = TestPortProvider.generateURL(uri);
-            assertThat(actualAbsoluteUri, either(CoreMatchers.is(expectedAbsoluteUri))
-                    .or(CoreMatchers.is(expectedAbsoluteUri.replace(TestPortProvider.getHost(), "127.0.0.1"))));
-
-            }
+            Assert.assertEquals(actualAbsoluteUri, "http://unknown" + uri);
+         }
       }
    }
-
 }
