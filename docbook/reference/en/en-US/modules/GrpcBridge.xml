@@ -1,0 +1,1241 @@
+<chapter id="grpc-bridge">
+   <title>gRPC Bridge</title>
+   
+   <para>
+      The RESTEasy modules <emphasis>grpc-bridge</emphasis> and <emphasis>grpc-bridge-runtime</emphasis>
+      have been developed to enable communication between gRPC clients and Jakarta REST servers. The
+      classes in the former module are able to scan a directory tree of Jakarta REST resource classes and
+      generate classes that form an intermediary layer between the gRPC runtime and a Jakarta REST server. Those
+      generated classes are supported by grpc-bridge-runtime. The process of generating the files is facilitated
+      by the maven archetype <ulink url="https://github.com/resteasy/gRPCtoJAXRS-archetype">
+      https://github.com/resteasy/gRPCtoJAXRS-archetype</ulink>.
+   </para>
+   
+<section>
+<title>protobuf and gRPC</title>
+
+   <para>
+      <ulink url="https://grpc.io/">gRPC</ulink>, introduced by Google, is a relatively recent member of
+      the extended Remote Procedure Call (RPC) / Remote Method Invocation (RMI) family of client-server frameworks.
+      An example of the
+      former is the venerable <ulink url="https://www.corba.org/">CORBA</ulink>, and an example of the latter 
+      is <ulink url="https://docs.oracle.com/javase/tutorial/rmi/">Java RMI</ulink>. An early generation of
+      <ulink url="https://jbossremoting.jboss.org/documentation/v2.html">JBoss Remoting</ulink> presented
+      aspects of both.
+   </para>
+   
+<section>
+<title>.proto IDL file</title>
+
+   <para>
+      gRPC shares with CORBA the concept of a programming language independent 
+      <emphasis>Interface Definition Language</emphasis> (IDL)
+      that can be translated into code in any language for which a compiler exists. gRPC is built on
+      top of <ulink url="https://developers.google.com/protocol-buffers">protobuf</ulink>, a data definion framework,
+      also from Google, which has an IDL and a precisely defined wire format. For example,
+   </para>
+   
+   <programlisting>
+syntax = "proto3";
+package org.greet;
+option java_package = "org.greet";
+option java_outer_classname = "Greet_proto";
+
+message Greeting {
+  string s = 1;
+}
+   </programlisting>
+
+   <para>
+      is a protobuf IDL file that defines a data type called <code>Greeting</code> with a single
+      string field. Note that each message field is associated with a distinct integer; e.g., <code>s</code>
+      is associated with 1, which supports the translation to and from the wire format.
+      When it is compiled, the output is a several hundred line class called 
+      <code>org.greet.Greet_proto</code>:
+   </para>
+   
+   <programlisting>
+package org.greet;
+
+public final class Greet_proto {
+
+   public static final class Greeting extends
+         com.google.protobuf.GeneratedMessageV3 implements GreetingOrBuilder {
+
+      public java.lang.String getS() {
+         ...
+      }
+
+      public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder&lt;Builder&gt; implements
+            org.jboss.greeting.Greeting_proto.GreetingOrBuilder {
+
+         public Builder setS() {
+            ...
+         }
+      }
+   }
+}
+   </programlisting>
+   
+   <para>
+      The <code>Builder</code> class supports creating a <code>Greeting</code>
+   </para>
+   
+   <programlisting>
+org.greet.Greet_proto.Greeting.Builder builder = org.greet.Greet_proto.Greeting.newBuilder();
+Greeting greeting = builder.setS("foo").build();
+   </programlisting>
+   
+   <para>
+      and the <code>getS()</code> method supports retrieving the contents of the <code>Greeting</code>.
+   </para>
+   
+   <para>
+      gRPC extends the protobuf IDL with a syntax for defining methods. For example,
+   </para>
+   
+   <programlisting>
+syntax = "proto3";
+package org.greet;
+option java_package = "org.greet";
+option java_outer_classname = "Greet_proto";
+
+message Greeting {
+   string s = 1;
+}
+
+message gString {string value = 2;}
+
+service GreetService {
+   rpc greet (gString) returns (Greeting);
+}
+   </programlisting>
+   
+   <para>
+      adds the <code>greet</code> remote call. Note that it also adds a <code>gString</code> type
+      since remote calls can't use the builtin <code>string</code> type. 
+      When this extended file is compiled by protoc plus the gRPC plugin,
+      the result, in addition to <code>org.greet.Greet_proto</code>, is the class <code>org.greet.GreetServiceGrpc</code>,
+      also with hundreds of lines:
+   </para>
+
+   <programlisting>
+public final class GreetServiceGrpc {
+   ...
+   public static final class GreetServiceBlockingStub extends
+         io.grpc.stub.AbstractBlockingStub&lt;GreetServiceBlockingStub&gt; {
+      ...
+      public org.greet.Greet_proto.Greeting greet(org.greet.Greet_proto.gString request) {
+         ...
+      }
+   }
+   ...
+   public static final class GreetServiceStub extends
+         io.grpc.stub.AbstractAsyncStub&lt;GreetServiceStub&gt; {
+      ...
+      public void greet(org.greet.Greet_proto.gString request,
+         io.grpc.stub.StreamObserver&lt;org.greet.Greet_proto.gString&gt; responseObserver) {
+         ...
+      }
+   }
+}
+   </programlisting>
+</section>
+
+<section>
+   <title>Client stubs</title>
+   
+   <para>
+      The inner class <code>GreetServiceGrpc.GreetServiceBlockingStub</code> is used on the client side to
+      invoke the methods defined in the .proto file. In this case, there is only one, <code>greet()</code>,
+      and an invocation would look something like:
+   </para>
+   
+   <programlisting>
+private static String target = "localhost:8082";
+private static ManagedChannel channel;
+private static GreetServiceBlockingStub blockingStub;
+   
+public static void setup() throws Exception {
+   channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+   blockingStub = GreetServiceGrpc.newBlockingStub(channel);
+}
+
+public void test() throws Exception {
+   org.greet.Greet_proto.gString gs = org.greet.Greet_proto.gStrng.newBuilder().setS("foo").build();
+   org.greet.Greet_proto.Greeting response = blockingStub.greet(gs);
+   String s = response.getS();
+   ...
+}
+   </programlisting>
+   
+   <para>
+      There's also the asynchronous client stub <code>GreetServiceStub</code> and 
+      <code>GreetServiceFutureStub</code>, which returns a <code>GrpcFuture</code>.
+   </para>
+</section>
+
+<section>
+   <title>Server stubs</title>
+   
+   <para>
+      The gRPC plugin also generates the inner class <code>GreetServiceGrpc.GreetServiceImplBase</code>,
+      which has a default method for each rpc entry in the .proto file. The default method will indicate that
+      the method is not implemented. The idea is that the developer should create a class extending
+      <code>GreetServiceImplBase</code> with implementing methods. A simple example is
+   </para>
+   
+   <programlisting>
+public void greet(org.greet.Greet_proto.gString request, StreamObserver&lt;org.greet.Greet_proto.Greeting&gt; responseObserver) {
+   String name = request.getValue();
+   org.greet.Greet_proto.Greeting greeting = org.greet.Greet_proto.Greeting.newBuilder().setS("hello, " + name).build();
+   responseObserver.onNext(greeting);
+}
+   </programlisting>
+</section>
+</section>
+
+<section>
+<title>Connecting a gRPC client to a Jakarta REST server</title>
+
+   <para>
+      A gRPC client needs to access the client stubs like <code>GreetServiceBlockingStub</code>,
+      which are generated from a .proto IDL file by the protobuf compiler with the gRPC plugin. That is, the process
+      starts with an IDL file. Where does the IDL file come from? In a typical case, the IDL file is part of
+      the design and is created manually early in the process. In the situation we are addressing here, though,
+      we have a pre-existing Jakarta REST service to which the IDL file must conform. Now, in principle, it could be
+      generated manually from the Jakarta REST server classes, but that would be tedious and error prone. RESTEasy's
+      grpc-bridge module automates the process.
+   </para>
+   
+<section>
+<title>Generating an IDL file</title>
+   
+   <para>
+      The class <code>org.jboss.resteasy.grpc.protobuf.JavaToProtobufGenerator</code> traverses,
+      with the help of the Java parser <ulink url="https://github.com/javaparser/javaparser">https://github.com/javaparser/javaparser</ulink>,
+      a set of Jakarta REST resource classes. For each class that appears as an entity type or a return type of a resource method 
+      or resource locator, <code>JavaToProtobufGenerator</code> generates a protobuf message. For each resource 
+      method or resource locator, it generates an rpc entry.
+   </para>
+   
+   <para>
+      Note that not all message types can be discovered by syntactic examination, since a resource method could return
+      a <code>jakarta.ws.rs.core.Response</code>, where the type of the actual entity depends on the behavior of the method.
+      Technically, it's a non-computable problem. There is a mechanism for manually specifying addtional classes, which we
+      will discuss later.
+   </para>
+   
+   <para>
+      Given <code>org.greet.Greeting</code>
+   </para>
+   
+   <programlisting>
+package org.greet;
+
+public class Greeting {
+   private String s;
+   
+   public Greeting(String s) {
+      this.s = s;
+   }
+}
+   </programlisting>
+   
+   <para>and <code>org.greet.Greeter</code></para>
+   
+   <programlisting>
+package org.greet;
+
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+
+@Path("")
+public class Greeter {
+
+   @POST
+   @Path("greet")
+   public Greeting greet(String s) {
+      return new Greeting("hello, " + s);
+   }
+}
+   </programlisting>
+   
+   <para>
+       <code>JavaToProtobufGenerator</code> will generate Greet.proto:
+   </para>
+   
+   <programlisting>
+syntax = "proto3";
+package org.greet;
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+option java_package = "org.greet";
+option java_outer_classname = "Greet_proto";
+
+service GreetService {
+// /greet gString org_greet___Greeting POST sync
+  rpc greet (GeneralEntityMessage) returns (GeneralReturnMessage);
+}
+
+message org_greet___Greeting {
+  string s = 1;
+}
+
+message gInteger   {int32  value = 2;}
+message gFloat     {float  value = 3;}
+message gCharacter {string value = 4;}
+message gByte      {int32  value = 5;}
+message gLong      {int64  value = 6;}
+message gString    {string value = 7;}
+message gBoolean   {bool   value = 8;}
+message gDouble    {double value = 9;}
+message gShort     {int32  value = 10;}
+
+message gHeader {
+   repeated string values = 11;
+}
+
+message gCookie {
+   string name = 12;
+   string value = 13;
+   int32  version = 14;
+   string path = 15;
+   string domain = 16;
+}
+
+message gNewCookie {
+   string name = 17;
+   string value = 18;
+   int32  version = 19;
+   string path = 20;
+   string domain = 21;
+   string comment = 22;
+   int32 maxAge = 23;
+   google.protobuf.Timestamp expiry = 24;
+   bool secure = 25;
+   bool httpOnly = 26;
+
+   enum SameSite {
+      NONE   = 0;
+      LAX    = 1;
+      STRICT = 2;
+   }
+
+   SameSite sameSite = 27;
+}
+
+message ServletInfo {
+   string characterEncoding = 28;
+   string clientAddress = 29;
+   string clientHost = 30;
+   int32  clientPort = 31;
+}
+
+message FormValues {
+   repeated string formValues_field = 32;
+}
+
+message FormMap {
+   map&lt;string, FormValues&gt; formMap_field = 33;
+}
+
+message GeneralEntityMessage {
+   ServletInfo servletInfo = 34;
+   string URL = 35;
+   map&lt;string, gHeader&gt; headers = 36;
+   repeated gCookie cookies = 37;
+   oneof messageType {
+      gString gString_field = 38;
+      FormMap form_field = 39;
+   }
+}
+
+message GeneralReturnMessage {
+   map&lt;string, gHeader&gt; headers = 40;
+   repeated gNewCookie cookies = 41;
+   gInteger status = 42;
+   oneof messageType {
+      org_greet___Greeting org_greet___Greeting_field = 43;
+   }
+}
+   </programlisting>
+   
+   <para>
+      Clearly, the generated IDL file is more complicated than the one discussed earlier. The more interesting
+      distinctions are the following:
+   </para>
+   
+   <orderedlist>
+      <listitem>
+         protobuf does not have a notion of packages, so the class <code>org.greet.Greeting</code> is represented as
+         <code>org_greet___Greeting</code>.
+      </listitem>
+      <listitem>
+         Some information pertaining to the rpc entries is saved in comments for future use. In the example, 
+         "/greet gString org_greet___Greeting POST sync" means: 
+         <itemizedlist>
+            <listitem>the path to the <code>greet()</code> method is "/greet"</listitem>
+            <listitem>the type of the entity parameter is <code>gString</code></listitem>
+            <listitem>the type of the response entity is <code>org_greet___Greeting</code></listitem>
+            <listitem>the HTTP verb on the resource method is POST</listitem>
+            <listitem>the resource method is synchronous</listitem>
+         </itemizedlist>
+      </listitem>
+      <listitem>
+         The <code>GeneralEntityMessage</code> message type is used as the request value for all methods. Something
+         like this complex structure is necessary to bridge the gap between gRPC requests and Jakarta REST requests.
+         In particular, while gRPC allows only a single request value, Jakarta REST allows, besides the entity parameter
+         itself, things like headers, cookies, query parameters, etc. <code>GeneralEntityMessage</code> can
+         accomodate all of those. Also, consider the 
+         <programlisting>
+   oneof messageType {
+      gString gString_field = 42;
+   }  
+         </programlisting>
+         <code>oneof</code> is a protobuf construct that allows a field to be populated with a value whose type
+         is one of the types listed in the <code>oneof</code> list. There's only one rpc method here, so there's only
+         one type in the list. But suppose there were another rpc method with the comment
+         <programlisting>
+// /float gFloat gInteger POST sync
+         </programlisting>
+         Then the <code>oneof</code> field would look like
+         <programlisting>
+    oneof messageType {
+      gString gString_field = 42;
+      gFloat gFloat_field = 43;
+   }        
+         </programlisting>
+         This way, resource methods with a <code>String</code> entity type or a <code>float</code> entity type could
+         be represented.
+      </listitem>
+      <listitem>
+      The <code>GeneralReturnMessage</code> message type plays a role like <code>GeneralEntityMessage</code> but for return values.
+      </listitem>
+      <listitem>
+      [discuss cookies]
+      </listitem>
+   </orderedlist>
+</section>
+
+<section>
+<title>Inheritance</title>
+
+   <para>
+      gRPC and Jakarta REST have different semantics, and the classes <code>GeneralEntityMessage</code> and <code>GeneralReturnMessage</code>
+      introduced in the preceding section help to bridge the differences. Another fundamental difference is the lack of a notion
+      of inheritance in gRPC. That is, the protobuf IDL supports nested structures but does not have a notion of a structure
+      being derived from another structure. <code>JavaToProtobufGenerator</code> generates a special field to represent a parent
+      class. Let's define the class <code>GeneralGreeting</code>
+   </para>
+   
+   <programlisting>
+package org.greet;
+
+public class GeneralGreeting extends Greeting {
+   private String salute;
+   
+   public GeneralGreeting(String salute, String s) {
+      super(s);
+      this.salute = salute;
+   }
+}
+   </programlisting>
+   
+   <para>and extend <code>Greeter</code>:</para>
+   
+   <programlisting>
+package org.greet;
+
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+
+@Path("")
+public class Greeter {
+   
+   @Path("greet")
+   @POST
+   public Greeting greet(String s) {
+      return new Greeting("hello, " + s);
+   }
+   
+   
+   @Path("salute")
+   @POST
+   public GeneralGreeting generalGreet(@QueryParam("salute") String salute, String s) {
+      return new GeneralGreeting(salute, s);
+   }
+}
+   </programlisting>
+   
+   <para>
+      Then <code>JavaToProtobufGenerator</code> will make the following adjustments to Greet.proto:
+   </para>
+   
+   <programlisting>
+...
+service GreetService { // 1
+// /greet gString org_greet___Greeting POST sync
+  rpc greet (GeneralEntityMessage) returns (GeneralReturnMessage);
+// /salute gString org_greet___GeneralGreeting POST sync
+  rpc generalGreet (GeneralEntityMessage) returns (GeneralReturnMessage);
+}
+...
+message org_greet___GeneralGreeting { // 2
+  string salute = 2;
+  org_greet___Greeting greeting___super = 3;
+}
+...
+message GeneralReturnMessage {
+   map&lt;string, gHeader&gt; headers = 42;
+   repeated gNewCookie cookies = 43;
+   gInteger status = 44;
+   oneof messageType { // 3
+      org_greet___Greeting org_greet___Greeting_field = 45;
+      org_greet___GeneralGreeting org_greet___GeneralGreeting_field = 46;
+   }
+}
+   </programlisting>
+   
+   <para>
+      Note the following:
+   </para>
+   
+   <orderedlist>
+      <listitem>A second rpc entry is generated.</listitem>
+      <listitem>The new message type <code>org_greet___GeneralGreeting</code> is generated.</listitem>
+      <listitem>A second message type option is added to the <code>oneof</code> field in <code>GeneralReturnMessage</code>.</listitem>
+   </orderedlist>
+   
+   <para>
+      Especially, note the field <code>greeting___super</code> in <code>org_greet___GeneralGreeting</code>. The
+      syntax "___super" indicates that the content of that field represents, in Java terms, the parent class
+      <code>org.greet.Greeting</code>. The classes in grpc-bridge that subsequently process Greet.proto treat it accordingly.
+   </para>
+</section>
+
+<section>
+<title>Runtime intermediary layer on the server</title>
+
+   <para>
+      The gRPC runtime accepts a gRPC request and dispatches it to <code>GreetServiceGrpc</code>, whose methods are
+      meant to be overridden by "business logic" methods. Here, though, we mean for the request to be forwarded to a Jakarta
+      REST resource method, so we need code that transforms a gRPC request to a Jakarta REST request. The class
+      <code>org.jboss.resteasy.grpc.JaxrsImplBaseExtender</code> in grpc-bridge will generate 
+      <code>org.greet.GreetServiceGrpcImpl</code> with the necessary methods.
+   </para>
+   
+   <para>
+      Given the updated version of <code>org.greet.Greeter</code>, there will be two methods in <code>GreetServiceGrpc</code>
+      that need to be overridden. For example, 
+   </para>
+   
+   <programlisting>
+public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserver&lt;org.greet.Greet_proto.GeneralReturnMessage&gt; responseObserver);
+   </programlisting>
+   
+   <para>
+      will be overridden by
+   </para>
+   
+   <programlisting>
+public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserver&lt;org.greet.Greet_proto.GeneralReturnMessage&gt; responseObserver) {
+   HttpServletRequest request = null;
+   try {
+      HttpServletResponseImpl response = new HttpServletResponseImpl("org_greet___Greeting", "sync", Greet_Server.getContext(), builder, fd); // 1
+      GeneratedMessageV3 actualParam = param.getGStringField();
+      request = getHttpServletRequest(param, actualParam, "//greet", response, "POST", "org.greet.Greet_proto.GeneralReturnMessage"); // 2
+      HttpServletDispatcher servlet = getServlet(); // 3
+      activateRequestContext();
+      servlet.service("POST", request, response); // 4
+      MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();
+      ByteArrayOutputStream baos = msos.getDelegate();
+      ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+      org_greet___Greeting reply = org_greet___Greeting.parseFrom(bais); // 5
+      org.greet.Greet_proto.GeneralReturnMessage.Builder grmb = createGeneralReturnMessageBuilder(response);
+      grmb.setOrgGreetGreetingField(reply);
+      responseObserver.onNext(grmb.build()); // 6
+   } catch (Exception e) {
+      responseObserver.onError(e);
+   } finally {
+      responseObserver.onCompleted();
+      if (requestContextController != null) {
+         requestContextController.deactivate();
+      }
+   }
+   </programlisting>
+   
+   <para>
+      The general mission of <code>greet()</code> is to create a servlet environment for the RESTEasy resource method to run in.
+      More specifically, without going into too much detail, the following steps occur:
+   </para>
+   <orderedlist>
+      <listitem>create a servlet response</listitem>
+      <listitem>create a servlet request</listitem>
+      <listitem>find the target servlet inside RESTEasy</listitem>
+      <listitem>call the <code>service()</code> method of the target servlet</listitem>
+      <listitem>parse the response object</listitem>
+      <listitem>pass the response back to the gRPC runtime</listitem>
+   </orderedlist>
+</section>
+
+<section>
+<title>Translating Java classes</title>
+
+   <para>
+      Note that the sequence
+   </para>
+
+<programlisting>
+              org.greet.Greeting (Java)
+                      -> (JavaToProtobufGenerator) -> 
+                      -> org_greet___Greeting (protobuf)
+                      -> (protoc) -> 
+                      -> org.greet.Greet_proto.org_greet___Greeting (Java)
+</programlisting>
+
+   <para>
+      turns the Java class <code>org.greet.Greeting</code> into a second Java class <code>org.greet.Greet_proto.org_greet___Greeting</code>
+      by way of the protobuf message type <code>org_greet___Greeting</code>. For clarity, we refer to
+      <code>org.greet.Greet_proto.org_greet___Greeting</code> as the <emphasis>javabuf</emphasis> version of <code>org.greet.Greeting</code>.
+   </para>
+   
+   <para>
+      Two classes are generated to translate back and forth between a Java class and its javabuf counterpart. In particular, the
+      class <code>org.jboss.resteasy.grpc.protobuf.JavabufTranslatorGenerator</code> generates a class like
+      <code>org.greet.Greet_JavabufTranslator</code>, which has two static methods
+   </para>
+   
+   <programlisting>
+   public static Message translateToJavabuf(Object o);
+   public static Object translateFromJavabuf(Message message);
+   </programlisting>
+   
+   <para>
+      which do the translations. Note that all javabuf classes implement the interface 
+      <code>com.google.protobuf.Message</code>. Without going too deeply into the details,
+      <code>Greet_JavabufTranslator</code> has two classes for each message type; for example,
+   </para>
+   
+   <programlisting>
+   static class org_greet___Greeting_ToJavabuf implements TranslateToJavabuf { ... }
+   static class org_greet___Greeting_FromJavabuf implements TranslateFromJavabuf { ... }
+   </programlisting>
+   
+   <para>
+      Each class has a list of lambdas, each lambda being responsible for translating one field.
+   </para>
+   
+   <para>
+      <code>Greet_JavabufTranslator</code> does the heavy lifting of the translations. It is called from
+      the class <code>org.greet.GreetMessageBodyReaderWriter</code>, which is generated by
+      <code>org.jboss.resteasy.grpc.protobuf.ReaderWriterGenerator</code>. <code>GreetMessageBodyReaderWriter</code>
+      implements <code>jakarta.ws.rs.ext.MessageBodyReader</code> and
+      <code>jakarta.ws.rs.ext.MessageBodyWriter</code>, so it's registered as a provider with the 
+      RESTEasy runtime. The request entity and the response entity are instances of javabuf classes, so it's
+      important that <code>GreetMessageBodyReaderWriter</code> is always used instead of any other
+      providers. Since some built-in providers like <code>org.jboss.resteasy.plugins.providers.StringTextStar</code>
+      are very general, it is important to guarantee that <code>GreetMessageBodyReaderWriter</code> has
+      the highest priority. One strategy available in RESTEasy is to eliminate <emphasis role="bold">all</emphasis>
+      built-in providers and then add back any that are necessary. For example, that can be accomplished
+      in a web.xml file as follows:
+   </para>
+   
+   <programlisting>
+    &lt;servlet&gt;
+       &lt;servlet-name&gt;GreetServlet&lt;/servlet-name&gt;
+       &lt;servlet-class&gt;
+          org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher
+       &lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    
+    &lt;!-- 
+       The intention is that GreetMessageBodyReaderWriter (with the help of Greet_JavabufTranslator)
+       will handle all reading and writing of data objects. Therefore, we
+
+       1. eliminate all builtin providers, and then
+       2. add back builtin providers other than MessageBodyReaders and MessageBodyWriters.
+
+     --&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;resteasy.use.builtin.providers&lt;/param-name&gt;
+        &lt;param-value&gt;false&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    ...
+     &lt;context-param&gt;
+       &lt;param-name&gt;resteasy.providers&lt;/param-name&gt;
+       &lt;param-value&gt;
+          org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider,
+          org.jboss.resteasy.plugins.interceptors.CacheControlFeature,
+          org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFeature,
+          org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponseFilter,
+          org.jboss.resteasy.plugins.interceptors.ServerContentEncodingAnnotationFeature,
+          org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider,
+          org.jboss.resteasy.plugins.providers.CompletionStageProvider,
+          org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter,
+          org.jboss.resteasy.plugins.providers.jackson.UnrecognizedPropertyExceptionHandler,
+          org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder,
+          org.jboss.resteasy.plugins.providers.jsonp.JsonpPatchMethodFilter,
+          org.jboss.resteasy.plugins.providers.ReactiveStreamProvider,
+          org.jboss.resteasy.plugins.providers.sse.SseEventProvider,
+          org.jboss.resteasy.plugins.providers.sse.SseEventSinkInterceptor,
+          org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionMapper,
+          org.jboss.resteasy.plugins.validation.ValidatorContextResolver,
+          org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI,
+          org.jboss.resteasy.security.doseta.ClientDigitalSigningHeaderDecoratorFeature,
+          org.jboss.resteasy.security.doseta.ClientDigitalVerificationHeaderDecoratorFeature,
+          org.jboss.resteasy.security.doseta.DigitalSigningInterceptor,
+          org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor,
+          org.jboss.resteasy.security.doseta.ServerDigitalSigningHeaderDecoratorFeature,
+          org.jboss.resteasy.security.doseta.ServerDigitalVerificationHeaderDecoratorFeature
+       &lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+     &lt;context-param&gt;
+       &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+       &lt;param-value&gt;/grpcToJaxrs&lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+    &lt;servlet-mapping&gt;
+       &lt;servlet-name&gt;GreetServlet&lt;/servlet-name&gt;
+       &lt;url-pattern&gt;/grpcToJaxrs/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+   </programlisting>
+   
+   <para>
+      Of course, the list of providers can be reduced to those that are actually needed.
+   </para>
+</section>
+</section>
+
+<section>
+<title>Automating the generation of the mediating classes</title>
+
+<section id="building_bridge">
+<title>Building the bridge project</title>
+   <para>
+      There are a lot of moving parts in the generation of the classes that make up the gRPC to Jakarta
+      REST intermediary layer, so we've gathered the details together into a maven archetype in the
+      gRPCtoJAXRS-archetype github project (<ulink url="https://github.com/resteasy/gRPCtoJAXRS-archetype">
+      https://github.com/resteasy/gRPCtoJAXRS-archetype</ulink>).
+   </para>
+   
+   <para>
+      The gRPCtoJAXRS-archetype creates a maven project we call the <emphasis>bridge project</emphasis>,
+      consisting, at first, mainly of a pom.xml that can build
+      the intermediary classes. The archetype assumes the existence of a Jakarta REST project, called the
+      <emphasis>target project</emphasis>, whose source JAR is available in an accessible repository.
+      In this example, we assume the existence of org.greet:greet:0.0.1-SNAPSHOT.
+      To generate a new project that will include the classes from the target project plus the
+      intermediary classes, run
+   </para>
+   
+   <programlisting>
+mvn archetype:generate -B \
+   -DarchetypeGroupId=org.jboss.resteasy \
+   -DarchetypeArtifactId=gRPCtoJAXRS-archetype \
+   -DarchetypeVersion=0.0.3-SNAPSHOT \
+   -DgroupId=org.greet \
+   -DartifactId=greet \
+   -Dversion=0.0.1-SNAPSHOT \
+   -Dgenerate-prefix=Greet \
+   -Dgenerate-package=org.greet \
+   -Dresteasy-version=6.2.0.Final
+   </programlisting>
+   
+   <para>
+      The following parameters need to be supplied:
+   </para>
+   
+   <itemizedlist>
+      <listitem>archetypeGroupId: gRPCtoJAXRS-archetype's groupId </listitem>
+      <listitem>archetypeArtifactId: gRPCtoJAXRS-archetype's archetypeId</listitem>
+      <listitem>archetypeVersion: gRPCtoJAXRS-archetype's version</listitem>
+      <listitem>groupId: groupId of the target project</listitem>
+      <listitem>artifactId: artifactId of the target project</listitem>
+      <listitem>version: version of the target project</listitem>
+      <listitem>generate-prefix: the prefix for generated classes</listitem>
+      <listitem>generate-package: Java package for generated classes</listitem>
+      <listitem>resteasy-version: version of RESTEasy to use</listitem>
+   </itemizedlist>
+   
+   <para>
+      The result of running the archetype is a new project with GAV groupId:artifactId.grpc:version. At this point, the
+      layout of the new project is
+   </para>
+   
+   <programlisting>
++- pom.xml
++- src/main/webapp
+|  +- META-INF
+|  |  +- beans.xml
+|  +- WEB-INF
+|     +- web.xml
++- src/main/resources
+|  +- buildjar
+|  +- deployjar
++- src/test/java
+   +- org.jboss.resteasy.grpc.server
+      +- Greet_Server.java 
+   </programlisting>
+       
+   <para>
+      The most important file is pom.xml, which describes the sequence of events necessary for generating
+      a WAR with the contents of the target project plus the intermediary layer. The other files are
+   </para>
+   
+   <itemizedlist>
+      <listitem>beans.xml: empty file</listitem>
+      <listitem>web.xml: implements the Jakarta REST provider removal described above</listitem>
+      <listitem>buildjar: a bash script that produces a JAR file (See <xref linkend="output_products"/>.)</listitem>
+      <listitem>deployjar: a bash script that deploys the JAR built by buildjar to a maven repository
+                           (See <xref linkend="output_products"/>.)</listitem>
+      <listitem><code>Greet_Server.java</code>: a Jakarta REST resource class that can turn on the gRPC server runtime</listitem>
+   </itemizedlist>
+   
+   <para>
+      Once the new project is created, the pom.xml can be used to generate the intermediary classes.
+      For example:
+   </para>
+   
+   <programlisting>
+mvn -Dservlet.name=GreetServlet clean install 
+   </programlisting>
+   
+   <para>
+   servlet.name is the name of the servlet associated with the target project. There are also some optional
+   parameters:
+   </para>
+   
+   <itemizedlist>
+      <listitem>classes: additional classes not detected by syntactic scanning</listitem>
+      <listitem>release.type: deploy as a snapshot or otherwise. Defaults to "snapshot".</listitem>
+      <listitem>inWildFly: the generated WAR will be run in WildFly. Defaults to "true".
+                See <xref linkend="output_products"/> and <xref linkend="using_war"/>
+                for more information.</listitem>
+   </itemizedlist>
+   
+   <para>
+      The syntax for the extra.classes parameter is
+   </para>
+   
+   <programlisting>
+          (DIR ":" CLASSNAME) ("," DIR ":" CLASSNAME)*
+   </programlisting>
+   
+   <para>
+      where
+   </para>
+   
+   <itemizedlist>
+      <listitem>DIR: directory of the class's source</listitem>
+      <listitem>CLASSNAME: fully qualified name of the class</listitem>
+   </itemizedlist>
+   
+   <para>
+      For example,
+   </para>
+   
+   <programlisting>
+mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.Extra clean install 
+   </programlisting>
+   
+   <para>
+      When the project is built, the layout is as follows:
+   </para>
+   
+   <programlisting>
++- pom.xml
++- src/main/java
+|  +- org.greet
+|     +- GeneralGreeting.java
+|     +  Greeter.java
+|     +  Greeting.java
++- src/main/proto
+|  +- Greet.proto
++- src/main/webapp
+|  +- META-INF
+|  |  +- beans.xml
+|  +- WEB-INF
+|     +- web.xml
++- src/main/resources
+|  +- buildjar
+|  +- deployjar
++- src/test/java
+|  +- org.jboss.resteasy.grpc.server
+|     +- Greet_Server.java 
++- target/generated-sources/protobuf
+|  +- java
+|     +- org.greet
+|     |  +- Greet_proto.java
+|  +- grpc-java
+|     +- org.greet
+|        +- Greet_JavabufTranslator.java
+|        +- GreetMessageBodyReaderWriter.java
+|        +- GreetServiceGrpc.java
+|        +- GreetServiceGrpcImpl.java
+   </programlisting>
+</section>
+
+<section id="output_products">
+<title>Output products</title>
+
+   <para>
+      The packaging type of the project created by the archetype is "war", so, in the example, mvn install
+      creates greet.grpc-0.0.1-SNAPSHOT.war. The project also uses the src/main/resources/buildjar bash
+      script to create greet.grpc-0.0.1-SNAPSHOT.jar for use at compile time. 
+   </para>
+   
+   <para>
+      Going a step further, mvn deploy can deploy the WAR and JAR (where the deployjar bash script manages
+      the latter) to a remote repository. Note that deployjar hard codes the JBoss repositories as follows:
+   </para>
+   
+   <programlisting>
+if [ ${RELEASE_TYPE} == "snapshot" ]; then
+   URL=https://repository.jboss.org/nexus/content/repositories/snapshots/
+else
+   URL=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/
+fi
+   </programlisting>
+   
+   <para>
+      These presumably need to be modified. Maven repository configuration is beyond the scope of this document.
+   </para>
+
+   <para>
+      Depending on the environment to which it will be deployed, the WAR's WEB-INF/lib directory can be 
+      populated with the protobuf, gRPC, and other JARs necessary for the intermediary classes to run.
+      For example, versions 25.0.0.Final and later of WildFly come supplied with those JARs, and setting
+      the maven property "inWildFly" to "true" (or, in fact, anything other than "false") when building
+      the bridge project will create an empty WEB-INF/lib directory. Setting it to "false" will populate
+      WEB-INF/lib appropriately.
+   </para>
+</section>
+</section>
+
+<section id="using_war">
+<title>Using the generated WAR</title>
+
+   <para>
+      If the WAR is to be deployed to an instance of WildFly running with the gRPC subsystem 
+      <ulink url="https://github.com/wildfly-extras/wildfly-grpc-feature-pack">
+      https://github.com/wildfly-extras/wildfly-grpc-feature-pack</ulink>, then, it should be
+      built with parameter "inWildFly" set to "true" (or anything other than "false"), which
+      will cause <code>JaxrsImplBaseExtender</code> to emit the <code>org.wildfly.grpc.GrpcService</code>
+      annotation on the <code>GreetServiceGrpcImpl</code> class. The gRPC subsystem will recognize
+      the <code>@GrpcService</code> annotation and install <code>GreetServiceGrpcImpl</code> with the
+      gRPC runtime.
+   </para>
+   
+   <para>
+      Once <code>GreetServiceGrpcImpl</code> is registered, a gRPC client can send requests, but
+      there's one more thing to do to set up the intermediary layer. The overriding methods in
+      <code>GreetServiceGrpcImpl</code> need to be able to dispatch the request to the appropriate
+      servlet. A Jakarta REST request to <code>org.jboss.resteasy.grpc.server.Greet_Server</code>
+      in the src/test/java directory will cause the handling
+      servlet to be stored by <code>GrpcHttpServletDispatcher</code> so that it can be retrieved by
+      the intermediary code for subsequent gRPC requests. For example,
+   </para>
+   
+   <programlisting>
+http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJaxrs/grpcserver/ready
+   </programlisting>
+   
+   <para>
+      Alternatively, if the generated WAR is not running in an instance of WildFly with the
+      grpc subsystem, a call to
+   </para>
+   
+   <programlisting>
+http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJaxrs/grpcserver/start
+   </programlisting>
+   
+   <para>
+      will initiate the gRPC server runtime.
+   </para>
+</section>
+
+<section id="human_intervention">
+<title>Human intervention</title>
+
+   <para>
+      As much as possible, grpc-bridge and grpc-bridge-runtime automate the conversion back and forth between
+      the gRPC and Jakarta REST worlds, but there are some situations in which manual intervention is required,
+      for one reason or another.
+   </para>
+   
+<section id="servlet_environment">
+<title>Servlet environment</title>
+
+   <para>
+      Although the Jakarta REST specification does not mandate its use, a servlet container is a common environment
+      for running Jakarta REST applications, and, in that case, the spec mandates the availability by injection of
+      certain servlet related types:
+   </para>
+   
+   <programlisting>
+The <code>@Context</code> annotation can be used to indicate a dependency on a Servlet-defined resource.
+A Servlet-based implementation MUST support injection of the following Servlet-defined types:
+<code>ServletConfig</code>, <code>ServletContext</code>, <code>HttpServletRequest</code>, and <code>HttpServletResponse</code>.
+   </programlisting>
+   
+   <para>
+      Accordingly, grpc-bridge creates a servlet environment for Jakarta REST resources to execute in.
+      A Jakarta REST "native" call on a servlet in the target project will result in the creation of a
+      <code>ServletContext</code> and a <code>ServletConfig</code> which can be adopted by the grpc-bridge
+      runtime. In particular, for a servlet configured to run
+      <code>org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher</code>, <code>GrpcHttpServletDispatcher</code>
+      will capture the servlet so that it can be called by the code in <code>GreetServiceGrpcImpl</code>.
+      For example, from the Greeting project discussed above, the archetype will generate a web.xml with the lines
+   </para>
+   
+   <programlisting>
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GreetServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;
+            org.jboss.resteasy.grpc.servlet.GrpcHttpServletDispatcher
+        &lt;/servlet-class&gt;
+    &lt;/servlet>
+
+    &lt;context-param>
+        &lt;param-name>resteasy.servlet.mapping.prefix&lt;/param-name>
+        &lt;param-value>/grpcToJaxrs&lt;/param-value>
+    &lt;/context-param>
+
+    &lt;servlet-mapping>
+        &lt;servlet-name>GreetServlet&lt;/servlet-name>
+        &lt;url-pattern>/grpcToJaxrs/*&lt;/url-pattern>
+    &lt;/servlet-mapping>
+   </programlisting>
+
+   <para>
+      and will create the Jakarta REST resource class <code>org.jboss.resteasy.grpc.server.Greet_Server</code>
+      in src/test/java of the bridge project. A call to &lt;context-path&gt;/grpcToJaxrs/grpcserver/ready,
+      for example, will capture GreetServlet, with its <code>ServletContext</code> and <code>ServletConfig</code>.
+      The <code>ServletContext</code> applies to all servlets in the WAR, but note that the
+      <code>ServletConfig</code> is specific to GreetServlet. If there's only one configured servlet, then that
+      is fine, but suppose we have
+   </para>
+   
+   <programlisting>
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GreetServlet1&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;
+            org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher
+        &lt;/servlet-class&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+           &lt;param-value&gt;/grpcToJaxrs1&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;param1&lt;/param-name&gt;
+           &lt;param-value&gt;value1&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;GreetServlet2&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;
+            org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher
+        &lt;/servlet-class&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+           &lt;param-value&gt;/grpcToJaxrs2&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+           &lt;param-name&gt;param2&lt;/param-name&gt;
+           &lt;param-value&gt;value2&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+    
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GreetServlet1&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/grpcToJaxrs1/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+    
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;GreetServlet2&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/grpcToJaxrs2/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+   </programlisting>
+   
+   <para>
+      Then a call to &lt;context-path&gt;/grpcToJaxrs1/grpcserver/ready will result in a different
+      <code>ServletConfig</code> than a call to &lt;context-path&gt;/grpcToJaxrs2/grpcserver/ready.
+      The archetype will generate a web.xml with a single servlet, and <code>JaxrsImplBaseExtender</code>
+      will generate calls to that servlet. In more complex circumstances, though, some manual
+      intervention may be called for.
+   </para>
+
+   <para>
+   The other two injectable classes, <code>HttpServletRequest</code> and <code>HttpServletResponse</code>,
+   are supplied by the grpc-bridge runtime. Normally, those classes would be created by a servlet container
+   which has an actual HTTP network connection from which information like URLs, headers, and addresses
+   can be obtained, but for the grpc-bridge runtime, the HTTP connection is hidden by the gRPC runtime.
+   Some information can be derived or approximated; for example, in the absence of path parameters, the path
+   can be derived from the <code>@Path</code> annotation(s). In many cases, though, <code>HttpServletRequest</code>
+   relies on the client to spell out any information needed for a given computation. Recall that
+   <code>GeneralEntityMessage</code> has slots for all kinds of information:
+   </para>
+   
+   <programlisting>
+message GeneralEntityMessage {
+   ServletInfo servletInfo = 45;
+   string URL = 46;
+   map&lt;string, gHeader&gt; headers = 47;
+   repeated gCookie cookies = 48;
+   string httpMethod = 49;
+   oneof messageType {
+   ...
+   }
+}
+   </programlisting>
+   
+   <para>
+      Some of these fields, e.g., cookies and headers, are naturally supplied by the client. On the other hand,
+      the information in 
+   </para>
+   
+   <programlisting>
+message ServletInfo {
+   string characterEncoding = 39;
+   string clientAddress = 40;
+   string clientHost = 41;
+   int32  clientPort = 42;
+}
+   </programlisting>
+   
+   <para>
+      would normally come from the network connection.
+   </para>
+</section>
+
+<section id="runtime_information">
+<title>Runtime information</title>
+
+   <para>
+      Consider the resource method
+   </para>
+   
+   <programlisting>
+public Response m() {
+   if (test()) {
+      return Response.ok(new X()).build();
+   } else {
+      Response.ok(new Y()).build();
+   }
+}
+   </programlisting>
+   
+   <para>
+      Will it return an <code>X</code> or a <code>Y</code>? If <code>test()</code> is
+   </para>
+   
+   <programlisting>
+public boolean test() {
+   return true;
+}
+   </programlisting>
+   
+   <para>
+      it's clear that <code>m()</code> will return an <code>X</code>, and, moreover, that can be determined
+      statically at compile time. But it's a well known fact in theoretical computer science, first proved by Alan Turing
+      [see, for example, <ulink url="https://en.wikipedia.org/wiki/Halting_problem">https://en.wikipedia.org/wiki/Halting_problem</ulink>],
+      that not all questions can be answered algorithmically.
+   </para>
+   
+   <para>
+      We can't tell if <code>m()</code> returns an <code>X</code> or a <code>Y</code>, but we know it returns
+      an <code>Object</code>. Protobuf has an analogous universal type called <code>google.protobuf.Any</code>,
+      or, in Java, <code>com.google.protobuf.Any</code>, which consists of a byte array filled with an object in
+      protobuf format plus a URL in string form that indicates the type of the object. For example, the code
+   </para>
+   
+   <programlisting>
+gString gs = gString.newBuilder().setValue("abc").build();
+Any any = Any.pack(gs);
+System.out.println(any);
+if (any.is(gString.class));{
+   gString gs2 = any.unpack(gString.class);
+   Assert.assertEquals("abc", gs2.getValue());
+}
+   </programlisting>
+   
+   <para>
+      outputs
+   </para>
+   
+   <programlisting>
+type_url: "type.googleapis.com/jaxrs.example.gString"
+value: "\222\001\003abc"
+   </programlisting>
+   
+   <para>
+      Now, suppose we have the resource method
+   </para>
+   
+   <programlisting>
+public Response getResponse() {
+   return Response.ok("abc").build();
+}
+   </programlisting>
+   
+   <para>
+      Together, <code>GreetMessageBodyReaderWriter</code> and <code>Greet_JavabufTranslator</code>
+      turn "abc" into a <code>gString</code> and then pack it into an <code>Any</code>.
+      Then we might have the following on the client side:
+   </para>
+
+   <programlisting>
+@Test
+public void testResponse() throws Exception {
+   GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+   GeneralEntityMessage gem = messageBuilder.build();
+   try {
+      GeneralReturnMessage grm = blockingStub.getResponse(gem);
+      gString gs = gString.newBuilder().setValue("abc").build();
+      Any any = grm.getGoogleProtobufAnyField();
+      Assert.assertEquals(gs, any.unpack(gString.class));
+   } catch (StatusRuntimeException e) {
+      Assert.fail("fail");
+      return;
+   } 
+}
+   </programlisting>
+   
+   <para>
+   Another case in which we can't statically determine the return type is when an asynchronous
+   resource method uses the <code>@Suspended</code> annotation:
+   </para>
+   
+   <programlisting>
+@GET
+@Path("suspend")
+public void suspend(@Suspended final AsyncResponse response) {
+   Thread t = new Thread() {
+   @Override
+      public void run() {
+         try {
+            response.resume("suspend");
+         } catch (Exception e) {
+            response.resume(e);
+         }
+      }
+   };
+   t.start();
+}
+   </programlisting>
+   
+   <para>
+      Similar unpacking would happen on the client side.
+   </para>
+</section>
+</section>
+
+<section id="todo">
+<title>TODO</title>
+
+</section>
+</chapter>
