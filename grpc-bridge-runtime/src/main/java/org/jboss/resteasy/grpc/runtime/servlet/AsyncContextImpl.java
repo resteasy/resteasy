@@ -15,21 +15,16 @@ import jakarta.servlet.ServletResponse;
 
 public class AsyncContextImpl implements AsyncContext {
 
-   private static ExecutorService executorService = ContextualExecutors.threadPool();
-
+   private ExecutorService executorService = ContextualExecutors.threadPool();
    private ServletRequest servletRequest;
    private ServletResponse servletResponse;
    private Set<AsyncListener> listeners = new HashSet<AsyncListener>();
-   long timeout;
+   private volatile long timeout;
    private volatile boolean complete = false;
 
    public AsyncContextImpl(final ServletRequest servletRequest, final ServletResponse servletResponse) {
       this.servletRequest = servletRequest;
       this.servletResponse = servletResponse;
-   }
-
-   public static ExecutorService getExecutorService() {
-      return executorService;
    }
 
    @Override

@@ -42,12 +42,6 @@
          <artifactId>resteasy-cdi</artifactId>
          <version>${project.version}</version>
          <scope>provided</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>org.jboss.weld</groupId>
-               <artifactId>weld-api</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
 
       <dependency>
