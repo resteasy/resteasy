@@ -372,7 +372,7 @@ public class JaxrsImplBaseExtender {
         .append("   }\n\n")
         ;
       sb.append("   private static HttpServletRequest getHttpServletRequest(").append(pkg).append(".").append(root).append("_proto.GeneralEntityMessage param, GeneratedMessageV3 actualParam, String path, HttpServletResponse response, String verb, String type) throws Exception {\n")
-        .append("      String url = param.getURL() == \"\" ? \"http://localhost:8080\" + path : param.getURL();\n")
+        .append("      String url = \"\".equals(param.getURL()) ? \"http://localhost:8080\" + path : param.getURL();\n")
         .append("      ByteArrayInputStream bais = new ByteArrayInputStream(actualParam.toByteArray());\n")
         .append("      MockServletInputStream msis = new MockServletInputStream(bais);\n")
         .append("      Map<String, List<String>> headers = convertHeaders(param.getHeadersMap());\n")
