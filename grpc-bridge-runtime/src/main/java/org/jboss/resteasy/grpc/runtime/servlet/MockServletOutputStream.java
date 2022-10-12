@@ -25,6 +25,10 @@ public class MockServletOutputStream extends ServletOutputStream {
       baos.write(b);
    }
 
+   public void reset() {
+      baos.reset();
+   }
+
    public ByteArrayOutputStream getDelegate() {
       return baos;
    }

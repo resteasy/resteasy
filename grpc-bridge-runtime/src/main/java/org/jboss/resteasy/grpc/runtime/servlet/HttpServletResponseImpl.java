@@ -189,7 +189,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
    @Override
    public void reset() {
-      msos.getDelegate().reset();
+      msos.reset();
       writer = null;
       headers.clear();
       responseState = ResponseState.NONE;
