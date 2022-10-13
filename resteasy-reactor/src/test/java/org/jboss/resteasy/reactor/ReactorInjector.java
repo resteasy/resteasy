@@ -21,7 +21,7 @@ public class ReactorInjector implements ContextInjector<Mono<Integer>, Integer>{
             async = true;
       }
       if(!async)
-         return Mono.just(42);
+         return Mono.just(24);
       return Mono.create(emitter -> {
          new Thread(() -> {
             try

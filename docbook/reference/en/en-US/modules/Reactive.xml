@@ -504,7 +504,7 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
     </orderedlist>
     
     <para>
-       RESTEasy currently supports RxJava (deprecated) and RxJava2.
+       RESTEasy currently supports RxJava (deprecated), RxJava2 and Reactor.
     </para>
     
 </sect1>
