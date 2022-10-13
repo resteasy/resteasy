@@ -59,14 +59,13 @@ public class ReaderWriterGenerator {
    }
 
    private static void imports(Class<?> wrapperClass, String rootClass, StringBuilder sb) {
-      sb.append("import java.io.ByteArrayOutputStream;" + LS)
+      sb
         .append("import java.io.IOException;" + LS)
         .append("import java.io.InputStream;" + LS)
         .append("import java.io.OutputStream;" + LS)
         .append("import java.lang.annotation.Annotation;" + LS)
         .append("import java.lang.reflect.Type;" + LS)
         .append("import jakarta.annotation.Priority;" + LS)
-        .append("import jakarta.servlet.ServletConfig;" + LS)
         .append("import jakarta.ws.rs.Consumes;" + LS)
         .append("import jakarta.ws.rs.Produces;" + LS)
         .append("import jakarta.ws.rs.WebApplicationException;" + LS)
@@ -83,7 +82,6 @@ public class ReaderWriterGenerator {
         .append("import ").append("jakarta.servlet.http.HttpServletResponse;" + LS)
         .append("import ").append("org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
         .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
-        .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;" + LS)
         .append("import org.jboss.resteasy.core.ResteasyContext;" + LS)
         ;
       for (Class<?> clazz : wrapperClass.getClasses()) {
@@ -182,35 +180,8 @@ public class ReaderWriterGenerator {
          if (primitives.containsKey(simpleName) && !primitives.get(simpleName).equals("ignore")) {
             insert = " || " + primitives.get(simpleName) + ".class.equals(clazz)";
          }
-         sb.append("      if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {" + LS)
+         sb.append("if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {" + LS)
            .append("         return ").append(simpleName).append(".parseFrom(is);" + LS)
-           .append("      } ");
-      }
-      if (subclasses.length > 0) {
-         sb.append("else {" + LS)
-           .append("         throw new IOException(\"unrecognized class: \" + clazz);" + LS)
-           .append("      }" + LS);
-      }
-      sb.append("   }" + LS + LS);
-
-      startElse = false;
-      sb.append("   private static GeneratedMessageV3 unpackMessage(Class<?> clazz, Any any) throws IOException {" + LS);
-      for (int i = 0; i < subclasses.length; i++) {
-         if (subclasses[i].isInterface()) {
-            continue;
-         }
-         if (startElse) {
-            sb.append("else ");
-         } else {
-            startElse = true;
-         }
-         String simpleName = subclasses[i].getSimpleName();
-         String insert = "";
-         if (primitives.containsKey(simpleName) && !primitives.get(simpleName).equals("ignore")) {
-            insert = " || " + primitives.get(simpleName) + ".class.equals(clazz)";
-         }
-         sb.append("      if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {" + LS)
-           .append("         return any.unpack(").append(simpleName).append(".class);" + LS)
            .append("      } ");
       }
       if (subclasses.length > 0) {
@@ -234,11 +205,20 @@ public class ReaderWriterGenerator {
 
    private static String javabufToJavaClass(String classname) {
       int i = classname.indexOf("___");
-      String simpleName = i < 0 ? classname : classname.substring(i + 3);
-      if (primitives.containsKey(simpleName) && !"gEmpty".equals(simpleName)) {
-         return "java.lang." + simpleName.substring(1);
+      if (i >= 0) {
+         String simpleName = classname.substring(i + 3);
+         if (primitives.containsKey(simpleName) && !"gEmpty".equals(simpleName)) {
+            return "java.lang." + simpleName.substring(1);
+         }
+         return simpleName;
+      } else {
+         i = classname.indexOf("_INNER_");
+         if (i >= 0) {
+            return classname.substring(i + "_INNER_".length());
+         } else {
+            return classname;
+         }
       }
-      return simpleName;
    }
 
    private static String originalSimpleName(String s) {

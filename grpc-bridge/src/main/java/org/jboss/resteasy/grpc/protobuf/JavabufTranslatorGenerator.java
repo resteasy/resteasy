@@ -14,7 +14,7 @@ import org.jboss.resteasy.grpc.runtime.protobuf.AssignFromJavabuf;
 import org.jboss.resteasy.grpc.runtime.protobuf.AssignToJavabuf;
 import org.jboss.resteasy.grpc.runtime.protobuf.TranslateFromJavabuf;
 import org.jboss.resteasy.grpc.runtime.protobuf.TranslateToJavabuf;
-import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
+//import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
@@ -109,7 +109,7 @@ public class JavabufTranslatorGenerator {
       PRIMITIVE_WRAPPER_TYPES.put("gBoolean",   boolean.class);
       PRIMITIVE_WRAPPER_TYPES.put("gCharacter", char.class);
       PRIMITIVE_WRAPPER_TYPES.put("gString",    String.class);
-      PRIMITIVE_WRAPPER_TYPES.put("gEmpty",     void.class);
+//      PRIMITIVE_WRAPPER_TYPES.put("gEmpty",     void.class);
 
       GET_METHODS.put("Byte",      ".byteValue()");
       GET_METHODS.put("Short",     ".shortValue()");
@@ -167,7 +167,6 @@ public class JavabufTranslatorGenerator {
         .append("import ").append(AssignToJavabuf.class.getCanonicalName()).append(";" + LS)
         .append("import ").append(TranslateFromJavabuf.class.getCanonicalName()).append(";" + LS)
         .append("import ").append(TranslateToJavabuf.class.getCanonicalName()).append(";" + LS)
-        .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
         ;
       Class<?>[] classes = wrapperClass.getClasses();
       for (Class<?> clazz: classes) {
@@ -175,6 +174,9 @@ public class JavabufTranslatorGenerator {
             continue;
          }
          String simpleName = clazz.getSimpleName();
+         if ("gEmpty".equals(simpleName)) {
+            continue;
+         }
          if (PRIMITIVE_WRAPPER_TYPES.containsKey(simpleName)) {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
          } else if ("GeneralEntityMessage".equals(simpleName)
@@ -375,12 +377,6 @@ public class JavabufTranslatorGenerator {
         .append("      }" + LS)
         .append("      return null;" + LS)
         .append("   }" + LS + LS);
-      sb.append("   private static Object messageToObject(Message message) throws ClassNotFoundException {" + LS)
-        .append("      String messageClassName = message.getClass().getName();" + LS)
-        .append("      int i = messageClassName.indexOf(\"___\");" + LS)
-        .append("      String classname = messageClassName.substring(0, i).replaceAll(\"_\", \".\") + \".\" + messageClassName.substring(i + 2);" + LS)
-        .append("      return Class.forName(classname);" + LS)
-        .append("   }" + LS + LS);
       sb.append(
            "   private static boolean isSuperClass(String fieldName) {" + LS +
            "      return fieldName.endsWith(\"___super\");" + LS +
@@ -400,9 +396,7 @@ public class JavabufTranslatorGenerator {
          return;
       }
       sb.append("   static class ")
-        .append(fqnify(clazz.getSimpleName())).append("_ToJavabuf implements TranslateToJavabuf {" + LS)
-        .append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName()).append(".getDescriptor();" + LS)
-        .append("      private static DynamicMessage.Builder builder = DynamicMessage.newBuilder(descriptor);" + LS);
+        .append(fqnify(clazz.getSimpleName())).append("_ToJavabuf implements TranslateToJavabuf {" + LS);
       if (PRIMITIVE_WRAPPER_TYPES.containsKey(clazz.getSimpleName())) {
          String simpleJavabufName = clazz.getSimpleName();
          String simpleJavaName = simpleJavabufName.substring(1);
@@ -413,7 +407,9 @@ public class JavabufTranslatorGenerator {
          .append("         return builder.setValue(p").append(GET_METHODS.get(simpleJavaName)).append(").build();" + LS)
          .append("      }" + LS);
       } else {
-         sb.append("      private static List<AssignToJavabuf> assignList = new ArrayList<AssignToJavabuf>();" + LS + LS)
+         sb.append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName()).append(".getDescriptor();" + LS)
+           .append("      private static DynamicMessage.Builder builder = DynamicMessage.newBuilder(descriptor);" + LS)
+           .append("      private static List<AssignToJavabuf> assignList = new ArrayList<AssignToJavabuf>();" + LS + LS)
            .append("      static {" + LS)
            .append("         for (FieldDescriptor f : descriptor.getFields()) {" + LS)
            .append("            String name = f.getName();" + LS)

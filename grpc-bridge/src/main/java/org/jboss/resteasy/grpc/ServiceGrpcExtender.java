@@ -103,65 +103,40 @@ public class ServiceGrpcExtender {
    }
 
    private void imports(Scanner scanner, StringBuilder sb, String fileName) {
-      sb.append("import com.google.protobuf.ByteString;" + LS)
-        .append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
+      sb.append("import com.google.protobuf.Descriptors.FieldDescriptor;" + LS)
         .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
-        .append("import com.google.protobuf.Message;" + LS)
         .append("import com.google.protobuf.Timestamp;" + LS)
         .append("import io.grpc.stub.StreamObserver;" + LS)
         .append("import java.io.ByteArrayInputStream;" + LS)
         .append("import java.io.ByteArrayOutputStream;" + LS)
-        .append("import java.io.IOException;" + LS)
-        .append("import java.io.InputStream;" + LS)
-        .append("import java.text.DateFormat;" + LS)
         .append("import java.text.ParseException;" + LS)
         .append("import java.time.ZonedDateTime;" + LS)
         .append("import java.time.format.DateTimeFormatter;" + LS)
         .append("import java.util.ArrayList;" + LS)
         .append("import java.util.Collection;" + LS)
-        .append("import java.util.concurrent.ExecutorService;" + LS)
         .append("import java.util.HashMap;" + LS)
         .append("import java.util.Iterator;" + LS)
         .append("import java.util.List;" + LS)
         .append("import java.util.Map;" + LS)
         .append("import jakarta.enterprise.context.control.RequestContextController;" + LS)
-        .append("import jakarta.ws.rs.RuntimeType;" + LS)
-        .append("import jakarta.ws.rs.core.MediaType;" + LS)
-        .append("import jakarta.servlet.Servlet;" + LS)
-        .append("import jakarta.servlet.ServletConfig;" + LS)
         .append("import jakarta.servlet.ServletContext;" + LS)
         .append("import jakarta.servlet.http.Cookie;" + LS)
         .append("import jakarta.servlet.http.HttpServletRequest;" + LS)
         .append("import jakarta.servlet.http.HttpServletResponse;" + LS)
-        .append("import org.jboss.resteasy.core.ResteasyContext;" + LS)
-        .append("import org.jboss.resteasy.core.SynchronousDispatcher;" + LS)
-        .append("import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;" + LS)
-//        .append("import org.jboss.resteasy.plugins.grpc.sse.SseEvent;" + LS)
-        .append("import org.jboss.resteasy.grpc.runtime.servlet.AsyncContextImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletInputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletOutputStream;" + LS)
-        .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;" + LS)
-        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;" + LS)
+//        .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;" + LS)
+//        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;" + LS)
         .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
-        .append("import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;" + LS)
-        .append("import org.jboss.resteasy.plugins.server.servlet.ServletContainerDispatcher;" + LS)
-        .append("import org.jboss.resteasy.spi.Dispatcher;" + LS)
-        .append("import org.jboss.resteasy.spi.ResteasyProviderFactory;" + LS)
         .append("import org.wildfly.grpc.GrpcService;" + LS)
         .append("import javax.inject.Inject;" + LS)
-        .append("import jakarta.enterprise.inject.spi.BeanManager;" + LS)
         .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
-        .append("import jakarta.enterprise.context.RequestScoped;" + LS)
-        .append("import jakarta.enterprise.context.ContextNotActiveException;" + LS)
         .append("import com.google.protobuf.Any;" + LS)
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
-        .append("import ").append(packageName).append(".").append(outerClassName).append(".gInteger;" + LS)
-        .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;" + LS)
-        .append("import ").append(packageName).append(".").append(outerClassName).append(".gCookie;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gNewCookie;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".FormValues;" + LS)
@@ -227,15 +202,13 @@ public class ServiceGrpcExtender {
       scanner.useDelimiter("\\)");
       String param = getParamType(packageName, outerClassName, scanner.next());
       if (!imports.contains(actualEntityClass)) {
-         if ("Any".equals(actualEntityClass) || "google.protobuf.Any".equals(actualEntityClass)) {
-         } else {
+         if (!"Any".equals(actualEntityClass) && !"google.protobuf.Any".equals(actualEntityClass) && !"gEmpty".equals(actualEntityClass)) {
             sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
             imports.add(actualEntityClass);
          }
       }
       if (!imports.contains(actualReturnClass)) {
-         if ("Any".equals(actualReturnClass) || "google.protobuf.Any".equals(actualReturnClass)) {
-         } else {
+         if (!"Any".equals(actualReturnClass) && !"google.protobuf.Any".equals(actualReturnClass) && !"gEmpty".equals(actualReturnClass)) {
             sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
             imports.add(actualReturnClass);
          }
@@ -420,7 +393,6 @@ public class ServiceGrpcExtender {
         .append("         cookie.setVersion(protoCookie.getVersion());" + LS)
         .append("         cookie.setPath(protoCookie.getPath());" + LS)
         .append("         cookie.setDomain(protoCookie.getDomain());" + LS)
-//        .append("         cookie.setVersion(protoCookie.getVersion());" + LS)
         .append("         cookieArray[i++] = cookie;" + LS)
         .append("      }" + LS)
         .append("      return cookieArray;" + LS)
