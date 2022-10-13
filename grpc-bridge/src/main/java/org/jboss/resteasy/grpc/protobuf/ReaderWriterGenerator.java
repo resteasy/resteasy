@@ -15,6 +15,7 @@ import static java.nio.file.StandardOpenOption.*;
 public class ReaderWriterGenerator {
 
    private static Logger logger = Logger.getLogger(ReaderWriterGenerator.class);
+   private static String LS = System.lineSeparator();
    private static Map<String, String> primitives = new HashMap<String, String>();
 
    static {
@@ -53,44 +54,44 @@ public class ReaderWriterGenerator {
    }
 
    private static void classHeader(String[] args, String readerWriterClass, Class<?> wrapperClass, StringBuilder sb) {
-      sb.append("package ").append(wrapperClass.getPackage().getName()).append(";\n\n");
+      sb.append("package ").append(wrapperClass.getPackage().getName()).append(";" + LS + LS);
       imports(wrapperClass, args[2], sb);
    }
 
    private static void imports(Class<?> wrapperClass, String rootClass, StringBuilder sb) {
-      sb.append("import java.io.ByteArrayOutputStream;\n")
-        .append("import java.io.IOException;\n")
-        .append("import java.io.InputStream;\n")
-        .append("import java.io.OutputStream;\n")
-        .append("import java.lang.annotation.Annotation;\n")
-        .append("import java.lang.reflect.Type;\n")
-        .append("import jakarta.annotation.Priority;\n")
-        .append("import jakarta.servlet.ServletConfig;\n")
-        .append("import jakarta.ws.rs.Consumes;\n")
-        .append("import jakarta.ws.rs.Produces;\n")
-        .append("import jakarta.ws.rs.WebApplicationException;\n")
-        .append("import jakarta.ws.rs.core.MediaType;\n")
-        .append("import jakarta.ws.rs.core.MultivaluedMap;\n")
-        .append("import jakarta.ws.rs.ext.MessageBodyReader;\n")
-        .append("import jakarta.ws.rs.ext.MessageBodyWriter;\n")
-        .append("import jakarta.ws.rs.ext.Provider;\n")
-        .append("import com.google.protobuf.GeneratedMessageV3;\n")
-        .append("import com.google.protobuf.Any;\n")
-        .append("import com.google.protobuf.Message;\n")
-        .append("import com.google.protobuf.CodedInputStream;\n")
-        .append("import com.google.protobuf.CodedOutputStream;\n")
-        .append("import ").append("jakarta.servlet.http.HttpServletResponse;\n")
-        .append("import ").append("org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;\n")
-        .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";\n")
-        .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;\n")
-        .append("import org.jboss.resteasy.core.ResteasyContext;\n")
+      sb.append("import java.io.ByteArrayOutputStream;" + LS)
+        .append("import java.io.IOException;" + LS)
+        .append("import java.io.InputStream;" + LS)
+        .append("import java.io.OutputStream;" + LS)
+        .append("import java.lang.annotation.Annotation;" + LS)
+        .append("import java.lang.reflect.Type;" + LS)
+        .append("import jakarta.annotation.Priority;" + LS)
+        .append("import jakarta.servlet.ServletConfig;" + LS)
+        .append("import jakarta.ws.rs.Consumes;" + LS)
+        .append("import jakarta.ws.rs.Produces;" + LS)
+        .append("import jakarta.ws.rs.WebApplicationException;" + LS)
+        .append("import jakarta.ws.rs.core.MediaType;" + LS)
+        .append("import jakarta.ws.rs.core.MultivaluedMap;" + LS)
+        .append("import jakarta.ws.rs.ext.MessageBodyReader;" + LS)
+        .append("import jakarta.ws.rs.ext.MessageBodyWriter;" + LS)
+        .append("import jakarta.ws.rs.ext.Provider;" + LS)
+        .append("import com.google.protobuf.GeneratedMessageV3;" + LS)
+        .append("import com.google.protobuf.Any;" + LS)
+        .append("import com.google.protobuf.Message;" + LS)
+        .append("import com.google.protobuf.CodedInputStream;" + LS)
+        .append("import com.google.protobuf.CodedOutputStream;" + LS)
+        .append("import ").append("jakarta.servlet.http.HttpServletResponse;" + LS)
+        .append("import ").append("org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
+        .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
+        .append("import ").append(wrapperClass.getPackageName()).append(".").append(rootClass).append("_JavabufTranslator;" + LS)
+        .append("import org.jboss.resteasy.core.ResteasyContext;" + LS)
         ;
       for (Class<?> clazz : wrapperClass.getClasses()) {
          if (clazz.isInterface()) {
             continue;
          }
          if (primitives.containsKey(clazz.getSimpleName())) {
-            sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
+            sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
          } else if ("GeneralEntityMessage".equals(clazz.getSimpleName())
                  || "GeneralReturnMessage".equals(clazz.getSimpleName())
                  || "ServletInfo".equals(clazz.getSimpleName())
@@ -100,71 +101,71 @@ public class ReaderWriterGenerator {
                  || "FormMap".equals(clazz.getSimpleName())
                  || "FormValues".equals(clazz.getSimpleName())
                ) {
-            sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
+            sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
          } else {
-            sb.append("import ").append(clazz.getName().replace("$", ".")).append(";\n");
-            sb.append("import ").append(originalClassName(clazz.getName())).append(";\n");
+            sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
+            sb.append("import ").append(originalClassName(clazz.getName())).append(";" + LS);
          }
       }
-      sb.append("\n\n");
+      sb.append("" + LS + LS);
    }
 
    private static void classBody(String[] args, Class<?> wrapperClass, StringBuilder sb) {
-      sb.append("@Provider\n")
-        .append("@Consumes(\"application/grpc-jaxrs;grpc-jaxrs=true\")\n")
-        .append("@Produces(\"*/*;grpc-jaxrs=true\")\n")
-        .append("@Priority(Integer.MIN_VALUE)\n")
-        .append("@SuppressWarnings(\"rawtypes\")\n")
-        .append("public class ").append(args[2]).append("MessageBodyReaderWriter implements MessageBodyReader<Object>, MessageBodyWriter<Object> {\n\n")
-        .append("   @Override\n")
-        .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {\n")
-        .append("      return ").append(args[2]).append("_JavabufTranslator.handlesFromJavabuf(type);\n")
-        .append("   }\n\n")
-        .append("   @SuppressWarnings(\"unchecked\")\n")
-        .append("   @Override\n")
-        .append("   public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType,\n")
-        .append("        MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {\n")
-        .append("      try {\n")
-        .append("      if (httpHeaders.getFirst(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
-        .append("         Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));\n")
-        .append("         Message m = any.unpack(").append(args[2]).append("_JavabufTranslator.translateToJavabufClass(type));\n")
-        .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(m);\n")
-        .append("      } else {\n")
-        .append("         GeneratedMessageV3 message = getMessage(type, entityStream);\n")
-        .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(message);\n")
-        .append("      }\n")
-        .append("      } catch (Exception e) {\n")
-        .append("         throw new RuntimeException(e);\n")
-        .append("      }\n")
-        .append("   }\n\n")
-        .append("   @Override\n")
-        .append("   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {\n")
-       .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);\n")
-        .append("   }\n\n")
-        .append("   @Override\n")
-        .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType,\n")
-        .append("      MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {\n")
-        .append("      Message message = ").append(args[2]).append("_JavabufTranslator.translateToJavabuf(t);\n")
-        .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);\n")
-        .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {\n")
-        .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);\n")
-        .append("         Any.pack(message).writeTo(cos);\n")
-        .append("         cos.flush();\n")
-        .append("         if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {\n")
-        .append("            AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();\n")
-        .append("            amsos.release();\n")
-        .append("            return;\n")
-        .append("         }\n")
-        .append("      } else {\n")
-        .append("         message.writeTo(entityStream);\n")
-        .append("         entityStream.flush();\n")
-        .append("      }\n")
-        .append("      if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {\n")
-        .append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();\n")
-        .append("         amsos.release();\n")
-        .append("      }\n")
-        .append("   }\n\n")
-        .append("   private static GeneratedMessageV3 getMessage(Class<?> clazz, InputStream is) throws IOException {\n");
+      sb.append("@Provider" + LS)
+        .append("@Consumes(\"application/grpc-jaxrs;grpc-jaxrs=true\")" + LS)
+        .append("@Produces(\"*/*;grpc-jaxrs=true\")" + LS)
+        .append("@Priority(Integer.MIN_VALUE)" + LS)
+        .append("@SuppressWarnings(\"rawtypes\")" + LS)
+        .append("public class ").append(args[2]).append("MessageBodyReaderWriter implements MessageBodyReader<Object>, MessageBodyWriter<Object> {" + LS + LS)
+        .append("   @Override" + LS)
+        .append("   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {" + LS)
+        .append("      return ").append(args[2]).append("_JavabufTranslator.handlesFromJavabuf(type);" + LS)
+        .append("   }" + LS + LS)
+        .append("   @SuppressWarnings(\"unchecked\")" + LS)
+        .append("   @Override" + LS)
+        .append("   public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType," + LS)
+        .append("        MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {" + LS)
+        .append("      try {" + LS)
+        .append("      if (httpHeaders.getFirst(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {" + LS)
+        .append("         Any any =  Any.parseFrom(CodedInputStream.newInstance(entityStream));" + LS)
+        .append("         Message m = any.unpack(").append(args[2]).append("_JavabufTranslator.translateToJavabufClass(type));" + LS)
+        .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(m);" + LS)
+        .append("      } else {" + LS)
+        .append("         GeneratedMessageV3 message = getMessage(type, entityStream);" + LS)
+        .append("         return ").append(args[2]).append("_JavabufTranslator.translateFromJavabuf(message);" + LS)
+        .append("      }" + LS)
+        .append("      } catch (Exception e) {" + LS)
+        .append("         throw new RuntimeException(e);" + LS)
+        .append("      }" + LS)
+        .append("   }" + LS + LS)
+        .append("   @Override" + LS)
+        .append("   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {" + LS)
+       .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);" + LS)
+        .append("   }" + LS + LS)
+        .append("   @Override" + LS)
+        .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType," + LS)
+        .append("      MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {" + LS)
+        .append("      Message message = ").append(args[2]).append("_JavabufTranslator.translateToJavabuf(t);" + LS)
+        .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);" + LS)
+        .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {" + LS)
+        .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);" + LS)
+        .append("         Any.pack(message).writeTo(cos);" + LS)
+        .append("         cos.flush();" + LS)
+        .append("         if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {" + LS)
+        .append("            AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();" + LS)
+        .append("            amsos.release();" + LS)
+        .append("            return;" + LS)
+        .append("         }" + LS)
+        .append("      } else {" + LS)
+        .append("         message.writeTo(entityStream);" + LS)
+        .append("         entityStream.flush();" + LS)
+        .append("      }" + LS)
+        .append("      if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {" + LS)
+        .append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();" + LS)
+        .append("         amsos.release();" + LS)
+        .append("      }" + LS)
+        .append("   }" + LS + LS)
+        .append("   private static GeneratedMessageV3 getMessage(Class<?> clazz, InputStream is) throws IOException {" + LS);
       Class<?>[] subclasses = wrapperClass.getClasses();
       boolean startElse = false;
       for (int i = 0; i < subclasses.length; i++) {
@@ -181,19 +182,19 @@ public class ReaderWriterGenerator {
          if (primitives.containsKey(simpleName) && !primitives.get(simpleName).equals("ignore")) {
             insert = " || " + primitives.get(simpleName) + ".class.equals(clazz)";
          }
-         sb.append("      if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {\n")
-           .append("         return ").append(simpleName).append(".parseFrom(is);\n")
+         sb.append("      if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {" + LS)
+           .append("         return ").append(simpleName).append(".parseFrom(is);" + LS)
            .append("      } ");
       }
       if (subclasses.length > 0) {
-         sb.append("else {\n")
-           .append("         throw new IOException(\"unrecognized class: \" + clazz);\n")
-           .append("      }\n");
+         sb.append("else {" + LS)
+           .append("         throw new IOException(\"unrecognized class: \" + clazz);" + LS)
+           .append("      }" + LS);
       }
-      sb.append("   }\n\n");
+      sb.append("   }" + LS + LS);
 
       startElse = false;
-      sb.append("   private static GeneratedMessageV3 unpackMessage(Class<?> clazz, Any any) throws IOException {\n");
+      sb.append("   private static GeneratedMessageV3 unpackMessage(Class<?> clazz, Any any) throws IOException {" + LS);
       for (int i = 0; i < subclasses.length; i++) {
          if (subclasses[i].isInterface()) {
             continue;
@@ -208,20 +209,20 @@ public class ReaderWriterGenerator {
          if (primitives.containsKey(simpleName) && !primitives.get(simpleName).equals("ignore")) {
             insert = " || " + primitives.get(simpleName) + ".class.equals(clazz)";
          }
-         sb.append("      if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {\n")
-           .append("         return any.unpack(").append(simpleName).append(".class);\n")
+         sb.append("      if (").append(javabufToJavaClass(simpleName)).append(".class.equals(clazz)").append(insert).append(") {" + LS)
+           .append("         return any.unpack(").append(simpleName).append(".class);" + LS)
            .append("      } ");
       }
       if (subclasses.length > 0) {
-         sb.append("else {\n")
-           .append("         throw new IOException(\"unrecognized class: \" + clazz);\n")
-           .append("      }\n");
+         sb.append("else {" + LS)
+           .append("         throw new IOException(\"unrecognized class: \" + clazz);" + LS)
+           .append("      }" + LS);
       }
-      sb.append("   }\n\n");
+      sb.append("   }" + LS + LS);
    }
 
    private static void finishClass(StringBuilder sb) {
-      sb.append("}\n");
+      sb.append("}" + LS);
    }
 
    private static void writeClass(Class<?> wrapperClass, String[] args, StringBuilder sbHeader, StringBuilder sbBody) throws IOException {

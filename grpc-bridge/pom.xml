@@ -7,27 +7,15 @@
       <version>6.2.2.Final-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
+
    <artifactId>grpc-bridge</artifactId>
    <packaging>jar</packaging>
-   <name>RESTEasy gRPC to JAX-RS bridge</name>
+   <name>RESTEasy gRPC to Jakarta RESTful Services bridge</name>
    <url>http://maven.apache.org</url>
 
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <version.io.grpc>1.39.0</version.io.grpc>
    </properties>
-
-   <dependencyManagement>
-      <dependencies>
-         <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-bom</artifactId>
-            <version>${version.io.grpc}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-      </dependencies>
-   </dependencyManagement>
 
    <dependencies>
       <dependency>
@@ -49,53 +37,23 @@
          <artifactId>resteasy-cdi</artifactId>
          <version>${project.version}</version>
          <scope>provided</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>org.jboss.weld</groupId>
-               <artifactId>weld-api</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
 
       <dependency>
          <groupId>jakarta.servlet</groupId>
          <artifactId>jakarta.servlet-api</artifactId>
-         <scope>compile</scope>
+         <scope>provided</scope>
       </dependency>
    
       <dependency>
          <groupId>com.google.protobuf</groupId>
          <artifactId>protobuf-java</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-api</artifactId>
-      </dependency>
-      
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-core</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-stub</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-netty-shaded</artifactId>
+         <scope>provided</scope>
       </dependency>
 
       <dependency>
          <groupId>com.github.javaparser</groupId>
          <artifactId>javaparser-symbol-solver-core</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.undertow</groupId>
-         <artifactId>undertow-servlet-jakarta</artifactId>      
       </dependency>
 
       <dependency>
@@ -106,11 +64,13 @@
       <dependency>
          <groupId>org.jboss.logging</groupId>
          <artifactId>jboss-logging-annotations</artifactId>
+         <scope>provided</scope>
       </dependency>
 
       <dependency>
          <groupId>org.jboss.logging</groupId>
          <artifactId>jboss-logging-processor</artifactId>
+         <scope>provided</scope>
       </dependency>
 
    </dependencies>
