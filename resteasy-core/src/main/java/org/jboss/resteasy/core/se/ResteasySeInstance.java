@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.SeBootstrap.Configuration;
@@ -35,6 +36,7 @@ import jakarta.ws.rs.core.Application;
 
 import org.jboss.jandex.Index;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
@@ -52,10 +54,13 @@ public class ResteasySeInstance implements Instance {
     private static final Logger LOGGER = Logger.getLogger(ResteasySeInstance.class);
     private final EmbeddedServer server;
     private final Configuration configuration;
+    private final ExecutorService executor;
 
-    private ResteasySeInstance(final EmbeddedServer server, final Configuration configuration) {
+    private ResteasySeInstance(final EmbeddedServer server, final Configuration configuration,
+                               final ExecutorService executor) {
         this.server = server;
         this.configuration = configuration;
+        this.executor = executor;
     }
 
     /**
@@ -76,6 +81,7 @@ public class ResteasySeInstance implements Instance {
      */
     public static CompletionStage<Instance> create(final Application application,
                                                    final Configuration configuration) {
+        final ExecutorService executor = ContextualExecutors.threadPool();
         return CompletableFuture.supplyAsync(() -> {
             try {
                 final Configuration config = ResteasySeConfiguration.from(configuration);
@@ -97,11 +103,11 @@ public class ResteasySeInstance implements Instance {
                             .forEach(name -> LOGGER.debugf("Provider %s found for %s", name, server));
                 }
                 server.start(config);
-                return new ResteasySeInstance(server, config);
+                return new ResteasySeInstance(server, config, executor);
             } catch (Throwable t) {
                 throw new CompletionException(t);
             }
-        });
+        }, executor);
     }
 
     /**
@@ -122,6 +128,7 @@ public class ResteasySeInstance implements Instance {
      */
     public static CompletionStage<Instance> create(final Class<? extends Application> applicationClass,
                                                    final Configuration configuration) {
+        final ExecutorService executor = ContextualExecutors.threadPool();
         return CompletableFuture.supplyAsync(() -> {
             try {
                 final Configuration config = ResteasySeConfiguration.from(configuration);
@@ -147,11 +154,11 @@ public class ResteasySeInstance implements Instance {
                             .forEach(name -> LOGGER.debugf("Provider %s found for %s", name, server));
                 }
                 server.start(config);
-                return new ResteasySeInstance(server, config);
+                return new ResteasySeInstance(server, config, executor);
             } catch (Throwable t) {
                 throw new CompletionException(t);
             }
-        });
+        }, executor);
     }
 
     @Override
@@ -161,10 +168,11 @@ public class ResteasySeInstance implements Instance {
 
     @Override
     public CompletionStage<StopResult> stop() {
-        return CompletableFuture.supplyAsync(() -> {
+        final CompletableFuture<StopResult> cf = new CompletableFuture<>();
+        executor.submit(() -> {
             try {
                 server.stop();
-                return new StopResult() {
+                cf.complete(new StopResult() {
                     @Override
                     public <T> T unwrap(final Class<T> nativeClass) {
                         if (nativeClass != null && nativeClass.isInstance(server)) {
@@ -172,11 +180,12 @@ public class ResteasySeInstance implements Instance {
                         }
                         return null;
                     }
-                };
+                });
             } catch (Throwable t) {
-                throw new CompletionException(t);
+                cf.completeExceptionally(t);
             }
         });
+        return cf.whenComplete(((stopResult, throwable) -> executor.shutdownNow()));
     }
 
     @Override
