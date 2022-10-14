@@ -63,8 +63,6 @@ import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import static java.nio.file.StandardOpenOption.*;
-
 /**
  * Traverses a set of JAX-RS resources and creates a protobuf representation.
  * <p/>
@@ -192,6 +190,7 @@ import static java.nio.file.StandardOpenOption.*;
 public class JavaToProtobufGenerator {
 
    private static Logger logger = Logger.getLogger(JavabufTranslatorGenerator.class);
+
    private static Map<String, String> TYPE_MAP = new HashMap<String, String>();
    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, String>();
    private static Map<String, String> PRIMITIVE_WRAPPER_DEFINITIONS = new HashMap<String, String>();
@@ -207,7 +206,7 @@ public class JavaToProtobufGenerator {
    private static Set<String> visited = new HashSet<String>();
    private static JavaSymbolSolver symbolSolver;
    private static ClassVisitor classVisitor = new ClassVisitor();
-   private static JaxrsResourceVisitor jaxrsResourceVisitor = new JaxrsResourceVisitor();
+   private static JakartaRESTResourceVisitor jakartaRESTResourceVisitor = new JakartaRESTResourceVisitor();
    private static boolean started = false;
    private static int counter = 1;
    private static boolean isSSE;
@@ -361,7 +360,7 @@ public class JavaToProtobufGenerator {
       sourceRoot.getParserConfiguration().setSymbolResolver(symbolSolver);
       List<ParseResult<CompilationUnit>> list = sourceRoot.tryToParseParallelized();
       for (ParseResult<CompilationUnit> p : list) {
-         jaxrsResourceVisitor.visit(p.getResult().get(), sb);
+         jakartaRESTResourceVisitor.visit(p.getResult().get(), sb);
       }
       if (started) {
          sb.append("}\n");
@@ -512,7 +511,7 @@ public class JavaToProtobufGenerator {
     * signatures of resource methods. Creates a service with an rpc declaration for
     * each resource method or locator.
     */
-   static class JaxrsResourceVisitor extends VoidVisitorAdapter<StringBuilder> {
+   static class JakartaRESTResourceVisitor extends VoidVisitorAdapter<StringBuilder> {
 
       public void visit(final ClassOrInterfaceDeclaration subClass, StringBuilder sb) {
          // Don't process gRPC server
@@ -592,7 +591,7 @@ public class JavaToProtobufGenerator {
    }
 
    /**
-    * Visit all classes discovered by JaxrsResourceVisitor in the process of visiting all JAX-RS resources
+    * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all JAX-RS resources
     */
    static class ClassVisitor extends VoidVisitorAdapter<StringBuilder> {
 
@@ -717,7 +716,7 @@ public class JavaToProtobufGenerator {
    }
 
    /**
-    * Visit all classes discovered by JaxrsResourceVisitor in the process of visiting all JAX-RS resources
+    * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all JAX-RS resources
     */
    static class AdditionalClassVisitor extends VoidVisitorAdapter<StringBuilder> {
       private String dir;
@@ -839,7 +838,6 @@ public class JavaToProtobufGenerator {
             ResolvedType rt = p.getType().resolve();
             resolvedTypes.add(rt.asReferenceType().getTypeDeclaration().get());
             String type = rt.describe();
-            int n = type.lastIndexOf(".");
             return fqnifyClass(type, isInnerClass(rt.asReferenceType().getTypeDeclaration().get()));
          }
       }
