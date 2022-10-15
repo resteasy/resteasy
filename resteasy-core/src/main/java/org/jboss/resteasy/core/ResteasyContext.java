@@ -145,3 +145,4 @@ public final class ResteasyContext
       return null;
    }
 }
+

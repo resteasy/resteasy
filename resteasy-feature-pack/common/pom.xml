@@ -147,6 +147,17 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>grpc-bridge-runtime</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>jose-jwt</artifactId>
             <version>${project.version}</version>
             <exclusions>

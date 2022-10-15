@@ -30,6 +30,9 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       return servletContainerDispatcher.getDispatcher();
    }
 
+   public ServletContainerDispatcher getServletContainerDispatcher() {
+      return servletContainerDispatcher;
+   }
 
    public void init(ServletConfig servletConfig) throws ServletException
    {
