@@ -1,15 +1,20 @@
 package org.jboss.resteasy.test.grpc;
 
 import java.io.File;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PropertyPermission;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -90,6 +95,15 @@ public class GrpcToJaxrsTest
                + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export, org.jboss.as.weld export services \n"));
          WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
          log.info(archive.toString(true));
+         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+               new FilePermission("<<ALL FILES>>", "read"),
+               new PropertyPermission("*", "read"),
+               new ReflectPermission("suppressAccessChecks"),
+               new RuntimePermission("accessDeclaredMembers"),
+               new RuntimePermission("getenv.GRPC_PROXY_EXP"),
+               new RuntimePermission("shutdownHooks"),
+               new SocketPermission("*", "accept, listen,resolve")
+         ), "permissions.xml");
 //         archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
          return archive;
    }

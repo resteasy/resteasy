@@ -90,7 +90,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
          final Cookie[] cookies, final Map<String, String[]> formParameters) throws URISyntaxException {
       this.servletResponse = servletResponse;
       this.servletContext = servletContext;
-      this.uri = uri;
+      setUri(uri);
       this.contextPath = servletContext.getContextPath();
       this.path = path;
       this.method = method;
@@ -604,7 +604,8 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    }
 
    public void setUri(String uri) {
-      this.uri = uri;
+      uriInfo = adjustUriInfo(new ResteasyUriInfo(uri, servletContext.getContextPath()));
+      this.uri = uriInfo.getRequestUri().toString();
    }
 
    public String getPath() {
@@ -708,7 +709,8 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    }
 
    public void setUriInfo(UriInfo uriInfo) {
-      this.uriInfo = uriInfo;
+      this.uriInfo = adjustUriInfo(uriInfo);
+      this.uri = uriInfo.getRequestUri().toString();
    }
 
    public void setServletPath(String servletPath) {
@@ -834,13 +836,6 @@ public class HttpServletRequestImpl implements HttpServletRequest {
    }
 
    private UriInfo getUriInfo() {
-      if (uriInfo == null) {
-         synchronized (this) {// synchronize ?
-            if (uriInfo == null) {
-               uriInfo = new ResteasyUriInfo(uri, servletContext.getContextPath());
-            }
-         }
-      }
       return uriInfo;
    }
 
@@ -862,6 +857,20 @@ public class HttpServletRequestImpl implements HttpServletRequest {
             parameters.put(entry.getKey(), entry.getValue().toArray(array));
          }
       }
+   }
+
+   // Make sure uriInfo.getRequestUri() is absolute for opentracing
+   private UriInfo adjustUriInfo(UriInfo uriInfo) {
+      String scheme = uriInfo.getRequestUri().getScheme();
+      if (scheme == null || "".equals(scheme)) {
+         String u = uriInfo.getRequestUri().toString();
+         if (u.charAt(0) != '/') {
+            u = '/' + u;
+         }
+         u = "http://localhost:8080" + u;
+         uriInfo = new ResteasyUriInfo(u, servletContext.getContextPath());
+      }
+      return uriInfo;
    }
 }
 
