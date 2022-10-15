@@ -17,73 +17,27 @@
       <version.io.grpc>1.39.0</version.io.grpc>
    </properties>
 
-   <dependencyManagement>
-      <dependencies>
-         <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-bom</artifactId>
-            <version>${version.io.grpc}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-      </dependencies>
-   </dependencyManagement>
-
    <dependencies>
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
-         <artifactId>resteasy-core-spi</artifactId>
+         <artifactId>resteasy-core</artifactId>
          <version>${project.version}</version>
          <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>org.jboss.resteasy</groupId>
-         <artifactId>resteasy-cdi</artifactId>
-         <version>${project.version}</version>
-         <scope>provided</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>org.jboss.weld</groupId>
-               <artifactId>weld-api</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
 
       <dependency>
          <groupId>jakarta.servlet</groupId>
          <artifactId>jakarta.servlet-api</artifactId>
-         <scope>compile</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>com.google.protobuf</groupId>
-         <artifactId>protobuf-java</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-api</artifactId>
-      </dependency>
-      
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-core</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-stub</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>io.grpc</groupId>
-         <artifactId>grpc-netty-shaded</artifactId>
       </dependency>
 
       <dependency>
          <groupId>io.undertow</groupId>
          <artifactId>undertow-servlet-jakarta</artifactId>      
+      </dependency>
+
+      <dependency>
+         <groupId>com.google.protobuf</groupId>
+         <artifactId>protobuf-java</artifactId>
       </dependency>
 
       <dependency>
@@ -99,11 +53,6 @@
       <dependency>
          <groupId>org.jboss.logging</groupId>
          <artifactId>jboss-logging-processor</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>jakarta.enterprise</groupId>
-         <artifactId>jakarta.enterprise.cdi-api</artifactId>
       </dependency>
 
    </dependencies>
