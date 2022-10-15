@@ -133,7 +133,7 @@ public class ServiceGrpcExtender {
 //        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;" + LS)
         .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
         .append("import org.wildfly.grpc.GrpcService;" + LS)
-        .append("import javax.inject.Inject;" + LS)
+        .append("import jakarta.inject.Inject;" + LS)
         .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
         .append("import com.google.protobuf.Any;" + LS)
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
