@@ -43,6 +43,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.concurrent.ThreadContext;
 import org.jboss.resteasy.spi.concurrent.ThreadContexts;
+import org.jboss.resteasy.spi.config.Configuration;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
@@ -58,6 +59,7 @@ public class ContextualExecutors {
     private static final String EXECUTOR_SERVICE_JNDI = "java:comp/DefaultManagedExecutorService";
     private static final String SCHEDULED_EXECUTOR_SERVICE_JNDI = "java:comp/DefaultManagedScheduledExecutorService";
 
+    private static final Configuration CONFIG = ConfigurationFactory.getInstance().getConfiguration();
     private static final Map<String, Boolean> JNDI_LOOKUPS = new ConcurrentHashMap<>();
 
     /**
@@ -386,16 +388,15 @@ public class ContextualExecutors {
 
     @SuppressWarnings("SameParameterValue")
     private static <T> T getConfigValue(final String name, final Class<T> type, final Supplier<T> dft) {
-        if (System.getSecurityManager() == null) {
-            return ConfigurationFactory.getInstance().getConfiguration()
-                    .getOptionalValue(name, type)
-                    .orElseGet(dft);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<T>) () ->
-                ConfigurationFactory.getInstance().getConfiguration()
-                        .getOptionalValue(name, type)
-                        .orElseGet(dft)
-        );
+            if(System.getSecurityManager() == null) {
+                return CONFIG.getOptionalValue(name, type)
+                        .orElseGet(dft);
+            } else {
+                return AccessController.doPrivileged((PrivilegedAction<T>) () ->
+                        CONFIG.getOptionalValue(name, type)
+                            .orElseGet(dft)
+                );
+            }
     }
 
     private static class ContextualThreadFactory implements ThreadFactory {
