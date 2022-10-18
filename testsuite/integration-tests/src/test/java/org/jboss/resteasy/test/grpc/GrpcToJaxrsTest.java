@@ -71,19 +71,13 @@ public class GrpcToJaxrsTest
    @Deployment
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
-         war.addClass(io.grpc.netty.shaded.io.netty.channel.group.ChannelMatchers.class);
-         war.addClass(com.google.common.util.concurrent.internal.InternalFutureFailureAccess.class);
-//         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-////               + "Dependencies: com.google.guava services,org.jboss.resteasy.resteasy-grpc-provider services\n"));
-//         + "Dependencies: com.google.guava services\n"));
          war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.25")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
-         war.addClass(jaxrs.example.CC1MessageBodyReaderWriter.class);
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-               + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export, org.jboss.as.weld export services \n"));
+               + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export \n"));
          WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-         log.info(archive.toString(true));
+//         log.info(archive.toString(true));
          war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                new FilePermission("<<ALL FILES>>", "read"),
                new PropertyPermission("*", "read"),
@@ -97,25 +91,6 @@ public class GrpcToJaxrsTest
          return archive;
    }
 
-   /*
-//      io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder nsb;
-      com.google.common.base.Preconditions p;
-      WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
-      war.addClass(io.grpc.netty.shaded.io.netty.channel.group.ChannelMatchers.class);
-      war.addClass(com.google.common.util.concurrent.internal.InternalFutureFailureAccess.class);
-      TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.0.Final-SNAPSHOT");
-      TestUtil.addOtherLibrary(war, "com.google.protobuf:protobuf-java:jar:3.17.3");
-//      TestUtil.addOtherLibrary(war, "io.grpc:grpc-api:jar:1.39.0");
-      TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:jar:1.39.0");
-      war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.14")));
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.jboss.resteasy.grpc-bridge-runtime export, io.grpc export, jakarta.enterprise.api export\n"));
-      WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-      log.info(archive.toString(true));
-      archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
-      return archive;
-    */
-//   private static String target = "localhost:9555";
    private static String target = "localhost:8082";
    private static CC1ServiceBlockingStub blockingStub;
    private static ManagedChannel channel;
