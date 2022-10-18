@@ -78,7 +78,7 @@ public class GrpcToJaxrsTest
 //         + "Dependencies: com.google.guava services\n"));
          war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.25")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
-         TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.47.0");
+         TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.addClass(jaxrs.example.CC1MessageBodyReaderWriter.class);
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export, org.jboss.as.weld export services \n"));
