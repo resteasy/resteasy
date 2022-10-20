@@ -37,6 +37,10 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter
             {
                sink.flushResponseToClient();
             }
+            @Override
+            public void close() {
+               sink.close();
+            }
          });
       }
    }
