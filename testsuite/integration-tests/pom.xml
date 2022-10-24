@@ -487,7 +487,6 @@
                     <plugin-options>
                         <!--<jboss-maven-dist/> -->
                         <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
-                        <jboss-jakarta-transform-artifacts>true</jboss-jakarta-transform-artifacts>
                     </plugin-options>
                     <feature-packs>
                         <feature-pack>
