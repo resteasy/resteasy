@@ -1,10 +1,13 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyPermission;
@@ -20,6 +23,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 //import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -30,6 +34,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
 import io.grpc.ManagedChannel;
@@ -55,6 +61,7 @@ import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC3;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC4;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC5;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC7;
+import jaxrs.example.CC1_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -71,7 +78,7 @@ public class GrpcToJaxrsTest
    @Deployment
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
-         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.28")));
+         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.30")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
@@ -87,7 +94,7 @@ public class GrpcToJaxrsTest
                new RuntimePermission("shutdownHooks"),
                new SocketPermission("*", "accept, listen,resolve")
          ), "permissions.xml");
-//         archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
+         archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
          return archive;
    }
 
@@ -130,9 +137,13 @@ public class GrpcToJaxrsTest
    }
 
    static void ready() {
+      try {
       jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/ready").build();
-      GeneralReturnMessage grm = blockingStub.ready(gem);
+      blockingStub.ready(gem);
+      } catch (Exception e) {
+         throw e;
+      }
    }
 
    @Before
@@ -692,22 +703,35 @@ public class GrpcToJaxrsTest
       }
    }
 
-   //      @Test
-   //      public void testSSE() throws Exception {
-   //         jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
-   //         messageBuilder.setURL("http://localhost:8080/p/sse");
-   //         GeneralEntityMessage gem = messageBuilder.build();
-   //         java.util.Iterator<jaxrs.example.CC1_proto.org_jboss_resteasy_plugins_protobuf_sse___SseEvent> events;
-   //         try {
-   //            events = blockingStub.sse(gem);
-   //         } catch (StatusRuntimeException e) {
-   //            Assert.fail("fail");
-   //            return;
-   //         }
-   //         while (events.hasNext()) {
-   //
-   //         }
-   //      }
+   @Test
+   public void testSSE() throws Exception {
+      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      messageBuilder.setURL("http://localhost:8080/p/sse");
+      GeneralEntityMessage gem = messageBuilder.build();
+      Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> response;
+      try {
+         response = blockingStub.sse(gem);
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+      ArrayList<org_jboss_resteasy_grpc_sse_runtime___SseEvent> list = new ArrayList<org_jboss_resteasy_grpc_sse_runtime___SseEvent>();
+      while (response.hasNext()) {
+         org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = response.next();
+         list.add(sseEvent);
+      }
+      Assert.assertEquals(3, list.size());
+      for (int k = 0; k < 3; k++) {
+         org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(k);
+         Assert.assertEquals("name" + (k + 1), sseEvent.getName());
+         ByteString byteString = sseEvent.getData();
+         byte[] bytes = byteString.toByteArray();
+         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+         Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+         gString gString = any.unpack(gString.class);
+         Assert.assertEquals("event" + (k + 1), gString.getValue());
+      }
+   }
 
    @Test
    public void testInheritance() throws Exception {

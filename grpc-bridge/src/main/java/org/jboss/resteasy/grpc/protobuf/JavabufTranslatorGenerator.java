@@ -14,7 +14,6 @@ import org.jboss.resteasy.grpc.runtime.protobuf.AssignFromJavabuf;
 import org.jboss.resteasy.grpc.runtime.protobuf.AssignToJavabuf;
 import org.jboss.resteasy.grpc.runtime.protobuf.TranslateFromJavabuf;
 import org.jboss.resteasy.grpc.runtime.protobuf.TranslateToJavabuf;
-//import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
@@ -148,8 +147,8 @@ public class JavabufTranslatorGenerator {
       sb.append("package ").append(wrapperClass.getPackage().getName()).append(";" + LS + LS);
       imports(wrapperClass, sb);
       sb.append(   "public class ")
-       .append(translatorClass)
-       .append(" {" + LS);
+        .append(translatorClass)
+        .append(" {" + LS);
    }
 
    private static void imports(Class<?> wrapperClass, StringBuilder sb) {
@@ -267,6 +266,7 @@ public class JavabufTranslatorGenerator {
         .append("      if (ttj == null) {" + LS)
         .append("         throw new RuntimeException(o.getClass() + \" is not recognized\");" + LS)
         .append("      }" + LS)
+        .append("      ttj.clear();" + LS)
         .append("      return ttj.assignToJavabuf(o);" + LS)
         .append("   }" + LS + LS)
         .append("   @SuppressWarnings(\"rawtypes\")" + LS)
@@ -308,15 +308,21 @@ public class JavabufTranslatorGenerator {
         .append("            try {" + LS)
         .append("               if (isSuperClass(fd.getName())) {" + LS)
         .append("                  Message message = toJavabufMap.get(obj.getClass().getSuperclass()).assignToJavabuf(obj);" + LS)
-        .append("                  messageBuilder.setField(fd, message);" + LS)
+        .append("                  if (message != null) {" + LS)
+        .append("                     messageBuilder.setField(fd, message);" + LS)
+        .append("                  }" + LS)
         .append("               } else {" + LS)
         .append("                  final Field field = javaClass.getDeclaredField(fd.getName());" + LS)
         .append("                  field.setAccessible(true);" + LS)
         .append("                  if (!String.class.equals(field.getType()) && toJavabufMap.keySet().contains(field.getType())) {" + LS)
         .append("                     Message message = toJavabufMap.get(field.getType()).assignToJavabuf(field.get(obj));" + LS)
-        .append("                     messageBuilder.setField(fd, message);" + LS)
+        .append("                     if (message != null) {" + LS)
+        .append("                        messageBuilder.setField(fd, message);" + LS)
+        .append("                     }" + LS)
         .append("                  } else {" + LS)
-        .append("                     messageBuilder.setField(fd, field.get(obj));" + LS)
+        .append("                     if (field.get(obj) != null) {" + LS)
+        .append("                        messageBuilder.setField(fd, field.get(obj));" + LS)
+        .append("                     }" + LS)
         .append("                  }" + LS)
         .append("               }" + LS)
         .append("            } catch (Exception e) {" + LS)
@@ -401,11 +407,14 @@ public class JavabufTranslatorGenerator {
          String simpleJavabufName = clazz.getSimpleName();
          String simpleJavaName = simpleJavabufName.substring(1);
          sb.append("" + LS)
-         .append("      public Message assignToJavabuf(Object x) {" + LS)
-         .append("         ").append(simpleJavaName).append(" p = (").append(simpleJavaName).append(") x;" + LS)
-         .append("         ").append(clazz.getCanonicalName()).append(".Builder builder = ").append(clazz.getCanonicalName()).append(".newBuilder();" + LS)
-         .append("         return builder.setValue(p").append(GET_METHODS.get(simpleJavaName)).append(").build();" + LS)
-         .append("      }" + LS);
+           .append("      public Message assignToJavabuf(Object x) {" + LS)
+           .append("         ").append(simpleJavaName).append(" p = (").append(simpleJavaName).append(") x;" + LS)
+           .append("         ").append(clazz.getCanonicalName()).append(".Builder builder = ").append(clazz.getCanonicalName()).append(".newBuilder();" + LS)
+           .append("         return builder.setValue(p").append(GET_METHODS.get(simpleJavaName)).append(").build();" + LS)
+           .append("      }" + LS + LS)
+           .append("      public void clear() {" + LS)
+           .append("         //" + LS)
+           .append("      }" + LS + LS);
       } else {
          sb.append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName()).append(".getDescriptor();" + LS)
            .append("      private static DynamicMessage.Builder builder = DynamicMessage.newBuilder(descriptor);" + LS)
@@ -428,6 +437,9 @@ public class JavabufTranslatorGenerator {
            .append("            }" + LS)
            .append("         }" + LS)
            .append("         return builder.build();" + LS)
+           .append("      }" + LS + LS)
+           .append("      public void clear() {" + LS)
+           .append("         builder.clear();" + LS)
            .append("      }" + LS);
       }
       sb.append("   }" + LS + LS);

@@ -211,7 +211,7 @@ public class JavaToProtobufGenerator {
    private static int counter = 1;
    private static boolean isSSE;
    private static String SSE_EVENT;
-   private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_plugins_grpc_sse___SseEvent";
+   private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
 
    static {
       TYPE_MAP.put("boolean", "bool");
@@ -282,7 +282,7 @@ public class JavaToProtobufGenerator {
       HTTP_VERBS.add("POST");
       HTTP_VERBS.add("PUT");
 
-      SSE_EVENT = "package org.jboss.resteasy.plugins.grpc.sse;\n"
+      SSE_EVENT = "package org.jboss.resteasy.grpc.sse.runtime;\n"
                 + "\n"
                 + "public class SseEvent {\n"
                 + "\n"
@@ -567,7 +567,7 @@ public class JavaToProtobufGenerator {
                .append("GeneralEntityMessage")
                .append(") returns (")
                .append("sse".equals(syncType) ? "stream " : "")
-               .append("GeneralReturnMessage")
+               .append("sse".equals(syncType) ? SSE_EVENT_CLASSNAME : "GeneralReturnMessage")
                .append(");\n");
 
                // Add each parameter and return type to resolvedTypes for further processing.

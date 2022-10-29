@@ -49,7 +49,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
 
    private GeneratedMessageV3.Builder<?> builder;
    private FieldDescriptor fd;
-   private AsyncMockServletOutputStream msos = new AsyncMockServletOutputStream();
+   private MockServletOutputStream msos;
    private MultivaluedMap<String, String> headers = new MultivaluedHashMap<String, String>();
    private String contentType;
    private String charset;
@@ -66,10 +66,13 @@ public class HttpServletResponseImpl implements HttpServletResponse {
          list.add("true");
          headers.put(GRPC_RETURN_RESPONSE, list);
       }
-      if ("async".equals(async)) {
+      if ("completionStage".equals(async) || "sse".equals(async) ||"suspended".equals(async)) {
          List<String> list = new ArrayList<String>();
          list.add("true");
          headers.put(GRPC_ASYNC, list);
+         msos = new AsyncMockServletOutputStream();
+      } else {
+         msos = new MockServletOutputStream();
       }
       this.builder = builder;
       this.fd = fd;

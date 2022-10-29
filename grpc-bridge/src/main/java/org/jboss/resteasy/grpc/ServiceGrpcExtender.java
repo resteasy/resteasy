@@ -17,6 +17,7 @@ public class ServiceGrpcExtender {
 
    private static Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
    private static final String LS = System.lineSeparator();
+   private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
 
    private boolean inWildFly = true;
    private String packageName = "";
@@ -109,6 +110,7 @@ public class ServiceGrpcExtender {
         .append("import io.grpc.stub.StreamObserver;" + LS)
         .append("import java.io.ByteArrayInputStream;" + LS)
         .append("import java.io.ByteArrayOutputStream;" + LS)
+        .append("import java.io.IOException;" + LS)
         .append("import java.text.ParseException;" + LS)
         .append("import java.time.ZonedDateTime;" + LS)
         .append("import java.time.format.DateTimeFormatter;" + LS)
@@ -123,19 +125,21 @@ public class ServiceGrpcExtender {
         .append("import jakarta.servlet.http.Cookie;" + LS)
         .append("import jakarta.servlet.http.HttpServletRequest;" + LS)
         .append("import jakarta.servlet.http.HttpServletResponse;" + LS)
+        .append("import jakarta.ws.rs.core.MediaType;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletInputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletOutputStream;" + LS)
-//        .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;" + LS)
-//        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;" + LS)
+        .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;" + LS)
+        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;" + LS)
         .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
         .append("import org.wildfly.grpc.GrpcService;" + LS)
         .append("import jakarta.inject.Inject;" + LS)
         .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
         .append("import com.google.protobuf.Any;" + LS)
+        .append("import com.google.protobuf.ByteString;" + LS)
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gNewCookie;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;" + LS)
@@ -245,47 +249,33 @@ public class ServiceGrpcExtender {
            .append("         responseObserver.onNext(grmb.build());" + LS);
       } else if ("completionStage".equals(syncType)) {
          sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();" + LS)
-           .append("         amsos.await();" + LS)
-           .append("         ByteArrayOutputStream baos = amsos.getDelegate();" + LS)
+           .append("         ByteArrayOutputStream baos = amsos.await();" + LS)
            .append("         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());" + LS)
            .append("         ").append(actualReturnClass).append(" reply = ").append(actualReturnClass).append(".parseFrom(bais);" + LS)
            .append("         ").append(retn).append(".Builder grmb = createGeneralReturnMessageBuilder(response);" + LS)
            .append("         ").append(getSetterMethod(actualReturnClass)).append("(reply);" + LS)
            .append("         responseObserver.onNext(grmb.build());" + LS);
-      }
-
-      else if ("sse".equals(syncType)) {
-//         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
-//           .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS)
-//           .append("         bais = new ByteArrayInputStream(baos.toByteArray());" + LS)
-//           .append("         bais.mark(0);" + LS)
-//           .append("         while (bais.read() != -1) {" + LS)
-//           .append("            bais.reset();" + LS)
-//           .append("            responseObserver.onNext(transformSseEvent(bais));" + LS)
-//           .append("            bais.mark(0);" + LS)
-//           .append("         }" + LS)
-//           ;
-         // temporary
-//         sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
-//         .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS);
-//
-//         sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();" + LS)
-//           .append("         while (true) {" + LS)
-//           .append("            ByteArrayOutputStream baos = amsos.await();" + LS)
-//           .append("            if (amsos.isClosed()) {" + LS)
-//           .append("               break;" + LS)
-//           .append("            }" + LS)
-//           .append("            byte[] bytes = baos.toByteArray();" + LS)
-//           .append("            if (bytes.length == 2 && bytes[0] == 10 && bytes[1] == 10) {" + LS)
-//           .append("               continue;" + LS)
-//           .append("            }" + LS)
-//           .append("            try {" + LS)
-//           .append("               org_jboss_resteasy_plugins_protobuf_sse___SseEvent reply = org_jboss_resteasy_plugins_protobuf_sse___SseEvent.parseFrom(bytes);" + LS)
-//           .append("               responseObserver.onNext(reply);" + LS)
-//           .append("            } catch (Exception e) {" + LS)
-//           .append("               continue;" + LS)
-//           .append("            }" + LS)
-//           .append("         }" + LS);
+      } else if ("sse".equals(syncType)) {
+         sb.append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();" + LS)
+           .append("         while (true) {" + LS)
+           .append("            if (amsos.isClosed()) {" + LS)
+           .append("               break;" + LS)
+           .append("            }" + LS)
+           .append("            ByteArrayOutputStream baos = amsos.await();" + LS)
+           .append("            if (amsos.isClosed()) {" + LS)
+           .append("               break;" + LS)
+           .append("            }" + LS)
+           .append("            byte[] bytes = baos.toByteArray();" + LS)
+           .append("            if (bytes.length == 2 && bytes[0] == 10 && bytes[1] == 10) {" + LS)
+           .append("               continue;" + LS)
+           .append("            }" + LS)
+           .append("            try {" + LS)
+           .append("               ").append(SSE_EVENT_CLASSNAME).append(" sseEvent = ").append(SSE_EVENT_CLASSNAME).append(".parseFrom(bytes);" + LS)
+           .append("               responseObserver.onNext(sseEvent);" + LS)
+           .append("            } catch (Exception e) {" + LS)
+           .append("               continue;" + LS)
+           .append("            }" + LS)
+           .append("         }" + LS);
       } else {
          sb.append("         MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();" + LS)
            .append("         ByteArrayOutputStream baos = msos.getDelegate();" + LS)
@@ -512,18 +502,18 @@ public class ServiceGrpcExtender {
         .append("      return ncb.build();" + LS)
         .append("   }" + LS)
         ;
-        //        .append("   private static org_jboss_resteasy_plugins_grpc_sse___SseEvent transformSseEvent(ByteArrayInputStream bais) throws IOException {" + LS)
-//        .append("      SseEventInputImpl eventInput = new SseEventInputImpl(null, MediaType.TEXT_PLAIN_TYPE, null, null, bais);" + LS)
-//        .append("      InboundSseEventImpl inboundEvent = (InboundSseEventImpl) eventInput.read();" + LS)
-//        .append("      org_jboss_resteasy_plugins_grpc_sse___SseEvent.Builder builder = org_jboss_resteasy_plugins_grpc_sse___SseEvent.newBuilder();" + LS)
-//        .append("      builder.setComment(inboundEvent.getComment());" + LS)
-//        .append("      builder.setData(ByteString.copyFrom(inboundEvent.getRawData()));" + LS)
-//        .append("      builder.setId(inboundEvent.getId());" + LS)
-//        .append("      builder.setName(inboundEvent.getName());" + LS)
-//        .append("      builder.setReconnectDelay(inboundEvent.getReconnectDelay());" + LS)
-//        .append("      return builder.build();" + LS)
-//        .append("   }" + LS)
-//        ;
+      sb.append("   private static ").append(SSE_EVENT_CLASSNAME).append(" transformSseEvent(ByteArrayInputStream bais) throws IOException {" + LS)
+        .append("      SseEventInputImpl eventInput = new SseEventInputImpl(null, MediaType.TEXT_PLAIN_TYPE, null, null, bais);" + LS)
+        .append("      InboundSseEventImpl inboundEvent = (InboundSseEventImpl) eventInput.read();" + LS)
+        .append("      ").append(SSE_EVENT_CLASSNAME).append(".Builder builder = ").append(SSE_EVENT_CLASSNAME).append(".newBuilder();" + LS)
+        .append("      builder.setComment(inboundEvent.getComment());" + LS)
+        .append("      builder.setData(ByteString.copyFrom(inboundEvent.getRawData()));" + LS)
+        .append("      builder.setId(inboundEvent.getId());" + LS)
+        .append("      builder.setName(inboundEvent.getName());" + LS)
+        .append("      builder.setReconnectDelay(inboundEvent.getReconnectDelay());" + LS)
+        .append("      return builder.build();" + LS)
+        .append("   }" + LS)
+        ;
    }
 
    private static String getParamType(String packageName, String outerClassName, String param) {

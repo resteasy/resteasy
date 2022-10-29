@@ -1,5 +1,9 @@
 package org.jboss.resteasy.grpc.protobuf;
 
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.WRITE;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,8 +15,7 @@ import java.util.Set;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;
-
-import static java.nio.file.StandardOpenOption.*;
+import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 
 public class ReaderWriterGenerator {
 
@@ -75,8 +78,10 @@ public class ReaderWriterGenerator {
 
    private static void imports(Class<?> wrapperClass, String rootClass, StringBuilder sb) {
       sb
+        .append("import java.io.ByteArrayOutputStream;" + LS)
         .append("import java.io.IOException;" + LS)
         .append("import java.io.InputStream;" + LS)
+        .append("import java.io.ObjectOutputStream;" + LS)
         .append("import java.io.OutputStream;" + LS)
         .append("import java.lang.annotation.Annotation;" + LS)
         .append("import java.lang.reflect.Type;" + LS)
@@ -96,6 +101,7 @@ public class ReaderWriterGenerator {
         .append("import com.google.protobuf.CodedOutputStream;" + LS)
         .append("import ").append("jakarta.servlet.http.HttpServletResponse;" + LS)
         .append("import ").append("org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
+        .append("import ").append(OutboundSseEventImpl.class.getCanonicalName()).append(";" + LS)
         .append("import ").append(HttpServletResponseImpl.class.getCanonicalName()).append(";" + LS)
         .append("import org.jboss.resteasy.core.ResteasyContext;" + LS)
         ;
@@ -153,11 +159,14 @@ public class ReaderWriterGenerator {
         .append("   }" + LS + LS)
         .append("   @Override" + LS)
         .append("   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {" + LS)
-       .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);" + LS)
+        .append("      return ").append(args[2]).append("_JavabufTranslator.handlesToJavabuf(type);" + LS)
         .append("   }" + LS + LS)
         .append("   @Override" + LS)
         .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType," + LS)
         .append("      MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {" + LS)
+        .append("      if (t instanceof OutboundSseEventImpl) {" + LS)
+        .append("         t = convertSseEvent((OutboundSseEventImpl) t);" + LS)
+        .append("      }" + LS)
         .append("      Message message = ").append(args[2]).append("_JavabufTranslator.translateToJavabuf(t);" + LS)
         .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);" + LS)
         .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {" + LS)
@@ -167,15 +176,17 @@ public class ReaderWriterGenerator {
         .append("         if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {" + LS)
         .append("            AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();" + LS)
         .append("            amsos.release();" + LS)
-        .append("            return;" + LS)
         .append("         }" + LS)
-        .append("      } else {" + LS)
-        .append("         message.writeTo(entityStream);" + LS)
-        .append("         entityStream.flush();" + LS)
+        .append("         return;" + LS)
         .append("      }" + LS)
         .append("      if (servletResponse.getOutputStream() instanceof AsyncMockServletOutputStream) {" + LS)
         .append("         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) servletResponse.getOutputStream();" + LS)
-        .append("         amsos.release();" + LS)
+        .append("         ByteArrayOutputStream baos = new ByteArrayOutputStream();" + LS)
+        .append("         message.writeTo(baos);" + LS)
+        .append("         amsos.release(baos);" + LS)
+        .append("      } else {" + LS)
+        .append("         message.writeTo(entityStream);" + LS)
+        .append("         entityStream.flush();" + LS)
         .append("      }" + LS)
         .append("   }" + LS + LS)
         .append("   private static GeneratedMessageV3 getMessage(Class<?> clazz, InputStream is) throws IOException {" + LS);
@@ -209,6 +220,25 @@ public class ReaderWriterGenerator {
            .append("      }" + LS);
       }
       sb.append("   }" + LS + LS);
+      sb.append("   private static SseEvent convertSseEvent(OutboundSseEventImpl osei) throws IOException {" + LS)
+        .append("      SseEvent sseEvent = new SseEvent();" + LS)
+        .append("      sseEvent.setComment(osei.getComment());" + LS)
+        .append("      sseEvent.setData(convertData(osei));" + LS)
+        .append("      sseEvent.setId(osei.getId());" + LS)
+        .append("      sseEvent.setName(osei.getName());" + LS)
+        .append("      sseEvent.setReconnectDelay(osei.getReconnectDelay());" + LS)
+        .append("      return sseEvent;" + LS)
+        .append("   }" + LS + LS)
+        ;
+      sb.append("   private static byte[] convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
+        .append("      ByteArrayOutputStream baos = new ByteArrayOutputStream();" + LS)
+        .append("      CodedOutputStream cos = CodedOutputStream.newInstance(baos);" + LS)
+        .append("      Message message = CC1_JavabufTranslator.translateToJavabuf(osei.getData());" + LS)
+        .append("      Any.pack(message).writeTo(cos);" + LS)
+        .append("      cos.flush();" + LS)
+        .append("      return baos.toByteArray();" + LS)
+        .append("   }" + LS + LS)
+        ;
    }
 
    private static void finishClass(StringBuilder sb) {

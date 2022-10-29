@@ -23,6 +23,13 @@
          <groupId>jakarta.ws.rs</groupId>
          <artifactId>jakarta.ws.rs-api</artifactId>
       </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-core</artifactId>
+         <version>${project.version}</version>
+         <scope>provided</scope>
+      </dependency>
     
       <dependency>
          <groupId>org.jboss.resteasy</groupId>
