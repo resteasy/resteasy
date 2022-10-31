@@ -1128,7 +1128,6 @@ public class GrpcToJaxrsTest
          }
          @Override
          public void onError(Throwable t) {
-            t.printStackTrace();
             latch.countDown();
          }
          @Override
