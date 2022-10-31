@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyPermission;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -32,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
@@ -40,11 +42,14 @@ import com.google.protobuf.Timestamp;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 import jaxrs.example.CC1ServiceGrpc;
 import jaxrs.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import jaxrs.example.CC1ServiceGrpc.CC1ServiceFutureStub;
+import jaxrs.example.CC1ServiceGrpc.CC1ServiceStub;
 import jaxrs.example.CC1_proto;
 import jaxrs.example.CC1_proto.FormMap;
 import jaxrs.example.CC1_proto.FormValues;
@@ -53,6 +58,7 @@ import jaxrs.example.CC1_proto.GeneralReturnMessage;
 import jaxrs.example.CC1_proto.ServletInfo;
 import jaxrs.example.CC1_proto.gCookie;
 import jaxrs.example.CC1_proto.gHeader;
+import jaxrs.example.CC1_proto.gInteger;
 import jaxrs.example.CC1_proto.gNewCookie;
 import jaxrs.example.CC1_proto.gString;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC2;
@@ -99,6 +105,8 @@ public class GrpcToJaxrsTest
 
    private static String target = "localhost:8082";
    private static CC1ServiceBlockingStub blockingStub;
+   private static CC1ServiceStub asyncStub;
+   private static CC1ServiceFutureStub futureStub;
    private static ManagedChannel channel;
 
    private static String generateURL(String path) {
@@ -118,6 +126,8 @@ public class GrpcToJaxrsTest
       log.info("response 2: " + response.readEntity(String.class));
       channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
       blockingStub = CC1ServiceGrpc.newBlockingStub(channel);
+      futureStub = CC1ServiceGrpc.newFutureStub(channel);
+      asyncStub = CC1ServiceGrpc.newStub(channel);
       int i = 0;
       for (i = 0; i < 5; i++) {
          try {
@@ -1049,6 +1059,112 @@ public class GrpcToJaxrsTest
          response = blockingStub.locator(gem);
          Assert.assertEquals("abc|xyz", response.getGoogleProtobufAnyField().unpack(CC1_proto.gString.class).getValue());
       } catch (Exception e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   static class GeneralReturnMessageHolder<T> {
+      ArrayList<T> values = new ArrayList<T>();
+      T getValue() {
+         return values.get(0);
+      }
+      void setValue(T value) {
+         values.add(value);
+      }
+      void addValue(T value) {
+         values.add(value);
+      }
+      Iterator<T> iterator() {
+         return values.iterator();
+      }
+      int size() {
+         return values.size();
+      }
+   }
+
+   @Test
+   public void testIntAsyncStub() throws Exception {
+      gInteger n = gInteger.newBuilder().setValue(3).build();
+      GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = builder.setGIntegerField(n).build();
+      CountDownLatch latch = new CountDownLatch(1);
+      GeneralReturnMessageHolder<Integer> grmh = new GeneralReturnMessageHolder<Integer>();
+      StreamObserver<GeneralReturnMessage> responseObserver = new StreamObserver<GeneralReturnMessage>() {
+         @Override
+         public void onNext(GeneralReturnMessage value) {
+            grmh.setValue(value.getGIntegerField().getValue());
+            latch.countDown();
+         }
+         @Override
+         public void onError(Throwable t) {
+            latch.countDown();
+         }
+         @Override
+         public void onCompleted() {
+            latch.countDown();
+         }
+      };
+      try {
+         asyncStub.getInt(gem, responseObserver);
+         latch.await();
+         Assert.assertEquals((Integer) 4, grmh.getValue());
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testSseAsyncStub() throws Exception {
+      GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = builder.build();
+      CountDownLatch latch = new CountDownLatch(1);
+      GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent> grmh = new GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent>();
+      StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent> responseObserver = new StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent>() {
+         @Override
+         public void onNext(org_jboss_resteasy_grpc_sse_runtime___SseEvent value) {
+            grmh.addValue(value);
+         }
+         @Override
+         public void onError(Throwable t) {
+            t.printStackTrace();
+            latch.countDown();
+         }
+         @Override
+         public void onCompleted() {
+            latch.countDown();
+         }
+      };
+      try {
+         asyncStub.sse(gem, responseObserver);
+         latch.await();
+         Assert.assertEquals(3, grmh.size());
+         Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> it = grmh.iterator();
+         for (int i = 0; i < 3; i++) {
+            org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
+            Assert.assertEquals("name" + (i + 1), sseEvent.getName());
+            byte[] bytes = sseEvent.getData().toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+            gString gString = any.unpack(gString.class);
+            Assert.assertEquals("event" + (i + 1), gString.getValue());
+         }
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testIntFutureStub() throws Exception {
+      gInteger n = gInteger.newBuilder().setValue(3).build();
+      GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = builder.setGIntegerField(n).build();
+      try {
+         ListenableFuture<GeneralReturnMessage> future = futureStub.getInt(gem);
+         Assert.assertEquals(4, future.get().getGIntegerField().getValue());
+      } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
       }
