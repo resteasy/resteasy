@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.core.PostResourceMethodInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
@@ -8,6 +10,7 @@ import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.core.PostResourceMethodInvokers;
 
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Cookie;
@@ -35,6 +38,8 @@ import java.util.function.Supplier;
  */
 public class PreMatchContainerRequestContext implements SuspendableContainerRequestContext
 {
+   private static final Logger LOG = Logger.getLogger(PreMatchContainerRequestContext.class);
+
    protected final HttpRequest httpRequest;
    protected Response response;
    private ContainerRequestFilter[] requestFilters;
@@ -314,6 +319,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          }
          catch (IOException e)
          {
+            cleanupPostResourceMethodInvokers();
             throw new ApplicationException(e);
          }
          finally
@@ -367,5 +373,21 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    public boolean startedContinuation()
    {
       return startedContinuation;
+   }
+
+   private void cleanupPostResourceMethodInvokers() {
+      PostResourceMethodInvokers postResourceMethodInvokers =
+              ResteasyContext.getContextData(PostResourceMethodInvokers.class);
+      // close PostResourceMethodInvokers and clear array list
+      if (postResourceMethodInvokers != null) {
+         for(PostResourceMethodInvoker p : postResourceMethodInvokers.getInvokers()) {
+            try {
+               p.close();
+            } catch (Exception e) {
+               LOG.warn(e.getMessage());
+            }
+         }
+         postResourceMethodInvokers.clear();
+      }
    }
 }
