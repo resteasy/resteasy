@@ -13,6 +13,11 @@
     <name>RESTEasy Reactor-Netty Integration</name>
     <description/>
 
+    <properties>
+        <!-- for debugging; to be removed in future -->
+        <byteman.version>4.0.20</byteman.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
@@ -120,7 +125,102 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- for debugging; to be removed in future -->
+        <dependency>
+            <groupId>org.jboss.byteman</groupId>
+            <artifactId>byteman</artifactId>
+            <version>${byteman.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.byteman</groupId>
+            <artifactId>byteman-submit</artifactId>
+            <scope>test</scope>
+            <version>${byteman.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.byteman</groupId>
+            <artifactId>byteman-install</artifactId>
+            <scope>test</scope>
+            <version>${byteman.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.byteman</groupId>
+            <artifactId>byteman-bmunit</artifactId>
+            <scope>test</scope>
+            <version>${byteman.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.testng</groupId>
+                    <artifactId>testng</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
+
+    <!-- everything in build is for debugging; to be removed in future -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jboss.byteman</groupId>
+                <artifactId>byteman-rulecheck-maven-plugin</artifactId>
+                <version>${byteman.version}</version>
+                <executions>
+                    <execution>
+                        <id>rulecheck-test</id>
+                        <goals>
+                            <goal>rulecheck</goal>
+                        </goals>
+                        <configuration>
+                            <packages>
+                                <package>org.jboss.resteasy.test</package>
+                                <package>reactor.netty.http</package>
+                            </packages>
+                            <includes>
+                                <include>**/*.btm</include>
+                            </includes>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>byteman data</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>org/jboss/resteasy/test/StreamingOutputTest.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                            </systemPropertyVariables>
+                            <!-- ensure we don't inherit a byteman jar form any env settings -->
+                            <useSystemClassLoader>true</useSystemClassLoader>
+                            <useManifestOnlyJar>true</useManifestOnlyJar>
+                            <forkMode>once</forkMode>
+                            <environmentVariables>
+                                <BYTEMAN_HOME></BYTEMAN_HOME>
+                            </environmentVariables>
+                            <systemProperties>
+                                <property>
+                                    <name>org.jboss.byteman.home</name>
+                                    <value></value>
+                                </property>
+                            </systemProperties>
+                            <argLine>-Djdk.attach.allowAttachSelf</argLine>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>

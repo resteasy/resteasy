@@ -1,0 +1,68 @@
+# --- enter/exit test
+RULE test method testConcurrent ENTERED
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testConcurrent()
+IF true
+DO traceln("ENTERED testConcurrent")
+ENDRULE
+RULE test method testConcurrent EXIT
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testConcurrent()
+AT EXIT
+IF true
+DO traceln("EXIT testConcurrent")
+ENDRULE
+
+# --- enter/exit test
+RULE test method testStreamingOutput
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testStreamingOutput()
+IF true
+DO traceln("ENTERED testStreamingOutput")
+ENDRULE
+RULE test method testStreamingOutput EXIT
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testStreamingOutput()
+AT EXIT
+IF true
+DO traceln("EXIT testStreamingOutput")
+ENDRULE
+
+# --- enter/exit test
+RULE test method testStreamingOutputForLargeContent
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testStreamingOutputForLargeContent()
+IF true
+DO traceln("ENTERED testStreamingOutputForLargeContent")
+ENDRULE
+RULE test method testStreamingOutputForLargeContent EXIT
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testStreamingOutputForLargeContent()
+AT EXIT
+IF true
+DO traceln("EXIT testStreamingOutputForLargeContent")
+ENDRULE
+
+# --- enter/exit test
+RULE test method testAsyncStreamingOutputForLargeContent
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testAsyncStreamingOutputForLargeContent()
+IF true
+DO traceln("ENTERED testAsyncStreamingOutputForLargeContent")
+ENDRULE
+RULE test method testAsyncStreamingOutputForLargeContent EXIT
+CLASS org.jboss.resteasy.test.StreamingOutputTest
+METHOD testAsyncStreamingOutputForLargeContent()
+AT EXIT
+IF true
+DO traceln("EXIT testAsyncStreamingOutputForLargeContent")
+ENDRULE
+
+# --- report callers of netty markSentHeaders
+RULE report markSentHeaders
+CLASS reactor.netty.http.HttpOperations
+METHOD markSentHeaders
+AT EXIT
+IF true
+DO traceStack(10)
+ENDRULE

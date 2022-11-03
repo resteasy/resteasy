@@ -6,7 +6,7 @@ import org.jboss.resteasy.spi.AsyncStreamingOutput;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
+//import org.junit.Ignore;
 import org.junit.Test;
 
 import jakarta.ws.rs.GET;
@@ -34,12 +34,19 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
+// start byteman debug .. to be removed
+import org.jboss.byteman.contrib.bmunit.BMScript;
+import org.jboss.byteman.contrib.bmunit.BMUnitConfig;
+import org.junit.runner.RunWith;
+@RunWith(org.jboss.byteman.contrib.bmunit.BMUnitRunner.class)
+@BMUnitConfig(loadDirectory="target/test-classes")
+@BMScript(value="check.btm")
+// end byteman debug .. to be removed
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Ignore("See RESTEASY-3118")
+//@Ignore("See RESTEASY-3118")
 public class StreamingOutputTest
 {
    private static final int LOOP_COUNT = 10;

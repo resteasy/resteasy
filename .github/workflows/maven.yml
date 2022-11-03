@@ -48,6 +48,9 @@ jobs:
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/server.log'
+      - name: Display Byteman data
+        run: cat server-adapters/resteasy-reactor-netty/target/surefire-reports/TEST-org.jboss.resteasy.test.StreamingOutputTest.xml
+
 
   additional-profiles:
     runs-on: ubuntu-latest

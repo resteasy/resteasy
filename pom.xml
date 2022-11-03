@@ -39,7 +39,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
+        <surefire.system.args>-Xms512m -Xmx512m -Djdk.attach.allowAttachSelf</surefire.system.args>
 
         <maven.test.skip>false</maven.test.skip>
         <skipTests>${maven.test.skip}</skipTests>
@@ -245,7 +245,7 @@
                 </os>
             </activation>
             <properties>
-                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true -Djdk.attach.allowAttachSelf</surefire.system.args>
                 <additionalJvmArgs>-Djdk.io.File.enableADS=true -Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
             </properties>
         </profile>
