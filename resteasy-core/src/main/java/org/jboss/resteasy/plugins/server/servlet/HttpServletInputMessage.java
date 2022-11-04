@@ -135,7 +135,8 @@ public class HttpServletInputMessage extends BaseHttpRequest
       if (formParameters != null) return formParameters;
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
-      if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST"))
+              && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
       {
          return getPutFormParameters();
       }
@@ -180,7 +181,8 @@ public class HttpServletInputMessage extends BaseHttpRequest
       if (decodedFormParameters != null) return decodedFormParameters;
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
-      if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST"))
+              && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
       {
          return getPutDecodedFormParameters();
       }
