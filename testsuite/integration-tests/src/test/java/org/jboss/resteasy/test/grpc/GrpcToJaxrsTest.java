@@ -83,7 +83,7 @@ public class GrpcToJaxrsTest
    @Deployment
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
-         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.31")));
+         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.32")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
