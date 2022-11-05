@@ -188,7 +188,7 @@ public class ReaderWriterGenerator {
         .append("         message.writeTo(entityStream);" + LS)
         .append("         entityStream.flush();" + LS)
         .append("      }" + LS)
-        .append("   }" + LS + LS)
+        .append("   }" + LS + LS) // Turn into switch
         .append("   private static GeneratedMessageV3 getMessage(Class<?> clazz, InputStream is) throws IOException {" + LS);
       Class<?>[] subclasses = wrapperClass.getClasses();
       boolean startElse = false;

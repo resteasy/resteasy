@@ -729,7 +729,7 @@ public class GrpcToJaxrsTest
          org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = response.next();
          list.add(sseEvent);
       }
-      Assert.assertEquals(3, list.size());
+      Assert.assertEquals(4, list.size());
       for (int k = 0; k < 3; k++) {
          org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(k);
          Assert.assertEquals("name" + (k + 1), sseEvent.getName());
@@ -740,6 +740,14 @@ public class GrpcToJaxrsTest
          gString gString = any.unpack(gString.class);
          Assert.assertEquals("event" + (k + 1), gString.getValue());
       }
+      org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(3);
+      Assert.assertEquals("name4", sseEvent.getName());
+      ByteString byteString = sseEvent.getData();
+      byte[] bytes = byteString.toByteArray();
+      ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+      Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+      org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
+      Assert.assertEquals(org_jboss_resteasy_example___CC5.newBuilder().setK(4).build(), cc5);
    }
 
    @Test
@@ -1138,7 +1146,7 @@ public class GrpcToJaxrsTest
       try {
          asyncStub.sse(gem, responseObserver);
          latch.await();
-         Assert.assertEquals(3, grmh.size());
+         Assert.assertEquals(4, grmh.size());
          Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> it = grmh.iterator();
          for (int i = 0; i < 3; i++) {
             org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
@@ -1149,6 +1157,14 @@ public class GrpcToJaxrsTest
             gString gString = any.unpack(gString.class);
             Assert.assertEquals("event" + (i + 1), gString.getValue());
          }
+         org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
+         Assert.assertEquals("name4", sseEvent.getName());
+         ByteString byteString = sseEvent.getData();
+         byte[] bytes = byteString.toByteArray();
+         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+         Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+         org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
+         Assert.assertEquals(org_jboss_resteasy_example___CC5.newBuilder().setK(4).build(), cc5);
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
