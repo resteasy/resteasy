@@ -353,7 +353,7 @@ org.jboss.resteasy.spi.LoggableFailure: RESTEASY003880: Unable to find contextua
 @GET
 @Path("test")
 @Produces("text/plain")
-public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
+public CompletionStage&lt;String&gt; text(@Context HttpRequest request) {
    System.out.println("request (inline): " + request);
    System.out.println("application (inline): " + ResteasyContext.getContextData(Application.class));
    CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
@@ -383,7 +383,7 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
 @GET
 @Path("test")
 @Produces("text/plain")
-public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
+public CompletionStage&lt;String&gt; text(@Context HttpRequest request) {
    System.out.println("request (inline): " + request);
    System.out.println("application (inline): " + ResteasyContext.getContextData(Application.class));
    CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
