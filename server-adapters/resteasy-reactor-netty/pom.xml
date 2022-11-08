@@ -215,6 +215,8 @@
                                 </property>
                             </systemProperties>
                             <argLine>-Djdk.attach.allowAttachSelf</argLine>
+                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                            <useUnlimitedThreads>true</useUnlimitedThreads>
                         </configuration>
                     </execution>
                 </executions>
