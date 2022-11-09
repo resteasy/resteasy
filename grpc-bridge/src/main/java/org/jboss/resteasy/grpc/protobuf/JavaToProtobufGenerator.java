@@ -1,6 +1,5 @@
 package org.jboss.resteasy.grpc.protobuf;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -189,7 +188,8 @@ import jakarta.ws.rs.core.Response;
  */
 public class JavaToProtobufGenerator {
 
-   private static Logger logger = Logger.getLogger(JavabufTranslatorGenerator.class);
+   private static final Logger logger = Logger.getLogger(JavabufTranslatorGenerator.class);
+   private static final String LS = System.lineSeparator();
 
    private static Map<String, String> TYPE_MAP = new HashMap<String, String>();
    private static Map<String, String> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, String>();
@@ -210,7 +210,6 @@ public class JavaToProtobufGenerator {
    private static boolean started = false;
    private static int counter = 1;
    private static boolean isSSE;
-   private static String SSE_EVENT;
    private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
 
    static {
@@ -281,17 +280,6 @@ public class JavaToProtobufGenerator {
       HTTP_VERBS.add("PATCH");
       HTTP_VERBS.add("POST");
       HTTP_VERBS.add("PUT");
-
-      SSE_EVENT = "package org.jboss.resteasy.grpc.sse.runtime;\n"
-                + "\n"
-                + "public class SseEvent {\n"
-                + "\n"
-                + "   String  comment;\n"
-                + "   String  id;\n"
-                + "   String  name;\n"
-                + "   byte[]  data;\n"
-                + "   long    reconnectDelay;\n"
-                + "}";
    }
 
    public static void main(String[] args) throws IOException
@@ -330,12 +318,12 @@ public class JavaToProtobufGenerator {
 
    private static void protobufHeader(String[] args, StringBuilder sb)
    {
-      sb.append("syntax = \"proto3\";\n");
-      sb.append("package " + args[1].replace('-', '.') + ";\n");
-      sb.append("import \"google/protobuf/any.proto\";\n");
-      sb.append("import \"google/protobuf/timestamp.proto\";\n");
-      sb.append("option java_package = \"" + args[2] + "\";\n");
-      sb.append("option java_outer_classname = \"" + args[3] + "_proto\";\n");
+      sb.append("syntax = \"proto3\";" + LS);
+      sb.append("package " + args[1].replace('-', '.') + ";" + LS);
+      sb.append("import \"google/protobuf/any.proto\";" + LS);
+      sb.append("import \"google/protobuf/timestamp.proto\";" + LS);
+      sb.append("option java_package = \"" + args[2] + "\";" + LS);
+      sb.append("option java_outer_classname = \"" + args[3] + "_proto\";" + LS);
    }
 
    /**
@@ -363,7 +351,7 @@ public class JavaToProtobufGenerator {
          jakartaRESTResourceVisitor.visit(p.getResult().get(), sb);
       }
       if (started) {
-         sb.append("}\n");
+         sb.append("}" + LS);
       }
       processAdditionalClasses(symbolSolver, sb);
    }
@@ -388,73 +376,78 @@ public class JavaToProtobufGenerator {
          }
       }
       if (isSSE) {
-         ByteArrayInputStream bais = new ByteArrayInputStream(SSE_EVENT.getBytes());
-         CompilationUnit cu = StaticJavaParser.parse(bais);
-         AdditionalClassVisitor additionalClassVisitor = new AdditionalClassVisitor("");
-         additionalClassVisitor.visit(cu, sb);
+         sb.append(LS)
+           .append("message org_jboss_resteasy_grpc_sse_runtime___SseEvent {" + LS)
+           .append("  string comment = ").append(counter++).append(";").append(LS)
+           .append("  string id = ").append(counter++).append(";").append(LS)
+           .append("  string name = ").append(counter++).append(";").append(LS)
+           .append("  google.protobuf.Any data = ").append(counter++).append(";").append(LS)
+           .append("  int64 reconnectDelay = ").append(counter++).append(";").append(LS)
+           .append("}").append(LS)
+           ;
       }
    }
 
    private static void finishProto(StringBuilder sb) {
       if (needEmpty) {
-         sb.append("\nmessage gEmpty {}");
+         sb.append(LS + "message gEmpty {}");
          entityMessageTypes.add("gEmpty");
          returnMessageTypes.add("gEmpty");
       }
 
       for (String wrapper : PRIMITIVE_WRAPPER_DEFINITIONS.values()) {
-         sb.append("\n").append(wrapper.replace("$V$", String.valueOf(counter++)));
+         sb.append(LS).append(wrapper.replace("$V$", String.valueOf(counter++)));
       }
       createGeneralEntityMessageType(sb);
       createGeneralReturnMessageType(sb);
    }
 
    private static void createGeneralEntityMessageType(StringBuilder sb) {
-      sb.append("\n\nmessage gHeader {\n").append("   repeated string values = ").append(counter++).append(";\n}");
-      sb.append("\n\nmessage gCookie {\n")
-        .append("   string name = ").append(counter++).append(";\n")
-        .append("   string value = ").append(counter++).append(";\n")
-        .append("   int32  version = ").append(counter++).append(";\n")
-        .append("   string path = ").append(counter++).append(";\n")
-        .append("   string domain = ").append(counter++).append(";\n")
+      sb.append(LS + LS + "message gHeader {" + LS).append("   repeated string values = ").append(counter++).append(";" + LS + "}");
+      sb.append(LS + LS + "message gCookie {" + LS)
+        .append("   string name = ").append(counter++).append(";" + LS)
+        .append("   string value = ").append(counter++).append(";" + LS)
+        .append("   int32  version = ").append(counter++).append(";" + LS)
+        .append("   string path = ").append(counter++).append(";" + LS)
+        .append("   string domain = ").append(counter++).append(";" + LS)
         .append("}");
-      sb.append("\n\nmessage gNewCookie {\n")
-        .append("   string name = ").append(counter++).append(";\n")
-        .append("   string value = ").append(counter++).append(";\n")
-        .append("   int32  version = ").append(counter++).append(";\n")
-        .append("   string path = ").append(counter++).append(";\n")
-        .append("   string domain = ").append(counter++).append(";\n")
-        .append("   string comment = ").append(counter++).append(";\n")
-        .append("   int32 maxAge = ").append(counter++).append(";\n")
-        .append("   google.protobuf.Timestamp expiry = ").append(counter++).append(";\n")
-        .append("   bool secure = ").append(counter++).append(";\n")
-        .append("   bool httpOnly = ").append(counter++).append(";\n\n")
-        .append("   enum SameSite {\n")
-        .append("      NONE   = 0;\n")
-        .append("      LAX    = 1;\n")
-        .append("      STRICT = 2;\n")
-        .append("   }\n\n")
-        .append("   SameSite sameSite = ").append(counter++).append(";\n")
+      sb.append(LS + LS + "message gNewCookie {" + LS)
+        .append("   string name = ").append(counter++).append(";" + LS)
+        .append("   string value = ").append(counter++).append(";" + LS)
+        .append("   int32  version = ").append(counter++).append(";" + LS)
+        .append("   string path = ").append(counter++).append(";" + LS)
+        .append("   string domain = ").append(counter++).append(";" + LS)
+        .append("   string comment = ").append(counter++).append(";" + LS)
+        .append("   int32 maxAge = ").append(counter++).append(";" + LS)
+        .append("   google.protobuf.Timestamp expiry = ").append(counter++).append(";" + LS)
+        .append("   bool secure = ").append(counter++).append(";" + LS)
+        .append("   bool httpOnly = ").append(counter++).append(";" + LS + LS)
+        .append("   enum SameSite {" + LS)
+        .append("      NONE   = 0;" + LS)
+        .append("      LAX    = 1;" + LS)
+        .append("      STRICT = 2;" + LS)
+        .append("   }" + LS + LS)
+        .append("   SameSite sameSite = ").append(counter++).append(";" + LS)
         .append("}");
-      sb.append("\n\nmessage ServletInfo {\n")
-        .append("   string characterEncoding = ").append(counter++).append(";\n")
-        .append("   string clientAddress = ").append(counter++).append(";\n")
-        .append("   string clientHost = ").append(counter++).append(";\n")
-        .append("   int32  clientPort = ").append(counter++).append(";\n")
+      sb.append(LS + LS + "message ServletInfo {" + LS)
+        .append("   string characterEncoding = ").append(counter++).append(";" + LS)
+        .append("   string clientAddress = ").append(counter++).append(";" + LS)
+        .append("   string clientHost = ").append(counter++).append(";" + LS)
+        .append("   int32  clientPort = ").append(counter++).append(";" + LS)
         .append("}");
-      sb.append("\n\nmessage FormValues {\n")
-        .append("   repeated string formValues_field = ").append(counter++).append(";\n")
+      sb.append(LS + LS + "message FormValues {" + LS)
+        .append("   repeated string formValues_field = ").append(counter++).append(";" + LS)
         .append("}");
-      sb.append("\n\nmessage FormMap {\n")
-        .append("   map<string, FormValues> formMap_field = ").append(counter++).append(";\n")
+      sb.append(LS + LS + "message FormMap {" + LS)
+        .append("   map<string, FormValues> formMap_field = ").append(counter++).append(";" + LS)
         .append("}");
-      sb.append("\n\nmessage GeneralEntityMessage {\n")
-        .append("   ServletInfo servletInfo = ").append(counter++).append(";\n")
-        .append("   string URL = ").append(counter++).append(";\n")
-        .append("   map<string, gHeader> headers = ").append(counter++).append(";\n")
-        .append("   repeated gCookie cookies = ").append(counter++).append(";\n")
-        .append("   string httpMethod = ").append(counter++).append(";\n")
-        .append("   oneof messageType {\n");
+      sb.append(LS + LS + "message GeneralEntityMessage {" + LS)
+        .append("   ServletInfo servletInfo = ").append(counter++).append(";" + LS)
+        .append("   string URL = ").append(counter++).append(";" + LS)
+        .append("   map<string, gHeader> headers = ").append(counter++).append(";" + LS)
+        .append("   repeated gCookie cookies = ").append(counter++).append(";" + LS)
+        .append("   string httpMethod = ").append(counter++).append(";" + LS)
+        .append("   oneof messageType {" + LS);
       for (String messageType : entityMessageTypes) {
          sb.append("      ")
          .append(messageType)
@@ -462,18 +455,18 @@ public class JavaToProtobufGenerator {
          .append(namify(messageType)).append("_field")
          .append(" = ")
          .append(counter++)
-         .append(";\n");
+         .append(";" + LS);
       }
-    sb.append("      FormMap form_field = ").append(counter++).append(";\n");
-    sb.append("   }\n}\n");
+    sb.append("      FormMap form_field = ").append(counter++).append(";" + LS);
+    sb.append("   }" + LS + "}" + LS);
    }
 
    private static void createGeneralReturnMessageType(StringBuilder sb) {
-      sb.append("\nmessage GeneralReturnMessage {\n")
-        .append("   map<string, gHeader> headers = ").append(counter++).append(";\n")
-        .append("   repeated gNewCookie cookies = ").append(counter++).append(";\n")
-        .append("   gInteger status = ").append(counter++).append(";\n")
-        .append("   oneof messageType {\n");
+      sb.append(LS + "message GeneralReturnMessage {" + LS)
+        .append("   map<string, gHeader> headers = ").append(counter++).append(";" + LS)
+        .append("   repeated gNewCookie cookies = ").append(counter++).append(";" + LS)
+        .append("   gInteger status = ").append(counter++).append(";" + LS)
+        .append("   oneof messageType {" + LS);
     for (String messageType : returnMessageTypes) {
        sb.append("      ")
          .append(messageType)
@@ -481,9 +474,9 @@ public class JavaToProtobufGenerator {
          .append(namify(messageType)).append("_field")
          .append(" = ")
          .append(counter++)
-         .append(";\n");
+         .append(";" + LS);
     }
-    sb.append("   }\n}\n");
+    sb.append("   }" + LS + "}" + LS);
    }
 
    private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
@@ -541,9 +534,9 @@ public class JavaToProtobufGenerator {
                String httpMethod = getHttpMethod(md);
                // Add service with a method for each resource method in class.
                if (!started) {
-                  sb.append("\nservice ")
+                  sb.append(LS + "service ")
                   .append(prefix)
-                  .append("Service {\n");
+                  .append("Service {" + LS);
                   started = true;
                }
                String entityType = getEntityParameter(md, httpMethod);
@@ -558,7 +551,7 @@ public class JavaToProtobufGenerator {
                  .append(entityType).append(" ")
                  .append(returnType).append(" ")
                  .append(httpMethod).append(" ")
-                 .append(syncType).append("\n");
+                 .append(syncType).append("" + LS);
                entityMessageTypes.add(entityType);
                returnMessageTypes.add(returnType);
                sb.append("  rpc ")
@@ -568,7 +561,7 @@ public class JavaToProtobufGenerator {
                .append(") returns (")
                .append("sse".equals(syncType) ? "stream " : "")
                .append("sse".equals(syncType) ? SSE_EVENT_CLASSNAME : "GeneralReturnMessage")
-               .append(");\n");
+               .append(");" + LS);
 
                // Add each parameter and return type to resolvedTypes for further processing.
                for (Parameter p : md.getParameters()) {
@@ -619,7 +612,7 @@ public class JavaToProtobufGenerator {
          visited.add(fqn);
 
          // Begin protobuf message definition.
-         sb.append("\nmessage ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {\n");
+         sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
 
          // Scan all variables in class.
          for (ResolvedFieldDeclaration rfd: clazz.getDeclaredFields()) {
@@ -662,7 +655,7 @@ public class JavaToProtobufGenerator {
                .append(rfd.getName())
                .append(" = ")
                .append(counter++)
-               .append(";\n");
+               .append(";" + LS);
             }
          }
 
@@ -685,7 +678,7 @@ public class JavaToProtobufGenerator {
                .append(superClassVariableName)
                .append(" = ")
                .append(counter++)
-               .append(";\n");
+               .append(";" + LS);
                break;
             } else if (rrt.getTypeDeclaration().get() instanceof JavaParserClassDeclaration) {
                JavaParserClassDeclaration jpcd = (JavaParserClassDeclaration) rrt.getTypeDeclaration().get();
@@ -706,12 +699,12 @@ public class JavaToProtobufGenerator {
                .append(superClassVariableName)
                .append(" = ")
                .append(counter++)
-               .append(";\n");
+               .append(";" + LS);
                break;
 
             }
          }
-         sb.append("}\n");
+         sb.append("}" + LS);
       }
    }
 
@@ -743,7 +736,7 @@ public class JavaToProtobufGenerator {
          visited.add(fqn);
 
          // Begin protobuf message definition.
-         sb.append("\nmessage ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {\n");
+         sb.append(LS + "message ").append(fqnifyClass(fqn, isInnerClass(clazz))).append(" {" + LS);
 
          // Scan all variables in class.
          for (FieldDeclaration fd: clazz.getFields()) {
@@ -775,7 +768,7 @@ public class JavaToProtobufGenerator {
                .append(rfd.getName())
                .append(" = ")
                .append(counter++)
-               .append(";\n");
+               .append(";" + LS);
             }
          }
 
@@ -803,12 +796,12 @@ public class JavaToProtobufGenerator {
                .append(superClassVariableName)
                .append(" = ")
                .append(counter++)
-               .append(";\n");
+               .append(";" + LS);
                break;
 
             }
          }
-         sb.append("}\n");
+         sb.append("}" + LS);
       }
    }
 

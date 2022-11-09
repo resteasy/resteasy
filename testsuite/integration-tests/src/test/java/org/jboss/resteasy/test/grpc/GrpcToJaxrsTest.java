@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
-import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
@@ -83,7 +82,7 @@ public class GrpcToJaxrsTest
    @Deployment
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
-         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.33")));
+         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.34")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
@@ -733,19 +732,13 @@ public class GrpcToJaxrsTest
       for (int k = 0; k < 3; k++) {
          org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(k);
          Assert.assertEquals("name" + (k + 1), sseEvent.getName());
-         ByteString byteString = sseEvent.getData();
-         byte[] bytes = byteString.toByteArray();
-         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-         Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+         Any any = sseEvent.getData();
          gString gString = any.unpack(gString.class);
          Assert.assertEquals("event" + (k + 1), gString.getValue());
       }
       org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(3);
       Assert.assertEquals("name4", sseEvent.getName());
-      ByteString byteString = sseEvent.getData();
-      byte[] bytes = byteString.toByteArray();
-      ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-      Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+      Any any = sseEvent.getData();
       org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
       Assert.assertEquals(org_jboss_resteasy_example___CC5.newBuilder().setK(4).build(), cc5);
    }
@@ -1159,10 +1152,7 @@ public class GrpcToJaxrsTest
          }
          org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
          Assert.assertEquals("name4", sseEvent.getName());
-         ByteString byteString = sseEvent.getData();
-         byte[] bytes = byteString.toByteArray();
-         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-         Any any =  Any.parseFrom(CodedInputStream.newInstance(bais));
+         Any any = sseEvent.getData();
          org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
          Assert.assertEquals(org_jboss_resteasy_example___CC5.newBuilder().setK(4).build(), cc5);
       } catch (StatusRuntimeException e) {

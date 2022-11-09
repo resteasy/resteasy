@@ -81,7 +81,6 @@ public class ReaderWriterGenerator {
         .append("import java.io.ByteArrayOutputStream;" + LS)
         .append("import java.io.IOException;" + LS)
         .append("import java.io.InputStream;" + LS)
-        .append("import java.io.ObjectOutputStream;" + LS)
         .append("import java.io.OutputStream;" + LS)
         .append("import java.lang.annotation.Annotation;" + LS)
         .append("import java.lang.reflect.Type;" + LS)
@@ -230,13 +229,9 @@ public class ReaderWriterGenerator {
         .append("      return sseEvent;" + LS)
         .append("   }" + LS + LS)
         ;
-      sb.append("   private static byte[] convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
-        .append("      ByteArrayOutputStream baos = new ByteArrayOutputStream();" + LS)
-        .append("      CodedOutputStream cos = CodedOutputStream.newInstance(baos);" + LS)
+      sb.append("   private static Any convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
         .append("      Message message = CC1_JavabufTranslator.translateToJavabuf(osei.getData());" + LS)
-        .append("      Any.pack(message).writeTo(cos);" + LS)
-        .append("      cos.flush();" + LS)
-        .append("      return baos.toByteArray();" + LS)
+        .append("      return Any.pack(message);" + LS)
         .append("   }" + LS + LS)
         ;
    }

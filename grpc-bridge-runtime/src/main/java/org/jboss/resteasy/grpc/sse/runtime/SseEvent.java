@@ -1,24 +1,16 @@
 package org.jboss.resteasy.grpc.sse.runtime;
 
-import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;
+import com.google.protobuf.Any;
 
 public class SseEvent {
 
    private String  comment;
    private String  id;
    private String  name;
-   private byte[]  data;
+   private Any     data;
    private long    reconnectDelay;
 
    public SseEvent() {}
-
-   public SseEvent(final InboundSseEventImpl inboundSseEvent) {
-      setComment(inboundSseEvent.getComment());
-      setData(inboundSseEvent.getRawData());
-      setId(inboundSseEvent.getId());
-      setName(inboundSseEvent.getName());
-      setReconnectDelay(inboundSseEvent.getReconnectDelay());
-   }
 
    public String getComment()
    {
@@ -44,10 +36,10 @@ public class SseEvent {
    {
       this.name = name;
    }
-   public byte[] getData() {
+   public Any getData() {
       return data;
    }
-   public void setData(byte[] data)
+   public void setData(Any data)
    {
       this.data = data;
    }

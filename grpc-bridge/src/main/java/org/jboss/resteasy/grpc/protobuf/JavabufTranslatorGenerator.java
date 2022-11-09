@@ -414,7 +414,7 @@ public class JavabufTranslatorGenerator {
            .append("      }" + LS + LS)
            .append("      public void clear() {" + LS)
            .append("         //" + LS)
-           .append("      }" + LS + LS);
+           .append("      }" + LS);
       } else {
          sb.append("      private static Descriptor descriptor = ").append(clazz.getCanonicalName()).append(".getDescriptor();" + LS)
            .append("      private static DynamicMessage.Builder builder = DynamicMessage.newBuilder(descriptor);" + LS)

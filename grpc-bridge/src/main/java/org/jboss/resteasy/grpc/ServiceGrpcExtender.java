@@ -15,9 +15,9 @@ import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;
 
 public class ServiceGrpcExtender {
 
-   private static Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
+   private static final Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
    private static final String LS = System.lineSeparator();
-   private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
+   private static final String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
 
    private boolean inWildFly = true;
    private String packageName = "";
@@ -110,7 +110,6 @@ public class ServiceGrpcExtender {
         .append("import io.grpc.stub.StreamObserver;" + LS)
         .append("import java.io.ByteArrayInputStream;" + LS)
         .append("import java.io.ByteArrayOutputStream;" + LS)
-        .append("import java.io.IOException;" + LS)
         .append("import java.text.ParseException;" + LS)
         .append("import java.time.ZonedDateTime;" + LS)
         .append("import java.time.format.DateTimeFormatter;" + LS)
@@ -125,21 +124,17 @@ public class ServiceGrpcExtender {
         .append("import jakarta.servlet.http.Cookie;" + LS)
         .append("import jakarta.servlet.http.HttpServletRequest;" + LS)
         .append("import jakarta.servlet.http.HttpServletResponse;" + LS)
-        .append("import jakarta.ws.rs.core.MediaType;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletResponseImpl;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletInputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletOutputStream;" + LS)
-        .append("import org.jboss.resteasy.plugins.providers.sse.InboundSseEventImpl;" + LS)
-        .append("import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;" + LS)
         .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
         .append("import org.wildfly.grpc.GrpcService;" + LS)
         .append("import jakarta.inject.Inject;" + LS)
         .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
         .append("import com.google.protobuf.Any;" + LS)
-        .append("import com.google.protobuf.ByteString;" + LS)
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gNewCookie;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;" + LS)
@@ -200,7 +195,7 @@ public class ServiceGrpcExtender {
    }
 
    private void rpc(Scanner scanner, String root, String path, String actualEntityClass, String actualReturnClass, String httpMethod, String syncType, StringBuilder sbHeader, StringBuilder sbBody) {
-      sbBody.append("\n   @java.lang.Override" + LS);
+      sbBody.append(LS + "   @java.lang.Override" + LS);
       String method = scanner.next();
       scanner.findWithinHorizon("\\(", 0);
       scanner.useDelimiter("\\)");
@@ -500,18 +495,6 @@ public class ServiceGrpcExtender {
         .append("         }" + LS)
         .append("      }" + LS)
         .append("      return ncb.build();" + LS)
-        .append("   }" + LS)
-        ;
-      sb.append("   private static ").append(SSE_EVENT_CLASSNAME).append(" transformSseEvent(ByteArrayInputStream bais) throws IOException {" + LS)
-        .append("      SseEventInputImpl eventInput = new SseEventInputImpl(null, MediaType.TEXT_PLAIN_TYPE, null, null, bais);" + LS)
-        .append("      InboundSseEventImpl inboundEvent = (InboundSseEventImpl) eventInput.read();" + LS)
-        .append("      ").append(SSE_EVENT_CLASSNAME).append(".Builder builder = ").append(SSE_EVENT_CLASSNAME).append(".newBuilder();" + LS)
-        .append("      builder.setComment(inboundEvent.getComment());" + LS)
-        .append("      builder.setData(ByteString.copyFrom(inboundEvent.getRawData()));" + LS)
-        .append("      builder.setId(inboundEvent.getId());" + LS)
-        .append("      builder.setName(inboundEvent.getName());" + LS)
-        .append("      builder.setReconnectDelay(inboundEvent.getReconnectDelay());" + LS)
-        .append("      return builder.build();" + LS)
         .append("   }" + LS)
         ;
    }
