@@ -65,6 +65,7 @@ import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC3;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC4;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC5;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC7;
+import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC9;
 import jaxrs.example.CC1_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent;
 
 /**
@@ -82,7 +83,7 @@ public class GrpcToJaxrsTest
    @Deployment
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
-         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.35")));
+         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.36")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
@@ -447,6 +448,33 @@ public class GrpcToJaxrsTest
          response = blockingStub.getString(gem);
          jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("ABC").build();
          Assert.assertEquals(expected, response.getGStringField());
+      } catch (StatusRuntimeException e) {
+         Assert.fail("fail");
+         return;
+      }
+   }
+
+   @Test
+   public void testConstructor() throws Exception {
+      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/constructor").build();
+      GeneralReturnMessage response;
+      try {
+         response = blockingStub.constructor(gem);
+         org_jboss_resteasy_example___CC3 cc3 = org_jboss_resteasy_example___CC3.newBuilder().setS("eight").build();
+         org_jboss_resteasy_example___CC9.Builder cc9Builder = org_jboss_resteasy_example___CC9.newBuilder();
+         org_jboss_resteasy_example___CC9 expected =
+               cc9Builder.setBo(true)
+               .setBy((byte) 1)
+               .setS((short)2)
+               .setI(3)
+               .setL(4L)
+               .setF(5.0f)
+               .setD(6.0d)
+               .setC('7')
+               .setCc3(cc3)
+               .build();
+         Assert.assertEquals(expected, response.getOrgJbossResteasyExampleCC9Field());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;

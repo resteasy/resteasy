@@ -65,20 +65,24 @@ import com.google.protobuf.Message;
  *    public void test() {
  *
  *      // 1. Create a CC2.
+ *
  *      CC2 cc2 = new CC2("abc", 19);
  *
  *      // 2. Translate to java protobuf form
+ *
  *      Message message = CC1_JavabufTranslator.translateToJavabuf(cc2);
  *
  *      // 3. Manually create a java protobuf representation of the same CC2 and demonstrate they're the same.
+ *
  *      CC1_proto.io_grpc_classes___CC3 cc3Message =  CC1_proto.io_grpc_classes___CC3.newBuilder().setS("abc").build();
  *      CC1_proto.io_grpc_classes___CC2 cc2Message =  CC1_proto.io_grpc_classes___CC2.newBuilder().setJ(19).setCC3Super(cc3Message).build();
  *      Assert.assertEquals(message, cc2Message);
  *
  *      // 4. A. Translate the java protobuf object created in step 2 back to its original java form.
  *      //    B. Demonstrate it's the same as the java object created in step 1.
+ *
  *      CC2 cc2_new = (CC2) CC1_JavabufTranslator.translateFromJavabuf(message);
- *      Assert.assertEquals(cc2,cc2_new);
+ *      Assert.assertEquals(cc2, cc2_new);
  *  }
  * </pre>
  */
@@ -95,8 +99,9 @@ public class JavabufTranslatorGenerator {
       void assign(Message message, Object object);
    }
 
-   private static Map<String, Class<?>> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, Class<?>>();
-   private static Map<String, String> GET_METHODS = new HashMap<String, String>();
+   private static final Map<String, Class<?>> PRIMITIVE_WRAPPER_TYPES = new HashMap<String, Class<?>>();
+   private static final Map<String, String> GET_METHODS = new HashMap<String, String>();
+   private static final Map<Class<?>, String> PRIMITIVE_DEFAULTS = new HashMap<Class<?>, String>();
 
    static {
       PRIMITIVE_WRAPPER_TYPES.put("gByte",      byte.class);
@@ -119,6 +124,15 @@ public class JavabufTranslatorGenerator {
       GET_METHODS.put("Boolean",   ".booleanValue()");
       GET_METHODS.put("Character", ".toString()");
       GET_METHODS.put("String",    "");
+
+      PRIMITIVE_DEFAULTS.put(boolean.class, "false");
+      PRIMITIVE_DEFAULTS.put(byte.class,    "(byte)0");
+      PRIMITIVE_DEFAULTS.put(short.class,   "(short)0");
+      PRIMITIVE_DEFAULTS.put(int.class,     "0");
+      PRIMITIVE_DEFAULTS.put(long.class,    "0L");
+      PRIMITIVE_DEFAULTS.put(float.class,   "0.0f");
+      PRIMITIVE_DEFAULTS.put(double.class,  "0.0d");
+      PRIMITIVE_DEFAULTS.put(char.class,   "'\\u0000'");
    }
 
    public static void main(String[] args) {
@@ -321,7 +335,18 @@ public class JavabufTranslatorGenerator {
         .append("                     }" + LS)
         .append("                  } else {" + LS)
         .append("                     if (field.get(obj) != null) {" + LS)
-        .append("                        messageBuilder.setField(fd, field.get(obj));" + LS)
+        .append("                        if (Byte.class.equals(field.getType()) || byte.class.equals(field.getType())) {" + LS)
+        .append("                           Byte b = field.getByte(obj);" + LS)
+        .append("                           messageBuilder.setField(fd, b.intValue());" + LS)
+        .append("                        } else if (Short.class.equals(field.getType()) || short.class.equals(field.getType())) {" + LS)
+        .append("                           Short s = field.getShort(obj);" + LS)
+        .append("                           messageBuilder.setField(fd, s.intValue());" + LS)
+        .append("                        } else if (Character.class.equals(field.getType()) || char.class.equals(field.getType())) {" + LS)
+        .append("                           Character c = field.getChar(obj);" + LS)
+        .append("                           messageBuilder.setField(fd, (int) c);" + LS)
+        .append("                        } else {" + LS)
+        .append("                           messageBuilder.setField(fd, field.get(obj));" + LS)
+        .append("                        }" + LS)
         .append("                     }" + LS)
         .append("                  }" + LS)
         .append("               }" + LS)
@@ -355,7 +380,16 @@ public class JavabufTranslatorGenerator {
         .append("                     field.set(object, obj);" + LS)
         .append("                  } else {" + LS)
         .append("                     Object ooo = message.getField(fd);" + LS)
-        .append("                     field.set(object, ooo);" + LS)
+        .append("                     if (Integer.class.equals(ooo.getClass()) && (Byte.class.equals(field.getType()) || byte.class.equals(field.getType()))) {" + LS)
+        .append("                        field.set(object, ((Integer) ooo).byteValue());" + LS)
+        .append("                     } else if (Integer.class.equals(ooo.getClass()) && (Short.class.equals(field.getType()) || short.class.equals(field.getType()))) {" + LS)
+        .append("                        field.set(object, ((Integer) ooo).shortValue());" + LS)
+        .append("                     } else if (Integer.class.equals(ooo.getClass()) && (Character.class.equals(field.getType()) || char.class.equals(field.getType()))) {" + LS)
+        .append("                        int i = ((Integer)ooo).intValue();" + LS)
+        .append("                        field.set(object, Character.toChars(i)[0]);" + LS)
+        .append("                     } else {" + LS)
+        .append("                        field.set(object, ooo);" + LS)
+        .append("                     }" + LS)
         .append("                  }" + LS)
         .append("               }" + LS)
         .append("            } catch (Exception e) {" + LS)
@@ -505,17 +539,7 @@ public class JavabufTranslatorGenerator {
            .append("         }" + LS)
            .append("      }" + LS + LS)
            .append("      public ").append(originalName).append(" assignFromJavabuf(Message message) {" + LS);
-           int n = findConstructor(clazz, originalName);
-           if (n == 0) {
-              sb.append("         ").append(originalName).append(" obj = new ").append(originalName).append("();" + LS);
-           }
-           else {
-              sb.append("         ").append(originalName).append(" obj = new ").append(originalName).append("(");
-              for (int i = 0; i < n - 1; i++) {
-                 sb.append("null, ");
-              }
-              sb.append("null);" + LS);
-           }
+         findConstructor(clazz, originalName, sb);
          sb.append("         for (AssignFromJavabuf assignFrom : assignList) {" + LS)
            .append("            try {" + LS)
            .append("               assignFrom.assign(message, obj);" + LS)
@@ -592,8 +616,8 @@ public class JavabufTranslatorGenerator {
       return s;
    }
 
-   private static int findConstructor(Class<?> clazz, String simpleName) throws ClassNotFoundException {
-      String className = javabufToJava(clazz.getName(), simpleName);
+   private static void findConstructor(Class<?> clazz, String originalName, StringBuilder sb) throws ClassNotFoundException {
+      String className = javabufToJava(clazz.getName(), originalName);
       Class<?> originalClazz = Class.forName(className);
       Constructor<?>[] cons = originalClazz.getConstructors();
       Constructor<?> con = cons[0];
@@ -604,7 +628,21 @@ public class JavabufTranslatorGenerator {
             }
          }
       }
-      return con.getParameterCount();
+      sb.append("         ").append(originalName).append(" obj = new ").append(originalName).append("(");
+      boolean first = true;
+      for (int i = 0; i < con.getParameterCount(); i++) {
+         if (first) {
+            first = false;
+         } else {
+            sb.append(", ");
+         }
+         if (PRIMITIVE_DEFAULTS.containsKey(con.getParameterTypes()[i])) {
+            sb.append(PRIMITIVE_DEFAULTS.get(con.getParameterTypes()[i]));
+         } else {
+            sb.append("null");
+         }
+      }
+      sb.append(");" + LS);
    }
 
    private static String javabufToJava(String javabufName, String simpleName) {

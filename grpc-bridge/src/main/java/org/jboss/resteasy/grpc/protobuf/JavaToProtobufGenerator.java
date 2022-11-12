@@ -110,6 +110,9 @@ import jakarta.ws.rs.core.Response;
  *    public CC2() {}
  * }
  *
+ * ========================
+ * package io.grpc.classes;
+ *
  * public class CC3 {
  *    String s;
  *
@@ -120,6 +123,7 @@ import jakarta.ws.rs.core.Response;
  *    public CC3() {}
  * }
  *
+ * ========================
  * package io.grpc.classes;
  *
  * public class CC4 {
@@ -134,6 +138,7 @@ import jakarta.ws.rs.core.Response;
  *    public CC4() {}
  * }
  *
+ * ========================
  * package io.grpc.classes;
  *
  * public class CC5 {
@@ -181,7 +186,6 @@ import jakarta.ws.rs.core.Response;
  * <b>Notes.</b>
  * <ol>
  *    <li>{@code CC1.m2()} is not a resource method, so it does not appear in CC1.proto.
- *    <li>As of now, {@code JavaToProtobufGenerator} requires classes to have a no-arg constructor.
  *    <li>Protobuf syntax does not support inheritance, so {@code JavaToProtobufGenerator}
  *        treats a superclass as a special field. For example, {@code CC2}  is a subclass of {@code CC3},
  *        so each instance of {@code CC2} has a field named {@code cC3___super} of {@code type io_grpc_classes___CC3}.
