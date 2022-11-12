@@ -23,6 +23,7 @@ public class ReaderWriterGenerator {
    private static String LS = System.lineSeparator();
    private static Map<String, String> primitives = new HashMap<String, String>();
    private static Set<String> internalClasses = new HashSet<String>();
+   private static boolean hasSSE;
 
    static {
       primitives.put("gBoolean",   "boolean");
@@ -108,6 +109,9 @@ public class ReaderWriterGenerator {
          if (clazz.isInterface() || internalClasses.contains(clazz.getSimpleName())) {
             continue;
          }
+         if ("SseEvent".equals(originalSimpleName(clazz.getSimpleName()))) {
+            hasSSE = true;
+         }
          if (primitives.containsKey(clazz.getSimpleName())) {
             sb.append("import ").append(clazz.getName().replace("$", ".")).append(";" + LS);
          } else if ("GeneralEntityMessage".equals(clazz.getSimpleName())
@@ -163,10 +167,14 @@ public class ReaderWriterGenerator {
         .append("   @Override" + LS)
         .append("   public void writeTo(Object t, Class type, Type genericType, Annotation[] annotations, MediaType mediaType," + LS)
         .append("      MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {" + LS)
-        .append("      if (t instanceof OutboundSseEventImpl) {" + LS)
-        .append("         t = convertSseEvent((OutboundSseEventImpl) t);" + LS)
-        .append("      }" + LS)
-        .append("      Message message = ").append(args[2]).append("_JavabufTranslator.translateToJavabuf(t);" + LS)
+        ;
+      if (hasSSE) {
+         sb.append("      if (t instanceof OutboundSseEventImpl) {" + LS)
+           .append("         t = convertSseEvent((OutboundSseEventImpl) t);" + LS)
+           .append("      }" + LS)
+           ;
+      }
+      sb.append("      Message message = ").append(args[2]).append("_JavabufTranslator.translateToJavabuf(t);" + LS)
         .append("      HttpServletResponse servletResponse = ResteasyContext.getContextData(HttpServletResponse.class);" + LS)
         .append("      if (servletResponse != null && servletResponse.getHeader(HttpServletResponseImpl.GRPC_RETURN_RESPONSE) != null) {" + LS)
         .append("         CodedOutputStream cos = CodedOutputStream.newInstance(entityStream);" + LS)
@@ -219,21 +227,23 @@ public class ReaderWriterGenerator {
            .append("      }" + LS);
       }
       sb.append("   }" + LS + LS);
-      sb.append("   private static SseEvent convertSseEvent(OutboundSseEventImpl osei) throws IOException {" + LS)
-        .append("      SseEvent sseEvent = new SseEvent();" + LS)
-        .append("      sseEvent.setComment(osei.getComment());" + LS)
-        .append("      sseEvent.setData(convertData(osei));" + LS)
-        .append("      sseEvent.setId(osei.getId());" + LS)
-        .append("      sseEvent.setName(osei.getName());" + LS)
-        .append("      sseEvent.setReconnectDelay(osei.getReconnectDelay());" + LS)
-        .append("      return sseEvent;" + LS)
-        .append("   }" + LS + LS)
-        ;
-      sb.append("   private static Any convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
-        .append("      Message message = CC1_JavabufTranslator.translateToJavabuf(osei.getData());" + LS)
-        .append("      return Any.pack(message);" + LS)
-        .append("   }" + LS + LS)
-        ;
+      if (hasSSE) {
+         sb.append("   private static SseEvent convertSseEvent(OutboundSseEventImpl osei) throws IOException {" + LS)
+           .append("      SseEvent sseEvent = new SseEvent();" + LS)
+           .append("      sseEvent.setComment(osei.getComment());" + LS)
+           .append("      sseEvent.setData(convertData(osei));" + LS)
+           .append("      sseEvent.setId(osei.getId());" + LS)
+           .append("      sseEvent.setName(osei.getName());" + LS)
+           .append("      sseEvent.setReconnectDelay(osei.getReconnectDelay());" + LS)
+           .append("      return sseEvent;" + LS)
+           .append("   }" + LS + LS)
+           ;
+         sb.append("   private static Any convertData(OutboundSseEventImpl osei) throws IOException {" + LS)
+           .append("      Message message = CC1_JavabufTranslator.translateToJavabuf(osei.getData());" + LS)
+           .append("      return Any.pack(message);" + LS)
+           .append("   }" + LS + LS)
+           ;
+      }
    }
 
    private static void finishClass(StringBuilder sb) {
@@ -268,6 +278,15 @@ public class ReaderWriterGenerator {
       }
    }
 
+   private static String originalClassName(String s) {
+      int i = s.indexOf("$");
+      int j = s.lastIndexOf("___");
+      j = j < 0 ? s.indexOf("_INNER_") : j;
+      j = j < 0 ? s.length() : j;
+      String pkg = s.substring(i + 1, j).replace('_', '.');
+      return pkg + "." + originalSimpleName(s);
+   }
+
    private static String originalSimpleName(String s) {
       int i = s.lastIndexOf("___");
       if (i >= 0) {
@@ -278,14 +297,5 @@ public class ReaderWriterGenerator {
          return s.substring(i + "_INNER_".length());
       }
       return s;
-   }
-
-   private static String originalClassName(String s) {
-      int i = s.indexOf("$");
-      int j = s.lastIndexOf("___");
-      j = j < 0 ? s.indexOf("_INNER_") : j;
-      j = j < 0 ? s.length() : j;
-      String pkg = s.substring(i + 1, j).replace('_', '.');
-      return pkg + "." + originalSimpleName(s);
    }
 }

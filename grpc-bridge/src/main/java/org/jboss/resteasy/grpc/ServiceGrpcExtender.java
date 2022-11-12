@@ -136,6 +136,7 @@ public class ServiceGrpcExtender {
         .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
         .append("import com.google.protobuf.Any;" + LS)
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
+        .append("import ").append(packageName).append(".").append(outerClassName).append(".gInteger;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gNewCookie;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;" + LS)
         .append("import ").append(packageName).append(".").append(outerClassName).append(".FormValues;" + LS)
@@ -201,13 +202,19 @@ public class ServiceGrpcExtender {
       scanner.useDelimiter("\\)");
       String param = getParamType(packageName, outerClassName, scanner.next());
       if (!imports.contains(actualEntityClass)) {
-         if (!"Any".equals(actualEntityClass) && !"google.protobuf.Any".equals(actualEntityClass) && !"gEmpty".equals(actualEntityClass)) {
+         if (!"Any".equals(actualEntityClass)
+               && !"google.protobuf.Any".equals(actualEntityClass)
+               && !"gInteger".equals(actualEntityClass)
+               && !"gEmpty".equals(actualEntityClass)) {
             sbHeader.append("import " + packageName + "." + outerClassName + "." + actualEntityClass + ";" + LS);
             imports.add(actualEntityClass);
          }
       }
       if (!imports.contains(actualReturnClass)) {
-         if (!"Any".equals(actualReturnClass) && !"google.protobuf.Any".equals(actualReturnClass) && !"gEmpty".equals(actualReturnClass)) {
+         if (!"Any".equals(actualReturnClass)
+               && !"google.protobuf.Any".equals(actualReturnClass)
+               && !"gInteger".equals(actualReturnClass)
+               && !"gEmpty".equals(actualReturnClass)) {
             sbHeader.append("import " + packageName + "." + outerClassName + "." + actualReturnClass + ";" + LS);
             imports.add(actualReturnClass);
          }

@@ -10,7 +10,7 @@
       by the maven archetype <ulink url="https://github.com/resteasy/gRPCtoJAXRS-archetype">
       https://github.com/resteasy/gRPCtoJAXRS-archetype</ulink>.
    </para>
-   
+
 <section>
 <title>protobuf and gRPC</title>
 
@@ -163,7 +163,7 @@ public static void setup() throws Exception {
 }
 
 public void test() throws Exception {
-   org.greet.Greet_proto.gString gs = org.greet.Greet_proto.gStrng.newBuilder().setS("foo").build();
+   org.greet.Greet_proto.gString gs = org.greet.Greet_proto.gString.newBuilder().setS("foo").build();
    org.greet.Greet_proto.Greeting response = blockingStub.greet(gs);
    String s = response.getS();
    ...
@@ -171,9 +171,14 @@ public void test() throws Exception {
    </programlisting>
    
    <para>
-      There's also the asynchronous client stub <code>GreetServiceStub</code> and 
-      <code>GreetServiceFutureStub</code>, which returns a <code>GrpcFuture</code>.
+      There are also
    </para>
+
+   <itemizedlist>
+      <listitem><code>GreetServiceStub</code>: asynchronous client stub</listitem>
+      <listitem><code>GreetServiceFutureStub</code>: client stub which returns a <code>GrpcFuture</code>.
+      </listitem>
+   </itemizedlist>
 </section>
 
 <section>
@@ -194,6 +199,90 @@ public void greet(org.greet.Greet_proto.gString request, StreamObserver&lt;org.g
 }
    </programlisting>
 </section>
+
+<section>
+<title><code>google.protobuf.Any</code></title>
+
+   <para>
+      As we will see below, there are situations in which the actual type of a message cannot
+      be determined until runtime, and protobuf has a general purpose type, 
+      <code>google.protobuf.Any</code>, which can hold any type of message. The definition of
+      <code>Any</code> is
+   </para>
+   
+   <programlisting>
+message Any {
+   string type_url = 1;
+   bytes value = 2;
+}
+   </programlisting>
+
+   <para>
+      The <code>value</code> field has built-in type <code>bytes</code>, which
+      "May contain any arbitrary sequence of bytes no longer than 2^32", according to
+      <ulink url="https://developers.google.com/protocol-buffers/docs/proto3">
+      https://developers.google.com/protocol-buffers/docs/proto3</ulink>. The type
+      of the message stored in the <code>value</code> is described by the URL
+      in the <code>type_url</code> field. Consider, for example,
+   </para>
+   
+   <programlisting>
+gString gs = gString.newBuilder().setValue("abc").build();
+Message m = Any.pack(gs);
+System.out.println(m);
+   </programlisting>
+   
+   <para>
+      The output is
+   </para>
+   
+   <programlisting>
+type_url: "type.googleapis.com/org.greet.gString"
+value: "\272\001\003abc"
+   </programlisting>
+   
+   <para>
+      The string "\272\001\003abc" is the internal representation of a <code>gString</code>,
+      the details of which are beyond the scope of this discussion. See 
+      <ulink url="https://developers.google.com/protocol-buffers/docs/encoding">
+      https://developers.google.com/protocol-buffers/docs/encoding</ulink> for details.
+      The URL is "type.googleapis.com/org.greet.gString", where the path "org.greet.gString"
+      gives the type of the object represented in the <code>value</code> field.
+   </para>
+   
+   <para>
+      The advantage of the <code>type_url</code> field is that it can be used to retrieve the
+      value of the <code>Any</code>. Consider, for example, the code
+   </para>
+   
+   <programlisting>
+Any any = null;
+if (/* predicate */) {
+   gString gs = gString.newBuilder().setValue("abc").build();
+   any = Any.pack(gs);
+} else {
+   gInteger gi = gInteger.newBuilder().setValue(7).build();
+   any = Any.pack(gi);
+}
+/* send any */
+   </programlisting>
+   
+   <para>
+      Then, the <code>Any</code> can be unpacked as follows:
+   </para>
+   
+   <programlisting>
+/* get any */
+if (any.getTypeUrl().endsWith("org.greet.gString")) {
+   gString gs = any.unpack(gString.class);
+   System.out.println("gs: " + gs);
+} else if (any.getTypeUrl().endsWith("org.greet.gInteger")) {
+   gInteger gi = any.unpack(gInteger.class);
+   System.out.println("gi: " + gi);
+}
+   </programlisting>
+</section>
+
 </section>
 
 <section>
@@ -224,7 +313,7 @@ public void greet(org.greet.Greet_proto.gString request, StreamObserver&lt;org.g
       Note that not all message types can be discovered by syntactic examination, since a resource method could return
       a <code>jakarta.ws.rs.core.Response</code>, where the type of the actual entity depends on the behavior of the method.
       Technically, it's a non-computable problem. There is a mechanism for manually specifying addtional classes, which we
-      will discuss later.
+      will discuss in <xref linkend="building_bridge"/>.
    </para>
    
    <para>
@@ -388,7 +477,7 @@ message GeneralReturnMessage {
          like this complex structure is necessary to bridge the gap between gRPC requests and Jakarta REST requests.
          In particular, while gRPC allows only a single request value, Jakarta REST allows, besides the entity parameter
          itself, things like headers, cookies, query parameters, etc. <code>GeneralEntityMessage</code> can
-         accomodate all of those. Also, consider the 
+         accomodate all of those. Also, consider the element
          <programlisting>
    oneof messageType {
       gString gString_field = 42;
@@ -580,7 +669,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
    </orderedlist>
 </section>
 
-<section>
+<section id="Translating-java">
 <title>Translating Java classes</title>
 
    <para>
@@ -678,8 +767,6 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
           org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder,
           org.jboss.resteasy.plugins.providers.jsonp.JsonpPatchMethodFilter,
           org.jboss.resteasy.plugins.providers.ReactiveStreamProvider,
-          org.jboss.resteasy.plugins.providers.sse.SseEventProvider,
-          org.jboss.resteasy.plugins.providers.sse.SseEventSinkInterceptor,
           org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionMapper,
           org.jboss.resteasy.plugins.validation.ValidatorContextResolver,
           org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI,
@@ -707,6 +794,274 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
       Of course, the list of providers can be reduced to those that are actually needed.
    </para>
 </section>
+
+<section id="SSE">
+<title>SSE</title>
+
+   <para>
+      One area in which gRPC has richer semantics than Jakarta REST is streaming, where gRPC
+      supports streaming in two directions, client to server and server to client, while Jakarta REST
+      supports streaming only from server to client. In particular, Jakarta REST adopts a version
+      of the <emphasis>Server Sent Events</emphasis> (SSE) specification (<ulink url="https://html.spec.whatwg.org/multipage/server-sent-events.html">
+      https://html.spec.whatwg.org/multipage/server-sent-events.html</ulink>) to describe server
+      to client streaming. RESTEasy's support of SSE is discussed in Section <link linkend="SSE-Server">SSE-Server</link>.
+   </para>
+   
+   <para>
+      The examples so far have demonstrated simple call / response semantics. A few changes are
+      necessary to support SSE streaming. Suppose <code>org.greet.Greeter</code> is extended with
+      method <code>sseGreet</code>:
+   </para>
+
+   <programlisting>
+private ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+
+@GET
+@Path("stream")
+@Produces(MediaType.SERVER_SENT_EVENTS)
+public void sseGreet(@Context SseEventSink eventSink, @Context Sse sse) {
+   ExecutorService executor = Executors.newFixedThreadPool(3);
+   final Map&lt;Class&lt;?&gt;, Object&gt; map = ResteasyContext.getContextDataMap();
+   executor.execute(() -> {
+      ResteasyContext.addCloseableContextDataLevel(map);
+      try (SseEventSink sink = eventSink) {
+         Iterator&lt;String&gt; it = names.iterator();
+         while (it.hasNext()) {
+            eventSink.send(sse.newEvent("hello, " + it.next()));
+         }
+      }
+   });
+}
+   </programlisting>
+
+   <para>
+      A couple of additions appear in Greet.proto:
+   </para>
+   
+   <itemizedlist>
+      <listitem>
+         A new message type is added:
+         <programlisting>
+message org_jboss_resteasy_grpc_sse_runtime___SseEvent {
+  string comment = 1;
+  string id = 2;
+  string name = 3;
+  google.protobuf.Any data = 4;
+  int64 reconnectDelay = 5;
+}
+         </programlisting>
+      </listitem>
+      <listitem>
+         a new rpc entry is added:
+         <programlisting>
+// stream gEmpty org_jboss_resteasy_grpc_sse_runtime___SseEvent GET sse
+  rpc sseGreet (GeneralEntityMessage) returns (stream org_jboss_resteasy_grpc_sse_runtime___SseEvent);
+         </programlisting>
+         Note that "<code>returns (stream org_jboss_resteasy_grpc_sse_runtime___SseEvent)</code>"
+         indicates that the call returns a stream of <code>org_jboss_resteasy_grpc_sse_runtime___SseEvent</code>
+         objects.
+      </listitem>
+   </itemizedlist>
+
+   <para>
+      The overriding method in <code>GreetServiceGrpcImpl</code> changes to handle multiple return messages:
+   </para>
+
+   <programlisting>
+   @java.lang.Override
+   public void sseGreet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserver&lt;org.greet.Greet_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent&gt; responseObserver) {
+      HttpServletRequest request = null;
+      try {
+         HttpServletResponseImpl response = new HttpServletResponseImpl("Any", "sse", Greet_Server.getContext(), builder, fd);
+         GeneratedMessageV3 actualParam = param.getGoogleProtobufAnyField();
+         request = getHttpServletRequest(param, actualParam, "/stream", response, "LOCATOR", "Any");
+         HttpServletDispatcher servlet = getServlet();
+         activateRequestContext();
+         servlet.service(request.getMethod(), request, response);
+         AsyncMockServletOutputStream amsos = (AsyncMockServletOutputStream) response.getOutputStream();
+         while (true) {
+            if (amsos.isClosed()) {
+               break;
+            }
+            ByteArrayOutputStream baos = amsos.await();
+            if (amsos.isClosed()) {
+               break;
+            }
+            byte[] bytes = baos.toByteArray();
+            if (bytes.length == 2 &amp;&amp; bytes[0] == 10 &amp;&amp; bytes[1] == 10) {
+               continue;
+            }
+            try {
+               org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = org_jboss_resteasy_grpc_sse_runtime___SseEvent.parseFrom(bytes);
+               responseObserver.onNext(sseEvent);
+            } catch (Exception e) {
+               continue;
+            }
+         }
+      } catch (Exception e) {
+         responseObserver.onError(e);
+      } finally {
+         responseObserver.onCompleted();
+         if (requestContextController != null) {
+            requestContextController.deactivate();
+         }
+      }
+   }
+   </programlisting>
+
+   <para>
+      These changes are generated automatically, so no intervention is required. However, the application
+      code on the client side needs to be adjusted. It could look, for example, something like this:
+   </para>
+
+   <programlisting>
+Iterator&lt;org_jboss_resteasy_grpc_sse_runtime___SseEvent&gt; response = blockingStub.sseGreet(gem);
+while (response.hasNext()) {
+   org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = response.next();
+   Any any = sseEvent.getData();
+   gString gString = any.unpack(gString.class);
+   System.out.println(gString.getValue());
+}
+   </programlisting>
+
+   <para>
+      Note, in particular, the treatment of the <code>data</code> field. The class
+      <code>jakarta.ws.rs.sse.OutboundSseEvent</code> has a <code>data</code> field
+      of type <code>java.lang.Object</code>. The corresponding field in the definition of
+      <code>org_jboss_resteasy_grpc_sse_runtime___SseEvent</code> in Greet.proto has
+      type <code>google.protobuf.Any</code>, which translates to <code>com.google.protobuf.Any</code>
+      in Greet_proto. Note that the method <code>Any.pack()</code> has signature
+   </para>
+
+   <programlisting>
+public static &lt;T extends com.google.protobuf.Message&gt; Any pack(T message, java.lang.String typeUrlPrefix);
+   </programlisting>
+
+   <para>
+      so we have to translate the <code>Object</code> into a <code>Message</code>;
+      The translation is handled by <code>Greet_JavabufTranslator</code>, which implies
+      that the type of the field must be one processed by <code>JavaToProtobufGenerator</code>.
+      If it is not discovered automatically, it can be passed into 
+      <code>JavaToProtobufGenerator</code> with the "classes" parameter, described in
+      <xref linkend="building_bridge"/>.
+   </para>
+</section>
+
+<section id="other_uses_Any">
+<title>Other uses of <code>google.protobuf.Any</code></title>
+
+   <para>
+      Consider the resource method
+   </para>
+   
+   <programlisting>
+public Response m() {
+   if (test()) {
+      return Response.ok(new X()).build();
+   } else {
+      Response.ok(new Y()).build();
+   }
+}
+   </programlisting>
+   
+   <para>
+      Will it return an <code>X</code> or a <code>Y</code>? If <code>test()</code> is
+   </para>
+   
+   <programlisting>
+public boolean test() {
+   return true;
+}
+   </programlisting>
+   
+   <para>
+      it's clear that <code>m()</code> will return an <code>X</code>, and, moreover, that can be determined
+      statically at compile time. But it's a well known fact in theoretical computer science, first proved by Alan Turing
+      [see, for example, <ulink url="https://en.wikipedia.org/wiki/Halting_problem">https://en.wikipedia.org/wiki/Halting_problem</ulink>],
+      that not all questions can be answered algorithmically.
+   </para>
+   
+   <para>
+      We can't tell if <code>m()</code> returns an <code>X</code> or a <code>Y</code>, but we know it returns
+      an <code>Object</code>. This is another case in which the protobuf type <code>google.protobuf.Any</code>
+      is useful.
+   </para>
+   
+   <para>
+      Suppose we add the resource method
+   </para>
+   
+   <programlisting>
+@POST
+@Path("greet/response")
+public Response response(String name) {
+   return Response.ok("hello " + name).build();
+}
+   </programlisting>
+   
+   <para>
+      to <code>org.greet.Greeter</code>. Then the oneof field of <code>GeneralReturnMessage</code> becomes
+   </para>
+   
+   <programlisting>
+   oneof messageType {
+      org_greet___Greeting org_greet___Greeting_field = 44;
+      google.protobuf.Any google_protobuf_Any_field = 45;
+      gString gString_field = 46;
+   }
+   </programlisting>
+   
+   <para>
+      augmented by the <code>google_protobuf_Any_field</code> field.
+   </para>
+   
+   <para>
+      Together, <code>GreetMessageBodyReaderWriter</code> and <code>Greet_JavabufTranslator</code>
+      turn the String ("hello " + name) in the <code>Response</code> into a <code>gString</code> and then pack it
+      into an <code>Any</code>. Then we might have the following on the client side:
+   </para>
+
+   <programlisting>
+GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
+gString gs = gString.newBuilder().setValue("Bill").build();
+GeneralEntityMessage gem = messageBuilder.setGStringField(gs).build();
+try {
+   GeneralReturnMessage grm = blockingStub.response(gem);
+   Any any = grm.getGoogleProtobufAnyField();
+   System.out.println(any.unpack(gString.class));
+} catch (StatusRuntimeException e) {
+   //
+} 
+   </programlisting>
+   
+   <para>
+   Another case in which we can't statically determine the return type is when an asynchronous
+   resource method uses the <code>@Suspended</code> annotation:
+   </para>
+   
+   <programlisting>
+@GET
+@Path("suspend")
+public void suspend(@Suspended final AsyncResponse response) {
+   Thread t = new Thread() {
+   @Override
+      public void run() {
+         try {
+            response.resume("suspend");
+         } catch (Exception e) {
+            response.resume(e);
+         }
+      }
+   };
+   t.start();
+}
+   </programlisting>
+   
+   <para>
+      Similar unpacking would happen on the client side.
+   </para>
+
+</section>
 </section>
 
 <section>
@@ -722,7 +1077,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
    </para>
    
    <para>
-      The gRPCtoJAXRS-archetype creates a maven project we call the <emphasis>bridge project</emphasis>,
+      gRPCtoJAXRS-archetype creates a maven project we call the <emphasis>bridge project</emphasis>,
       consisting, at first, mainly of a pom.xml that can build
       the intermediary classes. The archetype assumes the existence of a Jakarta REST project, called the
       <emphasis>target project</emphasis>, whose source JAR is available in an accessible repository.
@@ -743,7 +1098,7 @@ mvn archetype:generate -B \
    -Dgenerate-package=org.greet \
    -Dresteasy-version=6.2.0.Final
    </programlisting>
-   
+
    <para>
       The following parameters need to be supplied:
    </para>
@@ -759,10 +1114,15 @@ mvn archetype:generate -B \
       <listitem>generate-package: Java package for generated classes</listitem>
       <listitem>resteasy-version: version of RESTEasy to use</listitem>
    </itemizedlist>
-   
+
    <para>
-      The result of running the archetype is a new project with GAV groupId:artifactId.grpc:version. At this point, the
-      layout of the new project is
+      [The values of archetypeVersion and resteasy-version, of course, are subject to change.]
+   </para>
+
+   <para>
+      The result of running the archetype is a new project with GAV groupId:artifactId.grpc:version.
+      For example, from target project org.greet:greet:0.0.1-SNAPSHOT we will get generated project
+      org.greet:greet.grpc:0.0.1-SNAPSHOT. At this point, the layout of the new project is
    </para>
    
    <programlisting>
@@ -817,7 +1177,7 @@ mvn -Dservlet.name=GreetServlet clean install
    </itemizedlist>
    
    <para>
-      The syntax for the extra.classes parameter is
+      The syntax for the "classes" parameter is
    </para>
    
    <programlisting>
@@ -838,7 +1198,7 @@ mvn -Dservlet.name=GreetServlet clean install
    </para>
    
    <programlisting>
-mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.Extra clean install 
+mvn -Dservlet.name=GreetServlet -Dclasses=/home/bob/greet/java:org.greet.Extra clean install 
    </programlisting>
    
    <para>
@@ -875,6 +1235,9 @@ mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.E
 |        +- GreetMessageBodyReaderWriter.java
 |        +- GreetServiceGrpc.java
 |        +- GreetServiceGrpcImpl.java
+|  +- greet.grpc-0.0.1-SNAPSHOT.jar
+|  +- greet.grpc-0.0.1-SNAPSHOT.war
+|  +- greet.grpc-0.0.1-SNAPSHOT-sources.jar
    </programlisting>
 </section>
 
@@ -884,7 +1247,8 @@ mvn -Dservlet.name=GreetServlet -Dextra.classes=/home/bob/greet/java:org.greet.E
    <para>
       The packaging type of the project created by the archetype is "war", so, in the example, mvn install
       creates greet.grpc-0.0.1-SNAPSHOT.war. The project also uses the src/main/resources/buildjar bash
-      script to create greet.grpc-0.0.1-SNAPSHOT.jar for use at compile time. 
+      script to create greet.grpc-0.0.1-SNAPSHOT.jar with all of the compiled classes from
+      target/generated-sources/protobuf.
    </para>
    
    <para>
@@ -965,7 +1329,20 @@ http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJaxrs/grpcserver/start
       the gRPC and Jakarta REST worlds, but there are some situations in which manual intervention is required,
       for one reason or another.
    </para>
-   
+
+<section id="compile_time">
+<title>Compile time</title>
+
+   <para>
+      We have already discussed, in <xref linkend="SSE"/> and <xref linkend="other_uses_Any"/>, situations in which
+      it is not possible to determine statically all classes that are sent over the network. For example, if a resource
+      method returns <code>Response</code>, it may not be possible to determine the type of the returned entity.
+      That means that, when <code>JavaToProtobufGenerator</code> scans for classes, it may not find all of those
+      used, in which case the "classes" command line argument, described in <xref linkend="building_bridge"/>
+      can be used to supply those that are not detected.
+   </para>
+</section>
+
 <section id="servlet_environment">
 <title>Servlet environment</title>
 
@@ -976,9 +1353,10 @@ http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJaxrs/grpcserver/start
    </para>
    
    <programlisting>
-The <code>@Context</code> annotation can be used to indicate a dependency on a Servlet-defined resource.
-A Servlet-based implementation MUST support injection of the following Servlet-defined types:
-<code>ServletConfig</code>, <code>ServletContext</code>, <code>HttpServletRequest</code>, and <code>HttpServletResponse</code>.
+The <code>@Context</code> annotation can be used to indicate a dependency on a Servlet-defined
+resource. A Servlet-based implementation MUST support injection of the following
+Servlet-defined types: <code>ServletConfig</code>, <code>ServletContext</code>, <code>HttpServletRequest</code>, and
+<code>HttpServletResponse</code>.
    </programlisting>
    
    <para>
@@ -1012,6 +1390,7 @@ A Servlet-based implementation MUST support injection of the following Servlet-d
 
    <para>
       and will create the Jakarta REST resource class <code>org.jboss.resteasy.grpc.server.Greet_Server</code>
+      with annotation <code>@Path("grpcserver")</code>
       in src/test/java of the bridge project. A call to &lt;context-path&gt;/grpcToJaxrs/grpcserver/ready,
       for example, will capture GreetServlet, with its <code>ServletContext</code> and <code>ServletConfig</code>.
       The <code>ServletContext</code> applies to all servlets in the WAR, but note that the
@@ -1112,130 +1491,6 @@ message ServletInfo {
    </para>
 </section>
 
-<section id="runtime_information">
-<title>Runtime information</title>
-
-   <para>
-      Consider the resource method
-   </para>
-   
-   <programlisting>
-public Response m() {
-   if (test()) {
-      return Response.ok(new X()).build();
-   } else {
-      Response.ok(new Y()).build();
-   }
-}
-   </programlisting>
-   
-   <para>
-      Will it return an <code>X</code> or a <code>Y</code>? If <code>test()</code> is
-   </para>
-   
-   <programlisting>
-public boolean test() {
-   return true;
-}
-   </programlisting>
-   
-   <para>
-      it's clear that <code>m()</code> will return an <code>X</code>, and, moreover, that can be determined
-      statically at compile time. But it's a well known fact in theoretical computer science, first proved by Alan Turing
-      [see, for example, <ulink url="https://en.wikipedia.org/wiki/Halting_problem">https://en.wikipedia.org/wiki/Halting_problem</ulink>],
-      that not all questions can be answered algorithmically.
-   </para>
-   
-   <para>
-      We can't tell if <code>m()</code> returns an <code>X</code> or a <code>Y</code>, but we know it returns
-      an <code>Object</code>. Protobuf has an analogous universal type called <code>google.protobuf.Any</code>,
-      or, in Java, <code>com.google.protobuf.Any</code>, which consists of a byte array filled with an object in
-      protobuf format plus a URL in string form that indicates the type of the object. For example, the code
-   </para>
-   
-   <programlisting>
-gString gs = gString.newBuilder().setValue("abc").build();
-Any any = Any.pack(gs);
-System.out.println(any);
-if (any.is(gString.class));{
-   gString gs2 = any.unpack(gString.class);
-   Assert.assertEquals("abc", gs2.getValue());
-}
-   </programlisting>
-   
-   <para>
-      outputs
-   </para>
-   
-   <programlisting>
-type_url: "type.googleapis.com/jaxrs.example.gString"
-value: "\222\001\003abc"
-   </programlisting>
-   
-   <para>
-      Now, suppose we have the resource method
-   </para>
-   
-   <programlisting>
-public Response getResponse() {
-   return Response.ok("abc").build();
-}
-   </programlisting>
-   
-   <para>
-      Together, <code>GreetMessageBodyReaderWriter</code> and <code>Greet_JavabufTranslator</code>
-      turn "abc" into a <code>gString</code> and then pack it into an <code>Any</code>.
-      Then we might have the following on the client side:
-   </para>
-
-   <programlisting>
-@Test
-public void testResponse() throws Exception {
-   GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
-   GeneralEntityMessage gem = messageBuilder.build();
-   try {
-      GeneralReturnMessage grm = blockingStub.getResponse(gem);
-      gString gs = gString.newBuilder().setValue("abc").build();
-      Any any = grm.getGoogleProtobufAnyField();
-      Assert.assertEquals(gs, any.unpack(gString.class));
-   } catch (StatusRuntimeException e) {
-      Assert.fail("fail");
-      return;
-   } 
-}
-   </programlisting>
-   
-   <para>
-   Another case in which we can't statically determine the return type is when an asynchronous
-   resource method uses the <code>@Suspended</code> annotation:
-   </para>
-   
-   <programlisting>
-@GET
-@Path("suspend")
-public void suspend(@Suspended final AsyncResponse response) {
-   Thread t = new Thread() {
-   @Override
-      public void run() {
-         try {
-            response.resume("suspend");
-         } catch (Exception e) {
-            response.resume(e);
-         }
-      }
-   };
-   t.start();
-}
-   </programlisting>
-   
-   <para>
-      Similar unpacking would happen on the client side.
-   </para>
-</section>
 </section>
 
-<section id="todo">
-<title>TODO</title>
-
-</section>
 </chapter>
