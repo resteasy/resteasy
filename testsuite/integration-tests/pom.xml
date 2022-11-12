@@ -58,7 +58,7 @@
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
 
         <!-- For grpc-bridge test -->
-        <version.jaxrs.example.grpc>0.0.34</version.jaxrs.example.grpc>
+        <version.jaxrs.example.grpc>0.0.35</version.jaxrs.example.grpc>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
