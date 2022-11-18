@@ -129,6 +129,15 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
 
     @Override
     public EntityPart build() throws IllegalStateException, IOException, WebApplicationException {
+        // Per RFC 7578 ( https://tools.ietf.org/html/rfc7578#section-4.4 ) default to text/plain if not a file
+        // or application/octet-stream if it is.
+        if (this.mediaType == null) {
+            if (this.fileName == null) {
+                mediaType = MediaType.TEXT_PLAIN_TYPE;
+            } else {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+            }
+        }
         return new EntityPartImpl(name, headers, mediaType, fileName, content);
     }
 
