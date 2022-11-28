@@ -33,7 +33,7 @@ public interface Orders {
     	<section>
     		<title>JavaScript API servlet</title>
     		<para>
-    			In order to enable the JavaScript API servlet you must configure it in your
+    			In order to enable the JavaScript API servlet the user must configure it in the
     			web.xml file as such:
     		</para>
     		<programlisting language="xml"><![CDATA[<servlet>
@@ -153,7 +153,7 @@ Foo.put({$entity: text});]]></programlisting>
     	<section>
     		<title>Work with @Form</title>
     		<para>
-    			@Form is a RESTEasy specific annotation that allows you to re-use any @*Param annotation within an injected class. 
+    			@Form is a RESTEasy specific annotation that allows the user to re-use any @*Param annotation within an injected class.
     			The generated JavaScript API will expand the parameters for use automatically. Support we have the following form:
     		</para>
     		<programlisting language="java"><![CDATA[public class MyForm {
@@ -174,7 +174,7 @@ public class MyResource {
     public String postForm(@Form MyForm myForm) {...}
 
 }]]></programlisting>
-			<para>Then we could call the method from JavaScript API like following:</para>
+			<para>Then the method can be called from JavaScript API like following:</para>
 			<programlisting language="java"><![CDATA[MyResource.postForm({stuff:"A", myHeader:"B", number:1});]]></programlisting>
 			<para>Also, @Form supports prefix mappings for lists and maps:</para>
 			<programlisting language="java"><![CDATA[public static class Person {
@@ -197,7 +197,7 @@ public static class MyResource {
 	@POST
 	public void postForm(@Form Person p) {...} 
 }]]></programlisting>
-		<para>From JavaScript we could call the API like this:</para>
+		<para>From JavaScript the API could be called like this:</para>
 		<programlisting><![CDATA[MyResource.postForm({
 	telephoneNumbers:[
 		{"telephoneNumbers[0].countryCode":31},
@@ -282,7 +282,7 @@ public interface Orders {
  }
 }]]></programlisting>
 	    		<para>
-					Let us look at what the preceding &REST-API; API would give us on the client side:
+					Let's look at what the preceding &REST-API; API would give on the client side:
 	    		</para>
 	    		<programlisting language="javascript"><![CDATA[// this returns a JSON object
 var orderJSON = Orders.getOrderJSON({id: "23"});
@@ -365,7 +365,7 @@ public interface Orders {
  }
 }]]></programlisting>
 	    		<para>
-					Let us look at what the preceding &REST-API; API would give us on the client side:
+					Let's look at what the preceding &REST-API; API would give on the client side:
 	    		</para>
 	    		<programlisting language="javascript"><![CDATA[// this saves a JSON object
 Orders.putOrderJSON({$entity: {id: "23"}});
@@ -408,8 +408,8 @@ Orders.putOrderXML({$entity: order});]]></programlisting>
 					<tr>
 						<td>log</td>
 						<td>
-							Set to a function(string) in order to receive RESTEasy client API logs. This is useful if you want to
-							debug your client API and place the logs where you can see them.
+							Set to a function(string) in order to receive RESTEasy client API logs. This is useful to
+							debug the client API and place the logs where you can see them.
 						</td>
 					</tr>
 				</tbody>
@@ -539,12 +539,12 @@ r.execute(function(status, request, entity){
    		<title>Caching Features</title>
    		<para>
    			RESTEasy AJAX Client works well with server side caching features. But the buggy browsers cache will 
-   			always prevent the function to work properly. If you'd like to use RESTEasy's caching feature with its
-   			AJAX client, you can enable 'antiBrowserCache' option:
+   			always prevent the function to work properly. To use the RESTEasy caching feature with its
+   			AJAX client, enable the 'antiBrowserCache' option:
    		</para>
 	    <programlisting language="javascript"><![CDATA[REST.antiBrowserCache = true;]]></programlisting>
 		<para>
-			The above setting should be set once before you call any APIs.
+			The above setting should be set once before calling any APIs.
 		</para>
    	</section>
 </chapter>

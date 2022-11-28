@@ -9,7 +9,8 @@
 
 <para>
 
-The @CookieParam annotation allows you to inject the value of a cookie or an object representation of an HTTP request cookie into your method invocation
+The @CookieParam annotation allows the injection of the value of a cookie or an object representation
+   of an HTTP request cookie into a method invocation
 </para>
 <para>
 
@@ -29,7 +30,9 @@ public String getBooks(@CookieParam("sessionid") jakarta.ws.rs.core.Cookie id) {
 </para>
 <para>
 
-Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static valueOf() method.  You can also get an object representation of the cookie via the jakarta.ws.rs.core.Cookie class.
+Like PathParam, the parameter type can be a String, primitive, or class that has a String constructor
+   or static valueOf() method.  It can also get an object representation of the cookie via the
+   <code>jakarta.ws.rs.core.Cookie</code> class.
 </para>
 <para>
 

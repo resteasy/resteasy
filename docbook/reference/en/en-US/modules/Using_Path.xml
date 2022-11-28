@@ -30,7 +30,8 @@ public class Library {
 </para>
 <para>
 
-Let's say you have the RESTEasy servlet configured and reachable at a root path of http://myhost.com/services.  The requests would be handled by the Library class:
+In the class above, the RESTEasy servlet is configured and reachable at a root path of
+   http://myhost.com/services.  The requests handled by class, Library, are:
 </para>
 <para>
 
@@ -57,15 +58,21 @@ Let's say you have the RESTEasy servlet configured and reachable at a root path 
 </para>
 <para>
 
-The @jakarta.ws.rs.Path annotation must exist on either the class and/or a resource method.  If it exists on both the class and method, the relative path to the resource method is a concatenation of the class and method.
+The @jakarta.ws.rs.Path annotation must exist on either the class and/or a resource method.
+   If it exists on both the class and method, the relative path to the resource method is a
+   concatenation of the class and method.
 </para>
 <para>
 
-In the @jakarta.ws.rs package there are annotations for each HTTP method.  @GET, @POST, @PUT, @DELETE, and @HEAD.  You place these on public methods that you want to map to that certain kind of HTTP method.  As long as there is a @Path annotation on the class, you do not have to have a @Path annotation on the method you are mapping.  You can have more than one HTTP method as long as they can be distinguished from other methods.
+In the @jakarta.ws.rs package there are annotations for each HTTP method.  @GET, @POST, @PUT, @DELETE,
+   and @HEAD.  Place these on public methods that you want to map to that certain kind of HTTP method.
+   As long as there is a @Path annotation on the class, a @Path annotation is not required on the
+   method you are mapping.  There can be more than one HTTP method as long as they can be distinguished
+   from other methods.
 </para>
 <para>
 
-When you have a @Path annotation on a method without an HTTP method, these are called JAXRSResourceLocators.
+When a @Path annotation is on a method without an HTTP method, these are called JAXRSResourceLocators.
 </para>
 <para>
 
@@ -76,7 +83,8 @@ When you have a @Path annotation on a method without an HTTP method, these are c
 
 <para>
 
-The @Path annotation is not limited to simple path expressions.  You also have the ability to insert regular expressions into @Path's value.  For example:
+The @Path annotation is not limited to simple path expressions.  Regular expressions can be inserted into a @Path's value.
+   For example:
 </para>
 <para>
 

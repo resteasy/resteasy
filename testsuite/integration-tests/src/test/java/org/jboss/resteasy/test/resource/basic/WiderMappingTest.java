@@ -62,6 +62,9 @@ public class WiderMappingTest {
 
    /**
     * @tpTestDetails Two resources used, more general resource should be used
+    * Test confirms that the "HTTP OPTIONS requests" declared in WiderMappingDefaultOptions
+    * is called because config switch resteasy.wider.request.matching is set to "true".
+    * (see Jakarta RESTful Web Services 3.1 specification.  Section 3.3.5, HEAD and OPTIONS)
     * @tpSince RESTEasy 3.0.16
     */
    @Test

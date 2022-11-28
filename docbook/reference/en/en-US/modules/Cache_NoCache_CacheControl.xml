@@ -32,18 +32,18 @@ public @interface NoCache
 
    </programlisting>
    <para>
-      While @Cache builds a complex Cache-Control header, @NoCache is a simplified notation to say that you don't
-      want anything cached; i.e. Cache-Control: nocache.
+      While @Cache builds a complex Cache-Control header, @NoCache is a simplified notation to indicate no
+      caching is wanted; i.e. Cache-Control: nocache.
    </para>
    <para>
       These annotations can be put on the resource class or interface and specifies a default cache value for each
-      @GET resource method.  Or they can be put individually on each @GET resource method.
+      @GET resource method, or they can be put individually on each @GET resource method.
    </para>
    </sect1>
    <sect1 id="client_cache">
      <title>Client "Browser" Cache</title>
      <para>
-        RESTEasy has the ability to set up a client-side, browser-like, cache.  You can use it with the Client Proxy Framework, or with 
+        RESTEasy has the ability to set up a client-side, browser-like, cache.  It can be used with the Client Proxy Framework, or with
         ordinary requests.  This cache looks for Cache-Control headers sent back with a server response.  If the Cache-Control headers specify
        that the client is allowed to cache the response, Resteasy caches it within local memory.  The cache obeys max-age requirements 
        and will also automatically do HTTP 1.1 cache revalidation if either or both the Last-Modified and/or ETag headers are sent back with the
@@ -85,7 +85,7 @@ cacheFeature.setCache(cache);
 OrderServiceClient orderService = target.register(cacheFeature).proxy(OrderServiceClient.class); 
 </programlisting>
 
-   <para>If you are using the standard &REST-API; client framework to make invocations rather than the
+   <para>If using the standard &REST-API; client framework to make invocations rather than the
    proxy framework, it is just as easy:</para>
 
 <programlisting>
@@ -95,20 +95,20 @@ target.register(cacheFeature);
 String rtn = target.resolveTemplate("id", "1").request().get(String.class);
 </programlisting>
 
-   <para>The LightweightBrowserCache, by default, has a maximum 2 megabytes of caching space.  You can change this programmatically by callings
+   <para>The LightweightBrowserCache, by default, has a maximum 2 megabytes of caching space.  This can be changed programmatically by calling
          its setMaxBytes() method.   If the cache gets full, the cache completely wipes itself of all cached data.  This may seem
          a bit draconian, but the cache was written to avoid unnecessary synchronizations in a concurrent environment where the cache is 
-         shared between multiple threads.  If you desire a more complex caching solution or if you want to plug in a thirdparty cache
-         please contact our resteasy-developers list and discuss it with the community.
+         shared between multiple threads.  If a more complex caching solution is desired or a third party cache
+         is to be plugged in please contact our resteasy-developers list and discuss it with the community.
    </para>
    </sect1>
    <sect1 id="server_cache">
       <title>Local Server-Side Response Cache</title>
-      <para>RESTEasy has a server-side cache that can sit in front of your &REST-API; services.
-          It automatically caches marshalled responses from HTTP GET &REST-API; invocations if, and only if your
+      <para>RESTEasy has a server-side cache that can sit in front of &REST-API; services.
+          It automatically caches marshalled responses from HTTP GET &REST-API; invocations if, and only if the
           &REST-API; resource method sets a Cache-Control header.  When a GET comes in, the RESTEasy Server Cache checks
-          to see if the URI is stored in the cache.  If it does, it returns the already marshalled response without
-          invoking your &REST-API; method.  Each cache entry has a max age to whatever is specified in the Cache-Control
+          to see if the URI is stored in the cache.  If found, it returns the already marshalled response without
+          invoking the &REST-API; method.  Each cache entry has a max age to whatever is specified in the Cache-Control
           header of the initial request.  The cache also will automatically generate an ETag using an MD5 hash on the
           response body.  This allows the client to do HTTP 1.1 cache revalidation with the IF-NONE-MATCH header.
           The cache is also smart enough to perform revalidation if there is no initial cache hit, but the &REST-API;
@@ -116,7 +116,7 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
       </para>
        <para>
          The cache is also automatically invalidated for a particular URI that has
-           PUT, POST, or DELETE invoked on it.  You can also obtain a reference to the cache by injecting a
+           PUT, POST, or DELETE invoked on it.  A reference to the cache can be obtained by injecting an
            org.jboss.resteasy.plugins.cache.ServerCache
            via the @Context annotation
        </para>
@@ -129,11 +129,11 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
     public String get(@Context ServerCache cache) {...}
 
 </programlisting>
-      <para>To set up the server-side cache you must register an instance of org.jboss.resteasy.plugins.cache.server.ServerCacheFeature
-          via your Application getSingletons() or getClasses() methods.  The underlying cache is Infinispan.  By default,
+      <para>To set up the server-side cache an instance of org.jboss.resteasy.plugins.cache.server.ServerCacheFeature must be registered
+          via the Application's getSingletons() or getClasses() methods.  The underlying cache is Infinispan.  By default,
           RESTEasy will create an Infinispan cache for you.  Alternatively, you can create and pass in an instance
-          of your cache to the ServerCacheFeature constructor.  You can also configure Infinispan by specifying
-          various parameters.  First, if you are using Maven you must depend on the cache-core artifact:</para>
+          of your cache to the ServerCacheFeature constructor.  Infinispan can also be configured by specifying
+          various parameters.  If using Maven, add RESTEasy's cache-core artifact to the project:</para>
 <programlisting>
 <![CDATA[
 <dependency>
@@ -143,7 +143,7 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
 </dependency>
 ]]>
 </programlisting>
-      <para>The next thing you should probably do is set up the Infinispan configuration. In your web.xml, it would look like</para>
+      <para>Next set up the Infinispan configuration in the application's web.xml, it would look like</para>
 <programlisting>
 <![CDATA[
 <web-app>
@@ -161,8 +161,9 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
 ]]>
 </programlisting>
    <para>
-       server.request.cache.infinispan.config.file can either be a classpath or a file path. server.request.cache.infinispan.cache.name
-       is the name of the cache you want to reference that is declared in the config file.
+       <code>server.request.cache.infinispan.config.file</code> can either be a classpath or a file path.
+       <code>server.request.cache.infinispan.cache.name</code>
+       is the name of the cache to reference that is declared in the config file.
    </para>
    
    <para>See <xref linkend="microprofile_config"/> for more information about application configuration. </para>
@@ -177,9 +178,9 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
             Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified, etag);
         </programlisting>
         <para>
-            By default RESTEasy will return status code 304 (Not modified) or 412 (Precondition failed) if any of conditions fails.
-            However it is not compliant with RFC 7232 which states that headers <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal> MUST have higher precedence.
-            You can enable RFC 7232 compatible mode by setting the parameter <literal>resteasy.rfc7232preconditions</literal> to <literal>true</literal>.
+            By default RESTEasy will return status code 304 (Not modified) or 412 (Precondition failed) if any of conditions fails,
+            however it is not compliant with RFC 7232 which states that headers <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal> MUST have higher precedence.
+            RFC 7232 compatible mode can be enabled by setting the parameter <literal>resteasy.rfc7232preconditions</literal> to <literal>true</literal>.
             See <xref linkend="microprofile_config"/> for more information about application configuration.
         </para>
    </sect1>

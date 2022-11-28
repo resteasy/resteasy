@@ -3,7 +3,9 @@
 
 <para>
 
-You can build custom responses using the jakarta.ws.rs.core.Response and ResponseBuilder classes.  If you want to do your own streaming, your entity response must be an implementation of jakarta.ws.rs.core.StreamingOutput.   See the java doc for more information.
+Custom responses can be built using the jakarta.ws.rs.core.Response and ResponseBuilder
+    classes.  To do your own streaming, your entity response must be an
+    implementation of jakarta.ws.rs.core.StreamingOutput.   See the java doc for more information.
 </para>
 <para>
 

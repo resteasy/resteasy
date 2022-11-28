@@ -3,7 +3,7 @@
 
 <para>
 
-The @Context annotation allows you to inject instances of 
+The @Context annotation allows the injection of instances of
 </para>
 
 <itemizedlist>

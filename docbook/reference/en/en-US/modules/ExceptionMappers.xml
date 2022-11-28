@@ -6,7 +6,7 @@
    <para>
 
       ExceptionMappers are custom, application provided, components that can catch thrown application exceptions and
-      write specific HTTP responses. They are classes annotated with @Provider and that implement this interface
+      write specific HTTP responses. They are classes annotated with @Provider and implement this interface
    </para>
    <para>
 
@@ -56,13 +56,13 @@
    </para>
    <para>
 
-      You register ExceptionMappers the same way you do MessageBodyReader/Writers. By scanning for @Provider
+      ExceptionMappers are registered the same way as MessageBodyReader/Writers. By scanning for @Provider
       annotated classes, or programmatically through the
       ResteasyProviderFactory class.
    </para>
       <para>
-         As of RESTEasy 6.1 if a default <code>ExceptionMapper</code> is registered. This handles all uncaught
-         exceptions and returns a response with the exceptions message and a status of 500. If the exception is a
+         As of RESTEasy 6.1 if a default <code>ExceptionMapper</code> is registered. It handles all uncaught
+         exceptions and returns a response with the exception's message and a status of 500. If the exception is a
          <code>WebApplicationException</code> the response from the exception is returned. This can be turned off by
          setting the <code>dev.resteasy.exception.mapper</code> to <code>false</code>.
       </para>
@@ -78,8 +78,8 @@
    </sect1>
    <sect1 id="builtinException">
      <title>RESTEasy Built-in Internally-Thrown Exceptions</title>
-     <para>RESTEasy has a set of built-in exceptions that are thrown by it when it encounters errors during dispatching or marshalling.  They all
-           revolve around specific HTTP error codes.  You can find them in RESTEasy's javadoc under the package org.jboss.resteasy.spi.  Here's
+     <para>RESTEasy has a set of built-in exceptions that are thrown when it encounters errors during dispatching or marshalling.  They all
+           revolve around specific HTTP error codes.  They can be found in RESTEasy's javadoc under the package org.jboss.resteasy.spi.  Here's
            a list of them:</para>
 <table frame="topbot">
 <tgroup cols="3" rowsep="1" colsep="1">
@@ -245,7 +245,8 @@ Assert.assertEquals(nae, nae3);
 
 <sect1 id="overring_resteasy_exceptions">
    <title>Overriding RESTEasy Builtin Exceptions</title>
-   <para>You may override RESTEasy built-in exceptions by writing an ExceptionMapper for the exception.  For that matter, you can write an ExceptionMapper
+   <para>RESTEasy built-in exceptions can be overridden by writing an ExceptionMapper for the exception.
+      You can write an ExceptionMapper
    for any thrown exception including WebApplicationException</para>
 </sect1>
 </chapter>

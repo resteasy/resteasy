@@ -10,21 +10,17 @@
       metadata. For example, each entry has a title.
 
       The primary use case that Atom addresses is the syndication of Web
-      content such as weblogs and news headlines to Web sites as well as
+      content such as weblogs and news headlines to Websites as well as
       directly to user agents."
-   </para>
-   <para>
-      Atom is the next-gen RSS feed. Although it is used primarily for the syndication of blogs and news, many
-      are starting to use this format as the envelope for Web Services, for example, distributed notifications, job
-      queues, or simply a nice format for sending or receiving data in bulk from a service.
    </para>
    <sect1 id="resteasy_atom">
       <title>RESTEasy Atom API and Provider</title>
       <para>RESTEasy has defined a simple object model in Java to represent Atom and uses &XML-BIND-API; to marshal and unmarshal
          it. The
-         main classes are in the org.jboss.resteasy.plugins.providers.atom package and are Feed, Entry, Content, and
-         Link. If you
-         look at the source, you'd see that these are annotated with &XML-BIND-API; annotations. The distribution contains
+         main classes are in the <code>org.jboss.resteasy.plugins.providers.atom</code> package and are
+         <code>Feed</code>, <code>Entry</code>, <code>Content</code>, and
+         <code>Link</code>. If you
+         look at the source, you will see that these are annotated with &XML-BIND-API; annotations. The distribution contains
          the javadocs for this project and are a must to learn the model. Here is a simple example of sending
          an atom feed using the RESTEasy API.
       </para>
@@ -62,17 +58,17 @@ public class MyAtomService
         return feed;
     }
 }]]></programlisting>
-      <para>Because RESTEasy's atom provider is &XML-BIND-API; based, you are not limited to sending atom objects using XML.
-         You can automatically re-use all the other &XML-BIND-API; providers that RESTEasy has like JSON and fastinfoset.
-         All you have to do is have "atom+" in front of the main subtype. i.e. @Produces("application/atom+json") or
+      <para>RESTEasy's atom provider is &XML-BIND-API; based, there are no limits to sending atom objects using XML.
+         All the other &XML-BIND-API; providers that RESTEasy has like JSON and fastinfoset can automatically be re-use.
+         Just add "atom+" in front of the main subtype. i.e. @Produces("application/atom+json") or
          @Consumes("application/atom+fastinfoset")
       </para>
    </sect1>
    <sect1 id="xml_bind_api_atom">
       <title>Using &XML-BIND-API; with the Atom Provider</title>
       <para>
-         The org.jboss.resteasy.plugins.providers.atom.Content class allows you to unmarshal and marshal &XML-BIND-API;
-         annotated objects that are the body of the content. Here's an example of sending an Entry with
+         The <code>org.jboss.resteasy.plugins.providers.atom.Content</code> class is used to unmarshal and marshal &XML-BIND-API;
+         annotated objects that are the body of the content. Here's an example of sending an <code>Entry</code> with
          a Customer object attached as the body of the entry's content.
       </para>
       <programlisting><![CDATA[
@@ -115,13 +111,13 @@ public static class AtomServer
     }
 }]]></programlisting>
       <para>
-         The Content.setJAXBObject() method is used to tell the content object you are sending back
-         an object and want it marshalled appropriately. If you are using a different base
-         format other than XML, i.e. "application/atom+json", this attached object will be marshalled
+         The Content.setJAXBObject() method is used to tell the content object, an object is
+         being sent back and it is to be marshalled appropriately. If using a different base
+         format than XML, i.e. "application/atom+json", this attached object will be marshalled
          into that same format.
       </para>
       <para>
-         If you have an atom document as your input, you can also extract &XML-BIND-API; objects from Content using the
+         If the input is an atom document, &XML-BIND-API; objects can be extracted from Content using the
          Content.getJAXBObject(Class clazz) method. Here is an example of an input atom document and extracting
          a Customer object from the content.
       </para>

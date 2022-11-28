@@ -7,13 +7,13 @@
         <link linkend="Se_Bootstrap">SeBootstrap API</link>
     </para>
 
-    <para>RESTEasy has a few different plugins for different embedabble HTTP and/or Servlet containers if use RESTEasy in
-    a test environment, or within an environment where you do not want a Servlet engine dependency.</para>
+    <para>RESTEasy has a few different plugins for different embeddable HTTP and/or Servlet containers, if using RESTEasy in
+    a test environment or within an environment where you do not want a Servlet engine dependency.</para>
     <section>
         <title>Undertow</title>
         <para>
-            Undertow is a new Servlet Container that is used by WildFly (JBoss Community Server).  You can embed
-            Undertow as you wish.  Here's a test that shows it in action.
+            Undertow is a new Servlet Container that is used by WildFly (JBoss Community Server).  It can be embedded
+            if desired.  Here's a test that shows it in action.
 <programlisting><![CDATA[
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
@@ -122,8 +122,8 @@ public class UndertowTest
             <emphasis>NOTE:</emphasis> This module is deprecated and should not be used.
         </para>
         <para>>
-            The Sun JDK comes with a simple HTTP server implementation (com.sun.net.httpserver.HttpServer) which you
-            can run RESTEasy on top of.
+            The Sun JDK comes with a simple HTTP server implementation (com.sun.net.httpserver.HttpServer) on which
+            RESTEasy can be run on top of.
         </para>
     <programlisting> <![CDATA[
       HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
@@ -137,9 +137,9 @@ public class UndertowTest
       httpServer.stop(0);
     ]]></programlisting>
     <para>
-        Create your HttpServer the way you want then use the org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize Resteasy
-        and bind it to an HttpContext.  The HttpContext attributes are available by injecting in a org.jboss.resteasy.spi.ResteasyConfiguration
-        interface using @Context within your provider and resource classes.
+        Create the HttpServer as desired, then use the org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize Resteasy
+        and bind it to an HttpContext.  The HttpContext attributes are available by injecting an org.jboss.resteasy.spi.ResteasyConfiguration
+        interface using @Context within the provider and resource classes.
 
     </para>
     <para>Maven project you must include is:</para>
@@ -157,7 +157,7 @@ public class UndertowTest
     <section>
         <title>Netty</title>
         <para>
-            RESTEasy has integration with the popular Netty project as well..
+            RESTEasy has integration with the popular Netty project.
         </para>
     <programlisting> <![CDATA[
    public static void start(ResteasyDeployment deployment) throws Exception
@@ -171,7 +171,7 @@ public class UndertowTest
    }
     ]]></programlisting>
 
-    <para>Maven project you must include is:</para>
+    <para>Include this archive to use netty4</para>
 <programlisting> <![CDATA[
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -185,10 +185,10 @@ public class UndertowTest
         <title>Reactor-Netty</title>
         <para>
             RESTEasy integrates with the reactor-netty project. This
-            server adapter was created to pair with our reactor-netty
+            server adapter was created to pair with RESTEasy's reactor-netty
             based &REST-API; client integration. Ultimately, if using
             reactor-netty for both the server and server-contained
-            clients you will be able to do things like share the same
+            clients it will be possible to do things like share the same
             event loop for both server and client calls.
         </para>
     <programlisting> <![CDATA[
@@ -204,7 +204,7 @@ public class UndertowTest
    }
     ]]></programlisting>
 
-    <para>Maven project you must include is:</para>
+    <para>Include this archive to use the reactor netty feature</para>
 <programlisting> <![CDATA[
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -217,7 +217,7 @@ public class UndertowTest
   <section>
     <title>Vert.x</title>
     <para>
-      RESTEasy has integration with the popular Vert.x project as well..
+      RESTEasy has integration with the popular Vert.x project.
     </para>
     <programlisting> <![CDATA[
    public static void start(VertxResteasyDeployment deployment) throws Exception
@@ -231,7 +231,7 @@ public class UndertowTest
    }
     ]]></programlisting>
 
-    <para>Maven project you must include is:</para>
+    <para>Include this archive to use the Vertx feature</para>
     <programlisting> <![CDATA[
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -242,20 +242,23 @@ public class UndertowTest
 
     <para>The server will bootstrap its own Vert.x instance and Http server.</para>
 
-    <para>When a resource is called, it is done with the Vert.x Event Loop thread, keep in mind to
-    not block this thread and respect the Vert.x programming model, see the related Vert.x <ulink url="http://vertx.io/docs/vertx-core/java/#_don_t_block_me">manual page</ulink>.</para>
+    <para>When a resource is called, it is done with the Vert.x Event Loop thread, keep in mind
+    not block this thread and respect the Vert.x programming model, see the related Vert.x
+        <ulink url="http://vertx.io/docs/vertx-core/java/#_don_t_block_me">manual page</ulink>.</para>
 
-    <para>Vert.x extends the RESTEasy registry to  provide a new binding scope that creates resources per Event Loop:</para>
+    <para>Vert.x extends the RESTEasy registry to  provide a new binding scope that creates resources
+        per Event Loop:</para>
     <programlisting> <![CDATA[
   VertxResteasyDeployment deployment = new VertxResteasyDeployment();
   // Create an instance of resource per Event Loop
   deployment.getRegistry().addPerInstanceResource(Resource.class);
     ]]></programlisting>
 
-    <para>The per instance binding scope caches the same resource instance for each event loop providing the same
+    <para>The per instance binding scope caches the same resource instance for each event loop providing
+        the same
     concurrency model than a verticle deployed multiple times.</para>
 
-    <para>Vert.x can also embed a RESTEasy deployment, making easy to use &REST-API; annotated controller in Vert.x applications: </para>
+    <para>Vert.x can also embed a RESTEasy deployment, making it easy to use &REST-API; annotated controller in Vert.x applications: </para>
     <programlisting> <![CDATA[
   Vertx vertx = Vertx.vertx();
   HttpServer server = vertx.createHttpServer();
@@ -286,8 +289,8 @@ public class UndertowTest
    <title>EmbeddedJaxrsServer</title>
    <para>
        <classname>EmbeddedJaxrsServer</classname> is an interface provided to enable each embedded container
-       wrapper class to configurate, start and stop its container in a standard fashion.
-       Each of <classname>UndertowJaxrsServer</classname>, <classname>SunHttpJaxrsServer</classname>,
+       wrapper class to configure, start and stop its container in a standard fashion.
+       Each server <classname>UndertowJaxrsServer</classname>, <classname>SunHttpJaxrsServer</classname>,
        <classname>NettyJaxrsServer</classname>, and <classname>VertxJaxrsServer</classname> implements
        <classname>EmbeddedJaxrsServer</classname>.
    </para>

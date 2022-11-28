@@ -61,6 +61,9 @@ public class WiderMappingNegativeTest {
 
    /**
     * @tpTestDetails Two resources used, more general resource should not be used
+    * Test confirms that the "HTTP OPTIONS requests" declared in WiderMappingDefaultOptions
+    * is not called because config switch resteasy.wider.request.matching is set to "false".
+    * (see Jakarta RESTful Web Services 3.1 specification.  Section 3.3.5, HEAD and OPTIONS)
     * @tpSince RESTEasy 3.0.16
     */
    @Test

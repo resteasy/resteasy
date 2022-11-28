@@ -14,7 +14,7 @@
         a custom API for reading and writing multipart types as well as marshalling arbitrary List
        (for any multipart type) and Map (multipart/form-data only) objects
     </para>
-    <para>Classes <code>MultipartInput</code> and <code>MultipartOutput</code> provides read and write
+    <para>Classes <code>MultipartInput</code> and <code>MultipartOutput</code> provide read and write
         support for mime type "multipart/mixed" messages respectively.  They provide for
         multiple part messages, in which one or more different sets of data are combined in a single body.
     </para>
@@ -40,7 +40,7 @@
          and specifying special marshalling requirements.  In all cases the addPart
          methods require
          an input parameter, Object and a MediaType that declares the mime type of the object.
-         Sometimes you may have an object in which marshalling is sensitive to generic type metadata.
+         Sometimes there may be an object in which marshalling is sensitive to generic type metadata.
          In such cases, use an addPart method in which you declare the GenericType of the entity Object.
          Perhaps a file will be passed as content and it will require UTF-8 encoding.
          Setting input parameter, utf8Encode to <code>true</code> will indicate to RESTEasy to process the
@@ -48,7 +48,7 @@
          This flag is only processed when mime type "multipart/form-data" is specified.
       </para>
       <para><code>MultipartOutput</code> automatically generates a unique message boundary identifier
-         when it is created.  Method setBoundary is provided in case you wish to declare
+         when it is created.  Method setBoundary is provided to declare
          a different identifier.
       </para>
       <programlisting>
@@ -417,7 +417,7 @@ public class Soup {
     }
  ]]></programlisting>
 
-         <para>In this code fragment the client creates and sends of list
+         <para>In this code fragment the client creates and sends a list of
             <code>ContextProvidersCustomers</code>.
          </para>
          <programlisting>
@@ -637,7 +637,7 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
             transport time.
          </para>
          <para>RESTEasy requires annotation @XopWithMultipartRelated to be placed on any
-            endpoint method that returns an object that is to be to be processed with XOP
+            endpoint method that returns an object that is to be processed with XOP
             and on any endpoint input parameter that is to be processed by XOP.
          </para>
          <para>RESTEasy highly recommends, if you know the exact mime type of the POJO's
@@ -651,7 +651,7 @@ public MultipartRelatedOutput postRelated(MultipartRelatedInput input)
          <title>@XopWithMultipartRelated return object example</title>
 
          <para>The data to be transmitted is class, <code>ContextProvidersXop</code>.
-            Note that field <code>bytes</code> is identified as an application/octet-stream
+            Note that field, <code>bytes</code>, is identified as an application/octet-stream
             mime type using annotation @XmlMimeType
          </para>
 
@@ -683,7 +683,7 @@ public class ContextProvidersXop {
  ]]></programlisting>
 
          <para>The endpoint returns an instance of <code>ContextProvidersXop</code>.
-            Note annotation @XopWithMultipartRelated declared on the method because
+            Note annotation @XopWithMultipartRelated is declared on the method because
             we want the return object to use XOP packaging.
          </para>
 
@@ -864,10 +864,11 @@ public List&lt;EntityPart&gt; injected(@FormParam("content") final String string
            </para>
 
            <para>
-               Currently <code>multipart/form-data</code> requests only work in the provided servlet containers. You
-               must configure the servlet's multipart-config as well. If you use one of the RESTEasy Undertow embedded
-               servers or the <code>resteasy-servlet-initializer</code>, then you can annotate your application with
-               <code>@MultipartConfig</code>. For other cases you need to specify the configuration. Below is an example
+               Currently <code>multipart/form-data</code> requests only work in the provided servlet containers.
+               The servlet's multipart-config must be configured as well.
+               If using one of the RESTEasy Undertow embedded
+               servers or the <code>resteasy-servlet-initializer</code>, then annotate the application with
+               <code>@MultipartConfig</code>. For other servers specify the configuration. Below is an example
                <code>web.xml</code> configuration.
                <programlisting>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -1145,15 +1146,15 @@ public class ContextProvidersName {
 
       <section id="multipartform_annotation">
          <title>@MultipartForm and POJOs</title>
-         <para>If you have an exact knowledge of your multipart/form-data packets,
-            you can map them to and from a POJO class using the annotation
+         <para>If you have exact knowledge of the multipart/form-data packets,
+            they can be mapped to and from a POJO class using the annotation
             <code>@org.jboss.resteasy.annotations.providers.multipart.MultipartForm</code>
             and the &REST-API; <code>@FormParam</code> annotation. Simply define a POJO with
             at least a default constructor and annotate its fields and/or properties
             with <code>@FormParams</code>. These <code>@FormParams</code> must
             also be annotated with
             <code>@org.jboss.resteasy.annotations.providers.multipart.PartType</code>
-            if you are doing output. For example:
+            if doing output. For example:
          </para>
          <programlisting>
             <![CDATA[public class CustomerProblemForm {
@@ -1170,7 +1171,7 @@ public class ContextProvidersName {
     public String getProblem() { return problem; }
     public void setProblem(String problem) { this.problem = problem; }
 }]]></programlisting>
-         <para>After defining the POJO class you can use it to represent multipart/form-data. Here's
+         <para>After defining the POJO class it can be used to represent multipart/form-data. Here's
             an example of sending a <code>CustomerProblemForm</code> using the
             RESTEasy client framework:
          </para>
@@ -1195,8 +1196,8 @@ public interface CustomerPortal {
 }]]></programlisting>
          <para>Note that the <code>@MultipartForm</code> annotation was used to tell RESTEasy
             that the object has a <code>@FormParam</code>
-            and that it should be marshalled from that. You can also use the same
-            object to receive multipart data.
+            and that it should be marshalled from that. The same
+            object can be used to receive multipart data.
             Here is an example of the server side counterpart of our customer portal.
          </para>
          <programlisting>
@@ -1213,8 +1214,8 @@ public class CustomerPortalServer {
 }]]></programlisting>
          <para>In addition to the XML data format, JSON formatted data can be
             used to represent POJO classes.
-            To achieve this goal, plug in a JSON provider into your project. For example,
-            add the RESTEasy Jackson2 Provider into your project's dependency scope:
+            To achieve this, plug in a JSON provider into your project. For example,
+            add the RESTEasy Jackson2 Provider into the project's dependency scope:
          </para>
          <programlisting>
             <![CDATA[
@@ -1225,7 +1226,7 @@ public class CustomerPortalServer {
 </dependency>
 ]]></programlisting>
          <para>
-            Now you can write an ordinary POJO class, which Jackson2 will
+             Now an ordinary POJO class can be written, which Jackson2 will
             automatically serialize/deserialize into JSON format:
          </para>
          <programlisting>
@@ -1280,11 +1281,11 @@ public class JsonFormResource {
          return form.getUser().getName();
     }
 }]]></programlisting>
-         <para>As the code shown above, you can see the PartType of JsonUser is marked as "application/json",
+         <para>In the code shown above, it can be seen the PartType of JsonUser is marked as "application/json",
             and it's included in the "@MultipartForm Form" class instance.
          </para>
-         <para>To send the request to the resource method, you need to send JSON formatted data
-            that is corresponding with the JsonUser class. The easiest way to do
+         <para>To send the request to the resource method, send the JSON formatted data
+            that corresponds with the JsonUser class. The easiest way to do
             this is to use a proxy class that has
             the same definition of the resource class. Here is the sample code
             of the proxy class that is corresponding with the JsonFormResource class:
@@ -1317,13 +1318,12 @@ JsonForm proxy = client.target("your_request_url_address")
 String name = proxy.putMultipartForm(new JsonFormResource
                    .Form(new JsonUser("bill")));
 ...]]></programlisting>
-         <para>If your client side has the Jackson2 provider included, the
+         <para>If the client side has the Jackson2 provider included, the
             request will be marshaled correctly.
             The JsonUser data will be converted into JSON format and sent
             to the server side.
-            You can also use hand-crafted JSON data as your request and send
-            it to server side, but you have to
-            make sure the request data is in the correct form.
+             Hand-crafted JSON data can be use in the request and sent to the
+             server side. It must be made sure the request data is in the correct form.
          </para>
       </section>
 
@@ -1331,7 +1331,7 @@ String name = proxy.putMultipartForm(new JsonFormResource
 
     <section id="multipart_parsing_note">
         <title>Note about multipart parsing and working with other frameworks</title>
-        <para>There are a lot of frameworks doing multipart parsing automatically
+        <para>There are many frameworks doing multipart parsing automatically
            with the help of filters and interceptors, like
            <code>org.jboss.seam.web.MultipartFilter</code> in Seam and
            <code>org.springframework.web.multipart.MultipartResolver</code> in Spring,
@@ -1342,14 +1342,14 @@ String name = proxy.putMultipartForm(new JsonFormResource
     </section>
     <section id="multipart_overwrite_default_content_type">
         <title>Overwriting the default fallback content type for multipart messages</title>
-        <para>By default if no Content-Type header is present in a part,
+        <para>By default if no Content-Type header is present in a part
            <code>"text/plain; charset=us-ascii"</code> is used as the fallback.
-           This is the value defined by the MIME RFC. However some web clients,
-           like most, if not all, web browsers,
+           This is the value defined by the MIME RFC, however some web clients,
+           and web browsers
             do not send Content-Type headers for all fields in a multipart/form-data
            request.  They send them only for the file parts.  This can cause
            character encoding and unmarshalling errors on the server side. To correct
-           this there is an option to define an other, non-rfc compliant fallback value.
+           this there is an option to define another, non-rfc compliant fallback value.
            This can be done dynamically per request with the filter facility of &REST-API;
            3.0. In the following example we will set
            <code>"*/*; charset=UTF-8"</code> as the new default fallback:
