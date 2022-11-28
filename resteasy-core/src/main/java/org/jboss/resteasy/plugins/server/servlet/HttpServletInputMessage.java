@@ -142,7 +142,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
       }
       Map<String, String[]> parameterMap = request.getParameterMap();
       MultivaluedMap<String, String> queryMap = uri.getQueryParameters();
-      if (request.getMethod().equals("PUT") && mapEquals(parameterMap, queryMap))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST")) && mapEquals(parameterMap, queryMap))
       {
          return getPutFormParameters();
       }
@@ -188,7 +188,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
       }
       Map<String, String[]> parameterMap = request.getParameterMap();
       MultivaluedMap<String, String> queryMap = uri.getQueryParameters();
-      if (request.getMethod().equals("PUT") && mapEquals(parameterMap, queryMap))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST")) && mapEquals(parameterMap, queryMap))
       {
          return getPutDecodedFormParameters();
       }
