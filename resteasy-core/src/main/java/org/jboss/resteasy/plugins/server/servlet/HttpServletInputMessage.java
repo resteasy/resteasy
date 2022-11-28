@@ -135,13 +135,14 @@ public class HttpServletInputMessage extends BaseHttpRequest
       if (formParameters != null) return formParameters;
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
-      if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST"))
+              && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
       {
          return getPutFormParameters();
       }
       Map<String, String[]> parameterMap = request.getParameterMap();
       MultivaluedMap<String, String> queryMap = uri.getQueryParameters();
-      if (request.getMethod().equals("PUT") && mapEquals(parameterMap, queryMap))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST")) && mapEquals(parameterMap, queryMap))
       {
          return getPutFormParameters();
       }
@@ -180,13 +181,14 @@ public class HttpServletInputMessage extends BaseHttpRequest
       if (decodedFormParameters != null) return decodedFormParameters;
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
-      if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST"))
+              && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
       {
          return getPutDecodedFormParameters();
       }
       Map<String, String[]> parameterMap = request.getParameterMap();
       MultivaluedMap<String, String> queryMap = uri.getQueryParameters();
-      if (request.getMethod().equals("PUT") && mapEquals(parameterMap, queryMap))
+      if ((request.getMethod().equals("PUT") || request.getMethod().equals("POST")) && mapEquals(parameterMap, queryMap))
       {
          return getPutDecodedFormParameters();
       }
