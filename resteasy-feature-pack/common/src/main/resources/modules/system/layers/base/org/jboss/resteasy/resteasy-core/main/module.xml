@@ -48,10 +48,5 @@
         <module name="org.jboss.resteasy.resteasy-core-spi"/>
         <module name="org.jboss.resteasy.resteasy-validator-provider" optional="true" services="export" export="true"/>
         <module name="org.reactivestreams"/>
-        <!-- Optional dependencies if we have the MicroProfile Config available. Note we need to export the
-             org.jboss.resteasy.microprofile.config as it will be loaded from another module loader.
-         -->
-        <module name="org.eclipse.microprofile.config.api" optional="true"/>
-        <module name="org.jboss.resteasy.microprofile.config" export="true" services="export" optional="true"/>
     </dependencies>
 </module>

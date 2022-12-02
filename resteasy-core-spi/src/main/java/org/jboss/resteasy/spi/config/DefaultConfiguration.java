@@ -26,6 +26,7 @@ import java.util.function.Function;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 
 /**
@@ -47,7 +48,7 @@ public class DefaultConfiguration implements Configuration {
      * Creates a new configuration .
      */
     public DefaultConfiguration() {
-        this(null);
+        this(resolveConfiguration());
     }
 
     /**
@@ -56,7 +57,13 @@ public class DefaultConfiguration implements Configuration {
      * @param config the resolver
      */
     public DefaultConfiguration(final ResteasyConfiguration config) {
-        this.resolver = config == null ? DEFAULT_RESOLVER : new Resolver(config);
+        final ResteasyConfiguration delegate;
+        if (config == null) {
+            delegate = resolveConfiguration();
+        } else {
+            delegate = config;
+        }
+        this.resolver = delegate == null ? DEFAULT_RESOLVER : new Resolver(delegate);
     }
 
     @Override
@@ -113,6 +120,11 @@ public class DefaultConfiguration implements Configuration {
             sm.checkPermission(new ConfigPropertyPermission(name));
         }
         return getOptionalValue(name, type).orElseThrow(() -> Messages.MESSAGES.propertyNotFound(name));
+    }
+
+    private static ResteasyConfiguration resolveConfiguration() {
+        final ResteasyProviderFactory factory = ResteasyProviderFactory.peekInstance();
+        return factory == null ? null : factory.getContextData(ResteasyConfiguration.class);
     }
 
     private static class Resolver implements Function<String, String> {
