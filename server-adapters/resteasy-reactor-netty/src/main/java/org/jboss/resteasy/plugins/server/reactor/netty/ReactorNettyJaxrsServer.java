@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -374,15 +375,20 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
    {
       final String uri = req.uri();
 
-      String uriString;
+      final String uriString;
 
-      // If we appear to have an absolute URL, don't try to recreate it from the host and request line.
+      // If we have an absolute URL, don't try to recreate it from the host and request line.
       if (uri.startsWith(req.scheme() + "://")) {
          uriString = uri;
       } else {
          String host = req.requestHeaders().get(HttpHeaderNames.HOST);
          if (host == null || "".equals(host.trim())) {
-            host = "unknown";
+            final InetSocketAddress hostAddress = req.hostAddress();
+            if (hostAddress != null) {
+               host = hostAddress.getHostString() + ":" + hostAddress.getPort();
+            } else {
+               host = "unknown"; // Do we even want this?  Should we assert that this never executes?
+            }
          }
          uriString = new StringBuilder(100)
              .append(req.scheme())
