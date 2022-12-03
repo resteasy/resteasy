@@ -2,6 +2,8 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import reactor.netty.http.server.HttpServerRequest;
 
 public class UriInfoTest {
 
@@ -82,6 +85,20 @@ public class UriInfoTest {
         final Map<String, String> additionalHeaders = new HashMap<>();
         additionalHeaders.put("Host", "                  ");
         testProblematicHostHeader(additionalHeaders);
+    }
+
+    @Test
+    public void testCannotDetermineHost() {
+        final ReactorNettyJaxrsServer.UriExtractor extractor = new ReactorNettyJaxrsServer.UriExtractor();
+        final HttpServerRequest req = mock(HttpServerRequest.class, RETURNS_MOCKS);
+        when(req.hostAddress()).thenReturn(null);
+        try {
+            extractor.extract(req, "/contextPath");
+            fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
+        } catch (final IllegalArgumentException iae) {
+        } catch (final Exception e) {
+            fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
+        }
     }
 
     /**
