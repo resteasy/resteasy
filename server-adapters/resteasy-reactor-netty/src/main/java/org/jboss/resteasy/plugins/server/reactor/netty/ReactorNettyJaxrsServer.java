@@ -78,6 +78,8 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
 
    private DisposableServer server;
 
+   private UriExtractor uriExtractor = new UriExtractor();
+
    @Override
    public ReactorNettyJaxrsServer deploy() {
       return this;
@@ -371,34 +373,41 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       );
    }
 
+   static class UriExtractor {
+      ResteasyUriInfo extract(final HttpServerRequest req, final String contextPath)
+      {
+         final String uri = req.uri();
+
+         final String uriString;
+
+         // If we have an absolute URL, don't try to recreate it from the host and request line.
+         if (uri.startsWith(req.scheme() + "://")) {
+            uriString = uri;
+         } else {
+            String host = req.requestHeaders().get(HttpHeaderNames.HOST);
+            if (host == null || "".equals(host.trim())) {
+               final InetSocketAddress hostAddress = req.hostAddress();
+               if (hostAddress == null) {
+                  throw new IllegalArgumentException("Could not determine host address from request.  " +
+                          "This should never happen.");
+               }
+               host = hostAddress.getHostString() + ":" + hostAddress.getPort();
+            }
+            uriString = new StringBuilder(100)
+                    .append(req.scheme())
+                    .append("://")
+                    .append(host)
+                    .append(req.uri())
+                    .toString();
+         }
+
+         return new ResteasyUriInfo(uriString, contextPath);
+      }
+   }
+
    private ResteasyUriInfo extractUriInfo(final HttpServerRequest req, final String contextPath)
    {
-      final String uri = req.uri();
-
-      final String uriString;
-
-      // If we have an absolute URL, don't try to recreate it from the host and request line.
-      if (uri.startsWith(req.scheme() + "://")) {
-         uriString = uri;
-      } else {
-         String host = req.requestHeaders().get(HttpHeaderNames.HOST);
-         if (host == null || "".equals(host.trim())) {
-            final InetSocketAddress hostAddress = req.hostAddress();
-            if (hostAddress != null) {
-               host = hostAddress.getHostString() + ":" + hostAddress.getPort();
-            } else {
-               host = "unknown"; // Do we even want this?  Should we assert that this never executes?
-            }
-         }
-         uriString = new StringBuilder(100)
-             .append(req.scheme())
-             .append("://")
-             .append(host)
-             .append(req.uri())
-             .toString();
-      }
-
-      return new ResteasyUriInfo(uriString, contextPath);
+      return uriExtractor.extract(req, contextPath);
    }
 
 }
