@@ -5,9 +5,9 @@
          org.jboss.resteasy:resteasy-dependencies BOM which we do not want included in this BOM.
     -->
     <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-parent</artifactId>
-        <version>39</version>
+        <groupId>dev.resteasy.tools</groupId>
+        <artifactId>resteasy-parent</artifactId>
+        <version>2.0.2.Final</version>
         <relativePath/>
     </parent>
 
