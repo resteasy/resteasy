@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-parent</artifactId>
-        <version>38</version>
+        <groupId>dev.resteasy.tools</groupId>
+        <artifactId>resteasy-parent</artifactId>
+        <version>2.0.3.Final</version>
         <relativePath/>
     </parent>
 
@@ -36,6 +36,7 @@
 
         <!-- Require at least Java 11 to compile, but compile down to Java 8 -->
         <jdk.min.version>11</jdk.min.version>
+        <maven.compiler.release>8</maven.compiler.release>
         <javadoc.additional.params>--release=8</javadoc.additional.params>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
@@ -43,11 +44,13 @@
 
         <maven.test.skip>false</maven.test.skip>
         <skipTests>${maven.test.skip}</skipTests>
+        <wildfly.skip>${skipTests}</wildfly.skip>
 
         <!-- Galleon -->
         <galleon.fork.embedded>true</galleon.fork.embedded>
         <galleon.log.time>true</galleon.log.time>
         <galleon.offline>false</galleon.offline>
+        <galleon.skip>${skipTests}</galleon.skip>
 
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
@@ -59,7 +62,7 @@
         <additionalJvmArgs/>
     </properties>
 
-    <url>https://jboss.org/resteasy</url>
+    <url>https://resteasy.dev</url>
 
     <licenses>
         <license>
@@ -70,9 +73,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/resteasy/Resteasy.git</connection>
-        <developerConnection>scm:git:git@github.com:resteasy/Resteasy.git</developerConnection>
-        <url>https://github.com/resteasy/Resteasy/tree/master/</url>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy/tree/main/</url>
     </scm>
 
     <issueManagement>
@@ -275,23 +278,10 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>default-compile</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>compile</goal>
-                            </goals>
-                            <configuration>
-                                <release>8</release>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
                         <runOrder>alphabetical</runOrder>
@@ -386,22 +376,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${version.checkstyle.plugin}</version>
-                <configuration>
-                    <configLocation>resteasy-checkstyle/checkstyle.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/*$logger.java,**/*$bundle.java</excludes>
-                    <useFile/>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.resteasy.checkstyle</groupId>
-                        <artifactId>resteasy-checkstyle-config</artifactId>
-                        <version>${version.org.jboss.resteasy.checkstyle}</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>check-style</id>
@@ -415,7 +389,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${version.enforcer.plugin}</version>
                 <executions>
                     <execution>
                         <id>ban-bad-dependencies</id>
@@ -455,7 +428,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence></dependencyConvergence>
+                                <dependencyConvergence/>
                             </rules>
                         </configuration>
                     </execution>
@@ -468,7 +441,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>${version.jxr.plugin}</version>
             </plugin>
         </plugins>
     </reporting>
