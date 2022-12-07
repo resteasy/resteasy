@@ -24,7 +24,7 @@ public class MonoRxInvokerImpl implements MonoRxInvoker {
 
         @Override
         protected <T> Publisher<T> toPublisher(CompletionStage<T> completable) {
-            return Mono.fromFuture(completable.toCompletableFuture());
+            return Mono.fromCompletionStage(completable);
         }
     }
 
