@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -10,15 +10,11 @@ import javax.ws.rs.core.Application;
 @NameBoundProxiesAnnotation
 public class NameBoundCDIProxiesApplication extends Application {
 
+   @Override
    public Set<Class<?>> getClasses() {
-      Set<Class<?>> set = new HashSet<Class<?>>();
-      set.add(NameBoundCDIProxiesResource.class);
-      return set;
-   }
-
-   public Set<Object> getSingletons() {
-      Set<Object> set = new HashSet<Object>();
-      set.add(new NameBoundCDIProxiesInterceptor());
-      return set;
+      final Set<Class<?>> classes = new HashSet<>();
+      classes.add(NameBoundCDIProxiesResource.class);
+      classes.add(NameBoundCDIProxiesInterceptor.class);
+      return classes;
    }
 }
