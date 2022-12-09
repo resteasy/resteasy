@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.yaml.i18n;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
+import org.jboss.resteasy.spi.ReaderException;
 
 /**
  *
@@ -24,4 +25,7 @@ public interface Messages
 
    @Message(id = BASE + 10, value = "Failed to encode yaml for object: %s")
    String failedToEncodeYaml(String object);
+
+   @Message(id = BASE + 15, value = "Failed to decode Yaml. Type %s is not allowed to be decoded.")
+   ReaderException typeNotAllowed(Class<?> type);
 }

@@ -77,7 +77,7 @@
         <version.org.slf4j>1.7.29</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
-        <version.org.yaml.snakeyaml>1.32</version.org.yaml.snakeyaml>
+        <version.org.yaml.snakeyaml>1.33</version.org.yaml.snakeyaml>
         <version.weld.api>3.1.SP3 </version.weld.api>
         <version.weld>3.1.5.Final</version.weld>
         <version.json.patch>1.9</version.json.patch>
