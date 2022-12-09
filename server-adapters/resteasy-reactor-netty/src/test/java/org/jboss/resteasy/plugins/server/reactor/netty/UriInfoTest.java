@@ -95,7 +95,7 @@ public class UriInfoTest {
         try {
             extractor.extract(req, "/contextPath");
             fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
-        } catch (final IllegalArgumentException iae) {
+        } catch (final AssertionError ae) {
         } catch (final Exception e) {
             fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
         }
@@ -123,9 +123,6 @@ public class UriInfoTest {
 
     }
 
-    /**
-     *
-     */
     /**
      *
      * Returns what the server saw in {@link UriInfo#getRequestUri()}.
