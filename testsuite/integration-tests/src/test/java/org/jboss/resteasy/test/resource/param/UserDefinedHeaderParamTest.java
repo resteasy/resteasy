@@ -28,7 +28,7 @@ import jakarta.ws.rs.client.ClientBuilder;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-2874
- * @tpSince RESTEasy 4.7.0
+ * @tpSince RESTEasy 5.0.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -42,12 +42,12 @@ public class UserDefinedHeaderParamTest {
     public interface UserHeaderParamInterface {
 
         @POST
-        @Path("/header")
+        @Path("/header-first")
         @Consumes({"application/json", "text/plain", "image/jpeg"})
         String sendHeaderFirst(@HeaderParam("Content-Type") String contentType, String text);
 
         @POST
-        @Path("/header")
+        @Path("/text-first")
         @Consumes({"application/json", "text/plain", "image/jpeg"})
         String sendTextFirst(String text, @HeaderParam("Content-Type") String contentType);
 
@@ -88,7 +88,7 @@ public class UserDefinedHeaderParamTest {
      * @tpTestDetails Checks whether the correct content type header is returned in case user specified header param
      * as a first argument in proxy method.
      * @tpPassCrit Expected header is returned
-     * @tpSince RESTEasy 4.7.0
+     * @tpSince RESTEasy 5.0.5
      */
     @Test
     public void testHeaderParamFirst(){
@@ -103,7 +103,7 @@ public class UserDefinedHeaderParamTest {
      * @tpTestDetails Checks whether the correct content type header is returned in case user specified header param
      * as a second argument in proxy method.
      * @tpPassCrit Expected header is returned
-     * @tpSince RESTEasy 4.7.0
+     * @tpSince RESTEasy 5.0.5
      */
     @Test
     public void testTextFirst(){
@@ -118,7 +118,7 @@ public class UserDefinedHeaderParamTest {
      * @tpTestDetails Checks whether the correct content type header is returned in case user didn't specify header
      * param in proxy method. This should be the first content type in case of multiple @Consumes values.
      * @tpPassCrit Expected header is returned
-     * @tpSince RESTEasy 4.7.0
+     * @tpSince RESTEasy 5.0.5
      */
     @Test
     public void testDefaultHeaderParam(){
@@ -133,7 +133,7 @@ public class UserDefinedHeaderParamTest {
      * @tpTestDetails Checks whether the correct content type header is returned in case user specified header
      * param in proxy method with multiple other header params. This should be the last content type in arguments.
      * @tpPassCrit Expected header is returned
-     * @tpSince RESTEasy 4.7.0
+     * @tpSince RESTEasy 5.0.5
      */
     @Test
     public void testMultipleHeaderParams(){

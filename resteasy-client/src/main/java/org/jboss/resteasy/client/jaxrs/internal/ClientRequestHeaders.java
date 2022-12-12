@@ -30,7 +30,7 @@ public class ClientRequestHeaders
 {
    protected CaseInsensitiveMap<Object> headers = new CaseInsensitiveMap<Object>();
    protected ClientConfiguration configuration;
-   private boolean userForcedContentType = false;
+   private boolean contentTypeSet = false;
 
 
    public ClientRequestHeaders(final ClientConfiguration configuration)
@@ -77,7 +77,7 @@ public class ClientRequestHeaders
          headers.remove(HttpHeaders.CONTENT_TYPE);
          return;
       }
-      if (!userForcedContentType)
+      if (!contentTypeSet)
       {
          headers.putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
       }
@@ -182,7 +182,7 @@ public class ClientRequestHeaders
       else if (name.equalsIgnoreCase(HttpHeaders.CONTENT_TYPE))
       {
          headers.putSingle(HttpHeaders.CONTENT_TYPE, value);
-         userForcedContentType = true;
+         contentTypeSet = true;
       }
       else headers.add(name, value);
    }
