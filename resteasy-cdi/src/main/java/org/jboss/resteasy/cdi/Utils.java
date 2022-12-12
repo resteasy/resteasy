@@ -2,13 +2,26 @@ package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
 
 /**
  * Utility methods for detecting CDI scopes and JAX-RS components.
@@ -18,6 +31,20 @@ import javax.ws.rs.ext.Provider;
  */
 public class Utils
 {
+
+   private static final List<Class<?>> REST_INTERFACES = Arrays.asList(
+           ContainerRequestFilter.class,
+           ContainerResponseFilter.class,
+           ContextResolver.class,
+           DynamicFeature.class,
+           ExceptionMapper.class,
+           Feature.class,
+           MessageBodyReader.class,
+           MessageBodyWriter.class,
+           ParamConverterProvider.class,
+           ReaderInterceptor.class,
+           WriterInterceptor.class
+   );
    /**
     * Finds out if a given class is decorated with JAX-RS annotations.
     * Interfaces of the class are not scanned for JAX-RS annotations.
@@ -67,6 +94,12 @@ public class Utils
       if (isJaxrsAnnotatedClass(clazz))
       {
          return true;
+      }
+      // Check if this implements any known Jakarta REST interfaces
+      for (Class<?> intf : REST_INTERFACES) {
+         if (intf.isAssignableFrom(clazz)) {
+            return true;
+         }
       }
       for (Class<?> intf : clazz.getInterfaces())
       {
