@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.Set;
 
@@ -161,7 +162,7 @@ public class ClientInvoker implements MethodInvoker
    {
       WebTarget target = this.webTarget;
 
-      HashMap<String, Object> pathParamsMap = new HashMap<>();
+      final Map<String, Object> pathParamsMap = new HashMap<>();
 
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
