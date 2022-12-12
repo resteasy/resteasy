@@ -14,13 +14,13 @@ public class UserDefinedHeaderParamResource implements UserDefinedHeaderParamTes
     private HttpHeaders httpHeaders;
 
     @GET
-    @Path("/header")
+    @Path("/header-first")
     public String sendHeaderFirst(@HeaderParam("Content-Type") String contentType, String text) {
         return httpHeaders.getHeaderString("Content-Type");
     }
 
     @GET
-    @Path("/header")
+    @Path("/text-first")
     public String sendTextFirst(String text, @HeaderParam("Content-Type") String contentType) {
         return httpHeaders.getHeaderString("Content-Type");
     }
