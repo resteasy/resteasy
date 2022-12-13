@@ -8,11 +8,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import java.util.ServiceLoader;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SNIServerName;
@@ -44,6 +42,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 
 public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
 
@@ -85,7 +84,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       {
          SSLConnectionSocketFactory sslsf = null;
          SSLContext theContext = that.getSSLContext();
-          Iterator clientConfigProviderIterator = ServiceLoader.load(ClientConfigProvider.class).iterator();
+         final ClientConfigProvider configProvider = findClientConfigProvider();
 
          if (that.isTrustManagerDisabled())
          {
@@ -142,10 +141,9 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                   }
                }
             };
-         } else if (clientConfigProviderIterator.hasNext())
+         } else if (configProvider != null)
          {
             // delegate creation of socket to ClientConfigProvider implementation
-            final ClientConfigProvider configProvider = ((ClientConfigProvider) clientConfigProviderIterator.next());
             sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), verifier) {
                @Override
                public Socket createSocket(HttpContext context) throws IOException {
@@ -269,5 +267,21 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       engine.setSslContext(theContext);
       engine.setFollowRedirects(that.isFollowRedirects());
       return engine;
+   }
+
+   private static ClientConfigProvider findClientConfigProvider() {
+      if (System.getSecurityManager() == null) {
+         return PriorityServiceLoader.load(ClientConfigProvider.class, getClassLoader(ClientConfigProvider.class)).first().orElse(null);
+      }
+      return AccessController.doPrivileged((PrivilegedAction<ClientConfigProvider>) () ->
+              PriorityServiceLoader.load(ClientConfigProvider.class, getClassLoader(ClientConfigProvider.class)).first().orElse(null));
+   }
+
+   private static ClassLoader getClassLoader(final Class<?> type) {
+      ClassLoader result = Thread.currentThread().getContextClassLoader();
+      if (result == null) {
+         result = type.getClassLoader();
+      }
+      return result;
    }
 }
