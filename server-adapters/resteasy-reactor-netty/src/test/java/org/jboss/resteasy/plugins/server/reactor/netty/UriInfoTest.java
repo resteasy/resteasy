@@ -95,7 +95,7 @@ public class UriInfoTest {
         try {
             extractor.extract(req, "/contextPath");
             fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
-        } catch (final AssertionError ae) {
+        } catch (final IllegalArgumentException ignore) {
         } catch (final Exception e) {
             fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
         }
