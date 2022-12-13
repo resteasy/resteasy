@@ -153,11 +153,6 @@ public class NettyTest
       Assert.assertEquals("hello world", val);
       Assert.assertEquals("chunked", getResponse.getHeaderString("transfer-encoding"));
       Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
-      // [AG] Discuss with @crankydillo.  The Netty test seems to be doing the same.
-      // were you expecting something else?
-      // TODO IDE passes the following assertion.  I think because it's
-      // confused about what reactor-netty and/or netty library is on the
-      // classpath.
       Assert.assertNull(headResponse.getHeaderString("Content-Length"));
       Assert.assertNull(headResponse.getHeaderString("transfer-encoding"));
    }
