@@ -32,7 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-
 /**
  * @tpSubChapter Test situation where EJBs have parameter violations but no class, field, or property violations.
  * @tpChapter Integration tests
@@ -43,97 +42,96 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class EJBParameterViolationsOnlyTest {
 
-   private static ResteasyClient client;
-   private static EJBParameterViolationsOnlyDataObject validDataObject;
-   private static EJBParameterViolationsOnlyDataObject invalidDataObject;
+    private static ResteasyClient client;
+    private static EJBParameterViolationsOnlyDataObject validDataObject;
+    private static EJBParameterViolationsOnlyDataObject invalidDataObject;
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EJBParameterViolationsOnlyTest.class.getSimpleName())
-            .addClasses(
-                  EJBParameterViolationsOnlyTestApplication.class,
-                  EJBParameterViolationsOnlyDataObject.class,
-                  EJBParameterViolationsOnlyAbstractDataObject.class,
-                  EJBParameterViolationsOnlyResourceIntf.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null,
-            EJBParameterViolationsOnlyStatelessResource.class,
-            EJBParameterViolationsOnlyStatefulResource.class,
-            EJBParameterViolationsOnlySingletonResource.class
-            );
-   }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchive(EJBParameterViolationsOnlyTest.class.getSimpleName())
+                .addClasses(
+                        EJBParameterViolationsOnlyTestApplication.class,
+                        EJBParameterViolationsOnlyDataObject.class,
+                        EJBParameterViolationsOnlyAbstractDataObject.class,
+                        EJBParameterViolationsOnlyResourceIntf.class)
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        return TestUtil.finishContainerPrepare(war, null,
+                EJBParameterViolationsOnlyStatelessResource.class,
+                EJBParameterViolationsOnlyStatefulResource.class,
+                EJBParameterViolationsOnlySingletonResource.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, EJBParameterViolationsOnlyTest.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, EJBParameterViolationsOnlyTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void beforeClass() {
-      client = (ResteasyClient)ClientBuilder.newClient();
+    @BeforeClass
+    public static void beforeClass() {
+        client = (ResteasyClient) ClientBuilder.newClient();
 
-      // Create valid data object.
-      validDataObject = new EJBParameterViolationsOnlyDataObject();
-      validDataObject.setDirection("north");
-      validDataObject.setSpeed(10);
+        // Create valid data object.
+        validDataObject = new EJBParameterViolationsOnlyDataObject();
+        validDataObject.setDirection("north");
+        validDataObject.setSpeed(10);
 
-      // Create data object with constraint violations.
-      invalidDataObject = new EJBParameterViolationsOnlyDataObject();
-      invalidDataObject.setDirection("north");
-      invalidDataObject.setSpeed(0);
-   }
+        // Create data object with constraint violations.
+        invalidDataObject = new EJBParameterViolationsOnlyDataObject();
+        invalidDataObject.setDirection("north");
+        invalidDataObject.setSpeed(0);
+    }
 
-   @AfterClass
-   public static void afterClass() {
-      client.close();
-   }
+    @AfterClass
+    public static void afterClass() {
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Run tests for stateless EJB
-    * @tpSince RESTEasy 4.5
-    */
-   @Test
-   public void testStateless() throws Exception {
-      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
-      doValidationTest(client.target(generateURL("/app/stateless")));
-   }
+    /**
+     * @tpTestDetails Run tests for stateless EJB
+     * @tpSince RESTEasy 4.5
+     */
+    @Test
+    public void testStateless() throws Exception {
+        Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
+        doValidationTest(client.target(generateURL("/app/stateless")));
+    }
 
-   /**
-   * @tpTestDetails Run tests for stateful EJB
-    * @tpSince RESTEasy 4.5
-    */
-   @Test
-   public void testStateful() throws Exception {
-      doValidationTest(client.target(generateURL("/app/stateful")));
-   }
+    /**
+     * @tpTestDetails Run tests for stateful EJB
+     * @tpSince RESTEasy 4.5
+     */
+    @Test
+    public void testStateful() throws Exception {
+        doValidationTest(client.target(generateURL("/app/stateful")));
+    }
 
-   /**
-   * @tpTestDetails Run tests for singleton EJB
-    * @tpSince RESTEasy 4.5
-    */
-   @Test
-   public void testSingleton() throws Exception {
-      Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
-      doValidationTest(client.target(generateURL("/app/singleton")));
-   }
+    /**
+     * @tpTestDetails Run tests for singleton EJB
+     * @tpSince RESTEasy 4.5
+     */
+    @Test
+    public void testSingleton() throws Exception {
+        Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
+        doValidationTest(client.target(generateURL("/app/singleton")));
+    }
 
-   void doValidationTest(WebTarget target) throws Exception {
-      // Invoke with valid data object.
-      Invocation.Builder request = target.path("validation").request().accept(MediaType.TEXT_PLAIN);
-      Response response = request.post(Entity.entity(validDataObject, MediaType.APPLICATION_JSON), Response.class);
-      Assert.assertEquals(200, response.getStatus());
+    void doValidationTest(WebTarget target) throws Exception {
+        // Invoke with valid data object.
+        Invocation.Builder request = target.path("validation").request().accept(MediaType.TEXT_PLAIN);
+        Response response = request.post(Entity.entity(validDataObject, MediaType.APPLICATION_JSON), Response.class);
+        Assert.assertEquals(200, response.getStatus());
 
-      // Reset flag indicating method has been executed.
-      boolean used = target.path("used").request().get(boolean.class);
-      Assert.assertTrue(used);
-      target.path("reset").request().get();
+        // Reset flag indicating method has been executed.
+        boolean used = target.path("used").request().get(boolean.class);
+        Assert.assertTrue(used);
+        target.path("reset").request().get();
 
-      // Invoke with invalid data object.
-      Response response2 = request.post(Entity.entity(invalidDataObject, MediaType.APPLICATION_JSON), Response.class);
-      Assert.assertEquals(400, response2.getStatus());
-      Assert.assertEquals("true", response2.getHeaderString(Validation.VALIDATION_HEADER));
-      ViolationReport report = response2.readEntity(ViolationReport.class);
-      TestUtil.countViolations(report, 0, 0, 1, 0);
-      used = target.path("used").request().get(boolean.class);
-      Assert.assertFalse(used);
-   }
+        // Invoke with invalid data object.
+        Response response2 = request.post(Entity.entity(invalidDataObject, MediaType.APPLICATION_JSON), Response.class);
+        Assert.assertEquals(400, response2.getStatus());
+        Assert.assertEquals("true", response2.getHeaderString(Validation.VALIDATION_HEADER));
+        ViolationReport report = response2.readEntity(ViolationReport.class);
+        TestUtil.countViolations(report, 0, 0, 1, 0);
+        used = target.path("used").request().get(boolean.class);
+        Assert.assertFalse(used);
+    }
 }

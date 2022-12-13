@@ -1,14 +1,15 @@
 package org.jboss.resteasy.test.crypto;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.ws.rs.core.GenericType;
+
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.junit.Assert;
 import org.junit.Test;
-
-import jakarta.ws.rs.core.GenericType;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @tpSubChapter Crypto
@@ -17,27 +18,27 @@ import java.util.List;
  * @tpSince RESTEasy 3.0.16
  */
 public class GenericTypeCryptoTest {
-   protected static final Logger logger = Logger.getLogger(GenericTypeCryptoTest.class.getName());
+    protected static final Logger logger = Logger.getLogger(GenericTypeCryptoTest.class.getName());
 
-   /**
-    * @tpTestDetails Check GenerycType class on ArrayList
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testGenericType() throws Exception {
-      GenericType<List<String>> stringListType = new GenericType<List<String>>() {
-      };
-      logger.info("type: " + stringListType.getType());
-      logger.info("raw type: " + stringListType.getRawType());
-      PKCS7SignatureInput<List<String>> input = new PKCS7SignatureInput<>();
-      input.setType(stringListType);
-      Field field = PKCS7SignatureInput.class.getDeclaredField("entity");
-      field.setAccessible(true);
-      List<String> list = new ArrayList<>();
-      list.add("abc");
-      field.set(input, list);
-      List<String> list2 = input.getEntity(stringListType, null);
-      logger.info("list2: " + list2);
-      Assert.assertEquals("Wrong decryption and encryption of list", list, list2);
-   }
+    /**
+     * @tpTestDetails Check GenerycType class on ArrayList
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGenericType() throws Exception {
+        GenericType<List<String>> stringListType = new GenericType<List<String>>() {
+        };
+        logger.info("type: " + stringListType.getType());
+        logger.info("raw type: " + stringListType.getRawType());
+        PKCS7SignatureInput<List<String>> input = new PKCS7SignatureInput<>();
+        input.setType(stringListType);
+        Field field = PKCS7SignatureInput.class.getDeclaredField("entity");
+        field.setAccessible(true);
+        List<String> list = new ArrayList<>();
+        list.add("abc");
+        field.set(input, list);
+        List<String> list2 = input.getEntity(stringListType, null);
+        logger.info("list2: " + list2);
+        Assert.assertEquals("Wrong decryption and encryption of list", list, list2);
+    }
 }

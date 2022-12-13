@@ -23,14 +23,13 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
-public @interface Form
-{
-   /**
-    * This is a form parameter prefix you want applied to any @FormParam variables in the object
-    * See documentation for more details.
-    *
-    * @return prefix
-    */
-   String prefix() default "";
+@Target({ ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD })
+public @interface Form {
+    /**
+     * This is a form parameter prefix you want applied to any @FormParam variables in the object
+     * See documentation for more details.
+     *
+     * @return prefix
+     */
+    String prefix() default "";
 }

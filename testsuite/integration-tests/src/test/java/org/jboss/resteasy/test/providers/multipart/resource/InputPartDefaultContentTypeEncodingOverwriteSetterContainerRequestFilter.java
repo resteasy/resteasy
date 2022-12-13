@@ -12,11 +12,10 @@ import org.jboss.resteasy.test.providers.multipart.InputPartDefaultContentTypeEn
 @Provider
 public class InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter implements ContainerRequestFilter {
 
-   @Override
-   public void filter(ContainerRequestContext requestContext) throws IOException
-   {
-      requestContext.setProperty(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
-            InputPartDefaultContentTypeEncodingOverwriteTest.TEXT_PLAIN_WITH_CHARSET_UTF_8);
-   }
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        requestContext.setProperty(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
+                InputPartDefaultContentTypeEncodingOverwriteTest.TEXT_PLAIN_WITH_CHARSET_UTF_8);
+    }
 
 }

@@ -1,12 +1,13 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
+import java.util.concurrent.Executor;
+
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import org.jboss.resteasy.concurrent.ContextualExecutors;
-
-import java.util.concurrent.Executor;
 
 class ContextPropagatorOnCompletableCreateAction
         implements BiFunction<Completable, CompletableObserver, CompletableObserver> {
@@ -26,7 +27,7 @@ class ContextPropagatorOnCompletableCreateAction
         private final Executor contextExecutor;
 
         private ContextCapturerCompletable(final Completable s, final CompletableObserver o,
-                                           final Executor contextExecutor) {
+                final Executor contextExecutor) {
             this.source = o;
             this.contextExecutor = contextExecutor;
         }

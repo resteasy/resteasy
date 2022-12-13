@@ -14,38 +14,38 @@ import io.reactivex.Single;
 @Path("dummyservice")
 public class ClientResponseFilterExceptionResourceImpl {
 
-   @Path("sync")
-   @GET
-   @Produces("text/plain")
-   public String sync() {
-      return "sync";
-   }
+    @Path("sync")
+    @GET
+    @Produces("text/plain")
+    public String sync() {
+        return "sync";
+    }
 
-   @Path("cs")
-   @GET
-   @Produces("text/plain")
-   public CompletionStage<String> cs() {
-      return CompletableFuture.completedFuture("cs");
-   }
+    @Path("cs")
+    @GET
+    @Produces("text/plain")
+    public CompletionStage<String> cs() {
+        return CompletableFuture.completedFuture("cs");
+    }
 
-   @Path("single")
-   @GET
-   @Produces("text/plain")
-   public Single<String> single() {
-      return Single.just("single");
-   }
+    @Path("single")
+    @GET
+    @Produces("text/plain")
+    public Single<String> single() {
+        return Single.just("single");
+    }
 
-   @Path("observable")
-   @GET
-   @Produces("text/plain")
-   public Observable<String> observable() {
-      return Observable.just("observable");
-   }
+    @Path("observable")
+    @GET
+    @Produces("text/plain")
+    public Observable<String> observable() {
+        return Observable.just("observable");
+    }
 
-   @Path("flowable")
-   @GET
-   @Produces("text/plain")
-   public Flowable<String> flowable() {
-      return Flowable.just("flowable");
-   }
+    @Path("flowable")
+    @GET
+    @Produces("text/plain")
+    public Flowable<String> flowable() {
+        return Flowable.just("flowable");
+    }
 }

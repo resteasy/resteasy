@@ -28,40 +28,44 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Filters fields from json object. Specifies the filter implementation class in web.xml.
- * JsonFilterParent defines the @JsonFilter annotation. JsonFilter applies to its subclass JsonFilterChild as well.
+ *                    JsonFilterParent defines the @JsonFilter annotation. JsonFilter applies to its subclass JsonFilterChild as
+ *                    well.
  * @tpSince RESTEasy 3.1.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class JsonFilterSuperClassTest {
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonFilterSuperClassTest.class.getSimpleName());
-      war.addClasses(JsonFilterParent.class, JsonFilterChild.class, PersonType.class, ObjectFilterModifier.class,
-            ObjectWriterModifierFilter.class);
-      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-      war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(JsonFilterSuperClassTest.class.getSimpleName());
+        war.addClasses(JsonFilterParent.class, JsonFilterChild.class, PersonType.class, ObjectFilterModifier.class,
+                ObjectWriterModifierFilter.class);
+        war.addAsManifestResource(
+                new StringAsset(
+                        "Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"),
+                "MANIFEST.MF");
+        war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
+        return TestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, JsonFilterSuperClassTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, JsonFilterSuperClassTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Json string in the response is correctly filtered
-    * @tpSince RESTEasy 3.1.0
-    */
-   @Test
-   public void testJacksonStringInSuperClass() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/superclass/333"));
-      Response response = target.request().get();
-      response.bufferEntity();
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertTrue("Filter doesn't work", !response.readEntity(String.class).contains("id") &&
-            response.readEntity(String.class).contains("name"));
-      client.close();
-   }
+    /**
+     * @tpTestDetails Json string in the response is correctly filtered
+     * @tpSince RESTEasy 3.1.0
+     */
+    @Test
+    public void testJacksonStringInSuperClass() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(generateURL("/superclass/333"));
+        Response response = target.request().get();
+        response.bufferEntity();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertTrue("Filter doesn't work", !response.readEntity(String.class).contains("id") &&
+                response.readEntity(String.class).contains("name"));
+        client.close();
+    }
 }

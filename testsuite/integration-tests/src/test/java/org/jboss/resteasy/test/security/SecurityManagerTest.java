@@ -57,7 +57,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@ServerSetup({LoggingSetupTask.class, SecurityManagerTest.ConfigureSetupTask.class})
+@ServerSetup({ LoggingSetupTask.class, SecurityManagerTest.ConfigureSetupTask.class })
 public class SecurityManagerTest {
     private static final String PROPERTY_NAME = SecurityManagerTest.class.getName() + ".test";
     private static final String ENV_NAME = "TEST_ENV_VAR";
@@ -94,8 +94,8 @@ public class SecurityManagerTest {
                                 new ConfigPropertyPermission(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.name()),
                                 // Required to fall through to the default value
                                 new RuntimePermission("getenv." + Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.name()),
-                                new RuntimePermission("getenv." + ENV_NAME)
-                        ), "permissions.xml");
+                                new RuntimePermission("getenv." + ENV_NAME)),
+                        "permissions.xml");
     }
 
     @BeforeClass
@@ -119,7 +119,8 @@ public class SecurityManagerTest {
     @Test
     public void systemPropertyFailed() throws Exception {
         try (Client client = ClientBuilder.newClient()) {
-            final Response response = client.target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
+            final Response response = client
+                    .target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
             Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
@@ -135,7 +136,8 @@ public class SecurityManagerTest {
                     .request().get();
             final String value = checkFailedResponse(response);
             Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
-                    value.contains("\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\""));
+                    value.contains(
+                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\""));
         }
     }
 
@@ -159,7 +161,8 @@ public class SecurityManagerTest {
                     .request().get();
             final String value = checkFailedResponse(response);
             Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
-                    value.contains("\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\""));
+                    value.contains(
+                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\""));
         }
     }
 
@@ -178,7 +181,8 @@ public class SecurityManagerTest {
     @Test
     public void systemProperty() throws Exception {
         try (Client client = ClientBuilder.newClient()) {
-            final Response response = client.target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
+            final Response response = client
+                    .target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkSuccessfulResponse(response);
             Assert.assertEquals("test.value", value);
@@ -221,7 +225,7 @@ public class SecurityManagerTest {
     private static String checkFailedResponse(final Response response) {
         final String value = response.readEntity(String.class);
         Assert.assertEquals(String.format("Expected %s got %s. Response: \"%s\"",
-                        Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(), value),
+                Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(), value),
                 Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         return value;
     }
@@ -229,7 +233,7 @@ public class SecurityManagerTest {
     private static String checkSuccessfulResponse(final Response response) {
         final String value = response.readEntity(String.class);
         Assert.assertEquals(String.format("Expected %s got %s. Response: \"%s\"",
-                        Response.Status.OK.getStatusCode(), response.getStatus(), value),
+                Response.Status.OK.getStatusCode(), response.getStatus(), value),
                 Response.Status.OK, response.getStatusInfo());
         return value;
     }

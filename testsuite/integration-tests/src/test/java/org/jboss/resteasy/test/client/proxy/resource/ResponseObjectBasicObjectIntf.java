@@ -1,21 +1,21 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
+import jakarta.ws.rs.HeaderParam;
+
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.ResponseObject;
 import org.jboss.resteasy.annotations.Status;
 
-import jakarta.ws.rs.HeaderParam;
-
 @ResponseObject
 public interface ResponseObjectBasicObjectIntf {
-   @Status
-   int status();
+    @Status
+    int status();
 
-   @Body
-   String body();
+    @Body
+    String body();
 
-   org.jboss.resteasy.client.jaxrs.internal.ClientResponse response();
+    org.jboss.resteasy.client.jaxrs.internal.ClientResponse response();
 
-   @HeaderParam("Content-Type")
-   String contentType();
+    @HeaderParam("Content-Type")
+    String contentType();
 }

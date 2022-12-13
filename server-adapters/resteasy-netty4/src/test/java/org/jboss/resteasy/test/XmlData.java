@@ -7,28 +7,22 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "data")
-public class XmlData
-{
-   protected String name;
+public class XmlData {
+    protected String name;
 
-   public XmlData(final String data)
-   {
-      this.name = data;
-   }
+    public XmlData(final String data) {
+        this.name = data;
+    }
 
-   public XmlData()
-   {
-   }
+    public XmlData() {
+    }
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

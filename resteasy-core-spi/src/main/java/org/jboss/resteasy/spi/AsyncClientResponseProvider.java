@@ -16,10 +16,10 @@ public interface AsyncClientResponseProvider<T> {
      *
      * @return T reactive type
      */
-   T fromCompletionStage(CompletionStage<?> completionStage);
+    T fromCompletionStage(CompletionStage<?> completionStage);
 
     /**
-     * Turns {@link CompletionStage} to a reactive type in a deferred fashion.  For instance, in the case of
+     * Turns {@link CompletionStage} to a reactive type in a deferred fashion. For instance, in the case of
      * Rx or Reactor, the {@link Supplier#get()} will only be called when subscription happens.
      *
      * @param completionStageSupplier The {@link Supplier} of a {@link CompletionStage} that will produce a value.
@@ -27,5 +27,5 @@ public interface AsyncClientResponseProvider<T> {
      *
      * @return T reactive type
      */
-   T fromCompletionStage(Supplier<CompletionStage<?>> completionStageSupplier);
+    T fromCompletionStage(Supplier<CompletionStage<?>> completionStageSupplier);
 }

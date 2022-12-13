@@ -66,8 +66,7 @@ public class LoadableFeatureTest {
                         FeatureResource.class,
                         TestFeature.class,
                         TestDynamicFeature.class,
-                        TestApplication.class
-                )
+                        TestApplication.class)
                 .addAsServiceProvider(Feature.class, TestFeature.class)
                 .addAsServiceProvider(DynamicFeature.class, TestDynamicFeature.class);
     }
@@ -93,7 +92,6 @@ public class LoadableFeatureTest {
             Assert.assertEquals(TestDynamicFeature.class.getName(), response.readEntity(String.class));
         }
     }
-
 
     public static class TestFeature implements Feature {
 

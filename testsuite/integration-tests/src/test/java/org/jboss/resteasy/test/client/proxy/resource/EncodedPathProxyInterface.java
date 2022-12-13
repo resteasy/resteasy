@@ -9,13 +9,12 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 @Path("test")
-public interface EncodedPathProxyInterface
-{
-   @GET
-   @Path("/encode/{path:.+}")
-   Response encode(@Encoded @PathParam("path") String path, @Context UriInfo info);
+public interface EncodedPathProxyInterface {
+    @GET
+    @Path("/encode/{path:.+}")
+    Response encode(@Encoded @PathParam("path") String path, @Context UriInfo info);
 
-   @GET
-   @Path("/noencode/{path:.+}")
-   Response noencode(@PathParam("path") String path, @Context UriInfo info);
+    @GET
+    @Path("/noencode/{path:.+}")
+    Response noencode(@PathParam("path") String path, @Context UriInfo info);
 }

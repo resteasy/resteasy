@@ -6,10 +6,10 @@ import jakarta.ws.rs.Produces;
 
 @Path("/")
 public class InputStreamResource {
-   @Path("test")
-   @Produces("text/plain")
-   @GET
-   public String get() {
-      return "hello world";
-   }
+    @Path("test")
+    @Produces("text/plain")
+    @GET
+    public String get() {
+        return "hello world";
+    }
 }

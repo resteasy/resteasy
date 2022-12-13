@@ -5,19 +5,20 @@
 // Generated on: 2015.06.18 at 10:10:02 PM CST
 //
 
-
 package org.jboss.resteasy.wadl.jaxb;
 
 import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for ParamStyle.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for ParamStyle.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ *
  * <pre>
  * &lt;simpleType name="ParamStyle"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
@@ -35,33 +36,34 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum ParamStyle {
 
-   @XmlEnumValue("plain")
-   PLAIN("plain"),
-   @XmlEnumValue("query")
-   QUERY("query"),
-   @XmlEnumValue("matrix")
-   MATRIX("matrix"),
-   @XmlEnumValue("header")
-   HEADER("header"),
-   @XmlEnumValue("template")
-   TEMPLATE("template");
-   private final String value;
+    @XmlEnumValue("plain")
+    PLAIN("plain"),
+    @XmlEnumValue("query")
+    QUERY("query"),
+    @XmlEnumValue("matrix")
+    MATRIX("matrix"),
+    @XmlEnumValue("header")
+    HEADER("header"),
+    @XmlEnumValue("template")
+    TEMPLATE("template");
 
-   ParamStyle(final String v) {
-      value = v;
-   }
+    private final String value;
 
-   public String value() {
-      return value;
-   }
+    ParamStyle(final String v) {
+        value = v;
+    }
 
-   public static ParamStyle fromValue(String v) {
-      for (ParamStyle c: ParamStyle.values()) {
-         if (c.value.equals(v)) {
-            return c;
-         }
-      }
-      throw new IllegalArgumentException(v);
-   }
+    public String value() {
+        return value;
+    }
+
+    public static ParamStyle fromValue(String v) {
+        for (ParamStyle c : ParamStyle.values()) {
+            if (c.value.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
 
 }

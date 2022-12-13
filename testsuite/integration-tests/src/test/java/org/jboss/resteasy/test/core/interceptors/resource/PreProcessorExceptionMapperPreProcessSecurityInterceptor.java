@@ -9,9 +9,8 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class PreProcessorExceptionMapperPreProcessSecurityInterceptor implements ContainerRequestFilter {
 
-   @Override
-   public void filter(ContainerRequestContext requestContext) throws IOException
-   {
-      throw new PreProcessorExceptionMapperCandlepinUnauthorizedException();
-   }
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        throw new PreProcessorExceptionMapperCandlepinUnauthorizedException();
+    }
 }

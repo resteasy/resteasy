@@ -2,7 +2,7 @@
 <jboss-deployment-structure>
     <deployment>
         <dependencies>
-            <module name="org.bouncycastle" services="import"/>
+            <module name="org.bouncycastle" services="import" />
         </dependencies>
     </deployment>
 </jboss-deployment-structure>

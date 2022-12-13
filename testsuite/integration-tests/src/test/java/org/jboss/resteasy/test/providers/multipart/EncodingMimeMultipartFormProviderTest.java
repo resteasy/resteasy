@@ -31,37 +31,39 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class EncodingMimeMultipartFormProviderTest {
 
-   private static final String TEST_URI = generateURL("/encoding-mime");
-   // file with non ASCII character
-   private static final String testFilePath = TestUtil.getResourcePath(EncodingMimeMultipartFormProviderTest.class, "EncodingMimeMultipartFormProviderTestData.txt");
+    private static final String TEST_URI = generateURL("/encoding-mime");
+    // file with non ASCII character
+    private static final String testFilePath = TestUtil.getResourcePath(EncodingMimeMultipartFormProviderTest.class,
+            "EncodingMimeMultipartFormProviderTestData.txt");
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EncodingMimeMultipartFormProviderTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, EncodingMimeMultipartFormProviderResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(EncodingMimeMultipartFormProviderTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, EncodingMimeMultipartFormProviderResource.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, EncodingMimeMultipartFormProviderTest.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, EncodingMimeMultipartFormProviderTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Test of filename encoding
-    * @tpSince RESTEasy 3.6.0
-    */
-   @Test
-   public void testPostFormFile() throws Exception {
-      // prepare file
-      File file = new File(testFilePath);
-      Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
+    /**
+     * @tpTestDetails Test of filename encoding
+     * @tpSince RESTEasy 3.6.0
+     */
+    @Test
+    public void testPostFormFile() throws Exception {
+        // prepare file
+        File file = new File(testFilePath);
+        Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
 
-      MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
-      mpfdo.addFormData("file_upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE, EncodingMimeMultipartFormProviderResource.FILENAME_NON_ASCII, true);
+        MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
+        mpfdo.addFormData("file_upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE,
+                EncodingMimeMultipartFormProviderResource.FILENAME_NON_ASCII, true);
 
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      Response response = client.target(TEST_URI + "/file").request()
-              .post(Entity.entity(mpfdo, MediaType.MULTIPART_FORM_DATA_TYPE));
-      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-      client.close();
-   }
+        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
+        Response response = client.target(TEST_URI + "/file").request()
+                .post(Entity.entity(mpfdo, MediaType.MULTIPART_FORM_DATA_TYPE));
+        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        client.close();
+    }
 }

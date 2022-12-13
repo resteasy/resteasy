@@ -12,13 +12,13 @@ import org.jboss.logging.Logger;
 @Path("test")
 @Stateful
 public class CDIValidationSessionBeanResource implements CDIValidationSessionBeanProxy {
-   private static final Logger log = Logger.getLogger(CDIValidationSessionBeanResource.class);
+    private static final Logger log = Logger.getLogger(CDIValidationSessionBeanResource.class);
 
-   @GET
-   @Path("resource/{param}")
-   @Produces(MediaType.TEXT_PLAIN)
-   public int test(@PathParam("param") int param) {
-      log.info("entering CDIValidationSessionBeanResource.test()");
-      return param;
-   }
+    @GET
+    @Path("resource/{param}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public int test(@PathParam("param") int param) {
+        log.info("entering CDIValidationSessionBeanResource.test()");
+        return param;
+    }
 }

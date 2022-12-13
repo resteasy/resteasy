@@ -85,8 +85,8 @@ public abstract class SeBootstrapTest {
         start(new DefaultApplication());
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(instance.configuration()
-                            .baseUriBuilder()
-                            .path("default/test/constructed"))
+                    .baseUriBuilder()
+                    .path("default/test/constructed"))
                     .request()
                     .get();
             Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -100,7 +100,8 @@ public abstract class SeBootstrapTest {
         final EmbeddedServer server = instance.unwrap(getEmbeddedServerClass());
         Assert.assertNotNull(server);
         final Application application = server.getDeployment().getApplication();
-        Assert.assertTrue(String.format("Expected %s but found %s", SeBootstrapApplication1.class, application), application instanceof SeBootstrapApplication1);
+        Assert.assertTrue(String.format("Expected %s but found %s", SeBootstrapApplication1.class, application),
+                application instanceof SeBootstrapApplication1);
     }
 
     @Test
@@ -108,16 +109,16 @@ public abstract class SeBootstrapTest {
         start(SeBootstrapApplication1.class);
         try (Client client = ClientBuilder.newClient()) {
             Response response = client.target(instance.configuration()
-                            .baseUriBuilder()
-                            .path("setest1/no-index/defined"))
+                    .baseUriBuilder()
+                    .path("setest1/no-index/defined"))
                     .request()
                     .get();
             Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assert.assertEquals("Greetings defined", response.readEntity(String.class));
 
             response = client.target(instance.configuration()
-                            .baseUriBuilder()
-                            .path("setest1/test/skipped"))
+                    .baseUriBuilder()
+                    .path("setest1/test/skipped"))
                     .request()
                     .get();
             Assert.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
@@ -129,8 +130,8 @@ public abstract class SeBootstrapTest {
         start(SeBootstrapApplication2.class);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(instance.configuration()
-                            .baseUriBuilder()
-                            .path("setest2/test/scanned"))
+                    .baseUriBuilder()
+                    .path("setest2/test/scanned"))
                     .request()
                     .get();
             Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -143,8 +144,8 @@ public abstract class SeBootstrapTest {
         start(NoScanAnnotation.class);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(instance.configuration()
-                            .baseUriBuilder()
-                            .path("noscan/test/skipped"))
+                    .baseUriBuilder()
+                    .path("noscan/test/skipped"))
                     .request()
                     .get();
             Assert.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
@@ -162,8 +163,8 @@ public abstract class SeBootstrapTest {
                 .build());
         try (Client client = ClientBuilder.newBuilder().sslContext(TestSslUtil.createClientSslContext()).build()) {
             final Response response = client.target(instance.configuration()
-                            .baseUriBuilder()
-                            .path("default/test/secure"))
+                    .baseUriBuilder()
+                    .path("default/test/secure"))
                     .request()
                     .get();
             Assert.assertEquals(Response.Status.OK, response.getStatusInfo());

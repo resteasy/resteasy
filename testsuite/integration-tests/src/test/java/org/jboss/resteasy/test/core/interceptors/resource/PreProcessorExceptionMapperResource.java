@@ -6,9 +6,9 @@ import jakarta.ws.rs.Produces;
 
 @Path("/interception")
 public class PreProcessorExceptionMapperResource {
-   @GET
-   @Produces("text/plain")
-   public String get() {
-      return "hello world";
-   }
+    @GET
+    @Produces("text/plain")
+    public String get() {
+        return "hello world";
+    }
 }

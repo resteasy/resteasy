@@ -6,6 +6,6 @@ import jakarta.ws.rs.Path;
 
 @Path("/myform")
 public interface FormResourceProxy {
-   @POST
-   void post(@BeanParam FormResourceClientFormSecond form2);
+    @POST
+    void post(@BeanParam FormResourceClientFormSecond form2);
 }

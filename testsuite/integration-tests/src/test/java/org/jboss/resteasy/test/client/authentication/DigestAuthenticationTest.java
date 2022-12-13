@@ -46,8 +46,7 @@ public class DigestAuthenticationTest extends AbstractDigestAuthenticationTest {
                 .addClasses(
                         AbstractDigestAuthenticationTest.class,
                         RestActivator.class,
-                        UserResource.class
-                )
+                        UserResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource(TestAuth.createJBossWebXml(), "jboss-web.xml")
                 .addAsWebInfResource(TestAuth.createWebXml("DIGEST"), "web.xml");

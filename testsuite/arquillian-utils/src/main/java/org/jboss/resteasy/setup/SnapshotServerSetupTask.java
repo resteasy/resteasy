@@ -19,6 +19,10 @@
 
 package org.jboss.resteasy.setup;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.client.ModelControllerClient;
@@ -26,10 +30,6 @@ import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.utils.ServerReload;
 import org.junit.Assert;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -80,15 +80,18 @@ public class SnapshotServerSetupTask implements ServerSetupTask {
             }
             final String snapshot = Operations.readResult(result)
                     .asString();
-            final String fileName = snapshot.contains(File.separator) ? snapshot.substring(snapshot.lastIndexOf(File.separator) + 1) : snapshot;
+            final String fileName = snapshot.contains(File.separator)
+                    ? snapshot.substring(snapshot.lastIndexOf(File.separator) + 1)
+                    : snapshot;
             return () -> {
                 executeReloadAndWaitForCompletion(client.getControllerClient(), fileName);
 
                 final ModelNode result1 = client.getControllerClient()
                         .execute(Operations.createOperation("write-config"));
                 if (!Operations.isSuccessfulOutcome(result1)) {
-                    Assert.fail("Failed to write config after restoring from snapshot " + Operations.getFailureDescription(result1)
-                            .asString());
+                    Assert.fail(
+                            "Failed to write config after restoring from snapshot " + Operations.getFailureDescription(result1)
+                                    .asString());
                 }
             };
         } catch (Exception e) {
@@ -97,7 +100,7 @@ public class SnapshotServerSetupTask implements ServerSetupTask {
     }
 
     private static void executeReloadAndWaitForCompletion(final ModelControllerClient client,
-                                                          final String serverConfig) {
+            final String serverConfig) {
         final ModelNode op = Operations.createOperation("reload");
         if (serverConfig != null) {
             op.get("server-config")

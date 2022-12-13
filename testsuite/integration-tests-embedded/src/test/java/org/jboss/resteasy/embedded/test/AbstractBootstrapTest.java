@@ -29,6 +29,7 @@ import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
+
 import org.jboss.resteasy.core.se.ConfigurationOption;
 import org.junit.After;
 import org.junit.Before;

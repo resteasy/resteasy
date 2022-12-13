@@ -1,6 +1,5 @@
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <servlet>
         <servlet-name>sse</servlet-name>
@@ -13,9 +12,9 @@
             <param-value>org.jboss.resteasy.test.providers.sse.SsePostResourceMethodInvokerApplication</param-value>
         </init-param>
         <init-param>
-             <param-name>resteasy.servlet.mapping.prefix</param-name>
-              <param-value>/</param-value>
-        </init-param> 
+            <param-name>resteasy.servlet.mapping.prefix</param-name>
+            <param-value>/</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>

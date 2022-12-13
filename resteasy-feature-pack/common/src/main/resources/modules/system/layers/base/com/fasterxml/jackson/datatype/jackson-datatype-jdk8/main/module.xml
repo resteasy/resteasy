@@ -20,12 +20,12 @@
   -->
 <module xmlns="urn:jboss:module:1.9" name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8">
     <resources>
-        <artifact name="${com.fasterxml.jackson.datatype:jackson-datatype-jdk8}"/>
+        <artifact name="${com.fasterxml.jackson.datatype:jackson-datatype-jdk8}" />
     </resources>
 
     <dependencies>
-        <module name="com.fasterxml.jackson.core.jackson-annotations"/>
-        <module name="com.fasterxml.jackson.core.jackson-core"/>
-        <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="com.fasterxml.jackson.core.jackson-annotations" />
+        <module name="com.fasterxml.jackson.core.jackson-core" />
+        <module name="com.fasterxml.jackson.core.jackson-databind" />
     </dependencies>
 </module>

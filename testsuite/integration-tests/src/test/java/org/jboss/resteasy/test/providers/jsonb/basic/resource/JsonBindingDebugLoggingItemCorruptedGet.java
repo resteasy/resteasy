@@ -4,7 +4,8 @@ public class JsonBindingDebugLoggingItemCorruptedGet {
     Integer a;
 
     public Integer getA() {
-        if (true) throw new RuntimeException(JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName());
+        if (true)
+            throw new RuntimeException(JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName());
         return a;
     }
 

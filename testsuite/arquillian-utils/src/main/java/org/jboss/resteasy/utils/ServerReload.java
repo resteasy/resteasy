@@ -111,8 +111,9 @@ public class ServerReload {
      */
     public static void executeReloadAndWaitForCompletion(final ModelControllerClient client, final int timeout) {
         executeReload(client);
-        final ModelControllerClientConfiguration config = (client instanceof TestManagementClient) ? ((TestManagementClient) client).getConfiguration() :
-                TestManagementClient.createDefaultConfig();
+        final ModelControllerClientConfiguration config = (client instanceof TestManagementClient)
+                ? ((TestManagementClient) client).getConfiguration()
+                : TestManagementClient.createDefaultConfig();
         waitForLiveServerToReload(timeout, config);
     }
 
@@ -126,10 +127,11 @@ public class ServerReload {
      * @throws AssertionError if the reload does not complete within the specified timeout
      */
     public static void executeReloadAndWaitForCompletion(final ModelControllerClient client, final ModelNode reloadOp,
-                                                         final int timeout) {
+            final int timeout) {
         executeReload(client, reloadOp);
-        final ModelControllerClientConfiguration config = (client instanceof TestManagementClient) ? ((TestManagementClient) client).getConfiguration() :
-                TestManagementClient.createDefaultConfig();
+        final ModelControllerClientConfiguration config = (client instanceof TestManagementClient)
+                ? ((TestManagementClient) client).getConfiguration()
+                : TestManagementClient.createDefaultConfig();
         waitForLiveServerToReload(timeout, config);
     }
 
@@ -147,7 +149,6 @@ public class ServerReload {
         return Operations.isSuccessfulOutcome(rsp) ? Operations.readResult(rsp)
                 .asString() : "failed";
     }
-
 
     /**
      * Checks if the container status is "reload-required" and if it's the case executes reload and waits for completion.
@@ -177,8 +178,7 @@ public class ServerReload {
             } catch (InterruptedException ignore) {
             }
             try (
-                    ModelControllerClient liveClient = ModelControllerClient.Factory.create(config)
-            ) {
+                    ModelControllerClient liveClient = ModelControllerClient.Factory.create(config)) {
                 try {
                     final ModelNode result = liveClient.execute(operation);
                     if (Operations.isSuccessfulOutcome(result) && "running".equals(Operations.readResult(result)

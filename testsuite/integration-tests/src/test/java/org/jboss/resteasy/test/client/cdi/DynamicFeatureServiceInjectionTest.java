@@ -46,8 +46,7 @@ public class DynamicFeatureServiceInjectionTest extends AbstractRegistrationTest
         return createDeployment(DynamicFeatureServiceInjectionTest.class)
                 .addClasses(
                         InjectionFilterFeature.class,
-                        InjectionFilter.class
-                )
+                        InjectionFilter.class)
                 .addAsServiceProvider(DynamicFeature.class, InjectionFilterFeature.class);
     }
 

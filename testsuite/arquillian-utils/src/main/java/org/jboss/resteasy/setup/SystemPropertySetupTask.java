@@ -56,8 +56,9 @@ public abstract class SystemPropertySetupTask implements ServerSetupTask {
         }
         final ModelNode result = managementClient.getControllerClient().execute(builder.build());
         if (!Operations.isSuccessfulOutcome(result)) {
-            throw new RuntimeException(String.format("Failed to add system properties %s%n%s", properties, Operations.getFailureDescription(result)
-                    .asString()));
+            throw new RuntimeException(
+                    String.format("Failed to add system properties %s%n%s", properties, Operations.getFailureDescription(result)
+                            .asString()));
         }
     }
 
@@ -70,8 +71,9 @@ public abstract class SystemPropertySetupTask implements ServerSetupTask {
         }
         final ModelNode result = managementClient.getControllerClient().execute(builder.build());
         if (!Operations.isSuccessfulOutcome(result)) {
-            throw new RuntimeException(String.format("Failed to remove system properties %s%n%s", properties, Operations.getFailureDescription(result)
-                    .asString()));
+            throw new RuntimeException(String.format("Failed to remove system properties %s%n%s", properties,
+                    Operations.getFailureDescription(result)
+                            .asString()));
         }
     }
 }

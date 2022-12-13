@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * This can be used as a value object for incoming/outgoing request/responses
- * of the multipart/form-data mime type.  Parts are marshalled to and from
+ * of the multipart/form-data mime type. Parts are marshalled to and from
  * properties of the value object annotated with the JAX-RS @FormParam
  * anntotation.
  * <p>
@@ -21,8 +21,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
+@Target({ ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MultipartForm
-{
+public @interface MultipartForm {
 }

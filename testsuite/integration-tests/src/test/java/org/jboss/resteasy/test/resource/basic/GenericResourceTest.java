@@ -31,37 +31,37 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class GenericResourceTest {
 
-   private static GenericResourceStudentInterface proxy;
+    private static GenericResourceStudentInterface proxy;
 
-   @BeforeClass
-   public static void setup() {
-      ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateURL(""));
-      proxy = target.register(GenericResourceStudentReader.class).register(GenericResourceStudentWriter.class).proxy(GenericResourceStudentInterface.class);
-   }
+    @BeforeClass
+    public static void setup() {
+        ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateURL(""));
+        proxy = target.register(GenericResourceStudentReader.class).register(GenericResourceStudentWriter.class)
+                .proxy(GenericResourceStudentInterface.class);
+    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
-      war.addClass(GenericResourceStudent.class);
-      war.addClass(GenericResourceStudentInterface.class);
-      war.addClass(GenericResourceCrudResource.class);
-      return TestUtil.finishContainerPrepare(war, null, GenericResourceStudentCrudResource.class, GenericResourceStudentReader.class, GenericResourceStudentWriter.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
+        war.addClass(GenericResourceStudent.class);
+        war.addClass(GenericResourceStudentInterface.class);
+        war.addClass(GenericResourceCrudResource.class);
+        return TestUtil.finishContainerPrepare(war, null, GenericResourceStudentCrudResource.class,
+                GenericResourceStudentReader.class, GenericResourceStudentWriter.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, GenericResourceTest.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, GenericResourceTest.class.getSimpleName());
+    }
 
-   @Test
-   public void testGet()
-   {
-      Assert.assertTrue(proxy.get(1).getName().equals("Jozef Hartinger"));
-   }
+    @Test
+    public void testGet() {
+        Assert.assertTrue(proxy.get(1).getName().equals("Jozef Hartinger"));
+    }
 
-   @Test
-   public void testPut()
-   {
-      proxy.put(2, new GenericResourceStudent("John Doe"));
-      Assert.assertTrue(proxy.get(2).getName().equals("John Doe"));
-   }
+    @Test
+    public void testPut() {
+        proxy.put(2, new GenericResourceStudent("John Doe"));
+        Assert.assertTrue(proxy.get(2).getName().equals("John Doe"));
+    }
 }

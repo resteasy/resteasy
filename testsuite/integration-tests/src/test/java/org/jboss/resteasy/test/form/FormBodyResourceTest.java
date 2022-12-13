@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.form;
 
+import jakarta.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceClient;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceForm;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceResource;
@@ -24,25 +25,25 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class FormBodyResourceTest {
-   @Deployment
-   public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(FormParameterTest.class.getSimpleName());
-      war.addClasses(FormBodyResourceClient.class);
-      war.addClasses(FormBodyResourceForm.class);
-      return TestUtil.finishContainerPrepare(war, null, FormBodyResourceResource.class);
-   }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchive(FormParameterTest.class.getSimpleName());
+        war.addClasses(FormBodyResourceClient.class);
+        war.addClasses(FormBodyResourceForm.class);
+        return TestUtil.finishContainerPrepare(war, null, FormBodyResourceResource.class);
+    }
 
-   /**
-    * @tpTestDetails Check body of form.
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void test() {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      FormBodyResourceClient proxy = client.target(
-            PortProviderUtil.generateBaseUrl(FormParameterTest.class.getSimpleName()))
-            .proxyBuilder(FormBodyResourceClient.class).build();
-      Assert.assertEquals("foo.gotIt", proxy.put("foo"));
-      client.close();
-   }
+    /**
+     * @tpTestDetails Check body of form.
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void test() {
+        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
+        FormBodyResourceClient proxy = client.target(
+                PortProviderUtil.generateBaseUrl(FormParameterTest.class.getSimpleName()))
+                .proxyBuilder(FormBodyResourceClient.class).build();
+        Assert.assertEquals("foo.gotIt", proxy.put("foo"));
+        client.close();
+    }
 }

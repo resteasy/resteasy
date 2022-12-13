@@ -1,13 +1,5 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.plugins.server.reactor.netty.NettyUtil;
-import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
-import org.jboss.resteasy.spi.AsyncOutputStream;
-
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -15,6 +7,15 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.plugins.server.reactor.netty.NettyUtil;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 
 @Provider
 public class AsyncWriter implements AsyncMessageBodyWriter<AsyncWriterData> {
@@ -45,7 +46,7 @@ public class AsyncWriter implements AsyncMessageBodyWriter<AsyncWriterData> {
                         throw new RuntimeException(e);
                     }
                 })
-                        : CompletableFuture.completedFuture(null);
+                : CompletableFuture.completedFuture(null);
         return start.thenCompose(v -> entityStream.asyncWrite(resp.getBytes(Charset.forName("UTF-8"))))
                 .thenCompose(v -> entityStream.asyncFlush());
     }

@@ -16,7 +16,8 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 /**
- * Contains utility methods used for creating, running and getting results of jars meant to test ClientConfigProvider functionality.
+ * Contains utility methods used for creating, running and getting results of jars meant to test ClientConfigProvider
+ * functionality.
  */
 class ClientConfigProviderTestJarHelper {
 
@@ -52,21 +53,24 @@ class ClientConfigProviderTestJarHelper {
         basicAuthJarConfigProperties.mainClassPath = PACKAGE_PATH + basicAuthJarConfigProperties.mainClassCompiled;
         basicAuthJarConfigProperties.mainClassWithPackage = PACKAGE_NAME + "." + basicAuthJarConfigProperties.mainClassCompiled;
         basicAuthJarConfigProperties.mockedClientConfigProviderImplName = "ClientConfigProviderImplCredentials";
-        basicAuthJarConfigProperties.mockedClientConfigProviderImplClassPath = PACKAGE_PATH + basicAuthJarConfigProperties.mockedClientConfigProviderImplName + ".class";
+        basicAuthJarConfigProperties.mockedClientConfigProviderImplClassPath = PACKAGE_PATH
+                + basicAuthJarConfigProperties.mockedClientConfigProviderImplName + ".class";
 
         sslJarConfigProperties.mainClassName = "ClientConfigTestMainClass";
         sslJarConfigProperties.mainClassCompiled = sslJarConfigProperties.mainClassName + ".class";
         sslJarConfigProperties.mainClassPath = PACKAGE_PATH + sslJarConfigProperties.mainClassCompiled;
         sslJarConfigProperties.mainClassWithPackage = PACKAGE_NAME + "." + sslJarConfigProperties.mainClassCompiled;
         sslJarConfigProperties.mockedClientConfigProviderImplName = "ClientConfigProviderImplMocked";
-        sslJarConfigProperties.mockedClientConfigProviderImplClassPath = PACKAGE_PATH + sslJarConfigProperties.mockedClientConfigProviderImplName + ".class";
+        sslJarConfigProperties.mockedClientConfigProviderImplClassPath = PACKAGE_PATH
+                + sslJarConfigProperties.mockedClientConfigProviderImplName + ".class";
 
         bearerJarConfigProperties.mainClassName = "ClientConfigBearerTokenTestMainClass";
         bearerJarConfigProperties.mainClassCompiled = bearerJarConfigProperties.mainClassName + ".class";
         bearerJarConfigProperties.mainClassPath = PACKAGE_PATH + bearerJarConfigProperties.mainClassCompiled;
         bearerJarConfigProperties.mainClassWithPackage = PACKAGE_NAME + "." + bearerJarConfigProperties.mainClassCompiled;
         bearerJarConfigProperties.mockedClientConfigProviderImplName = "ClientConfigProviderImplWithBearerMocked";
-        bearerJarConfigProperties.mockedClientConfigProviderImplClassPath = PACKAGE_PATH + bearerJarConfigProperties.mockedClientConfigProviderImplName + ".class";
+        bearerJarConfigProperties.mockedClientConfigProviderImplClassPath = PACKAGE_PATH
+                + bearerJarConfigProperties.mockedClientConfigProviderImplName + ".class";
     }
 
     static String createClientConfigProviderTestJarWithBASIC() throws IOException {
@@ -89,7 +93,7 @@ class ClientConfigProviderTestJarHelper {
         File file = new File(JAR_NAME);
         try (JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(file), manifest)) {
             ClassLoader classLoader = ClientConfigProviderTestJarHelper.class.getClassLoader();
-            String[] addClassesToJAR = {properties.mainClassPath, properties.mockedClientConfigProviderImplClassPath};
+            String[] addClassesToJAR = { properties.mainClassPath, properties.mockedClientConfigProviderImplClassPath };
             for (String name : addClassesToJAR) {
                 putClassToJar(jarOutputStream, name,
                         Objects.requireNonNull(classLoader.getResource(name)));
@@ -111,14 +115,18 @@ class ClientConfigProviderTestJarHelper {
     }
 
     static Process runClientConfigProviderBearerTestJar(TestType testType, String jarPath) throws IOException {
-        return ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(jarPath, new String[]{bearerJarConfigProperties.mainClassName, testType.name()});
+        return ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(jarPath,
+                new String[] { bearerJarConfigProperties.mainClassName, testType.name() });
     }
 
     static Process runClientConfigProviderTestJar(String jarPath, String[] args) throws IOException {
         // use quotation marks for classpath on windows because folder names can have spaces
-        String classPath = System.getProperty("os.name").contains("indows") ? "\"" + jarPath + ";" + System.getProperty("java.class.path") + "\"" : jarPath + ":" + System.getProperty("java.class.path");
+        String classPath = System.getProperty("os.name").contains("indows")
+                ? "\"" + jarPath + ";" + System.getProperty("java.class.path") + "\""
+                : jarPath + ":" + System.getProperty("java.class.path");
         return Runtime.getRuntime()
-                .exec("java -cp "  +  classPath + " " + ClientConfigProviderTestJarHelper.PACKAGE_NAME + "." + String.join(" ", args) );
+                .exec("java -cp " + classPath + " " + ClientConfigProviderTestJarHelper.PACKAGE_NAME + "."
+                        + String.join(" ", args));
     }
 
     static String getResultOfProcess(Process proc) throws IOException {

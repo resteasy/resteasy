@@ -9,14 +9,6 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.SeBootstrap.Configuration;
 import jakarta.ws.rs.core.Application;
 
-import io.undertow.Undertow;
-import io.undertow.server.handlers.PathHandler;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.ServletContainer;
-import io.undertow.servlet.api.ServletInfo;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
@@ -26,6 +18,14 @@ import org.jboss.weld.environment.servlet.Listener;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
+import io.undertow.Undertow;
+import io.undertow.server.handlers.PathHandler;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ServletContainer;
+import io.undertow.servlet.api.ServletInfo;
+import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 /**
  * An {@link EmbeddedServer} that uses Undertow and enables CDI support.

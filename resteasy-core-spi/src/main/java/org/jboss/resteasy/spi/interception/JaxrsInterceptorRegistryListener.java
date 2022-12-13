@@ -8,8 +8,7 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorF
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface JaxrsInterceptorRegistryListener
-{
-   void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory);
+public interface JaxrsInterceptorRegistryListener {
+    void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory);
 
 }

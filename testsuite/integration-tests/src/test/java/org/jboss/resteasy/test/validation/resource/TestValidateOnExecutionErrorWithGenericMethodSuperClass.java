@@ -7,9 +7,9 @@ import jakarta.ws.rs.Path;
 
 @Path("")
 public class TestValidateOnExecutionErrorWithGenericMethodSuperClass<T> {
-   @POST
-   @Path("bar")
-   @ValidateOnExecution(type = {ExecutableType.ALL})
-   public void override(T qux) {
-   }
+    @POST
+    @Path("bar")
+    @ValidateOnExecution(type = { ExecutableType.ALL })
+    public void override(T qux) {
+    }
 }

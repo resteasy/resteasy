@@ -13,54 +13,46 @@ import org.jboss.resteasy.spi.metadata.ResourceClass;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SingletonResource implements ResourceFactory
-{
-   private final Object obj;
-   private final ResourceClass resourceClass;
+public class SingletonResource implements ResourceFactory {
+    private final Object obj;
+    private final ResourceClass resourceClass;
 
-   @Deprecated
-   public SingletonResource(final Object obj)
-   {
-      this.obj = obj;
-      this.resourceClass = ResourceBuilder.rootResourceFromAnnotations(obj.getClass());
-   }
+    @Deprecated
+    public SingletonResource(final Object obj) {
+        this.obj = obj;
+        this.resourceClass = ResourceBuilder.rootResourceFromAnnotations(obj.getClass());
+    }
 
-   public SingletonResource(final Object obj, final ResourceClass resourceClass)
-   {
-      this.obj = obj;
-      this.resourceClass = resourceClass;
-   }
+    public SingletonResource(final Object obj, final ResourceClass resourceClass) {
+        this.obj = obj;
+        this.resourceClass = resourceClass;
+    }
 
-   public void registered(ResteasyProviderFactory factory)
-   {
-      factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj, false);
-   }
+    public void registered(ResteasyProviderFactory factory) {
+        factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj, false);
+    }
 
-   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
-   {
-      return obj;
-   }
+    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory) {
+        return obj;
+    }
 
-   public void unregistered()
-   {
-   }
+    public void unregistered() {
+    }
 
-   public Class<?> getScannableClass()
-   {
-      return obj.getClass();
-   }
+    public Class<?> getScannableClass() {
+        return obj.getClass();
+    }
 
-   public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
-   {
-   }
+    public void requestFinished(HttpRequest request, HttpResponse response, Object resource) {
+    }
 
-   public String traceInfo() {
-      StringBuilder builder = new StringBuilder();
-      builder.append("[")
-              .append("SINGLETON").append("|")
-              .append(resourceClass.getClazz()).append("|")
-              .append(obj.toString())
-              .append("]");
-      return builder.toString();
-   }
+    public String traceInfo() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[")
+                .append("SINGLETON").append("|")
+                .append(resourceClass.getClazz()).append("|")
+                .append(obj.toString())
+                .append("]");
+        return builder.toString();
+    }
 }

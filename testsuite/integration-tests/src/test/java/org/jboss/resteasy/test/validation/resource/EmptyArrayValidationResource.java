@@ -9,9 +9,9 @@ import jakarta.ws.rs.core.MediaType;
 @Path("")
 public class EmptyArrayValidationResource {
 
-   @POST
-   @Path("emptyarray")
-   @Consumes(MediaType.APPLICATION_JSON)
-   public void test(@Valid EmptyArrayValidationFoo foo) {
-   }
+    @POST
+    @Path("emptyarray")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void test(@Valid EmptyArrayValidationFoo foo) {
+    }
 }

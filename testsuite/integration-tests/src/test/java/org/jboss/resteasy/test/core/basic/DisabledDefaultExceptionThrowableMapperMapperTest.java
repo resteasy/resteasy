@@ -54,22 +54,21 @@ public class DisabledDefaultExceptionThrowableMapperMapperTest extends DisabledD
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class, DisabledDefaultExceptionThrowableMapperMapperTest.class.getSimpleName() + ".war")
+        return ShrinkWrap
+                .create(WebArchive.class, DisabledDefaultExceptionThrowableMapperMapperTest.class.getSimpleName() + ".war")
                 .addClasses(
                         DisabledDefaultExceptionMapperTest.class,
                         ExceptionResource.class,
-                        TestUtil.class
-                )
+                        TestUtil.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 // This can be removed if WFARQ-118 is resolved
                 .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                                // Required for Arquillian
-                                new ReflectPermission("suppressAccessChecks"),
-                                new PropertyPermission("arquillian.*", "read"),
-                                new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
-                                // Required for JUnit
-                                new RuntimePermission("accessDeclaredMembers")
-                        ),
+                        // Required for Arquillian
+                        new ReflectPermission("suppressAccessChecks"),
+                        new PropertyPermission("arquillian.*", "read"),
+                        new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+                        // Required for JUnit
+                        new RuntimePermission("accessDeclaredMembers")),
                         "permissions.xml");
     }
 
@@ -108,8 +107,7 @@ public class DisabledDefaultExceptionThrowableMapperMapperTest extends DisabledD
         private static String toString(final Throwable t) {
             try (
                     StringWriter writer = new StringWriter();
-                    PrintWriter pw = new PrintWriter(writer)
-            ) {
+                    PrintWriter pw = new PrintWriter(writer)) {
                 t.printStackTrace(pw);
                 return writer.toString();
             } catch (IOException ignore) {

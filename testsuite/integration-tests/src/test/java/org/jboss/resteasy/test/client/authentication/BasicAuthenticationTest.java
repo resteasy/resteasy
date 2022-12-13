@@ -32,8 +32,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import dev.resteasy.client.util.authentication.HttpAuthenticators;
-import dev.resteasy.client.util.authentication.UserCredentials;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -48,6 +46,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import dev.resteasy.client.util.authentication.HttpAuthenticators;
+import dev.resteasy.client.util.authentication.UserCredentials;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -79,8 +80,7 @@ public class BasicAuthenticationTest {
         return ShrinkWrap.create(WebArchive.class, BasicAuthenticationTest.class.getSimpleName() + ".war")
                 .addClasses(
                         RestActivator.class,
-                        UserResource.class
-                )
+                        UserResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource(TestAuth.createJBossWebXml(), "jboss-web.xml")
                 .addAsWebInfResource(TestAuth.createWebXml("BASIC"), "web.xml");
@@ -101,8 +101,7 @@ public class BasicAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.basic(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -128,8 +127,7 @@ public class BasicAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.basic(CREDENTIALS_USER_2))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -146,8 +144,7 @@ public class BasicAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.available(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -161,9 +158,8 @@ public class BasicAuthenticationTest {
     public void invalidBasicAuth() throws Exception {
         try (
                 Client client = ClientBuilder.newBuilder()
-                        .register(HttpAuthenticators.basic(UserCredentials.clear(USER_1, new char[] {'x'})))
-                        .build()
-        ) {
+                        .register(HttpAuthenticators.basic(UserCredentials.clear(USER_1, new char[] { 'x' })))
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();

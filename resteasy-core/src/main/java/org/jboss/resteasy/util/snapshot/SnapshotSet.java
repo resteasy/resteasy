@@ -20,10 +20,10 @@ public class SnapshotSet<T> implements Set<T> {
         this.lockSnapshots = lockSnapshots;
     }
 
-   @SuppressWarnings({"rawtypes", "unchecked"})
-   public SnapshotSet(final Set<T> set, final boolean shallow, final boolean lockSnapshots, final boolean snapFirst) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public SnapshotSet(final Set<T> set, final boolean shallow, final boolean lockSnapshots, final boolean snapFirst) {
         if (delegate instanceof SnapshotSet) {
-            this.delegate = ((SnapshotSet)set).delegate;
+            this.delegate = ((SnapshotSet) set).delegate;
         } else if (shallow) {
             this.delegate = set;
         } else {
@@ -42,7 +42,6 @@ public class SnapshotSet<T> implements Set<T> {
         return !lockSnapshots && this.delegate != Collections.EMPTY_SET && !snapFirst;
     }
 
-
     public synchronized void lockSnapshots() {
         lockSnapshots = true;
     }
@@ -53,66 +52,79 @@ public class SnapshotSet<T> implements Set<T> {
 
     @Override
     public synchronized boolean add(T t) {
-        if (delegateUpdate()) return this.delegate.add(t);
+        if (delegateUpdate())
+            return this.delegate.add(t);
         final Set<T> delegate = copy();
-        if (!delegate.add(t)) return false;
+        if (!delegate.add(t))
+            return false;
         this.delegate = delegate;
         return true;
     }
 
     @Override
     public synchronized boolean remove(Object o) {
-        if (delegateUpdate()) return this.delegate.remove(o);
+        if (delegateUpdate())
+            return this.delegate.remove(o);
         final Set<T> delegate = copy();
-        if (!delegate.remove(o)) return false;
+        if (!delegate.remove(o))
+            return false;
         this.delegate = delegate;
         return true;
     }
 
     @Override
     public synchronized boolean addAll(Collection<? extends T> collection) {
-        if (delegateUpdate()) return this.delegate.addAll(collection);
+        if (delegateUpdate())
+            return this.delegate.addAll(collection);
         final Set<T> delegate = copy();
-        if (!delegate.addAll(collection)) return false;
+        if (!delegate.addAll(collection))
+            return false;
         this.delegate = delegate;
         return true;
     }
 
     @Override
     public synchronized boolean retainAll(Collection<?> collection) {
-        if (delegateUpdate()) return this.delegate.retainAll(collection);
+        if (delegateUpdate())
+            return this.delegate.retainAll(collection);
         final Set<T> delegate = copy();
-        if (!delegate.retainAll(collection)) return false;
+        if (!delegate.retainAll(collection))
+            return false;
         this.delegate = delegate;
         return true;
     }
 
     @Override
     public synchronized boolean removeAll(Collection<?> collection) {
-        if (delegateUpdate()) return this.delegate.removeAll(collection);
+        if (delegateUpdate())
+            return this.delegate.removeAll(collection);
         final Set<T> delegate = copy();
-        if (!delegate.removeAll(collection)) return false;
+        if (!delegate.removeAll(collection))
+            return false;
         this.delegate = delegate;
         return true;
     }
 
     @Override
     public synchronized void clear() {
-        if (delegateUpdate()) this.delegate.clear();
-        if (!this.delegate.isEmpty()) this.delegate = new HashSet<>();
+        if (delegateUpdate())
+            this.delegate.clear();
+        if (!this.delegate.isEmpty())
+            this.delegate = new HashSet<>();
     }
 
     @Override
     public synchronized boolean removeIf(Predicate<? super T> filter) {
-        if (delegateUpdate()) return this.delegate.removeIf(filter);
+        if (delegateUpdate())
+            return this.delegate.removeIf(filter);
         final Set<T> delegate = copy();
-        if (!delegate.removeIf(filter)) return false;
+        if (!delegate.removeIf(filter))
+            return false;
         this.delegate = delegate;
         return true;
     }
 
-
-// read methods
+    // read methods
 
     @Override
     public int size() {

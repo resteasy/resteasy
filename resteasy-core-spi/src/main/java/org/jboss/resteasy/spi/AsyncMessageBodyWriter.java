@@ -28,12 +28,13 @@ public interface AsyncMessageBodyWriter<T> extends MessageBodyWriter<T> {
      * @param entityStream the {@link AsyncOutputStream} for the HTTP entity. The
      *                     implementation should not close the output stream.
      * @return a {@link CompletionStage} indicating completion
-     * @throws java.io.IOException if an IO error arises (in the returned {@link CompletionStage})
+     * @throws java.io.IOException                   if an IO error arises (in the returned {@link CompletionStage})
      * @throws jakarta.ws.rs.WebApplicationException
-     *                             if a specific HTTP error response needs to be produced (in the returned {@link CompletionStage}).
-     *                             Only effective if thrown prior to the message being committed.
+     *                                               if a specific HTTP error response needs to be produced (in the returned
+     *                                               {@link CompletionStage}).
+     *                                               Only effective if thrown prior to the message being committed.
      */
     CompletionStage<Void> asyncWriteTo(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                                       MultivaluedMap<String, Object> httpHeaders,
-                                       AsyncOutputStream entityStream);
+            MultivaluedMap<String, Object> httpHeaders,
+            AsyncOutputStream entityStream);
 }

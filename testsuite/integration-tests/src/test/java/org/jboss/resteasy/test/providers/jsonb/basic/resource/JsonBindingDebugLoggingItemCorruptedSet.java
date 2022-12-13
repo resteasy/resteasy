@@ -8,7 +8,8 @@ public class JsonBindingDebugLoggingItemCorruptedSet {
     }
 
     public void setA(Integer a) {
-        if (true) throw new RuntimeException(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName());
+        if (true)
+            throw new RuntimeException(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName());
         this.a = a;
     }
 }

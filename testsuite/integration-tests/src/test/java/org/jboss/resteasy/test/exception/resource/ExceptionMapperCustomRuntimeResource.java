@@ -6,9 +6,9 @@ import jakarta.ws.rs.Produces;
 
 @Path("/test")
 public class ExceptionMapperCustomRuntimeResource {
-   @GET
-   @Produces("text/plain")
-   public String get() {
-      throw new ExceptionMapperCustomRuntimeException();
-   }
+    @GET
+    @Produces("text/plain")
+    public String get() {
+        throw new ExceptionMapperCustomRuntimeException();
+    }
 }

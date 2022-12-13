@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 @Local
 public interface CDIModulesModulesResourceIntf {
-   @GET
-   @Path("test")
-   Response test();
+    @GET
+    @Path("test")
+    Response test();
 }

@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/nowhere")
 public interface ReaderWriterNowhereClient {
-   @GET
-   @Produces("text/plain")
-   Response read();
+    @GET
+    @Produces("text/plain")
+    Response read();
 }

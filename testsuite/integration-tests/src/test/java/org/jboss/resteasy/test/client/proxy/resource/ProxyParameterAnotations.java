@@ -1,15 +1,15 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+
 import org.jboss.resteasy.annotations.jaxrs.CookieParam;
 import org.jboss.resteasy.annotations.jaxrs.FormParam;
 import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
-import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
-
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
 /**
  * Created by Marek Marusic <mmarusic@redhat.com> on 1/16/19.
@@ -43,9 +43,9 @@ public interface ProxyParameterAnotations {
     @Path("AllParams/{pathParam}")
     @POST
     String executeAllParams(@QueryParam String queryParam,
-                            @HeaderParam String headerParam,
-                            @CookieParam String cookieParam,
-                            @PathParam String pathParam,
-                            @FormParam String formParam,
-                            @MatrixParam String matrixParam);
+            @HeaderParam String headerParam,
+            @CookieParam String cookieParam,
+            @PathParam String pathParam,
+            @FormParam String formParam,
+            @MatrixParam String matrixParam);
 }

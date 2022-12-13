@@ -12,23 +12,20 @@ import jakarta.ws.rs.PathParam;
  * @param <ENTITY_IDENTIFIER_TYPE> Type of the entity identified i.e. java.lang.Long
  * @author Jozef Hartinger
  */
-public abstract class GenericResourceCrudResource<ENTITY_TYPE, ENTITY_IDENTIFIER_TYPE>
-{
-   abstract ENTITY_TYPE getEntity(ENTITY_IDENTIFIER_TYPE id);
+public abstract class GenericResourceCrudResource<ENTITY_TYPE, ENTITY_IDENTIFIER_TYPE> {
+    abstract ENTITY_TYPE getEntity(ENTITY_IDENTIFIER_TYPE id);
 
-   abstract void setEntity(ENTITY_IDENTIFIER_TYPE id, ENTITY_TYPE entity);
+    abstract void setEntity(ENTITY_IDENTIFIER_TYPE id, ENTITY_TYPE entity);
 
-   @GET
-   @Path("/{id}")
-   public ENTITY_TYPE get(@PathParam("id") ENTITY_IDENTIFIER_TYPE id)
-   {
-      return getEntity(id);
-   }
+    @GET
+    @Path("/{id}")
+    public ENTITY_TYPE get(@PathParam("id") ENTITY_IDENTIFIER_TYPE id) {
+        return getEntity(id);
+    }
 
-   @PUT
-   @Path("/{id}")
-   public void put(@PathParam("id") ENTITY_IDENTIFIER_TYPE id, ENTITY_TYPE entity)
-   {
-      setEntity(id, entity);
-   }
+    @PUT
+    @Path("/{id}")
+    public void put(@PathParam("id") ENTITY_IDENTIFIER_TYPE id, ENTITY_TYPE entity) {
+        setEntity(id, entity);
+    }
 }

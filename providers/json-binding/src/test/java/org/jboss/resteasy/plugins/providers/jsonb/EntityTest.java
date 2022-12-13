@@ -70,8 +70,7 @@ public class EntityTest {
             try (
                     Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("json"))
                             .request(MediaType.APPLICATION_JSON_TYPE)
-                            .post(Entity.json(null))
-            ) {
+                            .post(Entity.json(null))) {
                 Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 Assertions.assertNull(response.readEntity(JsonValue.class));
             }
@@ -86,8 +85,7 @@ public class EntityTest {
             try (
                     Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("json"))
                             .request(MediaType.APPLICATION_JSON_TYPE)
-                            .post(Entity.json(testEntity))
-            ) {
+                            .post(Entity.json(testEntity))) {
                 Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 Assertions.assertEquals(testEntity, response.readEntity(TestEntity.class));
             }

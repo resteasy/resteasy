@@ -1,8 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.util.CaseInsensitiveMap;
+import static java.util.Collections.unmodifiableSet;
 
-import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +12,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static java.util.Collections.unmodifiableSet;
+import jakarta.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 /**
  * A decorator class to track changes to the underlying map.
@@ -35,8 +36,8 @@ public class TrackingMap<V> extends CaseInsensitiveMap<V> implements Multivalued
     }
 
     private TrackingMap(final CaseInsensitiveMap<V> delegate,
-                        final Set<String> addedOrUpdatedKeys,
-                        final Set<String> removedKeys) {
+            final Set<String> addedOrUpdatedKeys,
+            final Set<String> removedKeys) {
         this.delegate = Objects.requireNonNull(delegate);
         this.addedOrUpdatedKeys = Objects.requireNonNull(addedOrUpdatedKeys);
         this.removedKeys = Objects.requireNonNull(removedKeys);
@@ -109,8 +110,8 @@ public class TrackingMap<V> extends CaseInsensitiveMap<V> implements Multivalued
 
     @Override
     public List<V> merge(String key,
-                         List<V> value,
-                         BiFunction<? super List<V>, ? super List<V>, ? extends List<V>> remappingFunction) {
+            List<V> value,
+            BiFunction<? super List<V>, ? super List<V>, ? extends List<V>> remappingFunction) {
         addToAddedOrUpdatedKeys(key);
         return this.delegate.merge(key, value, remappingFunction);
     }
@@ -137,7 +138,7 @@ public class TrackingMap<V> extends CaseInsensitiveMap<V> implements Multivalued
 
     @Override
     public List<V> computeIfAbsent(String key, Function<? super String, ? extends List<V>> mappingFunction) {
-        final List<V> value =  this.delegate.computeIfAbsent(key, mappingFunction);
+        final List<V> value = this.delegate.computeIfAbsent(key, mappingFunction);
         if (value != null) {
             addToAddedOrUpdatedKeys(key);
         }
@@ -146,7 +147,7 @@ public class TrackingMap<V> extends CaseInsensitiveMap<V> implements Multivalued
 
     @Override
     public List<V> computeIfPresent(String key,
-                                    BiFunction<? super String, ? super List<V>, ? extends List<V>> remappingFunction) {
+            BiFunction<? super String, ? super List<V>, ? extends List<V>> remappingFunction) {
         final List<V> value = this.delegate.computeIfPresent(key, remappingFunction);
         if (value != null) {
             addToAddedOrUpdatedKeys(key);
@@ -156,7 +157,7 @@ public class TrackingMap<V> extends CaseInsensitiveMap<V> implements Multivalued
 
     @Override
     public List<V> compute(String key,
-                           BiFunction<? super String, ? super List<V>, ? extends List<V>> remappingFunction) {
+            BiFunction<? super String, ? super List<V>, ? extends List<V>> remappingFunction) {
         final List<V> value = this.delegate.compute(key, remappingFunction);
         if (value != null) {
             addToAddedOrUpdatedKeys(key);
@@ -271,7 +272,6 @@ public class TrackingMap<V> extends CaseInsensitiveMap<V> implements Multivalued
         return new TrackingMap<>(
                 clone,
                 (Set<String>) ((HashSet<String>) this.addedOrUpdatedKeys).clone(),
-                (Set<String>) ((HashSet<String>) this.removedKeys).clone()
-        );
+                (Set<String>) ((HashSet<String>) this.removedKeys).clone());
     }
 }

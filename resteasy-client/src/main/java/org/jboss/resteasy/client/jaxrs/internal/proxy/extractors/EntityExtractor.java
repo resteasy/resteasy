@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
-
 /**
  * EntityExtractor extract objects from responses. An extractor can extract a
  * status, a header, a cookie, the response body, the clientRequest object, the
@@ -10,7 +9,6 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
  * @version $Revision: 1 $
  * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractorFactory
  */
-public interface EntityExtractor<T>
-{
-   T extractEntity(ClientContext context, Object... args);
+public interface EntityExtractor<T> {
+    T extractEntity(ClientContext context, Object... args);
 }

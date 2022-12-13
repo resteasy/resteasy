@@ -1,5 +1,22 @@
 package org.jboss.resteasy.test.security;
 
+import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WRONG;
+import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WRONG;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.HostnameVerifier;
+
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
@@ -17,21 +34,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import javax.net.ssl.HostnameVerifier;
-import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.Response;
-
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WRONG;
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WRONG;
-
 /**
  * @tpSubChapter Security
  * @tpChapter Integration tests
@@ -42,140 +44,146 @@ import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER
 @RunAsClient
 public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
 
-   private static final Logger LOG = Logger.getLogger(SslServerWithWrongHostnameCertificateTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(SslServerWithWrongHostnameCertificateTest.class.getName());
 
-   private static KeyStore truststore;
+    private static KeyStore truststore;
 
-   private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wrong-hostname.keystore";
-   private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-wrong-hostname.truststore";
-   private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_WRONG);
+    private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wrong-hostname.keystore";
+    private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-wrong-hostname.truststore";
+    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_WRONG);
 
-   @TargetsContainer(SSL_CONTAINER_QUALIFIER_WRONG)
-   @Deployment(managed=false, name=DEPLOYMENT_NAME)
-   public static Archive<?> createDeployment() {
-      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
-      return TestUtil.finishContainerPrepare(war, null, SslResource.class);
-   }
+    @TargetsContainer(SSL_CONTAINER_QUALIFIER_WRONG)
+    @Deployment(managed = false, name = DEPLOYMENT_NAME)
+    public static Archive<?> createDeployment() {
+        WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
+        return TestUtil.finishContainerPrepare(war, null, SslResource.class);
+    }
 
-   @BeforeClass
-   public static void prepareTruststore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-      truststore = KeyStore.getInstance("jks");
-      try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
-         truststore.load(in, PASSWORD.toCharArray());
-      }
-   }
+    @BeforeClass
+    public static void prepareTruststore()
+            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+        truststore = KeyStore.getInstance("jks");
+        try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
+            truststore.load(in, PASSWORD.toCharArray());
+        }
+    }
 
-   @Before
-   public void startContainer() throws Exception {
-      if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_WRONG)) {
-         containerController.start(SSL_CONTAINER_QUALIFIER_WRONG);
-         secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET_WRONG);
-         deployer.deploy(DEPLOYMENT_NAME);
-      }
-   }
+    @Before
+    public void startContainer() throws Exception {
+        if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_WRONG)) {
+            containerController.start(SSL_CONTAINER_QUALIFIER_WRONG);
+            secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET_WRONG);
+            deployer.deploy(DEPLOYMENT_NAME);
+        }
+    }
 
-   /**
-    * @tpTestDetails HostnameVerificationPolicy.STRICT test
-    * Client has truststore containing self-signed certificate.
-    * Server/endpoint is secured with the same self-signed certificate but server hostname(localhost) is not included among 'subject alternative names' in the certificate.
-    * HostnameVerificationPolicy is set to STRICT so exception should be thrown.
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test(expected = ProcessingException.class)
-   public void testHostnameVerificationPolicyStrict() {
-      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+    /**
+     * @tpTestDetails HostnameVerificationPolicy.STRICT test
+     *                Client has truststore containing self-signed certificate.
+     *                Server/endpoint is secured with the same self-signed certificate but server hostname(localhost) is not
+     *                included among 'subject alternative names' in the certificate.
+     *                HostnameVerificationPolicy is set to STRICT so exception should be thrown.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test(expected = ProcessingException.class)
+    public void testHostnameVerificationPolicyStrict() {
+        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-      resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
+        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
 
-      client = resteasyClientBuilder.trustStore(truststore).build();
-      client.target(URL).request().get();
-   }
+        client = resteasyClientBuilder.trustStore(truststore).build();
+        client.target(URL).request().get();
+    }
 
-   /**
-    * @tpTestDetails HostnameVerificationPolicy.WILDCARD test
-    * Client has truststore containing self-signed certificate.
-    * Server/endpoint is secured with the same self-signed certificate but server hostname(localhost) is not included among 'subject alternative names' in the certificate.
-    * HostnameVerificationPolicy is set to WILDCARD so exception should be thrown.
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test(expected = ProcessingException.class)
-   public void testHostnameVerificationPolicyWildcard() {
-      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+    /**
+     * @tpTestDetails HostnameVerificationPolicy.WILDCARD test
+     *                Client has truststore containing self-signed certificate.
+     *                Server/endpoint is secured with the same self-signed certificate but server hostname(localhost) is not
+     *                included among 'subject alternative names' in the certificate.
+     *                HostnameVerificationPolicy is set to WILDCARD so exception should be thrown.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test(expected = ProcessingException.class)
+    public void testHostnameVerificationPolicyWildcard() {
+        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-      resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
+        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
 
-      client = resteasyClientBuilder.trustStore(truststore).build();
-      client.target(URL).request().get();
-   }
+        client = resteasyClientBuilder.trustStore(truststore).build();
+        client.target(URL).request().get();
+    }
 
-   /**
-    * @tpTestDetails HostnameVerificationPolicy.ANY test
-    * Client has truststore containing self-signed certificate.
-    * Server/endpoint is secured with the same self-signed certificate and server hostname(localhost) is not included among 'subject alternative names' in the certificate.
-    * Client should trust the server because HostnameVerificationPolicy is set to ANY.
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test
-   public void testHostnameVerificationPolicyAny() {
-      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+    /**
+     * @tpTestDetails HostnameVerificationPolicy.ANY test
+     *                Client has truststore containing self-signed certificate.
+     *                Server/endpoint is secured with the same self-signed certificate and server hostname(localhost) is not
+     *                included among 'subject alternative names' in the certificate.
+     *                Client should trust the server because HostnameVerificationPolicy is set to ANY.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void testHostnameVerificationPolicyAny() {
+        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-      resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY);
+        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY);
 
-      client = resteasyClientBuilder.trustStore(truststore).build();
-      Response response = client.target(URL).request().get();
-      Assert.assertEquals("Hello World!", response.readEntity(String.class));
-      Assert.assertEquals(200, response.getStatus());
-   }
+        client = resteasyClientBuilder.trustStore(truststore).build();
+        Response response = client.target(URL).request().get();
+        Assert.assertEquals("Hello World!", response.readEntity(String.class));
+        Assert.assertEquals(200, response.getStatus());
+    }
 
-   /**
-    * @tpTestDetails custom hostnameVerifier
-    * Client has truststore containing self-signed certificate.
-    * Server/endpoint is secured with the same self-signed certificate and server hostname(localhost) is not included among 'subject alternative names' in the certificate.
-    * Instead it was generated for hostname "abc".
-    * Client should trust the server because custom HostnameVerifier is configured to return true for localhost.
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test
-   public void testCustomHostnameVerifier() {
-      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+    /**
+     * @tpTestDetails custom hostnameVerifier
+     *                Client has truststore containing self-signed certificate.
+     *                Server/endpoint is secured with the same self-signed certificate and server hostname(localhost) is not
+     *                included among 'subject alternative names' in the certificate.
+     *                Instead it was generated for hostname "abc".
+     *                Client should trust the server because custom HostnameVerifier is configured to return true for localhost.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void testCustomHostnameVerifier() {
+        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-      HostnameVerifier hostnameVerifier = (s, sslSession) -> s.equals(HOSTNAME);
-      resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
+        HostnameVerifier hostnameVerifier = (s, sslSession) -> s.equals(HOSTNAME);
+        resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
 
-      client = resteasyClientBuilder.trustStore(truststore).build();
-      Response response = client.target(URL).request().get();
-      Assert.assertEquals("Hello World!", response.readEntity(String.class));
-      Assert.assertEquals(200, response.getStatus());
-   }
+        client = resteasyClientBuilder.trustStore(truststore).build();
+        Response response = client.target(URL).request().get();
+        Assert.assertEquals("Hello World!", response.readEntity(String.class));
+        Assert.assertEquals(200, response.getStatus());
+    }
 
-   /**
-    * @tpTestDetails custom hostnameVerifier - accept all
-    * Client has truststore containing self-signed certificate.
-    * Server/endpoint is secured with the same self-signed certificate and server actual hostname(localhost) is not included among 'subject alternative names' in the certificate.
-    * Client should trust the server because HostnameVerifier acceptAll is configured to return true every time.
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test
-   public void testCustomHostnameVerifierAcceptAll() {
-      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+    /**
+     * @tpTestDetails custom hostnameVerifier - accept all
+     *                Client has truststore containing self-signed certificate.
+     *                Server/endpoint is secured with the same self-signed certificate and server actual hostname(localhost) is
+     *                not included among 'subject alternative names' in the certificate.
+     *                Client should trust the server because HostnameVerifier acceptAll is configured to return true every time.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void testCustomHostnameVerifierAcceptAll() {
+        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-      HostnameVerifier acceptAll = (hostname, session) -> true;
-      resteasyClientBuilder.hostnameVerifier(acceptAll);
+        HostnameVerifier acceptAll = (hostname, session) -> true;
+        resteasyClientBuilder.hostnameVerifier(acceptAll);
 
-      client = resteasyClientBuilder.trustStore(truststore).build();
-      Response response = client.target(URL).request().get();
-      Assert.assertEquals("Hello World!", response.readEntity(String.class));
-      Assert.assertEquals(200, response.getStatus());
-   }
+        client = resteasyClientBuilder.trustStore(truststore).build();
+        Response response = client.target(URL).request().get();
+        Assert.assertEquals("Hello World!", response.readEntity(String.class));
+        Assert.assertEquals(200, response.getStatus());
+    }
 
-   @After
-   public void after() {
-      client.close();
-   }
+    @After
+    public void after() {
+        client.close();
+    }
 
 }

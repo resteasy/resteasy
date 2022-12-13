@@ -7,7 +7,6 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy;
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
-public interface ClientInvokerModifier
-{
-   void modify(ClientInvoker invoker);
+public interface ClientInvokerModifier {
+    void modify(ClientInvoker invoker);
 }

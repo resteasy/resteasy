@@ -51,7 +51,7 @@ public class AsyncIOResource {
         RandomAccessFile rFile = new RandomAccessFile(file, "rw");
         rFile.setLength(size);
         rFile.close();
-        return Response.ok(new FileRange(file, 0, size-1)).build();
+        return Response.ok(new FileRange(file, 0, size - 1)).build();
     }
 
     private static class NullInputStream extends InputStream {

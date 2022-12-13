@@ -1,17 +1,18 @@
 package org.jboss.resteasy.test.resource.constructor.resource;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import jakarta.ws.rs.ext.ParamConverter;
 import jakarta.ws.rs.ext.ParamConverterProvider;
 import jakarta.ws.rs.ext.Provider;
-import java.lang.reflect.Type;
-import java.lang.annotation.Annotation;
 
 @Provider
-public class ItemParamConverterProvider   implements ParamConverterProvider {
+public class ItemParamConverterProvider implements ParamConverterProvider {
     @Override
     public <T> ParamConverter<T> getConverter(Class<T> rawType,
-                                              Type genericType,
-                                              Annotation[] annotations) {
+            Type genericType,
+            Annotation[] annotations) {
 
         if (rawType.getName().equals(Item.class.getName())) {
             return new ParamConverter<T>() {

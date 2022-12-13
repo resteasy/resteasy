@@ -1,29 +1,5 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.cookie.Cookie;
-import org.jboss.resteasy.plugins.providers.ProviderHelper;
-import org.jboss.resteasy.spi.WriterException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
-import reactor.netty.Connection;
-import reactor.netty.NettyOutbound;
-import reactor.netty.channel.AbortedException;
-import reactor.netty.http.server.HttpServerResponse;
-import reactor.netty.http.server.WebsocketServerSpec;
-import reactor.netty.http.websocket.WebsocketInbound;
-import reactor.netty.http.websocket.WebsocketOutbound;
-import reactor.test.StepVerifier;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,6 +19,31 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
+import org.jboss.resteasy.spi.WriterException;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.cookie.Cookie;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+import reactor.netty.Connection;
+import reactor.netty.NettyOutbound;
+import reactor.netty.channel.AbortedException;
+import reactor.netty.http.server.HttpServerResponse;
+import reactor.netty.http.server.WebsocketServerSpec;
+import reactor.netty.http.websocket.WebsocketInbound;
+import reactor.netty.http.websocket.WebsocketOutbound;
+import reactor.test.StepVerifier;
+
 public class ChunkOutputStreamTest {
 
     private static ByteArrayOutputStream baos;
@@ -57,13 +58,11 @@ public class ChunkOutputStreamTest {
             final ReactorNettyHttpResponse httpServerResponse = new ReactorNettyHttpResponse(
                     HttpMethod.POST,
                     testHttpServerResponse,
-                    completionSink
-            );
+                    completionSink);
             final ChunkOutputStream chunkOutputStream = new ChunkOutputStream(
                     httpServerResponse,
                     testHttpServerResponse,
-                    completionSink
-            );
+                    completionSink);
 
             final String inputData = mkInputData();
             final InputStream in = new ByteArrayInputStream(inputData.getBytes(StandardCharsets.UTF_8));
@@ -84,20 +83,17 @@ public class ChunkOutputStreamTest {
         final ReactorNettyHttpResponse httpServerResponse = new ReactorNettyHttpResponse(
                 HttpMethod.POST,
                 testHttpServerResponse,
-                completionSink
-        );
+                completionSink);
         final ChunkOutputStream chunkOutputStream = new ChunkOutputStream(
                 httpServerResponse,
                 testHttpServerResponse,
-                completionSink
-        );
+                completionSink);
 
         final byte[] errorBytes = "ERROR".getBytes(StandardCharsets.UTF_8);
         final CompletableFuture<Void> asyncWriteFuture = chunkOutputStream.asyncWrite(
                 errorBytes,
                 0,
-                errorBytes.length
-        );
+                errorBytes.length);
 
         StepVerifier.create(Mono.fromCompletionStage(asyncWriteFuture).then(completionSink.asMono()))
                 .verifyError(AbortedException.class);
@@ -111,28 +107,23 @@ public class ChunkOutputStreamTest {
         final ReactorNettyHttpResponse httpServerResponse = new ReactorNettyHttpResponse(
                 HttpMethod.POST,
                 testHttpServerResponse,
-                completionSink
-        );
+                completionSink);
         final ChunkOutputStream chunkOutputStream = new ChunkOutputStream(
                 httpServerResponse,
                 testHttpServerResponse,
-                completionSink
-        );
+                completionSink);
 
         final byte[] inputBytes = "DISCARD".getBytes(StandardCharsets.UTF_8);
         final CompletableFuture<Void> asyncWriteFuture = chunkOutputStream.asyncWrite(
                 inputBytes,
                 0,
-                inputBytes.length
-        );
+                inputBytes.length);
 
         StepVerifier
                 .create(Mono
                         .fromCompletionStage(asyncWriteFuture)
                         .then(completionSink.asMono()
-                                .timeout(Duration.ofSeconds(2))
-                        )
-                )
+                                .timeout(Duration.ofSeconds(2))))
                 .verifyError(WriterException.class);
     }
 
@@ -140,26 +131,24 @@ public class ChunkOutputStreamTest {
     public void testAsyncWrite_forErrorOnCancel() {
         final Sinks.Empty<Void> completionSink = Sinks.empty();
         final StringBuffer buffer = new StringBuffer();
-        completionSink.asMono().subscribe(v -> {}, err -> buffer.append(err.getClass().getName()));
+        completionSink.asMono().subscribe(v -> {
+        }, err -> buffer.append(err.getClass().getName()));
 
         final TestHttpServerResponse testHttpServerResponse = new SuccessHttpServerResponse();
         final ReactorNettyHttpResponse httpServerResponse = new ReactorNettyHttpResponse(
                 HttpMethod.POST,
                 testHttpServerResponse,
-                completionSink
-        );
+                completionSink);
         final ChunkOutputStream chunkOutputStream = new ChunkOutputStream(
                 httpServerResponse,
                 testHttpServerResponse,
-                completionSink
-        );
+                completionSink);
 
         final byte[] inputBytes = "CANCEL".getBytes(StandardCharsets.UTF_8);
         final CompletableFuture<Void> asyncWriteFuture = chunkOutputStream.asyncWrite(
                 inputBytes,
                 0,
-                inputBytes.length
-        );
+                inputBytes.length);
 
         StepVerifier.create(Mono.fromCompletionStage(asyncWriteFuture))
                 .thenCancel()
@@ -195,7 +184,8 @@ public class ChunkOutputStreamTest {
         }
 
         @Override
-        public <S> NettyOutbound sendUsing(Callable<? extends S> callable, BiFunction<? super Connection, ? super S, ?> biFunction, Consumer<? super S> consumer) {
+        public <S> NettyOutbound sendUsing(Callable<? extends S> callable,
+                BiFunction<? super Connection, ? super S, ?> biFunction, Consumer<? super S> consumer) {
             return null;
         }
 
@@ -270,7 +260,9 @@ public class ChunkOutputStreamTest {
         }
 
         @Override
-        public Mono<Void> sendWebsocket(BiFunction<? super WebsocketInbound, ? super WebsocketOutbound, ? extends Publisher<Void>> biFunction, WebsocketServerSpec websocketServerSpec) {
+        public Mono<Void> sendWebsocket(
+                BiFunction<? super WebsocketInbound, ? super WebsocketOutbound, ? extends Publisher<Void>> biFunction,
+                WebsocketServerSpec websocketServerSpec) {
             return null;
         }
 
@@ -364,7 +356,7 @@ public class ChunkOutputStreamTest {
                 try {
                     byteBuf.readBytes(baos, byteBuf.readableBytes());
                 } catch (final IOException e) {
-                    Assert.fail("Error writing bytes to outputstream : " +  e.getMessage());
+                    Assert.fail("Error writing bytes to outputstream : " + e.getMessage());
                 } finally {
                     byteBuf.release();
                 }

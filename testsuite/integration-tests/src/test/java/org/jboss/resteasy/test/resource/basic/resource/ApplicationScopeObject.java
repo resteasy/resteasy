@@ -5,12 +5,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class ApplicationScopeObject
-{
-   AtomicInteger counter = new AtomicInteger();
+public class ApplicationScopeObject {
+    AtomicInteger counter = new AtomicInteger();
 
-   public int getCount()
-   {
-      return counter.incrementAndGet();
-   }
+    public int getCount() {
+        return counter.incrementAndGet();
+    }
 }

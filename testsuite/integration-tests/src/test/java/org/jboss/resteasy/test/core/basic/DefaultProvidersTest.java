@@ -70,18 +70,16 @@ public class DefaultProvidersTest {
                         TestApplication.class,
                         ExceptionResource.class,
                         UnsupportedOperationExceptionMapper.class,
-                        TestUtil.class
-                )
+                        TestUtil.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 // This can be removed if WFARQ-118 is resolved
                 .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                                // Required for Arquillian
-                                new ReflectPermission("suppressAccessChecks"),
-                                new PropertyPermission("arquillian.*", "read"),
-                                new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
-                                // Required for JUnit
-                                new RuntimePermission("accessDeclaredMembers")
-                        ),
+                        // Required for Arquillian
+                        new ReflectPermission("suppressAccessChecks"),
+                        new PropertyPermission("arquillian.*", "read"),
+                        new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+                        // Required for JUnit
+                        new RuntimePermission("accessDeclaredMembers")),
                         "permissions.xml");
     }
 
@@ -110,8 +108,10 @@ public class DefaultProvidersTest {
 
     @Test
     public void defaultExceptionMapperNotUsed() throws Exception {
-        final ExceptionMapper<UnsupportedOperationException> mapper = providers.getExceptionMapper(UnsupportedOperationException.class);
-        Assert.assertTrue("Mapper was not an instance of UnsupportedOperationException: " + mapper, mapper instanceof UnsupportedOperationExceptionMapper);
+        final ExceptionMapper<UnsupportedOperationException> mapper = providers
+                .getExceptionMapper(UnsupportedOperationException.class);
+        Assert.assertTrue("Mapper was not an instance of UnsupportedOperationException: " + mapper,
+                mapper instanceof UnsupportedOperationExceptionMapper);
         final Response response = client.target(TestUtil.generateUri(url, "/exception/not-impl"))
                 .request()
                 .get();

@@ -8,41 +8,39 @@ import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 class JettyClientResponse extends FinalizedClientResponse {
-   private final Runnable cancel;
-   private InputStream stream;
+    private final Runnable cancel;
+    private InputStream stream;
 
-   JettyClientResponse(final ClientConfiguration configuration, final InputStream stream, final Runnable cancel) {
-      super(configuration, RESTEasyTracingLogger.empty());
-      this.cancel = cancel;
-      this.stream = stream;
-   }
+    JettyClientResponse(final ClientConfiguration configuration, final InputStream stream, final Runnable cancel) {
+        super(configuration, RESTEasyTracingLogger.empty());
+        this.cancel = cancel;
+        this.stream = stream;
+    }
 
-   @Override
-   protected InputStream getInputStream() {
-      return stream;
-   }
+    @Override
+    protected InputStream getInputStream() {
+        return stream;
+    }
 
-   @Override
-   protected void setInputStream(InputStream is) {
-      stream = is;
-      resetEntity();
-   }
+    @Override
+    protected void setInputStream(InputStream is) {
+        stream = is;
+        resetEntity();
+    }
 
-   @Override
-   public void releaseConnection() throws IOException {
-      releaseConnection(false);
-   }
+    @Override
+    public void releaseConnection() throws IOException {
+        releaseConnection(false);
+    }
 
-   @Override
-   public void releaseConnection(boolean consumeInputStream) throws IOException {
-      InputStream is = getInputStream();
-      if (is != null && consumeInputStream)
-      {
-         while (is.read() > 0)
-         {
-         }
-      }
-      cancel.run();
-   }
+    @Override
+    public void releaseConnection(boolean consumeInputStream) throws IOException {
+        InputStream is = getInputStream();
+        if (is != null && consumeInputStream) {
+            while (is.read() > 0) {
+            }
+        }
+        cancel.run();
+    }
 
 }

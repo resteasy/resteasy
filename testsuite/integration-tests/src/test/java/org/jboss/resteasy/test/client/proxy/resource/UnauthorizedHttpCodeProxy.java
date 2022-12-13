@@ -6,7 +6,7 @@ import jakarta.ws.rs.Produces;
 
 @Path("/regression")
 public interface UnauthorizedHttpCodeProxy {
-   @GET
-   @Produces("application/foo")
-   UnauthorizedHttpCodeObject getFoo();
+    @GET
+    @Produces("application/foo")
+    UnauthorizedHttpCodeObject getFoo();
 }

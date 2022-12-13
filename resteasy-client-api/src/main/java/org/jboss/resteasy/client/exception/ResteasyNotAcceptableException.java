@@ -10,10 +10,11 @@ import jakarta.ws.rs.core.Response;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyNotAcceptableException extends NotAcceptableException implements WebApplicationExceptionWrapper<NotAcceptableException> {
+public class ResteasyNotAcceptableException extends NotAcceptableException
+        implements WebApplicationExceptionWrapper<NotAcceptableException> {
 
-   private static final long serialVersionUID = 5369100091818187044L;
-   private final NotAcceptableException wrapped;
+    private static final long serialVersionUID = 5369100091818187044L;
+    private final NotAcceptableException wrapped;
 
     ResteasyNotAcceptableException(final NotAcceptableException wrapped) {
         super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());

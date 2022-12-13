@@ -22,15 +22,15 @@
 <module xmlns="urn:jboss:module:1.9" name="jakarta.ws.rs.api">
 
     <resources>
-        <artifact name="${jakarta.ws.rs:jakarta.ws.rs-api}"/>
+        <artifact name="${jakarta.ws.rs:jakarta.ws.rs-api}" />
     </resources>
 
     <dependencies>
-        <module name="java.logging"/>
-        <module name="java.xml"/>
-        <module name="jakarta.xml.bind.api"/>
+        <module name="java.logging" />
+        <module name="java.xml" />
+        <module name="jakarta.xml.bind.api" />
         <!-- Export the services for RESTful Web Services implementation -->
-        <module name="org.jboss.resteasy.resteasy-client" services="export"/>
-        <module name="org.jboss.resteasy.resteasy-core" services="export"/>
+        <module name="org.jboss.resteasy.resteasy-client" services="export" />
+        <module name="org.jboss.resteasy.resteasy-core" services="export" />
     </dependencies>
 </module>

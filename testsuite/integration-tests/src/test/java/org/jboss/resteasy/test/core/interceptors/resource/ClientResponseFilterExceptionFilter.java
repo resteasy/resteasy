@@ -8,8 +8,8 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class ClientResponseFilterExceptionFilter implements ClientResponseFilter {
 
-   @Override
-   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
-      throw new RuntimeException("ClientResponseFilterExceptionFilter");
-   }
+    @Override
+    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
+        throw new RuntimeException("ClientResponseFilterExceptionFilter");
+    }
 }
