@@ -8,10 +8,23 @@ on:
     branches-ignore:
       - 'dependabot/**'
     paths-ignore:
+      - '.gitignore'
       - ".github/workflows/manual-*.yml"
+      - "docbook"
+      - "distribution"
+      - "CONTRIBUTING.md"
+      - "License.html"
+      - "README.md"
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - '.gitignore'
+      - "docbook"
+      - "distribution"
+      - "CONTRIBUTING.md"
+      - "License.html"
+      - "README.md"
 
 jobs:
   build:
