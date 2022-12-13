@@ -1,19 +1,23 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
@@ -42,44 +46,98 @@ public class UriInfoTest {
     public void testUriInfoUsingFullUriWithHostname() throws Exception
     {
         final String uri = TestPortProvider.generateURL("/uriinfo");
-        Assert.assertEquals(uri, test(uri));
+        assertThat(uri, equalTo(uriInfoRequestUri(uri)));
     }
 
     @Test
     public void testUriInfoUsingFullUriWithIp() throws Exception
     {
         final String uri = TestPortProvider.generateURL("/uriinfo").replace("localhost", "127.0.0.1");
-        Assert.assertEquals(uri, test(uri));
+        assertThat(uri, equalTo(uriInfoRequestUri(uri)));
     }
 
-    /**
-     * Verifies the uriInfo is correctly built in the case a partial uri (no scheme/host) is used to send the request.
-     * Since a partial uri is provided in this case, uriInfo's absolute uri will be constructed by the server given the
-     * incoming {@link HttpServerRequest#hostAddress()}. See {@link java.net.InetSocketAddress#getHostString()}. In this
-     * case, the constructed uri will either contains the hostname if available or the ip address.
-     *
-     * @throws Exception
-     */
     @Test
     public void testUriInfoUsingPartialUri() throws Exception
     {
         final String uri = "/uriinfo";
-
-        final String response = test(uri);
-
+        final String response = uriInfoRequestUri(uri);
         final String absoluteUri = TestPortProvider.generateURL(uri);
-        assertThat(response, CoreMatchers.either(CoreMatchers.is(absoluteUri))
-                .or(CoreMatchers.is(absoluteUri.replace(TestPortProvider.getHost(), "127.0.0.1"))));
+        assertThat(response, equalTo(absoluteUri));
+    }
+
+    @Test
+    public void testNoHostHeader() throws Exception
+    {
+        testProblematicHostHeader(Collections.emptyMap());
+    }
+
+    @Test
+    public void testEmptyStringHostHeader() throws Exception
+    {
+        final Map<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Host", "");
+        testProblematicHostHeader(additionalHeaders);
+    }
+
+    @Test
+    public void testOnlySpacesHostHeader() throws Exception
+    {
+        final Map<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Host", "                  ");
+        testProblematicHostHeader(additionalHeaders);
+    }
+
+    @Test
+    public void testCannotDetermineHost() {
+        final ReactorNettyJaxrsServer.UriExtractor extractor = new ReactorNettyJaxrsServer.UriExtractor();
+        final HttpServerRequest req = mock(HttpServerRequest.class, RETURNS_MOCKS);
+        when(req.hostAddress()).thenReturn(null);
+        try {
+            extractor.extract(req, "/contextPath");
+            fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
+        } catch (final IllegalArgumentException ignore) {
+        } catch (final Exception e) {
+            fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
+        }
+    }
+
+    /**
+     * Meant to test cases related to a problematic request Host header (no Host header, empty Host header, etc).
+     * @param hostHeader
+     */
+    private void testProblematicHostHeader(final Map<String, String> hostHeader) throws IOException {
+        // Optional<Tuple2<String, String>> is the best 'design' data structure, but not going there for this test..
+        final String uri = "/uriinfo";
+        final String response = uriInfoRequestUri(uri, hostHeader);
+        final String expectedUri = "http://127.0.0.1:" + TestPortProvider.getPort() + uri;
+        assertThat(response, equalTo(expectedUri));
+    }
+
+    /**
+     * @see #uriInfoRequestUri(String, Map<String, String>) always sends the Host header in the request.
+     */
+    private String uriInfoRequestUri(final String uri) throws IOException {
+        final Map<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Host", TestPortProvider.getHost() + ":" + TestPortProvider.getPort());
+        return uriInfoRequestUri(uri, additionalHeaders);
 
     }
 
-    private String test(final String uri) throws UnknownHostException, IOException {
-
+    /**
+     *
+     * Returns what the server saw in {@link UriInfo#getRequestUri()}.
+     *
+     * @param uri
+     * @param additionalHeaders added to the request
+     * @return
+     * @throws IOException
+     */
+    private String uriInfoRequestUri(final String uri, Map<String, String> additionalHeaders) throws IOException {
         try (Socket client = new Socket(TestPortProvider.getHost(), TestPortProvider.getPort())) {
             try (PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                out.printf("GET %s HTTP/1.1\r\n", uri);
-               out.print("Host: \r\n");
+               additionalHeaders.forEach((n, v) -> out.printf("%s: %s\r\n", n, v));
                out.print("Connection: close\r\n");
                out.print("\r\n");
                out.flush();
@@ -116,6 +174,4 @@ public class UriInfoTest {
        }
 
     }
-
-
 }

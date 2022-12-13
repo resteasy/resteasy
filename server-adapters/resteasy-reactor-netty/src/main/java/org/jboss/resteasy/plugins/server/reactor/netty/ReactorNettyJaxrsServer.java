@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import javax.net.ssl.SSLContext;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -75,6 +77,8 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
    private UnaryOperator<HttpRequestDecoderSpec> mkDecoderSpec = spec -> spec;
 
    private DisposableServer server;
+
+   private UriExtractor uriExtractor = new UriExtractor();
 
    @Override
    public ReactorNettyJaxrsServer deploy() {
@@ -369,26 +373,41 @@ public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNetty
       );
    }
 
+   static class UriExtractor {
+      ResteasyUriInfo extract(final HttpServerRequest req, final String contextPath)
+      {
+         final String uri = req.uri();
+
+         final String uriString;
+
+         // If we have an absolute URL, don't try to recreate it from the host and request line.
+         if (uri.startsWith(req.scheme() + "://")) {
+            uriString = uri;
+         } else {
+            String host = req.requestHeaders().get(HttpHeaderNames.HOST);
+            if (host == null || "".equals(host.trim())) {
+               final InetSocketAddress hostAddress = req.hostAddress();
+               if (hostAddress == null) {
+                  throw new IllegalArgumentException("Could not determine host address from request.  " +
+                          "This should never happen.");
+               }
+               host = hostAddress.getHostString() + ":" + hostAddress.getPort();
+            }
+            uriString = new StringBuilder(100)
+                    .append(req.scheme())
+                    .append("://")
+                    .append(host)
+                    .append(req.uri())
+                    .toString();
+         }
+
+         return new ResteasyUriInfo(uriString, contextPath);
+      }
+   }
+
    private ResteasyUriInfo extractUriInfo(final HttpServerRequest req, final String contextPath)
    {
-      final String uri = req.uri();
-
-      String uriString;
-
-      // If we appear to have an absolute URL, don't try to recreate it from the host and request line.
-      if (uri.startsWith(req.scheme() + "://")) {
-         uriString = uri;
-      } else {
-         uriString = new StringBuilder(100)
-             .append(req.scheme())
-             .append("://")
-             .append(req.hostAddress().getHostString())
-             .append(":").append(req.hostAddress().getPort())
-             .append(req.uri())
-             .toString();
-      }
-
-      return new ResteasyUriInfo(uriString, contextPath);
+      return uriExtractor.extract(req, contextPath);
    }
 
 }
