@@ -7,7 +7,21 @@ on:
     branches:
       - 'main'
     paths-ignore:
+      - '.gitignore'
       - ".github/workflows/manual-*.yml"
+      - ".mvn"
+      - "docbook"
+      - "distribution"
+      - "CODEOWNERS"
+      - "CODE_OF_CONDUCT.md"
+      - "CONTRIBUTING.adoc"
+      - "dco.txt"
+      - "LICENSE"
+      - "mvnw"
+      - "mvnw.cmd"
+      - "README.md"
+      - "security.txt"
+      - "*/README.MD"
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 

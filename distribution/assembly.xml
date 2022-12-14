@@ -10,7 +10,7 @@
         <fileSet>
             <directory>../</directory>
             <includes>
-                <include>License.html</include>
+                <include>LICENSE</include>
             </includes>
             <outputDirectory></outputDirectory>
         </fileSet>
