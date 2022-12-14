@@ -10,21 +10,38 @@ on:
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
+      - ".mvn"
       - "docbook"
       - "distribution"
-      - "CONTRIBUTING.md"
-      - "License.html"
+      - "CODEOWNERS"
+      - "CODE_OF_CONDUCT.md"
+      - "CONTRIBUTING.adoc"
+      - "dco.txt"
+      - "LICENSE"
+      - "mvnw"
+      - "mvnw.cmd"
       - "README.md"
+      - "security.txt"
+      - "*/README.MD"
   pull_request:
     branches:
       - '**'
     paths-ignore:
       - '.gitignore'
+      - ".github/workflows/manual-*.yml"
+      - ".mvn"
       - "docbook"
       - "distribution"
-      - "CONTRIBUTING.md"
-      - "License.html"
+      - "CODEOWNERS"
+      - "CODE_OF_CONDUCT.md"
+      - "CONTRIBUTING.adoc"
+      - "dco.txt"
+      - "LICENSE"
+      - "mvnw"
+      - "mvnw.cmd"
       - "README.md"
+      - "security.txt"
+      - "*/README.MD"
 
 jobs:
   build:

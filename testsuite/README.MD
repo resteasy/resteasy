@@ -3,12 +3,12 @@
 ## Introduction
 The aim of testsuite module is to provide unit and integration tests for Resteasy.
 All newly added tests go into this module.
-The integration tests run with specified Wildfly server.
+The integration tests run with specified WildFly server.
 
 ## Testsuite structure
 - arquillian-utils - contains helper classes used often in tests like - help methods for creating the deployment,
 categories for tests, server setup task etc.
-- integration-tests - contains tests to run in container (Wildfly)
+- integration-tests - contains tests to run in container (WildFly)
 - integration-tests-spring - tests for resteasy integration with spring
 - integration-tests-embedded - contain tests that are configured to run in each of the standalone containers, (Undertow, Vertx, Netty4, Sun jdk).
 - unit-tests - standalone tests not running in container
