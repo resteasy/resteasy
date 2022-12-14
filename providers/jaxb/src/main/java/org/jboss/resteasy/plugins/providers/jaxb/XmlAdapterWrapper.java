@@ -14,76 +14,64 @@ import org.jboss.resteasy.spi.util.Types;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
- * Copyright Apr 8, 2015
+ *          Copyright Apr 8, 2015
  */
-class XmlAdapterWrapper extends XmlAdapter<Object, Object>
-{
-   private XmlAdapter<Object, Object> delegate;
-   private Class<?> clazz;
+class XmlAdapterWrapper extends XmlAdapter<Object, Object> {
+    private XmlAdapter<Object, Object> delegate;
+    private Class<?> clazz;
 
-   XmlAdapterWrapper(final XmlAdapter<Object, Object> delegate, final Class<?> clazz)
-   {
-      this.delegate = delegate;
-      this.clazz = clazz;
-   }
+    XmlAdapterWrapper(final XmlAdapter<Object, Object> delegate, final Class<?> clazz) {
+        this.delegate = delegate;
+        this.clazz = clazz;
+    }
 
-   @Override
-   public Object unmarshal(Object v) throws Exception
-   {
-      return delegate.unmarshal(v);
-   }
+    @Override
+    public Object unmarshal(Object v) throws Exception {
+        return delegate.unmarshal(v);
+    }
 
-   @Override
-   public Object marshal(Object v) throws Exception
-   {
-      return delegate.marshal(v);
-   }
+    @Override
+    public Object marshal(Object v) throws Exception {
+        return delegate.marshal(v);
+    }
 
-   public Class<?> getValueType()
-   {
-      return clazz;
-   }
+    public Class<?> getValueType() {
+        return clazz;
+    }
 
-   protected static Class<?> xmlAdapterValueType(Class<?> baseType, Annotation[] annotations)
-   {
-      Class<?> clazz = baseType;
-      if (baseType.isAnnotationPresent(XmlJavaTypeAdapter.class))
-      {
-         XmlJavaTypeAdapter xmlJavaTypeAdapter = FindAnnotation.findAnnotation(baseType, annotations, XmlJavaTypeAdapter.class);
-         Class<? extends XmlAdapter> adapterClass = xmlJavaTypeAdapter.value();
-         ParameterizedType xmlAdapterType = ParameterizedType.class.cast(adapterClass.getGenericSuperclass());
-         Class<?> valueType = Types.getArgumentType(xmlAdapterType, 0);
-         Class<?> boundType = Types.getArgumentType(xmlAdapterType, 1);
-         if (boundType.isAssignableFrom(baseType))
-         {
-            clazz = valueType;
-         }
-      }
-      return clazz;
-   }
-
-   @SuppressWarnings("unchecked")
-   protected static XmlAdapterWrapper getXmlAdapter(Class<?> baseType, Annotation[] annotations)
-   {
-      if (baseType.isAnnotationPresent(XmlJavaTypeAdapter.class))
-      {
-         XmlJavaTypeAdapter xmlJavaTypeAdapter = FindAnnotation.findAnnotation(baseType, annotations, XmlJavaTypeAdapter.class);
-         Class<? extends XmlAdapter> adapterClass = xmlJavaTypeAdapter.value();
-         ParameterizedType xmlAdapterType = ParameterizedType.class.cast(adapterClass.getGenericSuperclass());
-         Class<?> boundType = Types.getArgumentType(xmlAdapterType, 1);
-         if (boundType.isAssignableFrom(baseType))
-         {
-            try
-            {
-               Class<?> valueType = Types.getArgumentType(xmlAdapterType, 0);
-               return new XmlAdapterWrapper(adapterClass.newInstance(), valueType);
+    protected static Class<?> xmlAdapterValueType(Class<?> baseType, Annotation[] annotations) {
+        Class<?> clazz = baseType;
+        if (baseType.isAnnotationPresent(XmlJavaTypeAdapter.class)) {
+            XmlJavaTypeAdapter xmlJavaTypeAdapter = FindAnnotation.findAnnotation(baseType, annotations,
+                    XmlJavaTypeAdapter.class);
+            Class<? extends XmlAdapter> adapterClass = xmlJavaTypeAdapter.value();
+            ParameterizedType xmlAdapterType = ParameterizedType.class.cast(adapterClass.getGenericSuperclass());
+            Class<?> valueType = Types.getArgumentType(xmlAdapterType, 0);
+            Class<?> boundType = Types.getArgumentType(xmlAdapterType, 1);
+            if (boundType.isAssignableFrom(baseType)) {
+                clazz = valueType;
             }
-            catch (Exception e)
-            {
-               throw new JAXBMarshalException(e);
+        }
+        return clazz;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static XmlAdapterWrapper getXmlAdapter(Class<?> baseType, Annotation[] annotations) {
+        if (baseType.isAnnotationPresent(XmlJavaTypeAdapter.class)) {
+            XmlJavaTypeAdapter xmlJavaTypeAdapter = FindAnnotation.findAnnotation(baseType, annotations,
+                    XmlJavaTypeAdapter.class);
+            Class<? extends XmlAdapter> adapterClass = xmlJavaTypeAdapter.value();
+            ParameterizedType xmlAdapterType = ParameterizedType.class.cast(adapterClass.getGenericSuperclass());
+            Class<?> boundType = Types.getArgumentType(xmlAdapterType, 1);
+            if (boundType.isAssignableFrom(baseType)) {
+                try {
+                    Class<?> valueType = Types.getArgumentType(xmlAdapterType, 0);
+                    return new XmlAdapterWrapper(adapterClass.newInstance(), valueType);
+                } catch (Exception e) {
+                    throw new JAXBMarshalException(e);
+                }
             }
-         }
-      }
-      return null;
-   }
+        }
+        return null;
+    }
 }

@@ -22,14 +22,14 @@
 <module xmlns="urn:jboss:module:1.9" name="com.ibm.async.asyncutil">
 
     <properties>
-        <property name="jboss.api" value="private"/>
+        <property name="jboss.api" value="private" />
     </properties>
 
     <resources>
-        <artifact name="${com.ibm.async:asyncutil}"/>
+        <artifact name="${com.ibm.async:asyncutil}" />
     </resources>
 
     <dependencies>
-        <module name="java.logging"/>
+        <module name="java.logging" />
     </dependencies>
 </module>

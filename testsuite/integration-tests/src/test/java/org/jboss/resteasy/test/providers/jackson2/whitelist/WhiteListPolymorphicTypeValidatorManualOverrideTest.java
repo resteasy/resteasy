@@ -1,6 +1,17 @@
 package org.jboss.resteasy.test.providers.jackson2.whitelist;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
+import jakarta.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -22,17 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import jakarta.ws.rs.client.ClientBuilder;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -43,7 +44,8 @@ import java.util.stream.Collectors;
 @RunAsClient
 public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
 
-    protected static final Logger logger = Logger.getLogger(WhiteListPolymorphicTypeValidatorManualOverrideTest.class.getName());
+    protected static final Logger logger = Logger
+            .getLogger(WhiteListPolymorphicTypeValidatorManualOverrideTest.class.getName());
 
     static ResteasyClient client;
 
@@ -52,7 +54,8 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
         WebArchive war = TestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorManualOverrideTest.class.getSimpleName());
         war.addClass(WhiteListPolymorphicTypeValidatorManualOverrideTest.class);
         return TestUtil.finishContainerPrepare(war, null, JaxRsActivator.class, TestRESTService.class,
-                TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Automobile2.class, Aircraft.class, JacksonConfig.class);
+                TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Automobile2.class, Aircraft.class,
+                JacksonConfig.class);
     }
 
     @Before
@@ -133,8 +136,10 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
             is = http.getInputStream();
         }
 
-        String result = is == null ? "" : new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
-        String response = String.format("Response code: %s response message: %s  %s", http.getResponseCode(), http.getResponseMessage(), result);
+        String result = is == null ? ""
+                : new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+        String response = String.format("Response code: %s response message: %s  %s", http.getResponseCode(),
+                http.getResponseMessage(), result);
 
         logger.info("Response: " + response);
 

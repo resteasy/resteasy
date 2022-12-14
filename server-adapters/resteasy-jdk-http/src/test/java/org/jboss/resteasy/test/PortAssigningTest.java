@@ -12,21 +12,20 @@ import org.junit.Test;
  * @since 4.0
  * @see https://issues.jboss.org/browse/RESTEASY-1429
  */
-public class PortAssigningTest
-{
-   @Test
-   public void testZeroPort() throws Exception {
-      //given
-      SunHttpJaxrsServer server = new SunHttpJaxrsServer();
-      server.setPort(0);
-      server.getDeployment();
-      //when
-      server.start();
-      int ip = server.getPort();
-      server.stop();
+public class PortAssigningTest {
+    @Test
+    public void testZeroPort() throws Exception {
+        //given
+        SunHttpJaxrsServer server = new SunHttpJaxrsServer();
+        server.setPort(0);
+        server.getDeployment();
+        //when
+        server.start();
+        int ip = server.getPort();
+        server.stop();
 
-      //then
-      Assert.assertTrue(ip != 0);
-   }
+        //then
+        Assert.assertTrue(ip != 0);
+    }
 
 }

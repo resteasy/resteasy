@@ -5,9 +5,9 @@ import jakarta.ws.rs.Produces;
 
 @Path("/")
 public class MultiInterfaceResLocatorResource {
-   @Produces("text/plain")
-   @Path("test")
-   public Object resourceLocator() {
-      return new MultiInterfaceResLocatorSubresource();
-   }
+    @Produces("text/plain")
+    @Path("test")
+    public Object resourceLocator() {
+        return new MultiInterfaceResLocatorSubresource();
+    }
 }

@@ -14,40 +14,34 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class AsyncIOWriterTest
-{
+public class AsyncIOWriterTest {
 
-   static Client client;
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      ResteasyDeployment deployment = VertxContainer.start();
-      deployment.getProviderFactory().register(MyTypeWriter.class);
-      deployment.getProviderFactory().register(MyTypeInterceptor.class);
-      Registry registry = deployment.getRegistry();
-      registry.addPerRequestResource(AsyncIOWriterResource.class);
-      client = ClientBuilder.newClient();
-   }
+    static Client client;
 
-   @AfterClass
-   public static void end() throws Exception
-   {
-      try
-      {
-         client.close();
-      }
-      catch (Exception e)
-      {
+    @BeforeClass
+    public static void setup() throws Exception {
+        ResteasyDeployment deployment = VertxContainer.start();
+        deployment.getProviderFactory().register(MyTypeWriter.class);
+        deployment.getProviderFactory().register(MyTypeInterceptor.class);
+        Registry registry = deployment.getRegistry();
+        registry.addPerRequestResource(AsyncIOWriterResource.class);
+        client = ClientBuilder.newClient();
+    }
 
-      }
-      VertxContainer.stop();
-   }
+    @AfterClass
+    public static void end() throws Exception {
+        try {
+            client.close();
+        } catch (Exception e) {
 
-   @Test
-   public void testAsyncIoWriter() throws Exception
-   {
-      WebTarget target = client.target(generateURL("/async-io-writer"));
-      String val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
-   }
+        }
+        VertxContainer.stop();
+    }
+
+    @Test
+    public void testAsyncIoWriter() throws Exception {
+        WebTarget target = client.target(generateURL("/async-io-writer"));
+        String val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
+    }
 }

@@ -13,14 +13,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
-import org.jboss.resteasy.links.test.ObjectMapperProvider;
-import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 import org.jboss.resteasy.links.test.Book;
 import org.jboss.resteasy.links.test.BookStoreService;
+import org.jboss.resteasy.links.test.ObjectMapperProvider;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
@@ -35,88 +35,84 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestLinksNoPackage
-{
+public class TestLinksNoPackage {
 
-   private static NettyJaxrsServer server;
-   private static Dispatcher dispatcher;
+    private static NettyJaxrsServer server;
+    private static Dispatcher dispatcher;
 
-   @BeforeClass
-   public static void beforeClass() throws Exception
-   {
-      server = new NettyJaxrsServer();
-      server.setPort(TestPortProvider.getPort());
-      server.setRootResourcePath("/");
-      ResteasyDeployment deployment = server.getDeployment();
-      deployment.getActualProviderClasses().add(ObjectMapperProvider.class);
-      deployment.start();
-      dispatcher = deployment.getDispatcher();
-      server.start();
-   }
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        server = new NettyJaxrsServer();
+        server.setPort(TestPortProvider.getPort());
+        server.setRootResourcePath("/");
+        ResteasyDeployment deployment = server.getDeployment();
+        deployment.getActualProviderClasses().add(ObjectMapperProvider.class);
+        deployment.start();
+        dispatcher = deployment.getDispatcher();
+        server.start();
+    }
 
-   @AfterClass
-   public static void afterClass() throws Exception
-   {
-      server.stop();
-      server = null;
-      dispatcher = null;
-   }
+    @AfterClass
+    public static void afterClass() throws Exception {
+        server.stop();
+        server = null;
+        dispatcher = null;
+    }
 
-   @Parameters
-   public static List<Class<?>[]> getParameters(){
-      List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
-      classes.add(new Class<?>[]{BookStoreNoPackage.class});
-      return classes;
-   }
+    @Parameters
+    public static List<Class<?>[]> getParameters() {
+        List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
+        classes.add(new Class<?>[] { BookStoreNoPackage.class });
+        return classes;
+    }
 
-   private Class<?> resourceType;
-   private String url;
-   private BookStoreService client;
-   private HttpClient httpClient;
+    private Class<?> resourceType;
+    private String url;
+    private BookStoreService client;
+    private HttpClient httpClient;
 
-   public TestLinksNoPackage(final Class<?> resourceType){
-      this.resourceType = resourceType;
-   }
+    public TestLinksNoPackage(final Class<?> resourceType) {
+        this.resourceType = resourceType;
+    }
 
-   @Before
-   public void before(){
-      POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
-      dispatcher.getRegistry().addResourceFactory(noDefaults);
-      httpClient = HttpClientBuilder.create().build();
-      ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
-      url = generateBaseUrl();
-      ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
-      client = target.proxy(BookStoreService.class);
-   }
+    @Before
+    public void before() {
+        POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
+        dispatcher.getRegistry().addResourceFactory(noDefaults);
+        httpClient = HttpClientBuilder.create().build();
+        ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
+        url = generateBaseUrl();
+        ResteasyWebTarget target = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
+        client = target.proxy(BookStoreService.class);
+    }
 
-   @SuppressWarnings("deprecation")
-   @After
-   public void after(){
-      // TJWS does not support chunk encodings well so I need to kill kept
-      // alive connections
-      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
-      dispatcher.getRegistry().removeRegistrations(resourceType);
-   }
+    @SuppressWarnings("deprecation")
+    @After
+    public void after() {
+        // TJWS does not support chunk encodings well so I need to kill kept
+        // alive connections
+        httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
+        dispatcher.getRegistry().removeRegistrations(resourceType);
+    }
 
-   @Test
-   public void testELWorksWithoutPackage() throws Exception
-   {
-      Book book = client.getBookXML("foo");
-      checkBookLinks1(url, book);
-      book = client.getBookJSON("foo");
-      checkBookLinks1(url, book);
-   }
+    @Test
+    public void testELWorksWithoutPackage() throws Exception {
+        Book book = client.getBookXML("foo");
+        checkBookLinks1(url, book);
+        book = client.getBookJSON("foo");
+        checkBookLinks1(url, book);
+    }
 
-   private void checkBookLinks1(String url, Book book) {
-      Assert.assertNotNull(book);
-      Assert.assertEquals("foo", book.getTitle());
-      Assert.assertEquals("bar", book.getAuthor());
-      RESTServiceDiscovery links = book.getRest();
-      Assert.assertNotNull(links);
-      Assert.assertEquals(1, links.size());
-      // self
-      AtomLink atomLink = links.getLinkForRel("self");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo", atomLink.getHref());
-   }
+    private void checkBookLinks1(String url, Book book) {
+        Assert.assertNotNull(book);
+        Assert.assertEquals("foo", book.getTitle());
+        Assert.assertEquals("bar", book.getAuthor());
+        RESTServiceDiscovery links = book.getRest();
+        Assert.assertNotNull(links);
+        Assert.assertEquals(1, links.size());
+        // self
+        AtomLink atomLink = links.getLinkForRel("self");
+        Assert.assertNotNull(atomLink);
+        Assert.assertEquals(url + "/book/foo", atomLink.getHref());
+    }
 }

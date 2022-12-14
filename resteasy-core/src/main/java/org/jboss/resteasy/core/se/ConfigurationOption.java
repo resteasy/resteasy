@@ -22,6 +22,7 @@ package org.jboss.resteasy.core.se;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+
 import javax.net.ssl.SSLContext;
 
 import jakarta.ws.rs.SeBootstrap.Configuration;
@@ -57,7 +58,8 @@ public enum ConfigurationOption {
     PORT(Configuration.PORT, PortProvider.getPort(), Integer.class),
     ROOT_PATH(Configuration.ROOT_PATH, "/", String.class),
     SSL_CONTEXT(Configuration.SSL_CONTEXT, null, SSLContext.class),
-    SSL_CLIENT_AUTHENTICATION(Configuration.SSL_CLIENT_AUTHENTICATION, SSLClientAuthentication.NONE, SSLClientAuthentication.class),
+    SSL_CLIENT_AUTHENTICATION(Configuration.SSL_CLIENT_AUTHENTICATION, SSLClientAuthentication.NONE,
+            SSLClientAuthentication.class),
     EMBEDDED_SERVER(
             "org.jboss.resteasy.se.embedded.server.instance", null, EmbeddedServer.class),
     JANDEX_INDEX("org.jboss.resteasy.jandex.index", null, Index.class),

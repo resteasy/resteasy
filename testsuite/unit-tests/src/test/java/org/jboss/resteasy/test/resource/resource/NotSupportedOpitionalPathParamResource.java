@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.resource.resource;
 
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import java.util.OptionalLong;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import java.util.OptionalLong;
+
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 @Path("optional_not_supported")
 public class NotSupportedOpitionalPathParamResource {

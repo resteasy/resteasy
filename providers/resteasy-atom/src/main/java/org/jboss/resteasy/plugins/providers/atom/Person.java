@@ -1,12 +1,16 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import java.net.URI;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import java.net.URI;
 
 /**
- * <p>Per RFC4287:</p>
+ * <p>
+ * Per RFC4287:
+ * </p>
+ *
  * <pre>
  *   A Person construct is an element that describes a person,
  *   corporation, or similar entity (hereafter, 'person').
@@ -24,53 +28,44 @@ import java.net.URI;
  * @version $Revision: 1 $
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Person extends CommonAttributes
-{
-   private String name;
+public class Person extends CommonAttributes {
+    private String name;
 
-   private URI uri;
+    private URI uri;
 
-   private String email;
+    private String email;
 
-   public Person()
-   {
-   }
+    public Person() {
+    }
 
-   public Person(final String name)
-   {
-      this.name = name;
-   }
+    public Person(final String name) {
+        this.name = name;
+    }
 
-   @XmlElement
-   public String getName()
-   {
-      return name;
-   }
+    @XmlElement
+    public String getName() {
+        return name;
+    }
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-   @XmlElement
-   public URI getUri()
-   {
-      return uri;
-   }
+    @XmlElement
+    public URI getUri() {
+        return uri;
+    }
 
-   public void setUri(URI uri)
-   {
-      this.uri = uri;
-   }
+    public void setUri(URI uri) {
+        this.uri = uri;
+    }
 
-   @XmlElement
-   public String getEmail()
-   {
-      return email;
-   }
+    @XmlElement
+    public String getEmail() {
+        return email;
+    }
 
-   public void setEmail(String email)
-   {
-      this.email = email;
-   }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

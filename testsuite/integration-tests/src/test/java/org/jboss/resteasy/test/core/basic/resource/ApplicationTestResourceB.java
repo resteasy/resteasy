@@ -5,9 +5,9 @@ import jakarta.ws.rs.Path;
 
 @Path("/resources")
 public class ApplicationTestResourceB {
-   @Path("b")
-   @GET
-   public String get() {
-      return "b";
-   }
+    @Path("b")
+    @GET
+    public String get() {
+        return "b";
+    }
 }

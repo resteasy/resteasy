@@ -46,7 +46,7 @@ public class AsyncWriter implements AsyncMessageBodyWriter<AsyncWriterData> {
                         throw new RuntimeException(e);
                     }
                 })
-                        : CompletableFuture.completedFuture(null);
+                : CompletableFuture.completedFuture(null);
         return start.thenCompose(v -> entityStream.asyncWrite(resp.getBytes(Charset.forName("UTF-8"))))
                 .thenCompose(v -> entityStream.asyncFlush());
     }

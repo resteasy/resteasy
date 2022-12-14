@@ -32,7 +32,7 @@ public class PatchMethodFilter extends AbstractPatchMethodFilter {
     private volatile ObjectMapper objectMapper;
 
     protected boolean isDisabled(ContainerRequestContext requestContext) {
-       return this.readFilterDisabledFlag(requestContext) != FilterFlag.JACKSON;
+        return this.readFilterDisabledFlag(requestContext) != FilterFlag.JACKSON;
     }
 
     protected byte[] applyPatch(ContainerRequestContext requestContext, byte[] targetJsonBytes) throws IOException, Failure {
@@ -53,7 +53,8 @@ public class PatchMethodFilter extends AbstractPatchMethodFilter {
                 JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
                 result = patch.apply(targetJson);
             } else {
-                final JsonMergePatch mergePatch = JsonMergePatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+                final JsonMergePatch mergePatch = JsonMergePatch
+                        .fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
                 result = mergePatch.apply(targetJson);
             }
             mapper.writeValue(targetOutputStream, result);

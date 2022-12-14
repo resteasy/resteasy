@@ -14,30 +14,25 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JWTContextResolver implements ContextResolver<ObjectMapper>
-{
-   protected ObjectMapper mapper = new ObjectMapper();
+public class JWTContextResolver implements ContextResolver<ObjectMapper> {
+    protected ObjectMapper mapper = new ObjectMapper();
 
-   public JWTContextResolver()
-   {
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
-      mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
-   }
+    public JWTContextResolver() {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+        mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+    }
 
-   public JWTContextResolver(final boolean indent)
-   {
-      this();
-      if (indent)
-      {
-         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-      }
-   }
+    public JWTContextResolver(final boolean indent) {
+        this();
+        if (indent) {
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        }
+    }
 
-
-   @Override
-   public ObjectMapper getContext(Class<?> type)
-   {
-      if (JsonWebToken.class.isAssignableFrom(type)) return mapper;
-      return null;
-   }
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+        if (JsonWebToken.class.isAssignableFrom(type))
+            return mapper;
+        return null;
+    }
 }

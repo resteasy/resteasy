@@ -1,5 +1,16 @@
 package org.jboss.resteasy.test.cdi.interceptors;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+
+import javax.swing.text.Utilities;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -44,16 +55,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.swing.text.Utilities;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Response;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-
 /**
  * @tpSubChapter CDI
  * @tpChapter Integration tests
@@ -63,60 +64,65 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class InterceptorTest {
-   protected static final Logger log = Logger.getLogger(InterceptorTest.class.getName());
+    protected static final Logger log = Logger.getLogger(InterceptorTest.class.getName());
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
+    @Deployment
+    public static Archive<?> createTestArchive() {
 
-      WebArchive war = TestUtil.prepareArchive(InterceptorTest.class.getSimpleName());
-      war.addClasses(Constants.class, UtilityProducer.class, Utilities.class, InterceptorVisitList.class)
-            .addClasses(InterceptorResource.class, InterceptorOne.class, InterceptorTwo.class)
-            .addClasses(InterceptorClassBinding.class, InterceptorMethodBinding.class, InterceptorThree.class, InterceptorFour.class)
-            .addClasses(InterceptorFilterBinding.class, InterceptorRequestFilterInterceptorBinding.class)
-            .addClasses(InterceptorResponseFilterInterceptorBinding.class)
-            .addClasses(InterceptorRequestFilterInterceptor.class, InterceptorResponseFilterInterceptor.class, InterceptorRequestFilter.class, InterceptorResponseFilter.class)
-            .addClasses(InterceptorReaderBinding.class, InterceptorWriterBinding.class)
-            .addClasses(InterceptorBook.class, InterceptorBookReader.class, InterceptorBookWriter.class)
-            .addClasses(InterceptorBookReaderInterceptor.class, InterceptorBookWriterInterceptor.class)
-            .addClasses(InterceptorBookReaderInterceptorInterceptor.class, InterceptorBookWriterInterceptorInterceptor.class)
-            .addClasses(InterceptorClassInterceptorStereotype.class, InterceptorClassMethodInterceptorStereotype.class, InterceptorStereotyped.class)
-            .addClasses(InterceptorLifecycleBinding.class, InterceptorPostConstructInterceptor.class, InterceptorPreDestroyInterceptor.class)
-            .addAsWebInfResource(InterceptorTest.class.getPackage(), "interceptorBeans.xml", "beans.xml");
-      return war;
-   }
+        WebArchive war = TestUtil.prepareArchive(InterceptorTest.class.getSimpleName());
+        war.addClasses(Constants.class, UtilityProducer.class, Utilities.class, InterceptorVisitList.class)
+                .addClasses(InterceptorResource.class, InterceptorOne.class, InterceptorTwo.class)
+                .addClasses(InterceptorClassBinding.class, InterceptorMethodBinding.class, InterceptorThree.class,
+                        InterceptorFour.class)
+                .addClasses(InterceptorFilterBinding.class, InterceptorRequestFilterInterceptorBinding.class)
+                .addClasses(InterceptorResponseFilterInterceptorBinding.class)
+                .addClasses(InterceptorRequestFilterInterceptor.class, InterceptorResponseFilterInterceptor.class,
+                        InterceptorRequestFilter.class, InterceptorResponseFilter.class)
+                .addClasses(InterceptorReaderBinding.class, InterceptorWriterBinding.class)
+                .addClasses(InterceptorBook.class, InterceptorBookReader.class, InterceptorBookWriter.class)
+                .addClasses(InterceptorBookReaderInterceptor.class, InterceptorBookWriterInterceptor.class)
+                .addClasses(InterceptorBookReaderInterceptorInterceptor.class,
+                        InterceptorBookWriterInterceptorInterceptor.class)
+                .addClasses(InterceptorClassInterceptorStereotype.class, InterceptorClassMethodInterceptorStereotype.class,
+                        InterceptorStereotyped.class)
+                .addClasses(InterceptorLifecycleBinding.class, InterceptorPostConstructInterceptor.class,
+                        InterceptorPreDestroyInterceptor.class)
+                .addAsWebInfResource(InterceptorTest.class.getPackage(), "interceptorBeans.xml", "beans.xml");
+        return war;
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, InterceptorTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, InterceptorTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails One item is stored and load to collection in resources.
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testInterceptors() throws Exception {
-      Client client = ClientBuilder.newClient();
+    /**
+     * @tpTestDetails One item is stored and load to collection in resources.
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testInterceptors() throws Exception {
+        Client client = ClientBuilder.newClient();
 
-      // Create book.
-      InterceptorBook book = new InterceptorBook("RESTEasy: the Sequel");
-      WebTarget base = client.target(generateURL("/create/"));
-      Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
-      assertEquals(200, response.getStatus());
-      int id = response.readEntity(int.class);
-      MatcherAssert.assertThat("Id of stored book is wrong.", 0, is(id));
+        // Create book.
+        InterceptorBook book = new InterceptorBook("RESTEasy: the Sequel");
+        WebTarget base = client.target(generateURL("/create/"));
+        Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
+        assertEquals(200, response.getStatus());
+        int id = response.readEntity(int.class);
+        MatcherAssert.assertThat("Id of stored book is wrong.", 0, is(id));
 
-      // Retrieve book.
-      base = client.target(generateURL("/book/" + id));
-      response = base.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
-      assertEquals(200, response.getStatus());
-      InterceptorBook result = response.readEntity(InterceptorBook.class);
-      assertEquals("Wrong book is received.", book, result);
+        // Retrieve book.
+        base = client.target(generateURL("/book/" + id));
+        response = base.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
+        assertEquals(200, response.getStatus());
+        InterceptorBook result = response.readEntity(InterceptorBook.class);
+        assertEquals("Wrong book is received.", book, result);
 
-      // check interceptors
-      base = client.target(generateURL("/test/"));
-      response = base.request().post(Entity.text(new String()));
-      assertEquals(200, response.getStatus());
+        // check interceptors
+        base = client.target(generateURL("/test/"));
+        response = base.request().post(Entity.text(new String()));
+        assertEquals(200, response.getStatus());
 
-      client.close();
-   }
+        client.close();
+    }
 }

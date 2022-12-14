@@ -6,11 +6,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
 @Path("")
-public class TestValidateOnExecutionErrorWithGenericSupermethod implements TestValidateOnExecutionInterfaceWithGenericSupermethod<String> {
-   @POST
-   @Path("bar")
-   @ValidateOnExecution(type = {ExecutableType.ALL})
-   @Override
-   public void override(String qux) {
-   }
+public class TestValidateOnExecutionErrorWithGenericSupermethod
+        implements TestValidateOnExecutionInterfaceWithGenericSupermethod<String> {
+    @POST
+    @Path("bar")
+    @ValidateOnExecution(type = { ExecutableType.ALL })
+    @Override
+    public void override(String qux) {
+    }
 }

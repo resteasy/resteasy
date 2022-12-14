@@ -35,91 +35,76 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 @Provider
 @Produces("application/atom+*")
 @Consumes("application/atom+*")
-public class AtomFeedProvider implements MessageBodyReader<Feed>, AsyncBufferedMessageBodyWriter<Feed>
-{
-   @Context
-   protected Providers providers;
+public class AtomFeedProvider implements MessageBodyReader<Feed>, AsyncBufferedMessageBodyWriter<Feed> {
+    @Context
+    protected Providers providers;
 
-   protected JAXBContextFinder getFinder(MediaType type)
-   {
-      ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
-      if (resolver == null) return null;
-      return resolver.getContext(null);
-   }
+    protected JAXBContextFinder getFinder(MediaType type) {
+        ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
+        if (resolver == null)
+            return null;
+        return resolver.getContext(null);
+    }
 
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return Feed.class.isAssignableFrom(type);
-   }
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return Feed.class.isAssignableFrom(type);
+    }
 
-   public Feed readFrom(Class<Feed> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
-   {
-      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
-      JAXBContextFinder finder = getFinder(mediaType);
-      if (finder == null)
-      {
-         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
-      }
+    public Feed readFrom(Class<Feed> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
+        JAXBContextFinder finder = getFinder(mediaType);
+        if (finder == null) {
+            throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
+        }
 
-      try
-      {
-         JAXBContext ctx = finder.findCachedContext(Feed.class, mediaType, annotations);
-         Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(entityStream);
-         for (Entry entry : feed.getEntries())
-         {
-            entry.setFinder(finder);
-            if (entry.getContent() != null) entry.getContent().setFinder(finder);
-         }
-         return feed;
-      }
-      catch (JAXBException e)
-      {
-         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToUnmarshal(mediaType), e);
-      }
-   }
+        try {
+            JAXBContext ctx = finder.findCachedContext(Feed.class, mediaType, annotations);
+            Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(entityStream);
+            for (Entry entry : feed.getEntries()) {
+                entry.setFinder(finder);
+                if (entry.getContent() != null)
+                    entry.getContent().setFinder(finder);
+            }
+            return feed;
+        } catch (JAXBException e) {
+            throw new JAXBUnmarshalException(Messages.MESSAGES.unableToUnmarshal(mediaType), e);
+        }
+    }
 
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return Feed.class.isAssignableFrom(type);
-   }
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return Feed.class.isAssignableFrom(type);
+    }
 
-   public long getSize(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return -1;
-   }
+    public long getSize(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return -1;
+    }
 
-   public void writeTo(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
-   {
-      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-      JAXBContextFinder finder = getFinder(mediaType);
-      if (finder == null)
-      {
-         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
-      }
-      HashSet<Class> set = new HashSet<Class>();
-      set.add(Feed.class);
-      for (Entry entry : feed.getEntries())
-      {
-         if (entry.getAnyOtherJAXBObject() != null)
-         {
-            set.add(entry.getAnyOtherJAXBObject().getClass());
-         }
-         if (entry.getContent() != null && entry.getContent().getJAXBObject() != null)
-         {
-            set.add(entry.getContent().getJAXBObject().getClass());
-         }
-      }
-      try
-      {
-         JAXBContext ctx = finder.findCacheContext(mediaType, annotations, set.toArray(new Class[set.size()]));
-         Marshaller marshaller = ctx.createMarshaller();
-         marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", AtomNamespacePrefixMapper.INSTANCE);
+    public void writeTo(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+        JAXBContextFinder finder = getFinder(mediaType);
+        if (finder == null) {
+            throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
+        }
+        HashSet<Class> set = new HashSet<Class>();
+        set.add(Feed.class);
+        for (Entry entry : feed.getEntries()) {
+            if (entry.getAnyOtherJAXBObject() != null) {
+                set.add(entry.getAnyOtherJAXBObject().getClass());
+            }
+            if (entry.getContent() != null && entry.getContent().getJAXBObject() != null) {
+                set.add(entry.getContent().getJAXBObject().getClass());
+            }
+        }
+        try {
+            JAXBContext ctx = finder.findCacheContext(mediaType, annotations, set.toArray(new Class[set.size()]));
+            Marshaller marshaller = ctx.createMarshaller();
+            marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", AtomNamespacePrefixMapper.INSTANCE);
 
-         marshaller.marshal(feed, entityStream);
-      }
-      catch (JAXBException e)
-      {
-         throw new JAXBMarshalException(Messages.MESSAGES.unableToMarshal(mediaType), e);
-      }
-   }
+            marshaller.marshal(feed, entityStream);
+        } catch (JAXBException e) {
+            throw new JAXBMarshalException(Messages.MESSAGES.unableToMarshal(mediaType), e);
+        }
+    }
 }

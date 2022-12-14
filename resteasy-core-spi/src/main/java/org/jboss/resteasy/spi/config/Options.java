@@ -47,7 +47,8 @@ public class Options<T> {
      * The default is 5 MB.
      * </p>
      */
-    public static final Options<Threshold> ENTITY_MEMORY_THRESHOLD = new Options<>("dev.resteasy.entity.memory.threshold", Threshold.class,
+    public static final Options<Threshold> ENTITY_MEMORY_THRESHOLD = new Options<>("dev.resteasy.entity.memory.threshold",
+            Threshold.class,
             Functions.singleton(() -> Threshold.of(5L, SizeUnit.MEGABYTE)));
 
     /**
@@ -57,7 +58,8 @@ public class Options<T> {
      * The default is 50 MB.
      * </p>
      */
-    public static final Options<Threshold> ENTITY_FILE_THRESHOLD = new Options<>("dev.resteasy.entity.file.threshold", Threshold.class,
+    public static final Options<Threshold> ENTITY_FILE_THRESHOLD = new Options<>("dev.resteasy.entity.file.threshold",
+            Threshold.class,
             Functions.singleton(() -> Threshold.of(50L, SizeUnit.MEGABYTE)));
 
     private final String key;

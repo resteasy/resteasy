@@ -41,7 +41,7 @@ import org.jboss.resteasy.spi.util.Types;
 
 /**
  * A {@link MessageBodyReader} for reading {@code multipart/form-data} into a collection of
- * {@linkplain  EntityPart entity parts}.
+ * {@linkplain EntityPart entity parts}.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  * @since 6.1
@@ -52,7 +52,7 @@ public class MultipartEntityPartReader implements MessageBodyReader<List<EntityP
 
     @Override
     public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
-                              final MediaType mediaType) {
+            final MediaType mediaType) {
         return List.class.isAssignableFrom(type)
                 && genericType instanceof ParameterizedType
                 && Types.isGenericTypeInstanceOf(EntityPart.class, genericType);
@@ -60,13 +60,14 @@ public class MultipartEntityPartReader implements MessageBodyReader<List<EntityP
 
     @Override
     public List<EntityPart> readFrom(final Class<List<EntityPart>> type, final Type genericType,
-                                     final Annotation[] annotations, final MediaType mediaType,
-                                     final MultivaluedMap<String, String> httpHeaders,
-                                     final InputStream entityStream)
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, String> httpHeaders,
+            final InputStream entityStream)
             throws IOException, WebApplicationException {
 
         final String boundary = mediaType.getParameters().get("boundary");
-        if (boundary == null) throw new IOException(Messages.MESSAGES.unableToGetBoundary());
+        if (boundary == null)
+            throw new IOException(Messages.MESSAGES.unableToGetBoundary());
         // On the returned EntityPart an injected (@Context Providers) doesn't work as it can't be found when
         // constructing this type. Therefore, the lookup here is required.
         final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);

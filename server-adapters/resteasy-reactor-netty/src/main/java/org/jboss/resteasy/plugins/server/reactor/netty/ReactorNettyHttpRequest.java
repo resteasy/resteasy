@@ -1,5 +1,25 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
@@ -14,30 +34,12 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.RunnableWithException;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+
 import reactor.netty.http.server.HttpServerRequest;
-
-import jakarta.ws.rs.container.AsyncResponse;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * This is the 1-way bridge from reactor-netty's {@link HttpServerRequest} and
- * RestEasy.  Headers come via direct call.  RestEasy will access the request
+ * RestEasy. Headers come via direct call. RestEasy will access the request
  * body via {@link #getInputStream}.
  */
 class ReactorNettyHttpRequest extends BaseHttpRequest {
@@ -52,12 +54,11 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
     private Duration timeout;
 
     ReactorNettyHttpRequest(
-        final ResteasyUriInfo uri,
-        final HttpServerRequest req,
-        final InputStream body,
-        final ReactorNettyHttpResponse response,
-        final SynchronousDispatcher dispatcher
-        ) {
+            final ResteasyUriInfo uri,
+            final HttpServerRequest req,
+            final InputStream body,
+            final ReactorNettyHttpResponse response,
+            final SynchronousDispatcher dispatcher) {
         super(uri);
         this.req = requireNonNull(req);
         this.in = requireNonNull(body);
@@ -105,26 +106,22 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
     }
 
     @Override
-    public Enumeration<String> getAttributeNames()
-    {
+    public Enumeration<String> getAttributeNames() {
         return Collections.enumeration(attributes.keySet());
     }
 
     @Override
-    public Object getAttribute(String attribute)
-    {
+    public Object getAttribute(String attribute) {
         return attributes.get(attribute);
     }
 
     @Override
-    public void setAttribute(String name, Object value)
-    {
+    public void setAttribute(String name, Object value) {
         attributes.put(name, value);
     }
 
     @Override
-    public void removeAttribute(String name)
-    {
+    public void removeAttribute(String name) {
         attributes.remove(name);
     }
 
@@ -167,8 +164,8 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
         protected volatile boolean wasSuspended;
         protected NettyExecutionContext.NettyHttpAsyncResponse asyncResponse;
 
-        NettyExecutionContext(final ReactorNettyHttpRequest request, final ReactorNettyHttpResponse response, final SynchronousDispatcher dispatcher)
-        {
+        NettyExecutionContext(final ReactorNettyHttpRequest request, final ReactorNettyHttpResponse response,
+                final SynchronousDispatcher dispatcher) {
             super(dispatcher, request, response);
             this.request = request;
             this.response = response;
@@ -197,8 +194,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
 
         @Override
         public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
-            if (wasSuspended)
-            {
+            if (wasSuspended) {
                 throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
             }
             wasSuspended = true;
@@ -217,7 +213,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
             // check if this CF is already resolved
             CompletableFuture<Void> ret = f.toCompletableFuture();
             // if it's not resolved, we may need to suspend
-            if(!ret.isDone() && !isSuspended()) {
+            if (!ret.isDone() && !isSuspended()) {
                 suspend();
             }
             return ret;
@@ -225,7 +221,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
 
         @Override
         public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
-            if(!NettyUtil.isIoThread()) {
+            if (!NettyUtil.isIoThread()) {
                 try {
                     f.run();
                 } catch (Exception e) {
@@ -234,14 +230,14 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
                     return ret;
                 }
                 return CompletableFuture.completedFuture(null);
-            } else if(!hasInterceptors) {
+            } else if (!hasInterceptors) {
                 Map<Class<?>, Object> context = ResteasyContext.getContextDataMap();
                 // turn any sync request into async
-                if(!isSuspended()) {
+                if (!isSuspended()) {
                     suspend();
                 }
                 return CompletableFuture.runAsync(() -> {
-                    try(ResteasyContext.CloseableContext newContext = ResteasyContext.addCloseableContextDataLevel(context)){
+                    try (ResteasyContext.CloseableContext newContext = ResteasyContext.addCloseableContextDataLevel(context)) {
                         f.run();
                     } catch (RuntimeException e) {
                         throw e;
@@ -251,7 +247,8 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
                 });
             } else {
                 CompletableFuture<Void> ret = new CompletableFuture<>();
-                ret.completeExceptionally(new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
+                ret.completeExceptionally(
+                        new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
                 return ret;
             }
         }
@@ -266,11 +263,11 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
             protected ScheduledFuture<?> timeoutFuture;
 
             private ReactorNettyHttpResponse nettyResponse;
+
             NettyHttpAsyncResponse(
-                final SynchronousDispatcher dispatcher,
-                final ReactorNettyHttpRequest request,
-                final ReactorNettyHttpResponse response
-            ) {
+                    final SynchronousDispatcher dispatcher,
+                    final ReactorNettyHttpRequest request,
+                    final ReactorNettyHttpResponse response) {
                 super(dispatcher, request, response);
                 this.nettyResponse = response;
             }
@@ -282,22 +279,23 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
 
             @Override
             public void complete() {
-                synchronized (responseLock)
-                {
-                    if (done) return;
-                    if (cancelled) return;
+                synchronized (responseLock) {
+                    if (done)
+                        return;
+                    if (cancelled)
+                        return;
                     done = true;
                     nettyFlush();
                 }
             }
 
-
             @Override
             public boolean resume(Object entity) {
-                synchronized (responseLock)
-                {
-                    if (done) return false;
-                    if (cancelled) return false;
+                synchronized (responseLock) {
+                    if (done)
+                        return false;
+                    if (cancelled)
+                        return false;
                     done = true;
                     return internalResume(entity, t -> nettyFlush());
                 }
@@ -305,10 +303,11 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
 
             @Override
             public boolean resume(Throwable ex) {
-                synchronized (responseLock)
-                {
-                    if (done) return false;
-                    if (cancelled) return false;
+                synchronized (responseLock) {
+                    if (done)
+                        return false;
+                    if (cancelled)
+                        return false;
                     done = true;
                     return internalResume(ex, t -> nettyFlush());
                 }
@@ -317,8 +316,7 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
             @Override
             public boolean cancel() {
                 log.trace("Cancellation occurred!");
-                synchronized (responseLock)
-                {
+                synchronized (responseLock) {
                     if (cancelled) {
                         return true;
                     }
@@ -334,25 +332,24 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
             @Override
             public boolean cancel(int retryAfter) {
                 log.trace("Cancellation occurred!");
-                synchronized (responseLock)
-                {
-                    if (cancelled) return true;
-                    if (done) return false;
+                synchronized (responseLock) {
+                    if (cancelled)
+                        return true;
+                    if (done)
+                        return false;
                     done = true;
                     cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                        t -> nettyFlush());
+                    return internalResume(
+                            Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter)
+                                    .build(),
+                            t -> nettyFlush());
                 }
             }
 
-            protected synchronized void nettyFlush()
-            {
-                try
-                {
+            protected synchronized void nettyFlush() {
+                try {
                     nettyResponse.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -360,14 +357,17 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
             @Override
             public boolean cancel(Date retryAfter) {
                 log.trace("Cancellation occurred!");
-                synchronized (responseLock)
-                {
-                    if (cancelled) return true;
-                    if (done) return false;
+                synchronized (responseLock) {
+                    if (cancelled)
+                        return true;
+                    if (done)
+                        return false;
                     done = true;
                     cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                        t -> nettyFlush());
+                    return internalResume(
+                            Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter)
+                                    .build(),
+                            t -> nettyFlush());
                 }
             }
 
@@ -389,10 +389,10 @@ class ReactorNettyHttpRequest extends BaseHttpRequest {
             @Override
             public boolean setTimeout(long time, TimeUnit unit) {
                 log.debug("Setting timeout");
-                synchronized (responseLock)
-                {
-                    if (done || cancelled) return false;
-                    if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
+                synchronized (responseLock) {
+                    if (done || cancelled)
+                        return false;
+                    if (timeoutFuture != null && !timeoutFuture.cancel(false)) {
                         return false;
                     }
                     timeout = Duration.ofNanos(unit.toNanos(time));

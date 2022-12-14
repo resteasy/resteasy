@@ -1,17 +1,5 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
-import org.jboss.resteasy.spi.AsyncOutputStream;
-import org.jboss.resteasy.spi.WriterException;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
-import reactor.netty.NettyOutbound;
-import reactor.netty.http.server.HttpServerRequest;
-import reactor.netty.http.server.HttpServerResponse;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -19,11 +7,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
+import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.spi.WriterException;
+import org.reactivestreams.Publisher;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+import reactor.netty.NettyOutbound;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
+
 /**
  * This is the output stream leveraged by {@link
- * ReactorNettyHttpResponse#getOutputStream}.  It provides the heavy lifting
+ * ReactorNettyHttpResponse#getOutputStream}. It provides the heavy lifting
  * for actually transferring the bytes written by RestEasy to a {@link NettyOutbound},
- * which is what reactor-netty works with.  Most of the heavy
+ * which is what reactor-netty works with. Most of the heavy
  * lifting occurs in {@link #asyncWrite(byte[], int, int)}.
  */
 class ChunkOutputStream extends AsyncOutputStream {
@@ -52,8 +53,7 @@ class ChunkOutputStream extends AsyncOutputStream {
     ChunkOutputStream(
             final ReactorNettyHttpResponse parentResponse,
             final HttpServerResponse reactorNettyResponse,
-            final Sinks.Empty<Void> completionSink
-    ) {
+            final Sinks.Empty<Void> completionSink) {
         this.completionSink = Objects.requireNonNull(completionSink);
         this.parentResponse = Objects.requireNonNull(parentResponse);
         this.nettyOutbound = Objects.requireNonNull(reactorNettyResponse);
@@ -61,7 +61,7 @@ class ChunkOutputStream extends AsyncOutputStream {
 
     @Override
     public void write(int b) {
-        write(new byte[]{(byte) b}, 0, 1);
+        write(new byte[] { (byte) b }, 0, 1);
     }
 
     @Override
@@ -114,14 +114,12 @@ class ChunkOutputStream extends AsyncOutputStream {
                     .doOnError(err -> completionSink.emitError(err, Sinks.EmitFailureHandler.FAIL_FAST))
                     .doOnCancel(() -> completionSink.emitError(
                             new WriterException(Messages.MESSAGES.responseWriteAborted()),
-                            Sinks.EmitFailureHandler.FAIL_FAST
-                    ))
+                            Sinks.EmitFailureHandler.FAIL_FAST))
                     .doOnDiscard(
                             ByteBuf.class,
                             byteBuf -> completionSink.emitError(
                                     new WriterException(Messages.MESSAGES.responseWriteAborted()),
-                                    Sinks.EmitFailureHandler.FAIL_FAST
-                    ))
+                                    Sinks.EmitFailureHandler.FAIL_FAST))
                     .toFuture();
         } catch (final Exception e) {
             completionSink.emitError(e, Sinks.EmitFailureHandler.FAIL_FAST);

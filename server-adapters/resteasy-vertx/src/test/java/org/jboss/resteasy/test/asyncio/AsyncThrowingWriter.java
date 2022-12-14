@@ -37,12 +37,12 @@ public class AsyncThrowingWriter implements AsyncMessageBodyWriter<AsyncThrowing
     public CompletionStage<Void> asyncWriteTo(AsyncThrowingWriterData t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
             AsyncOutputStream entityStream) {
-       WebApplicationException ex = new WebApplicationException(Response.ok("this is fine").build());
-       if(t.throwNow)
-          throw ex;
-       CompletableFuture<Void> ret = new CompletableFuture<>();
-       ret.completeExceptionally(ex);
-       return ret;
+        WebApplicationException ex = new WebApplicationException(Response.ok("this is fine").build());
+        if (t.throwNow)
+            throw ex;
+        CompletableFuture<Void> ret = new CompletableFuture<>();
+        ret.completeExceptionally(ex);
+        return ret;
     }
 
 }

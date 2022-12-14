@@ -38,125 +38,127 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class JsonBindingAnnotationsJacksonTest {
 
+    private static final String WAR_WITH_JSONB = "war_with_jsonb";
+    private static final String WAR_WITHOUT_JSONB = "war_without_jsonb";
 
-   private static final String WAR_WITH_JSONB = "war_with_jsonb";
-   private static final String WAR_WITHOUT_JSONB = "war_without_jsonb";
+    protected static final Logger logger = Logger.getLogger(JsonBindingAnnotationsJacksonTest.class.getName());
 
-   protected static final Logger logger = Logger.getLogger(JsonBindingAnnotationsJacksonTest.class.getName());
+    static Client client;
 
-   static Client client;
+    @Deployment(name = WAR_WITH_JSONB)
+    public static Archive<?> deployWithJsonB() {
+        return deploy(WAR_WITH_JSONB, true);
+    }
 
-   @Deployment(name = WAR_WITH_JSONB)
-   public static Archive<?> deployWithJsonB() {
-      return deploy(WAR_WITH_JSONB, true);
-   }
+    @Deployment(name = WAR_WITHOUT_JSONB)
+    public static Archive<?> deployWithoutJsonB() {
+        return deploy(WAR_WITHOUT_JSONB, false);
+    }
 
-   @Deployment(name = WAR_WITHOUT_JSONB)
-   public static Archive<?> deployWithoutJsonB() {
-      return deploy(WAR_WITHOUT_JSONB, false);
-   }
+    public static Archive<?> deploy(String archiveName, boolean useJsonB) {
+        WebArchive war = TestUtil.prepareArchive(archiveName);
+        war.addClass(JsonBindingTest.class);
+        if (useJsonB) {
+            war.addAsManifestResource("jboss-deployment-structure-json-b.xml", "jboss-deployment-structure.xml");
+        } else {
+            war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
+        }
+        return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
+    }
 
-   public static Archive<?> deploy(String archiveName, boolean useJsonB) {
-      WebArchive war = TestUtil.prepareArchive(archiveName);
-      war.addClass(JsonBindingTest.class);
-      if (useJsonB) {
-         war.addAsManifestResource("jboss-deployment-structure-json-b.xml", "jboss-deployment-structure.xml");
-      } else {
-         war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
-      }
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(JsonBindingAnnotationsJacksonTest.class.getSimpleName());
+        war.addClass(JsonBindingAnnotationsJacksonTest.class);
+        return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
+    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(JsonBindingAnnotationsJacksonTest.class.getSimpleName());
-      war.addClass(JsonBindingAnnotationsJacksonTest.class);
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
-   }
+    @Before
+    public void init() {
+        client = ClientBuilder.newClient();
+    }
 
-   @Before
-   public void init() {
-      client = ClientBuilder.newClient();
-   }
+    @After
+    public void after() throws Exception {
+        client.close();
+        client = null;
+    }
 
-   @After
-   public void after() throws Exception {
-      client.close();
-      client = null;
-   }
+    /**
+     * @tpTestDetails JSON-B is not used on client, JSON-B is used on server
+     *                client send a value in variable with @JsonbTransient annotation
+     *                server should not receive a value in this variable (JSON-B on server should filter it)
+     *                end-point returns a value in this variable, but server should ignore this variable
+     *                check that server returns object without variable with @JsonbTransient annotation to client
+     *
+     * @tpPassCrit The resource returns object with correct values
+     * @tpSince RESTEasy 3.5
+     */
+    @Test
+    public void jsonbOnServerNotOnClientTest() throws Exception {
+        String charset = "UTF-8";
+        WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/cat/transient", WAR_WITH_JSONB));
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+        Entity<Cat> entity = Entity.entity(
+                new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+        Cat json = target.request().post(entity, Cat.class);
+        logger.info("Request entity: " + entity);
+        MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
+                json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+    }
 
-   /**
-    * @tpTestDetails JSON-B is not used on client, JSON-B is used on server
-    *                client send a value in variable with @JsonbTransient annotation
-    *                server should not receive a value in this variable (JSON-B on server should filter it)
-    *                end-point returns a value in this variable, but server should ignore this variable
-    *                check that server returns object without variable with @JsonbTransient annotation to client
-    *
-    * @tpPassCrit The resource returns object with correct values
-    * @tpSince RESTEasy 3.5
-    */
-   @Test
-   public void jsonbOnServerNotOnClientTest() throws Exception {
-      String charset = "UTF-8";
-      WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/cat/transient", WAR_WITH_JSONB));
-      MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
-      Entity<Cat> entity = Entity.entity(
-              new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
-      Cat json = target.request().post(entity, Cat.class);
-      logger.info("Request entity: " + entity);
-      MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-              json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
-   }
-   /**
-    * @tpTestDetails JSON-B is not used on both server and client
-    *                check that @JsonbTransient annotation is ignored
-    *
-    * @tpPassCrit The resource returns object with correct values
-    * @tpSince RESTEasy 3.5
-    */
-   @Test
-   public void jsonbNotOnServerNotOnClientTest() throws Exception {
-      String charset = "UTF-8";
-      WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/cat/not/transient", WAR_WITHOUT_JSONB));
-      MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
-      Entity<Cat> entity = Entity.entity(
-              new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
-      Cat json = target.request().post(entity, Cat.class);
-      logger.info("Request entity: " + entity);
-      MatcherAssert.assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
-              json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
-   }
+    /**
+     * @tpTestDetails JSON-B is not used on both server and client
+     *                check that @JsonbTransient annotation is ignored
+     *
+     * @tpPassCrit The resource returns object with correct values
+     * @tpSince RESTEasy 3.5
+     */
+    @Test
+    public void jsonbNotOnServerNotOnClientTest() throws Exception {
+        String charset = "UTF-8";
+        WebTarget target = client
+                .target(PortProviderUtil.generateURL("/test/jsonBinding/cat/not/transient", WAR_WITHOUT_JSONB));
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+        Entity<Cat> entity = Entity.entity(
+                new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+        Cat json = target.request().post(entity, Cat.class);
+        logger.info("Request entity: " + entity);
+        MatcherAssert.assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
+                json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
+    }
 
-   /**
-    * @tpTestDetails JSON-B is not used on client, JSON-B is used on server
-    *                client uses custom json provider that returns corrupted json data
-    *                client sends corrupted json data to server
-    *                JSON-B provider on server should throw relevant exception
-    *                Server should returns relevant error message in response
-    * @tpSince RESTEasy 3.5
-    */
-   @Test
-   public void negativeScenarioOnServer() throws Exception {
-      LogCounter errorLogCounter = new LogCounter("ERROR", false, DEFAULT_CONTAINER_QUALIFIER);
-      try {
-         Client client = ClientBuilder.newBuilder().register(JsonBindingCustomRepeaterProvider.class).build();
-         String charset = "UTF-8";
-         WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/repeater", WAR_WITH_JSONB));
-         MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
-         Entity<Cat> entity = Entity.entity(
-                 new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
-         logger.info("Request entity: " + entity);
-         Response response = target.request().post(entity);
-         // check server logs
-         MatcherAssert.assertThat("Server printed more than one error message during the request", errorLogCounter.count(), is(1));
-         // check response
-         int responseCode = response.getStatus();
-         MatcherAssert.assertThat("Wrong response code", responseCode, is(500));
-         String responseBody = response.readEntity(String.class);
-         Assert.assertTrue("Wrong response error message: " + responseBody,
-                 responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"));
-      } finally {
-         client.close();
-      }
-   }
+    /**
+     * @tpTestDetails JSON-B is not used on client, JSON-B is used on server
+     *                client uses custom json provider that returns corrupted json data
+     *                client sends corrupted json data to server
+     *                JSON-B provider on server should throw relevant exception
+     *                Server should returns relevant error message in response
+     * @tpSince RESTEasy 3.5
+     */
+    @Test
+    public void negativeScenarioOnServer() throws Exception {
+        LogCounter errorLogCounter = new LogCounter("ERROR", false, DEFAULT_CONTAINER_QUALIFIER);
+        try {
+            Client client = ClientBuilder.newBuilder().register(JsonBindingCustomRepeaterProvider.class).build();
+            String charset = "UTF-8";
+            WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/repeater", WAR_WITH_JSONB));
+            MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+            Entity<Cat> entity = Entity.entity(
+                    new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+            logger.info("Request entity: " + entity);
+            Response response = target.request().post(entity);
+            // check server logs
+            MatcherAssert.assertThat("Server printed more than one error message during the request", errorLogCounter.count(),
+                    is(1));
+            // check response
+            int responseCode = response.getStatus();
+            MatcherAssert.assertThat("Wrong response code", responseCode, is(500));
+            String responseBody = response.readEntity(String.class);
+            Assert.assertTrue("Wrong response error message: " + responseBody,
+                    responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"));
+        } finally {
+            client.close();
+        }
+    }
 }

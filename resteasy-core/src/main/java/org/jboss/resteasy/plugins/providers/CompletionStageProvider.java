@@ -6,11 +6,10 @@ import org.jboss.resteasy.spi.AsyncResponseProvider;
 
 public class CompletionStageProvider implements AsyncResponseProvider<CompletionStage<?>> {
 
-   @SuppressWarnings("rawtypes")
-   @Override
-   public CompletionStage toCompletionStage(CompletionStage<?> asyncResponse)
-   {
-      return asyncResponse;
-   }
+    @SuppressWarnings("rawtypes")
+    @Override
+    public CompletionStage toCompletionStage(CompletionStage<?> asyncResponse) {
+        return asyncResponse;
+    }
 
 }

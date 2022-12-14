@@ -8,14 +8,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD, PARAMETER })
-public @interface AsyncInjectionPrimitiveInjectorSpecifier
-{
-   enum Type {
-      VALUE, NULL, NO_RESULT;
-   }
+public @interface AsyncInjectionPrimitiveInjectorSpecifier {
+    enum Type {
+        VALUE,
+        NULL,
+        NO_RESULT;
+    }
 
-   Type value() default Type.VALUE;
+    Type value() default Type.VALUE;
 }

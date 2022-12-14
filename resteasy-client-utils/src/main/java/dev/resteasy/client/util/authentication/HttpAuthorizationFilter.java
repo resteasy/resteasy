@@ -44,8 +44,9 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
-import dev.resteasy.client.util.common.LimitMap;
 import org.jboss.logging.Logger;
+
+import dev.resteasy.client.util.common.LimitMap;
 
 /**
  * A {@link ClientResponseFilter} which repeats the request if the response from the original request has a status of
@@ -145,7 +146,7 @@ public class HttpAuthorizationFilter implements ClientRequestFilter, ClientRespo
     }
 
     private static boolean repeatRequest(final ClientRequestContext request, final ClientResponseContext response,
-                                         final String authHeader) {
+            final String authHeader) {
         if (authHeader == null) {
             return false;
         }

@@ -37,10 +37,10 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.spi.EntityOutputStream;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.UnmodifiableMultivaluedMap;
+import org.jboss.resteasy.spi.EntityOutputStream;
 
 /**
  * An implementation of the {@link EntityPart.Builder}.
@@ -57,7 +57,6 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
     private MediaType mediaType;
     private String fileName;
     private Content content;
-
 
     /**
      * Creates a new builder with the part name.
@@ -149,7 +148,7 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         private final Content content;
 
         private EntityPartImpl(final String name, final MultivaluedMap<String, String> headers,
-                               final MediaType mediaType, final String fileName, final Content content) {
+                final MediaType mediaType, final String fileName, final Content content) {
             this.name = name;
             this.headers = new UnmodifiableMultivaluedMap<>(new MultivaluedHashMap<>(headers));
             this.mediaType = mediaType;
@@ -187,7 +186,8 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         public <T> T getContent(final GenericType<T> type)
                 throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
             final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);
-            final MessageBodyReader<T> reader = (MessageBodyReader<T>) providers.getMessageBodyReader(type.getRawType(), type.getType(), ANNOTATIONS, mediaType);
+            final MessageBodyReader<T> reader = (MessageBodyReader<T>) providers.getMessageBodyReader(type.getRawType(),
+                    type.getType(), ANNOTATIONS, mediaType);
             if (reader == null) {
                 throw new RuntimeException(Messages.MESSAGES.unableToFindMessageBodyReader(mediaType, type.getRawType()
                         .getName()));
@@ -209,7 +209,8 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
 
         @Override
         public String toString() {
-            return String.format("EntityPart[name=%s, fileName=%s, mediaType=%s, headers=%s, content=%s]", name, fileName, mediaType, headers, content);
+            return String.format("EntityPart[name=%s, fileName=%s, mediaType=%s, headers=%s, content=%s]", name, fileName,
+                    mediaType, headers, content);
         }
     }
 
@@ -225,7 +226,7 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         }
 
         InputStream getInputStream(final MediaType mediaType,
-                                   final MultivaluedMap<String, String> headers) throws IOException {
+                final MultivaluedMap<String, String> headers) throws IOException {
             if (content instanceof InputStream) {
                 return (InputStream) content;
             }
@@ -238,8 +239,10 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
             try (EntityOutputStream out = new EntityOutputStream()) {
                 final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);
                 @SuppressWarnings("unchecked")
-                final MessageBodyWriter<Object> messageBodyWriter = providers.getMessageBodyWriter((Class<Object>) genericType.getRawType(), genericType.getType(), ANNOTATIONS, mediaType);
-                messageBodyWriter.writeTo(content, genericType.getRawType(), genericType.getType(), ANNOTATIONS, mediaType, new MultivaluedHashMap<>(headers), out);
+                final MessageBodyWriter<Object> messageBodyWriter = providers.getMessageBodyWriter(
+                        (Class<Object>) genericType.getRawType(), genericType.getType(), ANNOTATIONS, mediaType);
+                messageBodyWriter.writeTo(content, genericType.getRawType(), genericType.getType(), ANNOTATIONS, mediaType,
+                        new MultivaluedHashMap<>(headers), out);
                 return out.toInputStream();
             }
         }

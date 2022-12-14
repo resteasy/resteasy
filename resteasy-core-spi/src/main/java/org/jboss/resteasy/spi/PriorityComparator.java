@@ -20,6 +20,7 @@
 package org.jboss.resteasy.spi;
 
 import java.util.Comparator;
+
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 

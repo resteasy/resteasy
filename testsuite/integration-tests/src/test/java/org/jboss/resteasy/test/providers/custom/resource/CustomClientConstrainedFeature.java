@@ -16,22 +16,21 @@ import org.jboss.logging.Logger;
 @Provider
 @ConstrainedTo(RuntimeType.CLIENT)
 public class CustomClientConstrainedFeature implements Feature {
-   private static volatile boolean invoked = false;
-   private Logger logger = Logger.getLogger(CustomClientConstrainedFeature.class);
+    private static volatile boolean invoked = false;
+    private Logger logger = Logger.getLogger(CustomClientConstrainedFeature.class);
 
-   @Override
-   public boolean configure(FeatureContext context)
-   {
-      logger.info("Configuring CustomClientConstrainedFeature");
-      invoked = true;
-      return true;
-   }
+    @Override
+    public boolean configure(FeatureContext context) {
+        logger.info("Configuring CustomClientConstrainedFeature");
+        invoked = true;
+        return true;
+    }
 
-   public static boolean wasInvoked() {
-      return invoked;
-   }
+    public static boolean wasInvoked() {
+        return invoked;
+    }
 
-   public static void reset() {
-      invoked = false;
-   }
+    public static void reset() {
+        invoked = false;
+    }
 }

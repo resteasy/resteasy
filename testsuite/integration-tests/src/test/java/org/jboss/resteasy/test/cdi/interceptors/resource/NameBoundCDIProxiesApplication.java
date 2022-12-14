@@ -9,8 +9,8 @@ import jakarta.ws.rs.core.Application;
 @NameBoundProxiesAnnotation
 public class NameBoundCDIProxiesApplication extends Application {
 
-   @Override
-   public Set<Class<?>> getClasses() {
-      return Set.of(NameBoundCDIProxiesResource.class, NameBoundCDIProxiesInterceptor.class);
-   }
+    @Override
+    public Set<Class<?>> getClasses() {
+        return Set.of(NameBoundCDIProxiesResource.class, NameBoundCDIProxiesInterceptor.class);
+    }
 }

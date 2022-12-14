@@ -49,22 +49,21 @@ public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends Disable
 
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class, DisabledDefaultExceptionNoThrowableMapperMapperTest.class.getSimpleName() + ".war")
+        return ShrinkWrap
+                .create(WebArchive.class, DisabledDefaultExceptionNoThrowableMapperMapperTest.class.getSimpleName() + ".war")
                 .addClasses(
                         DisabledDefaultExceptionMapperTest.class,
                         ExceptionResource.class,
-                        TestUtil.class
-                )
+                        TestUtil.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 // These can be removed if WFARQ-118 is resolved
                 .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                                // Required for Arquillian
-                                new ReflectPermission("suppressAccessChecks"),
-                                new PropertyPermission("arquillian.*", "read"),
-                                new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
-                                // Required for JUnit
-                                new RuntimePermission("accessDeclaredMembers")
-                        ),
+                        // Required for Arquillian
+                        new ReflectPermission("suppressAccessChecks"),
+                        new PropertyPermission("arquillian.*", "read"),
+                        new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+                        // Required for JUnit
+                        new RuntimePermission("accessDeclaredMembers")),
                         "permissions.xml");
     }
 
@@ -73,7 +72,8 @@ public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends Disable
      */
     @Test
     public void defaultExceptionMapper() {
-        Assert.assertNull("Expected not to have a default exception mapper", providers.getExceptionMapper(RuntimeException.class));
+        Assert.assertNull("Expected not to have a default exception mapper",
+                providers.getExceptionMapper(RuntimeException.class));
     }
 
     /**

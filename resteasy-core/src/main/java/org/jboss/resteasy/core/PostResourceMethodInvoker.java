@@ -6,5 +6,5 @@ package org.jboss.resteasy.core;
  *
  */
 public interface PostResourceMethodInvoker extends AutoCloseable {
-   void invoke();
+    void invoke();
 }

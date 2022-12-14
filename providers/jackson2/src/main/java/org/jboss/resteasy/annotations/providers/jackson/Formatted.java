@@ -8,8 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Formatted
-{
+public @interface Formatted {
 }

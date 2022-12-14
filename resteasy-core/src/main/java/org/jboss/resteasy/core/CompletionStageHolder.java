@@ -20,7 +20,7 @@ public class CompletionStageHolder {
 
     public static Object resolve(Object injectedObject) {
         if (injectedObject != null && injectedObject instanceof CompletionStageHolder) {
-            return ((CompletionStageHolder)injectedObject).getStage();
+            return ((CompletionStageHolder) injectedObject).getStage();
         }
         return injectedObject;
     }

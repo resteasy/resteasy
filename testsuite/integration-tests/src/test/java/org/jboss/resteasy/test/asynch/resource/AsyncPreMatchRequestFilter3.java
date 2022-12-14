@@ -9,8 +9,7 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class AsyncPreMatchRequestFilter3 extends AsyncRequestFilter {
 
-   public AsyncPreMatchRequestFilter3()
-   {
-      super("PreMatchFilter3");
-   }
+    public AsyncPreMatchRequestFilter3() {
+        super("PreMatchFilter3");
+    }
 }

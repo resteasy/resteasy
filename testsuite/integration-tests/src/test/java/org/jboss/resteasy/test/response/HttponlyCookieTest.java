@@ -29,44 +29,44 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class HttponlyCookieTest {
 
-   static Client client;
+    static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(HttponlyCookieTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, HttponlyCookieResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(HttponlyCookieTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, HttponlyCookieResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, HttponlyCookieTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, HttponlyCookieTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void setup() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void close() {
-      client.close();
-      client = null;
-   }
+    @AfterClass
+    public static void close() {
+        client.close();
+        client = null;
+    }
 
-   @Test
-   public void testHttponlyTrue() {
-      WebTarget target = client.target(generateURL("/cookie/true"));
-      Response response = target.request().get();
-      NewCookie cookie = response.getCookies().entrySet().iterator().next().getValue();
-      Assert.assertNotNull(cookie);
-      Assert.assertTrue(cookie.isHttpOnly());
-   }
+    @Test
+    public void testHttponlyTrue() {
+        WebTarget target = client.target(generateURL("/cookie/true"));
+        Response response = target.request().get();
+        NewCookie cookie = response.getCookies().entrySet().iterator().next().getValue();
+        Assert.assertNotNull(cookie);
+        Assert.assertTrue(cookie.isHttpOnly());
+    }
 
-   @Test
-   public void testHttponlyDefault() {
-      WebTarget target = client.target(generateURL("/cookie/default"));
-      Response response = target.request().get();
-      NewCookie cookie = response.getCookies().entrySet().iterator().next().getValue();
-      Assert.assertNotNull(cookie);
-      Assert.assertFalse(cookie.isHttpOnly());
-   }
+    @Test
+    public void testHttponlyDefault() {
+        WebTarget target = client.target(generateURL("/cookie/default"));
+        Response response = target.request().get();
+        NewCookie cookie = response.getCookies().entrySet().iterator().next().getValue();
+        Assert.assertNotNull(cookie);
+        Assert.assertFalse(cookie.isHttpOnly());
+    }
 }

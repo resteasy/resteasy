@@ -12,16 +12,16 @@ import org.jboss.resteasy.spi.DecoratorProcessor;
 
 public class LinkDecorator implements DecoratorProcessor<Marshaller, AddLinks> {
 
-   public Marshaller decorate(Marshaller target, final AddLinks annotation,
-                              Class type, Annotation[] annotations, MediaType mediaType) {
+    public Marshaller decorate(Marshaller target, final AddLinks annotation,
+            Class type, Annotation[] annotations, MediaType mediaType) {
 
-      target.setListener(new Listener() {
-         @Override
-         public void beforeMarshal(Object entity) {
-            LinksInjector injector = new LinksInjector();
-            injector.inject(entity, LinksProvider.getObjectLinksProvider().getLinks(entity));
-         }
-      });
-      return target;
-   }
+        target.setListener(new Listener() {
+            @Override
+            public void beforeMarshal(Object entity) {
+                LinksInjector injector = new LinksInjector();
+                injector.inject(entity, LinksProvider.getObjectLinksProvider().getLinks(entity));
+            }
+        });
+        return target;
+    }
 }

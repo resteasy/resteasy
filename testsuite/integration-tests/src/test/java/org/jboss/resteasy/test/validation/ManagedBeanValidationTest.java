@@ -30,52 +30,53 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ManagedBeanValidationTest {
 
-   private static Client client;
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchiveWithApplication(ManagedBeanValidationTest.class.getSimpleName(), ManagedBeanValidationApplication.class);
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, ManagedBeanValidationResource.class);
-   }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchiveWithApplication(ManagedBeanValidationTest.class.getSimpleName(),
+                ManagedBeanValidationApplication.class);
+        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        return TestUtil.finishContainerPrepare(war, null, ManagedBeanValidationResource.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ManagedBeanValidationTest.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ManagedBeanValidationTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void beforeClass() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void beforeClass() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void afterClass() {
-      client.close();
-   }
+    @AfterClass
+    public static void afterClass() {
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Verify behavior for valid parameters.
-    * @tpSince RESTEasy 3.12.0
-    */
-   @Test
-   public void testManagedBeanValidationValid() {
-      Response response = client.target(generateURL("/validate")).queryParam("q", 2).request().get();
-      Assert.assertEquals(200, response.getStatus());
-      response = client.target(generateURL("/visited")).request().get();
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertTrue(response.readEntity(boolean.class));
-   }
+    /**
+     * @tpTestDetails Verify behavior for valid parameters.
+     * @tpSince RESTEasy 3.12.0
+     */
+    @Test
+    public void testManagedBeanValidationValid() {
+        Response response = client.target(generateURL("/validate")).queryParam("q", 2).request().get();
+        Assert.assertEquals(200, response.getStatus());
+        response = client.target(generateURL("/visited")).request().get();
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertTrue(response.readEntity(boolean.class));
+    }
 
-   /**
-    * @tpTestDetails Verify behavior for invalid parameters.
-    * @tpSince RESTEasy 3.12.0
-    */
-   @Test
-   public void testManagedBeanValidationInvalid() {
-      Response response = client.target(generateURL("/validate")).queryParam("q", 0).request().get();
-      Assert.assertEquals(400, response.getStatus());
-      response = client.target(generateURL("/visited")).request().get();
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertFalse(response.readEntity(boolean.class));
-   }
+    /**
+     * @tpTestDetails Verify behavior for invalid parameters.
+     * @tpSince RESTEasy 3.12.0
+     */
+    @Test
+    public void testManagedBeanValidationInvalid() {
+        Response response = client.target(generateURL("/validate")).queryParam("q", 0).request().get();
+        Assert.assertEquals(400, response.getStatus());
+        response = client.target(generateURL("/visited")).request().get();
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertFalse(response.readEntity(boolean.class));
+    }
 }

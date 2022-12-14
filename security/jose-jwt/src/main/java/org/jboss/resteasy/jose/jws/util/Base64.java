@@ -3,32 +3,48 @@ package org.jboss.resteasy.jose.jws.util;
 /**
  * Copied from keycloak.
  *
- * <p>Encodes and decodes to and from Base64 notation.</p>
- * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
+ * <p>
+ * Encodes and decodes to and from Base64 notation.
+ * </p>
+ * <p>
+ * Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.
+ * </p>
  * <p/>
- * <p>Example:</p>
+ * <p>
+ * Example:
+ * </p>
  * <p/>
  * <code>String encoded = Base64.encode( myByteArray );</code>
  * <br />
  * <code>byte[] myByteArray = Base64.decode( encoded );</code>
  * <p/>
- * <p>The <tt>options</tt> parameter, which appears in a few places, is used to pass
+ * <p>
+ * The <tt>options</tt> parameter, which appears in a few places, is used to pass
  * several pieces of information to the encoder. In the "higher level" methods such as
  * encodeBytes( bytes, options ) the options parameter can be used to indicate such
  * things as first gzipping the bytes before encoding them, not inserting linefeeds,
- * and encoding using the URL-safe and Ordered dialects.</p>
+ * and encoding using the URL-safe and Ordered dialects.
+ * </p>
  * <p/>
- * <p>Note, according to <a href="http://www.faqs.org/rfcs/rfc3548.html">RFC3548</a>,
+ * <p>
+ * Note, according to <a href="http://www.faqs.org/rfcs/rfc3548.html">RFC3548</a>,
  * Section 2.1, implementations should not add line feeds unless explicitly told
  * to do so. I've got Base64 set to this behavior now, although earlier versions
- * broke lines by default.</p>
+ * broke lines by default.
+ * </p>
  * <p/>
- * <p>The constants defined in Base64 can be OR-ed together to combine options, so you
- * might make a call like this:</p>
+ * <p>
+ * The constants defined in Base64 can be OR-ed together to combine options, so you
+ * might make a call like this:
+ * </p>
  * <p/>
  * <code>String encoded = Base64.encodeBytes( mybytes, Base64.GZIP | Base64.DO_BREAK_LINES );</code>
- * <p>to compress the data before encoding it and then making the output have newline characters.</p>
- * <p>Also...</p>
+ * <p>
+ * to compress the data before encoding it and then making the output have newline characters.
+ * </p>
+ * <p>
+ * Also...
+ * </p>
  * <code>String encoded = Base64.encodeBytes( crazyString.getBytes() );</code>
  * <p/>
  * <p/>
@@ -147,8 +163,7 @@ package org.jboss.resteasy.jose.jws.util;
  */
 public class Base64 {
 
-    /* ********  P U B L I C   F I E L D S  ******** */
-
+    /* ******** P U B L I C F I E L D S ******** */
 
     /**
      * No options specified. Value is zero.
@@ -160,12 +175,10 @@ public class Base64 {
      */
     public static final int ENCODE = 1;
 
-
     /**
      * Specify decoding in first bit. Value is zero.
      */
     public static final int DECODE = 0;
-
 
     /**
      * Specify that data should be gzip-compressed in second bit. Value is two.
@@ -176,7 +189,6 @@ public class Base64 {
      * Specify that gzipped data should <em>not</em> be automatically gunzipped.
      */
     public static final int DONT_GUNZIP = 4;
-
 
     /**
      * Do break lines when encoding. Value is 8.
@@ -193,46 +205,38 @@ public class Base64 {
      */
     public static final int URL_SAFE = 16;
 
-
     /**
      * Encode using the special "ordered" dialect of Base64 described here:
      * <a href="http://www.faqs.org/qa/rfcc-1940.html">http://www.faqs.org/qa/rfcc-1940.html</a>.
      */
     public static final int ORDERED = 32;
 
-
-    /* ********  P R I V A T E   F I E L D S  ******** */
-
+    /* ******** P R I V A T E F I E L D S ******** */
 
     /**
      * Maximum line length (76) of Base64 output.
      */
     private static final int MAX_LINE_LENGTH = 76;
 
-
     /**
      * The equals sign (=) as a byte.
      */
     private static final byte EQUALS_SIGN = (byte) '=';
-
 
     /**
      * The new line character (\n) as a byte.
      */
     private static final byte NEW_LINE = (byte) '\n';
 
-
     /**
      * Preferred encoding.
      */
     private static final String PREFERRED_ENCODING = "US-ASCII";
 
-
     private static final byte WHITE_SPACE_ENC = -5; // Indicates white space in encoding
     private static final byte EQUALS_SIGN_ENC = -1; // Indicates equals sign in encoding
 
-
-    /* ********  S T A N D A R D   B A S E 6 4   A L P H A B E T  ******** */
+    /* ******** S T A N D A R D B A S E 6 4 A L P H A B E T ******** */
 
     /**
      * The 64 valid Base64 values.
@@ -251,47 +255,45 @@ public class Base64 {
             (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) '+', (byte) '/'
     };
 
-
     /**
      * Translates a Base64 value to either its 6-bit reconstruction value
      * or a negative number indicating some other meaning.
      */
     private static final byte[] _STANDARD_DECODABET = {
-            -9, -9, -9, -9, -9, -9, -9, -9, -9,                 // Decimal  0 -  8
-            -5, -5,                                      // Whitespace: Tab and Linefeed
-            -9, -9,                                      // Decimal 11 - 12
-            -5,                                         // Whitespace: Carriage Return
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 14 - 26
-            -9, -9, -9, -9, -9,                             // Decimal 27 - 31
-            -5,                                         // Whitespace: Space
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,              // Decimal 33 - 42
-            62,                                         // Plus sign at decimal 43
-            -9, -9, -9,                                   // Decimal 44 - 46
-            63,                                         // Slash at decimal 47
-            52, 53, 54, 55, 56, 57, 58, 59, 60, 61,              // Numbers zero through nine
-            -9, -9, -9,                                   // Decimal 58 - 60
-            -1,                                         // Equals sign at decimal 61
-            -9, -9, -9,                                      // Decimal 62 - 64
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,            // Letters 'A' through 'N'
-            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,        // Letters 'O' through 'Z'
-            -9, -9, -9, -9, -9, -9,                          // Decimal 91 - 96
-            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,     // Letters 'a' through 'm'
-            39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,     // Letters 'n' through 'z'
-            -9, -9, -9, -9, -9                              // Decimal 123 - 127
-            , -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,       // Decimal 128 - 139
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 140 - 152
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 153 - 165
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 166 - 178
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 179 - 191
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 192 - 204
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 205 - 217
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 218 - 230
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 231 - 243
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9         // Decimal 244 - 255
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal  0 -  8
+            -5, -5, // Whitespace: Tab and Linefeed
+            -9, -9, // Decimal 11 - 12
+            -5, // Whitespace: Carriage Return
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 14 - 26
+            -9, -9, -9, -9, -9, // Decimal 27 - 31
+            -5, // Whitespace: Space
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 33 - 42
+            62, // Plus sign at decimal 43
+            -9, -9, -9, // Decimal 44 - 46
+            63, // Slash at decimal 47
+            52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // Numbers zero through nine
+            -9, -9, -9, // Decimal 58 - 60
+            -1, // Equals sign at decimal 61
+            -9, -9, -9, // Decimal 62 - 64
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Letters 'A' through 'N'
+            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, // Letters 'O' through 'Z'
+            -9, -9, -9, -9, -9, -9, // Decimal 91 - 96
+            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, // Letters 'a' through 'm'
+            39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, // Letters 'n' through 'z'
+            -9, -9, -9, -9, -9 // Decimal 123 - 127
+            , -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 128 - 139
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 140 - 152
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 153 - 165
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 166 - 178
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 179 - 191
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 192 - 204
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 205 - 217
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 218 - 230
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 231 - 243
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9 // Decimal 244 - 255
     };
 
-
-    /* ********  U R L   S A F E   B A S E 6 4   A L P H A B E T  ******** */
+    /* ******** U R L S A F E B A S E 6 4 A L P H A B E T ******** */
 
     /**
      * Used in the URL- and Filename-safe dialect described in Section 4 of RFC3548:
@@ -315,45 +317,44 @@ public class Base64 {
      * Used in decoding URL- and Filename-safe dialects of Base64.
      */
     private static final byte[] _URL_SAFE_DECODABET = {
-            -9, -9, -9, -9, -9, -9, -9, -9, -9,                 // Decimal  0 -  8
-            -5, -5,                                      // Whitespace: Tab and Linefeed
-            -9, -9,                                      // Decimal 11 - 12
-            -5,                                         // Whitespace: Carriage Return
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 14 - 26
-            -9, -9, -9, -9, -9,                             // Decimal 27 - 31
-            -5,                                         // Whitespace: Space
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,              // Decimal 33 - 42
-            -9,                                         // Plus sign at decimal 43
-            -9,                                         // Decimal 44
-            62,                                         // Minus sign at decimal 45
-            -9,                                         // Decimal 46
-            -9,                                         // Slash at decimal 47
-            52, 53, 54, 55, 56, 57, 58, 59, 60, 61,              // Numbers zero through nine
-            -9, -9, -9,                                   // Decimal 58 - 60
-            -1,                                         // Equals sign at decimal 61
-            -9, -9, -9,                                   // Decimal 62 - 64
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,            // Letters 'A' through 'N'
-            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,        // Letters 'O' through 'Z'
-            -9, -9, -9, -9,                                // Decimal 91 - 94
-            63,                                         // Underscore at decimal 95
-            -9,                                         // Decimal 96
-            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,     // Letters 'a' through 'm'
-            39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,     // Letters 'n' through 'z'
-            -9, -9, -9, -9, -9                              // Decimal 123 - 127
-            , -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 128 - 139
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 140 - 152
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 153 - 165
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 166 - 178
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 179 - 191
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 192 - 204
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 205 - 217
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 218 - 230
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 231 - 243
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9         // Decimal 244 - 255
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal  0 -  8
+            -5, -5, // Whitespace: Tab and Linefeed
+            -9, -9, // Decimal 11 - 12
+            -5, // Whitespace: Carriage Return
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 14 - 26
+            -9, -9, -9, -9, -9, // Decimal 27 - 31
+            -5, // Whitespace: Space
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 33 - 42
+            -9, // Plus sign at decimal 43
+            -9, // Decimal 44
+            62, // Minus sign at decimal 45
+            -9, // Decimal 46
+            -9, // Slash at decimal 47
+            52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // Numbers zero through nine
+            -9, -9, -9, // Decimal 58 - 60
+            -1, // Equals sign at decimal 61
+            -9, -9, -9, // Decimal 62 - 64
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Letters 'A' through 'N'
+            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, // Letters 'O' through 'Z'
+            -9, -9, -9, -9, // Decimal 91 - 94
+            63, // Underscore at decimal 95
+            -9, // Decimal 96
+            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, // Letters 'a' through 'm'
+            39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, // Letters 'n' through 'z'
+            -9, -9, -9, -9, -9 // Decimal 123 - 127
+            , -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 128 - 139
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 140 - 152
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 153 - 165
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 166 - 178
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 179 - 191
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 192 - 204
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 205 - 217
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 218 - 230
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 231 - 243
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9 // Decimal 244 - 255
     };
 
-
-    /* ********  O R D E R E D   B A S E 6 4   A L P H A B E T  ******** */
+    /* ******** O R D E R E D B A S E 6 4 A L P H A B E T ******** */
 
     /**
      * I don't get the point of this technique, but someone requested it,
@@ -379,46 +380,44 @@ public class Base64 {
      * Used in decoding the "ordered" dialect of Base64.
      */
     private static final byte[] _ORDERED_DECODABET = {
-            -9, -9, -9, -9, -9, -9, -9, -9, -9,                 // Decimal  0 -  8
-            -5, -5,                                      // Whitespace: Tab and Linefeed
-            -9, -9,                                      // Decimal 11 - 12
-            -5,                                         // Whitespace: Carriage Return
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 14 - 26
-            -9, -9, -9, -9, -9,                             // Decimal 27 - 31
-            -5,                                         // Whitespace: Space
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,              // Decimal 33 - 42
-            -9,                                         // Plus sign at decimal 43
-            -9,                                         // Decimal 44
-            0,                                          // Minus sign at decimal 45
-            -9,                                         // Decimal 46
-            -9,                                         // Slash at decimal 47
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,                       // Numbers zero through nine
-            -9, -9, -9,                                   // Decimal 58 - 60
-            -1,                                         // Equals sign at decimal 61
-            -9, -9, -9,                                   // Decimal 62 - 64
-            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,     // Letters 'A' through 'M'
-            24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,     // Letters 'N' through 'Z'
-            -9, -9, -9, -9,                                // Decimal 91 - 94
-            37,                                         // Underscore at decimal 95
-            -9,                                         // Decimal 96
-            38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,     // Letters 'a' through 'm'
-            51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,     // Letters 'n' through 'z'
-            -9, -9, -9, -9, -9                                 // Decimal 123 - 127
-            , -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 128 - 139
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 140 - 152
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 153 - 165
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 166 - 178
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 179 - 191
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 192 - 204
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 205 - 217
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 218 - 230
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9,     // Decimal 231 - 243
-            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9         // Decimal 244 - 255
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal  0 -  8
+            -5, -5, // Whitespace: Tab and Linefeed
+            -9, -9, // Decimal 11 - 12
+            -5, // Whitespace: Carriage Return
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 14 - 26
+            -9, -9, -9, -9, -9, // Decimal 27 - 31
+            -5, // Whitespace: Space
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 33 - 42
+            -9, // Plus sign at decimal 43
+            -9, // Decimal 44
+            0, // Minus sign at decimal 45
+            -9, // Decimal 46
+            -9, // Slash at decimal 47
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, // Numbers zero through nine
+            -9, -9, -9, // Decimal 58 - 60
+            -1, // Equals sign at decimal 61
+            -9, -9, -9, // Decimal 62 - 64
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, // Letters 'A' through 'M'
+            24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, // Letters 'N' through 'Z'
+            -9, -9, -9, -9, // Decimal 91 - 94
+            37, // Underscore at decimal 95
+            -9, // Decimal 96
+            38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, // Letters 'a' through 'm'
+            51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, // Letters 'n' through 'z'
+            -9, -9, -9, -9, -9 // Decimal 123 - 127
+            , -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 128 - 139
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 140 - 152
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 153 - 165
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 166 - 178
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 179 - 191
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 192 - 204
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 205 - 217
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 218 - 230
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 231 - 243
+            -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9 // Decimal 244 - 255
     };
 
-
-    /* ********  D E T E R M I N E   W H I C H   A L H A B E T  ******** */
-
+    /* ******** D E T E R M I N E W H I C H A L H A B E T ******** */
 
     /**
      * Returns one of the _SOMETHING_ALPHABET byte arrays depending on
@@ -435,8 +434,7 @@ public class Base64 {
         } else {
             return _STANDARD_ALPHABET;
         }
-    }   // end getAlphabet
-
+    } // end getAlphabet
 
     /**
      * Returns one of the _SOMETHING_DECODABET byte arrays depending on
@@ -453,8 +451,7 @@ public class Base64 {
         } else {
             return _STANDARD_DECODABET;
         }
-    }   // end getAlphabet
-
+    } // end getAlphabet
 
     /**
      * Defeats instantiation.
@@ -462,9 +459,7 @@ public class Base64 {
     private Base64() {
     }
 
-
-    /* ********  E N C O D I N G   M E T H O D S  ******** */
-
+    /* ******** E N C O D I N G M E T H O D S ******** */
 
     /**
      * Encodes up to the first three bytes of array <var>threeBytes</var>
@@ -484,11 +479,11 @@ public class Base64 {
     private static byte[] encode3to4(byte[] b4, byte[] threeBytes, int numSigBytes, int options) {
         encode3to4(threeBytes, 0, numSigBytes, b4, 0, options);
         return b4;
-    }   // end encode3to4
-
+    } // end encode3to4
 
     /**
-     * <p>Encodes up to three bytes of the array <var>source</var>
+     * <p>
+     * Encodes up to three bytes of the array <var>source</var>
      * and writes the resulting four Base64 bytes to <var>destination</var>.
      * The source and destination arrays can be manipulated
      * anywhere along their length by specifying
@@ -498,9 +493,12 @@ public class Base64 {
      * the <var>source</var> array or <var>destOffset</var> + 4 for
      * the <var>destination</var> array.
      * The actual number of significant bytes in your array is
-     * given by <var>numSigBytes</var>.</p>
-     * <p>This is the lowest level of the encoding methods with
-     * all possible parameters.</p>
+     * given by <var>numSigBytes</var>.
+     * </p>
+     * <p>
+     * This is the lowest level of the encoding methods with
+     * all possible parameters.
+     * </p>
      *
      * @param source      the array to convert
      * @param srcOffset   the index where conversion begins
@@ -555,9 +553,8 @@ public class Base64 {
 
             default:
                 return destination;
-        }   // end switch
-    }   // end encode3to4
-
+        } // end switch
+    } // end encode3to4
 
     /**
      * Performs Base64 encoding on the <code>raw</code> ByteBuffer,
@@ -579,9 +576,8 @@ public class Base64 {
             raw.get(raw3, 0, rem);
             encode3to4(enc4, raw3, rem, NO_OPTIONS);
             encoded.put(enc4);
-        }   // end input remaining
+        } // end input remaining
     }
-
 
     /**
      * Performs Base64 encoding on the <code>raw</code> ByteBuffer,
@@ -605,19 +601,20 @@ public class Base64 {
             for (int i = 0; i < 4; i++) {
                 encoded.put((char) (enc4[i] & 0xFF));
             }
-        }   // end input remaining
+        } // end input remaining
     }
-
 
     /**
      * Serializes an object and returns the Base64-encoded
      * version of that serialized object.
      * <p/>
-     * <p>As of v 2.3, if the object
+     * <p>
+     * As of v 2.3, if the object
      * cannot be serialized or there is another error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned a null value, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      * <p/>
      * The object is not GZip-compressed before being encoded.
      *
@@ -630,22 +627,25 @@ public class Base64 {
     public static String encodeObject(java.io.Serializable serializableObject)
             throws java.io.IOException {
         return encodeObject(serializableObject, NO_OPTIONS);
-    }   // end encodeObject
-
+    } // end encodeObject
 
     /**
      * Serializes an object and returns the Base64-encoded
      * version of that serialized object.
      * <p/>
-     * <p>As of v 2.3, if the object
+     * <p>
+     * As of v 2.3, if the object
      * cannot be serialized or there is another error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned a null value, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      * <p/>
      * The object is not GZip-compressed before being encoded.
      * <p/>
-     * Example options:<pre>
+     * Example options:
+     *
+     * <pre>
      *   GZIP: gzip-compresses object before encoding it.
      *   DO_BREAK_LINES: break lines at 76 characters
      * </pre>
@@ -667,14 +667,13 @@ public class Base64 {
 
         if (serializableObject == null) {
             throw new NullPointerException("Cannot serialize a null object.");
-        }   // end if: null
+        } // end if: null
 
         // Streams
         java.io.ByteArrayOutputStream baos = null;
         java.io.OutputStream b64os = null;
         java.util.zip.GZIPOutputStream gzos = null;
         java.io.ObjectOutputStream oos = null;
-
 
         try {
             // ObjectOutputStream -> (GZIP) -> Base64 -> ByteArrayOutputStream
@@ -689,12 +688,12 @@ public class Base64 {
                 oos = new java.io.ObjectOutputStream(b64os);
             }
             oos.writeObject(serializableObject);
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             // Catch it and then throw it immediately so that
             // the finally{} block is called for cleanup.
             throw e;
-        }   // end catch
+        } // end catch
         finally {
             try {
                 oos.close();
@@ -712,19 +711,18 @@ public class Base64 {
                 baos.close();
             } catch (Exception e) {
             }
-        }   // end finally
+        } // end finally
 
         // Return value according to relevant encoding.
         try {
             return new String(baos.toByteArray(), PREFERRED_ENCODING);
-        }   // end try
+        } // end try
         catch (java.io.UnsupportedEncodingException uue) {
             // Fall back to some Java default
             return new String(baos.toByteArray());
-        }   // end catch
+        } // end catch
 
-    }   // end encode
-
+    } // end encode
 
     /**
      * Encodes a byte array into Base64 notation.
@@ -744,16 +742,17 @@ public class Base64 {
             encoded = encodeBytes(source, 0, source.length, NO_OPTIONS);
         } catch (java.io.IOException ex) {
             assert false : ex.getMessage();
-        }   // end catch
+        } // end catch
         assert encoded != null;
         return encoded;
-    }   // end encodeBytes
-
+    } // end encodeBytes
 
     /**
      * Encodes a byte array into Base64 notation.
      * <p>
-     * Example options:<pre>
+     * Example options:
+     *
+     * <pre>
      *   GZIP: gzip-compresses object before encoding it.
      *   DO_BREAK_LINES: break lines at 76 characters
      *     <i>Note: Technically, this makes your encoding non-compliant.</i>
@@ -764,10 +763,12 @@ public class Base64 {
      * Example: <code>encodeBytes( myData, Base64.GZIP | Base64.DO_BREAK_LINES )</code>
      * <p/>
      * <p/>
-     * <p>As of v 2.3, if there is an error with the GZIP stream,
+     * <p>
+     * As of v 2.3, if there is an error with the GZIP stream,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned a null value, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param source  The data to convert
      * @param options Specified options
@@ -780,17 +781,18 @@ public class Base64 {
      */
     public static String encodeBytes(byte[] source, int options) throws java.io.IOException {
         return encodeBytes(source, 0, source.length, options);
-    }   // end encodeBytes
-
+    } // end encodeBytes
 
     /**
      * Encodes a byte array into Base64 notation.
      * Does not GZip-compress data.
      * <p/>
-     * <p>As of v 2.3, if there is an error,
+     * <p>
+     * As of v 2.3, if there is an error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned a null value, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param source The data to convert
      * @param off    Offset in array where conversion should begin
@@ -809,16 +811,17 @@ public class Base64 {
             encoded = encodeBytes(source, off, len, NO_OPTIONS);
         } catch (java.io.IOException ex) {
             assert false : ex.getMessage();
-        }   // end catch
+        } // end catch
         assert encoded != null;
         return encoded;
-    }   // end encodeBytes
-
+    } // end encodeBytes
 
     /**
      * Encodes a byte array into Base64 notation.
      * <p>
-     * Example options:<pre>
+     * Example options:
+     *
+     * <pre>
      *   GZIP: gzip-compresses object before encoding it.
      *   DO_BREAK_LINES: break lines at 76 characters
      *     <i>Note: Technically, this makes your encoding non-compliant.</i>
@@ -829,10 +832,12 @@ public class Base64 {
      * Example: <code>encodeBytes( myData, Base64.GZIP | Base64.DO_BREAK_LINES )</code>
      * <p/>
      * <p/>
-     * <p>As of v 2.3, if there is an error with the GZIP stream,
+     * <p>
+     * As of v 2.3, if there is an error with the GZIP stream,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned a null value, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param source  The data to convert
      * @param off     Offset in array where conversion should begin
@@ -852,13 +857,12 @@ public class Base64 {
         // Return value according to relevant encoding.
         try {
             return new String(encoded, PREFERRED_ENCODING);
-        }   // end try
+        } // end try
         catch (java.io.UnsupportedEncodingException uue) {
             return new String(encoded);
-        }   // end catch
+        } // end catch
 
-    }   // end encodeBytes
-
+    } // end encodeBytes
 
     /**
      * Similar to {@link #encodeBytes(byte[])} but returns
@@ -879,7 +883,6 @@ public class Base64 {
         }
         return encoded;
     }
-
 
     /**
      * Similar to {@link #encodeBytes(byte[], int, int, int)} but returns
@@ -902,21 +905,21 @@ public class Base64 {
 
         if (source == null) {
             throw new NullPointerException("Cannot serialize a null array.");
-        }   // end if: null
+        } // end if: null
 
         if (off < 0) {
             throw new IllegalArgumentException("Cannot have negative offset: " + off);
-        }   // end if: off < 0
+        } // end if: off < 0
 
         if (len < 0) {
             throw new IllegalArgumentException("Cannot have length offset: " + len);
-        }   // end if: len < 0
+        } // end if: len < 0
 
         if (off + len > source.length) {
             throw new IllegalArgumentException(
-                    String.format("Cannot have offset of %d and length of %d with array of length %d", off, len, source.length));
-        }   // end if: off < 0
-
+                    String.format("Cannot have offset of %d and length of %d with array of length %d", off, len,
+                            source.length));
+        } // end if: off < 0
 
         // Compress?
         if ((options & GZIP) != 0) {
@@ -932,12 +935,12 @@ public class Base64 {
 
                 gzos.write(source, off, len);
                 gzos.close();
-            }   // end try
+            } // end try
             catch (java.io.IOException e) {
                 // Catch it and then throw it immediately so that
                 // the finally{} block is called for cleanup.
                 throw e;
-            }   // end catch
+            } // end catch
             finally {
                 try {
                     gzos.close();
@@ -951,10 +954,10 @@ public class Base64 {
                     baos.close();
                 } catch (Exception e) {
                 }
-            }   // end finally
+            } // end finally
 
             return baos.toByteArray();
-        }   // end if: compress
+        } // end if: compress
 
         // Else, don't compress. Better not to use streams at all then.
         else {
@@ -973,7 +976,6 @@ public class Base64 {
             }
             byte[] outBuff = new byte[encLen];
 
-
             int d = 0;
             int e = 0;
             int len2 = len - 2;
@@ -986,14 +988,13 @@ public class Base64 {
                     outBuff[e + 4] = NEW_LINE;
                     e++;
                     lineLength = 0;
-                }   // end if: end of line
-            }   // en dfor: each piece of array
+                } // end if: end of line
+            } // en dfor: each piece of array
 
             if (d < len) {
                 encode3to4(source, d + off, len - d, outBuff, e, options);
                 e += 4;
-            }   // end if: some padding needed
-
+            } // end if: some padding needed
 
             // Only resize array if we didn't guess it right.
             if (e <= outBuff.length - 1) {
@@ -1010,13 +1011,11 @@ public class Base64 {
                 return outBuff;
             }
 
-        }   // end else: don't compress
+        } // end else: don't compress
 
-    }   // end encodeBytesToBytes
+    } // end encodeBytesToBytes
 
-
-    /* ********  D E C O D I N G   M E T H O D S  ******** */
-
+    /* ******** D E C O D I N G M E T H O D S ******** */
 
     /**
      * Decodes four bytes from array <var>source</var>
@@ -1031,8 +1030,10 @@ public class Base64 {
      * the <var>destination</var> array.
      * This method returns the actual number of bytes that
      * were converted from the Base64 encoding.
-     * <p>This is the lowest level of the decoding methods with
-     * all possible parameters.</p>
+     * <p>
+     * This is the lowest level of the decoding methods with
+     * all possible parameters.
+     * </p>
      *
      * @param source      the array to convert
      * @param srcOffset   the index where conversion begins
@@ -1052,19 +1053,20 @@ public class Base64 {
         // Lots of error checking and exception throwing
         if (source == null) {
             throw new NullPointerException("Source array was null.");
-        }   // end if
+        } // end if
         if (destination == null) {
             throw new NullPointerException("Destination array was null.");
-        }   // end if
+        } // end if
         if (srcOffset < 0 || srcOffset + 3 >= source.length) {
             throw new IllegalArgumentException(String.format(
-                    "Source array with length %d cannot have offset of %d and still process four bytes.", source.length, srcOffset));
-        }   // end if
+                    "Source array with length %d cannot have offset of %d and still process four bytes.", source.length,
+                    srcOffset));
+        } // end if
         if (destOffset < 0 || destOffset + 2 >= destination.length) {
             throw new IllegalArgumentException(String.format(
-                    "Destination array with length %d cannot have offset of %d and still store three bytes.", destination.length, destOffset));
-        }   // end if
-
+                    "Destination array with length %d cannot have offset of %d and still store three bytes.",
+                    destination.length, destOffset));
+        } // end if
 
         byte[] DECODABET = getDecodabet(options);
 
@@ -1107,15 +1109,13 @@ public class Base64 {
                     | ((DECODABET[source[srcOffset + 2]] & 0xFF) << 6)
                     | ((DECODABET[source[srcOffset + 3]] & 0xFF));
 
-
             destination[destOffset] = (byte) (outBuff >> 16);
             destination[destOffset + 1] = (byte) (outBuff >> 8);
             destination[destOffset + 2] = (byte) (outBuff);
 
             return 3;
         }
-    }   // end decodeToBytes
-
+    } // end decodeToBytes
 
     /**
      * Low-level access to decoding ASCII characters in
@@ -1133,14 +1133,13 @@ public class Base64 {
     public static byte[] decode(byte[] source)
             throws java.io.IOException {
         byte[] decoded = null;
-//        try {
+        //        try {
         decoded = decode(source, 0, source.length, NO_OPTIONS);
-//        } catch( java.io.IOException ex ) {
-//            assert false : "IOExceptions only come from GZipping, which is turned off: " + ex.getMessage();
-//        }
+        //        } catch( java.io.IOException ex ) {
+        //            assert false : "IOExceptions only come from GZipping, which is turned off: " + ex.getMessage();
+        //        }
         return decoded;
     }
-
 
     /**
      * Low-level access to decoding ASCII characters in
@@ -1165,31 +1164,31 @@ public class Base64 {
         // Lots of error checking and exception throwing
         if (source == null) {
             throw new NullPointerException("Cannot decode null source array.");
-        }   // end if
+        } // end if
         if (off < 0 || off + len > source.length) {
             throw new IllegalArgumentException(String.format(
                     "Source array with length %d cannot have offset of %d and process %d bytes.", source.length, off, len));
-        }   // end if
+        } // end if
 
         if (len == 0) {
             return new byte[0];
         } else if (len < 4) {
             throw new IllegalArgumentException(
                     "Base64-encoded string must have at least four characters, but length specified was " + len);
-        }   // end if
+        } // end if
 
         byte[] DECODABET = getDecodabet(options);
 
-        int len34 = len * 3 / 4;       // Estimate on array size
+        int len34 = len * 3 / 4; // Estimate on array size
         byte[] outBuff = new byte[len34]; // Upper limit on size of output
-        int outBuffPosn = 0;             // Keep track of where we're writing
+        int outBuffPosn = 0; // Keep track of where we're writing
 
-        byte[] b4 = new byte[4];     // Four byte buffer from source, eliminating white space
-        int b4Posn = 0;               // Keep track of four byte input buffer
-        int i = 0;               // Source array counter
-        byte sbiDecode = 0;               // Special value from DECODABET
+        byte[] b4 = new byte[4]; // Four byte buffer from source, eliminating white space
+        int b4Posn = 0; // Keep track of four byte input buffer
+        int i = 0; // Source array counter
+        byte sbiDecode = 0; // Special value from DECODABET
 
-        for (i = off; i < off + len; i++) {  // Loop through source
+        for (i = off; i < off + len; i++) { // Loop through source
 
             sbiDecode = DECODABET[source[i] & 0xFF];
 
@@ -1198,30 +1197,29 @@ public class Base64 {
             // DECODABETs at the top of the file.
             if (sbiDecode >= WHITE_SPACE_ENC) {
                 if (sbiDecode >= EQUALS_SIGN_ENC) {
-                    b4[b4Posn++] = source[i];         // Save non-whitespace
-                    if (b4Posn > 3) {                  // Time to decode?
+                    b4[b4Posn++] = source[i]; // Save non-whitespace
+                    if (b4Posn > 3) { // Time to decode?
                         outBuffPosn += decode4to3(b4, 0, outBuff, outBuffPosn, options);
                         b4Posn = 0;
 
                         // If that was the equals sign, break out of 'for' loop
                         if (source[i] == EQUALS_SIGN) {
                             break;
-                        }   // end if: equals sign
-                    }   // end if: quartet built
-                }   // end if: equals sign or better
-            }   // end if: white space, equals sign or better
+                        } // end if: equals sign
+                    } // end if: quartet built
+                } // end if: equals sign or better
+            } // end if: white space, equals sign or better
             else {
                 // There's a bad input character in the Base64 stream.
                 throw new java.io.IOException(String.format(
                         "Bad Base64 input character decimal %d in array position %d", ((int) source[i]) & 0xFF, i));
-            }   // end else:
-        }   // each input character
+            } // end else:
+        } // each input character
 
         byte[] out = new byte[outBuffPosn];
         System.arraycopy(outBuff, 0, out, 0, outBuffPosn);
         return out;
-    }   // end decode
-
+    } // end decode
 
     /**
      * Decodes data from Base64 notation, automatically
@@ -1235,7 +1233,6 @@ public class Base64 {
     public static byte[] decode(String s) throws java.io.IOException {
         return decode(s, NO_OPTIONS);
     }
-
 
     /**
      * Decodes data from Base64 notation, automatically
@@ -1252,16 +1249,16 @@ public class Base64 {
 
         if (s == null) {
             throw new NullPointerException("Input string was null.");
-        }   // end if
+        } // end if
 
         byte[] bytes;
         try {
             bytes = s.getBytes(PREFERRED_ENCODING);
-        }   // end try
+        } // end try
         catch (java.io.UnsupportedEncodingException uee) {
             bytes = s.getBytes();
-        }   // end catch
-        //</change>
+        } // end catch
+          //</change>
 
         // Decode
         bytes = decode(bytes, 0, bytes.length, options);
@@ -1286,17 +1283,17 @@ public class Base64 {
 
                     while ((length = gzis.read(buffer)) >= 0) {
                         baos.write(buffer, 0, length);
-                    }   // end while: reading input
+                    } // end while: reading input
 
                     // No error? Get new bytes.
                     bytes = baos.toByteArray();
 
-                }   // end try
+                } // end try
                 catch (java.io.IOException e) {
                     //e.printStackTrace();
                     throw e;
                     // Just return originally-decoded bytes
-                }   // end catch
+                } // end catch
                 finally {
                     try {
                         baos.close();
@@ -1310,14 +1307,13 @@ public class Base64 {
                         bais.close();
                     } catch (Exception e) {
                     }
-                }   // end finally
+                } // end finally
 
-            }   // end if: gzipped
-        }   // end if: bytes.length >= 2
+            } // end if: gzipped
+        } // end if: bytes.length >= 2
 
         return bytes;
-    }   // end decode
-
+    } // end decode
 
     /**
      * Attempts to decode Base64 data and deserialize a Java
@@ -1335,7 +1331,6 @@ public class Base64 {
             throws java.io.IOException, ClassNotFoundException {
         return decodeToObject(encodedObject, NO_OPTIONS, null);
     }
-
 
     /**
      * Attempts to decode Base64 data and deserialize a Java
@@ -1370,7 +1365,7 @@ public class Base64 {
             // If no custom class loader is provided, use Java's builtin OIS.
             if (loader == null) {
                 ois = new java.io.ObjectInputStream(bais);
-            }   // end if: no loader provided
+            } // end if: no loader provided
 
             // Else make a customized object input stream that uses
             // the provided class loader.
@@ -1383,20 +1378,20 @@ public class Base64 {
                         if (c == null) {
                             return super.resolveClass(streamClass);
                         } else {
-                            return c;   // Class loader knows of this class.
-                        }   // end else: not null
-                    }   // end resolveClass
-                };  // end ois
-            }   // end else: no custom class loader
+                            return c; // Class loader knows of this class.
+                        } // end else: not null
+                    } // end resolveClass
+                }; // end ois
+            } // end else: no custom class loader
 
             obj = ois.readObject();
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
-            throw e;    // Catch and throw in order to execute finally{}
-        }   // end catch
+            throw e; // Catch and throw in order to execute finally{}
+        } // end catch
         catch (ClassNotFoundException e) {
-            throw e;    // Catch and throw in order to execute finally{}
-        }   // end catch
+            throw e; // Catch and throw in order to execute finally{}
+        } // end catch
         finally {
             try {
                 bais.close();
@@ -1406,19 +1401,20 @@ public class Base64 {
                 ois.close();
             } catch (Exception e) {
             }
-        }   // end finally
+        } // end finally
 
         return obj;
-    }   // end decodeObject
-
+    } // end decodeObject
 
     /**
      * Convenience method for encoding data to a file.
      * <p/>
-     * <p>As of v 2.3, if there is a error,
+     * <p>
+     * As of v 2.3, if there is a error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned false, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param dataToEncode byte array of data to encode in base64 form
      * @param filename     Filename for saving encoded data
@@ -1431,34 +1427,35 @@ public class Base64 {
 
         if (dataToEncode == null) {
             throw new NullPointerException("Data to encode was null.");
-        }   // end iff
+        } // end iff
 
         OutputStream bos = null;
         try {
             bos = new OutputStream(
                     new java.io.FileOutputStream(filename), ENCODE);
             bos.write(dataToEncode);
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             throw e; // Catch and throw to execute finally{} block
-        }   // end catch: java.io.IOException
+        } // end catch: java.io.IOException
         finally {
             try {
                 bos.close();
             } catch (Exception e) {
             }
-        }   // end finally
+        } // end finally
 
-    }   // end encodeToFile
-
+    } // end encodeToFile
 
     /**
      * Convenience method for decoding data to a file.
      * <p/>
-     * <p>As of v 2.3, if there is a error,
+     * <p>
+     * As of v 2.3, if there is a error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned false, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param dataToDecode Base64-encoded data as a string
      * @param filename     Filename for saving decoded data
@@ -1473,28 +1470,29 @@ public class Base64 {
             bos = new OutputStream(
                     new java.io.FileOutputStream(filename), DECODE);
             bos.write(dataToDecode.getBytes(PREFERRED_ENCODING));
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             throw e; // Catch and throw to execute finally{} block
-        }   // end catch: java.io.IOException
+        } // end catch: java.io.IOException
         finally {
             try {
                 bos.close();
             } catch (Exception e) {
             }
-        }   // end finally
+        } // end finally
 
-    }   // end decodeToFile
-
+    } // end decodeToFile
 
     /**
      * Convenience method for reading a base64-encoded
      * file and decoding it.
      * <p/>
-     * <p>As of v 2.3, if there is a error,
+     * <p>
+     * As of v 2.3, if there is a error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned false, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param filename Filename for reading encoded data
      * @return decoded byte array
@@ -1516,46 +1514,48 @@ public class Base64 {
             // Check for size of file
             if (file.length() > Integer.MAX_VALUE) {
                 throw new java.io.IOException("File is too big for this convenience method (" + file.length() + " bytes).");
-            }   // end if: file too big for int index
+            } // end if: file too big for int index
             buffer = new byte[(int) file.length()];
 
             // Open a stream
             bis = new InputStream(
                     new java.io.BufferedInputStream(
-                            new java.io.FileInputStream(file)), DECODE);
+                            new java.io.FileInputStream(file)),
+                    DECODE);
 
             // Read until done
             while ((numBytes = bis.read(buffer, length, 4096)) >= 0) {
                 length += numBytes;
-            }   // end while
+            } // end while
 
             // Save in a variable to return
             decodedData = new byte[length];
             System.arraycopy(buffer, 0, decodedData, 0, length);
 
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             throw e; // Catch and release to execute finally{}
-        }   // end catch: java.io.IOException
+        } // end catch: java.io.IOException
         finally {
             try {
                 bis.close();
             } catch (Exception e) {
             }
-        }   // end finally
+        } // end finally
 
         return decodedData;
-    }   // end decodeFromFile
-
+    } // end decodeFromFile
 
     /**
      * Convenience method for reading a binary file
      * and base64-encoding it.
      * <p/>
-     * <p>As of v 2.3, if there is a error,
+     * <p>
+     * As of v 2.3, if there is a error,
      * the method will throw an java.io.IOException. <b>This is new to v2.3!</b>
      * In earlier versions, it just returned false, but
-     * in retrospect that's a pretty poor way to handle it.</p>
+     * in retrospect that's a pretty poor way to handle it.
+     * </p>
      *
      * @param filename Filename for reading binary data
      * @return base64-encoded string
@@ -1577,29 +1577,30 @@ public class Base64 {
             // Open a stream
             bis = new InputStream(
                     new java.io.BufferedInputStream(
-                            new java.io.FileInputStream(file)), ENCODE);
+                            new java.io.FileInputStream(file)),
+                    ENCODE);
 
             // Read until done
             while ((numBytes = bis.read(buffer, length, 4096)) >= 0) {
                 length += numBytes;
-            }   // end while
+            } // end while
 
             // Save in a variable to return
             encodedData = new String(buffer, 0, length, PREFERRED_ENCODING);
 
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             throw e; // Catch and release to execute finally{}
-        }   // end catch: java.io.IOException
+        } // end catch: java.io.IOException
         finally {
             try {
                 bis.close();
             } catch (Exception e) {
             }
-        }   // end finally
+        } // end finally
 
         return encodedData;
-    }   // end encodeFromFile
+    } // end encodeFromFile
 
     /**
      * Reads <tt>infile</tt> and encodes it to <tt>outfile</tt>.
@@ -1618,18 +1619,17 @@ public class Base64 {
             out = new java.io.BufferedOutputStream(
                     new java.io.FileOutputStream(outfile));
             out.write(encoded.getBytes("US-ASCII")); // Strict, 7-bit output.
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             throw e; // Catch and release to execute finally{}
-        }   // end catch
+        } // end catch
         finally {
             try {
                 out.close();
             } catch (Exception ex) {
             }
-        }   // end finally
-    }   // end encodeFileToFile
-
+        } // end finally
+    } // end encodeFileToFile
 
     /**
      * Reads <tt>infile</tt> and decodes it to <tt>outfile</tt>.
@@ -1648,21 +1648,19 @@ public class Base64 {
             out = new java.io.BufferedOutputStream(
                     new java.io.FileOutputStream(outfile));
             out.write(decoded);
-        }   // end try
+        } // end try
         catch (java.io.IOException e) {
             throw e; // Catch and release to execute finally{}
-        }   // end catch
+        } // end catch
         finally {
             try {
                 out.close();
             } catch (Exception ex) {
             }
-        }   // end finally
-    }   // end decodeFileToFile
+        } // end finally
+    } // end decodeFileToFile
 
-
-    /* ********  I N N E R   C L A S S   I N P U T S T R E A M  ******** */
-
+    /* ******** I N N E R C L A S S I N P U T S T R E A M ******** */
 
     /**
      * A {@link InputStream} will read data from another
@@ -1674,16 +1672,15 @@ public class Base64 {
      */
     public static class InputStream extends java.io.FilterInputStream {
 
-        private boolean encode;         // Encoding or decoding
-        private int position;       // Current position in the buffer
-        private byte[] buffer;         // Small buffer holding converted data
-        private int bufferLength;   // Length of buffer (3 or 4)
-        private int numSigBytes;    // Number of meaningful bytes in the buffer
+        private boolean encode; // Encoding or decoding
+        private int position; // Current position in the buffer
+        private byte[] buffer; // Small buffer holding converted data
+        private int bufferLength; // Length of buffer (3 or 4)
+        private int numSigBytes; // Number of meaningful bytes in the buffer
         private int lineLength;
-        private boolean breakLines;     // Break lines at less than 80 characters
-        private int options;        // Record options used to create the stream.
-        private byte[] decodabet;      // Local copies to avoid extra method calls
-
+        private boolean breakLines; // Break lines at less than 80 characters
+        private int options; // Record options used to create the stream.
+        private byte[] decodabet; // Local copies to avoid extra method calls
 
         /**
          * Constructs a {@link InputStream} in DECODE mode.
@@ -1693,14 +1690,15 @@ public class Base64 {
          */
         public InputStream(final java.io.InputStream in) {
             this(in, DECODE);
-        }   // end constructor
-
+        } // end constructor
 
         /**
          * Constructs a {@link InputStream} in
          * either ENCODE or DECODE mode.
          * <p/>
-         * Valid options:<pre>
+         * Valid options:
+         *
+         * <pre>
          *   ENCODE or DECODE: Encode or Decode as data is read.
          *   DO_BREAK_LINES: break lines at 76 characters
          *     (only meaningful when encoding)</i>
@@ -1726,7 +1724,7 @@ public class Base64 {
             this.position = -1;
             this.lineLength = 0;
             this.decodabet = getDecodabet(options);
-        }   // end constructor
+        } // end constructor
 
         /**
          * Reads enough of the input stream to convert
@@ -1752,19 +1750,19 @@ public class Base64 {
                             numBinaryBytes++;
                         } else {
                             break; // out of for loop
-                        }   // end else: end of stream
+                        } // end else: end of stream
 
-                    }   // end for: each needed input byte
+                    } // end for: each needed input byte
 
                     if (numBinaryBytes > 0) {
                         encode3to4(b3, 0, numBinaryBytes, buffer, 0, options);
                         position = 0;
                         numSigBytes = 4;
-                    }   // end if: got data
+                    } // end if: got data
                     else {
-                        return -1;  // Must be end of stream
-                    }   // end else
-                }   // end if: encoding
+                        return -1; // Must be end of stream
+                    } // end else
+                } // end if: encoding
 
                 // Else decoding
                 else {
@@ -1775,44 +1773,43 @@ public class Base64 {
                         int b = 0;
                         do {
                             b = in.read();
-                        }
-                        while (b >= 0 && decodabet[b & 0x7f] <= WHITE_SPACE_ENC);
+                        } while (b >= 0 && decodabet[b & 0x7f] <= WHITE_SPACE_ENC);
 
                         if (b < 0) {
                             break; // Reads a -1 if end of stream
-                        }   // end if: end of stream
+                        } // end if: end of stream
 
                         b4[i] = (byte) b;
-                    }   // end for: each needed input byte
+                    } // end for: each needed input byte
 
                     if (i == 4) {
                         numSigBytes = decode4to3(b4, 0, buffer, 0, options);
                         position = 0;
-                    }   // end if: got four characters
+                    } // end if: got four characters
                     else if (i == 0) {
                         return -1;
-                    }   // end else if: also padded correctly
+                    } // end else if: also padded correctly
                     else {
                         // Must have broken out from above.
                         throw new java.io.IOException("Improperly padded Base64 input.");
-                    }   // end
+                    } // end
 
-                }   // end else: decode
-            }   // end else: get data
+                } // end else: decode
+            } // end else: get data
 
             // Got data?
             if (position >= 0) {
                 // End of relevant data?
-                if ( /*!encode &&*/ position >= numSigBytes) {
+                if ( /* !encode && */ position >= numSigBytes) {
                     return -1;
-                }   // end if: got data
+                } // end if: got data
 
                 if (encode && breakLines && lineLength >= MAX_LINE_LENGTH) {
                     lineLength = 0;
                     return '\n';
-                }   // end if
+                } // end if
                 else {
-                    lineLength++;   // This isn't important when decoding
+                    lineLength++; // This isn't important when decoding
                     // but throwing an extra "if" seems
                     // just as wasteful.
 
@@ -1820,19 +1817,18 @@ public class Base64 {
 
                     if (position >= bufferLength) {
                         position = -1;
-                    }   // end if: end
+                    } // end if: end
 
                     return b & 0xFF; // This is how you "cast" a byte that's
                     // intended to be unsigned.
-                }   // end else
-            }   // end if: position >= 0
+                } // end else
+            } // end if: position >= 0
 
             // Else error
             else {
                 throw new java.io.IOException("Error in Base64 code reading stream.");
-            }   // end else
-        }   // end read
-
+            } // end else
+        } // end read
 
         /**
          * Calls {@link #read()} repeatedly until the end of stream
@@ -1861,15 +1857,13 @@ public class Base64 {
                 } else {
                     break; // Out of 'for' loop
                 } // Out of 'for' loop
-            }   // end for: each byte read
+            } // end for: each byte read
             return i;
-        }   // end read
+        } // end read
 
-    }   // end inner class InputStream
+    } // end inner class InputStream
 
-
-    /* ********  I N N E R   C L A S S   O U T P U T S T R E A M  ******** */
-
+    /* ******** I N N E R C L A S S O U T P U T S T R E A M ******** */
 
     /**
      * A {@link OutputStream} will write data to another
@@ -1887,10 +1881,10 @@ public class Base64 {
         private int bufferLength;
         private int lineLength;
         private boolean breakLines;
-        private byte[] b4;         // Scratch used in a few places
+        private byte[] b4; // Scratch used in a few places
         private boolean suspendEncoding;
-        private int options;    // Record for later
-        private byte[] decodabet;  // Local copies to avoid extra method calls
+        private int options; // Record for later
+        private byte[] decodabet; // Local copies to avoid extra method calls
 
         /**
          * Constructs a {@link OutputStream} in ENCODE mode.
@@ -1900,14 +1894,15 @@ public class Base64 {
          */
         public OutputStream(final java.io.OutputStream out) {
             this(out, ENCODE);
-        }   // end constructor
-
+        } // end constructor
 
         /**
          * Constructs a {@link OutputStream} in
          * either ENCODE or DECODE mode.
          * <p/>
-         * Valid options:<pre>
+         * Valid options:
+         *
+         * <pre>
          *   ENCODE or DECODE: Encode or Decode as data is read.
          *   DO_BREAK_LINES: don't break lines at 76 characters
          *     (only meaningful when encoding)</i>
@@ -1934,8 +1929,7 @@ public class Base64 {
             this.b4 = new byte[4];
             this.options = options;
             this.decodabet = getDecodabet(options);
-        }   // end constructor
-
+        } // end constructor
 
         /**
          * Writes the byte to the output stream after
@@ -1956,7 +1950,7 @@ public class Base64 {
             if (suspendEncoding) {
                 this.out.write(theByte);
                 return;
-            }   // end if: supsended
+            } // end if: supsended
 
             // Encode?
             if (encode) {
@@ -1969,11 +1963,11 @@ public class Base64 {
                     if (breakLines && lineLength >= MAX_LINE_LENGTH) {
                         this.out.write(NEW_LINE);
                         lineLength = 0;
-                    }   // end if: end of line
+                    } // end if: end of line
 
                     position = 0;
-                }   // end if: enough to output
-            }   // end if: encoding
+                } // end if: enough to output
+            } // end if: encoding
 
             // Else, Decoding
             else {
@@ -1985,14 +1979,13 @@ public class Base64 {
                         int len = decode4to3(buffer, 0, b4, 0, options);
                         out.write(b4, 0, len);
                         position = 0;
-                    }   // end if: enough to output
-                }   // end if: meaningful base64 character
+                    } // end if: enough to output
+                } // end if: meaningful base64 character
                 else if (decodabet[theByte & 0x7f] != WHITE_SPACE_ENC) {
                     throw new java.io.IOException("Invalid character in Base64 data.");
-                }   // end else: not white space either
-            }   // end else: decoding
-        }   // end write
-
+                } // end else: not white space either
+            } // end else: decoding
+        } // end write
 
         /**
          * Calls {@link #write(int)} repeatedly until <var>len</var>
@@ -2010,14 +2003,13 @@ public class Base64 {
             if (suspendEncoding) {
                 this.out.write(theBytes, off, len);
                 return;
-            }   // end if: supsended
+            } // end if: supsended
 
             for (int i = 0; i < len; i++) {
                 write(theBytes[off + i]);
-            }   // end for: each byte written
+            } // end for: each byte written
 
-        }   // end write
-
+        } // end write
 
         /**
          * Method added by PHIL. [Thanks, PHIL. -Rob]
@@ -2030,14 +2022,13 @@ public class Base64 {
                 if (encode) {
                     out.write(encode3to4(b4, buffer, position, options));
                     position = 0;
-                }   // end if: encoding
+                } // end if: encoding
                 else {
                     throw new java.io.IOException("Base64 input not properly padded.");
-                }   // end else: decoding
-            }   // end if: buffer partially full
+                } // end else: decoding
+            } // end if: buffer partially full
 
-        }   // end flush
-
+        } // end flush
 
         /**
          * Flushes and closes (I think, in the superclass) the stream.
@@ -2055,8 +2046,7 @@ public class Base64 {
 
             buffer = null;
             out = null;
-        }   // end close
-
+        } // end close
 
         /**
          * Suspends encoding of the stream.
@@ -2069,8 +2059,7 @@ public class Base64 {
         public void suspendEncoding() throws java.io.IOException {
             flushBase64();
             this.suspendEncoding = true;
-        }   // end suspendEncoding
-
+        } // end suspendEncoding
 
         /**
          * Resumes encoding of the stream.
@@ -2081,11 +2070,8 @@ public class Base64 {
          */
         public void resumeEncoding() {
             this.suspendEncoding = false;
-        }   // end resumeEncoding
+        } // end resumeEncoding
 
+    } // end inner class OutputStream
 
-    }   // end inner class OutputStream
-
-
-}   // end class Base64
-
+} // end class Base64

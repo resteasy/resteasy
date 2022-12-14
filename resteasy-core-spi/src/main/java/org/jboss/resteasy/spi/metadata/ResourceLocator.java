@@ -6,22 +6,21 @@ import java.lang.reflect.Type;
 /**
  * @author Christian Kaltepoth
  */
-public interface ResourceLocator
-{
-   ResourceClass getResourceClass();
+public interface ResourceLocator {
+    ResourceClass getResourceClass();
 
-   Class<?> getReturnType();
+    Class<?> getReturnType();
 
-   Type getGenericReturnType();
+    Type getGenericReturnType();
 
-   Method getMethod();
+    Method getMethod();
 
-   Method getAnnotatedMethod();
+    Method getAnnotatedMethod();
 
-   MethodParameter[] getParams();
+    MethodParameter[] getParams();
 
-   String getFullpath();
+    String getFullpath();
 
-   String getPath();
+    String getPath();
 
 }

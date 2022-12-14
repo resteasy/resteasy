@@ -48,406 +48,390 @@ import io.netty.channel.ChannelHandlerContext;
  * @author Kristoffer Sjogren
  * @version $Revision: 1 $
  */
-public class NettyHttpRequest extends BaseHttpRequest
-{
-   protected ResteasyHttpHeaders httpHeaders;
-   protected SynchronousDispatcher dispatcher;
-   protected String httpMethod;
-   protected InputStream inputStream;
-   protected Map<String, Object> attributes = new HashMap<String, Object>();
-   protected NettyHttpResponse response;
-   private final boolean is100ContinueExpected;
-   private final NettyExecutionContext executionContext;
-   private final ChannelHandlerContext ctx;
-   private volatile boolean flushed;
-   private ByteBuf content;
+public class NettyHttpRequest extends BaseHttpRequest {
+    protected ResteasyHttpHeaders httpHeaders;
+    protected SynchronousDispatcher dispatcher;
+    protected String httpMethod;
+    protected InputStream inputStream;
+    protected Map<String, Object> attributes = new HashMap<String, Object>();
+    protected NettyHttpResponse response;
+    private final boolean is100ContinueExpected;
+    private final NettyExecutionContext executionContext;
+    private final ChannelHandlerContext ctx;
+    private volatile boolean flushed;
+    private ByteBuf content;
 
-   public NettyHttpRequest(final ChannelHandlerContext ctx, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod, final SynchronousDispatcher dispatcher, final NettyHttpResponse response, final boolean is100ContinueExpected)
-   {
-      super(uri);
-      this.is100ContinueExpected = is100ContinueExpected;
-      this.response = response;
-      this.dispatcher = dispatcher;
-      this.httpHeaders = httpHeaders;
-      this.httpMethod = httpMethod;
-      this.ctx = ctx;
-      this.executionContext = new NettyExecutionContext(this, response, dispatcher);
-   }
+    public NettyHttpRequest(final ChannelHandlerContext ctx, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri,
+            final String httpMethod, final SynchronousDispatcher dispatcher, final NettyHttpResponse response,
+            final boolean is100ContinueExpected) {
+        super(uri);
+        this.is100ContinueExpected = is100ContinueExpected;
+        this.response = response;
+        this.dispatcher = dispatcher;
+        this.httpHeaders = httpHeaders;
+        this.httpMethod = httpMethod;
+        this.ctx = ctx;
+        this.executionContext = new NettyExecutionContext(this, response, dispatcher);
+    }
 
-   @Override
-   public MultivaluedMap<String, String> getMutableHeaders()
-   {
-      return httpHeaders.getMutableHeaders();
-   }
+    @Override
+    public MultivaluedMap<String, String> getMutableHeaders() {
+        return httpHeaders.getMutableHeaders();
+    }
 
-   @Override
-   public void setHttpMethod(String method)
-   {
-      this.httpMethod = method;
-   }
+    @Override
+    public void setHttpMethod(String method) {
+        this.httpMethod = method;
+    }
 
-   @Override
-   public Enumeration<String> getAttributeNames()
-   {
-      return Collections.enumeration(new HashSet<>(attributes.keySet()));
-   }
+    @Override
+    public Enumeration<String> getAttributeNames() {
+        return Collections.enumeration(new HashSet<>(attributes.keySet()));
+    }
 
-   @Override
-   public ResteasyAsynchronousContext getAsyncContext()
-   {
-      return executionContext;
-   }
+    @Override
+    public ResteasyAsynchronousContext getAsyncContext() {
+        return executionContext;
+    }
 
-   public boolean isFlushed()
-   {
-      return flushed;
-   }
+    public boolean isFlushed() {
+        return flushed;
+    }
 
-   @Override
-   public Object getAttribute(String attribute)
-   {
-      return attributes.get(attribute);
-   }
+    @Override
+    public Object getAttribute(String attribute) {
+        return attributes.get(attribute);
+    }
 
-   @Override
-   public void setAttribute(String name, Object value)
-   {
-      attributes.put(name, value);
-   }
+    @Override
+    public void setAttribute(String name, Object value) {
+        attributes.put(name, value);
+    }
 
-   @Override
-   public void removeAttribute(String name)
-   {
-      attributes.remove(name);
-   }
+    @Override
+    public void removeAttribute(String name) {
+        attributes.remove(name);
+    }
 
-   @Override
-   public HttpHeaders getHttpHeaders()
-   {
-      return httpHeaders;
-   }
+    @Override
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders;
+    }
 
-   @Override
-   public InputStream getInputStream()
-   {
-      return inputStream;
-   }
+    @Override
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 
-   @Override
-   public void setInputStream(InputStream stream)
-   {
-      this.inputStream = stream;
-   }
+    @Override
+    public void setInputStream(InputStream stream) {
+        this.inputStream = stream;
+    }
 
-   @Override
-   public String getHttpMethod()
-   {
-      return httpMethod;
-   }
+    @Override
+    public String getHttpMethod() {
+        return httpMethod;
+    }
 
-   public NettyHttpResponse getResponse()
-   {
-      return response;
-   }
+    public NettyHttpResponse getResponse() {
+        return response;
+    }
 
-   public boolean isKeepAlive()
-   {
-      return response.isKeepAlive();
-   }
+    public boolean isKeepAlive() {
+        return response.isKeepAlive();
+    }
 
-   public boolean is100ContinueExpected()
-   {
-      return is100ContinueExpected;
-   }
+    public boolean is100ContinueExpected() {
+        return is100ContinueExpected;
+    }
 
-   @Override
-   public void forward(String path)
-   {
-      throw new NotImplementedYetException();
-   }
+    @Override
+    public void forward(String path) {
+        throw new NotImplementedYetException();
+    }
 
-   @Override
-   public boolean wasForwarded()
-   {
-      return false;
-   }
+    @Override
+    public boolean wasForwarded() {
+        return false;
+    }
 
-   public void setContentBuffer(ByteBuf content) {
-      this.content = content;
-      this.inputStream = new ByteBufInputStream(content);
-   }
+    public void setContentBuffer(ByteBuf content) {
+        this.content = content;
+        this.inputStream = new ByteBufInputStream(content);
+    }
 
-   public void releaseContentBuffer() {
-      if (content != null) {
-         this.content.release();
-      }
-   }
+    public void releaseContentBuffer() {
+        if (content != null) {
+            this.content.release();
+        }
+    }
 
-   class NettyExecutionContext extends AbstractExecutionContext {
-      protected final NettyHttpRequest request;
-      protected final NettyHttpResponse response;
-      protected volatile boolean done;
-      protected volatile boolean cancelled;
-      protected volatile boolean wasSuspended;
-      protected final NettyHttpAsyncResponse asyncResponse;
+    class NettyExecutionContext extends AbstractExecutionContext {
+        protected final NettyHttpRequest request;
+        protected final NettyHttpResponse response;
+        protected volatile boolean done;
+        protected volatile boolean cancelled;
+        protected volatile boolean wasSuspended;
+        protected final NettyHttpAsyncResponse asyncResponse;
 
-      NettyExecutionContext(final NettyHttpRequest request, final NettyHttpResponse response, final SynchronousDispatcher dispatcher)
-      {
-         super(dispatcher, request, response);
-         this.request = request;
-         this.response = response;
-         this.asyncResponse = new NettyHttpAsyncResponse(dispatcher, request, response);
-      }
-
-      @Override
-      public boolean isSuspended() {
-         return wasSuspended;
-      }
-
-      @Override
-      public ResteasyAsynchronousResponse getAsyncResponse() {
-         return asyncResponse;
-      }
-
-      @Override
-      public ResteasyAsynchronousResponse suspend() throws IllegalStateException {
-         return suspend(-1);
-      }
-
-      @Override
-      public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException {
-         return suspend(millis, TimeUnit.MILLISECONDS);
-      }
-
-      @Override
-      public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
-         if (wasSuspended)
-         {
-            throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
-         }
-         wasSuspended = true;
-         return asyncResponse;
-      }
-
-      @Override
-      public void complete() {
-         if (wasSuspended) {
-            asyncResponse.complete();
-         }
-      }
-
-      @Override
-      public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
-          // check if this CF is already resolved
-          CompletableFuture<Void> ret = f.toCompletableFuture();
-          // if it's not resolved, we may need to suspend
-          if(!ret.isDone() && !isSuspended()) {
-              suspend();
-          }
-          return ret;
-      }
-
-      @Override
-      public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
-          if(!NettyUtil.isIoThread()) {
-              // we're blocking
-              try {
-                  f.run();
-              } catch (Exception e) {
-                  CompletableFuture<Void> ret = new CompletableFuture<>();
-                  ret.completeExceptionally(e);
-                  return ret;
-              }
-              return CompletableFuture.completedFuture(null);
-          } else if(!hasInterceptors) {
-              Map<Class<?>, Object> context = ResteasyContext.getContextDataMap();
-              // turn any sync request into async
-              if(!isSuspended()) {
-                  suspend();
-              }
-              return CompletableFuture.runAsync(() -> {
-                  try(CloseableContext newContext = ResteasyContext.addCloseableContextDataLevel(context)){
-                      f.run();
-                  } catch (RuntimeException e) {
-                      throw e;
-                  } catch (Exception e) {
-                      throw new RuntimeException(e);
-                  }
-              });
-          } else {
-             CompletableFuture<Void> ret = new CompletableFuture<>();
-             ret.completeExceptionally(new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
-             return ret;
-          }
-      }
-
-      /**
-       * Netty implementation of {@link AsyncResponse}.
-       *
-       * @author Kristoffer Sjogren
-       */
-      class NettyHttpAsyncResponse extends AbstractAsynchronousResponse {
-         private final Object responseLock = new Object();
-         protected ScheduledFuture<?> timeoutFuture;
-         private final NettyHttpResponse nettyResponse;
-         NettyHttpAsyncResponse(final SynchronousDispatcher dispatcher, final NettyHttpRequest request, final NettyHttpResponse response) {
+        NettyExecutionContext(final NettyHttpRequest request, final NettyHttpResponse response,
+                final SynchronousDispatcher dispatcher) {
             super(dispatcher, request, response);
-            this.nettyResponse = response;
-         }
+            this.request = request;
+            this.response = response;
+            this.asyncResponse = new NettyHttpAsyncResponse(dispatcher, request, response);
+        }
 
-         @Override
-         public void initialRequestThreadFinished() {
-         // done
-         }
+        @Override
+        public boolean isSuspended() {
+            return wasSuspended;
+        }
 
-         @Override
-         public void complete() {
-            synchronized (responseLock)
-            {
-               if (done) return;
-               if (cancelled) return;
-               done = true;
-               nettyFlush();
+        @Override
+        public ResteasyAsynchronousResponse getAsyncResponse() {
+            return asyncResponse;
+        }
+
+        @Override
+        public ResteasyAsynchronousResponse suspend() throws IllegalStateException {
+            return suspend(-1);
+        }
+
+        @Override
+        public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException {
+            return suspend(millis, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
+            if (wasSuspended) {
+                throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
             }
-         }
+            wasSuspended = true;
+            return asyncResponse;
+        }
 
-
-         @Override
-         public boolean resume(Object entity) {
-            synchronized (responseLock)
-            {
-               if (done) return false;
-               if (cancelled) return false;
-               done = true;
-               return internalResume(entity, t -> nettyFlush());
+        @Override
+        public void complete() {
+            if (wasSuspended) {
+                asyncResponse.complete();
             }
-         }
+        }
 
-         @Override
-         public boolean resume(Throwable ex) {
-            synchronized (responseLock)
-            {
-               if (done) return false;
-               if (cancelled) return false;
-               done = true;
-               return internalResume(ex, t -> nettyFlush());
+        @Override
+        public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+            // check if this CF is already resolved
+            CompletableFuture<Void> ret = f.toCompletableFuture();
+            // if it's not resolved, we may need to suspend
+            if (!ret.isDone() && !isSuspended()) {
+                suspend();
             }
-         }
+            return ret;
+        }
 
-         @Override
-         public boolean cancel() {
-            synchronized (responseLock)
-            {
-               if (cancelled) {
-                  return true;
-               }
-               if (done) {
-                  return false;
-               }
-               done = true;
-               cancelled = true;
-               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> nettyFlush());
+        @Override
+        public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+            if (!NettyUtil.isIoThread()) {
+                // we're blocking
+                try {
+                    f.run();
+                } catch (Exception e) {
+                    CompletableFuture<Void> ret = new CompletableFuture<>();
+                    ret.completeExceptionally(e);
+                    return ret;
+                }
+                return CompletableFuture.completedFuture(null);
+            } else if (!hasInterceptors) {
+                Map<Class<?>, Object> context = ResteasyContext.getContextDataMap();
+                // turn any sync request into async
+                if (!isSuspended()) {
+                    suspend();
+                }
+                return CompletableFuture.runAsync(() -> {
+                    try (CloseableContext newContext = ResteasyContext.addCloseableContextDataLevel(context)) {
+                        f.run();
+                    } catch (RuntimeException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            } else {
+                CompletableFuture<Void> ret = new CompletableFuture<>();
+                ret.completeExceptionally(
+                        new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
+                return ret;
             }
-         }
+        }
 
-         @Override
-         public boolean cancel(int retryAfter) {
-            synchronized (responseLock)
-            {
-               if (cancelled) return true;
-               if (done) return false;
-               done = true;
-               cancelled = true;
-               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                  t -> nettyFlush());
+        /**
+         * Netty implementation of {@link AsyncResponse}.
+         *
+         * @author Kristoffer Sjogren
+         */
+        class NettyHttpAsyncResponse extends AbstractAsynchronousResponse {
+            private final Object responseLock = new Object();
+            protected ScheduledFuture<?> timeoutFuture;
+            private final NettyHttpResponse nettyResponse;
+
+            NettyHttpAsyncResponse(final SynchronousDispatcher dispatcher, final NettyHttpRequest request,
+                    final NettyHttpResponse response) {
+                super(dispatcher, request, response);
+                this.nettyResponse = response;
             }
-         }
 
-         protected void nettyFlush()
-         {
-            flushed = true;
-            try
-            {
-               synchronized (responseLock) {
-                  nettyResponse.finish();
-               }
+            @Override
+            public void initialRequestThreadFinished() {
+                // done
             }
-            catch (IOException e)
-            {
-               throw new RuntimeException(e);
+
+            @Override
+            public void complete() {
+                synchronized (responseLock) {
+                    if (done)
+                        return;
+                    if (cancelled)
+                        return;
+                    done = true;
+                    nettyFlush();
+                }
             }
-         }
 
-         @Override
-         public boolean cancel(Date retryAfter) {
-            synchronized (responseLock)
-            {
-               if (cancelled) return true;
-               if (done) return false;
-               done = true;
-               cancelled = true;
-               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                  t -> nettyFlush());
+            @Override
+            public boolean resume(Object entity) {
+                synchronized (responseLock) {
+                    if (done)
+                        return false;
+                    if (cancelled)
+                        return false;
+                    done = true;
+                    return internalResume(entity, t -> nettyFlush());
+                }
             }
-         }
 
-         @Override
-         public boolean isSuspended() {
-            return !done && !cancelled;
-         }
-
-         @Override
-         public boolean isCancelled() {
-            return cancelled;
-         }
-
-         @Override
-         public boolean isDone() {
-            return done;
-         }
-
-         @Override
-         public boolean setTimeout(long time, TimeUnit unit) {
-            synchronized (responseLock)
-            {
-               if (done || cancelled) return false;
-               if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
-                  return false;
-               }
-               Runnable task = new Runnable() {
-                  @Override
-                  public void run()
-                  {
-                     handleTimeout();
-                  }
-               };
-               timeoutFuture = ctx.executor().schedule(task, time, unit);
+            @Override
+            public boolean resume(Throwable ex) {
+                synchronized (responseLock) {
+                    if (done)
+                        return false;
+                    if (cancelled)
+                        return false;
+                    done = true;
+                    return internalResume(ex, t -> nettyFlush());
+                }
             }
-            return true;
-         }
 
-         protected void handleTimeout()
-         {
-            if (timeoutHandler != null)
-            {
-               timeoutHandler.handleTimeout(this);
-               return;
+            @Override
+            public boolean cancel() {
+                synchronized (responseLock) {
+                    if (cancelled) {
+                        return true;
+                    }
+                    if (done) {
+                        return false;
+                    }
+                    done = true;
+                    cancelled = true;
+                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> nettyFlush());
+                }
             }
-            if (done) return;
-            resume(new ServiceUnavailableException());
-         }
-      }
-   }
 
-   @Override
-   public String getRemoteHost()
-   {
-      return ((InetSocketAddress)ctx.channel().remoteAddress()).getHostName();
-   }
+            @Override
+            public boolean cancel(int retryAfter) {
+                synchronized (responseLock) {
+                    if (cancelled)
+                        return true;
+                    if (done)
+                        return false;
+                    done = true;
+                    cancelled = true;
+                    return internalResume(
+                            Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter)
+                                    .build(),
+                            t -> nettyFlush());
+                }
+            }
 
-   @Override
-   public String getRemoteAddress()
-   {
-      return ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress();
-   }
+            protected void nettyFlush() {
+                flushed = true;
+                try {
+                    synchronized (responseLock) {
+                        nettyResponse.finish();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public boolean cancel(Date retryAfter) {
+                synchronized (responseLock) {
+                    if (cancelled)
+                        return true;
+                    if (done)
+                        return false;
+                    done = true;
+                    cancelled = true;
+                    return internalResume(
+                            Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter)
+                                    .build(),
+                            t -> nettyFlush());
+                }
+            }
+
+            @Override
+            public boolean isSuspended() {
+                return !done && !cancelled;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return cancelled;
+            }
+
+            @Override
+            public boolean isDone() {
+                return done;
+            }
+
+            @Override
+            public boolean setTimeout(long time, TimeUnit unit) {
+                synchronized (responseLock) {
+                    if (done || cancelled)
+                        return false;
+                    if (timeoutFuture != null && !timeoutFuture.cancel(false)) {
+                        return false;
+                    }
+                    Runnable task = new Runnable() {
+                        @Override
+                        public void run() {
+                            handleTimeout();
+                        }
+                    };
+                    timeoutFuture = ctx.executor().schedule(task, time, unit);
+                }
+                return true;
+            }
+
+            protected void handleTimeout() {
+                if (timeoutHandler != null) {
+                    timeoutHandler.handleTimeout(this);
+                    return;
+                }
+                if (done)
+                    return;
+                resume(new ServiceUnavailableException());
+            }
+        }
+    }
+
+    @Override
+    public String getRemoteHost() {
+        return ((InetSocketAddress) ctx.channel().remoteAddress()).getHostName();
+    }
+
+    @Override
+    public String getRemoteAddress() {
+        return ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress();
+    }
 }

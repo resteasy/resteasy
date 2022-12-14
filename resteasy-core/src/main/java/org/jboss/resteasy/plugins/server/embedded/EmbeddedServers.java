@@ -34,7 +34,7 @@ import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
- * A utility for interacting with and locating {@linkplain  EmbeddedServer embedded servers}.
+ * A utility for interacting with and locating {@linkplain EmbeddedServer embedded servers}.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
@@ -54,7 +54,8 @@ public class EmbeddedServers {
     }
 
     /**
-     * Attempts to resolve the {@link ApplicationPath} on the deployments {@linkplain jakarta.ws.rs.core.Application application}.
+     * Attempts to resolve the {@link ApplicationPath} on the deployments {@linkplain jakarta.ws.rs.core.Application
+     * application}.
      * If the application is not set or is not annotated, {@code null} is returned.
      *
      * @param deployment the deployment to check
@@ -144,15 +145,17 @@ public class EmbeddedServers {
             if (instance instanceof EmbeddedServer) {
                 return (EmbeddedServer) instance;
             }
-            LogMessages.LOGGER.invalidPropertyType(instance, ConfigurationOption.EMBEDDED_SERVER.key(), EmbeddedServer.class.getName());
+            LogMessages.LOGGER.invalidPropertyType(instance, ConfigurationOption.EMBEDDED_SERVER.key(),
+                    EmbeddedServer.class.getName());
         }
         final Optional<EmbeddedServer> found;
         if (System.getSecurityManager() == null) {
             found = PriorityServiceLoader.load(EmbeddedServer.class)
                     .first();
         } else {
-            found = AccessController.doPrivileged((PrivilegedAction<Optional<EmbeddedServer>>) () -> PriorityServiceLoader.load(EmbeddedServer.class)
-                    .first());
+            found = AccessController.doPrivileged(
+                    (PrivilegedAction<Optional<EmbeddedServer>>) () -> PriorityServiceLoader.load(EmbeddedServer.class)
+                            .first());
         }
         return found.orElseThrow(() -> Messages.MESSAGES.noImplementationFound(EmbeddedServer.class.getName()));
     }

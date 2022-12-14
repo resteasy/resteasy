@@ -55,12 +55,11 @@ public class OverriddenInjectableContextTest {
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 // This can be removed if WFARQ-118 is resolved
                 .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                                // Required for Arquillian
-                                new ReflectPermission("suppressAccessChecks"),
-                                new PropertyPermission("arquillian.debug", "read"),
-                                // Required for JUnit
-                                new RuntimePermission("accessDeclaredMembers")
-                        ),
+                        // Required for Arquillian
+                        new ReflectPermission("suppressAccessChecks"),
+                        new PropertyPermission("arquillian.debug", "read"),
+                        // Required for JUnit
+                        new RuntimePermission("accessDeclaredMembers")),
                         "permissions.xml");
     }
 

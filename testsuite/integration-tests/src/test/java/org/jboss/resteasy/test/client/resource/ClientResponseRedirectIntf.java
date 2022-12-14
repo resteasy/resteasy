@@ -6,6 +6,6 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/redirect")
 public interface ClientResponseRedirectIntf {
-   @GET
-   Response get();
+    @GET
+    Response get();
 }

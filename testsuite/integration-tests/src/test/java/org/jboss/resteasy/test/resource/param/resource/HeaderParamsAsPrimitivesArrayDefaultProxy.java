@@ -6,11 +6,11 @@ import jakarta.ws.rs.Produces;
 
 @Path("/array/default")
 public interface HeaderParamsAsPrimitivesArrayDefaultProxy {
-   @GET
-   @Produces("application/boolean")
-   String doGetBoolean();
+    @GET
+    @Produces("application/boolean")
+    String doGetBoolean();
 
-   @GET
-   @Produces("application/short")
-   String doGetShort();
+    @GET
+    @Produces("application/short")
+    String doGetShort();
 }

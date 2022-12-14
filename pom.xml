@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-parent</artifactId>
-        <version>39</version>
+        <groupId>dev.resteasy.tools</groupId>
+        <artifactId>resteasy-parent</artifactId>
+        <version>2.0.2.Final</version>
         <relativePath/>
     </parent>
 
@@ -23,7 +23,6 @@
         <!-- Dependency versions -->
         <dep.arquillian-bom.version>1.7.0.Alpha13</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
-        <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
         <server.version>27.0.0.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha6</version.org.wildfly.arquillian.wildfly-arquillian>
@@ -34,10 +33,6 @@
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.2.5</maven.min.version>
 
-        <!-- Require at least Java 11 to compile -->
-        <jdk.min.version>11</jdk.min.version>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m</surefire.system.args>
 
@@ -57,7 +52,6 @@
         <version.org.jboss.galleon>5.0.6.Final</version.org.jboss.galleon>
         <version.org.wildfly.galleon-plugins>6.2.0.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>4.0.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
-        <version.surefire.plugin>3.0.0-M7</version.surefire.plugin>
 
         <!-- Test options -->
         <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
@@ -249,6 +243,62 @@
                 <additionalJvmArgs>-Djdk.io.File.enableADS=true -Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
             </properties>
         </profile>
+        <profile>
+            <id>format-check</id>
+            <build>
+                <plugins>
+                    <!-- Validate formatting -->
+                    <plugin>
+                        <groupId>net.revelc.code.formatter</groupId>
+                        <artifactId>formatter-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>validate-format</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>validate</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>validate-format-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>validate</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.revelc.code</groupId>
+                        <artifactId>impsort-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>check-import-sort</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>check-import-sort-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <contributors>
@@ -265,23 +315,10 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <release>11</release>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>default-compile</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>compile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
                         <runOrder>alphabetical</runOrder>
@@ -376,22 +413,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${version.checkstyle.plugin}</version>
-                <configuration>
-                    <configLocation>resteasy-checkstyle/checkstyle.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/*$logger.java,**/*$bundle.java</excludes>
-                    <useFile/>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.resteasy.checkstyle</groupId>
-                        <artifactId>resteasy-checkstyle-config</artifactId>
-                        <version>${version.org.jboss.resteasy.checkstyle}</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>check-style</id>
@@ -405,7 +426,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${version.enforcer.plugin}</version>
                 <executions>
                     <execution>
                         <id>ban-bad-dependencies</id>
@@ -445,8 +465,43 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence></dependencyConvergence>
+                                <dependencyConvergence/>
                             </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Format source files -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>format-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                            <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sort-resource-imports</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>sort</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                            <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -458,7 +513,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>${version.jxr.plugin}</version>
             </plugin>
         </plugins>
     </reporting>

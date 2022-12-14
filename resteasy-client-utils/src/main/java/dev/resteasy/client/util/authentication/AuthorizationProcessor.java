@@ -41,7 +41,7 @@ public interface AuthorizationProcessor {
      * @param authenticateHeader the {@link jakarta.ws.rs.core.HttpHeaders#WWW_AUTHENTICATE} value
      *
      * @return the value for the {@link jakarta.ws.rs.core.HttpHeaders#AUTHORIZATION} header or {@link null} if one
-     * could not be created by this processor
+     *         could not be created by this processor
      */
     String createRequestHeader(ClientRequestContext requestContext, List<String> authenticateHeader);
 
@@ -51,7 +51,7 @@ public interface AuthorizationProcessor {
      * @param requestContext the client request context
      *
      * @return the value for the {@link jakarta.ws.rs.core.HttpHeaders#AUTHORIZATION} header or {@link null} if one
-     * could not be created by this processor
+     *         could not be created by this processor
      */
     default String createRequestHeader(ClientRequestContext requestContext) {
         return null;

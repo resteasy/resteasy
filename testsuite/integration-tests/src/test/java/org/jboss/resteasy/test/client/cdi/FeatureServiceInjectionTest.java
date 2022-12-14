@@ -45,8 +45,7 @@ public class FeatureServiceInjectionTest extends AbstractRegistrationTest {
         return createDeployment(FeatureServiceInjectionTest.class)
                 .addClasses(
                         InjectionFilterFeature.class,
-                        InjectionFilter.class
-                )
+                        InjectionFilter.class)
                 .addAsServiceProvider(Feature.class, InjectionFilterFeature.class);
     }
 

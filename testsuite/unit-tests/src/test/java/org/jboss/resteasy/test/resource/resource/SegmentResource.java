@@ -5,15 +5,15 @@ import jakarta.ws.rs.Path;
 
 @Path("/resource")
 public class SegmentResource {
-   @GET
-   @Path("sub")
-   public String get() {
-      return null;
-   }
+    @GET
+    @Path("sub")
+    public String get() {
+        return null;
+    }
 
-   @Path("{id}")
-   public SegmentLocator locator() {
-      return new SegmentLocator();
-   }
+    @Path("{id}")
+    public SegmentLocator locator() {
+        return new SegmentLocator();
+    }
 
 }

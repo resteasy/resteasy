@@ -19,14 +19,14 @@
 
 package org.jboss.resteasy.test.client.proxy.resource;
 
-import org.jboss.resteasy.test.client.proxy.ProxyPathParamRegexTest;
-
+import jakarta.ws.rs.Encoded;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.Encoded;
 import jakarta.ws.rs.core.MediaType;
+
+import org.jboss.resteasy.test.client.proxy.ProxyPathParamRegexTest;
 
 @Path("")
 public class ProxyPathParamRegexResource implements ProxyPathParamRegexTest.RegexInterface {

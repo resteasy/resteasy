@@ -64,7 +64,8 @@ public class AuthenticationSetupTask extends SnapshotServerSetupTask implements 
         addUser(builder, realmAddress, TestAuth.USER_2, TestAuth.PASSWORD_2);
 
         // Configure the role decoder
-        final ModelNode roleDecoder = Operations.createAddress("subsystem", "elytron", "simple-role-decoder", "from-roles-attribute-" + realmName);
+        final ModelNode roleDecoder = Operations.createAddress("subsystem", "elytron", "simple-role-decoder",
+                "from-roles-attribute-" + realmName);
         op = Operations.createAddOperation(roleDecoder);
         op.get("attribute").set("roles");
         builder.addStep(op);
@@ -82,7 +83,8 @@ public class AuthenticationSetupTask extends SnapshotServerSetupTask implements 
         builder.addStep(op);
 
         // Configure the authentication factory
-        final ModelNode httpAuthFactoryAddress = Operations.createAddress("subsystem", "elytron", "http-authentication-factory", "http-auth-" + realmName);
+        final ModelNode httpAuthFactoryAddress = Operations.createAddress("subsystem", "elytron", "http-authentication-factory",
+                "http-auth-" + realmName);
         op = Operations.createAddOperation(httpAuthFactoryAddress);
         op.get("security-domain").set(sdName);
         op.get("http-server-mechanism-factory").set("global");
@@ -97,7 +99,8 @@ public class AuthenticationSetupTask extends SnapshotServerSetupTask implements 
         builder.addStep(op);
 
         // Configure Undertow
-        final ModelNode undertowAddress = Operations.createAddress("subsystem", "undertow", "application-security-domain", sdName);
+        final ModelNode undertowAddress = Operations.createAddress("subsystem", "undertow", "application-security-domain",
+                sdName);
         op = Operations.createAddOperation(undertowAddress);
         op.get("http-authentication-factory").set("http-auth-" + realmName);
         builder.addStep(op);
@@ -137,7 +140,7 @@ public class AuthenticationSetupTask extends SnapshotServerSetupTask implements 
     }
 
     private void addUser(final CompositeOperationBuilder builder, final ModelNode address, final String username,
-                         final String password) {
+            final String password) {
         ModelNode op = Operations.createOperation("add-identity", address);
         op.get("identity").set(username);
         builder.addStep(op);

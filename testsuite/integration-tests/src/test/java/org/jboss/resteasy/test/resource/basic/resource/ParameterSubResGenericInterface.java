@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.resource.basic.resource;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.QueryParam;
 import java.util.List;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.QueryParam;
+
 public interface ParameterSubResGenericInterface<T> {
-   @GET
-   String get(@QueryParam("foo") List<T> params);
+    @GET
+    String get(@QueryParam("foo") List<T> params);
 }

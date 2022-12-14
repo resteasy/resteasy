@@ -6,8 +6,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
 public interface TestValidateOnExecutionInterface {
-   @POST
-   @Path("overrideInterface1")
-   @ValidateOnExecution(type = {ExecutableType.NONE})
-   void overrideInterface1(String s);
+    @POST
+    @Path("overrideInterface1")
+    @ValidateOnExecution(type = { ExecutableType.NONE })
+    void overrideInterface1(String s);
 }

@@ -7,6 +7,5 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "delete")
-public class DeleteResourceMethod extends ResourceMethodEntry
-{
+public class DeleteResourceMethod extends ResourceMethodEntry {
 }

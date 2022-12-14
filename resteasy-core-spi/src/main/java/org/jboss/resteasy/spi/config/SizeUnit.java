@@ -41,6 +41,7 @@ public enum SizeUnit {
     EXABYTE(TERABYTE, "EB"),
 
     ;
+
     private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
     private final SizeUnit parent;
     private final long sizeInBytes;

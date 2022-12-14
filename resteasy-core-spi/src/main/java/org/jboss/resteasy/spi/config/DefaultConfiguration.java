@@ -32,9 +32,9 @@ import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 /**
  * A default configuration which searches for a property in the following order:
  * <ol>
- *     <li>System properties</li>
- *     <li>Environment variables</li>
- *     <li>{@link ResteasyConfiguration}</li>
+ * <li>System properties</li>
+ * <li>Environment variables</li>
+ * <li>{@link ResteasyConfiguration}</li>
  * </ol>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>

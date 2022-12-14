@@ -12,14 +12,12 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MockDispatcherFactory
-{
+public class MockDispatcherFactory {
 
-   public static Dispatcher createDispatcher()
-   {
-      Dispatcher dispatcher = new SynchronousDispatcher(new ResteasyProviderFactoryImpl());
-      ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
-      RegisterBuiltin.register(dispatcher.getProviderFactory());
-      return dispatcher;
-   }
+    public static Dispatcher createDispatcher() {
+        Dispatcher dispatcher = new SynchronousDispatcher(new ResteasyProviderFactoryImpl());
+        ResteasyProviderFactory.setInstance(dispatcher.getProviderFactory());
+        RegisterBuiltin.register(dispatcher.getProviderFactory());
+        return dispatcher;
+    }
 }

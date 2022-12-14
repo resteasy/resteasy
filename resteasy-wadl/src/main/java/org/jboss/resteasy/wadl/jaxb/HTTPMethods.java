@@ -5,18 +5,19 @@
 // Generated on: 2015.06.18 at 10:10:02 PM CST
 //
 
-
 package org.jboss.resteasy.wadl.jaxb;
 
 import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for HTTPMethods.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for HTTPMethods.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ *
  * <pre>
  * &lt;simpleType name="HTTPMethods"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN"&gt;
@@ -34,18 +35,18 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum HTTPMethods {
 
-   GET,
-   POST,
-   PUT,
-   HEAD,
-   DELETE;
+    GET,
+    POST,
+    PUT,
+    HEAD,
+    DELETE;
 
-   public String value() {
-      return name();
-   }
+    public String value() {
+        return name();
+    }
 
-   public static HTTPMethods fromValue(String v) {
-      return valueOf(v);
-   }
+    public static HTTPMethods fromValue(String v) {
+        return valueOf(v);
+    }
 
 }

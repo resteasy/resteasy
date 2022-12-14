@@ -11,6 +11,7 @@ public class ConstructorParams404Resource {
     public ConstructorParams404Resource(@QueryParam("queryP") final Item queryP) {
         throw new RuntimeException("force an constructor exception");
     }
+
     @GET
     @Path("get")
     public Response getIt() {

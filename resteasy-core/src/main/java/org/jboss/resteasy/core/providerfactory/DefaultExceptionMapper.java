@@ -37,7 +37,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
-    private static final LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, DefaultExceptionMapper.class.getName());
+    private static final LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class,
+            DefaultExceptionMapper.class.getName());
     static final DefaultExceptionMapper INSTANCE = new DefaultExceptionMapper();
 
     @Override

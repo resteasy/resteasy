@@ -30,6 +30,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.spi.util.FindAnnotation;
 
 /**
@@ -42,14 +43,14 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
 public class GreeterMessageBodyWriter implements MessageBodyWriter<Greeter> {
     @Override
     public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations,
-                               final MediaType mediaType) {
+            final MediaType mediaType) {
         return Greeter.class.isAssignableFrom(type) && FindAnnotation.findAnnotation(annotations, GreetAsync.class) == null;
     }
 
     @Override
     public void writeTo(final Greeter greeter, final Class<?> type, final Type genericType,
-                        final Annotation[] annotations, final MediaType mediaType,
-                        final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream)
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream)
             throws IOException, WebApplicationException {
         entityStream.write(greeter.greet("Sync"));
     }

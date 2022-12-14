@@ -5,12 +5,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 @Path("root")
-public interface RootResource
-{
-   @Path("/sub")
-   SubResource getSubResource();
+public interface RootResource {
+    @Path("/sub")
+    SubResource getSubResource();
 
-   @Path("entered")
-   @GET
-   Response entered();
+    @Path("entered")
+    @GET
+    Response entered();
 }

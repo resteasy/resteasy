@@ -19,11 +19,12 @@
 
 package org.jboss.resteasy.test.form.resource;
 
-import jakarta.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.InputStream;
+
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
-import java.io.InputStream;
-import java.io.IOException;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class FormContainerRequestFilterFilter implements ContainerRequestFilter {

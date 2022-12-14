@@ -5,9 +5,9 @@ import jakarta.ws.rs.Path;
 
 public class ResourceLocatorReceiver {
 
-   @Path("/head")
-   @GET
-   public String get() {
-      return this.getClass().getName();
-   }
+    @Path("/head")
+    @GET
+    public String get() {
+        return this.getClass().getName();
+    }
 }

@@ -1,11 +1,12 @@
 package org.jboss.resteasy.test.client.resource;
 
-import jakarta.ws.rs.client.ClientRequestContext;
-import jakarta.ws.rs.client.ClientRequestFilter;
 import java.io.IOException;
 
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+
 public class ConfigurationInheritanceTestFilter4 implements ClientRequestFilter {
-   @Override
-   public void filter(ClientRequestContext requestContext) throws IOException {
-   }
+    @Override
+    public void filter(ClientRequestContext requestContext) throws IOException {
+    }
 }

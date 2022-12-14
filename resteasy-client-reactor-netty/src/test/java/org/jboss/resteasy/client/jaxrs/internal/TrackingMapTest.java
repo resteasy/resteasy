@@ -1,18 +1,18 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.junit.Test;
 
 public class TrackingMapTest {
 
@@ -33,7 +33,7 @@ public class TrackingMapTest {
         trackingMap.remove(CONTENT_TYPE_HEADER, Collections.singletonList(CONTENT_TYPE_HEADER_VAL));
 
         assertEquals("Removed keys list should be empty", 2, trackingMap.getRemovedKeys().size());
-        assertArrayEquals(new Object[]{CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER}, trackingMap.getRemovedKeys().toArray());
+        assertArrayEquals(new Object[] { CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER }, trackingMap.getRemovedKeys().toArray());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class TrackingMapTest {
         trackingMap.remove(CACHE_CONTROL_HEADER);
         trackingMap.remove(CONTENT_TYPE_HEADER, Collections.singletonList(CONTENT_TYPE_HEADER_VAL));
 
-        assertArrayEquals(new Object[]{CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER}, trackingMap.getRemovedKeys().toArray());
+        assertArrayEquals(new Object[] { CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER }, trackingMap.getRemovedKeys().toArray());
 
         trackingMap.add(CACHE_CONTROL_HEADER, "no-store");
         trackingMap.add(CONTENT_TYPE_HEADER, "text-plain");
@@ -65,7 +65,8 @@ public class TrackingMapTest {
         assertEquals(Collections.singletonList("no-store"), trackingMap.get(CACHE_CONTROL_HEADER));
         assertEquals(Collections.singletonList("text-plain"), trackingMap.get(CONTENT_TYPE_HEADER));
         assertTrue(trackingMap.getRemovedKeys().isEmpty());
-        assertArrayEquals(new Object[]{CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER}, trackingMap.getAddedOrUpdatedKeys().toArray());
+        assertArrayEquals(new Object[] { CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER },
+                trackingMap.getAddedOrUpdatedKeys().toArray());
         assertTrue(trackingMap.getRemovedKeys().isEmpty());
     }
 
@@ -103,11 +104,11 @@ public class TrackingMapTest {
 
         final TrackingMap<String> trackingMap = new TrackingMap<>(caseInsensitiveMap);
         trackingMap.add(CONTENT_TYPE_HEADER, CONTENT_TYPE_HEADER_VAL);
-        assertArrayEquals(new Object[]{CONTENT_TYPE_HEADER}, trackingMap.getAddedOrUpdatedKeys().toArray());
+        assertArrayEquals(new Object[] { CONTENT_TYPE_HEADER }, trackingMap.getAddedOrUpdatedKeys().toArray());
 
         trackingMap.clear();
         assertTrue(trackingMap.getAddedOrUpdatedKeys().isEmpty());
-        assertArrayEquals(new Object[]{CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER}, trackingMap.getRemovedKeys().toArray());
+        assertArrayEquals(new Object[] { CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER }, trackingMap.getRemovedKeys().toArray());
     }
 
     /**

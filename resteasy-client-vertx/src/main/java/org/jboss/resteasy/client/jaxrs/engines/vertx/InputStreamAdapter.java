@@ -1,11 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.engines.vertx;
 
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.streams.ReadStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.ReadStream;
 
 public class InputStreamAdapter extends InputStream {
 

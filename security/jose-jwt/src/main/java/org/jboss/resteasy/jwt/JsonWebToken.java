@@ -9,151 +9,126 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JsonWebToken implements Serializable
-{
-   @JsonProperty("jti")
-   protected String id;
-   @JsonProperty("exp")
-   protected long expiration;
-   @JsonProperty("nbf")
-   protected long notBefore;
-   @JsonProperty("iat")
-   protected long issuedAt;
-   @JsonProperty("iss")
-   protected String issuer;
-   @JsonProperty("aud")
-   protected String audience;
-   @JsonProperty("prn")
-   protected String principal;
-   @JsonProperty("typ")
-   protected String type;
+public class JsonWebToken implements Serializable {
+    @JsonProperty("jti")
+    protected String id;
+    @JsonProperty("exp")
+    protected long expiration;
+    @JsonProperty("nbf")
+    protected long notBefore;
+    @JsonProperty("iat")
+    protected long issuedAt;
+    @JsonProperty("iss")
+    protected String issuer;
+    @JsonProperty("aud")
+    protected String audience;
+    @JsonProperty("prn")
+    protected String principal;
+    @JsonProperty("typ")
+    protected String type;
 
-   public String getId()
-   {
-      return id;
-   }
+    public String getId() {
+        return id;
+    }
 
-   public JsonWebToken id(String id)
-   {
-      this.id = id;
-      return this;
-   }
+    public JsonWebToken id(String id) {
+        this.id = id;
+        return this;
+    }
 
+    public long getExpiration() {
+        return expiration;
+    }
 
-   public long getExpiration()
-   {
-      return expiration;
-   }
+    public JsonWebToken expiration(long expiration) {
+        this.expiration = expiration;
+        return this;
+    }
 
-   public JsonWebToken expiration(long expiration)
-   {
-      this.expiration = expiration;
-      return this;
-   }
+    @JsonIgnore
+    public boolean isExpired() {
+        long time = System.currentTimeMillis() / 1000;
+        return time > expiration;
+    }
 
-   @JsonIgnore
-   public boolean isExpired()
-   {
-      long time = System.currentTimeMillis() / 1000;
-      return time > expiration;
-   }
+    public long getNotBefore() {
+        return notBefore;
+    }
 
-   public long getNotBefore()
-   {
-      return notBefore;
-   }
+    public JsonWebToken notBefore(long notBefore) {
+        this.notBefore = notBefore;
+        return this;
+    }
 
-   public JsonWebToken notBefore(long notBefore)
-   {
-      this.notBefore = notBefore;
-      return this;
-   }
+    @JsonIgnore
+    public boolean isNotBefore() {
+        return (System.currentTimeMillis() / 1000) >= notBefore;
 
+    }
 
-   @JsonIgnore
-   public boolean isNotBefore()
-   {
-      return (System.currentTimeMillis() / 1000) >= notBefore;
+    /**
+     * Tests that the token is not expired and is not-before.
+     *
+     * @return true if the token is not expired and is not-before
+     */
+    @JsonIgnore
+    public boolean isActive() {
+        return (!isExpired() || expiration == 0) && (isNotBefore() || notBefore == 0);
+    }
 
-   }
+    public long getIssuedAt() {
+        return issuedAt;
+    }
 
-   /**
-    * Tests that the token is not expired and is not-before.
-    *
-    * @return true if the token is not expired and is not-before
-    */
-   @JsonIgnore
-   public boolean isActive()
-   {
-      return (!isExpired() || expiration == 0) && (isNotBefore() || notBefore == 0);
-   }
+    /**
+     * Set issuedAt to the current time.
+     *
+     * @return {@link JsonWebToken}
+     */
+    @JsonIgnore
+    public JsonWebToken issuedNow() {
+        issuedAt = System.currentTimeMillis() / 1000;
+        return this;
+    }
 
-   public long getIssuedAt()
-   {
-      return issuedAt;
-   }
+    public JsonWebToken issuedAt(long issuedAt) {
+        this.issuedAt = issuedAt;
+        return this;
+    }
 
-   /**
-    * Set issuedAt to the current time.
-    *
-    * @return {@link JsonWebToken}
-    */
-   @JsonIgnore
-   public JsonWebToken issuedNow()
-   {
-      issuedAt = System.currentTimeMillis() / 1000;
-      return this;
-   }
+    public String getIssuer() {
+        return issuer;
+    }
 
-   public JsonWebToken issuedAt(long issuedAt)
-   {
-      this.issuedAt = issuedAt;
-      return this;
-   }
+    public JsonWebToken issuer(String issuer) {
+        this.issuer = issuer;
+        return this;
+    }
 
+    public String getAudience() {
+        return audience;
+    }
 
-   public String getIssuer()
-   {
-      return issuer;
-   }
+    public JsonWebToken audience(String audience) {
+        this.audience = audience;
+        return this;
+    }
 
-   public JsonWebToken issuer(String issuer)
-   {
-      this.issuer = issuer;
-      return this;
-   }
+    public String getPrincipal() {
+        return principal;
+    }
 
+    public JsonWebToken principal(String principal) {
+        this.principal = principal;
+        return this;
+    }
 
-   public String getAudience()
-   {
-      return audience;
-   }
+    public String getType() {
+        return type;
+    }
 
-   public JsonWebToken audience(String audience)
-   {
-      this.audience = audience;
-      return this;
-   }
-
-   public String getPrincipal()
-   {
-      return principal;
-   }
-
-   public JsonWebToken principal(String principal)
-   {
-      this.principal = principal;
-      return this;
-   }
-
-   public String getType()
-   {
-      return type;
-   }
-
-   public JsonWebToken type(String type)
-   {
-      this.type = type;
-      return this;
-   }
+    public JsonWebToken type(String type) {
+        this.type = type;
+        return this;
+    }
 }
