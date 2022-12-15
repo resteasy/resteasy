@@ -24,6 +24,7 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
@@ -159,7 +160,8 @@ public class VertxTest {
         Response getResponse = target.request().buildGet().invoke();
         String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
         Assertions.assertEquals("hello world", val);
-        Assertions.assertEquals("chunked", getResponse.getHeaderString("transfer-encoding"));
+        Assertions.assertTrue(MediaType.TEXT_PLAIN_TYPE.isCompatible(getResponse.getMediaType()),
+                String.format("Expected %s to be compatible with %s", MediaType.TEXT_PLAIN_TYPE, getResponse.getMediaType()));
         Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
         Assertions.assertNull(headResponse.getHeaderString("Content-Length"));
         Assertions.assertNull(headResponse.getHeaderString("transfer-encoding"));

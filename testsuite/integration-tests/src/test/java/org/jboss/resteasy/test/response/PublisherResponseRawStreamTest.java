@@ -94,8 +94,9 @@ public class PublisherResponseRawStreamTest {
         Invocation.Builder request = client.target(generateURL("/chunked-infinite")).request();
         Future<Response> futureResponse = request.async().get();
         try {
-            futureResponse.get(2, TimeUnit.SECONDS);
-        } catch (TimeoutException x) {
+            // TODO (jrp) for some reason starting the request takes longer, this needs to be looked at
+            futureResponse.get(5, TimeUnit.SECONDS);
+        } catch (TimeoutException expected) {
         }
         close();
         setup();

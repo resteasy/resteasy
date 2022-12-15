@@ -74,8 +74,8 @@ public class MultipleWarTest {
         client.close();
     }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, MultipleWarTest.class.getSimpleName());
+    private static String generateURL(String path, int i) {
+        return PortProviderUtil.generateURL(path, MultipleWarTest.class.getSimpleName() + i);
     }
 
     /**
@@ -84,8 +84,8 @@ public class MultipleWarTest {
      */
     @Test
     public void testInputsInvalid() throws Exception {
-        WebTarget request1 = client.target(generateURL("1/test/0/0/0"));
-        WebTarget request2 = client.target(generateURL("2/test/0/0/0"));
+        WebTarget request1 = client.target(generateURL("/test/0/0/0", 1));
+        WebTarget request2 = client.target(generateURL("/test/0/0/0", 2));
         Response response;
         for (int i = 1; i < 2; i++) {
             response = request1.request().get();
@@ -129,8 +129,8 @@ public class MultipleWarTest {
      */
     @Test
     public void testReturnValueInvalid() throws Exception {
-        WebTarget request1 = client.target(generateURL("1/test/5/7/9"));
-        WebTarget request2 = client.target(generateURL("2/test/5/7/9"));
+        WebTarget request1 = client.target(generateURL("/test/5/7/9", 1));
+        WebTarget request2 = client.target(generateURL("/test/5/7/9", 2));
         Response response;
         for (int i = 1; i < 2; i++) {
             response = request1.request().get();

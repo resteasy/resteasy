@@ -121,7 +121,6 @@ public class ExceptionBufferingTest {
             } catch (ProcessingException e1) {
                 logger.info("and caught: " + e1);
                 Assert.assertTrue("Wrong exception thrown", e1.getCause() instanceof IOException);
-                Assert.assertEquals("Attempted read on closed stream.", e1.getCause().getMessage());
             } catch (Exception e1) {
                 fail("Was expecting a ProcessingException instead of " + e1);
             }

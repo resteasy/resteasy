@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -50,9 +51,12 @@ public class Expect100Test {
 
     @Test
     public void testExpect100() throws Exception {
-        WebTarget target = client.target(generateURL("/test"));
-        Response response = target.request().header("Expect", "100-continue").post(Entity.entity("hi", "text/plain"));
-        Assertions.assertEquals(200, response.getStatus());
-        Assertions.assertEquals("hello world", response.readEntity(String.class));
+        // Using the Apache client as "Expected" is a forbidden header entry
+        try (Client client = ClientBuilder.newBuilder().register(new ClientHttpEngineBuilder43()).build()) {
+            WebTarget target = client.target(generateURL("/test"));
+            Response response = target.request().header("Expect", "100-continue").post(Entity.entity("hi", "text/plain"));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("hello world", response.readEntity(String.class));
+        }
     }
 }

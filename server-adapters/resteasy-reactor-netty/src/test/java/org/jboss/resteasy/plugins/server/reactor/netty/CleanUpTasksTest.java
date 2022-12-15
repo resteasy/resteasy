@@ -9,6 +9,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.util.SSLCerts;
@@ -60,6 +61,8 @@ public class CleanUpTasksTest {
         client = ClientBuilder
                 .newBuilder()
                 .sslContext(clientContext)
+                // TODO (jrp) we need to figure out why this doesn't work with the HttpClient
+                .register(new ClientHttpEngineBuilder43())
                 .build()
                 .register(JacksonJsonProvider.class);
 

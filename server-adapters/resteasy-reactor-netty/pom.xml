@@ -139,6 +139,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <reactor.logging.fallback>JDK</reactor.logging.fallback>
+                        <jdk.httpclient.allowRestrictedHeaders>connection,expect</jdk.httpclient.allowRestrictedHeaders>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

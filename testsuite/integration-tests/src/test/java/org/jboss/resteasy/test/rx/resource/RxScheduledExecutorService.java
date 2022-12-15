@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.wildfly.common.cpu.ProcessorInfo;
+
 public class RxScheduledExecutorService implements ScheduledExecutorService {
 
     public static class DaemonThreadFactory implements ThreadFactory {
@@ -34,7 +36,8 @@ public class RxScheduledExecutorService implements ScheduledExecutorService {
         }
     }
 
-    private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(ProcessorInfo.availableProcessors(),
+            new DaemonThreadFactory());
     public static boolean used;
 
     @Override

@@ -58,33 +58,6 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
  * An Apache HTTP engine for use with the new Builder Config style.
  */
 public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEngine {
-    private static class CleanupAction implements Runnable {
-        private final AtomicBoolean closed;
-        private final AtomicBoolean autoClosed;
-        private final CloseableHttpClient client;
-
-        private CleanupAction(final AtomicBoolean closed, final AtomicBoolean autoClosed, final CloseableHttpClient client) {
-            this.closed = closed;
-            this.autoClosed = autoClosed;
-            this.client = client;
-        }
-
-        @Override
-        public void run() {
-            if (closed.compareAndSet(false, true)) {
-                if (client != null) {
-                    if (autoClosed.get()) {
-                        LogMessages.LOGGER.closingForYou(this.getClass());
-                    }
-                    try {
-                        client.close();
-                    } catch (Exception e) {
-                        LogMessages.LOGGER.debugf(e, "Failed to close client %s", client);
-                    }
-                }
-            }
-        }
-    }
 
     static final String FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY = "org.jboss.resteasy.client.jaxrs.engines.fileUploadInMemoryThreshold";
 
@@ -645,7 +618,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
             final boolean allowClose,
             final AtomicBoolean closed, final AtomicBoolean autoClosed, final HttpClient client) {
         if (allowClose && client instanceof CloseableHttpClient) {
-            return ResourceCleaner.register(engine, new CleanupAction(closed, autoClosed, (CloseableHttpClient) client));
+            return ResourceCleaner.register(engine, new ClientCleanupAction(closed, autoClosed, (CloseableHttpClient) client));
         }
         return () -> closed.set(true);
     }

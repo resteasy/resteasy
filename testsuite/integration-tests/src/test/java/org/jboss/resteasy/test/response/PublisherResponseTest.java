@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @tpSubChapter Publisher response type
@@ -263,7 +264,7 @@ public class PublisherResponseTest {
         FlowableRxInvoker invoker = client.target(generateURL("/chunked-infinite")).request().rx(FlowableRxInvoker.class);
         Flowable<String> flowable = (Flowable<String>) invoker.get();
         ArrayList<String> list = new ArrayList<String>();
-        flowable.subscribe(
+        final Disposable disposable = flowable.subscribe(
                 (String s) -> {
                     list.add(s);
                     if (list.size() >= 2)
@@ -275,6 +276,7 @@ public class PublisherResponseTest {
         client.close();
 
         Thread.sleep(5000);
+        disposable.dispose();
         client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/infinite-done")).request();
         Response response = request.get();

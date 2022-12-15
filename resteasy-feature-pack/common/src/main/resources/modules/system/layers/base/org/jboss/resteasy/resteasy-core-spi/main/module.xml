@@ -30,6 +30,7 @@
         <module name="java.logging" />
         <module name="java.management" />
         <module name="java.naming" />
+        <module name="java.net.http" />
         <module name="java.xml" />
         <module name="jakarta.activation.api" />
         <module name="jakarta.annotation.api" />

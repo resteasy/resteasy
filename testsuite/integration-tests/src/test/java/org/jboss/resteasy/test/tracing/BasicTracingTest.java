@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.tracing;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -59,8 +60,8 @@ public class BasicTracingTest extends TracingTestBase {
             Response response = base.request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             boolean hasTracing = false;
-            for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-                if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
+            for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
+                if (caseInsensitiveStartsWith(entry.getKey(), RESTEasyTracing.HEADER_TRACING_PREFIX)) {
                     LOG.info("<K, V> ->" + entry);
                     hasTracing = true;
                     break;

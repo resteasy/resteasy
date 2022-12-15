@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.netty.SniConfiguration;
 import org.jboss.resteasy.test.util.SSLCerts;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test;
  * @author Sebastian Łaskawiec
  * @see https://issues.jboss.org/browse/RESTEASY-1431
  */
+// TODO (jrp) this doesn't test much and the tests actually should be failing. The SSL connection errors are being swallowed
 public class SniTest {
 
     private static NettyJaxrsServer server;
@@ -94,6 +96,9 @@ public class SniTest {
         if (sniName != null) {
             resteasyClientBuilder.sniHostNames(sniName);
         }
+        // TODO (jrp) this currently only works with the Apache Client. The JDK HttpClient doesn't terminate for some reason.
+        // TODO (jrp) however, we should consider migrating to HTTP/2 anyway
+        resteasyClientBuilder.register(new ClientHttpEngineBuilder43());
         return resteasyClientBuilder.build();
     }
 

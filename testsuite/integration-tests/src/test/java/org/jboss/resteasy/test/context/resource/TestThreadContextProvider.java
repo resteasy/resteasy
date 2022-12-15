@@ -39,7 +39,8 @@ public class TestThreadContextProvider implements ThreadContext<Map<String, Stri
 
     @Override
     public Map<String, String> capture() {
-        localState.get().put("captured", Thread.currentThread().getName());
+        // We use putIfAbsent here as other threads could come into play and we really only want the first threads name
+        localState.get().putIfAbsent("captured", Thread.currentThread().getName());
         return localState.get();
     }
 
