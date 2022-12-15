@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -78,8 +79,8 @@ public class OnDemandTracingTest extends TracingTestBase {
 
     private void testTracingEnabled(Response response, boolean flag) {
         boolean hasTracing = false;
-        for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-            if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
+        for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
+            if (caseInsensitiveStartsWith(entry.getKey(), RESTEasyTracing.HEADER_TRACING_PREFIX)) {
                 LOG.info("<K, V> ->" + entry);
                 hasTracing = true;
                 break;

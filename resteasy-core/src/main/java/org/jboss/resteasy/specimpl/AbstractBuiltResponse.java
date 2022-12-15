@@ -51,7 +51,7 @@ public abstract class AbstractBuiltResponse extends Response {
     protected Type genericType;
     protected HeaderValueProcessor processor;
     protected volatile boolean isClosed;
-    protected InputStream is;
+    protected volatile InputStream is;
     protected byte[] bufferedEntity;
     protected volatile boolean streamRead;
     protected volatile boolean streamFullyRead;

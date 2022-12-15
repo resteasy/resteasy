@@ -1,9 +1,13 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.ConstantBootstraps;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -21,6 +25,7 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.AbstractBuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
@@ -37,6 +42,8 @@ import org.reactivestreams.Publisher;
  * @version $Revision: 1 $
  */
 public abstract class ClientResponse extends BuiltResponse {
+    private static final VarHandle INPUT_STREAM_HANDLER = ConstantBootstraps.fieldVarHandle(MethodHandles.lookup(), "is",
+            VarHandle.class, AbstractBuiltResponse.class, InputStream.class);
     // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
     protected Map<String, Object> properties;
     protected ClientConfiguration configuration;
@@ -146,10 +153,15 @@ public abstract class ClientResponse extends BuiltResponse {
         return is != null ? new AbstractBuiltResponse.InputStreamWrapper<ClientResponse>(is, this) : null;
     }
 
-    // Method is defined here because the "protected" abstract declaration
-    // in AbstractBuiltResponse is not accessible to classes in this module.
-    // Making the method "public" causes different errors.
-    protected abstract void setInputStream(InputStream is);
+    @Override
+    protected void setInputStream(final InputStream is) {
+        InputStream old = this.is;
+        safeClose(old);
+        while (!INPUT_STREAM_HANDLER.compareAndSet(this, old, is)) {
+            old = this.is;
+            safeClose(old);
+        }
+    }
 
     // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
     @Override
@@ -258,6 +270,15 @@ public abstract class ClientResponse extends BuiltResponse {
     public void abortIfClosed() {
         if (bufferedEntity == null)
             super.abortIfClosed();
+    }
+
+    protected static void safeClose(final Closeable closeable) {
+        try {
+            if (closeable != null)
+                closeable.close();
+        } catch (IOException e) {
+            LogMessages.LOGGER.debugf(e, "Failed to close %s", closeable);
+        }
     }
 
 }

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.function.Supplier;
 
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -163,4 +164,13 @@ public interface Messages {
     @Message(id = BASE + 194, value = "No content type found in response. Cannot extract the response value.")
     @Signature(messageIndex = 1, value = { Response.class, String.class })
     ResponseProcessingException noContentTypeFound(@Param Response response);
+
+    @Message(id = BASE + 195, value = "Request method %s cannot have a body.")
+    ProcessingException bodyNotAllowed(String method);
+
+    @Message(id = BASE + 196, value = "The hostname verifier cannot be set on the HttpClientEngine")
+    IllegalStateException hostnameVerifierSet();
+
+    @Message(id = BASE + 197, value = "Failed to get the response content. The connection may have been closed.")
+    IllegalStateException noContentFound();
 }

@@ -1,5 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.i18n;
 
+import java.net.http.HttpClient;
+
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
@@ -30,4 +32,17 @@ public interface LogMessages extends BasicLogger {
     @LogMessage(level = Level.WARN)
     @Message(id = Messages.BASE + 187, value = "Closing a %s instance for you. Please close clients yourself.")
     void closingForYou(Class<?> clazz);
+
+    @LogMessage(level = Level.WARN)
+    @Message(id = Messages.BASE + 300, value = "Could not determine the HttpClient.Version from %s. Defaulting to %s.")
+    void invalidVersion(Object found, HttpClient.Version version);
+
+    @LogMessage(level = Level.WARN)
+    @Message(id = Messages.BASE + 301, value = "Could not determine the protocol from %s. Defaulting to %s.")
+    void invalidProtocol(Object found, String defaultValue);
+
+    @LogMessage(level = Level.WARN)
+    @Message(id = Messages.BASE + 302, value = "Using a HostnameVerifier is not supported for the java.net.http.HttpClient. " +
+            "Falling back to the Apache HTTP Client. Note that HTTP/2 support will not be available with the client.")
+    void hostnameVerifierFound();
 }

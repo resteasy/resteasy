@@ -101,6 +101,7 @@
                     <jvm>${test.java.home}/bin/java</jvm>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <securityManagerArg>${securityManagerArg}</securityManagerArg>
                         <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
                         <ipv6>false</ipv6>

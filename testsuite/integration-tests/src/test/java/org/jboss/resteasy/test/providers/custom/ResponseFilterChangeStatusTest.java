@@ -78,7 +78,7 @@ public class ResponseFilterChangeStatusTest {
 
         logger.info(response.getMediaType());
         Assert.assertTrue("Response must heave set up all headers, as if GET request was called.",
-                response.getMediaType().equals(MediaType.TEXT_PLAIN_TYPE));
+                response.getMediaType().isCompatible(MediaType.TEXT_PLAIN_TYPE));
         response.close();
     }
 

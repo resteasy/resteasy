@@ -94,6 +94,15 @@ public class EntityOutputStream extends OutputStream {
     }
 
     /**
+     * Creates a new entity stream with the maximum in memory threshold of a default value.
+     *
+     * @param filePrefix the file prefix if a file is created
+     */
+    public EntityOutputStream(final Supplier<String> filePrefix) {
+        this(getOptionValue(Options.ENTITY_MEMORY_THRESHOLD), getTempDir(), filePrefix);
+    }
+
+    /**
      * Creates a new entity stream with the maximum in memory threshold of the supplied value.
      *
      * @param memoryThreshold the maximum number of bytes to hold in memory

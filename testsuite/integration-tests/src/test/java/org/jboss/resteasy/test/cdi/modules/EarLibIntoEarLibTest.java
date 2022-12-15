@@ -74,7 +74,7 @@ public class EarLibIntoEarLibTest {
         log.info("starting testModules()");
 
         Client client = ClientBuilder.newClient();
-        WebTarget base = client.target(url + "/modules/test/");
+        WebTarget base = client.target(TestUtil.generateUri(url, "modules/test/"));
         Response response = base.request().get();
         log.info("Status: " + response.getStatus());
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

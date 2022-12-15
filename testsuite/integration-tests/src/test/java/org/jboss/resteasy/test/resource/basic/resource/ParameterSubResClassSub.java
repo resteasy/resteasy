@@ -28,7 +28,7 @@ public class ParameterSubResClassSub {
     @Produces("text/plain")
     public String get(@Context HttpHeaders headers) {
         Assert.assertEquals("Wrong path value from injected UriInfo", "/path/subclass", uriInfo.getPath());
-        Assert.assertNotNull("Connection header from injected HttpHeaders is null", headers.getHeaderString("Connection"));
+        Assert.assertNotNull("Host header from injected HttpHeaders is null", headers.getHeaderString(HttpHeaders.HOST));
         return "resourceCounter:" + resourceCounter.incrementAndGet() + ",appscope:" + appScope.getCount() + ",requestScope:"
                 + requestScope.getCount();
     }

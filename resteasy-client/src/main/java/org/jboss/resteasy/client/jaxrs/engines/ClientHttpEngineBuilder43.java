@@ -64,6 +64,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                 case ANY:
                     verifier = new NoopHostnameVerifier();
                     break;
+                case DEFAULT:
                 case WILDCARD:
                     verifier = new DefaultHostnameVerifier();
                     break;

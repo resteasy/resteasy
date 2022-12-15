@@ -608,6 +608,7 @@
                         <TEST_ENV_VAR>test-env-value</TEST_ENV_VAR>
                     </environmentVariables>
                     <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <module.jar.path>${module.jar.path}</module.jar.path>
                     </systemPropertyVariables>
                 </configuration>

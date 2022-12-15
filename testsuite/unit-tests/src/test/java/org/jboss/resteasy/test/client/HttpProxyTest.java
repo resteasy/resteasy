@@ -6,6 +6,7 @@ import org.apache.http.HttpHost;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,12 +15,13 @@ import org.junit.Test;
  * @tpChapter HTTP proxy setup
  * @tpSince RESTEasy 3.8.0
  */
+// TODO (jrp) we should find a way to test this with the HttpClientEngine too
 public class HttpProxyTest {
 
     @Test
     public void testHttpProxyHostSetup() {
         final String testProxyHost = "myproxy.com";
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
+        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) createBuilder()
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, testProxyHost);
         ResteasyClient client = clientBuilder.build();
         ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
@@ -38,7 +40,7 @@ public class HttpProxyTest {
         final String testProxyHost = "myproxy.com";
         final String testProxyPort = "8080";
         final String testProxyScheme = "https";
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
+        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) createBuilder()
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, testProxyHost)
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, testProxyPort)
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, testProxyScheme);
@@ -66,7 +68,7 @@ public class HttpProxyTest {
 
     @Test
     public void testHttpProxyOverride() {
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
+        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) createBuilder()
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, "myproxy.com")
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, "8080")
                 .property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "https");
@@ -101,5 +103,10 @@ public class HttpProxyTest {
 
         Assert.assertNull(proxy);
         client.close();
+    }
+
+    private static ClientBuilder createBuilder() {
+        return ClientBuilder.newBuilder()
+                .register(new ClientHttpEngineBuilder43());
     }
 }

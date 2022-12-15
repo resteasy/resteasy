@@ -104,8 +104,8 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public List<String> getRequestHeader(String name) {
-        List<String> vals = unmodifiableRequestHeaders.get(name);
-        return vals == null ? Collections.<String> emptyList() : vals;
+        // Ignore the case as headers should be case-insensitive
+        return getHeader(unmodifiableRequestHeaders, name);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public Date getDate() {
-        String date = requestHeaders.getFirst(DATE);
+        String date = getFirstHeader(requestHeaders, DATE);
         if (date == null)
             return null;
         return DateUtil.parseDate(date);
@@ -133,8 +133,8 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public String getHeaderString(String name) {
-        List<String> vals = requestHeaders.get(name);
-        if (vals == null)
+        List<String> vals = getHeader(requestHeaders, name);
+        if (vals == null || vals.isEmpty())
             return null;
         StringBuilder builder = new StringBuilder();
         boolean first = true;
@@ -150,7 +150,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public Locale getLanguage() {
-        String obj = requestHeaders.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+        String obj = getFirstHeader(requestHeaders, HttpHeaders.CONTENT_LANGUAGE);
         if (obj == null)
             return null;
         return new Locale(obj);
@@ -158,7 +158,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public int getLength() {
-        String obj = requestHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
+        String obj = getFirstHeader(requestHeaders, HttpHeaders.CONTENT_LENGTH);
         if (obj == null)
             return -1;
         return Integer.parseInt(obj);
@@ -171,7 +171,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public MediaType getMediaType() {
-        String obj = requestHeaders.getFirst(HttpHeaders.CONTENT_TYPE);
+        String obj = getFirstHeader(requestHeaders, HttpHeaders.CONTENT_TYPE);
         if (obj == null)
             return null;
         if (obj == cachedMediaTypeString)
@@ -183,7 +183,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public List<MediaType> getAcceptableMediaTypes() {
-        List<String> vals = requestHeaders.get(ACCEPT);
+        List<String> vals = getHeader(requestHeaders, ACCEPT);
         if (vals == null || vals.isEmpty()) {
             return MEDIA_WILDCARD;
         }
@@ -213,7 +213,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public List<Locale> getAcceptableLanguages() {
-        List<String> vals = requestHeaders.get(ACCEPT_LANGUAGE);
+        List<String> vals = getHeader(requestHeaders, ACCEPT_LANGUAGE);
         if (vals == null || vals.isEmpty()) {
             return LANGUAGE_WILDCARD;
         }
@@ -254,5 +254,19 @@ public class ResteasyHttpHeaders implements HttpHeaders {
                 }
             }
         }
+    }
+
+    private static String getFirstHeader(final MultivaluedMap<String, String> map, final String name) {
+        final List<String> headers = getHeader(map, name);
+        return headers.isEmpty() ? null : headers.get(0);
+    }
+
+    private static List<String> getHeader(final MultivaluedMap<String, String> map, final String name) {
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(name)) {
+                return entry.getValue();
+            }
+        }
+        return Collections.emptyList();
     }
 }

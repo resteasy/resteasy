@@ -19,6 +19,7 @@
 
 package org.jboss.resteasy.spi.config;
 
+import java.net.http.HttpClient;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -62,6 +63,42 @@ public class Options<T> {
     public static final Options<Threshold> ENTITY_FILE_THRESHOLD = new Options<>("dev.resteasy.entity.file.threshold",
             Threshold.class,
             Functions.singleton(() -> Threshold.of(50L, SizeUnit.MEGABYTE)));
+
+    /**
+     * An option for generating a custom {@linkplain HttpClient.Builder builder} when using the {@link HttpClient} as
+     * the backing client for the {@linkplain jakarta.ws.rs.client.Client REST client}.
+     *
+     * @since 6.3
+     */
+    public static final Options<HttpClient.Builder> HTTP_CLIENT_BUILDER = new Options<>("dev.resteasy.client.builder",
+            HttpClient.Builder.class,
+            HttpClient::newBuilder);
+
+    /**
+     * An option for defining the HTTP version when using the {@link HttpClient} as the backing client for the
+     * {@linkplain jakarta.ws.rs.client.Client REST client}.
+     * <p>
+     * The default is HTTP_2.
+     * </p>
+     *
+     * @since 6.3
+     */
+    public static final Options<HttpClient.Version> HTTP_CLIENT_VERSION = new Options<>("dev.resteasy.client.http.version",
+            HttpClient.Version.class,
+            () -> HttpClient.Version.HTTP_2);
+
+    /**
+     * An option for defining the {@link javax.net.ssl.SSLContext#getInstance(String) SSLContext} protocol for the
+     * {@linkplain jakarta.ws.rs.client.Client REST client}.
+     * <p>
+     * The default is TLS.
+     * </p>
+     *
+     * @since 6.3
+     */
+    public static final Options<String> CLIENT_SSL_CONTEXT_PROTOCOL = new Options<>("dev.resteasy.client.ssl.context.protocol",
+            String.class,
+            () -> "TLS");
 
     private final String key;
     private final Class<T> name;

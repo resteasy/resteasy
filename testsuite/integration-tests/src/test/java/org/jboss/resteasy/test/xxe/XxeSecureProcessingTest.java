@@ -104,7 +104,7 @@ public class XxeSecureProcessingTest {
      */
     @Test
     public void testXmlRootElementDefaultSmall() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request()
+        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", "null")).request()
                 .post(Entity.entity(small, "application/xml"));
         Assert.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
@@ -119,7 +119,7 @@ public class XxeSecureProcessingTest {
      */
     @Test
     public void testXmlRootElementDefaultBig() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request()
+        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", "null")).request()
                 .post(Entity.entity(big, "application/xml"));
         Assert.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);

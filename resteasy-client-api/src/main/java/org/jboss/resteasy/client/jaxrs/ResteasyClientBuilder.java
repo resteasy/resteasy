@@ -24,6 +24,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public abstract class ResteasyClientBuilder extends ClientBuilder {
     public enum HostnameVerificationPolicy {
         /**
+         * Uses the default host name verification policy.
+         */
+        DEFAULT,
+        /**
          * Hostname verification is not done on the server's certificate
          */
         ANY,
@@ -282,4 +286,6 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
     public abstract ResteasyClientBuilder setFollowRedirects(boolean followRedirects);
 
     public abstract boolean isFollowRedirects();
+
+    public abstract ResteasyClientBuilder toImmutable();
 }

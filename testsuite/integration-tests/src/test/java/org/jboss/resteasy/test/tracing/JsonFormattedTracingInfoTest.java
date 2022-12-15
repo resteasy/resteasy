@@ -36,7 +36,7 @@ public class JsonFormattedTracingInfoTest extends BasicTracingTest {
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             boolean hasTracing = false;
             for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
-                if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
+                if (caseInsensitiveStartsWith(entry.getKey(), RESTEasyTracing.HEADER_TRACING_PREFIX)) {
                     hasTracing = true;
                     String jsonText = entry.getValue().toString();
                     ObjectMapper objectMapper = new ObjectMapper();

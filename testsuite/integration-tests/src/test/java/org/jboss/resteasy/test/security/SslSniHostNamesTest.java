@@ -54,7 +54,9 @@ public class SslSniHostNamesTest extends SslTestBase {
     private static String SERVER_TRUSTED_KEYSTORE_PATH = RESOURCES + "/server.keystore";
 
     private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client.truststore";
-    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_SNI);
+    // The JDK HttpClient will always add the hostname, localhost in this case, to the SNI match list. Using the IP
+    // address will avoid that.
+    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_SNI, "127.0.0.1");
 
     private static AutoCloseable RESET_CONFIG = null;
 

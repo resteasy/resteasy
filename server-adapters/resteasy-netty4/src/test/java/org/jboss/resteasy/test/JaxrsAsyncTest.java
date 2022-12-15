@@ -7,6 +7,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation.Builder;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -163,10 +164,13 @@ public class JaxrsAsyncTest {
 
     @Test(timeout = REQUEST_TIMEOUT)
     public void testConnectionCloseHeader() throws Exception {
-        Builder requestBuilder = client.target(BASE_URI).path("jaxrs/empty").request();
-        requestBuilder.header("Connection", "close");
-        Response response = requestBuilder.get();
-        Assert.assertEquals(HttpHeaderValues.CLOSE.toString(), response.getHeaderString("Connection"));
-        response.close();
+        // Using the Apache client as "Connection" is a forbidden header entry
+        try (Client client = ClientBuilder.newBuilder().register(new ClientHttpEngineBuilder43()).build()) {
+            Builder requestBuilder = client.target(BASE_URI).path("jaxrs/empty").request();
+            requestBuilder.header("Connection", "close");
+            Response response = requestBuilder.get();
+            Assert.assertEquals(HttpHeaderValues.CLOSE.toString(), response.getHeaderString("Connection"));
+            response.close();
+        }
     }
 }

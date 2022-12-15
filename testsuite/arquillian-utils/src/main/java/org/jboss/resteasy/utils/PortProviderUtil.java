@@ -147,19 +147,36 @@ public class PortProviderUtil {
         // quarkus does not generate URLs with contextRoot (i.e. archive name)
         String localTestName = (isQuarkus) ? "" : testName;
 
-        String localPath = path;
-        if (isQuarkus) {
-            if (path.startsWith("/")) {
-                localPath = path.substring(1);
+        final StringBuilder result = new StringBuilder()
+                .append("http://");
+        if (ipv6) {
+            result.append('[');
+        }
+        result.append(hostName);
+        if (ipv6) {
+            result.append(']');
+        }
+        result.append(':')
+                .append(port);
+
+        if (localTestName != null && !localTestName.isBlank()) {
+            if (localTestName.startsWith("/")) {
+                result.append(localTestName);
+            } else {
+                result.append('/').append(localTestName);
             }
         }
-
-        // ipv4
-        if (!ipv6) {
-            return String.format("http://%s:%d/%s%s", hostName, port, localTestName, localPath);
+        if (path != null && !path.isBlank()) {
+            if (result.charAt(result.length() - 1) != '/') {
+                result.append('/');
+            }
+            if (path.startsWith("/")) {
+                result.append(path.substring(1));
+            } else {
+                result.append(path);
+            }
         }
-        // ipv6
-        return String.format("http://[%s]:%d/%s%s", hostName, port, localTestName, localPath);
+        return result.toString();
     }
 
     /**
