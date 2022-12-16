@@ -24,7 +24,7 @@
         <dep.arquillian-bom.version>1.7.0.Alpha13</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <server.version>27.0.0.Final</server.version>
-        <version.org.wildfly>${server.version}</version.org.wildfly>
+        <version.org.wildfly>27.0.1.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha6</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
