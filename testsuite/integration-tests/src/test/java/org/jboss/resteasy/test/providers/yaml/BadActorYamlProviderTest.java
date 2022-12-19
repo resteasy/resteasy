@@ -392,6 +392,12 @@ public class BadActorYamlProviderTest {
             Assert.assertEquals(Response.Status.OK, getResponse.getStatusInfo());
             Assert.assertFalse("The AttackVector was attacked!!", getResponse.readEntity(boolean.class));
         }
+        // Check the attacked vector, it should be false
+        try (Response getResponse = CLIENT.target(generateUri("/message/check/static/attacked")).request().get()) {
+            // We should have an OK response
+            Assert.assertEquals(Response.Status.OK, getResponse.getStatusInfo());
+            Assert.assertFalse("The AttackVector was attacked via static initialization!!", getResponse.readEntity(boolean.class));
+        }
     }
 
     private void assertEmpty() {

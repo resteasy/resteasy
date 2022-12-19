@@ -50,6 +50,12 @@ public class MessageResource {
         return AttackVector.CONSTRUCTOR_INVOKED.get();
     }
 
+    @GET
+    @Path("/check/static/attacked")
+    public boolean staticAttacked() {
+        return AttackVector.STATIC_BLOCK_INVOKED.get();
+    }
+
     @POST
     @Consumes("text/yaml")
     @Path("/string")
@@ -94,6 +100,7 @@ public class MessageResource {
     public Response reset() {
         messages.clear();
         AttackVector.CONSTRUCTOR_INVOKED.set(false);
+        AttackVector.STATIC_BLOCK_INVOKED.set(false);
         return Response.noContent().build();
     }
 

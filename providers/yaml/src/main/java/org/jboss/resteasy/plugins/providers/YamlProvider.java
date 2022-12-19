@@ -25,9 +25,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URLClassLoader;
+import java.math.BigDecimal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,10 +53,21 @@ import java.util.Set;
 public class YamlProvider extends AbstractEntityProvider<Object> {
    private static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowIfBaseType";
    private static final String DISABLE_TYPE_CHECK = "resteasy.yaml.deserialization.disable.type.check";
-   private static final Collection<String> DENY_LIST = Arrays.asList(
-           "javax.script.ScriptEngineManager",
-           URLClassLoader.class.getName(),
-           Object.class.getName()
+   // These types should likely always be allowed
+   private static final Collection<String> DEFAULT_ALLOWED_TYPES = Arrays.asList(
+           BigDecimal.class.getName(),
+           Boolean.class.getName(),
+           Byte.class.getName(),
+           Character.class.getName(),
+           Double.class.getName(),
+           Float.class.getName(),
+           Integer.class.getName(),
+           List.class.getName(),
+           Long.class.getName(),
+           Map.class.getName(),
+           Set.class.getName(),
+           Short.class.getName(),
+           String.class.getName()
    );
    private final Collection<String> allowedList;
 
@@ -164,7 +176,11 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
 
    private static Collection<String> createAllowedList() {
       final String value = getProperty(ALLOWED_LIST);
-      return value == null ? Collections.emptyList() : Arrays.asList(value.split(","));
+      final Collection<String> allowed = new ArrayList<>(DEFAULT_ALLOWED_TYPES);
+      if (value != null) {
+         Collections.addAll(allowed, value.split(","));
+      }
+      return allowed;
    }
 
    private static boolean isTypeCheckDisabled() {
@@ -241,29 +257,23 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
          if (type == null) {
             return false;
          }
-         final String name = type.getName();
-         // Check the allowed types first
-         if (allowedList.contains(name)) {
-            return false;
-         }
          // Allow all primitives
          if (type.isPrimitive()) {
             return false;
          }
-         // Denied types are not safe
-         if (DENY_LIST.contains(name)) {
-            return true;
-         }
-         // We should trust known types
-         if (name.startsWith("java") || name.startsWith("javax")) {
-            return false;
-         }
-         // Finally check the known types
+         // Check the known types, these are a parameter or return type of a method. We assume these are safe.
          boolean denied = true;
          for (Class<?> allowed : types) {
             if (allowed.isAssignableFrom(type)) {
                denied = false;
                break;
+            }
+         }
+         if (denied) {
+            // Check the allowed list if we are overriding a denied type
+            final String name = type.getName();
+            if (allowedList.contains(name)) {
+               return false;
             }
          }
          return denied;
