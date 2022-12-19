@@ -147,7 +147,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     protected boolean lockSnapshots;
     protected StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
 
-    private final boolean defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
+    private boolean defaultExceptionManagerEnabled = true;
 
     public ResteasyProviderFactoryImpl() {
         // NOTE!!! It is important to put all initialization into initialize() as ThreadLocalResteasyProviderFactory
@@ -215,6 +215,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         enabledFeatures = parent == null ? new SnapshotSet<>(lockSnapshots)
                 : new SnapshotSet<>(parent.enabledFeatures, true, lockSnapshots, snapFirst);
         if (parent != null) {
+            defaultExceptionManagerEnabled = parent.defaultExceptionManagerEnabled;
             if (snapFirst) {
                 // resourcemethod invoker factory
                 // we don't want to copy these
@@ -231,6 +232,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
                         .synchronizedSortedSet(new TreeSet<>(parent.sortedParamConverterProviders));
             }
         } else {
+            defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
             contextResolvers = new ConcurrentHashMap<>();
             sortedParamConverterProviders = Collections.synchronizedSortedSet(new TreeSet<>());
         }
