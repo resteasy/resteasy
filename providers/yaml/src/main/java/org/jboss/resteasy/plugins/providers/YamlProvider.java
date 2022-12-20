@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Provider for YAML {@literal <->} Object marshalling. Uses the following mime
@@ -55,24 +56,24 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
    private static final String DISABLE_TYPE_CHECK = "resteasy.yaml.deserialization.disable.type.check";
    // These types should likely always be allowed
    private static final Collection<String> DEFAULT_ALLOWED_TYPES = Arrays.asList(
-           BigDecimal.class.getName(),
-           Boolean.class.getName(),
-           Byte.class.getName(),
-           Character.class.getName(),
-           Double.class.getName(),
-           Float.class.getName(),
-           Integer.class.getName(),
-           List.class.getName(),
-           Long.class.getName(),
-           Map.class.getName(),
-           Set.class.getName(),
-           Short.class.getName(),
-           String.class.getName()
+           toPattern(BigDecimal.class),
+           toPattern(Boolean.class),
+           toPattern(Byte.class),
+           toPattern(Character.class),
+           toPattern(Double.class),
+           toPattern(Float.class),
+           toPattern(Integer.class),
+           toPattern(List.class),
+           toPattern(Long.class),
+           toPattern(Map.class),
+           toPattern(Set.class),
+           toPattern(Short.class),
+           toPattern(String.class)
    );
-   private final Collection<String> allowedList;
+   private final Pattern allowedPattern;
 
    public YamlProvider() {
-      allowedList = createAllowedList();
+      allowedPattern = createAllowPattern();
    }
    // MessageBodyReader
 
@@ -93,9 +94,9 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             }
             final BaseConstructor constructor;
             if (genericType instanceof ParameterizedType) {
-               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedList);
+               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedPattern);
             } else {
-               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedList);
+               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedPattern);
             }
             return new Yaml(constructor).loadAs(entityStream, type);
          } else {
@@ -174,13 +175,13 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       });
    }
 
-   private static Collection<String> createAllowedList() {
+   private static Pattern createAllowPattern() {
       final String value = getProperty(ALLOWED_LIST);
       final Collection<String> allowed = new ArrayList<>(DEFAULT_ALLOWED_TYPES);
       if (value != null) {
          Collections.addAll(allowed, value.split(","));
       }
-      return allowed;
+      return Pattern.compile(String.join("|", allowed));
    }
 
    private static boolean isTypeCheckDisabled() {
@@ -219,14 +220,18 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       }
    }
 
+   private static String toPattern(final Class<?> type) {
+      return Pattern.quote(type.getName());
+   }
+
    private static class TypeSafeConstructor extends CustomClassLoaderConstructor {
       private final Set<Class<?>> types;
-      private final Collection<String> allowedList;
+      private final Pattern allowedPattern;
 
       private TypeSafeConstructor(final ParameterizedType parameterizedType, final ClassLoader classLoader,
-                                  final Collection<String> allowedList) {
+                                  final Pattern allowedPattern) {
          super(classLoader);
-         this.allowedList = allowedList;
+         this.allowedPattern = allowedPattern;
          final Set<Class<?>> genericTypes = new HashSet<>();
          for (Type typeArg : parameterizedType.getActualTypeArguments()) {
             try {
@@ -239,10 +244,10 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       }
 
       private TypeSafeConstructor(final Class<?> type, final ClassLoader classLoader,
-                                  final Collection<String> allowedList) {
+                                  final Pattern allowedPattern) {
          super(classLoader);
          this.types = Collections.singleton(type);
-         this.allowedList = allowedList;
+         this.allowedPattern = allowedPattern;
       }
 
       @Override
@@ -272,7 +277,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
          if (denied) {
             // Check the allowed list if we are overriding a denied type
             final String name = type.getName();
-            if (allowedList.contains(name)) {
+            if (allowedPattern.matcher(name).matches()) {
                return false;
             }
          }
