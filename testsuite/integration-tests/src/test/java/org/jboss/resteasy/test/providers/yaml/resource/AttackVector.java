@@ -7,6 +7,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AttackVector {
     static final AtomicBoolean CONSTRUCTOR_INVOKED = new AtomicBoolean(false);
+    static final AtomicBoolean STATIC_BLOCK_INVOKED = new AtomicBoolean(false);
+
+    static {
+        STATIC_BLOCK_INVOKED.set(true);
+    }
 
     public AttackVector() {
         CONSTRUCTOR_INVOKED.set(true);

@@ -25,9 +25,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URLClassLoader;
+import java.math.BigDecimal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Provider for YAML {@literal <->} Object marshalling. Uses the following mime
@@ -52,15 +54,26 @@ import java.util.Set;
 public class YamlProvider extends AbstractEntityProvider<Object> {
    private static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowIfBaseType";
    private static final String DISABLE_TYPE_CHECK = "resteasy.yaml.deserialization.disable.type.check";
-   private static final Collection<String> DENY_LIST = Arrays.asList(
-           "javax.script.ScriptEngineManager",
-           URLClassLoader.class.getName(),
-           Object.class.getName()
+   // These types should likely always be allowed
+   private static final Collection<String> DEFAULT_ALLOWED_TYPES = Arrays.asList(
+           toPattern(BigDecimal.class),
+           toPattern(Boolean.class),
+           toPattern(Byte.class),
+           toPattern(Character.class),
+           toPattern(Double.class),
+           toPattern(Float.class),
+           toPattern(Integer.class),
+           toPattern(List.class),
+           toPattern(Long.class),
+           toPattern(Map.class),
+           toPattern(Set.class),
+           toPattern(Short.class),
+           toPattern(String.class)
    );
-   private final Collection<String> allowedList;
+   private final Pattern allowedPattern;
 
    public YamlProvider() {
-      allowedList = createAllowedList();
+      allowedPattern = createAllowPattern();
    }
    // MessageBodyReader
 
@@ -81,9 +94,9 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             }
             final BaseConstructor constructor;
             if (genericType instanceof ParameterizedType) {
-               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedList);
+               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedPattern);
             } else {
-               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedList);
+               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedPattern);
             }
             return new Yaml(constructor).loadAs(entityStream, type);
          } else {
@@ -162,9 +175,13 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       });
    }
 
-   private static Collection<String> createAllowedList() {
+   private static Pattern createAllowPattern() {
       final String value = getProperty(ALLOWED_LIST);
-      return value == null ? Collections.emptyList() : Arrays.asList(value.split(","));
+      final Collection<String> allowed = new ArrayList<>(DEFAULT_ALLOWED_TYPES);
+      if (value != null) {
+         Collections.addAll(allowed, value.split(","));
+      }
+      return Pattern.compile(String.join("|", allowed));
    }
 
    private static boolean isTypeCheckDisabled() {
@@ -203,14 +220,18 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       }
    }
 
+   private static String toPattern(final Class<?> type) {
+      return Pattern.quote(type.getName());
+   }
+
    private static class TypeSafeConstructor extends CustomClassLoaderConstructor {
       private final Set<Class<?>> types;
-      private final Collection<String> allowedList;
+      private final Pattern allowedPattern;
 
       private TypeSafeConstructor(final ParameterizedType parameterizedType, final ClassLoader classLoader,
-                                  final Collection<String> allowedList) {
+                                  final Pattern allowedPattern) {
          super(classLoader);
-         this.allowedList = allowedList;
+         this.allowedPattern = allowedPattern;
          final Set<Class<?>> genericTypes = new HashSet<>();
          for (Type typeArg : parameterizedType.getActualTypeArguments()) {
             try {
@@ -223,10 +244,10 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       }
 
       private TypeSafeConstructor(final Class<?> type, final ClassLoader classLoader,
-                                  final Collection<String> allowedList) {
+                                  final Pattern allowedPattern) {
          super(classLoader);
          this.types = Collections.singleton(type);
-         this.allowedList = allowedList;
+         this.allowedPattern = allowedPattern;
       }
 
       @Override
@@ -241,29 +262,23 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
          if (type == null) {
             return false;
          }
-         final String name = type.getName();
-         // Check the allowed types first
-         if (allowedList.contains(name)) {
-            return false;
-         }
          // Allow all primitives
          if (type.isPrimitive()) {
             return false;
          }
-         // Denied types are not safe
-         if (DENY_LIST.contains(name)) {
-            return true;
-         }
-         // We should trust known types
-         if (name.startsWith("java") || name.startsWith("javax")) {
-            return false;
-         }
-         // Finally check the known types
+         // Check the known types, these are a parameter or return type of a method. We assume these are safe.
          boolean denied = true;
          for (Class<?> allowed : types) {
             if (allowed.isAssignableFrom(type)) {
                denied = false;
                break;
+            }
+         }
+         if (denied) {
+            // Check the allowed list if we are overriding a denied type
+            final String name = type.getName();
+            if (allowedPattern.matcher(name).matches()) {
+               return false;
             }
          }
          return denied;
