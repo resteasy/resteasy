@@ -62,7 +62,7 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration {
         String applicationConfig = getParameter(Application.class.getName());
         if (applicationConfig == null) {
             // stupid spec doesn't use FQN of Application class name
-            applicationConfig = getParameter("jakarta.ws.rs.Application");
+            applicationConfig = getParameter("resteasy.Application");
         } else {
             LogMessages.LOGGER.useOfApplicationClass(Application.class.getName());
         }

@@ -9,7 +9,7 @@
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
         <init-param>
-            <param-name>jakarta.ws.rs.Application</param-name>
+            <param-name>resteasy.Application</param-name>
             <param-value>org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestApplication</param-value>
         </init-param>
     </servlet>

@@ -12,7 +12,7 @@
             org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher
         </servlet-class>
         <init-param>
-            <param-name>jakarta.ws.rs.Application</param-name>
+            <param-name>resteasy.Application</param-name>
             <param-value>org.jboss.resteasy.test.providers.sse.SseApplication</param-value>
         </init-param>
         <init-param>

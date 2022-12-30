@@ -49,7 +49,7 @@
             </listitem>
             <listitem>
                 <para>
-                    If a &REST-API; Provider or <code>jakarta.ws.rs.Application</code>
+                    If a &REST-API; Provider or <code>resteasy.Application</code>
                     subclass does not define a scope explicitly, it is bound to the
                     Application scope.
                 </para>

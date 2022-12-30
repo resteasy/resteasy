@@ -438,7 +438,7 @@ public class MyApplication extends Application
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
         <init-param>
-            <param-name>jakarta.ws.rs.Application</param-name>
+            <param-name>resteasy.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </servlet>
@@ -513,7 +513,7 @@ public class MyApplication extends Application
             org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
         </filter-class>
         <init-param>
-            <param-name>jakarta.ws.rs.Application</param-name>
+            <param-name>resteasy.Application</param-name>
             <param-value>com.restfully.shop.services.ShoppingApplication</param-value>
         </init-param>
     </filter>
@@ -1004,7 +1004,7 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                         </row>
                         <row>
                             <entry>
-                                jakarta.ws.rs.Application
+                                resteasy.Application
                             </entry>
                             <entry>
                                 no default

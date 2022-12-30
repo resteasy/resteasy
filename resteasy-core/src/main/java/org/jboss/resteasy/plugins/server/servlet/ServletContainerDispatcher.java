@@ -74,7 +74,7 @@ public class ServletContainerDispatcher {
             globalDispatcher = ctxDeployment.getDispatcher();
         }
 
-        String application = bootstrap.getInitParameter("jakarta.ws.rs.Application");
+        String application = bootstrap.getInitParameter("resteasy.Application");
         String useGlobalStr = bootstrap.getInitParameter("resteasy.servlet.context.deployment");
         boolean useGlobal = globalFactory != null;
         if (useGlobalStr != null)

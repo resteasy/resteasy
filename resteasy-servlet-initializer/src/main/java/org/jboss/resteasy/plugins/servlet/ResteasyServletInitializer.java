@@ -28,7 +28,7 @@ import org.jboss.resteasy.spi.NotImplementedYetException;
 @HandlesTypes({ Application.class, Path.class, Provider.class })
 public class ResteasyServletInitializer implements ServletContainerInitializer {
     private static final String RESTEASY_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
-    private static final String APPLICATION = "jakarta.ws.rs.Application";
+    private static final String APPLICATION = "resteasy.Application";
     static final Set<String> ignoredPackages = new HashSet<String>();
 
     static {

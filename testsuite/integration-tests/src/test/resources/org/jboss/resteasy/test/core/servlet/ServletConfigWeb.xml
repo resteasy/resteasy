@@ -4,7 +4,7 @@
 <web-app>
     <display-name>Archetype RestEasy Web Application</display-name>
     <context-param>
-        <param-name>jakarta.ws.rs.Application</param-name>
+        <param-name>resteasy.Application</param-name>
         <param-value>org.jboss.resteasy.test.core.servlet.resource.ServletConfigApplication</param-value>
     </context-param>
 
