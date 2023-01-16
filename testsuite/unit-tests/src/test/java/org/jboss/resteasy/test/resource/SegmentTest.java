@@ -5,7 +5,6 @@ import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
-import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.resource.SegmentLocatorComplex;
 import org.jboss.resteasy.test.resource.resource.SegmentNullResource;
@@ -51,12 +50,9 @@ public class SegmentTest {
       ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory
             .getInstance());
       registry.addPerRequestResource(SegmentResource.class);
+      ResourceInvoker invoker = registry.getResourceInvoker(MockHttpRequest.options("/resource/sub"));
       try {
-         ResourceInvoker invoker = registry.getResourceInvoker(MockHttpRequest.options("/resource/sub"));
-      } catch (DefaultOptionsMethodException e) {
-      }
-      try {
-         ResourceInvoker invoker = registry.getResourceInvoker(MockHttpRequest.put("/resource/sub"));
+         invoker = registry.getResourceInvoker(MockHttpRequest.put("/resource/sub"));
       } catch (NotAllowedException e) {
       }
    }
