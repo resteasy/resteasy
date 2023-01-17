@@ -24,8 +24,8 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.test.ContainerConstants;
-import org.jboss.resteasy.test.providers.jsonb.basic.resource.DebugLoggingServerSetup;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingEndPoint;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItem;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedGet;
@@ -50,7 +50,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 4.0.0.Beta7
  */
 @RunWith(Arquillian.class)
-@ServerSetup({ DebugLoggingServerSetup.class }) // TBD: remove debug logging activation?
+@ServerSetup({ LoggingSetupTask.class }) // TBD: remove debug logging activation?
 public class JsonBindingDebugLoggingTest {
 
     static ResteasyClient client;

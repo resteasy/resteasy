@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import java.io.IOException;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -25,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wildfly.extras.creaper.core.CommandFailedException;
 
 /**
  * @tpSubChapter Security
@@ -48,7 +45,7 @@ public class SecurityContextTest {
     private Client nonauthorizedClient;
 
     @Before
-    public void initClient() throws IOException, CommandFailedException {
+    public void initClient() {
 
         // Create jaxrs client
         nonauthorizedClient = ClientBuilder.newClient();
