@@ -40,10 +40,6 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.wildfly.extras.creaper.core.ManagementClient;
-import org.wildfly.extras.creaper.core.online.ModelNodeResult;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.creaper.core.online.OnlineOptions;
 
 /**
  * Base util class for RESTEasy testing.
@@ -206,31 +202,6 @@ public class TestUtil {
      */
     public static int getManagementPort(final int offset) {
         return getManagementPort() + offset;
-    }
-
-    public static OnlineManagementClient clientInit() throws IOException {
-        OnlineOptions onlineOptions = OnlineOptions
-                .standalone()
-                .hostAndPort(PortProviderUtil.getHost(), getManagementPort()) // 9990 is default port for EAP 7
-                .connectionTimeout(120000)
-                .build();
-        return ManagementClient.online(onlineOptions);
-    }
-
-    public static OnlineManagementClient clientInit(int portOffset) throws IOException {
-        OnlineOptions onlineOptions = OnlineOptions
-                .standalone()
-                .hostAndPort("localhost", getManagementPort(portOffset)) // 9990 is default port for EAP 7
-                .connectionTimeout(120000)
-                .build();
-        return ManagementClient.online(onlineOptions);
-    }
-
-    public static ModelNodeResult runCmd(OnlineManagementClient client, String cmd) throws Exception {
-        ModelNodeResult result = client.execute(cmd);
-        logger.info("CLI command: " + cmd);
-        logger.info("Result: " + result.toString());
-        return result;
     }
 
     /**

@@ -92,8 +92,6 @@
         <version.org.jboss.shrinkwrap.resolver>3.1.6</version.org.jboss.shrinkwrap.resolver>
         <version.org.mockito>4.9.0</version.org.mockito>
         <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>
-        <version.org.wildfly.core.wildfly-cli>19.0.1.Final</version.org.wildfly.core.wildfly-cli>
-        <version.org.wildfly.extras.creaper>1.6.2</version.org.wildfly.extras.creaper>
         <version.org.wildfly.security>2.0.0.Final</version.org.wildfly.security>
         <version.weld.api>5.0.SP2</version.weld.api>
         <version.weld>5.1.1.SP2</version.weld>
@@ -802,32 +800,6 @@
                 <version>${version.jakarta.jms.jms-api}</version>
             </dependency>
             <dependency>
-                <groupId>org.wildfly.extras.creaper</groupId>
-                <artifactId>creaper-core</artifactId>
-                <version>${version.org.wildfly.extras.creaper}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.as</groupId>
-                        <artifactId>jboss-as-controller-client</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.jboss.as</groupId>
-                        <artifactId>jboss-as-cli</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.extras.creaper</groupId>
-                <artifactId>creaper-commands</artifactId>
-                <version>${version.org.wildfly.extras.creaper}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-patching</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-aether-provider</artifactId>
                 <version>${version.org.apache.maven}</version>
@@ -963,12 +935,6 @@
                         <artifactId>weld-jsf</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.wildfly.core</groupId>
-                <artifactId>wildfly-cli</artifactId>
-                <version>${version.org.wildfly.core.wildfly-cli}</version>
             </dependency>
 
             <!-- Used for SeBootstrap testing -->

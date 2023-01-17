@@ -44,7 +44,6 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 4.0.0
  */
 @RunWith(Arquillian.class)
-//@RunWith(UndertowTestRunner.class)
 @RunAsClient
 public class AsyncInjectionTest {
     protected static final Logger log = Logger.getLogger(AsyncInjectionTest.class.getName());

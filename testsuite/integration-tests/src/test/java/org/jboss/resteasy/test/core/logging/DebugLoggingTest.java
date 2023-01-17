@@ -4,6 +4,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
+import java.util.Map;
+import java.util.Set;
+
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
@@ -13,8 +16,10 @@ import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingEndPoint;
@@ -26,13 +31,10 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 
 /**
  * @tpSubChapter Interceptors
@@ -43,7 +45,15 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(DebugLoggingTest.DebugLoggingSetupTask.class)
 public class DebugLoggingTest {
+
+    public static class DebugLoggingSetupTask extends LoggingSetupTask {
+        @Override
+        protected Map<String, Set<String>> getLogLevels() {
+            return Map.of("ALL", Set.of("org.jboss.resteasy", "jakarta.xml.bind", "com.fasterxml.jackson"));
+        }
+    }
 
     static ResteasyClient client;
     protected static final Logger logger = Logger.getLogger(DebugLoggingTest.class.getName());
@@ -62,32 +72,6 @@ public class DebugLoggingTest {
         WebArchive war = TestUtil.prepareArchive(CUSTOM);
         return TestUtil.finishContainerPrepare(war, null, DebugLoggingEndPoint.class, DebugLoggingReaderInterceptorCustom.class,
                 DebugLoggingWriterInterceptorCustom.class, DebugLoggingCustomReaderAndWriter.class);
-    }
-
-    @BeforeClass
-    public static void initLogging() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
-
-        // enable RESTEasy debug logging
-        TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)");
-        TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:add(level=ALL)");
-        TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:add(level=ALL)");
-        TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:add(level=ALL)");
-
-        client.close();
-    }
-
-    @AfterClass
-    public static void removeLogging() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
-
-        // enable RESTEasy debug logging
-        TestUtil.runCmd(client, "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=INFO)");
-        TestUtil.runCmd(client, "/subsystem=logging/logger=org.jboss.resteasy:remove()");
-        TestUtil.runCmd(client, "/subsystem=logging/logger=jakarta.xml.bind:remove()");
-        TestUtil.runCmd(client, "/subsystem=logging/logger=com.fasterxml.jackson:remove()");
-
-        client.close();
     }
 
     @Before
