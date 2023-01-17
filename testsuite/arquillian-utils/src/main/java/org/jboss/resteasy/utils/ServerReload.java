@@ -21,6 +21,7 @@ package org.jboss.resteasy.utils;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.CancellationException;
@@ -136,6 +137,24 @@ public class ServerReload {
     }
 
     /**
+     * Executes a {@code reload} operation and waits a configurable maximum time for the reload to complete.
+     *
+     * @param client       the client to use for the request. Cannot be {@code null}
+     * @param serverConfig the server configuration file
+     *
+     * @throws AssertionError if the reload does not complete within the specified timeout
+     */
+    public static void executeReloadAndWaitForCompletion(final ModelControllerClient client,
+            final String serverConfig) {
+        final ModelNode op = Operations.createOperation("reload");
+        if (serverConfig != null) {
+            op.get("server-config")
+                    .set(serverConfig);
+        }
+        executeReloadAndWaitForCompletion(client, op);
+    }
+
+    /**
      * Returns the current running state, {@code server-state}, of the server.
      *
      * @param client the client used to execute the operation
@@ -164,6 +183,79 @@ public class ServerReload {
         } else {
             Assert.assertEquals("Server state 'running' is expected", "running", runningState);
         }
+    }
+
+    /**
+     * Takes a snapshot of the current state of the server.
+     * <p>
+     * Returns a AutoCloseable that can be used to restore the server state
+     * </p>
+     *
+     * @param port the port to create the client for
+     *
+     * @return A closeable that can be used to restore the server
+     */
+    public static AutoCloseable takeSnapshot(final int port) {
+        try (ModelControllerClient client = TestManagementClient.create("localhost", port)) {
+            final String fileName = takeSnapshot0(client);
+            return () -> {
+                try (ModelControllerClient restoreClient = TestManagementClient.create("localhost", port)) {
+                    executeReloadAndWaitForCompletion(restoreClient, fileName);
+
+                    final ModelNode result1 = restoreClient.execute(Operations.createOperation("write-config"));
+                    if (!Operations.isSuccessfulOutcome(result1)) {
+                        Assert.fail(
+                                "Failed to write config after restoring from snapshot "
+                                        + Operations.getFailureDescription(result1)
+                                                .asString());
+                    }
+                }
+            };
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to take snapshot", e);
+        }
+    }
+
+    /**
+     * Takes a snapshot of the current state of the server.
+     * <p>
+     * Returns a AutoCloseable that can be used to restore the server state
+     * </p>
+     *
+     * @param client The client
+     *
+     * @return A closeable that can be used to restore the server
+     */
+    public static AutoCloseable takeSnapshot(final ModelControllerClient client) {
+        try {
+            final String fileName = takeSnapshot0(client);
+            return () -> {
+                executeReloadAndWaitForCompletion(client, fileName);
+
+                final ModelNode result1 = client.execute(Operations.createOperation("write-config"));
+                if (!Operations.isSuccessfulOutcome(result1)) {
+                    Assert.fail(
+                            "Failed to write config after restoring from snapshot " + Operations.getFailureDescription(result1)
+                                    .asString());
+                }
+            };
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to take snapshot", e);
+        }
+    }
+
+    private static String takeSnapshot0(final ModelControllerClient client) throws IOException {
+        final ModelNode op = Operations.createOperation("take-snapshot");
+        final ModelNode result = client.execute(op);
+        if (!Operations.isSuccessfulOutcome(result)) {
+            Assert.fail("Reload operation didn't finish successfully: " + Operations.getFailureDescription(result)
+                    .asString());
+        }
+        final String snapshot = Operations.readResult(result)
+                .asString();
+        return snapshot.contains(File.separator)
+                ? snapshot.substring(snapshot.lastIndexOf(File.separator) + 1)
+                : snapshot;
     }
 
     @SuppressWarnings("BusyWait")

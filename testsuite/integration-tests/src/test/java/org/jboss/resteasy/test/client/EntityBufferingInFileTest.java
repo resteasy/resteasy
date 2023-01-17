@@ -12,6 +12,9 @@ import org.apache.http.HttpEntity;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.dmr.ModelNode;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -19,22 +22,17 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.client.resource.EntityBufferingInFileResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.creaper.core.online.operations.Address;
-import org.wildfly.extras.creaper.core.online.operations.Operations;
-import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -43,41 +41,25 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(EntityBufferingInFileTest.MaxPostServerSetupTask.class)
 public class EntityBufferingInFileTest extends ClientTestBase {
+
+    public static class MaxPostServerSetupTask extends SnapshotServerSetupTask {
+        @Override
+        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
+            final ModelNode address = Operations.createAddress("undertow", "server", "default-server", "http-listener",
+                    "default");
+            final ModelNode op = Operations.createWriteAttributeOperation(address, "max-post-size", MAX_POST_SIZE);
+            final ModelNode result = client.getControllerClient().execute(op);
+            if (!Operations.isSuccessfulOutcome(result)) {
+                throw new RuntimeException(
+                        "Failed to configure server: " + Operations.getFailureDescription(result).asString());
+            }
+        }
+    }
 
     private static final Logger logger = Logger.getLogger(EntityBufferingInFileTest.class);
     private static final long MAX_POST_SIZE = 2147483647;
-    private static ModelNode origMaxPostSizeValue;
-    private static Address address = Address.subsystem("undertow").and("server", "default-server").and("http-listener",
-            "default");
-
-    @BeforeClass
-    public static void setMaxPostSize() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
-        Administration admin = new Administration(client);
-        Operations ops = new Operations(client);
-
-        // get original 'max-post-size' value
-        origMaxPostSizeValue = ops.readAttribute(address, "max-post-size").value();
-        // set 'max-post-size' - max size of the object send in the post request
-        ops.writeAttribute(address, "max-post-size", MAX_POST_SIZE);
-        // reload server
-        admin.reload();
-        client.close();
-    }
-
-    @AfterClass
-    public static void resetToDefault() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
-        Administration admin = new Administration(client);
-        Operations ops = new Operations(client);
-
-        // write original 'disallowed methods' value
-        ops.writeAttribute(address, "max-post-size", origMaxPostSizeValue);
-        // reload server
-        admin.reload();
-        client.close();
-    }
 
     @Deployment
     public static Archive<?> deploy() {

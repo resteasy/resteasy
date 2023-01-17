@@ -104,38 +104,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.wildfly.extras.creaper</groupId>
-            <artifactId>creaper-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-controller-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-cli</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.wildfly.extras.creaper</groupId>
-            <artifactId>creaper-commands</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.wildfly</groupId>
-                    <artifactId>wildfly-patching</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Required for creaper-commands -->
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-cli</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-aether-provider</artifactId>
             <exclusions>
