@@ -84,7 +84,6 @@ public class GrpcToJakartaRESTTest
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest.class.getSimpleName());
          war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.36")));
-         TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export \n"));
@@ -697,7 +696,7 @@ public class GrpcToJakartaRESTTest
       GeneralReturnMessage response;
       try {
          response = blockingStub.contextPath(gem);
-         Assert.assertEquals("/GrpcToJaxrsTest", response.getGStringField().getValue());
+         Assert.assertEquals("/GrpcToJakartaRESTTest", response.getGStringField().getValue());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
