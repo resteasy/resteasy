@@ -76,13 +76,13 @@ import jaxrs.example.CC1_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class GrpcToJaxrsTest
+public class GrpcToJakartaRESTTest
 {
-   protected static final Logger log = Logger.getLogger(GrpcToJaxrsTest.class.getName());
+   protected static final Logger log = Logger.getLogger(GrpcToJakartaRESTTest.class.getName());
 
    @Deployment
    public static Archive<?> deploy() {
-         WebArchive war = TestUtil.prepareArchive(GrpcToJaxrsTest.class.getSimpleName());
+         WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest.class.getSimpleName());
          war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.36")));
          TestUtil.addOtherLibrary(war, "org.jboss.resteasy:grpc-bridge-runtime:jar:6.2.2.Final-SNAPSHOT");
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
@@ -110,7 +110,7 @@ public class GrpcToJaxrsTest
    private static ManagedChannel channel;
 
    private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, GrpcToJaxrsTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, GrpcToJakartaRESTTest.class.getSimpleName());
    }
 
    @BeforeClass
@@ -118,13 +118,8 @@ public class GrpcToJaxrsTest
    {
       channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
       Client client = ClientBuilder.newClient();
-      Response response = client.target(generateURL("/grpcToJaxrs/grpcserver/start")).request().get();
-      log.info("status: " + response.getStatus());
-      log.info("response: " + response.readEntity(String.class));
-      response = client.target(generateURL("/grpcToJaxrs/p/ready")).request().get();
-      log.info("status 2: " + response.getStatus());
-      log.info("response 2: " + response.readEntity(String.class));
-      channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+      Response response = client.target(generateURL("/grpcToJakartaRest/grpcserver/start")).request().get();
+      response = client.target(generateURL("/grpcToJakartaRest/p/ready")).request().get();
       blockingStub = CC1ServiceGrpc.newBlockingStub(channel);
       futureStub = CC1ServiceGrpc.newFutureStub(channel);
       asyncStub = CC1ServiceGrpc.newStub(channel);
@@ -717,7 +712,7 @@ public class GrpcToJaxrsTest
       GeneralReturnMessage response;
       try {
          response = blockingStub.servletContext(gem);
-         Assert.assertEquals("/grpcToJaxrs", response.getGStringField().getValue());
+         Assert.assertEquals("/grpcToJakartaRest", response.getGStringField().getValue());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
          return;
@@ -910,7 +905,7 @@ public class GrpcToJaxrsTest
       }
       {
          GeneralEntityMessage.Builder messageBuilder = GeneralEntityMessage.newBuilder();
-         GeneralEntityMessage gem = messageBuilder.setURL("http://localhost:8080" + contextPath + "/grpcToJaxrs/p/servletPath").build();
+         GeneralEntityMessage gem = messageBuilder.setURL("http://localhost:8080" + contextPath + "/grpcToJakartaRest/p/servletPath").build();
          GeneralReturnMessage response;
          try {
             response = blockingStub.servletPath(gem);
@@ -922,7 +917,7 @@ public class GrpcToJaxrsTest
 
             // servlet path
             int j = result.indexOf('|', i + 1);
-            Assert.assertEquals("/grpcToJaxrs", result.substring(i + 1, j));
+            Assert.assertEquals("/grpcToJakartaRest", result.substring(i + 1, j));
 
             // path
             i = j + 1;
