@@ -44,29 +44,28 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.Response;
-import jaxrs.example.CC1ServiceGrpc;
-import jaxrs.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
-import jaxrs.example.CC1ServiceGrpc.CC1ServiceFutureStub;
-import jaxrs.example.CC1ServiceGrpc.CC1ServiceStub;
-import jaxrs.example.CC1_proto;
-import jaxrs.example.CC1_proto.FormMap;
-import jaxrs.example.CC1_proto.FormValues;
-import jaxrs.example.CC1_proto.GeneralEntityMessage;
-import jaxrs.example.CC1_proto.GeneralReturnMessage;
-import jaxrs.example.CC1_proto.ServletInfo;
-import jaxrs.example.CC1_proto.gCookie;
-import jaxrs.example.CC1_proto.gHeader;
-import jaxrs.example.CC1_proto.gInteger;
-import jaxrs.example.CC1_proto.gNewCookie;
-import jaxrs.example.CC1_proto.gString;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC2;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC3;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC4;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC5;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC7;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_example___CC9;
-import jaxrs.example.CC1_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent;
+import jakarta.rest.example.CC1ServiceGrpc;
+import jakarta.rest.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import jakarta.rest.example.CC1ServiceGrpc.CC1ServiceFutureStub;
+import jakarta.rest.example.CC1ServiceGrpc.CC1ServiceStub;
+import jakarta.rest.example.CC1_proto;
+import jakarta.rest.example.CC1_proto.FormMap;
+import jakarta.rest.example.CC1_proto.FormValues;
+import jakarta.rest.example.CC1_proto.GeneralEntityMessage;
+import jakarta.rest.example.CC1_proto.GeneralReturnMessage;
+import jakarta.rest.example.CC1_proto.ServletInfo;
+import jakarta.rest.example.CC1_proto.gCookie;
+import jakarta.rest.example.CC1_proto.gHeader;
+import jakarta.rest.example.CC1_proto.gInteger;
+import jakarta.rest.example.CC1_proto.gNewCookie;
+import jakarta.rest.example.CC1_proto.gString;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC2;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC3;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC4;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC5;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC7;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC9;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -83,7 +82,7 @@ public class GrpcToJakartaRESTTest
    @Deployment
    public static Archive<?> deploy() {
          WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest.class.getSimpleName());
-         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jaxrs.example:jaxrs.example.grpc:war:0.0.36")));
+         war.merge(ShrinkWrap.createFromZipFile( WebArchive.class, TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.37")));
          TestUtil.addOtherLibrary(war, "io.grpc:grpc-netty-shaded:1.39.0");
          war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                + "Dependencies: io.grpc, com.google.guava services, org.jboss.resteasy.grpc-bridge-runtime export \n"));
@@ -117,8 +116,8 @@ public class GrpcToJakartaRESTTest
    {
       channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
       Client client = ClientBuilder.newClient();
-      Response response = client.target(generateURL("/grpcToJakartaRest/grpcserver/start")).request().get();
-      response = client.target(generateURL("/grpcToJakartaRest/p/ready")).request().get();
+      client.target(generateURL("/grpcToJakartaRest/grpcserver/start")).request().get();
+      client.target(generateURL("/grpcToJakartaRest/p/ready")).request().get();
       blockingStub = CC1ServiceGrpc.newBlockingStub(channel);
       futureStub = CC1ServiceGrpc.newFutureStub(channel);
       asyncStub = CC1ServiceGrpc.newStub(channel);
@@ -141,7 +140,7 @@ public class GrpcToJakartaRESTTest
 
    static void ready() {
       try {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/ready").build();
       blockingStub.ready(gem);
       } catch (Exception e) {
@@ -162,13 +161,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testBoolean() throws Exception {
-      jaxrs.example.CC1_proto.gBoolean n = jaxrs.example.CC1_proto.gBoolean.newBuilder().setValue(false).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gBoolean n = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(false).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGBooleanField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getBoolean(gem);
-         jaxrs.example.CC1_proto.gBoolean expected = jaxrs.example.CC1_proto.gBoolean.newBuilder().setValue(true).build();
+         jakarta.rest.example.CC1_proto.gBoolean expected = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(true).build();
          Assert.assertEquals(expected, response.getGBooleanField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -178,13 +177,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testBooleanWithUnnecessaryURL() throws Exception {
-      jaxrs.example.CC1_proto.gBoolean n = jaxrs.example.CC1_proto.gBoolean.newBuilder().setValue(false).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gBoolean n = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(false).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080/p/boolean").setGBooleanField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getBoolean(gem);
-         jaxrs.example.CC1_proto.gBoolean expected = jaxrs.example.CC1_proto.gBoolean.newBuilder().setValue(true).build();
+         jakarta.rest.example.CC1_proto.gBoolean expected = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(true).build();
          Assert.assertEquals(expected, response.getGBooleanField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -194,13 +193,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testBooleanWrapper() throws Exception {
-      jaxrs.example.CC1_proto.gBoolean n = jaxrs.example.CC1_proto.gBoolean.newBuilder().setValue(false).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gBoolean n = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(false).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGBooleanField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getBooleanWrapper(gem);
-         jaxrs.example.CC1_proto.gBoolean expected = jaxrs.example.CC1_proto.gBoolean.newBuilder().setValue(true).build();
+         jakarta.rest.example.CC1_proto.gBoolean expected = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(true).build();
          Assert.assertEquals(expected, response.getGBooleanField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -210,13 +209,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testByte() throws Exception {
-      jaxrs.example.CC1_proto.gByte n = jaxrs.example.CC1_proto.gByte.newBuilder().setValue(3).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gByte n = jakarta.rest.example.CC1_proto.gByte.newBuilder().setValue(3).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGByteField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getByte(gem);
-         jaxrs.example.CC1_proto.gByte expected = jaxrs.example.CC1_proto.gByte.newBuilder().setValue(4).build();
+         jakarta.rest.example.CC1_proto.gByte expected = jakarta.rest.example.CC1_proto.gByte.newBuilder().setValue(4).build();
          Assert.assertEquals(expected, response.getGByteField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -226,13 +225,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testByteWrapper() throws Exception {
-      jaxrs.example.CC1_proto.gByte n = jaxrs.example.CC1_proto.gByte.newBuilder().setValue(7).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gByte n = jakarta.rest.example.CC1_proto.gByte.newBuilder().setValue(7).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGByteField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getByteWrapper(gem);
-         jaxrs.example.CC1_proto.gByte expected = jaxrs.example.CC1_proto.gByte.newBuilder().setValue(8).build();
+         jakarta.rest.example.CC1_proto.gByte expected = jakarta.rest.example.CC1_proto.gByte.newBuilder().setValue(8).build();
          Assert.assertEquals(expected, response.getGByteField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -242,13 +241,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testShort() throws Exception {
-      jaxrs.example.CC1_proto.gShort n = jaxrs.example.CC1_proto.gShort.newBuilder().setValue(3).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gShort n = jakarta.rest.example.CC1_proto.gShort.newBuilder().setValue(3).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGShortField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getShort(gem);
-         jaxrs.example.CC1_proto.gShort expected = jaxrs.example.CC1_proto.gShort.newBuilder().setValue(4).build();
+         jakarta.rest.example.CC1_proto.gShort expected = jakarta.rest.example.CC1_proto.gShort.newBuilder().setValue(4).build();
          Assert.assertEquals(expected, response.getGShortField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -258,13 +257,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testShortWrapper() throws Exception {
-      jaxrs.example.CC1_proto.gShort n = jaxrs.example.CC1_proto.gShort.newBuilder().setValue(7).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gShort n = jakarta.rest.example.CC1_proto.gShort.newBuilder().setValue(7).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGShortField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getShortWrapper(gem);
-         jaxrs.example.CC1_proto.gShort expected = jaxrs.example.CC1_proto.gShort.newBuilder().setValue(8).build();
+         jakarta.rest.example.CC1_proto.gShort expected = jakarta.rest.example.CC1_proto.gShort.newBuilder().setValue(8).build();
          Assert.assertEquals(expected, response.getGShortField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -274,13 +273,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testInt() throws Exception {
-      jaxrs.example.CC1_proto.gInteger n = jaxrs.example.CC1_proto.gInteger.newBuilder().setValue(3).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gInteger n = jakarta.rest.example.CC1_proto.gInteger.newBuilder().setValue(3).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGIntegerField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getInt(gem);
-         jaxrs.example.CC1_proto.gInteger expected = jaxrs.example.CC1_proto.gInteger.newBuilder().setValue(4).build();
+         jakarta.rest.example.CC1_proto.gInteger expected = jakarta.rest.example.CC1_proto.gInteger.newBuilder().setValue(4).build();
          Assert.assertEquals(expected, response.getGIntegerField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -290,13 +289,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testInteger() throws Exception {
-      jaxrs.example.CC1_proto.gInteger n = jaxrs.example.CC1_proto.gInteger.newBuilder().setValue(3).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gInteger n = jakarta.rest.example.CC1_proto.gInteger.newBuilder().setValue(3).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setGIntegerField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getInteger(gem);
-         jaxrs.example.CC1_proto.gInteger expected = jaxrs.example.CC1_proto.gInteger.newBuilder().setValue(4).build();
+         jakarta.rest.example.CC1_proto.gInteger expected = jakarta.rest.example.CC1_proto.gInteger.newBuilder().setValue(4).build();
          Assert.assertEquals(expected, response.getGIntegerField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -306,13 +305,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testLong() throws Exception {
-      jaxrs.example.CC1_proto.gLong n = jaxrs.example.CC1_proto.gLong.newBuilder().setValue(3L).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gLong n = jakarta.rest.example.CC1_proto.gLong.newBuilder().setValue(3L).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/long").setGLongField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getLong(gem);
-         jaxrs.example.CC1_proto.gLong expected = jaxrs.example.CC1_proto.gLong.newBuilder().setValue(4L).build();
+         jakarta.rest.example.CC1_proto.gLong expected = jakarta.rest.example.CC1_proto.gLong.newBuilder().setValue(4L).build();
          Assert.assertEquals(expected, response.getGLongField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -322,13 +321,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testLongWrapper() throws Exception {
-      jaxrs.example.CC1_proto.gLong n = jaxrs.example.CC1_proto.gLong.newBuilder().setValue(3L).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gLong n = jakarta.rest.example.CC1_proto.gLong.newBuilder().setValue(3L).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/Long").setGLongField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getLongWrapper(gem);
-         jaxrs.example.CC1_proto.gLong expected = jaxrs.example.CC1_proto.gLong.newBuilder().setValue(4L).build();
+         jakarta.rest.example.CC1_proto.gLong expected = jakarta.rest.example.CC1_proto.gLong.newBuilder().setValue(4L).build();
          Assert.assertEquals(expected, response.getGLongField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -338,13 +337,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testFloat() throws Exception {
-      jaxrs.example.CC1_proto.gFloat n = jaxrs.example.CC1_proto.gFloat.newBuilder().setValue(3.0f).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gFloat n = jakarta.rest.example.CC1_proto.gFloat.newBuilder().setValue(3.0f).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/float").setGFloatField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getFloat(gem);
-         jaxrs.example.CC1_proto.gFloat expected = jaxrs.example.CC1_proto.gFloat.newBuilder().setValue(4.0f).build();
+         jakarta.rest.example.CC1_proto.gFloat expected = jakarta.rest.example.CC1_proto.gFloat.newBuilder().setValue(4.0f).build();
          Assert.assertEquals(expected, response.getGFloatField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -354,13 +353,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testFloatWrapper() throws Exception {
-      jaxrs.example.CC1_proto.gFloat n = jaxrs.example.CC1_proto.gFloat.newBuilder().setValue(3.0f).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gFloat n = jakarta.rest.example.CC1_proto.gFloat.newBuilder().setValue(3.0f).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/Float").setGFloatField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getFloat(gem);
-         jaxrs.example.CC1_proto.gFloat expected = jaxrs.example.CC1_proto.gFloat.newBuilder().setValue(4.0f).build();
+         jakarta.rest.example.CC1_proto.gFloat expected = jakarta.rest.example.CC1_proto.gFloat.newBuilder().setValue(4.0f).build();
          Assert.assertEquals(expected, response.getGFloatField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -370,13 +369,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testDouble() throws Exception {
-      jaxrs.example.CC1_proto.gDouble n = jaxrs.example.CC1_proto.gDouble.newBuilder().setValue(3.0d).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gDouble n = jakarta.rest.example.CC1_proto.gDouble.newBuilder().setValue(3.0d).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/double").setGDoubleField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getDouble(gem);
-         jaxrs.example.CC1_proto.gDouble expected = jaxrs.example.CC1_proto.gDouble.newBuilder().setValue(4.0d).build();
+         jakarta.rest.example.CC1_proto.gDouble expected = jakarta.rest.example.CC1_proto.gDouble.newBuilder().setValue(4.0d).build();
          Assert.assertEquals(expected, response.getGDoubleField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -386,13 +385,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testDoubleWrapper() throws Exception {
-      jaxrs.example.CC1_proto.gDouble n = jaxrs.example.CC1_proto.gDouble.newBuilder().setValue(3.0d).build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gDouble n = jakarta.rest.example.CC1_proto.gDouble.newBuilder().setValue(3.0d).build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/Double").setGDoubleField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getDouble(gem);
-         jaxrs.example.CC1_proto.gDouble expected = jaxrs.example.CC1_proto.gDouble.newBuilder().setValue(4.0d).build();
+         jakarta.rest.example.CC1_proto.gDouble expected = jakarta.rest.example.CC1_proto.gDouble.newBuilder().setValue(4.0d).build();
          Assert.assertEquals(expected, response.getGDoubleField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -402,13 +401,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testChar() throws Exception {
-      jaxrs.example.CC1_proto.gCharacter n = jaxrs.example.CC1_proto.gCharacter.newBuilder().setValue("a").build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gCharacter n = jakarta.rest.example.CC1_proto.gCharacter.newBuilder().setValue("a").build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/char").setGCharacterField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getChar(gem);
-         jaxrs.example.CC1_proto.gCharacter expected = jaxrs.example.CC1_proto.gCharacter.newBuilder().setValue("A").build();
+         jakarta.rest.example.CC1_proto.gCharacter expected = jakarta.rest.example.CC1_proto.gCharacter.newBuilder().setValue("A").build();
          Assert.assertEquals(expected, response.getGCharacterField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -418,13 +417,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testCharacter() throws Exception {
-      jaxrs.example.CC1_proto.gCharacter n = jaxrs.example.CC1_proto.gCharacter.newBuilder().setValue("a").build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gCharacter n = jakarta.rest.example.CC1_proto.gCharacter.newBuilder().setValue("a").build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/Character").setGCharacterField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getChar(gem);
-         jaxrs.example.CC1_proto.gCharacter expected = jaxrs.example.CC1_proto.gCharacter.newBuilder().setValue("A").build();
+         jakarta.rest.example.CC1_proto.gCharacter expected = jakarta.rest.example.CC1_proto.gCharacter.newBuilder().setValue("A").build();
          Assert.assertEquals(expected, response.getGCharacterField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -434,13 +433,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testString() throws Exception {
-      jaxrs.example.CC1_proto.gString n = jaxrs.example.CC1_proto.gString.newBuilder().setValue("abc").build();
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.gString n = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("abc").build();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/string").setGStringField(n).build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.getString(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("ABC").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("ABC").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -450,7 +449,7 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testConstructor() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/constructor").build();
       GeneralReturnMessage response;
       try {
@@ -477,12 +476,12 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testProduces() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080/p/produces").build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.produces(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("produces").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("produces").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -492,12 +491,12 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testConsumes() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/consumes").build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.produces(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("consumes").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("consumes").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -507,12 +506,12 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testPathParams() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080/p/path/aa/param/bb").build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.pathParams(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("xaaybbz").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("xaaybbz").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -522,12 +521,12 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testQueryParams() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080/p/query?q1=a&q2=b").build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.queryParams(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("xaybz").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("xaybz").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -537,12 +536,12 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testMatrixParams() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080/p/matrix;m1=a;m2=b/more;m3=c").build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.matrixParams(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("waxbycz").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("waxbycz").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -555,7 +554,7 @@ public class GrpcToJakartaRESTTest
     */
    @Test
    public void testCookieParams() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080/p/cookieParams");
       gCookie.Builder cookieBuilder1 = gCookie.newBuilder();
       gCookie.Builder cookieBuilder2 = gCookie.newBuilder();
@@ -575,7 +574,7 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testHeaderParams() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080" + "/p/headerParams");
       gHeader.Builder headerBuilder1 = gHeader.newBuilder();
       gHeader header1 = headerBuilder1.addValues("v1.1").addValues("v1.2").build();
@@ -596,7 +595,7 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testParamsList() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
       builder.putHeaders("h1", gHeader.newBuilder().addValues("hv1").addValues("hv2").build());
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/params;m1=mv1;m1=mv2/pv1/list/pv2?q1=qv1&q1=qv2").build();
       GeneralReturnMessage response;
@@ -628,13 +627,13 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testParamsSortedSet() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder builder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       builder.putHeaders("h1", gHeader.newBuilder().addValues("hv1").addValues("hv2").build());
       GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/params;m1=mv1;m1=mv2/pv1/sortedset/pv2?q1=qv1&q1=qv2").build();
       GeneralReturnMessage response;
       try {
          response = blockingStub.paramsSortedSet(gem);
-         jaxrs.example.CC1_proto.gString expected = jaxrs.example.CC1_proto.gString.newBuilder().setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
+         jakarta.rest.example.CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("hv1hv2mv1mv2pv1pv2qv1qv2").build();
          Assert.assertEquals(expected, response.getGStringField());
       } catch (StatusRuntimeException e) {
          Assert.fail("fail");
@@ -660,7 +659,7 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testSuspend() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080/p/suspend");
       GeneralEntityMessage gem = messageBuilder.build();
       try {
@@ -677,7 +676,7 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testCompletionStage() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jakarta.rest.example.CC1_proto.GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080/p/async/cs");
       GeneralEntityMessage gem = messageBuilder.build();
       try {
@@ -735,7 +734,7 @@ public class GrpcToJakartaRESTTest
 
    @Test
    public void testSSE() throws Exception {
-      jaxrs.example.CC1_proto.GeneralEntityMessage.Builder messageBuilder = jaxrs.example.CC1_proto.GeneralEntityMessage.newBuilder();
+      CC1_proto.GeneralEntityMessage.Builder messageBuilder = CC1_proto.GeneralEntityMessage.newBuilder();
       messageBuilder.setURL("http://localhost:8080/p/sse");
       GeneralEntityMessage gem = messageBuilder.build();
       Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> response;

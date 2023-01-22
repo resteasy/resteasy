@@ -58,7 +58,7 @@
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
 
         <!-- For grpc-bridge test -->
-        <version.jaxrs.example.grpc>0.0.36</version.jaxrs.example.grpc>
+        <version.jakarta.rest.example.grpc>0.0.37</version.jakarta.rest.example.grpc>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -385,25 +385,24 @@
         </dependency>
 
        <dependency>
-            <groupId>jaxrs.example</groupId>
-            <artifactId>jaxrs.example.grpc</artifactId>
-            <version>${version.jaxrs.example.grpc}</version>
-            <type>jar</type>
+            <groupId>jakarta.rest.example</groupId>
+            <artifactId>jakarta.rest.example.grpc</artifactId>
+            <version>0.0.37</version>
             <exclusions>
                <exclusion>
                   <groupId>javax.inject</groupId>
                   <artifactId>javax.inject</artifactId>
                </exclusion>
                <exclusion>
-                  <groupId>jaxrs.example</groupId>
-                  <artifactId>jaxrs.example</artifactId>
+                  <groupId>jakarta.rest.example</groupId>
+                  <artifactId>jakarta.rest.example</artifactId>
                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>jaxrs.example</groupId>
-            <artifactId>jaxrs.example.grpc</artifactId>
-            <version>${version.jaxrs.example.grpc}</version>
+            <groupId>jakarta.rest.example</groupId>
+            <artifactId>jakarta.rest.example.grpc</artifactId>
+            <version>${version.jakarta.rest.example.grpc}</version>
             <type>war</type>
             <exclusions>
                <exclusion>
@@ -411,8 +410,8 @@
                   <artifactId>javax.inject</artifactId>
                </exclusion>
                <exclusion>
-                  <groupId>jaxrs.example</groupId>
-                  <artifactId>jaxrs.example</artifactId>
+                  <groupId>jakarta.rest.example</groupId>
+                  <artifactId>jakarta.rest.example</artifactId>
                </exclusion>
             </exclusions>
         </dependency>
