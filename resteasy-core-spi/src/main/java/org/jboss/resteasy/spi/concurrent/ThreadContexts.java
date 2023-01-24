@@ -19,10 +19,13 @@
 
 package org.jboss.resteasy.spi.concurrent;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.jboss.resteasy.spi.PriorityComparator;
 
@@ -39,7 +42,7 @@ public class ThreadContexts {
      * Creates a new collection instance.
      */
     public ThreadContexts() {
-        contexts = new ArrayList<>();
+        contexts = createContexts();
     }
 
     /**
@@ -84,5 +87,18 @@ public class ThreadContexts {
             contexts.clear();
         }
         return this;
+    }
+
+    private static List<ThreadContext<Object>> createContexts() {
+        final List<ThreadContext<Object>> contexts = new ArrayList<>();
+        if (System.getSecurityManager() == null) {
+            ServiceLoader.load(ThreadContext.class).forEach(contexts::add);
+        } else {
+            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                ServiceLoader.load(ThreadContext.class).forEach(contexts::add);
+                return null;
+            });
+        }
+        return contexts;
     }
 }
