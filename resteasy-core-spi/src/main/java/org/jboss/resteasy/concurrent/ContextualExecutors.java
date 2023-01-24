@@ -24,7 +24,6 @@ import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -321,24 +320,17 @@ public class ContextualExecutors {
         };
     }
 
-    @SuppressWarnings("unchecked")
     private static Map<ThreadContext<Object>, Object> getContexts() {
         final Map<ThreadContext<Object>, Object> contexts = new LinkedHashMap<>();
-        if (System.getSecurityManager() == null) {
-            ServiceLoader.load(ThreadContext.class).forEach(context -> contexts.put(context, context.capture()));
-        } else {
-            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-                ServiceLoader.load(ThreadContext.class).forEach(context -> contexts.put(context, context.capture()));
-                return null;
-            });
-        }
         // Load any registered providers
-        final ThreadContexts threadContexts = ResteasyProviderFactory.getInstance()
+        ThreadContexts threadContexts = ResteasyProviderFactory.getInstance()
                 .getContextData(ThreadContexts.class);
-        if (threadContexts != null) {
-            for (ThreadContext<Object> context : threadContexts.getThreadContexts()) {
-                contexts.put(context, context.capture());
-            }
+        // Create a new ThreadContexts which will load at least the ones from services
+        if (threadContexts == null) {
+            threadContexts = new ThreadContexts();
+        }
+        for (ThreadContext<Object> context : threadContexts.getThreadContexts()) {
+            contexts.put(context, context.capture());
         }
         return contexts;
     }
