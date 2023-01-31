@@ -40,10 +40,5 @@
         <module name="org.jboss.resteasy.resteasy-core" services="import"/>
         <module name="org.jboss.resteasy.resteasy-core-spi"/>
         <module name="org.reactivestreams"/>
-        <!-- Optional dependencies if we have the MicroProfile REST Client available. Note we need to export the
-             org.jboss.resteasy.resteasy-client-microprofile as it will be loaded from another module loader.
-         -->
-        <module name="org.eclipse.microprofile.restclient" export="true" optional="true"/>
-        <module name="org.jboss.resteasy.resteasy-client-microprofile" export="true" services="export" optional="true"/>
     </dependencies>
 </module>
