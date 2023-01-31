@@ -1077,6 +1077,21 @@ String s = config.getOptionalValue("prop_name", String.class).orElse("d'oh");
                                 for more information.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                dev.resteasy.throw.options.exception
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Setting this value to true will throw a <classname>org.jboss.resteasy.spi.DefaultOptionsMethodException</classname>
+                                if the HTTP method "OPTIONS" is sent and the matching method is not annotated with
+                                <classname>@OPTIONS</classname>. This is the original behavior of RESTEasy. However, this
+                                has been changed to return the response so that it&apos;s processed with an
+                                <classname>ExceptionMapper</classname>.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>

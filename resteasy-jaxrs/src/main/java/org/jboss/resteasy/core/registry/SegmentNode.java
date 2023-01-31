@@ -5,8 +5,11 @@ import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
@@ -456,7 +459,13 @@ public class SegmentNode
             if (httpMethod.equals("OPTIONS"))
             {
 
-               ResponseBuilder resBuilder =  Response.ok(allowHeaderValue.toString(),  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue.toString());
+               // Normally we would not create the ResponseBuilder like this. However, we need to ensure we end up with
+               // a BuiltResponse, so we'll do it like this.
+               ResponseBuilder resBuilder = new ResponseBuilderImpl()
+                       .entity(allowHeaderValue)
+                       .type(MediaType.TEXT_PLAIN_TYPE)
+                       .status(Response.Status.OK.getStatusCode(), Response.Status.OK.getReasonPhrase())
+                       .header(HttpHeaderNames.ALLOW, allowHeaderValue);
 
                if (allowed.contains("PATCH"))
                {
@@ -480,6 +489,12 @@ public class SegmentNode
                      acceptPatch.append(mediaType.toString());
                   }
                   resBuilder.header(HttpHeaderNames.ACCEPT_PATCH, acceptPatch.toString());
+               }
+               // Default to the old behavior of throwing an exception.
+               final ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+               if (context != null && !Boolean.parseBoolean(context.getParameter("dev.resteasy.throw.options.exception"))) {
+                  final MethodExpression expression = new MethodExpression(this, "", new ConstantResourceInvoker((BuiltResponse) resBuilder.build()));
+                  return new Match(expression, null);
                }
                throw new DefaultOptionsMethodException(Messages.MESSAGES.noResourceMethodFoundForOptions(), resBuilder.build());
             }

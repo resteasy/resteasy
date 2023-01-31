@@ -121,7 +121,8 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 <row>
 <entry>DefaultOptionsMethodException</entry>
 <entry>N/A</entry>
-<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, RESTEasy provides a default behavior by throwing this exception</entry>
+<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, RESTEasy provides a default behavior by throwing this exception.
+   This can be disabled by setting the configuration property <code>dev.resteasy.throw.options.exception</code> is set to false.</entry>
 </row>
 <row>
 <entry>UnrecognizedPropertyExceptionHandler</entry>
