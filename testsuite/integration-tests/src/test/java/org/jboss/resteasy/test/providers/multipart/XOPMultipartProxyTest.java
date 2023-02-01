@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.nio.file.Files;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -86,7 +87,7 @@ public class XOPMultipartProxyTest {
     */
    @Test
    public void testXOPSend() throws Exception {
-      File tmpFile = File.createTempFile("pre", ".tmp");
+      File tmpFile = Files.createTempFile("pre", ".tmp").toFile();
       tmpFile.deleteOnExit();
       Writer writer = new FileWriter(tmpFile);
       writer.write("testXOPSend");
