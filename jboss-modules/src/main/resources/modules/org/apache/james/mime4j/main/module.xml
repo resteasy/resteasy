@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.5" name="org.apache.james.mime4j" >
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <!-- Insert resources here -->
+    </resources>
+
+    <dependencies>
+        <module name="org.apache.commons.io"/>
+        <module name="org.apache.commons.logging"/>
+    </dependencies>
+</module>

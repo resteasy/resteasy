@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 
-import org.apache.james.mime4j.parser.Field;
+import org.apache.james.mime4j.stream.Field;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
