@@ -2,11 +2,11 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -143,17 +143,17 @@ public class Mime4JWorkaround {
 
         public StorageOutputStream createStorageOutputStream() throws IOException
         {
-            return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory));
+            return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory.toPath()));
         }
 
-        private static File createTempFile(String prefix, String suffix, File directory) throws IOException
+        private static Path createTempFile(String prefix, String suffix, Path directory) throws IOException
         {
             boolean java2SecurityEnabled = System.getSecurityManager() != null;
             if (java2SecurityEnabled)
             {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<File>) () ->
-                        File.createTempFile(prefix, suffix, directory));
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<Path>) () ->
+                        Files.createTempFile(directory, prefix, suffix));
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
                     if (cause instanceof IOException)
@@ -162,17 +162,17 @@ public class Mime4JWorkaround {
                     } else throw new RuntimeException(cause);
                 }
             }
-            return File.createTempFile(prefix, suffix, directory);
+            return Files.createTempFile(directory, prefix, suffix);
         }
 
-        private static FileOutputStream createFileOutputStream(File file) throws IOException
+        private static OutputStream createFileOutputStream(final Path file) throws IOException
         {
             boolean java2SecurityEnabled = System.getSecurityManager() != null;
             if (java2SecurityEnabled)
             {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<FileOutputStream>) () ->
-                        new FileOutputStream(file));
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<OutputStream>) () ->
+                        Files.newOutputStream(file));
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
                     if (cause instanceof IOException)
@@ -181,16 +181,16 @@ public class Mime4JWorkaround {
                     } else throw new RuntimeException(cause);
                 }
             }
-            return new FileOutputStream(file);
+            return Files.newOutputStream(file);
         }
 
         private static final class TempFileStorageOutputStream extends StorageOutputStream
         {
-            private File file;
+            private final Path file;
 
-            private OutputStream out;
+            private final OutputStream out;
 
-            TempFileStorageOutputStream(final File file) throws IOException
+            TempFileStorageOutputStream(final Path file) throws IOException
             {
                 this.file = file;
                 this.out = createFileOutputStream(file);
@@ -220,11 +220,11 @@ public class Mime4JWorkaround {
         private static final class TempFileStorage implements Storage
         {
 
-            private File file;
+            private Path file;
 
-            private static final Set<File> filesToDelete = new HashSet<File>();
+            private static final Set<Path> filesToDelete = new HashSet<>();
 
-            TempFileStorage(final File file)
+            TempFileStorage(final Path file)
             {
                 this.file = file;
             }
@@ -247,12 +247,14 @@ public class Mime4JWorkaround {
                         file = null;
                     }
 
-                    for (Iterator<File> iterator = filesToDelete.iterator(); iterator.hasNext();)
+                    for (Iterator<Path> iterator = filesToDelete.iterator(); iterator.hasNext();)
                     {
-                        File f = iterator.next();
-                        if (f.delete())
-                        {
+                        Path f = iterator.next();
+                        try {
+                            Files.deleteIfExists(f);
                             iterator.remove();
+                        } catch (IOException e) {
+                            LogMessages.LOGGER.debugf(e, "Failed to delete file %s", f);
                         }
                     }
                 }
@@ -263,7 +265,7 @@ public class Mime4JWorkaround {
                 if (file == null)
                     throw new IllegalStateException("storage has been deleted");
 
-                return new BufferedInputStream(new FileInputStream(file));
+                return new BufferedInputStream(Files.newInputStream(file));
             }
 
         }
