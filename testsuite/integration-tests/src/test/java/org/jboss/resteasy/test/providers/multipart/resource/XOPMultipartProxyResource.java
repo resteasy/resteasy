@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
@@ -28,7 +29,7 @@ public class XOPMultipartProxyResource implements XOPMultipartProxy {
 
     private XOPMultipartProxyGetFileResponse getResponse(String content) throws Exception {
         XOPMultipartProxyGetFileResponse response = new XOPMultipartProxyGetFileResponse();
-        File out = File.createTempFile("tmp", ".txt");
+        File out = Files.createTempFile("tmp", ".txt").toFile();
         out.deleteOnExit();
         try (FileWriter writer = new FileWriter(out)) {
             writer.write(content);
