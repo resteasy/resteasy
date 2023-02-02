@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test.response.resource;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -50,34 +51,32 @@ public class RangeResource {
     }
 
     private static File createFile() {
-        File file = null;
+        java.nio.file.Path file = null;
         try {
-            file = File.createTempFile("tmp", "tmp");
-            FileOutputStream fos = new FileOutputStream(file);
-            for (int i = 0; i < 1000; i++) {
-                fos.write("hello".getBytes());
+            file = Files.createTempFile("tmp", "tmp");
+            try (BufferedWriter writer = Files.newBufferedWriter(file)) {
+                for (int i = 0; i < 1000; i++) {
+                    writer.write("hello");
+                }
+                writer.write("1234");
             }
-            fos.write("1234".getBytes());
-            fos.flush();
-            fos.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return file;
+        return file.toFile();
     }
 
     private static File createSmallFile() {
-        File smallfile = null;
+        java.nio.file.Path smallfile = null;
         try {
-            smallfile = File.createTempFile("smalltmp", "tmp");
-            FileOutputStream fos = new FileOutputStream(smallfile);
-            fos.write("123456789".getBytes());
-            fos.flush();
-            fos.close();
+            smallfile = Files.createTempFile("smalltmp", "tmp");
+            try (BufferedWriter writer = Files.newBufferedWriter(smallfile)) {
+                writer.write("123456789");
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return smallfile;
+        return smallfile.toFile();
     }
 
 }
