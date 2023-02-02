@@ -5,14 +5,14 @@ package org.jboss.resteasy.plugins.providers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CompletionStage;
 
 import jakarta.activation.DataSource;
@@ -46,11 +46,16 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       private final byte[] byteBuffer;
       private final int byteBufferOffset;
       private final int byteBufferLength;
-      private final File tempFile;
+      private final Path tempFile;
       private final String type;
 
       protected SequencedDataSource(final byte[] byteBuffer, final int byteBufferOffset,
-                                    final int byteBufferLength, final File tempFile, final String type)
+                                    final int byteBufferLength, final File tempFile, final String type) {
+         this(byteBuffer, byteBufferOffset, byteBufferLength, tempFile.toPath(), type);
+      }
+
+      protected SequencedDataSource(final byte[] byteBuffer, final int byteBufferOffset,
+                                    final int byteBufferLength, final Path tempFile, final String type)
       {
          super();
          this.byteBuffer = byteBuffer;
@@ -72,9 +77,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          InputStream bis = new ByteArrayInputStream(byteBuffer, byteBufferOffset, byteBufferLength);
          if (tempFile == null)
             return bis;
-         @SuppressWarnings("resource")
-         InputStream fis = new FileInputStream(tempFile);
-         return new SequenceInputStream(bis, fis);
+         return new SequenceInputStream(bis, Files.newInputStream(tempFile));
       }
 
       @Override
@@ -103,27 +106,20 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       byte[] memoryBuffer = new byte[4096];
       int readCount = in.read(memoryBuffer, 0, memoryBuffer.length);
 
-      File tempFile = null;
+      Path tempFile = null;
       if (readCount > 0)
       {
          byte[] buffer = new byte[4096];
          int count = in.read(buffer, 0, buffer.length);
          if (count > -1) {
-            tempFile = File.createTempFile("resteasy-provider-datasource", null);
-            FileOutputStream fos = new FileOutputStream(tempFile);
-            Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
-            if (cleanables != null)
-            {
-               cleanables.addCleanable(new TempFileCleanable(tempFile));
-            }
-            fos.write(buffer, 0, count);
-            try
-            {
+            tempFile = Files.createTempFile("resteasy-provider-datasource", null);
+            try (OutputStream fos = Files.newOutputStream(tempFile)) {
+               Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
+               if (cleanables != null) {
+                  cleanables.addCleanable(new TempFileCleanable(tempFile));
+               }
+               fos.write(buffer, 0, count);
                ProviderHelper.writeTo(in, fos);
-            }
-            finally
-            {
-               fos.close();
             }
          }
       }
@@ -299,21 +295,15 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
    private static class TempFileCleanable implements Cleanable {
 
-      private File tempFile;
+      private final Path tempFile;
 
-      TempFileCleanable(final File tempFile) {
+      TempFileCleanable(final Path tempFile) {
          this.tempFile = tempFile;
       }
 
       @Override
       public void clean() throws Exception {
-         if(tempFile.exists())
-         {
-            if (!tempFile.delete()) //set delete on exit only if the file can't be deleted now
-            {
-               tempFile.deleteOnExit();
-            }
-         }
+         Files.deleteIfExists(tempFile);
       }
    }
 }
