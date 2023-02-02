@@ -1,16 +1,16 @@
 package org.jboss.resteasy.plugins.providers;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CompletionStage;
 
 import jakarta.ws.rs.Consumes;
@@ -59,12 +59,11 @@ public class FileProvider implements MessageBodyReader<File>,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
-        File downloadedFile = null;
+        Path downloadedFile = null;
 
         if (_downloadDirectory != null) {
             try {
-                downloadedFile = File.createTempFile(PREFIX, SUFFIX, new File(
-                        _downloadDirectory));
+                downloadedFile = Files.createTempFile(Path.of(_downloadDirectory), PREFIX, SUFFIX);
             } catch (final IOException ex) {
                 // could make this configurable, so we fail on fault rather than
                 // default.
@@ -73,27 +72,23 @@ public class FileProvider implements MessageBodyReader<File>,
         }
 
         if (downloadedFile == null)
-            downloadedFile = File.createTempFile(PREFIX, SUFFIX);
+            downloadedFile = Files.createTempFile(PREFIX, SUFFIX);
 
         Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
         if (cleanables != null) {
             cleanables.addCleanable(new FileHolder(downloadedFile));
         } else {
-            LogMessages.LOGGER.temporaryFileCreated(downloadedFile.getPath());
+            LogMessages.LOGGER.temporaryFileCreated(downloadedFile.toString());
         }
 
         if (NoContent.isContentLengthZero(httpHeaders))
-            return downloadedFile;
-        OutputStream output = new BufferedOutputStream(new FileOutputStream(
-                downloadedFile));
+            return downloadedFile.toFile();
 
-        try {
+        try (OutputStream output = Files.newOutputStream(downloadedFile)) {
             ProviderHelper.writeTo(entityStream, output);
-        } finally {
-            output.close();
         }
 
-        return downloadedFile;
+        return downloadedFile.toFile();
     }
 
     public boolean isWriteable(Class<?> type, Type genericType,
@@ -258,15 +253,15 @@ public class FileProvider implements MessageBodyReader<File>,
     }
 
     private static class FileHolder implements Cleanable {
-        File file;
+        final Path file;
 
-        FileHolder(final File file) {
+        FileHolder(final Path file) {
             this.file = file;
         }
 
         @Override
         public void clean() throws Exception {
-            file.delete();
+            Files.deleteIfExists(file);
         }
     }
 }
