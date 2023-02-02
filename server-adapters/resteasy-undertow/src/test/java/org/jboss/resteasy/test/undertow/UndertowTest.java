@@ -20,6 +20,7 @@ import javax.ws.rs.core.Application;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -102,7 +103,7 @@ public class UndertowTest
    @Test
    public void testAddResourcePrefixPath() throws Exception
    {
-      File staticFile = File.createTempFile("tmp", "index.html");
+      File staticFile = Files.createTempFile("tmp", "index.html").toFile();
       staticFile.deleteOnExit();
       BufferedWriter writer = new BufferedWriter( new FileWriter( staticFile ) );
       final String staticFileContent = "Hello static world!";
