@@ -39,6 +39,16 @@
           ~ +++++++   KEEP THIS LIST ALPHABETICAL BY MODULE NAME!   +++++++
           ~ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
           -->
+        <!-- This is required for RESTEASY-3282. Normally this would not be done in a micro release, but we need a CVE fix. -->
+        <module-def name="org.apache.commons.io">
+            <maven-resource group="commons-io" artifact="commons-io"/>
+        </module-def>
+        <module-def name="org.apache.james.mime4j">
+            <maven-resource group="org.apache.james" artifact="apache-mime4j-core"/>
+            <maven-resource group="org.apache.james" artifact="apache-mime4j-dom"/>
+            <maven-resource group="org.apache.james" artifact="apache-mime4j-storage"/>
+        </module-def>
+
         <module-def name="org.codehaus.jackson.jackson-core-asl">
             <maven-resource group="org.codehaus.jackson" artifact="jackson-core-asl"/>
         </module-def>
