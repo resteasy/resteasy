@@ -16,7 +16,6 @@
     <name>RESTEasy Main testsuite: Spring integration tests</name>
 
     <properties>
-        <version.org.springframework>5.3.7</version.org.springframework>
         <version.org.aspectj>1.7.3</version.org.aspectj>
         <version.aopalliance>1.0</version.aopalliance>
     </properties>
