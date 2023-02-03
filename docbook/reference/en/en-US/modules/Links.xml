@@ -52,7 +52,7 @@
 					<tr>
 						<td>org.jboss.resteasy</td>
 						<td>resteasy-links</td>
-						<td>3.15.5-SNAPSHOT</td>
+						<td>3.15.5.Final</td>
 					</tr>
 				</tbody>
 			</table>
