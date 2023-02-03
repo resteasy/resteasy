@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
  * does not have a Java method that supports OPTIONS.  RESTEasy provides a default behavior for OPTIONS.
  * If you want to override this behavior, write an exception mapper for this exception.
  */
+@Deprecated
 public class DefaultOptionsMethodException extends Failure
 {
    public DefaultOptionsMethodException(final String s, final Response response)
