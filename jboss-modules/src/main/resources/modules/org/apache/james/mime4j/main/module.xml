@@ -27,6 +27,7 @@
     </resources>
 
     <dependencies>
+        <module name="org.apache.commons.io"/>
         <module name="org.apache.commons.logging"/>
     </dependencies>
 </module>
