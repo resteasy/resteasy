@@ -20,7 +20,7 @@ on:
       - "mvnw"
       - "mvnw.cmd"
       - "README.md"
-      - "security.txt"
+      - "SECURITY.md"
       - "*/README.MD"
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
