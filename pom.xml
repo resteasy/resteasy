@@ -475,19 +475,6 @@
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>format-resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                            <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>net.revelc.code</groupId>
