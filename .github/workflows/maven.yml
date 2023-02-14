@@ -23,7 +23,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['11', '17']
-        wildfly-version: ['27.0.0.Final']
+        wildfly-version: ['27.0.1.Final']
 
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +56,7 @@ jobs:
       fail-fast: false
       matrix:
         java: ['11']
-        wildfly-version: ['27.0.0.Final']
+        wildfly-version: ['27.0.1.Final']
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
