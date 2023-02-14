@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
- * @tpSince RESTEasy 6.2.2.Final
+ * @tpSince RESTEasy 6.2.3.Final-SNAPSHOT
  * (RESTEASY-567) Verify that PUT and POST endpoints with preceding ContainerRequestFilter
  * pass the FormParam data.
  */
