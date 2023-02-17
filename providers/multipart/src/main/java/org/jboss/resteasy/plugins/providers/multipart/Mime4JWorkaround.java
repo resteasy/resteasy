@@ -143,7 +143,8 @@ public class Mime4JWorkaround {
 
         public StorageOutputStream createStorageOutputStream() throws IOException
         {
-            return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory.toPath()));
+            return new TempFileStorageOutputStream(createTempFile(prefix, suffix,
+                directory != null ? directory.toPath() : null));
         }
 
         private static Path createTempFile(String prefix, String suffix, Path directory) throws IOException
@@ -152,8 +153,13 @@ public class Mime4JWorkaround {
             if (java2SecurityEnabled)
             {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<Path>) () ->
-                        Files.createTempFile(directory, prefix, suffix));
+                    return AccessController.doPrivileged((PrivilegedExceptionAction<Path>) () -> {
+                        if (directory != null) {
+                            return Files.createTempFile(directory, prefix, suffix);
+                        } else {
+                            return Files.createTempFile(prefix, suffix);
+                        }
+                    });
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
                     if (cause instanceof IOException)
@@ -162,7 +168,12 @@ public class Mime4JWorkaround {
                     } else throw new RuntimeException(cause);
                 }
             }
-            return Files.createTempFile(directory, prefix, suffix);
+
+            if (directory != null) {
+                return Files.createTempFile(directory, prefix, suffix);
+            } else {
+                return Files.createTempFile(prefix, suffix);
+            }
         }
 
         private static OutputStream createFileOutputStream(final Path file) throws IOException
