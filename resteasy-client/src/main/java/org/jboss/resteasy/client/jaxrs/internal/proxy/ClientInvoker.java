@@ -1,16 +1,12 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.RxInvoker;
 import jakarta.ws.rs.client.RxInvokerProvider;
@@ -142,29 +138,11 @@ public class ClientInvoker implements MethodInvoker {
 
     protected ClientInvocation createRequest(Object[] args) {
         WebTarget target = this.webTarget;
+        for (int i = 0; i < processors.length; i++) {
+            if (processors != null && processors[i] instanceof WebTargetProcessor) {
+                WebTargetProcessor processor = (WebTargetProcessor) processors[i];
+                target = processor.build(target, args[i]);
 
-        final Map<String, Object> pathParamsMap = new HashMap<>();
-
-        for (int i = 0; i < method.getParameterTypes().length; i++) {
-            Annotation[] paramAnnotations = method.getParameterAnnotations()[i];
-            for (Annotation annotation : paramAnnotations) {
-                if (annotation instanceof PathParam) {
-                    pathParamsMap.put(((PathParam) annotation).value(), args[i]);
-                    break;
-                }
-            }
-        }
-
-        if (pathParamsMap.size() > 1) {
-            target = target.resolveTemplates(pathParamsMap);
-        }
-
-        if (processors != null) {
-            for (int i = 0; i < processors.length; i++) {
-                if (processors[i] instanceof WebTargetProcessor) {
-                    WebTargetProcessor processor = (WebTargetProcessor) processors[i];
-                    target = processor.build(target, args[i]);
-                }
             }
         }
         ClientInvocationBuilder builder = (ClientInvocationBuilder) target.request();
@@ -177,12 +155,11 @@ public class ClientInvoker implements MethodInvoker {
         if (accepts != null) {
             clientInvocation.getHeaders().accept(accepts);
         }
-        if (processors != null) {
-            for (int i = 0; i < processors.length; i++) {
-                if (processors[i] instanceof InvocationProcessor) {
-                    InvocationProcessor processor = (InvocationProcessor) processors[i];
-                    processor.process(clientInvocation, args[i]);
-                }
+        for (int i = 0; i < processors.length; i++) {
+            if (processors != null && processors[i] instanceof InvocationProcessor) {
+                InvocationProcessor processor = (InvocationProcessor) processors[i];
+                processor.process(clientInvocation, args[i]);
+
             }
         }
         return clientInvocation;
