@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -143,7 +142,7 @@ public class ClientInvoker implements MethodInvoker {
     protected ClientInvocation createRequest(Object[] args) {
         WebTarget target = this.webTarget;
 
-        final Map<String, Object> pathParamsMap = new HashMap<>();
+        HashMap<String, Object> pathParamsMap = new HashMap<>();
 
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Annotation[] paramAnnotations = method.getParameterAnnotations()[i];
