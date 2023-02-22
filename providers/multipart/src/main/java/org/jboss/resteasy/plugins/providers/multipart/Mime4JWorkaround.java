@@ -131,7 +131,12 @@ class Mime4JWorkaround {
         }
 
         public StorageOutputStream createStorageOutputStream() throws IOException {
-            Path file = Files.createTempFile(directory.toPath(), prefix, suffix);
+            Path file;
+            if (directory != null) {
+                file = Files.createTempFile(directory.toPath(), prefix, suffix);
+            } else {
+                file = Files.createTempFile(prefix, suffix);
+            }
 
             return new TempFileStorageOutputStream(file);
         }
