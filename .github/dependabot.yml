@@ -33,9 +33,9 @@ updates:
     target-branch: 6.2
     schedule:
       interval: "daily"
-    allow:
+    ignore:
       - dependency-name: '*:*'
-        update-types: ['version-update:semver-patch']
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
@@ -50,9 +50,9 @@ updates:
     target-branch: 5.0
     schedule:
       interval: "daily"
-    allow:
+    ignore:
       - dependency-name: '*:*'
-        update-types: ['version-update:semver-patch']
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
