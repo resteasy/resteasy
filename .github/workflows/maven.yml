@@ -49,12 +49,12 @@ jobs:
           echo "::group::Build Logs"
           mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Djava8.home=%JAVA_HOME_8_X64%"'
           echo "::endgroup::"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/*.txt'
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
@@ -101,12 +101,12 @@ jobs:
           echo "::group::Build Logs"
           mvn clean install -U -B -fae -rf ':resteasy-testsuite' '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Dtest.java8.home=%JAVA_HOME_8_X64%"'
           echo "::endgroup::"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/*.txt'
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
