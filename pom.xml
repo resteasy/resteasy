@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <dep.arquillian-bom.version>1.7.0.Alpha14</dep.arquillian-bom.version>
-        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <server.version>27.0.1.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.0.Alpha6</version.org.wildfly.arquillian.wildfly-arquillian>
