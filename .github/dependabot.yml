@@ -30,7 +30,7 @@ updates:
   # 6.2 branch
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: 6.2
+    target-branch: "6.2"
     schedule:
       interval: "daily"
     ignore:
@@ -41,13 +41,13 @@ updates:
     # Workflow files stored in the
     # default location of `.github/workflows`
     directory: "/"
-    target-branch: 6.2
+    target-branch: "6.2"
     schedule:
       interval: "daily"
   # 5.0 branch
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: 5.0
+    target-branch: "5.0"
     schedule:
       interval: "daily"
     ignore:
@@ -58,6 +58,6 @@ updates:
     # Workflow files stored in the
     # default location of `.github/workflows`
     directory: "/"
-    target-branch: 5.0
+    target-branch: "5.0"
     schedule:
       interval: "daily"
