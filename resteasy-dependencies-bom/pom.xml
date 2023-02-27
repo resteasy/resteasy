@@ -83,7 +83,7 @@
         <version.com.github.java-json-tools.msg-simple>1.2</version.com.github.java-json-tools.msg-simple>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
-        <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
+        <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
         <version.org.hibernate.validator>6.2.0.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
