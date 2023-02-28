@@ -5,7 +5,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>3.15.5-SNAPSHOT</version>
+        <version>3.15.6.Final</version>
     </parent>
 
     <artifactId>eagledns-fork</artifactId>
