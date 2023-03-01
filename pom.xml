@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
-        <dep.arquillian-bom.version>1.7.0.Alpha10</dep.arquillian-bom.version>
+        <dep.arquillian-bom.version>1.7.0.Alpha14</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.1.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
         <server.version>25.0.1.Final</server.version>
@@ -52,7 +52,7 @@
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.org.jboss.galleon>4.2.9.Final</version.org.jboss.galleon>
-        <version.org.wildfly.galleon-plugins>5.2.2.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>5.2.11.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>2.1.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
         <!-- Test options -->

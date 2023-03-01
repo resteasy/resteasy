@@ -21,7 +21,7 @@
         <version.com.google.guava>30.1.1-jre</version.com.google.guava>
         <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
-        <version.jakarta.mail>1.6.5</version.jakarta.mail>
+        <version.jakarta.mail>1.6.7</version.jakarta.mail>
         <version.org.glassfish.jaxb.jaxb>2.3.3-b02</version.org.glassfish.jaxb.jaxb>
         <version.com.sun.xml.fastinfoset>1.2.18</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.9.0</version.commons-io.commons-io>
@@ -36,13 +36,13 @@
         <version.jakarta.json-api>1.1.6</version.jakarta.json-api>
         <version.jakarta.json.bind-api>1.0.2</version.jakarta.json.bind-api>
         <version.jakarta.validation-api>2.0.2</version.jakarta.validation-api>
-        <version.javax.ws.rs-api>2.0.1.Final</version.javax.ws.rs-api>
+        <version.javax.ws.rs-api>2.0.2.Final</version.javax.ws.rs-api>
         <version.junit>4.13.2</version.junit>
         <version.log4j>2.13.3</version.log4j>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.14</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.16</version.org.apache.httpcomponents.httpcore>
-        <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
+        <version.org.apache.httpcomponents.httpasyncclient>4.1.5</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.8.9</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
         <version.org.bouncycastle>1.69</version.org.bouncycastle>
