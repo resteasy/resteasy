@@ -8,7 +8,7 @@
         project, group id and version. The new group id is <code>org.jboss.resteasy.spring</code>. Currently the
         artifact id's have not changed.
     </para>
-    <para>RESTEasy currently supports Spring version _SPRING_VER_</para>
+    <para>RESTEasy currently supports Spring version 5.3</para>
     <section id="BasicIntegration">
         <title>Basic Integration</title>
         <para>For Maven users, you must use the <code>org.jboss.resteasy.spring:resteasy-spring</code> artifact. And here is the dependency you
