@@ -241,7 +241,7 @@
             <dependency>
                 <groupId>com.sun.xml.stream</groupId>
                 <artifactId>sjsxp</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.2</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
             one. A newer is brought in by org.glassfish.jaxb -->
