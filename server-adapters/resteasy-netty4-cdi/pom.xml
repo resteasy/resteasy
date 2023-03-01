@@ -12,9 +12,6 @@
     <artifactId>resteasy-netty4-cdi</artifactId>
     <name>RESTEasy Netty 4 Integration w/ CDI Support</name>
     <description/>
-    <properties>
-        <dep.arq.weld.se>3.0.2.Final</dep.arq.weld.se>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -87,7 +84,7 @@
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-weld-embedded</artifactId>
-            <version>${dep.arq.weld.se}</version>
+            <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jboss.weld</groupId>
