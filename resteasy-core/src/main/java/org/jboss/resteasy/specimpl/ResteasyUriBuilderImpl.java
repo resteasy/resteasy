@@ -179,18 +179,36 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
                 this.host = host;
             }
         }
-        if (match.group(5) != null) {
-            String group = match.group(5);
+
+        HashMap<String, String> pathComponentsMap;
+        if (match.group(6) == null && match.group(8) == null) {
+            pathComponentsMap = new HashMap<>();
+            pathComponentsMap.put("path", match.group(5).toString());
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(match.group(5) == null ? "" : match.group(5));
+            sb.append(match.group(6) == null ? "" : match.group(6));
+            sb.append(match.group(8) == null ? "" : match.group(8));
+            pathComponentsMap = pathSegementParser(sb.toString());
+        }
+
+        if (pathComponentsMap.get("path") != null) {
+            String group = pathComponentsMap.get("path");
             if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1 &&
                     group.indexOf('/') > -1 && group.indexOf(':') < group.indexOf('/'))
                 throw new IllegalArgumentException(Messages.MESSAGES.illegalUriTemplate(uriTemplate));
             if (!"".equals(group))
                 replacePath(group);
         }
-        if (match.group(7) != null)
-            replaceQuery(match.group(7));
-        if (match.group(9) != null)
-            fragment(match.group(9));
+
+        if (pathComponentsMap.get("query") != null) {
+            replaceQuery(pathComponentsMap.get("query"));
+        }
+
+        if (pathComponentsMap.get("fragment") != null) {
+            fragment(pathComponentsMap.get("fragment"));
+        }
+
         return this;
     }
 
@@ -607,6 +625,8 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
             }
             Object value = paramMap.get(param);
             String stringValue = value != null ? value.toString() : null;
+            String regexValue = regexEval(string, stringValue, param);
+            stringValue = regexValue;
             if (stringValue != null) {
                 if (!fromEncodedMap) {
                     if (encodeSlash)
@@ -1087,5 +1107,241 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
         if (templateValues.containsKey(null))
             throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
         return uriTemplate(buildCharSequence(templateValues, true, true, true));
+    }
+
+    /**
+     * The URI spec rfc3986, section 3.4 Query notes it may not be possible,
+     * "to distinguish query data from path data when looking for hierarchical separators."
+     * (e.g. http://http://127.0.0.1:8080/something/{string:[a-z]?}/cust?q={"status":"GOLD"})
+     * Parsing the uri and differentiating the regex expression "{string:[a-z]?}" from
+     * the query expression "cust?q={"status":"GOLD"}" is difficult. This method performs
+     * extra processing to identify path regex expressions from query expressions and
+     * encode them as appropriate.
+     *
+     * @param group5 uri path after "http://host:port/
+     * @param group6 proposed query text from "?" designator and following text
+     * @param group7 proposed query text following "?"
+     */
+    /*
+     * rls
+     * private void processRegexVsQueryText(String group5, String group6, String group7) {
+     *
+     * String tmpGroup5 = group5;
+     * String tmpGroup6 = group6;
+     *
+     * if (group5 != null && group6 != null) {
+     * int posBracketClose = group6.indexOf("}");
+     * if (posBracketClose > -1) {
+     * int posSlash = group5.lastIndexOf("/");
+     * if (group5.regionMatches(posSlash + 1, "{", 0, 1)) {
+     * tmpGroup5 = group5 + group6.substring(0, posBracketClose + 1);
+     * String tmpTmpGroup6 = group6.substring(posBracketClose + 1);
+     *
+     * int posQmark = tmpTmpGroup6.indexOf("?");
+     * if (posQmark != -1) {
+     * tmpGroup6 = tmpTmpGroup6.substring(posQmark + 1);
+     * } else {
+     * tmpGroup6 = "";
+     * }
+     * } else {
+     * tmpGroup6 = group7;
+     * }
+     * } else {
+     * tmpGroup6 = group7;
+     * }
+     * }
+     *
+     * if (tmpGroup5 != null && !tmpGroup5.isEmpty()) {
+     * replacePath(tmpGroup5);
+     * }
+     *
+     * if (tmpGroup6 != null && !tmpGroup6.isEmpty()) {
+     * replaceQuery(tmpGroup6);
+     * }
+     * }
+     * rls
+     */
+    /**
+     * A regex expression can be provided as part of a path parameter
+     * (e.g. http://host:port/book/{string:[a-z]?[1-9]+}). This method
+     * extracts the regex expression and applies it to the srcStringValue
+     * and returns the resulting value
+     *
+     * @param srcSegment     the path text segment to be processed
+     * @param srcStringValue the value provided by the users
+     * @param param          the name associated with the path parameter
+     * @return the result of applying the regex expression to the srcStringValue
+     */
+    private String regexEval(String srcSegment, String srcStringValue, String param) {
+        Matcher matcher = Pattern.compile("\\{[^/\\$]*").matcher(srcSegment);
+
+        // check for regex text something like {someVar: (regex_text)+}
+        if (matcher.find()) {
+            String group = matcher.group();
+            if (group != null && !group.isEmpty()) {
+                if (group.indexOf(":") != -1 && group.startsWith("{") && group.endsWith("}")) {
+                    // extract the regex text and use pattern to eval user param input
+                    String regexText = group.substring(group.indexOf(":") + 1, (group.length() - 1)).trim();
+                    Matcher regexMatch = Pattern.compile(regexText).matcher(srcStringValue);
+                    if (regexMatch.matches()) {
+                        return srcStringValue;
+                    } else {
+                        throw new IllegalArgumentException(Messages.MESSAGES.regexPathParameterResultEmpty(param, regexText));
+                    }
+                }
+            }
+        }
+        return srcStringValue;
+    }
+
+    /**
+     * [rfc3986] The URI path component starts after the authority component
+     * and is terminated by the first question mark ("?"), number sign ("#"), or
+     * end-of-line.
+     *
+     * This method focuses on separating the path component from the query and
+     * fragment components.
+     *
+     * @param uriTemplate all text after the authority component
+     * @return a map that contains key/value pairs for path, query and fragment
+     */
+    public HashMap<String, String> pathSegementParser(CharSequence uriTemplate) {
+        HashMap<String, String> pathComponentsMap = new HashMap<>();
+
+        // check for a fragment text
+        String[] fragmentComponentParts = fragmentComponentParser(uriTemplate.toString());
+        if (fragmentComponentParts[0] != null) {
+            pathComponentsMap.put("fragment", fragmentComponentParts[0]);
+        }
+        // check for query text
+        String[] queryComponentParts = queryComponentParser(fragmentComponentParts[1]);
+        if (queryComponentParts[0] != null) {
+            pathComponentsMap.put("query", queryComponentParts[0]);
+        }
+        pathComponentsMap.put("path", queryComponentParts[1]);
+        return pathComponentsMap;
+    }
+
+    /**
+     * [rfc3986] A fragment identifier component is indicated by the presence of a
+     * number sign ("#") character and terminated by the end of the URI.
+     * The characters slash ("/") and question mark ("?") are allowed to
+     * represent data within the fragment identifier.
+     *
+     * This method strips off the fragment part when found and passes the remaining
+     * path for query text evaluation.
+     *
+     * @param pathParamText all text after the authority component
+     * @return 2 dimensional array is returned. [0] is the fragment text. [1] is the
+     *         remaining path text
+     */
+    private String[] fragmentComponentParser(String pathParamText) {
+        String[] componentParts = new String[2];
+        componentParts[1] = pathParamText;
+        // check for a fragment at the end of the line
+        int poundCharLoc = pathParamText.lastIndexOf("#");
+        if (poundCharLoc > -1) {
+            if (!isPathParamWithRegex(pathParamText, poundCharLoc)) {
+                String frag = pathParamText.substring(poundCharLoc + 1, pathParamText.length());
+                if (frag.length() > 1) {
+                    componentParts[0] = frag;
+                }
+                componentParts[1] = pathParamText.substring(0, poundCharLoc);
+            }
+        }
+        return componentParts;
+    }
+
+    /**
+     * [rfc3986] The query component is indicated by the first question
+     * mark ("?") character and terminated by a number sign ("#") character
+     * or by the end of the URI. The characters slash ("/") and question
+     * mark ("?") may represent data within the query component.
+     *
+     * This method strips off the query text when found from the path text.
+     *
+     * @param pathParamText all text after the authority component
+     * @return 2 dimensional array is returned. [0] is the query text. [1] is the
+     *         remaining path text
+     */
+    private String[] queryComponentParser(String pathParamText) {
+        String[] componentParts = new String[2];
+        componentParts[1] = pathParamText;
+        // check for query string
+        Matcher matcher = Pattern.compile("[^\\?]*\\?").matcher(pathParamText);
+        int cnt = 0;
+        int[] questionMarkLoc = new int[10];
+        while (matcher.find()) {
+            questionMarkLoc[cnt++] = matcher.end();
+        }
+
+        if (cnt > 0) {
+            // evaluate text around ? determine if query or pathParam text
+            for (int i = 0; i < cnt; i++) {
+                if (!isPathParamWithRegex(pathParamText, questionMarkLoc[i])) {
+                    String queryText = pathParamText.substring(questionMarkLoc[i], pathParamText.length());
+                    if (!queryText.isEmpty()) {
+                        componentParts[0] = queryText;
+                    }
+                    componentParts[1] = pathParamText.substring(0, questionMarkLoc[i] - 1);
+                    break;
+                }
+            }
+        }
+        return componentParts;
+    }
+
+    /**
+     * JAXRS allows a pathParam to declare a regex. This is problematic because
+     * query text and fragment text can both contain "?", "#" and "/" as can
+     * regex text.
+     * (e.g. http://localhost:8080/a/b/{row:[a-z?]+}/c
+     *
+     * @GET
+     *      @Produces("text/plain")
+     *      @Path("/{row:[a-z?]+}/c")
+     *      String getRow(@PathParam("row") String row);
+     *      )
+     *
+     *      This method evaluates the text for such regex
+     *
+     * @param pathParamText the path to be evaluated
+     * @param refCharLoc    the special character (e.g. "?", "#") to reference
+     * @return true when pathParam regex text identified, False otherwise
+     */
+    private boolean isPathParamWithRegex(String pathParamText, int refCharLoc) {
+        boolean isPathParamRegexText = false;
+
+        // step 1.  find the 1st preceding "/". It marks the beginning of the sub path
+        int lookBehindLoc = pathParamText.lastIndexOf("/", refCharLoc);
+        if (lookBehindLoc > -1) {
+            // step 2. find the 1st following "}/" or "}"end-of-line. It marks the
+            // end of a pathParam.
+            int lookAheadLoc = pathParamText.indexOf("}/", refCharLoc);
+            if (lookAheadLoc == -1) {
+                lookAheadLoc = pathParamText.indexOf("}", refCharLoc);
+                if (lookAheadLoc == -1) {
+                    return isPathParamRegexText;
+                } else {
+                    lookAheadLoc += 1; // include "}" end-of-line in following text eval
+                }
+            } else {
+                lookAheadLoc += 2; // include "}/" in follow text eval
+            }
+
+            // step 3. Determine if the substring meets the format of a pathParam with
+            //   regex expression (e.g.  /{string:[0-9?]*} )
+            if (lookBehindLoc > -1 && lookAheadLoc > -1) {
+                String possiblePathParamText = pathParamText.substring(lookBehindLoc, lookAheadLoc);
+                // pattern eval text
+                Matcher pmatcher = Pattern.compile("^(/\\{([^:]+):.*\\}[/]?)?")
+                        .matcher(possiblePathParamText);
+                if (pmatcher.matches()) {
+                    // this is path param regex text
+                    isPathParamRegexText = true;
+                }
+            }
+        }
+        return isPathParamRegexText;
     }
 }

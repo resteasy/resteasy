@@ -103,7 +103,7 @@ public class UriBuilderTest {
             builder = UriBuilder.fromUri("{id: [0-9]+}");
             Assert.assertEquals(new URI("123"), builder.build("123"));
 
-            builder = UriBuilder.fromUri("{id: [0-9]+}");
+            builder = UriBuilder.fromUri("{id: [a-z]+}");
             Assert.assertEquals(new URI("abcd"), builder.build("abcd"));
 
             builder = UriBuilder.fromUri("/resources/{id: [0-9]+}");
@@ -186,10 +186,10 @@ public class UriBuilderTest {
         {
             URI bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").replaceMatrix("x=a;y=b").build();
             Assert.assertEquals(ERROR_MSG, URI.create("http://localhost:8080/a/b/c;x=a;y=b"), bu);
-            UriBuilder builder = UriBuilder.fromUri("http://localhost:8080/a").path("/{b:A{0:10}}/c;a=x;b=y");
+            UriBuilder builder = UriBuilder.fromUri("http://localhost:8080/a").path("/{b:B{0,10}}/c;a=x;b=y");
             builder.replaceMatrixParam("a", "1", "2");
-            bu = builder.build("b");
-            Assert.assertEquals(ERROR_MSG, URI.create("http://localhost:8080/a/b/c;b=y;a=1;a=2"), bu);
+            bu = builder.build("B");
+            Assert.assertEquals(ERROR_MSG, URI.create("http://localhost:8080/a/B/c;b=y;a=1;a=2"), bu);
 
             // test removal
 
