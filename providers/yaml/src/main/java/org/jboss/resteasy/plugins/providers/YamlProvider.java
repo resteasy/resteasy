@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
@@ -100,7 +101,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             }
             return new Yaml(constructor).loadAs(entityStream, type);
          } else {
-            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type, getClassLoader(type));
+            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type, getClassLoader(type), new LoaderOptions());
             return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
          }
       } catch (Exception e) {
@@ -230,7 +231,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
 
       private TypeSafeConstructor(final ParameterizedType parameterizedType, final ClassLoader classLoader,
                                   final Pattern allowedPattern) {
-         super(classLoader);
+         super(classLoader, new LoaderOptions());
          this.allowedPattern = allowedPattern;
          final Set<Class<?>> genericTypes = new HashSet<>();
          for (Type typeArg : parameterizedType.getActualTypeArguments()) {
@@ -245,7 +246,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
 
       private TypeSafeConstructor(final Class<?> type, final ClassLoader classLoader,
                                   final Pattern allowedPattern) {
-         super(classLoader);
+         super(classLoader, new LoaderOptions());
          this.types = Collections.singleton(type);
          this.allowedPattern = allowedPattern;
       }
