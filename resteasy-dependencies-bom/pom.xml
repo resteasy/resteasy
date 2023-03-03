@@ -87,7 +87,7 @@
         <version.org.hibernate.validator>6.2.0.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.13.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
-        <version.io.projectreactor>2020.0.8</version.io.projectreactor>
+        <version.io.projectreactor>2020.0.29</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
