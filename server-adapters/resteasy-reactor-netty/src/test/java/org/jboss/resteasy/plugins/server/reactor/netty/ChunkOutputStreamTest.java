@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
@@ -324,6 +325,51 @@ public class ChunkOutputStreamTest {
         @Override
         public HttpVersion version() {
             return null;
+        }
+
+        @Override
+        public HttpServerResponse trailerHeaders(final Consumer<? super HttpHeaders> trailerHeaders) {
+            return null;
+        }
+
+        @Override
+        public SocketAddress hostAddress() {
+            return null;
+        }
+
+        @Override
+        public SocketAddress connectionHostAddress() {
+            return null;
+        }
+
+        @Override
+        public SocketAddress remoteAddress() {
+            return null;
+        }
+
+        @Override
+        public SocketAddress connectionRemoteAddress() {
+            return null;
+        }
+
+        @Override
+        public String scheme() {
+            return null;
+        }
+
+        @Override
+        public String connectionScheme() {
+            return null;
+        }
+
+        @Override
+        public String hostName() {
+            return null;
+        }
+
+        @Override
+        public int hostPort() {
+            return 0;
         }
     }
 
