@@ -82,7 +82,7 @@ public class HeadersLowerCasedTest {
             try (PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 out.printf("GET %s HTTP/1.1\r\n", path);
-                out.print("Host: \r\n");
+                out.print(String.format("Host: %s\r\n", TestPortProvider.getHost()));
                 out.print("Connection: close\r\n");
                 out.print("DUMMY-KEY: dummyValue\r\n");
                 out.print("\r\n");

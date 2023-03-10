@@ -25,6 +25,7 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import reactor.netty.http.server.HttpServerRequest;
@@ -69,6 +70,7 @@ public class UriInfoTest {
     }
 
     @Test
+    @Ignore("https://github.com/reactor/reactor-netty/issues/2723")
     public void testEmptyStringHostHeader() throws Exception {
         final Map<String, String> additionalHeaders = new HashMap<>();
         additionalHeaders.put("Host", "");
@@ -76,6 +78,7 @@ public class UriInfoTest {
     }
 
     @Test
+    @Ignore("https://github.com/reactor/reactor-netty/issues/2723")
     public void testOnlySpacesHostHeader() throws Exception {
         final Map<String, String> additionalHeaders = new HashMap<>();
         additionalHeaders.put("Host", "                  ");

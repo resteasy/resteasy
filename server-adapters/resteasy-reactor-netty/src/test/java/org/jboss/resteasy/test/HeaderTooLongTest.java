@@ -71,9 +71,6 @@ public class HeaderTooLongTest {
         //              .tcpConfiguration(this::configure)
         //              .port(configuredPort)
         //              .httpRequestDecoder(spec -> spec.maxHeaderSize(Integer.MAX_VALUE));
-        //
-        // The problem though..  Shouldn't it be 431 (Request Header Fields Too Large)
-        // instead of 413 (Payload Too Large)?
-        Assert.assertEquals(413, response.getStatus());
+        Assert.assertEquals(431, response.getStatus());
     }
 }

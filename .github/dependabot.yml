@@ -34,6 +34,7 @@ updates:
     schedule:
       interval: "daily"
     ignore:
+      - dependency-name: 'io.projectreactor:*'
       - dependency-name: '*:*'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
     open-pull-requests-limit: 10
@@ -51,6 +52,7 @@ updates:
     schedule:
       interval: "daily"
     ignore:
+      - dependency-name: 'io.projectreactor:*'
       - dependency-name: '*:*'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
     open-pull-requests-limit: 10

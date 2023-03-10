@@ -166,8 +166,8 @@ public class ReactorTest {
                 .flatMap(
                         resp1 -> getFn.get()
                                 .flatMap(resp2 -> getFn.get().map(resp3 -> String.join("-", Arrays.asList(resp1, resp2, resp3)))
-                                        .subscriberContext(Context.of(ctxKey, 24))))
-                .subscriberContext(ctx -> ctx.put(ctxKey, 42));
+                                        .contextWrite(Context.of(ctxKey, 24))))
+                .contextWrite(ctx -> ctx.put(ctxKey, 42));
 
         assertThat(mono.block(), equalTo("got it-got it-got it"));
         assertThat(secrets, equalTo(Arrays.asList(42, 42, 24)));
