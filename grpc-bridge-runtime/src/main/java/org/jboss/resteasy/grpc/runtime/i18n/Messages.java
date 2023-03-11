@@ -30,25 +30,28 @@ public interface Messages
    @Message(id = 21520, value = "Cannot call getOutputStream(), getWriter() already called")
    IllegalStateException getWriterAlreadyCalled();
 
-   @Message(id = 21525, value = "Header name was null")
+   @Message(id = 21525, value = "Cannot get ServletContext")
+   IllegalStateException cantGetServletContext();
+
+   @Message(id = 21530, value = "Header name was null")
    NullPointerException headerNameWasNull();
 
-   @Message(id = 21530, value = "Header %s cannot be converted to a date")
+   @Message(id = 21535, value = "Header %s cannot be converted to a date")
    IllegalArgumentException headerCannotBeConvertedToDate(String header);
 
-   @Message(id = 21535, value = "InputStream already returned")
+   @Message(id = 21540, value = "InputStream already returned")
    String inputStreamAlreadyReturned();
 
-   @Message(id = 21540, value = "Method %s is not implemented")
+   @Message(id = 21545, value = "Method %s is not implemented")
    String isNotImplemented(String method);
 
-   @Message(id = 21545, value = "Reader already returned")
+   @Message(id = 21550, value = "Reader already returned")
    IllegalArgumentException readerAlreadyReturned();
 
-   @Message(id = 21550, value = "Request %s was not original or a wrapper")
+   @Message(id = 21555, value = "Request %s was not original or a wrapper")
    IllegalArgumentException requestWasNotOriginalOrWrapper(ServletRequest request);
 
-   @Message(id = 21555, value = "Response %s was not original or a wrapper")
+   @Message(id = 21560, value = "Response %s was not original or a wrapper")
    IllegalArgumentException responseWasNotOriginalOrWrapper(ServletResponse response);
 
 }

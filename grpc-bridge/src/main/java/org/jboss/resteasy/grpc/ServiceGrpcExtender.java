@@ -25,14 +25,16 @@ public class ServiceGrpcExtender {
    private String serviceName = "";
    private String servletName = "";
    private Set<String> imports = new HashSet<String>();
-
+   private String artifactIdVersion;
+   
    public static void main(String[] args) {
-      if (args == null || (args.length != 3 && args.length != 4)) {
-         logger.info("need three or four args:");
+      if (args == null || (args.length != 4 && args.length != 5)) {
+         logger.info("need four or five args:");
          logger.info("  arg[0]: .proto file prefix");
          logger.info("  arg[1]: servlet name");
          logger.info("  arg[2]: package of generated sources");
-         logger.info("  arg[3]: in WildFly (optional)");
+         logger.info("  arg[3]  artifactId-version");
+         logger.info("  arg[4]: in WildFly (optional)");
          return;
       }
       new ServiceGrpcExtender(args);
@@ -41,8 +43,9 @@ public class ServiceGrpcExtender {
    public ServiceGrpcExtender(final String[] args) {
       servletName = args[1];
       if (args != null && args.length == 4) {
-         inWildFly = !"false".equals(args[3]);
+         inWildFly = !"false".equals(args[4]);
       }
+      artifactIdVersion = args[3];
       parse(args[0], args[2]);
    }
 
@@ -124,6 +127,10 @@ public class ServiceGrpcExtender {
         .append("import jakarta.servlet.http.Cookie;" + LS)
         .append("import jakarta.servlet.http.HttpServletRequest;" + LS)
         .append("import jakarta.servlet.http.HttpServletResponse;" + LS)
+        .append("import jakarta.ws.rs.client.Client;" + LS)
+        .append("import jakarta.ws.rs.client.ClientBuilder;" + LS)
+        .append("import jakarta.ws.rs.core.Response;" + LS)
+        .append("import org.jboss.resteasy.grpc.runtime.i18n.Messages;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.AsyncMockServletOutputStream;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher;" + LS)
         .append("import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;" + LS)
@@ -132,7 +139,6 @@ public class ServiceGrpcExtender {
         .append("import org.jboss.resteasy.grpc.runtime.servlet.MockServletOutputStream;" + LS)
         .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
         .append("import org.wildfly.grpc.GrpcService;" + LS)
-        .append("import jakarta.inject.Inject;" + LS)
         .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
         .append("import com.google.protobuf.Any;" + LS)
         .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
@@ -157,7 +163,8 @@ public class ServiceGrpcExtender {
             .append("   private static ").append(root).append("_proto.gString.Builder builder = ").append(root).append("_proto.gString.newBuilder();" + LS)
             .append("   private static FieldDescriptor fd = builder.getDescriptorForType().getFields().iterator().next();" + LS)
             .append("   private HttpServletDispatcher servlet;" + LS)
-            .append("   @Inject private RequestContextController requestContextController;" + LS)
+            .append("   private RequestContextController requestContextController;" + LS)
+            .append("   private ClassLoader tccl;" + LS)
             ;
       scanner.nextLine();
       scanner.skip("//");
@@ -294,6 +301,9 @@ public class ServiceGrpcExtender {
         .append("         if (requestContextController != null) {" + LS)
         .append("            requestContextController.deactivate();" + LS)
         .append("         }" + LS)
+        .append("         if (tccl != null) {" + LS)
+        .append("            Thread.currentThread().setContextClassLoader(tccl);" + LS)
+        .append("         }" + LS)
         .append("      }" + LS);
    }
 
@@ -301,9 +311,9 @@ public class ServiceGrpcExtender {
       sb.append("" + LS)
         .append("//=============================  non-static methods =============================" + LS)
         .append("   private void activateRequestContext() {" + LS)
-        .append("      if (requestContextController == null) {" + LS)
-        .append("         requestContextController = CDI.current().select(RequestContextController.class).get();" + LS)
-        .append("      }" + LS)
+        .append("      tccl = Thread.currentThread().getContextClassLoader();" + LS)
+        .append("      Thread.currentThread().setContextClassLoader(getClass().getClassLoader());" + LS)
+        .append("      requestContextController = CDI.current().select(RequestContextController.class).get();" + LS)
         .append("      requestContextController.activate();" + LS)
         .append("   }" + LS)
       ;
@@ -344,8 +354,7 @@ public class ServiceGrpcExtender {
         .append("      Map<String, List<String>> headers = convertHeaders(param.getHeadersMap());" + LS)
         .append("      Cookie[] cookies = convertCookies(param.getCookiesList());" + LS)
         .append("      String httpMethod = param.getHttpMethod();" + LS)
-        .append("//      ServletContext servletContext = org.jboss.resteasy.grpc.servlet.GrpcHttpServletDispatcher.getServletContext(\"").append(root).append("Servlet\");" + LS)
-        .append("      ServletContext servletContext = ").append(root).append("_Server.getServletContext();" + LS)
+        .append("      ServletContext servletContext = getServletContext();" + LS)
         .append("      HttpServletRequestImpl request = new HttpServletRequestImpl();" + LS)
         .append("      request.setServletResponse(response);" + LS)
         .append("      request.setServletContext(servletContext);" + LS)
@@ -374,6 +383,19 @@ public class ServiceGrpcExtender {
         .append("         }" + LS)
         .append("      }" + LS)
         .append("      return request;" + LS)
+        .append("   }" + LS + LS)
+        ;
+      sb.append("   private static ServletContext getServletContext() {" + LS)
+        .append("      ServletContext servletContext = CC1_Server.getServletContext();" + LS)
+        .append("      if (servletContext == null) {" + LS)
+        .append("         Client client = ClientBuilder.newClient();" + LS)
+        .append("         Response response = client.target(\"http://localhost:8080/" + artifactIdVersion + "/grpcToJakartaRest/grpcserver/context\").request().get();" + LS)
+        .append("         if (200 != response.getStatus()) {" + LS)
+        .append("            throw new RuntimeException(Messages.MESSAGES.cantGetServletContext());" + LS)
+        .append("         }" + LS)
+        .append("         servletContext = CC1_Server.getServletContext();" + LS)
+        .append("      }" + LS)
+        .append("      return servletContext;" + LS)
         .append("   }" + LS + LS)
         ;
       sb.append("   private static jakarta.servlet.http.Cookie[] convertCookies(List<").append(pkg).append(".").append(root).append("_proto.gCookie> cookieList) {" + LS)
