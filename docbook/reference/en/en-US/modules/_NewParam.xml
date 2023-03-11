@@ -2,30 +2,23 @@
 <title>Improved <code>@…Param</code> annotations</title>
 
 <para>
-With the addition of parameter names in the bytecode since Java 8, it is no longer necessary to require users to specify parameter names
-in the following annotations: <link linkend="_PathParam"><code>@PathParam</code></link>, 
-<link linkend="_QueryParam"><code>@QueryParam</code></link>, <link linkend="_FormParam"><code>@FormParam</code></link>,
-<link linkend="_CookieParam"><code>@CookieParam</code></link>, <link linkend="_HeaderParam"><code>@HeaderParam</code></link>
-and <link linkend="_MatrixParam"><code>@MatrixParam</code></link>. In order to benefit from this feature, you have to switch to new annotations
-with the same name, in a different package, which have an optional value parameter. To use this, follow these steps:
+    The &REST-API; specification defines annotations <code>@PathParam</code>, <code>@QueryParam</code>,
+    <code>@FormParam</code>, <code>@CookieParam</code>, <code>@HeaderParam</code> and <code>@MatrixParam</code>.  Each annontation
+    requires a parameter name.  RESTEasy provides a parallel set of annotations,
+    <link linkend="_PathParam"><code>@PathParam</code></link>,
+    <link linkend="_QueryParam"><code>@QueryParam</code></link>,
+    <link linkend="_FormParam"><code>@FormParam</code></link>,
+    <link linkend="_CookieParam"><code>@CookieParam</code></link>,
+    <link linkend="_HeaderParam"><code>@HeaderParam</code></link>
+    and <link linkend="_MatrixParam"><code>@MatrixParam</code></link>
+    which do not require a parameter name.   To use this RESTEasy feature, replace the
+    annotation's package name, <code>jakarta.ws.rs</code> with,
+    <code>org.jboss.resteasy.annotations.jaxrs</code>.
 </para>
-<itemizedlist>
-  <listitem>Import the <code>org.jboss.resteasy.annotations.jaxrs</code> package to replace annotations from the &REST-API; spec.</listitem>
-  <listitem>Tell your build system to record method parameter names in the bytecode.</listitem>
-  <listitem>Remove the annotation value if the name matches the name of the annotated variable.</listitem>
-</itemizedlist>
 <para>
 Note that you can omit the annotation name for annotated method parameters as well as annotated fields or JavaBean properties.
 </para>
-<para>
-For Maven users, recording method parameter names in the bytecode can be enabled by setting the <code>maven.compiler.parameters</code> 
-to <code>true</code>:
-</para>
-<programlisting><![CDATA[
-    <properties>
-        <maven.compiler.parameters>true</maven.compiler.parameters>
-    </properties>
-]]></programlisting>
+
 <para>Usage:</para>
 <programlisting>
 import org.jboss.resteasy.annotations.jaxrs.*;
@@ -41,8 +34,8 @@ public class Library {
 }
 </programlisting>
 
-<para>If your annotated variable does not have the same name as the path parameter, you can still
-specify the name:</para>
+<para>If an annotated variable does not have the same name as the path parameter, the name can still
+be specified:</para>
 <programlisting>
 import org.jboss.resteasy.annotations.jaxrs.*;
 

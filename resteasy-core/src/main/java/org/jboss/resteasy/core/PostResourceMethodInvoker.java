@@ -5,8 +5,6 @@ package org.jboss.resteasy.core;
  * @author Nicolas NESMON
  *
  */
-public interface PostResourceMethodInvoker {
-
-   void invoke();
-
+public interface PostResourceMethodInvoker extends AutoCloseable {
+    void invoke();
 }

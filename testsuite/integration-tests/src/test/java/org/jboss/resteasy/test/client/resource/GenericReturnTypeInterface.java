@@ -4,7 +4,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 public interface GenericReturnTypeInterface<T> {
-   @GET
-   @Path("t")
-   T t();
+    @GET
+    @Path("t")
+    T t();
 }

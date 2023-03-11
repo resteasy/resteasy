@@ -1,13 +1,14 @@
 package org.jboss.resteasy.test.common;
 
-import com.sun.net.httpserver.HttpServer;
-import org.junit.rules.ExternalResource;
-import org.xnio.streams.Streams;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+
+import org.junit.rules.ExternalResource;
+import org.xnio.streams.Streams;
+
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * Tiny fake HTTP server providing a target for testing the RESTEasy client.
@@ -55,7 +56,7 @@ public class FakeHttpServer extends ExternalResource {
 
         configurator.apply(server);
 
-        server.setExecutor(null);  // handle on dispatcher thread
+        server.setExecutor(null); // handle on dispatcher thread
 
         this.server = server;
     }

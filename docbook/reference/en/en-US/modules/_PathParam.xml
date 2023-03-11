@@ -78,7 +78,7 @@ There are a few more complicated uses of @PathParams not discussed in the previo
 </para>
 <para>
 
-You are allowed to specify one or more path params embedded in one URI segment.  Here are some examples:
+It is allowed to specify one or more path params embedded in one URI segment.  Here are some examples:
 </para>
 <para>
 
@@ -98,7 +98,7 @@ So, a URI of &quot;/aaa111bbb&quot; would match #1.  &quot;/bill-02115&quot; wou
 </para>
 <para>
 
-We discussed before how you can use regular expression patterns within @Path values.
+It was discussed before how to use regular expression patterns within @Path values.
 </para>
 <para>
 
@@ -183,7 +183,7 @@ public interface PathSegment {
 </para>
 <para>
 
-You can have RESTEasy inject a PathSegment instead of a value with your @PathParam.
+RESTEasy can inject a PathSegment instead of a value with the @PathParam.
 </para>
 <para>
 
@@ -209,7 +209,7 @@ GET http://host.com/library/book;name=EJB 3.0;author=Bill Burke
 </para>
 <para>
 
-The basic idea of matrix parameters is that it represents resources that are addressable by their attributes as well as their raw id.
+The idea of matrix parameters is that it represents resources that are addressable by their attributes as well as their raw id.
 </para>
 <para>
 

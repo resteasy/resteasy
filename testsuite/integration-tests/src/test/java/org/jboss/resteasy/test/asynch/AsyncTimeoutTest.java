@@ -18,10 +18,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 @RunWith(Arquillian.class)
 @RunAsClient
 public class AsyncTimeoutTest {
     static ResteasyClient client;
+
     @Deployment
     public static Archive<?> deploySimpleResource() {
         WebArchive war = TestUtil.prepareArchive(AsyncTimeoutTest.class.getSimpleName());
@@ -66,12 +68,11 @@ public class AsyncTimeoutTest {
     }
 
     @Test
-    public void testResumeAfterSettingAsyncTimeoutHandler() throws Exception
-    {
-       WebTarget base = client.target(generateURL("/resumeAfterSettingTimeoutHandler"));
-       Response response = base.request().get();
-       Assert.assertEquals(200, response.getStatus());
-       Assert.assertEquals("From initial", response.readEntity(String.class));
-       response.close();
+    public void testResumeAfterSettingAsyncTimeoutHandler() throws Exception {
+        WebTarget base = client.target(generateURL("/resumeAfterSettingTimeoutHandler"));
+        Response response = base.request().get();
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("From initial", response.readEntity(String.class));
+        response.close();
     }
 }

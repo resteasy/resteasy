@@ -60,7 +60,7 @@ public class BasicAuthorizationProcessor implements AuthorizationProcessor {
 
     @Override
     public String createRequestHeader(final ClientRequestContext requestContext,
-                                      final List<String> authenticateHeader) {
+            final List<String> authenticateHeader) {
         boolean process = false;
         for (String challenge : authenticateHeader) {
             if (challenge.regionMatches(true, 0, CHALLENGE_PREFIX, 0, CHALLENGE_PREFIX.length())) {

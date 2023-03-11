@@ -20,6 +20,7 @@
 package org.jboss.resteasy.plugins.server.embedded;
 
 import jakarta.ws.rs.SeBootstrap.Configuration;
+
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**

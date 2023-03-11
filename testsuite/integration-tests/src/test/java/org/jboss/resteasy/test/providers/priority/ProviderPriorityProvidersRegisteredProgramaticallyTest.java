@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
@@ -12,7 +13,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.priority.resource.ProviderPriorityExceptionMapperAAA;
@@ -43,69 +43,68 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
 
-   static ResteasyClient client;
+    static ResteasyClient client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
-      war.addClasses(ProviderPriorityFoo.class,
-            ProviderPriorityFooParamConverter.class,
-            ProviderPriorityTestException.class,
-            ProviderPriorityExceptionMapperCCC.class,
-            ProviderPriorityFooParamConverterProviderCCC.class
-      );
-      List<Class<?>> singletons = new ArrayList<Class<?>>();
-      singletons.add(ProviderPriorityExceptionMapperCCC.class);
-      singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons,
-            ProviderPriorityResource.class,
-            ProviderPriorityExceptionMapperAAA.class,
-            ProviderPriorityExceptionMapperBBB.class,
-            ProviderPriorityFooParamConverterProviderAAA.class,
-            ProviderPriorityFooParamConverterProviderBBB.class
-            );
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
+        war.addClasses(ProviderPriorityFoo.class,
+                ProviderPriorityFooParamConverter.class,
+                ProviderPriorityTestException.class,
+                ProviderPriorityExceptionMapperCCC.class,
+                ProviderPriorityFooParamConverterProviderCCC.class);
+        List<Class<?>> singletons = new ArrayList<Class<?>>();
+        singletons.add(ProviderPriorityExceptionMapperCCC.class);
+        singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);
+        return TestUtil.finishContainerPrepare(war, null, singletons,
+                ProviderPriorityResource.class,
+                ProviderPriorityExceptionMapperAAA.class,
+                ProviderPriorityExceptionMapperBBB.class,
+                ProviderPriorityFooParamConverterProviderAAA.class,
+                ProviderPriorityFooParamConverterProviderBBB.class);
+    }
 
-   private ResteasyProviderFactory factory;
-   @Before
-   public void init() {
-      factory = ResteasyProviderFactory.newInstance();
-      RegisterBuiltin.register(factory);
-      ResteasyProviderFactory.setInstance(factory);
+    private ResteasyProviderFactory factory;
 
-      client = (ResteasyClient)ClientBuilder.newClient();
-   }
+    @Before
+    public void init() {
+        factory = ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+        ResteasyProviderFactory.setInstance(factory);
 
-   @After
-   public void after() throws Exception {
-      client.close();
-      // Clear the singleton
-      ResteasyProviderFactory.clearInstanceIfEqual(factory);
-   }
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
-   }
+    @After
+    public void after() throws Exception {
+        client.close();
+        // Clear the singleton
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
+    }
 
-   /**
-    * @tpTestDetails Tests that Programatically registered ExceptionMappers and
-    *                ParamConverterProviders are sorted by priority
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testProgramaticRegistration() throws Exception {
-      WebTarget base = client.target(generateURL(""));
-      base.path("/register");
-      Response response = base.path("/register").request().get();
-      assertEquals(200, response.getStatus());
-      assertEquals("ok", response.readEntity(String.class));
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
+    }
 
-      response = base.path("/exception").request().get();
-      assertEquals(444, response.getStatus());
-      assertEquals("CCC", response.readEntity(String.class));
+    /**
+     * @tpTestDetails Tests that Programatically registered ExceptionMappers and
+     *                ParamConverterProviders are sorted by priority
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testProgramaticRegistration() throws Exception {
+        WebTarget base = client.target(generateURL(""));
+        base.path("/register");
+        Response response = base.path("/register").request().get();
+        assertEquals(200, response.getStatus());
+        assertEquals("ok", response.readEntity(String.class));
 
-      response = base.path("/paramconverter/dummy").request().get();
-      assertEquals(200, response.getStatus());
-      assertEquals("CCC", response.readEntity(String.class));
-   }
+        response = base.path("/exception").request().get();
+        assertEquals(444, response.getStatus());
+        assertEquals("CCC", response.readEntity(String.class));
+
+        response = base.path("/paramconverter/dummy").request().get();
+        assertEquals(200, response.getStatus());
+        assertEquals("CCC", response.readEntity(String.class));
+    }
 }

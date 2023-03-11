@@ -1,16 +1,16 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
 
 public class CopyOnWriteMapTest {
 
@@ -62,7 +62,7 @@ public class CopyOnWriteMapTest {
 
         final Map<String, String> secondMap = new CopyOnWriteMap<>(firstMap);
         assertEquals(firstMap.entrySet(), secondMap.entrySet());
-        firstMap.put(NEW_KEY,NEW_VALUE);
+        firstMap.put(NEW_KEY, NEW_VALUE);
         assertFalse(secondMap.containsKey(NEW_KEY));
     }
 

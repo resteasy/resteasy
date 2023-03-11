@@ -35,11 +35,11 @@ import java.util.concurrent.TimeUnit;
  * <strong>Note:</strong> if the executor is consider managed, for example running in a Jakarta EE environment, the
  * following methods are effectively ignored.
  * <ul>
- *     <li>{@link #shutdown()}</li>
- *     <li>{@link #shutdownNow()}</li>
- *     <li>{@link #isShutdown()}</li>
- *     <li>{@link #isTerminated()}</li>
- *     <li>{@link #awaitTermination(long, TimeUnit)}</li>
+ * <li>{@link #shutdown()}</li>
+ * <li>{@link #shutdownNow()}</li>
+ * <li>{@link #isShutdown()}</li>
+ * <li>{@link #isTerminated()}</li>
+ * <li>{@link #awaitTermination(long, TimeUnit)}</li>
  * </ul>
  * </p>
  *
@@ -64,13 +64,13 @@ public class ContextualScheduledExecutorService extends ContextualExecutorServic
 
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(final Runnable command, final long initialDelay, final long period,
-                                                  final TimeUnit unit) {
+            final TimeUnit unit) {
         return getDelegate().scheduleAtFixedRate(ContextualExecutors.runnable(command), initialDelay, period, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(final Runnable command, final long initialDelay, final long delay,
-                                                     final TimeUnit unit) {
+            final TimeUnit unit) {
         return getDelegate().scheduleWithFixedDelay(ContextualExecutors.runnable(command), initialDelay, delay, unit);
     }
 

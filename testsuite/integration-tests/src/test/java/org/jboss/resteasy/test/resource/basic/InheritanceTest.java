@@ -8,9 +8,9 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.basic.resource.InheritenceParentResource;
 import org.jboss.resteasy.test.resource.basic.resource.InheritenceParentResourceImpl;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,37 +29,36 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class InheritanceTest
-{
-   private static Client client;
+public class InheritanceTest {
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
-      war.addClass(InheritenceParentResource.class);
-      return TestUtil.finishContainerPrepare(war, null, InheritenceParentResourceImpl.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
+        war.addClass(InheritenceParentResource.class);
+        return TestUtil.finishContainerPrepare(war, null, InheritenceParentResourceImpl.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void beforeSub() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void beforeSub() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void afterSub() {
-      client.close();
-   }
+    @AfterClass
+    public static void afterSub() {
+        client.close();
+    }
 
-   @Test
-   public void Test1() throws Exception {
-      Builder builder = client.target(generateURL("/InheritanceTest")).request();
-      builder.header("Accept", "text/plain");
-      Response response = builder.get();
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("First", response.readEntity(String.class));
-   }
+    @Test
+    public void Test1() throws Exception {
+        Builder builder = client.target(generateURL("/InheritanceTest")).request();
+        builder.header("Accept", "text/plain");
+        Response response = builder.get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("First", response.readEntity(String.class));
+    }
 }

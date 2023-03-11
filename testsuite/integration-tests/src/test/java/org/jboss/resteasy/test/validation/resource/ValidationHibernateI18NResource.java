@@ -6,10 +6,10 @@ import jakarta.ws.rs.Path;
 
 @Path("")
 public class ValidationHibernateI18NResource {
-   @GET
-   @Path("test")
-   @Size(min = 2)
-   public String test() {
-      return "a";
-   }
+    @GET
+    @Path("test")
+    @Size(min = 2)
+    public String test() {
+        return "a";
+    }
 }

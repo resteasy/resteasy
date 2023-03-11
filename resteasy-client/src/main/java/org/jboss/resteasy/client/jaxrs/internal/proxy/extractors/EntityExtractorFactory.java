@@ -12,8 +12,7 @@ import java.lang.reflect.Method;
  * @see EntityExtractor , DefaultObjectEntityExtractor,
  *      ResponseObjectEntityExtractor
  */
-public interface EntityExtractorFactory
-{
-   @SuppressWarnings("rawtypes")
-   EntityExtractor createExtractor(Method method);
+public interface EntityExtractorFactory {
+    @SuppressWarnings("rawtypes")
+    EntityExtractor createExtractor(Method method);
 }

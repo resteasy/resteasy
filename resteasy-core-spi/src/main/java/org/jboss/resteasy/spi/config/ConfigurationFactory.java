@@ -19,10 +19,6 @@
 
 package org.jboss.resteasy.spi.config;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ServiceLoader;
-
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 /**
@@ -33,37 +29,15 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 public interface ConfigurationFactory {
 
     /**
-     * Returns a new factory. The factory with the lowest {@linkplain #priority() priority} will be selected.
+     * Returns the factory for the environment. The factory with the lowest {@linkplain #priority() priority} will be
+     * selected.
      *
-     * @return the new factory
+     * @return the factory for the current environment
      *
      * @throws RuntimeException if the service loader could not find a factory
      */
     static ConfigurationFactory getInstance() {
-        if (System.getSecurityManager() == null) {
-            final ServiceLoader<ConfigurationFactory> loader = ServiceLoader.load(ConfigurationFactory.class);
-            ConfigurationFactory current = null;
-            for (ConfigurationFactory factory : loader) {
-                if (current == null) {
-                    current = factory;
-                } else if (factory.priority() < current.priority()) {
-                    current = factory;
-                }
-            }
-            return current == null ? () -> Integer.MAX_VALUE : current;
-        }
-        return AccessController.doPrivileged((PrivilegedAction<ConfigurationFactory>) () -> {
-            final ServiceLoader<ConfigurationFactory> loader = ServiceLoader.load(ConfigurationFactory.class);
-            ConfigurationFactory current = null;
-            for (ConfigurationFactory factory : loader) {
-                if (current == null) {
-                    current = factory;
-                } else if (factory.priority() < current.priority()) {
-                    current = factory;
-                }
-            }
-            return current == null ? () -> Integer.MAX_VALUE : current;
-        });
+        return SingletonConfigurationFactory.getInstance();
     }
 
     /**
@@ -72,7 +46,7 @@ public interface ConfigurationFactory {
      * @return the configuration
      */
     default Configuration getConfiguration() {
-        return getConfiguration(null);
+        return new DefaultConfiguration();
     }
 
     /**

@@ -1,12 +1,14 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import jakarta.ws.rs.client.ClientBuilder;
-import org.jboss.resteasy.test.resource.basic.resource.CollectionDefaultValueResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.resource.basic.resource.CollectionDefaultValueResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -17,8 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import jakarta.ws.rs.core.Response;
-
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
@@ -28,36 +28,36 @@ import jakarta.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CollectionDefaultValueTest {
-   static ResteasyClient client;
+    static ResteasyClient client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(CollectionDefaultValueTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, CollectionDefaultValueResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(CollectionDefaultValueTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, CollectionDefaultValueResource.class);
+    }
 
-   @Before
-   public void init() {
-      client = (ResteasyClient)ClientBuilder.newClient();
-   }
+    @Before
+    public void init() {
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   @After
-   public void after() throws Exception {
-      client.close();
-   }
+    @After
+    public void after() throws Exception {
+        client.close();
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, CollectionDefaultValueTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, CollectionDefaultValueTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Test that empty QueryParam list is empty
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testEmpty() throws Exception {
-      Response response = client.target(generateURL("/collection")).request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails Test that empty QueryParam list is empty
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testEmpty() throws Exception {
+        Response response = client.target(generateURL("/collection")).request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        response.close();
+    }
 }

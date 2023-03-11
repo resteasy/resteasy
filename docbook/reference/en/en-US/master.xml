@@ -27,7 +27,6 @@
                 <!ENTITY StringConverter SYSTEM "modules/StringConverter.xml">
                 <!ENTITY Responses_using_jakarta.ws.rs.core.Response SYSTEM "modules/Responses_using_jakarta.ws.rs.core.Response.xml">
                 <!ENTITY ExceptionMappers SYSTEM "modules/ExceptionMappers.xml">
-                <!ENTITY Configuring_Individual_Jakarta_REST_Resource_Beans SYSTEM "modules/Configuring_Individual_Jakarta_REST_Resource_Beans.xml">
                 <!ENTITY Asynchronous_HTTP SYSTEM "modules/Asynchronous_HTTP.xml">
                 <!ENTITY Asynchronous_Job SYSTEM "modules/Async_job_service.xml">
                 <!ENTITY Asynchronous_Injection SYSTEM "modules/Async_Injection.xml">
@@ -65,7 +64,7 @@
                 <!ENTITY XML-BIND-API "Jakarta XML Binding">
                 <!ENTITY ENTERPRISE-BEANS "Jakarta Enterprise Beans">
                 <!ENTITY GRPC-BRIDGE SYSTEM "modules/GrpcBridge.xml">
-                <!ENTITY SPRING-VERSION "6.0.0-M3">
+                <!ENTITY SPRING-VERSION "6.0">
                 ]>
 
 <book>
@@ -73,7 +72,7 @@
    <bookinfo>
       <title>RESTEasy</title>
       <subtitle>Jakarta RESTFul Web Services</subtitle>
-      <releaseinfo>6.2.2.Final-SNAPSHOT</releaseinfo>
+      <releaseinfo>6.3.0.Alpha1-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>

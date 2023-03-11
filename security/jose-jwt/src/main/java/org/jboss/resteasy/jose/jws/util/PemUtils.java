@@ -1,7 +1,5 @@
 package org.jboss.resteasy.jose.jws.util;
 
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -11,6 +9,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 /**
  * Utility classes to extract PublicKey, PrivateKey, and X509Certificate from openssl generated PEM files

@@ -5,8 +5,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 public interface MultiInterfaceResLocatorIntf2 {
-   @GET
-   @Produces("text/plain")
-   @Path("hello2")
-   String resourceMethod2();
+    @GET
+    @Produces("text/plain")
+    @Path("hello2")
+    String resourceMethod2();
 }

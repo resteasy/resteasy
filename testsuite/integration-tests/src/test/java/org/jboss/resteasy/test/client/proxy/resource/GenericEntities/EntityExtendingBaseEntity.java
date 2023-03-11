@@ -3,7 +3,8 @@ package org.jboss.resteasy.test.client.proxy.resource.GenericEntities;
 public class EntityExtendingBaseEntity extends BaseEntity {
     private String lastName;
 
-    public EntityExtendingBaseEntity() {}
+    public EntityExtendingBaseEntity() {
+    }
 
     public EntityExtendingBaseEntity(final String name, final String lastName) {
         super.setName(name);

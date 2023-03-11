@@ -9,7 +9,6 @@ import org.jboss.logging.annotations.MessageLogger;
  */
 
 @MessageLogger(projectCode = "RESTEASY")
-public interface LogMessages extends BasicLogger
-{
-   LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
+public interface LogMessages extends BasicLogger {
+    LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
 }

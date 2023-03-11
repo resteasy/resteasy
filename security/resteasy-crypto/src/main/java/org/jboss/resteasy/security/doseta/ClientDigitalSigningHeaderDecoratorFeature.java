@@ -20,44 +20,39 @@ import org.jboss.resteasy.core.ResteasyContext;
  * @version $Revision: 1 $
  */
 @ConstrainedTo(RuntimeType.CLIENT)
-public class ClientDigitalSigningHeaderDecoratorFeature implements DynamicFeature
-{
-   @Override
-   public void configure(ResourceInfo resourceInfo, FeatureContext configurable)
-   {
-      Signed signed = resourceInfo.getResourceMethod().getAnnotation(Signed.class);
-      if (signed == null)
-      {
-         signed = (Signed) resourceInfo.getResourceClass().getAnnotation(Signed.class);
-      }
-      if (signed == null) return;
+public class ClientDigitalSigningHeaderDecoratorFeature implements DynamicFeature {
+    @Override
+    public void configure(ResourceInfo resourceInfo, FeatureContext configurable) {
+        Signed signed = resourceInfo.getResourceMethod().getAnnotation(Signed.class);
+        if (signed == null) {
+            signed = (Signed) resourceInfo.getResourceClass().getAnnotation(Signed.class);
+        }
+        if (signed == null)
+            return;
 
-      configurable.register(new DigitalSigningHeaderDecorator(signed));
-   }
+        configurable.register(new DigitalSigningHeaderDecorator(signed));
+    }
 
-   /**
-    * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
-    * @version $Revision: 1 $
-    */
-   @Priority(Priorities.HEADER_DECORATOR)
-   public static class DigitalSigningHeaderDecorator extends AbstractDigitalSigningHeaderDecorator implements ClientRequestFilter
-   {
-      public DigitalSigningHeaderDecorator(final Signed signed)
-      {
-         this.signed = signed;
-      }
+    /**
+     * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+     * @version $Revision: 1 $
+     */
+    @Priority(Priorities.HEADER_DECORATOR)
+    public static class DigitalSigningHeaderDecorator extends AbstractDigitalSigningHeaderDecorator
+            implements ClientRequestFilter {
+        public DigitalSigningHeaderDecorator(final Signed signed) {
+            this.signed = signed;
+        }
 
-      @Override
-      public void filter(ClientRequestContext requestContext) throws IOException
-      {
-         KeyRepository repository = (KeyRepository) requestContext.getProperty(KeyRepository.class.getName());
-         if (repository == null)
-         {
-            repository = ResteasyContext.getContextData(KeyRepository.class);
-         }
-         DKIMSignature header = createHeader(repository);
-         requestContext.getHeaders().add(DKIMSignature.DKIM_SIGNATURE, header);
-      }
+        @Override
+        public void filter(ClientRequestContext requestContext) throws IOException {
+            KeyRepository repository = (KeyRepository) requestContext.getProperty(KeyRepository.class.getName());
+            if (repository == null) {
+                repository = ResteasyContext.getContextData(KeyRepository.class);
+            }
+            DKIMSignature header = createHeader(repository);
+            requestContext.getHeaders().add(DKIMSignature.DKIM_SIGNATURE, header);
+        }
 
-   }
+    }
 }

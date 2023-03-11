@@ -1,11 +1,11 @@
 <chapter id="signature">
   <title>Doseta Digital Signature Framework</title>
 
-  <para>Digital signatures allow you to protect the integrity of a message.
-  They are used to verify that a message sent was sent by the actual user that
-  sent the message and was modified in transit. Most web apps handle message
+  <para>Digital signatures allow the protection of the integrity of a message.
+  They are used to verify that a transmitted message was sent by the actual user and
+      the sent message was not modified in transit. Most web applications handle message
   integrity by using TLS, like HTTPS, to secure the connection between the
-  client and server. Sometimes though, we have representations that are going
+  client and server. Sometimes there will be representations that are going
   to be forwarded to more than one recipient. Some representations may hop
   around from server to server. In this case, TLS is not enough. There needs
   to be a mechanism to verify who sent the original representation and that
@@ -14,21 +14,21 @@
 
   <para>While the mime type multiple/signed exists, it does have drawbacks.
   Most importantly it requires the receiver of the message body to understand
-  how to unpack. A receiver may not understand this mime type. A better
+  how to unpack it. A receiver may not understand this mime type. A better
   approach would be to put signatures in an HTTP header so that receivers that
   don't need to worry about the digital signature, don't have to.</para>
 
-  <para>The email world has a nice protocol called <ulink
+  <para>The email world has a protocol called <ulink
   url="http://dkim.org">Domain Keys Identified Mail</ulink> (DKIM). Work is
-  also being done to apply this header to protocols other than email (i.e.
+  underway to apply this header to protocols other than email (i.e.
   HTTP) through the <ulink
   url="https://tools.ietf.org/html/draft-crocker-doseta-base-02">DOSETA
-  specifications</ulink>. It allows you to sign a message body and attach the
+  specifications</ulink>. It allows the user to sign a message body and attach the
   signature via a DKIM-Signature header. Signatures are calculated by first
   hashing the message body then combining this hash with an arbitrary set of
-  metadata included within the DKIM-Signature header. You can also add other
-  request or response headers to the calculation of the signature. Adding
-  metadata to the signature calculation gives you a lot of flexibility to
+  metadata included within the DKIM-Signature header. Other
+  request or response headers can be added to the calculation of the signature. Adding
+  metadata to the signature calculation gives a lot of flexibility to
   piggyback various features like expiration and authorization. Here's what an
   example DKIM-Signature header might look like.</para>
 
@@ -44,8 +44,8 @@
 
 </programlisting></para>
 
-  <para>As you can see it is a set of name value pairs delimited by a ';'.
-  While its not THAT important to know the structure of the header, here's an
+  <para>You can see it is a set of name value pairs delimited by a ';'.
+  While it is not THAT important to know the structure of the header, here's an
   explanation of each parameter:</para>
 
   <variablelist>
@@ -90,7 +90,7 @@
 
       <listitem>
         <para>Canonical algorithm. Only simple/simple is supported at the
-        moment. Basically this allows you to transform the message body before
+        moment. This allows the transform of the message body before
         calculating the hash</para>
       </listitem>
     </varlistentry>
@@ -108,7 +108,7 @@
       <term>x</term>
 
       <listitem>
-        <para>When the signature expires. This is a numeric long value of the
+        <para>Signature expiration. This is a numeric long value of the
         time in seconds since epoch. Allows signer to control when a signed
         message's signature expires</para>
       </listitem>
@@ -118,7 +118,7 @@
       <term>t</term>
 
       <listitem>
-        <para>Timestamp of signature. Numeric long value of the time in
+        <para>Signature timestamp. Numeric long value of the time in
         seconds since epoch. Allows the verifier to control when a signature
         expires.</para>
       </listitem>
@@ -141,38 +141,38 @@
     </varlistentry>
   </variablelist>
 
-  <para>To verify a signature you need a public key. DKIM uses DNS text
+  <para>To verify a signature a public key is needed. DKIM uses DNS text
   records to discover a public key. To find a public key, the verifier
   concatenates the Selector (s parameter) with the domain (d parameter)</para>
 
   <para>&lt;selector&gt;._domainKey.&lt;domain&gt;</para>
 
   <para>It then takes that string and does a DNS request to retrieve a TXT
-  record under that entry. In our above example burke._domainKey.example.com
-  would be used as a string. This is a every interesting way to publish public
+  record under that entry. In the above example burke._domainKey.example.com
+  would be used as a string. This is an interesting way to publish public
   keys. For one, it becomes very easy for verifiers to find public keys.
-  There's no real central store that is needed. DNS is a infrastructure IT
+  There's no real central store that is needed. DNS is an infrastructure IT
   knows how to deploy. Verifiers can choose which domains they allow requests
-  from. RESTEasy supports discovering public keys via DNS. It also instead
-  allows you to discover public keys within a local Java KeyStore if you do
-  not want to use DNS. It also allows you to plug in your own mechanism to
+  from. RESTEasy supports discovering public keys via DNS. It also
+  allows the discovery of public keys within a local Java KeyStore if you do
+  not want to use DNS. It also allows the user to plug in their own mechanism to
   discover keys.</para>
 
-  <para>If you're interested in learning the possible use cases for digital
-  signatures, here's a <ulink
-  url="http://bill.burkecentral.com/2011/02/21/multiple-uses-for-content-signature/">blog</ulink>
-  you might find interesting.</para>
+  <para>If interested in learning the possible use cases for digital
+  signatures, here's an informative <ulink
+  url="http://bill.burkecentral.com/2011/02/21/multiple-uses-for-content-signature/">blog</ulink>.
+  </para>
 
   <section>
     <title>Maven settings</title>
 
-    <para>You must include the resteasy-crypto project to use the digital
+    <para>Archive, resteasy-crypto must include the project to use the digital
     signature framework.</para>
 
     <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
             &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
-            &lt;version&gt;6.2.2.Final-SNAPSHOT&lt;/version&gt;
+            &lt;version&gt;6.3.0.Alpha1-SNAPSHOT&lt;/version&gt;
         &lt;/dependency&gt;
 
 </programlisting></para>
@@ -182,9 +182,9 @@
     <title>Signing API</title>
 
     <para>To sign a request or response using the RESTEasy client or server
-    framework you need to create an instance of
+    framework create an instance of
     org.jboss.resteasy.security.doseta.DKIMSignature. This class represents
-    the DKIM-Signature header. You instantiate the DKIMSignature object and
+    the DKIM-Signature header. Instantiate the DKIMSignature object and
     then set the "DKIM-Signature" header of the request or response. Here's an
     example of using it on the server-side:</para>
 
@@ -225,25 +225,25 @@ ClientRequest request = new ClientRequest("http://...");
 request.header("DKIM-Signature", signature);
 request.body("text/plain", "some body to sign");
 ClientResponse response = request.put();
-</programlisting>To sign a message you need a PrivateKey. This can be
+</programlisting>To sign a message a PrivateKey is needed. This can be
     generated by KeyTool or manually using regular, standard JDK Signature
     APIs. RESTEasy currently only supports RSA key pairs. The DKIMSignature
-    class also allows you to add and control how various pieces of metadata
+    class allows the user to add and control how various pieces of metadata
     are added to the DKIM-Signature header and the signature calculation. See
     the javadoc for more details.</para>
 
-    <para>If you are including more than one signature, then just add
+    <para>If including more than one signature, then add
     additional DKIMSignature instances to the headers of the request or
     response.</para>
 
     <section>
       <title>@Signed annotation</title>
 
-      <para>Instead of using the API, RESTEasy also provides you an
+      <para>Instead of using the API, RESTEasy provides an
       annotation alternative to the manual way of signing using a
-      DKIMSignature instances is to use the
-      @org.jboss.resteasy.annotations.security.doseta.Signed annotation. It is
-      required that you configure a KeyRepository as described later in this
+      DKIMSignature instances. RESTEasy provides annotation
+      @org.jboss.resteasy.annotations.security.doseta.Signed. It is
+      required that a KeyRepository be configured as described later in this
       chapter. Here's an example:</para>
 
       <para><programlisting>   @GET
@@ -255,7 +255,7 @@ ClientResponse response = request.put();
       return "hello world";
    }
 
-</programlisting>The above example using a bunch of the optional annotation
+</programlisting>The above example uses optional annotation
       attributes of @Signed to create the following Content-Signature
       header:</para>
 
@@ -277,11 +277,11 @@ ClientResponse response = request.put();
   <section>
     <title>Signature Verification API</title>
 
-    <para>If you want fine grain control over verification, this is an API to
-    verify signatures manually. Its a little tricky because you'll need the
-    raw bytes of the HTTP message body in order to verify the signature. You
-    can get at an unmarshalled message body as well as the underlying raw
-    bytes by using a org.jboss.resteasy.spi.MarshalledEntity injection. Here's
+    <para>
+        RESTEasy supports fine grain control over verification with an API to verify signatures manually.
+        To verify the signature the raw bytes of the HTTP message body are needed.
+        Using org.jboss.resteasy.spi.MarshalledEntity injection will provide access
+        to the unmarshalled message body and the underlying raw bytes. Here is
     an example of doing this on the server side:</para>
 
     <para><programlisting>import org.jboss.resteasy.spi.MarshalledEntity;
@@ -307,11 +307,11 @@ public void verifyManual(@HeaderParam("Content-Signature") DKIMSignature signatu
       System.out.println("The text message posted is: " + input.getEntity());
 }
 </programlisting>MarshalledEntity is a generic interface. The template
-    parameter should be the Java type you want the message body to be
-    converted into. You will also have to configure a KeyRepository. This is
-    describe later in this chapter.</para>
+    parameter should be the Java type of the message body to be
+    converted into. A KeyRepository will have to be configured. This is
+    described later in this chapter.</para>
 
-    <para>The client side is a little bit different:</para>
+    <para>The client side is a little different:</para>
 
     <para><programlisting>ClientRequest request = new ClientRequest("http://localhost:9095/signed"));
 
@@ -325,14 +325,14 @@ response.getProperties().put(Verifier.class.getName(), verifier);
 // signature verification happens when you get the entity
 String entity = response.getEntity();
 
-</programlisting><parameter>On the client side, you create a verifier and add
+</programlisting><parameter>On the client side, create a verifier and add
     it as a property to the ClientResponse. This will trigger the verification
     interceptors.</parameter></para>
 
     <section>
       <title>Annotation-based verification</title>
 
-      <para>The easiest way to verify a signature sent in a HTTP request on
+      <para>The easiest way to verify a signature sent in an HTTP request on
       the server side is to use the
       @@org.jboss.resteasy.annotations.security.doseta.Verify (or
       @Verifications which is used to verify multiple signatures). Here's an
@@ -348,9 +348,9 @@ String entity = response.getEntity();
 </programlisting>In the above example, any DKIM-Signature headers attached to
       the posted message body will be verified. The public key to verify is
       discovered using the configured KeyRepository (discussed later in this
-      chapter). You can also specify which specific signatures you want to
-      verify as well as define multiple verifications you want to happen via
-      the @Verifications annotation. Here's a complex example:</para>
+      chapter). The user can specify which specific signatures to be
+          verified as well as define multiple verifications want via
+          the @Verifications annotation. Here's a complex example:</para>
 
       <para><programlisting>@POST
 @Consumes("text/plain")
@@ -364,8 +364,8 @@ public void post(String input) {...}
 
       <para>Failed verifications will throw an
       org.jboss.resteasy.security.doseta.UnauthorizedSignatureException. This
-      causes a 401 error code to be sent back to the client. If you catch this
-      exception using an ExceptionHandler you can browse the failure
+      causes a 401 error code to be sent back to the client. Catching this
+      exception using an ExceptionHandler allows the user to browse the failure
       results.</para>
     </section>
   </section>
@@ -373,12 +373,12 @@ public void post(String input) {...}
   <section>
     <title>Managing Keys via a KeyRepository</title>
 
-    <para>RESTEasy manages keys for you through a
+    <para>RESTEasy manages keys through an
     org.jboss.resteasy.security.doseta.KeyRepository. By default, the
     KeyRepository is backed by a Java KeyStore. Private keys are always
     discovered by looking into this KeyStore. Public keys may also be
-    discovered via a DNS text (TXT) record lookup if configured to do so. You
-    can also implement and plug in your own implementation of
+    discovered via a DNS text (TXT) record lookup if configured to do so. The user
+    can also implement and plug in their own implementation of
     KeyRepository.</para>
 
     <section>
@@ -397,35 +397,49 @@ public void post(String input) {...}
     </section>
 
     <section>
-      <title>Configure Restreasy to use the KeyRepository</title>
+      <title>Configure RESTEasy to use the KeyRepository</title>
 
-      <para>Next you need to configure the KeyRepository in your web.xml file
-      so that it is created and made available to RESTEasy to discover private
-      and public keys.You can reference a Java key store you want the Resteasy
-      signature framework to use within web.xml using either
-      <literal>resteasy.keystore.classpath</literal> or
-      <literal>resteasy.keystore.filename</literal> context parameters. You
-      must also specify the password (sorry its clear text) using the
-      <literal>resteasy.keystore.password</literal> context parameter. The
-      resteasy.context.objects is used to create the instance of the
-      repository. For example:</para>
+      <para>
+          Three <code>context-param</code> elements must be declared in the application's web.xml
+          in order for RESTEasy to properly be configured to use the KeyRepository.
+          This information enables the KeyRepository to be created and made available to
+          RESTEasy, which will use it to discover private and public keys.
+      </para>
+        <itemizedlist>
+            <listitem>(1) The Java key store to be referenced
+                by the Resteasy signature framework must be identified using either
+                <literal>resteasy.keystore.classpath</literal> or
+                <literal>resteasy.keystore.filename</literal> context parameters.
+            </listitem>
+            <listitem>(2) The password must be specified using the
+                <literal>resteasy.keystore.password</literal> context parameter.
+                Unfortunately the password must be in clear text.
+            </listitem>
+            <listitem>(3) The <literal>resteasy.context.objects parameter</literal> is used to identify the classes used
+                in creating the repository
+            </listitem>
+        </itemizedlist>
+        <para>
+            For example:
+        </para>
 
-      <para><programlisting>    &lt;context-param&gt;
+      <para><programlisting>
+(1) &lt;context-param&gt;
         &lt;param-name&gt;resteasy.doseta.keystore.classpath&lt;/param-name&gt;
         &lt;param-value&gt;test.jks&lt;/param-value&gt;
     &lt;/context-param&gt;
-    &lt;context-param&gt;
+(2)    &lt;context-param&gt;
         &lt;param-name&gt;resteasy.doseta.keystore.password&lt;/param-name&gt;
         &lt;param-value&gt;geheim&lt;/param-value&gt;
     &lt;/context-param&gt;
-    &lt;context-param&gt;
+(3)    &lt;context-param&gt;
         &lt;param-name&gt;resteasy.context.objects&lt;/param-name&gt;
         &lt;param-value&gt;org.jboss.resteasy.security.doseta.KeyRepository : org.jboss.resteasy.security.doseta.ConfiguredDosetaKeyRepository&lt;/param-value&gt;
     &lt;/context-param&gt;
 
 </programlisting></para>
 
-      <para>You can also manually register your own instance of a
+      <para>The user can manually register their own instance of a
       KeyRepository within an Application class. For example:</para>
 
       <para><programlisting>import org.jboss.resteasy.core.Dispatcher;
@@ -462,9 +476,10 @@ public class SignatureApplication extends Application
 
 </programlisting></para>
 
-      <para>On the client side, you can load a KeyStore manually, by
+      <para>
+          On the client side, a KeyStore can be loaded manually, by
       instantiating an instance of
-      org.jboss.resteasy.security.doseta.DosetaKeyRepository. You then set a
+      org.jboss.resteasy.security.doseta.DosetaKeyRepository. Then set a
       request attribute, "org.jboss.resteasy.security.doseta.KeyRepository",
       with the value of the created instance. Use the
       ClientRequest.getAttributes() method to do this. For example:</para>
@@ -487,8 +502,8 @@ request.header("DKIM-Signature", signatures);
     <section>
       <title>Using DNS to Discover Public Keys</title>
 
-      <para>Public keys can also be discover by a DNS text record lookup. You
-      must configure web.xml to turn this feature:</para>
+      <para>Public keys can be discovered by a DNS text record lookup. The
+      web.xml must be configured to enable this feature:</para>
 
       <para><programlisting>    &lt;context-param&gt;
         &lt;param-name&gt;resteasy.doseta.use.dns&lt;/param-name&gt;
@@ -500,16 +515,16 @@ request.header("DKIM-Signature", signatures);
     &lt;/context-param&gt;
 
 </programlisting>The resteasy.doseta.dns.uri context-param is optional and
-      allows you to point to a specific DNS server to locate text
+      allows pointing to a specific DNS server to locate text
       records.</para>
 
       <section>
         <title>Configuring DNS TXT Records</title>
 
         <para>DNS TXT Records are stored via a format described by the DOSETA
-        specification. The public key is defined via a base 64 encoding. You
-        can obtain this text encoding by exporting your public keys from your
-        keystore, then using a tool like openssl to get the text-based format.
+        specification. The public key is defined via a base 64 encoding. Text
+            encoding can be obtained by exporting the public keys from your
+            keystore and then using a tool like openssl to get the text-based format.
         For example:</para>
 
         <para><programlisting>$ keytool -export -alias bill._domainKey.client.com -keystore client.jks -file bill.der 

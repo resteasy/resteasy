@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -24,12 +25,12 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
-import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -39,184 +40,152 @@ import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
-public class InMemoryClientEngine implements ClientHttpEngine
-{
-   protected Dispatcher dispatcher;
-   protected URI baseUri;
+public class InMemoryClientEngine implements ClientHttpEngine {
+    protected Dispatcher dispatcher;
+    protected URI baseUri;
 
-   public InMemoryClientEngine()
-   {
-      dispatcher = new SynchronousDispatcher(ResteasyProviderFactory.getInstance());
-   }
+    public InMemoryClientEngine() {
+        dispatcher = new SynchronousDispatcher(ResteasyProviderFactory.getInstance());
+    }
 
-   public InMemoryClientEngine(final Dispatcher dispatcher)
-   {
-      this.dispatcher = dispatcher;
-   }
+    public InMemoryClientEngine(final Dispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+    }
 
+    public URI getBaseUri() {
+        return baseUri;
+    }
 
-   public URI getBaseUri()
-   {
-      return baseUri;
-   }
+    public void setBaseUri(URI baseUri) {
+        this.baseUri = baseUri;
+    }
 
-   public void setBaseUri(URI baseUri)
-   {
-      this.baseUri = baseUri;
-   }
+    @Override
+    public Response invoke(Invocation req) {
+        ClientInvocation request = (ClientInvocation) req;
+        MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getMethod(), request.getUri(), baseUri);
+        final MockHttpResponse mockResponse = new MockHttpResponse();
+        mockHttpRequest.setAsynchronousContext(
+                new SynchronousExecutionContext((SynchronousDispatcher) dispatcher, mockHttpRequest, mockResponse));
+        loadHttpMethod(request, mockHttpRequest);
+        dispatcher.invoke(mockHttpRequest, mockResponse);
+        return createResponse(request, mockResponse);
+    }
 
-   @Override
-   public Response invoke(Invocation req)
-   {
-      ClientInvocation request = (ClientInvocation)req;
-      MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getMethod(), request.getUri(), baseUri);
-      final MockHttpResponse mockResponse = new MockHttpResponse();
-      mockHttpRequest.setAsynchronousContext(new SynchronousExecutionContext((SynchronousDispatcher)dispatcher, mockHttpRequest, mockResponse));
-      loadHttpMethod(request, mockHttpRequest);
-      dispatcher.invoke(mockHttpRequest, mockResponse);
-      return createResponse(request, mockResponse);
-   }
+    protected ClientResponse createResponse(ClientInvocation request, final MockHttpResponse mockResponse) {
+        InputStream is = new ByteArrayInputStream(mockResponse.getOutput());
+        ClientResponse response = new InMemoryClientResponse(request.getClientConfiguration(), is);
+        response.setStatus(mockResponse.getStatus());
+        setHeaders(mockResponse, response);
+        return response;
+    }
 
-   protected ClientResponse createResponse(ClientInvocation request, final MockHttpResponse mockResponse)
-   {
-      InputStream is = new ByteArrayInputStream(mockResponse.getOutput());
-      ClientResponse response = new InMemoryClientResponse(request.getClientConfiguration(), is);
-      response.setStatus(mockResponse.getStatus());
-      setHeaders(mockResponse, response);
-      return response;
-   }
-
-   protected void setHeaders(final MockHttpResponse mockResponse, ClientResponse response)
-   {
-      MultivaluedMapImpl<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
-      for (Entry<String, List<Object>> entry : mockResponse.getOutputHeaders().entrySet())
-      {
-         List<String> values = new ArrayList<String>(entry.getValue().size());
-         for (Object value : entry.getValue())
-         {
-            values.add(value.toString());
-         }
-         responseHeaders.addMultiple(entry.getKey(), values);
-      }
-      response.setHeaders(responseHeaders);
-   }
-
-   public void loadHttpMethod(ClientInvocation request, MockHttpRequest mockHttpRequest)// throws Exception
-   {
-      // TODO: punt on redirects, for now.
-      // if (httpMethod instanceof GetMethod && request.followRedirects())
-      // httpMethod.setFollowRedirects(true);
-      // else httpMethod.setFollowRedirects(false);
-
-//      if (request.getEntity() != null && !request.getFormParameters().isEmpty())
-//         throw new RuntimeException(Messages.MESSAGES.cannotSendFormParametersAndEntity());
-
-      if (request.getEntity() instanceof Form)
-      {
-         commitHeaders(request, mockHttpRequest);
-         Form form = (Form) request.getEntity();
-         MultivaluedMap<String, String> map = form.asMap();
-         for (Map.Entry<String, List<String>> formParam : map.entrySet())
-         {
-            String key = formParam.getKey();
-            for (String value : formParam.getValue())
-            {
-               mockHttpRequest.getFormParameters().add(key, value);
+    protected void setHeaders(final MockHttpResponse mockResponse, ClientResponse response) {
+        MultivaluedMapImpl<String, String> responseHeaders = new MultivaluedMapImpl<String, String>();
+        for (Entry<String, List<Object>> entry : mockResponse.getOutputHeaders().entrySet()) {
+            List<String> values = new ArrayList<String>(entry.getValue().size());
+            for (Object value : entry.getValue()) {
+                values.add(value.toString());
             }
-         }
-      }
-      else if (request.getEntity() != null)
-      {
-         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            responseHeaders.addMultiple(entry.getKey(), values);
+        }
+        response.setHeaders(responseHeaders);
+    }
 
-         MediaType bodyContentType = request.getHeaders().getMediaType();
-         request.getHeaders().asMap().add(HttpHeaders.CONTENT_TYPE, bodyContentType.toString());
+    public void loadHttpMethod(ClientInvocation request, MockHttpRequest mockHttpRequest)// throws Exception
+    {
+        // TODO: punt on redirects, for now.
+        // if (httpMethod instanceof GetMethod && request.followRedirects())
+        // httpMethod.setFollowRedirects(true);
+        // else httpMethod.setFollowRedirects(false);
 
-         try
-         {
-            request.writeRequestBody(baos);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-         // commit headers after byte array is complete.
-         commitHeaders(request, mockHttpRequest);
-         mockHttpRequest.content(baos.toByteArray());
-         mockHttpRequest.contentType(bodyContentType);
-      }
-      else
-      {
-         commitHeaders(request, mockHttpRequest);
-      }
-   }
+        //      if (request.getEntity() != null && !request.getFormParameters().isEmpty())
+        //         throw new RuntimeException(Messages.MESSAGES.cannotSendFormParametersAndEntity());
 
-   public void commitHeaders(ClientInvocation request, MockHttpRequest mockHttpRequest)
-   {
-      MultivaluedMap<String, String> headers = mockHttpRequest.getMutableHeaders();
-      headers.putAll(request.getHeaders().asMap());
-   }
+        if (request.getEntity() instanceof Form) {
+            commitHeaders(request, mockHttpRequest);
+            Form form = (Form) request.getEntity();
+            MultivaluedMap<String, String> map = form.asMap();
+            for (Map.Entry<String, List<String>> formParam : map.entrySet()) {
+                String key = formParam.getKey();
+                for (String value : formParam.getValue()) {
+                    mockHttpRequest.getFormParameters().add(key, value);
+                }
+            }
+        } else if (request.getEntity() != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-   public Registry getRegistry()
-   {
-      return this.dispatcher.getRegistry();
-   }
+            MediaType bodyContentType = request.getHeaders().getMediaType();
+            request.getHeaders().asMap().add(HttpHeaders.CONTENT_TYPE, bodyContentType.toString());
 
-   public Dispatcher getDispatcher()
-   {
-      return dispatcher;
-   }
+            try {
+                request.writeRequestBody(baos);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            // commit headers after byte array is complete.
+            commitHeaders(request, mockHttpRequest);
+            mockHttpRequest.content(baos.toByteArray());
+            mockHttpRequest.contentType(bodyContentType);
+        } else {
+            commitHeaders(request, mockHttpRequest);
+        }
+    }
 
-   public void close()
-   {
-      // empty
-   }
+    public void commitHeaders(ClientInvocation request, MockHttpRequest mockHttpRequest) {
+        MultivaluedMap<String, String> headers = mockHttpRequest.getMutableHeaders();
+        headers.putAll(request.getHeaders().asMap());
+    }
 
-   @Override
-   public SSLContext getSslContext()
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
+    public Registry getRegistry() {
+        return this.dispatcher.getRegistry();
+    }
 
-   @Override
-   public HostnameVerifier getHostnameVerifier()
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
+    public Dispatcher getDispatcher() {
+        return dispatcher;
+    }
 
-   public static class InMemoryClientResponse extends FinalizedClientResponse
-   {
-      private InputStream stream;
+    public void close() {
+        // empty
+    }
 
-      protected InMemoryClientResponse(final ClientConfiguration configuration, final InputStream is)
-      {
-         super(configuration, RESTEasyTracingLogger.empty());
-         stream = is;
-      }
+    @Override
+    public SSLContext getSslContext() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-      @Override
-      protected void setInputStream(InputStream is)
-      {
-         stream = is;
-      }
+    @Override
+    public HostnameVerifier getHostnameVerifier() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-      public InputStream getInputStream()
-      {
-         return stream;
-      }
+    public static class InMemoryClientResponse extends FinalizedClientResponse {
+        private InputStream stream;
 
-      @Override
-      public void releaseConnection() throws IOException
-      {
-      }
+        protected InMemoryClientResponse(final ClientConfiguration configuration, final InputStream is) {
+            super(configuration, RESTEasyTracingLogger.empty());
+            stream = is;
+        }
 
-      @Override
-      public void releaseConnection(boolean consumeInputStream) throws IOException
-      {
-      }
+        @Override
+        protected void setInputStream(InputStream is) {
+            stream = is;
+        }
 
-   }
+        public InputStream getInputStream() {
+            return stream;
+        }
+
+        @Override
+        public void releaseConnection() throws IOException {
+        }
+
+        @Override
+        public void releaseConnection(boolean consumeInputStream) throws IOException {
+        }
+
+    }
 
 }

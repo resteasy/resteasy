@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD, PARAMETER })
-public @interface FormParam
-{
-   String value() default "";
+public @interface FormParam {
+    String value() default "";
 }

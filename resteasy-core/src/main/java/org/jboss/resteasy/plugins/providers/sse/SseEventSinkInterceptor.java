@@ -18,26 +18,27 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 @Provider
 @Priority(Integer.MAX_VALUE)
-public class SseEventSinkInterceptor implements ContainerRequestFilter
-{
-   @Override
-   public void filter(ContainerRequestContext requestContext) throws IOException
-   {
-      ResourceMethodInvoker rmi = ((PostMatchContainerRequestContext) requestContext).getResourceMethod();
-      if (rmi.isAsyncStreamProvider() || rmi.isSse())
-      {
-         Dispatcher dispatcher = ResteasyContext.getContextData(Dispatcher.class);
-         ResteasyProviderFactory providerFactory = dispatcher != null ? dispatcher.getProviderFactory() : ResteasyProviderFactory.getInstance();
-         SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider(providerFactory), providerFactory);
-         ResteasyContext.getContextDataMap().put(SseEventSink.class, sink);
-         ResteasyContext.getContextData(PostResourceMethodInvokers.class).addInvokers(new PostResourceMethodInvoker()
-         {
-            @Override
-            public void invoke()
-            {
-               sink.flushResponseToClient();
-            }
-         });
-      }
-   }
+public class SseEventSinkInterceptor implements ContainerRequestFilter {
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        ResourceMethodInvoker rmi = ((PostMatchContainerRequestContext) requestContext).getResourceMethod();
+        if (rmi.isAsyncStreamProvider() || rmi.isSse()) {
+            Dispatcher dispatcher = ResteasyContext.getContextData(Dispatcher.class);
+            ResteasyProviderFactory providerFactory = dispatcher != null ? dispatcher.getProviderFactory()
+                    : ResteasyProviderFactory.getInstance();
+            SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider(providerFactory), providerFactory);
+            ResteasyContext.getContextDataMap().put(SseEventSink.class, sink);
+            ResteasyContext.getContextData(PostResourceMethodInvokers.class).addInvokers(new PostResourceMethodInvoker() {
+                @Override
+                public void invoke() {
+                    sink.flushResponseToClient();
+                }
+
+                @Override
+                public void close() {
+                    sink.close();
+                }
+            });
+        }
+    }
 }

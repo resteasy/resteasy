@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-testsuite</artifactId>
-        <version>6.2.2.Final-SNAPSHOT</version>
+        <version>6.3.0.Alpha1-SNAPSHOT</version>
     </parent>
 
     <artifactId>arquillian-utils</artifactId>
-    <version>6.2.2.Final-SNAPSHOT</version>
+    <version>6.3.0.Alpha1-SNAPSHOT</version>
     <name>RESTEasy Main testsuite: Arquillian utils</name>
     <packaging>jar</packaging>
     <properties>
@@ -101,38 +101,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.wildfly.extras.creaper</groupId>
-            <artifactId>creaper-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-controller-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-cli</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.wildfly.extras.creaper</groupId>
-            <artifactId>creaper-commands</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.wildfly</groupId>
-                    <artifactId>wildfly-patching</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Required for creaper-commands -->
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-cli</artifactId>
         </dependency>
 
         <dependency>

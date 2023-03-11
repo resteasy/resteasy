@@ -1,15 +1,16 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ValidationComplexMapOfListOfArrayOfStrings {
-   @Valid
-   Map<String, ValidationComplexListOfArrayOfStrings> map;
+import jakarta.validation.Valid;
 
-   public ValidationComplexMapOfListOfArrayOfStrings(final String s) {
-      map = new HashMap<String, ValidationComplexListOfArrayOfStrings>();
-      map.put(s, new ValidationComplexListOfArrayOfStrings(s));
-   }
+public class ValidationComplexMapOfListOfArrayOfStrings {
+    @Valid
+    Map<String, ValidationComplexListOfArrayOfStrings> map;
+
+    public ValidationComplexMapOfListOfArrayOfStrings(final String s) {
+        map = new HashMap<String, ValidationComplexListOfArrayOfStrings>();
+        map.put(s, new ValidationComplexListOfArrayOfStrings(s));
+    }
 }

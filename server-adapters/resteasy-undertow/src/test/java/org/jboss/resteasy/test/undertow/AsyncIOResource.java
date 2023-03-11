@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -46,12 +47,12 @@ public class AsyncIOResource {
     @Path("io/file-range/{size}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response fileRange(@PathParam("size") long size) throws IOException {
-        File file = File.createTempFile("empty-file", "");
+        File file = Files.createTempFile("empty-file", "").toFile();
         file.deleteOnExit();
         RandomAccessFile rFile = new RandomAccessFile(file, "rw");
         rFile.setLength(size);
         rFile.close();
-        return Response.ok(new FileRange(file, 0, size-1)).build();
+        return Response.ok(new FileRange(file, 0, size - 1)).build();
     }
 
     private static class NullInputStream extends InputStream {

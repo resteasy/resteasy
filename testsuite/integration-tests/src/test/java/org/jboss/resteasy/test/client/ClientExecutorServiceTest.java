@@ -33,6 +33,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
@@ -63,8 +64,7 @@ public class ClientExecutorServiceTest {
         return TestUtil.finishContainerPrepare(
                 TestUtil.prepareArchive(ClientExecutorServiceTest.class.getSimpleName()),
                 Collections.emptyMap(),
-                TestResource.class
-        );
+                TestResource.class);
     }
 
     @ArquillianResource
@@ -112,8 +112,7 @@ public class ClientExecutorServiceTest {
         } catch (ShutdownNotAllowedException e) {
             try (
                     StringWriter writer = new StringWriter();
-                    PrintWriter pw = new PrintWriter(writer)
-            ) {
+                    PrintWriter pw = new PrintWriter(writer)) {
                 pw.println("The client should not be shutting down the executor.");
                 e.printStackTrace(pw);
                 Assert.fail(writer.toString());
@@ -131,27 +130,27 @@ public class ClientExecutorServiceTest {
 
         @Override
         public ScheduledFuture<?> schedule(final Runnable command, final long delay,
-                                           final TimeUnit unit) {
+                final TimeUnit unit) {
             return delegate.schedule(command, delay, unit);
         }
 
         @Override
         public <V> ScheduledFuture<V> schedule(final Callable<V> callable, final long delay,
-                                               final TimeUnit unit) {
+                final TimeUnit unit) {
             return delegate.schedule(callable, delay, unit);
         }
 
         @Override
         public ScheduledFuture<?> scheduleAtFixedRate(final Runnable command, final long initialDelay,
-                                                      final long period,
-                                                      final TimeUnit unit) {
+                final long period,
+                final TimeUnit unit) {
             return delegate.scheduleAtFixedRate(command, initialDelay, period, unit);
         }
 
         @Override
         public ScheduledFuture<?> scheduleWithFixedDelay(final Runnable command, final long initialDelay,
-                                                         final long delay,
-                                                         final TimeUnit unit) {
+                final long delay,
+                final TimeUnit unit) {
             return delegate.scheduleWithFixedDelay(command, initialDelay, delay, unit);
         }
 
@@ -216,7 +215,7 @@ public class ClientExecutorServiceTest {
 
         @Override
         public <T> T invokeAny(final Collection<? extends Callable<T>> tasks, final long timeout,
-                               final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return delegate.invokeAny(tasks, timeout, unit);
         }
 

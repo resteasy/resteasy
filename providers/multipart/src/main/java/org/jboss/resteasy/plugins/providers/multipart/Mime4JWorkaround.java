@@ -2,11 +2,11 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -43,11 +43,12 @@ import org.jboss.resteasy.spi.config.ConfigurationFactory;
  * Alter said code to use Mime4JWorkaroundBinaryEntityBuilder instead of EntityBuilder.
  */
 public class Mime4JWorkaround {
-   static final String MEM_THRESHOLD_PROPERTY = "org.jboss.resteasy.plugins.providers.multipart.memoryThreshold";
-   static final int DEFAULT_MEM_THRESHOLD = 1024;
+    static final String MEM_THRESHOLD_PROPERTY = "org.jboss.resteasy.plugins.providers.multipart.memoryThreshold";
+    static final int DEFAULT_MEM_THRESHOLD = 1024;
 
     /**
-     * This is a rough copy of DefaultMessageBuilder.parseMessage() modified to use a Mime4JWorkaround as the contentHandler instead
+     * This is a rough copy of DefaultMessageBuilder.parseMessage() modified to use a Mime4JWorkaround as the contentHandler
+     * instead
      * of an EntityBuilder.
      * <p>
      *
@@ -63,7 +64,8 @@ public class Mime4JWorkaround {
             MimeConfig cfg = MimeConfig.DEFAULT;
             boolean strict = cfg.isStrictParsing();
             DecodeMonitor mon = strict ? DecodeMonitor.STRICT : DecodeMonitor.SILENT;
-            BodyDescriptorBuilder bdb = new DefaultBodyDescriptorBuilder(null, strict ? DefaultFieldParser.getParser() : LenientFieldParser.getParser(), mon);
+            BodyDescriptorBuilder bdb = new DefaultBodyDescriptorBuilder(null,
+                    strict ? DefaultFieldParser.getParser() : LenientFieldParser.getParser(), mon);
 
             StorageProvider storageProvider;
             final Optional<String> value = getProperty(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class);
@@ -89,22 +91,17 @@ public class Mime4JWorkaround {
         }
     }
 
-    static int getMemThreshold()
-    {
-       try
-       {
-          int threshold = getProperty(MEM_THRESHOLD_PROPERTY, int.class).orElse(DEFAULT_MEM_THRESHOLD);
-          if (threshold > -1)
-          {
-             return threshold;
-          }
-          LogMessages.LOGGER.debugf("Negative threshold, %s, specified. Using default value", threshold);
-       }
-       catch (Exception e)
-       {
-          LogMessages.LOGGER.debug("Exception caught parsing memory threshold. Using default value.", e);
-       }
-       return DEFAULT_MEM_THRESHOLD;
+    static int getMemThreshold() {
+        try {
+            int threshold = getProperty(MEM_THRESHOLD_PROPERTY, int.class).orElse(DEFAULT_MEM_THRESHOLD);
+            if (threshold > -1) {
+                return threshold;
+            }
+            LogMessages.LOGGER.debugf("Negative threshold, %s, specified. Using default value", threshold);
+        } catch (Exception e) {
+            LogMessages.LOGGER.debug("Exception caught parsing memory threshold. Using default value.", e);
+        }
+        return DEFAULT_MEM_THRESHOLD;
     }
 
     private static <T> Optional<T> getProperty(final String name, final Class<T> type) {
@@ -113,11 +110,9 @@ public class Mime4JWorkaround {
                     .getConfiguration()
                     .getOptionalValue(name, type);
         }
-        return AccessController.doPrivileged((PrivilegedAction<Optional<T>>) () ->
-                ConfigurationFactory.getInstance()
-                        .getConfiguration()
-                        .getOptionalValue(name, type)
-        );
+        return AccessController.doPrivileged((PrivilegedAction<Optional<T>>) () -> ConfigurationFactory.getInstance()
+                .getConfiguration()
+                .getOptionalValue(name, type));
     }
 
     /**
@@ -125,8 +120,7 @@ public class Mime4JWorkaround {
      * to avoid memory leaks (see https://issues.apache.org/jira/browse/MIME4J-251)
      *
      */
-    private static class CustomTempFileStorageProvider extends AbstractStorageProvider
-    {
+    private static class CustomTempFileStorageProvider extends AbstractStorageProvider {
 
         private static final String DEFAULT_PREFIX = "m4j";
 
@@ -136,13 +130,11 @@ public class Mime4JWorkaround {
 
         private final File directory;
 
-        CustomTempFileStorageProvider()
-        {
+        CustomTempFileStorageProvider() {
             this(DEFAULT_PREFIX, null, null);
         }
 
-        CustomTempFileStorageProvider(final String prefix, final String suffix, final File directory)
-        {
+        CustomTempFileStorageProvider(final String prefix, final String suffix, final File directory) {
             if (prefix == null || prefix.length() < 3)
                 throw new IllegalArgumentException("invalid prefix");
 
@@ -154,96 +146,91 @@ public class Mime4JWorkaround {
             this.directory = directory;
         }
 
-        public StorageOutputStream createStorageOutputStream() throws IOException
-        {
+        public StorageOutputStream createStorageOutputStream() throws IOException {
             return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory));
         }
 
-        private static File createTempFile(String prefix, String suffix, File directory) throws IOException
-        {
+        private static Path createTempFile(String prefix, String suffix, File directory) throws IOException {
             boolean java2SecurityEnabled = System.getSecurityManager() != null;
-            if (java2SecurityEnabled)
-            {
+            if (java2SecurityEnabled) {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<File>) () ->
-                        File.createTempFile(prefix, suffix, directory));
+                    return AccessController.doPrivileged(
+                            (PrivilegedExceptionAction<Path>) () -> {
+                                if (directory == null) {
+                                    return Files.createTempFile(prefix, suffix);
+                                }
+                                return Files.createTempFile(directory.toPath(), prefix, suffix);
+                            });
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
-                    if (cause instanceof IOException)
-                    {
+                    if (cause instanceof IOException) {
                         throw (IOException) cause;
-                    } else throw new RuntimeException(cause);
+                    } else
+                        throw new RuntimeException(cause);
                 }
             }
-            return File.createTempFile(prefix, suffix, directory);
+            if (directory == null) {
+                return Files.createTempFile(prefix, suffix);
+            }
+            return Files.createTempFile(directory.toPath(), prefix, suffix);
         }
 
-        private static FileOutputStream createFileOutputStream(File file) throws IOException
-        {
+        private static OutputStream createFileOutputStream(final Path file) throws IOException {
             boolean java2SecurityEnabled = System.getSecurityManager() != null;
-            if (java2SecurityEnabled)
-            {
+            if (java2SecurityEnabled) {
                 try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<FileOutputStream>) () ->
-                        new FileOutputStream(file));
+                    return AccessController
+                            .doPrivileged((PrivilegedExceptionAction<OutputStream>) () -> Files.newOutputStream(file));
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
-                    if (cause instanceof IOException)
-                    {
+                    if (cause instanceof IOException) {
                         throw (IOException) cause;
-                    } else throw new RuntimeException(cause);
+                    } else
+                        throw new RuntimeException(cause);
                 }
             }
-            return new FileOutputStream(file);
+            return Files.newOutputStream(file);
         }
 
-        private static final class TempFileStorageOutputStream extends StorageOutputStream
-        {
-            private File file;
+        private static final class TempFileStorageOutputStream extends StorageOutputStream {
+            private final Path file;
 
-            private OutputStream out;
+            private final OutputStream out;
 
-            TempFileStorageOutputStream(final File file) throws IOException
-            {
+            TempFileStorageOutputStream(final Path file) throws IOException {
                 this.file = file;
                 this.out = createFileOutputStream(file);
             }
 
             @Override
-            public void close() throws IOException
-            {
+            public void close() throws IOException {
                 super.close();
                 out.close();
             }
 
             @Override
-            protected void write0(byte[] buffer, int offset, int length) throws IOException
-            {
+            protected void write0(byte[] buffer, int offset, int length) throws IOException {
                 out.write(buffer, offset, length);
             }
 
             @Override
-            protected Storage toStorage0() throws IOException
-            {
+            protected Storage toStorage0() throws IOException {
                 // out has already been closed because toStorage calls close
                 return new TempFileStorage(file);
             }
         }
 
-        private static final class TempFileStorage implements Storage
-        {
+        private static final class TempFileStorage implements Storage {
 
-            private File file;
+            private Path file;
 
-            private static final Set<File> filesToDelete = new HashSet<File>();
+            private static final Set<Path> filesToDelete = new HashSet<>();
 
-            TempFileStorage(final File file)
-            {
+            TempFileStorage(final Path file) {
                 this.file = file;
             }
 
-            public void delete()
-            {
+            public void delete() {
                 // deleting a file might not immediately succeed if there are still
                 // streams left open (especially under Windows). so we keep track of
                 // the files that have to be deleted and try to delete all these
@@ -252,36 +239,39 @@ public class Mime4JWorkaround {
                 // a better but more complicated solution would be to start a
                 // separate thread that tries to delete the files periodically.
 
-                synchronized (filesToDelete)
-                {
-                    if (file != null)
-                    {
+                synchronized (filesToDelete) {
+                    if (file != null) {
                         filesToDelete.add(file);
                         file = null;
                     }
 
-                    for (Iterator<File> iterator = filesToDelete.iterator(); iterator.hasNext();)
-                    {
-                        File f = iterator.next();
-                        if (f.delete())
-                        {
+                    for (Iterator<Path> iterator = filesToDelete.iterator(); iterator.hasNext();) {
+                        Path f = iterator.next();
+                        try {
+                            if (System.getSecurityManager() != null) {
+                                AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+                                    Files.deleteIfExists(f);
+                                    return null;
+                                });
+                            } else {
+                                Files.deleteIfExists(f);
+                            }
                             iterator.remove();
+                        } catch (PrivilegedActionException | IOException e) {
+                            LogMessages.LOGGER.debugf(e, "Failed to delete file %s", f);
                         }
                     }
                 }
             }
 
-            public InputStream getInputStream() throws IOException
-            {
+            public InputStream getInputStream() throws IOException {
                 if (file == null)
                     throw new IllegalStateException("storage has been deleted");
 
-                return new BufferedInputStream(new FileInputStream(file));
+                return new BufferedInputStream(Files.newInputStream(file));
             }
 
         }
     }
 
 }
-
-

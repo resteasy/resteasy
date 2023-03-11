@@ -88,8 +88,19 @@ public class Customer {
 </para>
 <para>
 
-In the above example, getCustomer() returns a java.lang.Object.  Per request, at runtime, the &REST-API; server will figure out how to dispatch the request based on the object returned by getCustomer().  What are the uses of this?  Well, maybe you have a class hierarchy for your customers.  Customer is the abstract base, CorporateCustomer and IndividualCustomer are subclasses.  Your getCustomer() method might be doing a Hibernate polymorphic query and doesn't know, or care, what concrete class is it querying for, or what it returns.
+In the above example, getCustomer() returns a java.lang.Object.  Per request, at runtime,
+    the &REST-API; server will determine how to dispatch the request based on the object returned
+    by getCustomer().  Possible uses of this are:
+    <itemizedlist>
+        <listitem>There maybe a class hierarchy for your customers.  Customer is the abstract base class,
+    CorporateCustomer and IndividualCustomer are subclasses.
+        </listitem>
+        <listitem>The getCustomer() method might be doing a Hibernate polymorphic query and doesn't know, or
+    care, what concrete class is it querying for, or what it returns.
+        </listitem>
+    </itemizedlist>
 </para>
+
 <para>
 
 <programlisting>

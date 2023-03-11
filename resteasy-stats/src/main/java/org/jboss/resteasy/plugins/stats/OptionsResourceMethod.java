@@ -7,6 +7,5 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "options")
-public class OptionsResourceMethod extends ResourceMethodEntry
-{
+public class OptionsResourceMethod extends ResourceMethodEntry {
 }

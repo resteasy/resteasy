@@ -10,10 +10,11 @@ import jakarta.ws.rs.core.Response;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyWebApplicationException extends WebApplicationException implements WebApplicationExceptionWrapper<WebApplicationException> {
+public class ResteasyWebApplicationException extends WebApplicationException
+        implements WebApplicationExceptionWrapper<WebApplicationException> {
 
-   private static final long serialVersionUID = -8805699073882024461L;
-   private final WebApplicationException wrapped;
+    private static final long serialVersionUID = -8805699073882024461L;
+    private final WebApplicationException wrapped;
 
     /**
      * Creates a new exception based on the wrapped exception. The response will be

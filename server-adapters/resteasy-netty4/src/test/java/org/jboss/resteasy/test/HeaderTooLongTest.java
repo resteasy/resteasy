@@ -19,53 +19,45 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
- * RESTEASY-1244
+ *         RESTEASY-1244
  *
  * @version $Revision: 1 $
  */
-public class HeaderTooLongTest
-{
-   static String longString = "abcdefghijklmnopqrstuvwxyz";
-   static
-   {
-      for (int i = 0; i < 10; i++)
-      {
-         longString += longString;
-      }
-   }
+public class HeaderTooLongTest {
+    static String longString = "abcdefghijklmnopqrstuvwxyz";
+    static {
+        for (int i = 0; i < 10; i++) {
+            longString += longString;
+        }
+    }
 
-   @Path("/")
-   public static class Resource
-   {
-      @GET
-      @Path("/test")
-      public String hello(@Context HttpHeaders headers)
-      {
-         return "hello world";
-      }
-   }
+    @Path("/")
+    public static class Resource {
+        @GET
+        @Path("/test")
+        public String hello(@Context HttpHeaders headers) {
+            return "hello world";
+        }
+    }
 
-   static Client client;
+    static Client client;
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() throws Exception {
+        NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void end() throws Exception
-   {
-      client.close();
-      NettyContainer.stop();
-   }
+    @AfterClass
+    public static void end() throws Exception {
+        client.close();
+        NettyContainer.stop();
+    }
 
-   @Test
-   public void testLongHeader() throws Exception
-   {
-      WebTarget target = client.target(generateURL("/test"));
-      Response response = target.request().header("xheader", longString).get();
-      Assert.assertEquals(400, response.getStatus());
-   }
+    @Test
+    public void testLongHeader() throws Exception {
+        WebTarget target = client.target(generateURL("/test"));
+        Response response = target.request().header("xheader", longString).get();
+        Assert.assertEquals(400, response.getStatus());
+    }
 }

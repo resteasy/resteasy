@@ -26,47 +26,41 @@ import org.jboss.resteasy.spi.util.Types;
  */
 @Provider
 @Consumes("application/pkcs7-signature")
-public class PKCS7SignatureReader implements MessageBodyReader<PKCS7SignatureInput>
-{
-   static
-   {
-      BouncyIntegration.init();
-   }
+public class PKCS7SignatureReader implements MessageBodyReader<PKCS7SignatureInput> {
+    static {
+        BouncyIntegration.init();
+    }
 
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return PKCS7SignatureInput.class.isAssignableFrom(type);
-   }
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return PKCS7SignatureInput.class.isAssignableFrom(type);
+    }
 
-   @SuppressWarnings(value = "unchecked")
-   public PKCS7SignatureInput readFrom(Class<PKCS7SignatureInput> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, InputStream entityStream) throws IOException, WebApplicationException
-   {
-      Class<?> baseType = null;
-      Type baseGenericType = null;
+    @SuppressWarnings(value = "unchecked")
+    public PKCS7SignatureInput readFrom(Class<PKCS7SignatureInput> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> headers, InputStream entityStream)
+            throws IOException, WebApplicationException {
+        Class<?> baseType = null;
+        Type baseGenericType = null;
 
-      if (genericType != null && genericType instanceof ParameterizedType)
-      {
-         ParameterizedType param = (ParameterizedType) genericType;
-         baseGenericType = param.getActualTypeArguments()[0];
-         baseType = Types.getRawType(baseGenericType);
-      }
-      try
-      {
-         CMSSignedData data = new CMSSignedData(entityStream);
-         PKCS7SignatureInput input = new PKCS7SignatureInput();
-         input.setType(baseType);
-         input.setGenericType(baseGenericType);
-         input.setAnnotations(annotations);
-         input.setData(data);
+        if (genericType != null && genericType instanceof ParameterizedType) {
+            ParameterizedType param = (ParameterizedType) genericType;
+            baseGenericType = param.getActualTypeArguments()[0];
+            baseType = Types.getRawType(baseGenericType);
+        }
+        try {
+            CMSSignedData data = new CMSSignedData(entityStream);
+            PKCS7SignatureInput input = new PKCS7SignatureInput();
+            input.setType(baseType);
+            input.setGenericType(baseGenericType);
+            input.setAnnotations(annotations);
+            input.setData(data);
 
-         Providers providers = ResteasyContext.getContextData(Providers.class);
-         input.setProviders(providers);
-         return input;
-      }
-      catch (Exception e)
-      {
-         throw new ReaderException(e);
-      }
+            Providers providers = ResteasyContext.getContextData(Providers.class);
+            input.setProviders(providers);
+            return input;
+        } catch (Exception e) {
+            throw new ReaderException(e);
+        }
 
-   }
+    }
 }

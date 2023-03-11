@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.exception;
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
 import java.net.URI;
+
 import jakarta.ws.rs.RedirectionException;
 import jakarta.ws.rs.core.Response;
 
@@ -11,10 +12,11 @@ import jakarta.ws.rs.core.Response;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyRedirectionException extends RedirectionException implements WebApplicationExceptionWrapper<RedirectionException> {
+public class ResteasyRedirectionException extends RedirectionException
+        implements WebApplicationExceptionWrapper<RedirectionException> {
 
-   private static final long serialVersionUID = 8815768802777099877L;
-   private final RedirectionException wrapped;
+    private static final long serialVersionUID = 8815768802777099877L;
+    private final RedirectionException wrapped;
 
     ResteasyRedirectionException(final RedirectionException wrapped) {
         super(wrapped.getMessage(), sanitize(wrapped.getResponse()));

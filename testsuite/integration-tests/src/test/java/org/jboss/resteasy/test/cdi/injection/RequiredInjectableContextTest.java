@@ -34,6 +34,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.sse.SseEventSource;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -122,8 +123,9 @@ public class RequiredInjectableContextTest {
         final Response response = get("providers");
         Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
         final String value = response.readEntity(String.class);
-        Assert.assertTrue(String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value)
-                , value.contains(TestExceptionMapper.class.getSimpleName()));
+        Assert.assertTrue(
+                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value),
+                value.contains(TestExceptionMapper.class.getSimpleName()));
     }
 
     @Test

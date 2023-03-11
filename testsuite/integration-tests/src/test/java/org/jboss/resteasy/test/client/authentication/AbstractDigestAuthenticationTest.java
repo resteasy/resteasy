@@ -37,14 +37,15 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import dev.resteasy.client.util.authentication.HttpAuthenticators;
-import dev.resteasy.client.util.authentication.UserCredentials;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import dev.resteasy.client.util.authentication.HttpAuthenticators;
+import dev.resteasy.client.util.authentication.UserCredentials;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -88,8 +89,7 @@ public abstract class AbstractDigestAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.digest(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -115,8 +115,7 @@ public abstract class AbstractDigestAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.digest(CREDENTIALS_USER_2))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -131,8 +130,7 @@ public abstract class AbstractDigestAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.digest(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .async()
@@ -148,15 +146,13 @@ public abstract class AbstractDigestAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.digest(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
             Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
             JsonObject json = response.readEntity(JsonObject.class);
             validate(json, 1);
-
 
             response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
@@ -173,8 +169,7 @@ public abstract class AbstractDigestAuthenticationTest {
                 Client client = ClientBuilder.newBuilder()
                         // Disable caching
                         .register(HttpAuthenticators.digest(-1, CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -196,8 +191,7 @@ public abstract class AbstractDigestAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.available(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -212,8 +206,7 @@ public abstract class AbstractDigestAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.digest(UserCredentials.clear(USER_1, new char[0])))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -232,14 +225,17 @@ public abstract class AbstractDigestAuthenticationTest {
     private void validate(final String username, final JsonObject json, final int nc) {
         Assert.assertEquals(username, json.getString("username"));
         final String authHeader = json.getString("authHeader");
-        Assert.assertEquals(String.format("Expected header to start with \"Digest\" but was \"%s\"", authHeader), "Digest ", authHeader.substring(0, 7));
+        Assert.assertEquals(String.format("Expected header to start with \"Digest\" but was \"%s\"", authHeader), "Digest ",
+                authHeader.substring(0, 7));
         // Remove "Digest " from header values
         final Map<String, String> values = parseHeader(authHeader.substring(7));
         if (username.matches("\\p{ASCII}+")) {
-            Assert.assertEquals(String.format("Expected username=\"%s\" in %s", username, authHeader), '"' + username + '"', values.get("username"));
+            Assert.assertEquals(String.format("Expected username=\"%s\" in %s", username, authHeader), '"' + username + '"',
+                    values.get("username"));
         } else {
             final String encodedUser = URLEncoder.encode(username, StandardCharsets.UTF_8);
-            Assert.assertEquals(String.format("Expected username*=UTF-8''%s in %s", encodedUser, authHeader), "UTF-8''" + encodedUser, values.get("username*"));
+            Assert.assertEquals(String.format("Expected username*=UTF-8''%s in %s", encodedUser, authHeader),
+                    "UTF-8''" + encodedUser, values.get("username*"));
         }
         Assert.assertEquals(String.format("Expected qop=auth in %s", authHeader), "auth", values.get("qop"));
         int parsedNc = -1;
@@ -249,8 +245,10 @@ public abstract class AbstractDigestAuthenticationTest {
             Assert.fail(String.format("Failed to parse nc; %s - header=%s", e.getMessage(), authHeader));
         }
         Assert.assertEquals(String.format("Expected nc=%08x in %s", nc, authHeader), nc, parsedNc);
-        Assert.assertEquals(String.format("Expected realm=\"%s\" in %s", TestAuth.REALM_NAME, authHeader), '"' + TestAuth.REALM_NAME + '"', values.get("realm"));
-        Assert.assertEquals(String.format("Expected algorithm=%s in %s", algorithm, authHeader), algorithm, values.get("algorithm"));
+        Assert.assertEquals(String.format("Expected realm=\"%s\" in %s", TestAuth.REALM_NAME, authHeader),
+                '"' + TestAuth.REALM_NAME + '"', values.get("realm"));
+        Assert.assertEquals(String.format("Expected algorithm=%s in %s", algorithm, authHeader), algorithm,
+                values.get("algorithm"));
     }
 
     private Map<String, String> parseHeader(final String header) {

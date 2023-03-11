@@ -46,8 +46,7 @@ public class Digest512256AuthenticationTest extends AbstractDigestAuthentication
                 .addClasses(
                         AbstractDigestAuthenticationTest.class,
                         RestActivator.class,
-                        UserResource.class
-                )
+                        UserResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource(TestAuth.createJBossWebXml(), "jboss-web.xml")
                 .addAsWebInfResource(TestAuth.createWebXml("DIGEST-SHA-512-256"), "web.xml");

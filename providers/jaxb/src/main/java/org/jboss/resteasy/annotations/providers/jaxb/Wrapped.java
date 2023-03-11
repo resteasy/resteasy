@@ -9,12 +9,13 @@ import java.lang.annotation.Target;
  * Put this on a method or parameter when you want to marshal or unmarshal a collection or array of JAXB objects
  * <p>
  * i.e.
+ *
  * <pre>
  * {@literal @}PUT
  * {@literal @}Consumes("application/xml") public void put(@Wrapped User[] users);
  * </pre>
  * <p>
- * User is a jaxb annotated class.  The input should be:
+ * User is a jaxb annotated class. The input should be:
  * <p>
  * {@literal <}resteasy:collection xmlns:resteasy="http://jboss.org/resteasy" xmlns:ns2="whatever"{@literal >}
  * {@literal <}ns2:user{@literal >}...{@literal <}/ns2:user{@literal >}
@@ -28,13 +29,12 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Target({ ElementType.PARAMETER, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Wrapped
-{
-   String element() default "collection";
+public @interface Wrapped {
+    String element() default "collection";
 
-   String namespace() default "";
+    String namespace() default "";
 
-   String prefix() default "";
+    String prefix() default "";
 }

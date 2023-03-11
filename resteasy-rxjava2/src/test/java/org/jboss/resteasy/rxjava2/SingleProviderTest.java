@@ -1,23 +1,22 @@
 package org.jboss.resteasy.rxjava2;
 
-import io.reactivex.Single;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
-public class SingleProviderTest
-{
+import io.reactivex.Single;
+
+public class SingleProviderTest {
     private final SingleProvider provider = new SingleProvider();
 
     @Test
-    public void testFromCompletionStage()
-    {
+    public void testFromCompletionStage() {
         final CompletableFuture<Integer> cs = new CompletableFuture<>();
         cs.complete(1);
         final Single<?> single = provider.fromCompletionStage(cs);
@@ -50,8 +49,7 @@ public class SingleProviderTest
     }
 
     @Test
-    public void testToCompletionStageCase() throws Exception
-    {
+    public void testToCompletionStageCase() throws Exception {
         final Object actual = provider.toCompletionStage(Single.just(1)).toCompletableFuture().get();
         assertEquals(1, actual);
     }

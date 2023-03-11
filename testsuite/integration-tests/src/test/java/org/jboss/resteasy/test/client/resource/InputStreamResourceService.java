@@ -14,20 +14,18 @@ import org.jboss.resteasy.util.ReadFromStream;
 
 @Path("/inputStream")
 public class InputStreamResourceService {
-   static String result = "hello";
+    static String result = "hello";
 
-   @GET
-   @Produces("text/plain")
-   public InputStream get()
-   {
-      return new ByteArrayInputStream(result.getBytes());
-   }
+    @GET
+    @Produces("text/plain")
+    public InputStream get() {
+        return new ByteArrayInputStream(result.getBytes());
+    }
 
-   @POST
-   @Consumes("text/plain")
-   public void post(InputStream is) throws IOException
-   {
-      result = new String(ReadFromStream.readFromStream(1024, is));
-   }
+    @POST
+    @Consumes("text/plain")
+    public void post(InputStream is) throws IOException {
+        result = new String(ReadFromStream.readFromStream(1024, is));
+    }
 
 }

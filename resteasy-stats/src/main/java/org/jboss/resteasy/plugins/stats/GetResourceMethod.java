@@ -7,6 +7,5 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "get")
-public class GetResourceMethod extends ResourceMethodEntry
-{
+public class GetResourceMethod extends ResourceMethodEntry {
 }

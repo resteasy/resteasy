@@ -42,8 +42,7 @@ public class HttpAuthenticators {
      */
     public static HttpAuthorizationFilter basic(final UserCredentials credentials) {
         return new HttpAuthorizationFilter(new BasicAuthorizationProcessor(
-                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials"))
-        ));
+                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials"))));
     }
 
     /**
@@ -57,8 +56,7 @@ public class HttpAuthenticators {
      */
     public static HttpAuthorizationFilter basic(final int limit, final UserCredentials credentials) {
         return new HttpAuthorizationFilter(limit, new BasicAuthorizationProcessor(
-                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials"))
-        ));
+                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials"))));
     }
 
     /**
@@ -71,8 +69,7 @@ public class HttpAuthenticators {
      */
     public static HttpAuthorizationFilter digest(final UserCredentials credentials) {
         return new HttpAuthorizationFilter(new DigestAuthorizationProcessor(
-                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials"))
-        ));
+                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials"))));
     }
 
     /**
@@ -86,8 +83,7 @@ public class HttpAuthenticators {
      */
     public static HttpAuthorizationFilter digest(final int limit, final UserCredentials credentials) {
         return new HttpAuthorizationFilter(limit, new DigestAuthorizationProcessor(
-                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials")), limit
-        ));
+                Objects.requireNonNull(credentials, ClientMessages.MESSAGES.requiredValue("credentials")), limit));
     }
 
     /**

@@ -1,11 +1,12 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
-import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
+import java.util.concurrent.Executor;
+
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.reactivestreams.Subscriber;
 
-import java.util.concurrent.Executor;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 
 @SuppressWarnings("rawtypes")
 class ContextPropagatorOnFlowableAssemblyAction implements Function<Flowable, Flowable> {

@@ -1,48 +1,21 @@
 package org.jboss.resteasy.client.jaxrs.engines.jetty;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
-import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
-class JettyClientResponse extends FinalizedClientResponse {
-   private final Runnable cancel;
-   private InputStream stream;
+class JettyClientResponse extends ClientResponse {
 
-   JettyClientResponse(final ClientConfiguration configuration, final InputStream stream, final Runnable cancel) {
-      super(configuration, RESTEasyTracingLogger.empty());
-      this.cancel = cancel;
-      this.stream = stream;
-   }
+    JettyClientResponse(final ClientConfiguration configuration, final InputStream stream) {
+        super(configuration, RESTEasyTracingLogger.empty());
+        setInputStream(stream);
+    }
 
-   @Override
-   protected InputStream getInputStream() {
-      return stream;
-   }
-
-   @Override
-   protected void setInputStream(InputStream is) {
-      stream = is;
-      resetEntity();
-   }
-
-   @Override
-   public void releaseConnection() throws IOException {
-      releaseConnection(false);
-   }
-
-   @Override
-   public void releaseConnection(boolean consumeInputStream) throws IOException {
-      InputStream is = getInputStream();
-      if (is != null && consumeInputStream)
-      {
-         while (is.read() > 0)
-         {
-         }
-      }
-      cancel.run();
-   }
-
+    @Override
+    protected void setInputStream(final InputStream is) {
+        this.is = is;
+        resetEntity();
+    }
 }

@@ -215,12 +215,12 @@
     <sect1>
         <title>JSON Patch and JSON Merge Patch</title>
         <para>
-            RESTEasy supports apply partial modification to target resource with JSON Patch/JSON Merge Patch.
-            Instead of sending json request which represents the whole modified resource with HTTP PUT method, the json request only
-            contains the modified part with HTTP PATCH method can do the same job.
+            RESTEasy supports applying partial modifications to target resources with JSON Patch/JSON Merge Patch.
+            Instead of sending a json request which represents the whole modified resource with an HTTP PUT method,
+            the json request only contains the modified part with an HTTP PATCH method to do the same job.
         </para>
         <para>
-            JSON Patch request has an array of json object and each JSON object gives the operation to execute against the target resource.
+            JSON Patch request has an array of json objects and each JSON object gives the operation to execute against the target resource.
             Here is an example to modify the target Student resource which has these fields and values:
             {"firstName":"Alice","id":1,"school":"MiddleWood School"}:
                 <programlisting><![CDATA[
@@ -237,16 +237,17 @@
                  ]]>
                 </programlisting>
             This JSON Patch request will copy the firstName to lastName field , then change the firstName value to "John".
-            The next operation is remove the school value and add male gender to this "id=1" student resource.
-            After this JSON Path is applied, the target resource will be modified to:
+            The next operation will remove the school value and add male gender to this "id=1" student resource.
+            After this JSON Path is applied.  The target resource will be modified to:
              {"firstName":"John","gender":"male","id":1,"lastName":"Taylor"}.
             The operation keyword here can be "add", "remove", "replace", "move", "copy", or "test". The "path" value
-            must be a JSON Pointer value to point the part to apply this JSON Patch.
+            must be a JSON Pointer value that points to the part to apply this JSON Patch.
         </para>
         <para>
-            Unlike use the operation keyword to patch the target resource, JSON Merge Patch request directly send the expect
-            json change and RestEasy merge this change to target resource which identified by the request URI. Like the below JSON Merge Patch request, it remove
-            the "school" value and change the "firstName" to "Green". This is much straightforward:
+            Unlike using the operation keyword to patch the target resource, JSON Merge Patch request directly sends the expected
+            json change.  RestEasy merges this change into the target resource which is identified by the request URI.
+            Like the JSON Merge Patch request below, it removes
+            the "school" value and changes the "firstName" to "Green".
             <programlisting><![CDATA[
              PATCH /StudentPatchTest/students/1 HTTP/1.1
              Content-Type: application/merge-patch+json
@@ -258,9 +259,9 @@
             </programlisting>
         </para>
         <para>
-            Enable JSON Patch or JSON Merge Patch only needs correctly annotate the resource method with mediaType:
-            @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON) is to enable JSON Patch and @Consumes("application/merge-patch+json")
-            to enable JSON Merge Patch:
+            Enabling JSON Patch or JSON Merge Patch only requires correctly annotating the resource method with these mediaTypes.
+            @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON) enables JSON Patch. @Consumes("application/merge-patch+json")
+            enables JSON Merge Patch:
             <programlisting><![CDATA[
             @GET
             @Path("/{id}")
@@ -305,18 +306,18 @@
             </programlisting>
             <note>
                 <para>
-                 Before create JSON Patch or JSON Merge Patch resource method, there must be a GET method to get this
-                  target resource. As above code example, the first resource method is responsible for getting the target
-                resource to apply patch.
+                 Before creating a JSON Patch or JSON Merge Patch resource method, there must be a GET method to get the
+                  target resource. In the above code example, the first resource method is responsible for getting the target
+                resource to apply the patch.
                 </para>
                 <para>
-                 It requires the patch filter to enable JSON Patch or JSON Merge Patch. The RestEasy PatchMethodFilter
+                 It requires the patch filter to enable JSON Patch or JSON Merge Patch. The RESTEasy PatchMethodFilter
                     is enabled by default. This filter can be disabled by setting "resteasy.patchfilter.disabled" to true
                     as described in <xref linkend="configuration_switches"/>.
                 </para>
             </note>
 
-            Client side needs create these json objects and send it with http PATCH method.
+            The client side needs to create these json objects and send them with a http PATCH method.
             <programlisting><![CDATA[
             //send JSON Patch request
             WebTarget patchTarget = client.target("http://localhost:8090/StudentPatchTest/students/1"));

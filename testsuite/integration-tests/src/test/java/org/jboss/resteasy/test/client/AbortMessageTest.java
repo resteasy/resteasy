@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-
 import java.io.UnsupportedEncodingException;
 import java.util.logging.LoggingPermission;
 
@@ -33,41 +32,40 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class AbortMessageTest {
-   static Client client;
+    static Client client;
 
-   @BeforeClass
-   public static void setup() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void close() {
-      client.close();
-   }
+    @AfterClass
+    public static void close() {
+        client.close();
+    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-               new LoggingPermission("control", ""),
-               new RuntimePermission("accessDeclaredMembers")
-      ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new LoggingPermission("control", ""),
+                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
+        return TestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, AbortMessageTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, AbortMessageTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Send response with "Aborted"
-    * @tpSince RESTEasy 3.1.0.Final
-    */
-   @Test
-   public void testAbort() throws UnsupportedEncodingException {
-      WebTarget target = client.target(generateURL("/showproblem"));
-      Response response = target.request().get();
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("aborted", response.readEntity(String.class));
-   }
+    /**
+     * @tpTestDetails Send response with "Aborted"
+     * @tpSince RESTEasy 3.1.0.Final
+     */
+    @Test
+    public void testAbort() throws UnsupportedEncodingException {
+        WebTarget target = client.target(generateURL("/showproblem"));
+        Response response = target.request().get();
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("aborted", response.readEntity(String.class));
+    }
 }

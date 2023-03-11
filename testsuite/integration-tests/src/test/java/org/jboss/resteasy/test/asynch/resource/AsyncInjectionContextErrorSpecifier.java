@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD, PARAMETER })
-public @interface AsyncInjectionContextErrorSpecifier
-{
+public @interface AsyncInjectionContextErrorSpecifier {
 
 }

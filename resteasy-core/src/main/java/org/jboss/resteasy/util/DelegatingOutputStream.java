@@ -7,56 +7,46 @@ import java.io.OutputStream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class DelegatingOutputStream extends OutputStream
-{
-   protected OutputStream delegate;
+public class DelegatingOutputStream extends OutputStream {
+    protected OutputStream delegate;
 
-   public DelegatingOutputStream()
-   {
-   }
+    public DelegatingOutputStream() {
+    }
 
-   public DelegatingOutputStream(final OutputStream delegate)
-   {
-      this.delegate = delegate;
-   }
+    public DelegatingOutputStream(final OutputStream delegate) {
+        this.delegate = delegate;
+    }
 
-   public OutputStream getDelegate()
-   {
-      return delegate;
-   }
+    public OutputStream getDelegate() {
+        return delegate;
+    }
 
-   public void setDelegate(OutputStream delegate)
-   {
-      this.delegate = delegate;
-   }
+    public void setDelegate(OutputStream delegate) {
+        this.delegate = delegate;
+    }
 
-   @Override
-   public void write(int i) throws IOException
-   {
-      getDelegate().write(i);
-   }
+    @Override
+    public void write(int i) throws IOException {
+        getDelegate().write(i);
+    }
 
-   @Override
-   public void write(byte[] bytes) throws IOException
-   {
-      getDelegate().write(bytes);
-   }
+    @Override
+    public void write(byte[] bytes) throws IOException {
+        getDelegate().write(bytes);
+    }
 
-   @Override
-   public void write(byte[] bytes, int i, int i1) throws IOException
-   {
-      getDelegate().write(bytes, i, i1);
-   }
+    @Override
+    public void write(byte[] bytes, int i, int i1) throws IOException {
+        getDelegate().write(bytes, i, i1);
+    }
 
-   @Override
-   public void flush() throws IOException
-   {
-      getDelegate().flush();
-   }
+    @Override
+    public void flush() throws IOException {
+        getDelegate().flush();
+    }
 
-   @Override
-   public void close() throws IOException
-   {
-      getDelegate().close();
-   }
+    @Override
+    public void close() throws IOException {
+        getDelegate().close();
+    }
 }

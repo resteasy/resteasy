@@ -1,12 +1,13 @@
 package org.jboss.resteasy.plugins.interceptors;
 
+import java.io.IOException;
+
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.ext.Provider;
-import java.io.IOException;
 
 /**
  * Must be used in conjunction with GZIPDecodingInterceptor
@@ -18,24 +19,18 @@ import java.io.IOException;
  */
 @Provider
 @Priority(Priorities.HEADER_DECORATOR)
-public class AcceptEncodingGZIPFilter implements ClientRequestFilter
-{
+public class AcceptEncodingGZIPFilter implements ClientRequestFilter {
 
-   @Override
-   public void filter(ClientRequestContext ctx) throws IOException
-   {
-      String encoding = ctx.getHeaderString(HttpHeaders.ACCEPT_ENCODING);
-      if (encoding == null)
-      {
-         ctx.getHeaders().add(HttpHeaders.ACCEPT_ENCODING, "gzip, deflate");
-      }
-      else
-      {
-         if (!encoding.contains("gzip"))
-         {
-            encoding += ", gzip";
-            ctx.getHeaders().add(HttpHeaders.ACCEPT_ENCODING, encoding);
-         }
-      }
-   }
+    @Override
+    public void filter(ClientRequestContext ctx) throws IOException {
+        String encoding = ctx.getHeaderString(HttpHeaders.ACCEPT_ENCODING);
+        if (encoding == null) {
+            ctx.getHeaders().add(HttpHeaders.ACCEPT_ENCODING, "gzip, deflate");
+        } else {
+            if (!encoding.contains("gzip")) {
+                encoding += ", gzip";
+                ctx.getHeaders().add(HttpHeaders.ACCEPT_ENCODING, encoding);
+            }
+        }
+    }
 }

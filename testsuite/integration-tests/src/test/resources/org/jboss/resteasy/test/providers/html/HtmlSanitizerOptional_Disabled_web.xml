@@ -1,12 +1,11 @@
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <display-name>HtmlSanitizerOptionalTest_Disabled</display-name>
 
     <context-param>
-       <param-name>resteasy.disable.html.sanitizer</param-name>
-       <param-value>true</param-value>
+        <param-name>resteasy.disable.html.sanitizer</param-name>
+        <param-value>true</param-value>
     </context-param>
 
     <servlet>

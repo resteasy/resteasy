@@ -45,7 +45,8 @@ public class PriorityServiceLoaderTestCase {
         check(true, TestImplFirst.class, loader1);
         check(false, TestImplNoPriority.class, loader1);
 
-        final PriorityServiceLoader<TestInterface.InnerInterface> loader2 = PriorityServiceLoader.load(TestInterface.InnerInterface.class);
+        final PriorityServiceLoader<TestInterface.InnerInterface> loader2 = PriorityServiceLoader
+                .load(TestInterface.InnerInterface.class);
         check(true, TestInterface.InnerImpl.class, loader2);
         check(false, TestInterface.InnerImpl.class, loader2);
 
@@ -95,20 +96,22 @@ public class PriorityServiceLoaderTestCase {
     @Test
     public void constructorParameter() {
         final Optional<AbstractResolver> resolver = PriorityServiceLoader.load(AbstractResolver.class, (service) -> {
-                    try {
-                        return service.getConstructor(String.class).newInstance("test-value");
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+            try {
+                return service.getConstructor(String.class).newInstance("test-value");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        })
                 .first();
         Assert.assertTrue(resolver.isPresent());
         Assert.assertEquals("test-value", resolver.get().resolve());
     }
 
     private void checkNext(final Class<?> expected, final int count,
-                           final Iterator<?> iterator) {
-        Assert.assertTrue(String.format("Entry %d is expected to be %s, but no more entries were found.", count, expected.getName()), iterator.hasNext());
+            final Iterator<?> iterator) {
+        Assert.assertTrue(
+                String.format("Entry %d is expected to be %s, but no more entries were found.", count, expected.getName()),
+                iterator.hasNext());
         Object instance = iterator.next();
         Assert.assertTrue(String.format("Expected entry %d to be %s but was %s", count, expected.getName(), instance.getClass()
                 .getName()), expected.isInstance(instance));

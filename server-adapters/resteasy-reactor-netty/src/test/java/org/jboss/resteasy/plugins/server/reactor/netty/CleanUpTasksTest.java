@@ -1,7 +1,16 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import io.netty.handler.ssl.ClientAuth;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
+
+import javax.net.ssl.SSLContext;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.util.SSLCerts;
@@ -11,14 +20,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.net.ssl.SSLContext;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
-import java.util.Collections;
-import java.util.concurrent.CountDownLatch;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
-import static org.junit.Assert.assertEquals;
+import io.netty.handler.ssl.ClientAuth;
 
 /**
  * Tests to make sure clean up tasks are executed after request is serviced.
@@ -66,7 +70,7 @@ public class CleanUpTasksTest {
     }
 
     /**
-     * Tests to verify clean up tasks are run.  Count of latch always needs to be 0
+     * Tests to verify clean up tasks are run. Count of latch always needs to be 0
      */
     @Test
     public void testCleanUpTasks() {

@@ -12,7 +12,7 @@
 		<title>Link Headers</title>
 		<para>
 		RESTEasy has both client and server side support for the <ulink url="http://tools.ietf.org/html/draft-nottingham-http-link-header-06">Link header specification</ulink>.
-		See the javadocs for org.jboss.resteasy.spi.LinkHeader, org.jboss.resteasy.spi.Link, and org.jboss.resteasy.client.ClientResponse.
+		See the javadocs for org.jboss.resteasy.spi.LinkHeader, org.jboss.resteasy.specimpl.LinkImpl, and org.jboss.resteasy.client.ClientResponse.
 		</para>
 		<para>
 		The main advantage of Link headers over Atom links in the resource is that those links are available
@@ -22,22 +22,23 @@
 	<section>
 		<title>Atom links in the resource representations</title>
 		<para>
-		RESTEasy allows you to inject <ulink url="http://tools.ietf.org/html/rfc4287#section-4.2.7">Atom links</ulink> directly inside the entity objects you are sending to the
+		RESTEasy allows the injection of <ulink url="http://tools.ietf.org/html/rfc4287#section-4.2.7">Atom links</ulink>
+			directly inside the entity objects that are sending to the
 		client, via auto-discovery.
 		</para>
 		<warning>
 			<para>This is only available when using the Jackson2 or &XML-BIND-API; providers (for JSON and XML).</para>
 		</warning>
 		<para>
-		The main advantage over Link headers is that you can have any number of Atom links directly over the
+		The main advantage over Link headers is that there can be any number of Atom links directly over the
 		concerned resources, for any number of resources in the response. For example, you can have Atom links
 		for the root response entity, and also for each of its children entities.
 		</para>
 		<section>
 			<title>Configuration</title>
 			<para>
-				There is no configuration required to be able to inject Atom links in your resource
-				representation, you just have to have this maven artifact in your path:
+				There is no configuration required to be able to inject Atom links into a resource
+				representation, you just have to have this maven artifact in the application's path:
 			</para>
 			<table>
 				<caption>Maven artifact for Atom link injection</caption>
@@ -52,7 +53,7 @@
 					<tr>
 						<td>org.jboss.resteasy</td>
 						<td>resteasy-links</td>
-						<td>6.2.2.Final-SNAPSHOT</td>
+						<td>6.3.0.Alpha1-SNAPSHOT</td>
 					</tr>
 				</tbody>
 			</table>
@@ -60,19 +61,19 @@
 		<section>
 			<title>Your first links injected</title>
 			<para>
-			You need three things in order to tell RESTEasy to inject Atom links in your entities:
+			Three things are needed in order to tell RESTEasy to inject Atom links into an entity:
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-					Annotate the &REST-API; method with <classname>@AddLinks</classname> to indicate that you want
-					Atom links injected in your response entity.
+					Annotate the &REST-API; method with <classname>@AddLinks</classname> to indicate that
+					Atom links are to be injected into the response entity.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-					Add <classname>RESTServiceDiscovery</classname> fields to the resource classes where you
-					want Atom links injected.
+					Add <classname>RESTServiceDiscovery</classname> fields to the resource classes where
+					Atom links are to be injected.
 					</para>
 				</listitem>
 				<listitem>
@@ -83,8 +84,8 @@
 				</listitem>
 			</itemizedlist>
 			<para>
-			The following example illustrates how you would declare everything in order to get the Atom links
-			injected in your book store:
+			The following example illustrates how to declare everything in order to get the Atom links
+			injected in the book store example:
 			</para>
 			<programlisting language="Java"><![CDATA[@Path("/")
 @Consumes({"application/xml", "application/json"})
@@ -136,7 +137,7 @@ public class Book {
 	private RESTServiceDiscovery rest;
 }]]></programlisting>
 			<para>
-			If you do a GET /order/foo you will then get this XML representation:
+			If you do a GET /order/foo, this XML representation will be returned:
 			</para>
 			<programlisting language="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <book xmlns:atom="http://www.w3.org/2005/Atom" title="foo" author="bar">
@@ -166,17 +167,17 @@ public class Book {
 }]]></programlisting>
 		</section>
 		<section>
-			<title>Customising how the Atom links are serialised</title>
+			<title>Customising Atom link serialization</title>
 			<para>
-			Because the <classname>RESTServiceDiscovery</classname> is in fact a &XML-BIND-API; type which inherits from
-			<classname>List</classname> you are free to annotate it as you want to customise the &XML-BIND-API; serialisation,
+			The <classname>RESTServiceDiscovery</classname> is a &XML-BIND-API; type which inherits from
+			<classname>List</classname>.  You are free to annotate it in order to customise the &XML-BIND-API; serialisation,
 			or just rely on the default with <classname>@XmlElementRef</classname>.
 			</para>
 		</section>
 		<section>
 			<title>Specifying which &REST-API; methods are tied to which resources</title>
 			<para>
-			This is all done by annotating the methods with the <classname>@LinkResource</classname> annotation.
+			This is done by annotating the methods with the <classname>@LinkResource</classname> annotation.
 			It supports the following optional parameters:
 			</para>
 			<table>
@@ -230,10 +231,10 @@ public class Book {
 				</tbody>
 			</table>
 			<para>
-			You can add several <classname>@LinkResource</classname> annotations on a single method by enclosing
-			them in	a <classname>@LinkResources</classname> annotation. This way you can add links to the same
+			Several <classname>@LinkResource</classname> annotations can be added on a single method by enclosing
+			them in	a <classname>@LinkResources</classname> annotation.  This allows the adding of links to the same
 			method on several resource types. For example the <constant>/order/foo/comments</constant> operation
-			can belongs on the <classname>Order</classname> resource with the <constant>comments</constant>
+			can belong on the <classname>Order</classname> resource with the <constant>comments</constant>
 			relation, and on the <classname>Comment</classname> resource with the <constant>list</constant>
 			relation.
 			</para>
@@ -250,16 +251,16 @@ public class Book {
 				<para>
 					URI template values are extracted from the entity from fields or Java Bean properties
 					annotated with <classname>@ResourceID</classname>, &XML-BIND-API;'s <classname>@XmlID</classname> or
-					Jakarta Persistence's <classname>@Id</classname>. If there are more than one URI template
-					value to find in a given entity, you can annotate your entity with <classname>@ResourceIDs</classname>
+					Jakarta Persistence's <classname>@Id</classname>. If there is more than one URI template
+					value to find in a given entity, the entity can be annotated with <classname>@ResourceIDs</classname>
 					to list the names of fields or properties that make up this entity's Id. If there are other
-					URI template values required from a parent entity, we try to find that parent in a field or
+					URI template values required from a parent entity, RESTEasy tries to find the parent on a field or
 					Java Bean property
 					annotated with <classname>@ParentResource</classname>. The list of URI template
 					values extracted up every <classname>@ParentResource</classname> is then reversed and used
 					as the list of values for the URI template.
 				</para>
-				<para>For example, let's consider the previous Book example, and a list of comments:</para>
+				<para>For example, consider the previous Book example, and a list of comments:</para>
 			<programlisting language="Java"><![CDATA[@XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class Comment {
@@ -332,9 +333,9 @@ public interface BookStore {
 			<section>
 				<title>Specifying path parameters manually</title>
 				<para>
-				If you do not want to annotate your entities with resource ID annotations (<classname>@ResourceID</classname>,
+				An alternative to annotating  entities with resource ID annotations (<classname>@ResourceID</classname>,
 				<classname>@ResourceIDs</classname>, <classname>@XmlID</classname> or <classname>@Id</classname>) and
-				<classname>@ParentResource</classname>, you can also specify the URI template values inside the
+				<classname>@ParentResource</classname>, you can specify the URI template values inside the
 				<classname>@LinkResource</classname> annotation, using Unified Expression Language expressions:
 				</para>
 				<table>
@@ -361,7 +362,7 @@ public interface BookStore {
 				<para>
 				The UEL expressions are evaluated in the context of the entity, which means that any unqualified
 				variable will be taken as a property for the entity itself, with the special variable
-				<varname>this</varname> bound to the entity we're generating links for.
+				<varname>this</varname> bound to the entity for which links are being generated.
 				</para>
 				<para>
 				The previous example of <classname>Comment</classname> service could be declared as such:
@@ -407,7 +408,7 @@ public interface BookStore {
 		<section>
 			<title>Securing entities</title>
 			<para>
-			You can restrict which links are injected in the resource based on security restrictions for the client,
+			The user can restrict which links are injected in the resource based on security restrictions for the client,
 			so that if the current client doesn't have permission to delete a resource he will not be presented
 			with the <constant>"delete"</constant> link relation.
 			</para>
@@ -440,20 +441,20 @@ public interface BookStore {
 		<section>
 			<title>Extending the UEL context</title>
 			<para>
-			We've seen that both the URI template values and the security constraints of <classname>@LinkResource</classname>
-			use UEL to evaluate expressions, and we provide a basic UEL context with access only to the entity
-			we're injecting links in, and nothing more.
+			It has been shown that both the URI template values and the security constraints of <classname>@LinkResource</classname>
+			use UEL to evaluate expressions.  RESTEasy provides a basic UEL context with access only to the entity
+			we are injecting links in, and nothing more.
 			</para>
 			<para>
-			If you want to add more variables or functions in this
-			context, you can by adding a <classname>@LinkELProvider</classname> annotation on the &REST-API; method,
+			More variables or functions can be added in this
+			context, by adding a <classname>@LinkELProvider</classname> annotation on the &REST-API; method,
 			its class, or its package. This annotation's value should point to a class that implements the
 			<classname>ELProvider</classname> interface, which wraps the default <classname>ELContext</classname>
 			in order to add any missing functions.
 			</para>
 			<para>
-			For example, if you want to support the Seam annotation <varname>s:hasPermission(target, permission)</varname>
-			in your security constraints, you can add a <classname>package-info.java</classname> file like this:
+			For example, to support the Seam annotation <varname>s:hasPermission(target, permission)</varname>
+			in your security constraints, add a <classname>package-info.java</classname> file like this:
 			</para>
 			<programlisting language="Java"><![CDATA[@LinkELProvider(SeamELProvider.class)
 package org.jboss.resteasy.links.test;
@@ -544,20 +545,20 @@ public interface BookStore {
 		<section>
 			<title>Resource facades</title>
 			<para>
-			Sometimes it is useful to add resources which are just containers or layers on other resources. For
-			example if you want to represent a collection of <classname>Comment</classname> with a start index
+			Sometimes it is useful to add resources which are just containers or layers on other resources, for
+			example to represent a collection of <classname>Comment</classname> with a start index
 			and a certain number of entries, in order to implement paging. Such a collection is not really an
-			entity in your model, but it should obtain the <constant>"add"</constant> and <constant>"list"</constant>
+			entity in the model, but it should obtain the <constant>"add"</constant> and <constant>"list"</constant>
 			link relations for the <constant>Comment</constant> entity.
 			</para>
 			<para>
-			This is possible using resource facades. A resource facade is a resource which implements the
+			This is possibly using resource facades. A resource facade is a resource which implements the
 			<classname>ResourceFacade&lt;T&gt;</classname> interface for the type <varname>T</varname>, and as
 			such, should receive all links for that type.
 			</para>
 			<para>
 			Since in most cases the instance of the <varname>T</varname> type is not directly available in the
-			resource facade, we need another way to extract its URI template values, and this is done by calling
+			resource facade, another way is needed to extract its URI template values. This is done by calling
 			the resource facade's <methodname>pathParameters()</methodname> method to obtain a map of URI template
 			values by name. This map will be used to fill in the URI template values for any link generated for
 			<varname>T</varname>, if there are enough values in the map.

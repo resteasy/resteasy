@@ -28,57 +28,54 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class NoStreamRx2Test
-{
-   private static ResteasyClient client;
+public class NoStreamRx2Test {
+    private static ResteasyClient client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName())
-              .addAsManifestResource(
-                      // Required until WFLY-17051 is resolved
-                      PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")
-                      ),
-                      "permissions.xml");
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
-      return TestUtil.finishContainerPrepare(war, null, NoStreamRx2Resource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName())
+                .addAsManifestResource(
+                        // Required until WFLY-17051 is resolved
+                        PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")),
+                        "permissions.xml");
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+                + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
+        return TestUtil.finishContainerPrepare(war, null, NoStreamRx2Resource.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, NoStreamRx2Test.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, NoStreamRx2Test.class.getSimpleName());
+    }
 
-   //////////////////////////////////////////////////////////////////////////////
-   @BeforeClass
-   public static void beforeClass() throws Exception {
-      client = (ResteasyClient)ClientBuilder.newClient();
-   }
+    //////////////////////////////////////////////////////////////////////////////
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void after() throws Exception {
-      client.close();
-   }
+    @AfterClass
+    public static void after() throws Exception {
+        client.close();
+    }
 
-   @Test
-   public void testSingle() throws InterruptedException
-   {
-      String data = client.target(generateURL("/single")).request().get(String.class);
-      Assert.assertEquals("got it", data);
+    @Test
+    public void testSingle() throws InterruptedException {
+        String data = client.target(generateURL("/single")).request().get(String.class);
+        Assert.assertEquals("got it", data);
 
-      String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
-      Assert.assertArrayEquals(new String[] {"one", "two"}, data2);
+        String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
+        Assert.assertArrayEquals(new String[] { "one", "two" }, data2);
 
-      data2 = client.target(generateURL("/flowable")).request().get(String[].class);
-      Assert.assertArrayEquals(new String[] {"one", "two"}, data2);
+        data2 = client.target(generateURL("/flowable")).request().get(String[].class);
+        Assert.assertArrayEquals(new String[] { "one", "two" }, data2);
 
-      data = client.target(generateURL("/context/single")).request().get(String.class);
-      Assert.assertEquals("got it", data);
+        data = client.target(generateURL("/context/single")).request().get(String.class);
+        Assert.assertEquals("got it", data);
 
-      data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
-      Assert.assertArrayEquals(new String[] {"one", "two"}, data2);
+        data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
+        Assert.assertArrayEquals(new String[] { "one", "two" }, data2);
 
-      data2 = client.target(generateURL("/context/flowable")).request().get(String[].class);
-      assertArrayEquals(new String[] {"one", "two"}, data2);
-   }
+        data2 = client.target(generateURL("/context/flowable")).request().get(String[].class);
+        assertArrayEquals(new String[] { "one", "two" }, data2);
+    }
 }

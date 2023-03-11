@@ -21,112 +21,112 @@ import io.reactivex.Single;
 @Path("")
 public interface Rx2SingleResource {
 
-   @GET
-   @Path("get/string")
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> get();
+    @GET
+    @Path("get/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> get();
 
-   @GET
-   @Path("get/thing")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<Thing> getThing();
+    @GET
+    @Path("get/thing")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<Thing> getThing();
 
-   @GET
-   @Path("get/thing/list")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<List<Thing>> getThingList();
+    @GET
+    @Path("get/thing/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<List<Thing>> getThingList();
 
-   @PUT
-   @Path("put/string")
-   @Consumes(MediaType.TEXT_PLAIN)
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> put(String s);
+    @PUT
+    @Path("put/string")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> put(String s);
 
-   @PUT
-   @Path("put/thing")
-   @Consumes(MediaType.TEXT_PLAIN)
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<Thing> putThing(String s);
+    @PUT
+    @Path("put/thing")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<Thing> putThing(String s);
 
-   @PUT
-   @Path("put/thing/list")
-   @Consumes(MediaType.TEXT_PLAIN)
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<List<Thing>> putThingList(String s);
+    @PUT
+    @Path("put/thing/list")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<List<Thing>> putThingList(String s);
 
-   @POST
-   @Path("post/string")
-   @Consumes(MediaType.TEXT_PLAIN)
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> post(String s);
+    @POST
+    @Path("post/string")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> post(String s);
 
-   @POST
-   @Path("post/thing")
-   @Consumes(MediaType.TEXT_PLAIN)
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<Thing> postThing(String s);
+    @POST
+    @Path("post/thing")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<Thing> postThing(String s);
 
-   @POST
-   @Path("post/thing/list")
-   @Consumes(MediaType.TEXT_PLAIN)
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<List<Thing>> postThingList(String s);
+    @POST
+    @Path("post/thing/list")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<List<Thing>> postThingList(String s);
 
-   @DELETE
-   @Path("delete/string")
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> delete();
+    @DELETE
+    @Path("delete/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> delete();
 
-   @DELETE
-   @Path("delete/thing")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<Thing> deleteThing();
+    @DELETE
+    @Path("delete/thing")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<Thing> deleteThing();
 
-   @DELETE
-   @Path("delete/thing/list")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<List<Thing>> deleteThingList();
+    @DELETE
+    @Path("delete/thing/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<List<Thing>> deleteThingList();
 
-   @HEAD
-   @Path("head/string")
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> head();
+    @HEAD
+    @Path("head/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> head();
 
-   @OPTIONS
-   @Path("options/string")
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> options();
+    @OPTIONS
+    @Path("options/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> options();
 
-   @OPTIONS
-   @Path("options/thing")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<Thing> optionsThing();
+    @OPTIONS
+    @Path("options/thing")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<Thing> optionsThing();
 
-   @OPTIONS
-   @Path("options/thing/list")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<List<Thing>> optionsThingList();
+    @OPTIONS
+    @Path("options/thing/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<List<Thing>> optionsThingList();
 
-   @TRACE
-   @Path("trace/string")
-   @Produces(MediaType.TEXT_PLAIN)
-   Single<String> trace();
+    @TRACE
+    @Path("trace/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    Single<String> trace();
 
-   @TRACE
-   @Path("trace/thing")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<Thing> traceThing();
+    @TRACE
+    @Path("trace/thing")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<Thing> traceThing();
 
-   @TRACE
-   @Path("trace/thing/list")
-   @Produces(MediaType.APPLICATION_JSON)
-   Single<List<Thing>> traceThingList();
+    @TRACE
+    @Path("trace/thing/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    Single<List<Thing>> traceThingList();
 
-   @GET
-   @Path("exception/unhandled")
-   Single<Thing> exceptionUnhandled() throws Exception;
+    @GET
+    @Path("exception/unhandled")
+    Single<Thing> exceptionUnhandled() throws Exception;
 
-   @GET
-   @Path("exception/handled")
-   Single<Thing> exceptionHandled() throws Exception;
+    @GET
+    @Path("exception/handled")
+    Single<Thing> exceptionHandled() throws Exception;
 }

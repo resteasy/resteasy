@@ -116,7 +116,8 @@ public class Threshold {
      */
     public static Threshold valueOf(final String value) {
         // The value should be something like 1 MB or 1MB
-        final Matcher matcher = PATTERN.matcher(Objects.requireNonNull(value, Messages.MESSAGES.nullParameter("value")).toUpperCase(Locale.ROOT));
+        final Matcher matcher = PATTERN
+                .matcher(Objects.requireNonNull(value, Messages.MESSAGES.nullParameter("value")).toUpperCase(Locale.ROOT));
         if (!matcher.find()) {
             return DEFAULT;
         }

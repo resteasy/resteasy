@@ -21,9 +21,10 @@ package org.jboss.resteasy.test.client.authentication;
 
 import java.nio.charset.StandardCharsets;
 
-import dev.resteasy.client.util.authentication.UserCredentials;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+
+import dev.resteasy.client.util.authentication.UserCredentials;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -43,8 +44,10 @@ class TestAuth {
     static final String BASIC_AUTH_HEADER_USER_2 = "Basic 6bmw54iqOum5sOeIquWKn+Wkqw==";
 
     private static final String WEB_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<web-app version=\"5.0\" xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
-            "   xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd\">\n" +
+            "<web-app version=\"5.0\" xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n"
+            +
+            "   xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd\">\n"
+            +
             "    <security-constraint>\n" +
             "        <web-resource-collection>\n" +
             "            <url-pattern>/user/*</url-pattern>\n" +

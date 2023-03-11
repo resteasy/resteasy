@@ -1,16 +1,16 @@
 <chapter id="Asynchronous_HTTP_Request_Processing">
    <title>Asynchronous HTTP Request Processing</title>
    <para>
-      Asynchronous HTTP Request Processing is a relatively new technique that allows you to process a single HTTP
+      Asynchronous HTTP Request Processing is a relatively new technique that allows the processing of a single HTTP
       request using non-blocking I/O and, if desired in separate threads. Some refer to it as COMET capabilities.
       The primary use case for Asynchronous HTTP is
       in the case where the client is polling the server for a delayed response. The usual example is an AJAX chat
       client where you want to push/pull from both the client and the server. These scenarios have the client blocking
-      a long time on the server’s socket waiting for a new message. What happens in synchronous HTTP where the server is
-      blocking on incoming and outgoing I/O is that you end up having a thread consumed per client connection.
+      a long time on the server’s socket waiting for a new message. In synchronous HTTP where the server is
+      blocking on incoming and outgoing I/O is that you have a thread consumed per client connection.
       This eats up memory and valuable thread resources. Not such a big deal in 90% of applications (in fact using
-      asynchronous processing may actually hurt your performance in most common scenarios), but when you start
-      getting a lot of concurrent clients that are blocking like this, there’s a lot of wasted resources and your
+      asynchronous processing may actually hurt performance in most common scenarios), but when there are
+      a lot of concurrent clients that are blocking like this, there is a lot of wasted resources and the
       server does not scale that well.
    </para>
    <sect1>
@@ -20,7 +20,7 @@
          and AsyncResponse interface.
       </para>
       <para>
-          Injecting an AsyncResponse as a parameter to your &REST-API; methods tells RESTEasy that the HTTP request/response should be detached from the currently
+          Injecting an AsyncResponse as a parameter to a &REST-API; methods tells RESTEasy that the HTTP request/response should be detached from the currently
          executing thread and that the current thread should not try to automatically process the response.
       </para>
       <para>
@@ -66,10 +66,16 @@ public class SimpleResource
          AsyncResponse also has other methods to cancel the execution.  See javadoc for more details.
       </para>
       <para>
-         <emphasis role="bold">NOTE:</emphasis> The old RESTEasy proprietary API for async http has been deprecated and may be removed as soon as RESTEasy 3.1.
-         In particular, the RESTEasy @Suspend annotation is replaced by <classname>jakarta.ws.rs.container.Suspended</classname>, and
-         <classname>org.jboss.resteasy.spi.AsynchronousResponse</classname> is replaced by
-         <classname>jakarta.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
+         <emphasis role="bold">NOTE:</emphasis>
+         In RESTEasy version 4.0.0.Final proprietary annotation
+         <code>org.jboss.resteasy.annotations.Suspend</code> was removed
+         and replaced by <code>jakarta.ws.rs.container.Suspended</code> and class
+         <code>org.jboss.resteasy.spi.AsynchronousResponse</code> was removed and replaced by
+         <code>jakarta.ws.rs.container.AsyncResponse</code>.
+      </para>
+      <para>
+         <code>jakarta.ws.rs.container.Suspended</code> replaces <code>javax.ws.rs.container.Suspended</code>.
+          Note that @Suspended does not have a value field,
          which represented a timeout limit. Instead, <methodname>AsyncResponse.setTimeout()</methodname> may be called.
       </para>
    </sect1>
@@ -134,9 +140,9 @@ public class SimpleResource
    <sect1>
       <title>Asynchronous filters</title>
       <para>
-         It is possible to write <link linkend="Asynchronous_Filter">filters that also turn the request asynchronous</link>. 
-         Whether or not filters turned the request asynchronous
-         before execution of your method makes absolutely no difference to your method: it does not need to be declared asynchronous in
+         It is possible to write <link linkend="Asynchronous_Filter">filters that also make the request asynchronous</link>.
+         Whether filters make the request asynchronous
+         before execution of a method makes absolutely no difference to a method: it does not need to be declared asynchronous in
          order to function as specified. Synchronous methods and asynchronous methods will work as specified by the spec.
       </para>
     </sect1>

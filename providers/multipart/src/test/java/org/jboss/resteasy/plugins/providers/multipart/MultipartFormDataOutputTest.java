@@ -40,8 +40,7 @@ public class MultipartFormDataOutputTest {
                 Map.entry("key5", "value5"),
                 Map.entry("key1", "value1"),
                 Map.entry("key4", "value4"),
-                Map.entry("key2", "value2")
-        );
+                Map.entry("key2", "value2"));
         final MultipartFormDataOutput output = new MultipartFormDataOutput();
         for (Map.Entry<String, Object> entry : expectedMap.entrySet()) {
             output.addFormData(entry.getKey(), entry.getValue(), MediaType.TEXT_PLAIN_TYPE);

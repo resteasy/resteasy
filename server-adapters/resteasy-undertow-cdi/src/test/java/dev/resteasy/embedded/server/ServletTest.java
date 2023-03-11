@@ -40,14 +40,15 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.core.se.ConfigurationOption;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -84,7 +85,7 @@ public class ServletTest {
     public void servlet() throws Exception {
         final HttpClient client = HttpClient.newHttpClient();
         final HttpResponse<String> response = client.send(HttpRequest
-                        .newBuilder(INSTANCE.configuration().baseUriBuilder().path("test-servlet").build()).GET().build(),
+                .newBuilder(INSTANCE.configuration().baseUriBuilder().path("test-servlet").build()).GET().build(),
                 HttpResponse.BodyHandlers.ofString());
         Assert.assertEquals(200, response.statusCode());
         Assert.assertEquals("test-servlet", response.body());
@@ -99,7 +100,6 @@ public class ServletTest {
             Assert.assertEquals("test-resource", response.readEntity(String.class));
         }
     }
-
 
     @WebServlet("/test-servlet")
     public static class TestServlet extends HttpServlet {

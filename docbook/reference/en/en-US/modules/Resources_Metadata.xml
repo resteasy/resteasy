@@ -72,7 +72,7 @@ public interface ResourceLocator
 </para>
 
 <para>
-Now, the interesting point is that RESTEasy allows tuning the metadata generation by providing implementations of the <emphasis>ResourceClassProcessor</emphasis> interface:
+The interesting point is that RESTEasy allows tuning the metadata generation by providing implementations of the <emphasis>ResourceClassProcessor</emphasis> interface:
 <programlisting>
 package org.jboss.resteasy.spi.metadata;
 
@@ -102,9 +102,6 @@ altering the http methods
 </listitem>
 <listitem>
 altering the @Produces / @Consumes media types
-</listitem>
-<listitem>
-...
 </listitem>
 </itemizedlist>
 

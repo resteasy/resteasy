@@ -22,11 +22,7 @@ package org.jboss.resteasy.core.scanner;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,6 +51,8 @@ import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexReader;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
+import org.jboss.jandex.JarIndexer;
+import org.jboss.jandex.Result;
 
 /**
  * A scanner for locating resources.
@@ -105,11 +103,12 @@ public class ResourceScanner {
 
     /**
      * Creates a new scanner. This first searches for {@code META-INF/jandex.idx} resources on the class path ignoring
-     * the  {@code filter}. If no index resources are found, the class path itself is indexed. Note that scanning the
+     * the {@code filter}. If no index resources are found, the class path itself is indexed. Note that scanning the
      * class path could have significant performance impacts.
      * <p>
      * A filter can be used to exclude certain paths from being processed. For example if you want only {@code *.class}
      * files to be processed you could add a filter like:
+     *
      * <pre>{@code final ResourceScanner.fromClassPath(Thread.currentThread().getContextClassLoader(),
      *                  (path) -> path.getFileName().toString().endsWith(".class"));}</pre>
      * </p>
@@ -122,10 +121,10 @@ public class ResourceScanner {
      * @throws IOException if there is an error reading the index
      */
     public static ResourceScanner fromClassPath(final ClassLoader cl, final Predicate<Path> filter) throws IOException {
+        final Collection<IndexView> indexes = new ArrayList<>();
         // Check for a jandex.idx
         final Enumeration<URL> resources = cl.getResources("META-INF/jandex.idx");
         if (resources.hasMoreElements()) {
-            final Collection<IndexView> indexes = new ArrayList<>();
             while (resources.hasMoreElements()) {
                 try (InputStream in = resources.nextElement().openStream()) {
                     final IndexReader reader = new IndexReader(in);
@@ -135,6 +134,7 @@ public class ResourceScanner {
             return new ResourceScanner(CompositeIndex.create(indexes));
         }
         final Indexer indexer = new Indexer();
+
         final String[] cpEntries = System.getProperty("java.class.path").split(File.pathSeparator);
         for (String entry : cpEntries) {
             final Path path = Paths.get(entry);
@@ -153,11 +153,12 @@ public class ResourceScanner {
                 } else if (path.getFileName().toString().endsWith(".class")) {
                     indexClass(indexer, path);
                 } else if (path.getFileName().toString().endsWith(".jar")) {
-                    indexJar(indexer, path);
+                    indexes.add(indexJar(indexer, path).getIndex());
                 }
             }
         }
-        return new ResourceScanner(indexer.complete());
+        indexes.add(indexer.complete());
+        return new ResourceScanner(CompositeIndex.create(indexes));
     }
 
     /**
@@ -238,34 +239,14 @@ public class ResourceScanner {
         return results;
     }
 
-    private static void indexJar(final Indexer indexer, final Path jar) throws IOException {
-        try (FileSystem fs = getZipFs(jar)) {
-            Files.walkFileTree(fs.getPath("/"), new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
-                        throws IOException {
-                    if (file.getFileName().toString().endsWith(".class")) {
-                        indexClass(indexer, file);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
+    private static Result indexJar(final Indexer indexer, final Path jar) throws IOException {
+        return JarIndexer.createJarIndex(jar.toFile(), indexer, false, false, false);
     }
 
     private static void indexClass(final Indexer indexer, final Path file) throws IOException {
         try (InputStream in = Files.newInputStream(file)) {
             indexer.index(in);
         }
-    }
-
-    private static FileSystem getZipFs(final Path path) throws IOException {
-        final URI uri = URI.create("jar:" + path.toUri());
-        try {
-            return FileSystems.getFileSystem(uri);
-        } catch (FileSystemNotFoundException ignore) {
-        }
-        return FileSystems.newFileSystem(uri, Collections.emptyMap());
     }
 
     private static class PrioritySorter implements Comparator<ClassInfo> {
@@ -275,8 +256,8 @@ public class ResourceScanner {
         public int compare(final ClassInfo o1, final ClassInfo o2) {
             int p1 = Integer.MAX_VALUE;
             int p2 = Integer.MAX_VALUE;
-            final AnnotationInstance pa1 = o1.classAnnotation(PRIORITY);
-            final AnnotationInstance pa2 = o2.classAnnotation(PRIORITY);
+            final AnnotationInstance pa1 = o1.declaredAnnotation(PRIORITY);
+            final AnnotationInstance pa2 = o2.declaredAnnotation(PRIORITY);
             if (pa1 != null) {
                 p1 = pa1.value().asInt();
             }

@@ -9,9 +9,8 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @ContentEncoding("gzip")
-public @interface GZIP
-{
+public @interface GZIP {
 }
