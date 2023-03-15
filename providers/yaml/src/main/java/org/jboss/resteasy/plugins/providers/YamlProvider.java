@@ -38,6 +38,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static java.lang.System.getSecurityManager;
+import static java.security.AccessController.doPrivileged;
+
 /**
  * Provider for YAML {@literal <->} Object marshalling. Uses the following mime
  * types:<pre><code>
@@ -54,6 +57,9 @@ import java.util.regex.Pattern;
 public class YamlProvider extends AbstractEntityProvider<Object> {
    private static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowIfBaseType";
    private static final String DISABLE_TYPE_CHECK = "resteasy.yaml.deserialization.disable.type.check";
+   // Setting this property tells snakeyaml to allow all tags during parsing. The tags will be instead whitelisted by resteasy
+   // provided constructor.
+   private static final String ALLOW_ALL_TAGS = "org.yaml.snakeyaml.allow-all-tags";
    // These types should likely always be allowed
    private static final Collection<String> DEFAULT_ALLOWED_TYPES = Arrays.asList(
            toPattern(BigDecimal.class),
@@ -84,6 +90,11 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
+      // Set "org.yaml.snakeyaml.allow-all-tags" to true to make snakeyaml parsing work in permissive mode, allowing all tags
+      // to be parsed. The tags will be checked later by a resteasy provided constructor (TypeSafeConstructor).
+      // This is only relevant for snakeyaml 1.33.SP2+, which is Red Hat fork of snakeyaml 1.33.
+      final String originalAllowAllTags = getSystemProperty(ALLOW_ALL_TAGS);
+      setSystemProperty(ALLOW_ALL_TAGS, "true");
 
       try {
          LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
@@ -106,6 +117,9 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       } catch (Exception e) {
          LogMessages.LOGGER.debug(Messages.MESSAGES.failedToDecodeYamlMessage(e.getMessage()));
          throw new ReaderException(Messages.MESSAGES.failedToDecodeYaml(), e);
+      } finally {
+         // set the original value for "org.yaml.snakeyaml.allow-all-tags"
+         setSystemProperty(ALLOW_ALL_TAGS, originalAllowAllTags);
       }
    }
 
@@ -216,6 +230,36 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
                System.getProperty(key);
             }
             return value;
+         });
+      }
+   }
+
+   private static String getSystemProperty(final String key) {
+      return getSecurityManager() == null ? System.getProperty(key) : doPrivileged(new PrivilegedAction<String>() {
+         @Override
+         public String run() {
+            return System.getProperty(key);
+         }
+      });
+   }
+
+   private static void setSystemProperty(final String key, final String value) {
+      if (getSecurityManager() == null) {
+         if (value == null) {
+            System.clearProperty(key);
+         } else {
+            System.setProperty(key, value);
+         }
+      } else {
+         doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+               if (value == null) {
+                  return System.clearProperty(key);
+               } else {
+                  return System.setProperty(key, value);
+               }
+            }
          });
       }
    }
