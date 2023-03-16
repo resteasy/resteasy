@@ -55,7 +55,7 @@ import static java.security.AccessController.doPrivileged;
 @Produces({"text/yaml", "text/x-yaml", "application/x-yaml"})
 @Deprecated
 public class YamlProvider extends AbstractEntityProvider<Object> {
-   private static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowIfBaseType";
+   protected static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowIfBaseType";
    private static final String DISABLE_TYPE_CHECK = "resteasy.yaml.deserialization.disable.type.check";
    // Setting this property tells snakeyaml to allow all tags during parsing. The tags will be instead whitelisted by resteasy
    // provided constructor.
@@ -189,11 +189,13 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       });
    }
 
-   private static Pattern createAllowPattern() {
+   protected static Pattern createAllowPattern() {
       final String value = getProperty(ALLOWED_LIST);
       final Collection<String> allowed = new ArrayList<>(DEFAULT_ALLOWED_TYPES);
       if (value != null) {
-         Collections.addAll(allowed, value.split(","));
+         for (String className: value.split(",")) {
+            allowed.add(Pattern.quote(className));
+         }
       }
       return Pattern.compile(String.join("|", allowed));
    }
@@ -214,7 +216,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             }
          }
          if (value == null) {
-            System.getProperty(key);
+            value = System.getProperty(key);
          }
          return value;
       } else {
