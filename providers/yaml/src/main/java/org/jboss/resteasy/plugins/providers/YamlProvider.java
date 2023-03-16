@@ -7,9 +7,11 @@ import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
+import org.yaml.snakeyaml.inspector.TrustedTagInspector;
 import org.yaml.snakeyaml.nodes.Node;
 
 import javax.ws.rs.Consumes;
@@ -87,20 +89,23 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
 
       try {
          LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
+         final LoaderOptions loaderOptions = new LoaderOptions();
+         // RESTEasy has its own mechanism for checking allowed tags so we should use the trusted tag inspector.
+         loaderOptions.setTagInspector(new TrustedTagInspector());
          if (isValidInternalType(type)) {
             // Use the old behavior of trusting everything
             if (isTypeCheckDisabled()) {
-               return new Yaml().loadAs(entityStream, type);
+               return new Yaml(loaderOptions).loadAs(entityStream, type);
             }
             final BaseConstructor constructor;
             if (genericType instanceof ParameterizedType) {
-               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedPattern);
+               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedPattern, loaderOptions);
             } else {
-               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedPattern);
+               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedPattern, loaderOptions);
             }
             return new Yaml(constructor).loadAs(entityStream, type);
          } else {
-            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type, getClassLoader(type));
+            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type, getClassLoader(type), loaderOptions);
             return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
          }
       } catch (Exception e) {
@@ -229,8 +234,8 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       private final Pattern allowedPattern;
 
       private TypeSafeConstructor(final ParameterizedType parameterizedType, final ClassLoader classLoader,
-                                  final Pattern allowedPattern) {
-         super(classLoader);
+                                  final Pattern allowedPattern, final LoaderOptions loaderOptions) {
+         super(classLoader, loaderOptions);
          this.allowedPattern = allowedPattern;
          final Set<Class<?>> genericTypes = new HashSet<>();
          for (Type typeArg : parameterizedType.getActualTypeArguments()) {
@@ -244,8 +249,8 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
       }
 
       private TypeSafeConstructor(final Class<?> type, final ClassLoader classLoader,
-                                  final Pattern allowedPattern) {
-         super(classLoader);
+                                  final Pattern allowedPattern, final LoaderOptions loaderOptions) {
+         super(classLoader, loaderOptions);
          this.types = Collections.singleton(type);
          this.allowedPattern = allowedPattern;
       }
