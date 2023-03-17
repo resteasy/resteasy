@@ -7,10 +7,11 @@ import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.WriterException;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
-import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.inspector.TrustedPrefixesTagInspector;
+import org.yaml.snakeyaml.inspector.TrustedTagInspector;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.security.AccessController;
@@ -32,11 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Provider for YAML {@literal <->} Object marshalling. Uses the following mime
@@ -52,28 +50,28 @@ import java.util.regex.Pattern;
 @Produces({"text/yaml", "text/x-yaml", "application/x-yaml"})
 @Deprecated
 public class YamlProvider extends AbstractEntityProvider<Object> {
-   private static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowIfBaseType";
+   public static final String ALLOWED_LIST = "resteasy.yaml.deserialization.allowed.list.allowPrefixes";
    private static final String DISABLE_TYPE_CHECK = "resteasy.yaml.deserialization.disable.type.check";
    // These types should likely always be allowed
    private static final Collection<String> DEFAULT_ALLOWED_TYPES = Arrays.asList(
-           toPattern(BigDecimal.class),
-           toPattern(Boolean.class),
-           toPattern(Byte.class),
-           toPattern(Character.class),
-           toPattern(Double.class),
-           toPattern(Float.class),
-           toPattern(Integer.class),
-           toPattern(List.class),
-           toPattern(Long.class),
-           toPattern(Map.class),
-           toPattern(Set.class),
-           toPattern(Short.class),
-           toPattern(String.class)
+           BigDecimal.class.getName(),
+           Boolean.class.getName(),
+           Byte.class.getName(),
+           Character.class.getName(),
+           Double.class.getName(),
+           Float.class.getName(),
+           Integer.class.getName(),
+           List.class.getName(),
+           Long.class.getName(),
+           Map.class.getName(),
+           Set.class.getName(),
+           Short.class.getName(),
+           String.class.getName()
    );
-   private final Pattern allowedPattern;
+   private final List<String> allowedTypes;
 
    public YamlProvider() {
-      allowedPattern = createAllowPattern();
+      allowedTypes = createAllowList();
    }
    // MessageBodyReader
 
@@ -84,23 +82,22 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
+      LoaderOptions loaderOptions = new LoaderOptions();
+      if (isTypeCheckDisabled()) {
+         // Use the old behavior - allow all tags.
+         loaderOptions.setTagInspector(new TrustedTagInspector());
+      } else {
+         // Only allow tags representing classes specified via the system property setting.
+         TrustedPrefixesTagInspector inspector = new TrustedPrefixesTagInspector(allowedTypes);
+         loaderOptions.setTagInspector(inspector);
+      }
 
       try {
          LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
          if (isValidInternalType(type)) {
-            // Use the old behavior of trusting everything
-            if (isTypeCheckDisabled()) {
-               return new Yaml().loadAs(entityStream, type);
-            }
-            final BaseConstructor constructor;
-            if (genericType instanceof ParameterizedType) {
-               constructor = new TypeSafeConstructor((ParameterizedType) genericType, getClassLoader(type), allowedPattern);
-            } else {
-               constructor = new TypeSafeConstructor(type, getClassLoader(type), allowedPattern);
-            }
-            return new Yaml(constructor).loadAs(entityStream, type);
+            return new Yaml(loaderOptions).loadAs(entityStream, type);
          } else {
-            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type, getClassLoader(type));
+            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type, type.getClassLoader(), loaderOptions);
             return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
          }
       } catch (Exception e) {
@@ -156,32 +153,13 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
 
    }
 
-   private static ClassLoader getClassLoader(final Class<?> type) {
-      if (System.getSecurityManager() == null) {
-         // Get the TCCL first
-         ClassLoader result = Thread.currentThread().getContextClassLoader();
-         if (result == null) {
-            result = type.getClassLoader();
-         }
-         return result;
-      }
-      return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
-         // Get the TCCL first
-         ClassLoader result = Thread.currentThread().getContextClassLoader();
-         if (result == null) {
-            result = type.getClassLoader();
-         }
-         return result;
-      });
-   }
-
-   private static Pattern createAllowPattern() {
+   static List<String> createAllowList() {
       final String value = getProperty(ALLOWED_LIST);
-      final Collection<String> allowed = new ArrayList<>(DEFAULT_ALLOWED_TYPES);
+      final List<String> allowed = new ArrayList<>(DEFAULT_ALLOWED_TYPES);
       if (value != null) {
          Collections.addAll(allowed, value.split(","));
       }
-      return Pattern.compile(String.join("|", allowed));
+      return allowed;
    }
 
    private static boolean isTypeCheckDisabled() {
@@ -200,7 +178,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             }
          }
          if (value == null) {
-            System.getProperty(key);
+            value = System.getProperty(key);
          }
          return value;
       } else {
@@ -217,71 +195,6 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             }
             return value;
          });
-      }
-   }
-
-   private static String toPattern(final Class<?> type) {
-      return Pattern.quote(type.getName());
-   }
-
-   private static class TypeSafeConstructor extends CustomClassLoaderConstructor {
-      private final Set<Class<?>> types;
-      private final Pattern allowedPattern;
-
-      private TypeSafeConstructor(final ParameterizedType parameterizedType, final ClassLoader classLoader,
-                                  final Pattern allowedPattern) {
-         super(classLoader);
-         this.allowedPattern = allowedPattern;
-         final Set<Class<?>> genericTypes = new HashSet<>();
-         for (Type typeArg : parameterizedType.getActualTypeArguments()) {
-            try {
-               genericTypes.add(classLoader.loadClass(typeArg.getTypeName()));
-            } catch (ClassNotFoundException e) {
-               LogMessages.LOGGER.failedToLoadType(typeArg.getTypeName());
-            }
-         }
-         this.types = genericTypes;
-      }
-
-      private TypeSafeConstructor(final Class<?> type, final ClassLoader classLoader,
-                                  final Pattern allowedPattern) {
-         super(classLoader);
-         this.types = Collections.singleton(type);
-         this.allowedPattern = allowedPattern;
-      }
-
-      @Override
-      protected Object newInstance(final Class<?> ancestor, final Node node, final boolean tryDefault) {
-         if (denied(node.getType())) {
-            throw Messages.MESSAGES.typeNotAllowed(node.getType());
-         }
-         return super.newInstance(ancestor, node, tryDefault);
-      }
-
-      private boolean denied(final Class<?> type) {
-         if (type == null) {
-            return false;
-         }
-         // Allow all primitives
-         if (type.isPrimitive()) {
-            return false;
-         }
-         // Check the known types, these are a parameter or return type of a method. We assume these are safe.
-         boolean denied = true;
-         for (Class<?> allowed : types) {
-            if (allowed.isAssignableFrom(type)) {
-               denied = false;
-               break;
-            }
-         }
-         if (denied) {
-            // Check the allowed list if we are overriding a denied type
-            final String name = type.getName();
-            if (allowedPattern.matcher(name).matches()) {
-               return false;
-            }
-         }
-         return denied;
       }
    }
 

@@ -2,7 +2,13 @@ package org.jboss.resteasy.test.providers.yaml;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.api.ServerSetupTask;
+import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.controller.client.helpers.ClientConstants;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.providers.YamlProvider;
 import org.junit.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.logging.Logger;
@@ -34,7 +40,29 @@ import java.util.List;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup({YamlProviderTest.SystemPropertySetup.class})
 public class YamlProviderTest {
+
+   @SuppressWarnings("deprecation")
+   static class SystemPropertySetup implements ServerSetupTask {
+
+      @Override
+      public void setup(ManagementClient managementClient, String s) throws Exception {
+         final ModelNode op = new ModelNode();
+         op.get(ClientConstants.OP).set(ClientConstants.ADD);
+         op.get(ClientConstants.OP_ADDR).add("system-property", YamlProvider.ALLOWED_LIST);
+         op.get("value").set(YamlProviderNestedObject.class.getName() + "," + YamlProviderObject.class.getName());
+         managementClient.getControllerClient().execute(op);
+      }
+
+      @Override
+      public void tearDown(ManagementClient managementClient, String s) throws Exception {
+         final ModelNode op = new ModelNode();
+         op.get(ClientConstants.OP).set(ClientConstants.REMOVE_OPERATION);
+         op.get(ClientConstants.OP_ADDR).add("system-property", YamlProvider.ALLOWED_LIST);
+         managementClient.getControllerClient().execute(op);
+      }
+   }
 
    protected static final Logger logger = Logger.getLogger(YamlProviderTest.class.getName());
 

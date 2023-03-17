@@ -15,6 +15,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.api.ServerSetupTask;
+import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.controller.client.helpers.ClientConstants;
+import org.jboss.dmr.ModelNode;
+import org.jboss.resteasy.plugins.providers.YamlProvider;
 import org.jboss.resteasy.test.providers.yaml.resource.AttackVector;
 import org.jboss.resteasy.test.providers.yaml.resource.Message;
 import org.jboss.resteasy.test.providers.yaml.resource.MessageResource;
@@ -39,9 +45,31 @@ import org.junit.runner.RunWith;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
+@SuppressWarnings("deprecation")
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup({BadActorYamlProviderTest.SystemPropertySetup.class})
 public class BadActorYamlProviderTest {
+
+    static class SystemPropertySetup implements ServerSetupTask {
+
+        @Override
+        public void setup(ManagementClient managementClient, String s) throws Exception {
+            final ModelNode op = new ModelNode();
+            op.get(ClientConstants.OP).set(ClientConstants.ADD);
+            op.get(ClientConstants.OP_ADDR).add("system-property", YamlProvider.ALLOWED_LIST);
+            op.get("value").set(Message.class.getName());
+            managementClient.getControllerClient().execute(op);
+        }
+
+        @Override
+        public void tearDown(ManagementClient managementClient, String s) throws Exception {
+            final ModelNode op = new ModelNode();
+            op.get(ClientConstants.OP).set(ClientConstants.REMOVE_OPERATION);
+            op.get(ClientConstants.OP_ADDR).add("system-property", YamlProvider.ALLOWED_LIST);
+            managementClient.getControllerClient().execute(op);
+        }
+    }
 
     @Deployment
     public static WebArchive deployment() {
@@ -57,12 +85,15 @@ public class BadActorYamlProviderTest {
     }
 
     private static Client CLIENT;
+    private static String ORIGINAL_ALLOWED_LIST_VALUE;
 
     @ArquillianResource
     private URI uri;
 
     @BeforeClass
     public static void setupClient() {
+        // System property to allow deserialization of the Message class on the client side:
+        ORIGINAL_ALLOWED_LIST_VALUE = System.setProperty(YamlProvider.ALLOWED_LIST, Message.class.getName());
         CLIENT = ClientBuilder.newClient();
     }
 
@@ -70,6 +101,12 @@ public class BadActorYamlProviderTest {
     public static void closeClient() {
         if (CLIENT != null) {
             CLIENT.close();
+        }
+
+        if (ORIGINAL_ALLOWED_LIST_VALUE == null) {
+            System.clearProperty(YamlProvider.ALLOWED_LIST);
+        } else {
+            System.setProperty(YamlProvider.ALLOWED_LIST, ORIGINAL_ALLOWED_LIST_VALUE);
         }
     }
 
@@ -123,23 +160,10 @@ public class BadActorYamlProviderTest {
                         .request("text/yaml")
                         .post(Entity.entity(yaml, "text/yaml"))
         ) {
-            // We should have an CREATED response, in our test case the type should be ignored and we end up with a null
-            // message
-            Assert.assertEquals(Response.Status.CREATED, response.getStatusInfo());
-            // We should have a location in the headers
-            final URI location = response.getLocation();
-            Assert.assertNotNull("Expected a Location header in " + response.getHeaders(), location);
-            // Even though the message was created, we need to ensure the type wasn't constructed in the process
+            // We should fail as the AttackVector should not be allowed
+            checkExpectedStatus(response, Response.Status.BAD_REQUEST, Response.Status.INTERNAL_SERVER_ERROR);
             assertNotAttacked();
-
-            // Check the response link, it should be "passed"
-            try (Response getResponse = CLIENT.target(location).request("text/yaml").get()) {
-                // We should have an OK response
-                Assert.assertEquals(Response.Status.OK, getResponse.getStatusInfo());
-                final Message message = getResponse.readEntity(Message.class);
-                Assert.assertNotNull("Message should not be null", message);
-                Assert.assertNull(message.getText());
-            }
+            assertEmpty();
         }
     }
 
@@ -188,23 +212,10 @@ public class BadActorYamlProviderTest {
                         .request("text/yaml")
                         .post(Entity.entity(yaml, "text/yaml"))
         ) {
-            // We should have an CREATED response, in our test case the type should be ignored and we end up with a null
-            // message
-            Assert.assertEquals(Response.Status.CREATED, response.getStatusInfo());
-            // We should have a location in the headers
-            final URI location = response.getLocation();
-            Assert.assertNotNull("Expected a Location header in " + response.getHeaders(), location);
-            // Even though the message was created, we need to ensure the type wasn't constructed in the process
+            // We should fail as the AttackVector should not be allowed
+            checkExpectedStatus(response, Response.Status.BAD_REQUEST, Response.Status.INTERNAL_SERVER_ERROR);
             assertNotAttacked();
-
-            // Check the response link, it should be "passed"
-            try (Response getResponse = CLIENT.target(location).request("text/yaml").get()) {
-                // We should have an OK response
-                Assert.assertEquals(Response.Status.OK, getResponse.getStatusInfo());
-                final Message message = getResponse.readEntity(Message.class);
-                Assert.assertNotNull("Message should not be null", message);
-                Assert.assertNull(message.getText());
-            }
+            assertEmpty();
         }
     }
 
