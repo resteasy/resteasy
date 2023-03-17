@@ -894,14 +894,18 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
         String prefix = "";
         if (query == null)
             query = "";
-        else {
-            sb.append(query).append("&");
+        else if (!query.equals("")) {
+            if (values == null)
+                throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
+            else if (values.length > 0)
+                sb.append(query).append("&");
+            else
+                sb.append(query);
         }
 
         if (name == null)
             throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
-        if (values == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
+
         for (Object value : values) {
             if (value == null)
                 throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
