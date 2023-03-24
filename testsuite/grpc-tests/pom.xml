@@ -48,7 +48,7 @@
 		<wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
 		<wildfly.grpc.test.feature.pack.version>0.0.5-SNAPSHOT</wildfly.grpc.test.feature.pack.version>
 		<!-- For grpc-bridge test -->
-		<version.jakarta.rest.example.grpc>0.0.37</version.jakarta.rest.example.grpc>
+		<version.jakarta.rest.example.grpc>0.0.38</version.jakarta.rest.example.grpc>
 	</properties>
 	<artifactId>resteasy-grpc-tests</artifactId>
 	<name>RESTEasy Main testsuite: gRPC tests</name>

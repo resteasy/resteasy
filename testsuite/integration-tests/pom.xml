@@ -58,7 +58,8 @@
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
 
         <!-- For grpc-bridge test -->
-        <version.jakarta.rest.example.grpc>0.0.37</version.jakarta.rest.example.grpc>
+        <version.jakarta.rest.example.grpc>0.0.38</version.jakarta.rest.example.grpc>
+        <version.io.grpc>1.52.1</version.io.grpc>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -139,6 +140,12 @@
             </exclusions>
             <scope>test</scope>
         </dependency>
+
+		<dependency>
+    <groupId>org.jboss.threads</groupId>
+    <artifactId>jboss-threads</artifactId>
+    <version>2.4.0.Final</version>
+		</dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -362,7 +369,8 @@
        <dependency>
             <groupId>jakarta.rest.example</groupId>
             <artifactId>jakarta.rest.example.grpc</artifactId>
-            <version>0.0.37</version>
+            <version>${version.jakarta.rest.example.grpc}</version>
+            <type>jar</type>
             <exclusions>
                <exclusion>
                   <groupId>javax.inject</groupId>
@@ -399,17 +407,19 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <!--version>3.17.3</version-->
+            <version>3.17.3</version>
         </dependency>
 
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
+            <version>${version.io.grpc}</version>
         </dependency>
 
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
+            <version>${version.io.grpc}</version>
         </dependency>
 
         <dependency>
