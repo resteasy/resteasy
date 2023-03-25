@@ -95,7 +95,7 @@ public class GrpcToJakartaRESTTest {
     public static Archive<?> doDeploy() {
         WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest.class.getSimpleName());
         war.merge(ShrinkWrap.createFromZipFile(WebArchive.class,
-                TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.37")));
+                TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.38")));
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                 + "Dependencies: org.wildfly.extension.grpc,org.jboss.resteasy.grpc-bridge-runtime,org.jboss.as.weld,org.jboss.threads \n"));
         WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
