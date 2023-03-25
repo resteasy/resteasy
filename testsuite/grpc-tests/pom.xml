@@ -44,10 +44,10 @@
 		<server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
 		<server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
 		<server.test.feature.pack.version>27.0.0.Final</server.test.feature.pack.version>
+		<!-- For grpc-bridge test -->
 		<wildfly.grpc.test.feature.pack.groupId>org.wildfly.extras.grpc</wildfly.grpc.test.feature.pack.groupId>
 		<wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
-		<wildfly.grpc.test.feature.pack.version>0.0.5-SNAPSHOT</wildfly.grpc.test.feature.pack.version>
-		<!-- For grpc-bridge test -->
+		<wildfly.grpc.test.feature.pack.version>0.0.5</wildfly.grpc.test.feature.pack.version>
 		<version.jakarta.rest.example.grpc>0.0.38</version.jakarta.rest.example.grpc>
 	</properties>
 	<artifactId>resteasy-grpc-tests</artifactId>
