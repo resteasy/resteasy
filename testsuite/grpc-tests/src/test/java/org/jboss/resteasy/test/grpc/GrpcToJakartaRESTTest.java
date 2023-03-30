@@ -95,7 +95,8 @@ public class GrpcToJakartaRESTTest {
     public static Archive<?> doDeploy() {
         WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest.class.getSimpleName());
         war.merge(ShrinkWrap.createFromZipFile(WebArchive.class,
-                TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.38")));
+                TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.39")));
+        war.addClass(CC1ServiceGrpcImplSub.class);
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                 + "Dependencies: org.wildfly.extension.grpc,org.jboss.resteasy.grpc-bridge-runtime,org.jboss.as.weld,org.jboss.threads \n"));
         WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
@@ -264,6 +265,7 @@ public class GrpcToJakartaRESTTest {
         this.testSSE(stub);
         this.testString(stub);
         this.testSuspend(stub);
+        this.testCopy(stub);
     }
 
     void testBoolean(CC1ServiceBlockingStub stub) throws Exception {
@@ -1212,6 +1214,21 @@ public class GrpcToJakartaRESTTest {
         }
     }
 
+    void testCopy(CC1ServiceBlockingStub stub) {
+        CC1_proto.gString n = CC1_proto.gString.newBuilder().setValue("abc").build();
+        CC1_proto.GeneralEntityMessage.Builder builder = CC1_proto.GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/copy").setGStringField(n).build();
+        GeneralReturnMessage response;
+        try {
+            response = stub.copy(gem);
+            CC1_proto.gString expected = jakarta.rest.example.CC1_proto.gString.newBuilder().setValue("xyz").build();
+            Assert.assertEquals(expected, response.getGStringField());
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+    }
+
     static class GeneralReturnMessageHolder<T> {
         ArrayList<T> values = new ArrayList<T>();
 
@@ -1236,7 +1253,7 @@ public class GrpcToJakartaRESTTest {
         }
     }
 
-    //    //@Test
+    //    @Test
     //    void testIntAsyncStub(CC1ServiceBlockingStub stub) throws Exception {
     //        gInteger n = gInteger.newBuilder().setValue(3).build();
     //        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
