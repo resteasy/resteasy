@@ -44,7 +44,7 @@
 		<!-- For grpc-bridge test -->
 		<wildfly.grpc.test.feature.pack.groupId>org.wildfly.extras.grpc</wildfly.grpc.test.feature.pack.groupId>
 		<wildfly.grpc.test.feature.pack.artifactId>wildfly-grpc-feature-pack</wildfly.grpc.test.feature.pack.artifactId>
-		<wildfly.grpc.test.feature.pack.version>0.0.7</wildfly.grpc.test.feature.pack.version>
+		<wildfly.grpc.test.feature.pack.version>0.0.8</wildfly.grpc.test.feature.pack.version>
 		<version.jakarta.rest.example.grpc>0.0.39</version.jakarta.rest.example.grpc>
 	</properties>
 	<artifactId>resteasy-grpc-tests</artifactId>
