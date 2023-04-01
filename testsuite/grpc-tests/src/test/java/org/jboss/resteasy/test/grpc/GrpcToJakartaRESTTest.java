@@ -1,20 +1,20 @@
 package org.jboss.resteasy.test.grpc;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FilePermission;
 import java.io.InputStream;
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.PropertyPermission;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import jakarta.rest.example.CC1ServiceGrpc;
 import jakarta.rest.example.CC1ServiceGrpc.CC1ServiceBlockingStub;
+import jakarta.rest.example.CC1ServiceGrpc.CC1ServiceFutureStub;
+import jakarta.rest.example.CC1ServiceGrpc.CC1ServiceStub;
 import jakarta.rest.example.CC1_proto;
 import jakarta.rest.example.CC1_proto.FormMap;
 import jakarta.rest.example.CC1_proto.FormValues;
@@ -23,6 +23,7 @@ import jakarta.rest.example.CC1_proto.GeneralReturnMessage;
 import jakarta.rest.example.CC1_proto.ServletInfo;
 import jakarta.rest.example.CC1_proto.gCookie;
 import jakarta.rest.example.CC1_proto.gHeader;
+import jakarta.rest.example.CC1_proto.gInteger;
 import jakarta.rest.example.CC1_proto.gNewCookie;
 import jakarta.rest.example.CC1_proto.gString;
 import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC2;
@@ -41,11 +42,9 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 // import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -54,7 +53,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
 import io.grpc.ChannelCredentials;
@@ -63,6 +64,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.TlsChannelCredentials;
+import io.grpc.stub.StreamObserver;
 
 /**
  * @tpSubChapter gRPC bridge plus WildFly grpc subsystem
@@ -97,29 +99,27 @@ public class GrpcToJakartaRESTTest {
         war.merge(ShrinkWrap.createFromZipFile(WebArchive.class,
                 TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.39")));
         war.addClass(CC1ServiceGrpcImplSub.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-                + "Dependencies: org.wildfly.extension.grpc,org.jboss.resteasy.grpc-bridge-runtime,org.jboss.as.weld,org.jboss.threads \n"));
         WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-        //         log.info(archive.toString(true));
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read"),
-                new PropertyPermission("*", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.GRPC_PROXY_EXP"),
-                new RuntimePermission("shutdownHooks"),
-                new SocketPermission("*", "accept, listen,resolve")), "permissions.xml");
-        //        archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
+        // log.info(archive.toString(true));
+        // archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
         return archive;
     }
+
+    private static ManagedChannel channelPlaintext;
+    private static ManagedChannel channelSslOneway;
+    private static ManagedChannel channelSslTwoway;
 
     private static CC1ServiceBlockingStub blockingStubPlaintext;
     private static CC1ServiceBlockingStub blockingStubSslOneway;
     private static CC1ServiceBlockingStub blockingStubSslTwoway;
 
-    private static ManagedChannel channelPlaintext;
-    private static ManagedChannel channelSslOneway;
-    private static ManagedChannel channelSslTwoway;
+    private static CC1ServiceStub asyncStubPlaintext;
+    private static CC1ServiceStub asyncStubSslOneway;
+    private static CC1ServiceStub asyncStubSslTwoway;
+
+    private static CC1ServiceFutureStub futureStubPlaintext;
+    private static CC1ServiceFutureStub futureStubSslOneway;
+    private static CC1ServiceFutureStub futureStubSslTwoway;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -144,27 +144,13 @@ public class GrpcToJakartaRESTTest {
         blockingStubSslOneway = CC1ServiceGrpc.newBlockingStub(channelSslOneway);
         blockingStubSslTwoway = CC1ServiceGrpc.newBlockingStub(channelSslTwoway);
 
-        //        int i = 0;
-        //        for (i = 0; i < 5; i++) {
-        //            try {
-        //                ready(blockingStubPlaintext);
-        //                //                ready(blockingStubSslOneway);
-        //                //                ready(blockingStubSslTwoway);
-        //                break;
-        //            } catch (Exception e) {
-        //                // keep trying
-        //                Thread.sleep(1000);
-        //            }
-        //        }
-        //        if (i == 5) {
-        //            //            Thread.sleep(1111111111);
-        //
-        //            throw new RuntimeException("can't connect to gRPC servers");
-        //        } else {
-        //            log.info("beforeClass() successful");
-        //        }
-        //        System.out.println("waiting ...");
-        //        Thread.sleep(1111111111);
+        asyncStubPlaintext = CC1ServiceGrpc.newStub(channelPlaintext);
+        asyncStubSslOneway = CC1ServiceGrpc.newStub(channelSslOneway);
+        asyncStubSslTwoway = CC1ServiceGrpc.newStub(channelSslTwoway);
+
+        futureStubPlaintext = CC1ServiceGrpc.newFutureStub(channelPlaintext);
+        futureStubSslOneway = CC1ServiceGrpc.newFutureStub(channelSslOneway);
+        futureStubSslTwoway = CC1ServiceGrpc.newFutureStub(channelSslTwoway);
     }
 
     static void accessServletContexts() {
@@ -172,24 +158,8 @@ public class GrpcToJakartaRESTTest {
         client.target("http://localhost:8080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
         client.target("http://localhost:9080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
         client.target("http://localhost:10080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
+        client.close();
     }
-
-    //    static void ready(CC1ServiceBlockingStub stub) {
-    //        try {
-    //            jakarta.rest.example.CC1_proto.GeneralEntityMessage.Builder builder = jakarta.rest.example.CC1_proto.GeneralEntityMessage
-    //                    .newBuilder();
-    //            GeneralEntityMessage gem = builder.setURL("http://localhost:8080" + "/p/ready").build();
-    //            stub.ready(gem);
-    //        } catch (Exception e) {
-    //            throw e;
-    //        }
-    //    }
-    //
-    //    //    @Before
-    //    //    public void before() {
-    //    //        channel = ManagedChannelBuilder.forTarget(targetPlaintext).usePlaintext().build();
-    //    //        blockingStubPlaintext = CC1ServiceGrpc.newBlockingStub(channel);
-    //    //    }
 
     @AfterClass
     public static void afterClass() throws InterruptedException {
@@ -201,22 +171,30 @@ public class GrpcToJakartaRESTTest {
     @Test
     @OperateOnDeployment("jbossas-plaintext")
     public void testPlaintext() throws Exception {
-        doTest(blockingStubPlaintext);
+        doBlockingTest(blockingStubPlaintext);
+        doAsyncTest(asyncStubPlaintext);
+        doFutureTest(futureStubPlaintext);
     }
 
     @Test
     @OperateOnDeployment("jbossas-ssl-oneway")
     public void testSslOneway() throws Exception {
-        doTest(blockingStubSslOneway);
+        doBlockingTest(blockingStubSslOneway);
+        doAsyncTest(asyncStubSslOneway);
+        doFutureTest(futureStubSslOneway);
     }
 
     @Test
     @OperateOnDeployment("jbossas-ssl-twoway")
     public void testSslTwoway() throws Exception {
-        doTest(blockingStubSslTwoway);
+        doBlockingTest(blockingStubSslTwoway);
+        doAsyncTest(asyncStubSslTwoway);
+        doFutureTest(futureStubSslTwoway);
     }
 
-    void doTest(CC1ServiceBlockingStub stub) throws Exception {
+    /****************************************************************************************/
+    /****************************************************************************************/
+    void doBlockingTest(CC1ServiceBlockingStub stub) throws Exception {
         this.testBoolean(stub);
         this.testBooleanWithUnnecessaryURL(stub);
         this.testBooleanWrapper(stub);
@@ -268,6 +246,17 @@ public class GrpcToJakartaRESTTest {
         this.testCopy(stub);
     }
 
+    void doAsyncTest(CC1ServiceStub asyncStub) throws Exception {
+        testIntAsyncStub(asyncStub);
+        testSseAsyncStub(asyncStub);
+    }
+
+    void doFutureTest(CC1ServiceFutureStub futureStub) throws Exception {
+        testIntFutureStub(futureStub);
+    }
+
+    /****************************************************************************************/
+    /****************************************************************************************/
     void testBoolean(CC1ServiceBlockingStub stub) throws Exception {
         jakarta.rest.example.CC1_proto.gBoolean n = jakarta.rest.example.CC1_proto.gBoolean.newBuilder().setValue(false)
                 .build();
@@ -1253,98 +1242,95 @@ public class GrpcToJakartaRESTTest {
         }
     }
 
-    //    @Test
-    //    void testIntAsyncStub(CC1ServiceBlockingStub stub) throws Exception {
-    //        gInteger n = gInteger.newBuilder().setValue(3).build();
-    //        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
-    //        GeneralEntityMessage gem = builder.setGIntegerField(n).build();
-    //        CountDownLatch latch = new CountDownLatch(1);
-    //        GeneralReturnMessageHolder<Integer> grmh = new GeneralReturnMessageHolder<Integer>();
-    //        StreamObserver<GeneralReturnMessage> responseObserver = new StreamObserver<GeneralReturnMessage>() {
-    //            @Override
-    //            public void onNext(GeneralReturnMessage value) {
-    //                grmh.setValue(value.getGIntegerField().getValue());
-    //                latch.countDown();
-    //            }
-    //
-    //            @Override
-    //            public void onError(Throwable t) {
-    //                latch.countDown();
-    //            }
-    //
-    //            @Override
-    //            public void onCompleted() {
-    //                latch.countDown();
-    //            }
-    //        };
-    //        try {
-    //            asyncStub.getInt(gem, responseObserver);
-    //            latch.await();
-    //            Assert.assertEquals((Integer) 4, grmh.getValue());
-    //        } catch (StatusRuntimeException e) {
-    //            Assert.fail("fail");
-    //            return;
-    //        }
-    //    }
+    void testIntAsyncStub(CC1ServiceStub asyncStub) throws Exception {
+        gInteger n = gInteger.newBuilder().setValue(3).build();
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setGIntegerField(n).build();
+        CountDownLatch latch = new CountDownLatch(1);
+        GeneralReturnMessageHolder<Integer> grmh = new GeneralReturnMessageHolder<Integer>();
+        StreamObserver<GeneralReturnMessage> responseObserver = new StreamObserver<GeneralReturnMessage>() {
+            @Override
+            public void onNext(GeneralReturnMessage value) {
+                grmh.setValue(value.getGIntegerField().getValue());
+                latch.countDown();
+            }
 
-    //    //@Test
-    //    void testSseAsyncStub(CC1ServiceBlockingStub stub) throws Exception {
-    //        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
-    //        GeneralEntityMessage gem = builder.build();
-    //        CountDownLatch latch = new CountDownLatch(1);
-    //        GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent> grmh = new GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent>();
-    //        StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent> responseObserver = new StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent>() {
-    //            @Override
-    //            public void onNext(org_jboss_resteasy_grpc_sse_runtime___SseEvent value) {
-    //                grmh.addValue(value);
-    //            }
-    //
-    //            @Override
-    //            public void onError(Throwable t) {
-    //                latch.countDown();
-    //            }
-    //
-    //            @Override
-    //            public void onCompleted() {
-    //                latch.countDown();
-    //            }
-    //        };
-    //        try {
-    //            asyncStub.sse(gem, responseObserver);
-    //            latch.await();
-    //            Assert.assertEquals(4, grmh.size());
-    //            Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> it = grmh.iterator();
-    //            for (int i = 0; i < 3; i++) {
-    //                org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
-    //                Assert.assertEquals("name" + (i + 1), sseEvent.getName());
-    //                byte[] bytes = sseEvent.getData().toByteArray();
-    //                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-    //                Any any = Any.parseFrom(CodedInputStream.newInstance(bais));
-    //                gString gString = any.unpack(gString.class);
-    //                Assert.assertEquals("event" + (i + 1), gString.getValue());
-    //            }
-    //            org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
-    //            Assert.assertEquals("name4", sseEvent.getName());
-    //            Any any = sseEvent.getData();
-    //            org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
-    //            Assert.assertEquals(org_jboss_resteasy_example___CC5.newBuilder().setK(4).build(), cc5);
-    //        } catch (StatusRuntimeException e) {
-    //            Assert.fail("fail");
-    //            return;
-    //        }
-    //    }
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
 
-    //    //@Test
-    //    void testIntFutureStub(CC1ServiceBlockingStub stub) throws Exception {
-    //        gInteger n = gInteger.newBuilder().setValue(3).build();
-    //        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
-    //        GeneralEntityMessage gem = builder.setGIntegerField(n).build();
-    //        try {
-    //            ListenableFuture<GeneralReturnMessage> future = futureStub.getInt(gem);
-    //            Assert.assertEquals(4, future.get().getGIntegerField().getValue());
-    //        } catch (StatusRuntimeException e) {
-    //            Assert.fail("fail");
-    //            return;
-    //        }
-    //    }
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        };
+        try {
+            asyncStub.getInt(gem, responseObserver);
+            latch.await();
+            Assert.assertEquals((Integer) 4, grmh.getValue());
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+    }
+
+    void testSseAsyncStub(CC1ServiceStub asyncStub) throws Exception {
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.build();
+        CountDownLatch latch = new CountDownLatch(1);
+        GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent> grmh = new GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent>();
+        StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent> responseObserver = new StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent>() {
+            @Override
+            public void onNext(org_jboss_resteasy_grpc_sse_runtime___SseEvent value) {
+                grmh.addValue(value);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        };
+        try {
+            asyncStub.sse(gem, responseObserver);
+            latch.await();
+            Assert.assertEquals(4, grmh.size());
+            Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> it = grmh.iterator();
+            for (int i = 0; i < 3; i++) {
+                org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
+                Assert.assertEquals("name" + (i + 1), sseEvent.getName());
+                byte[] bytes = sseEvent.getData().toByteArray();
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                Any any = Any.parseFrom(CodedInputStream.newInstance(bais));
+                gString gString = any.unpack(gString.class);
+                Assert.assertEquals("event" + (i + 1), gString.getValue());
+            }
+            org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
+            Assert.assertEquals("name4", sseEvent.getName());
+            Any any = sseEvent.getData();
+            org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
+            Assert.assertEquals(org_jboss_resteasy_example___CC5.newBuilder().setK(4).build(), cc5);
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+    }
+
+    void testIntFutureStub(CC1ServiceFutureStub futureStub) throws Exception {
+        gInteger n = gInteger.newBuilder().setValue(3).build();
+        GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
+        GeneralEntityMessage gem = builder.setGIntegerField(n).build();
+        try {
+            ListenableFuture<GeneralReturnMessage> future = futureStub.getInt(gem);
+            Assert.assertEquals(4, future.get().getGIntegerField().getValue());
+        } catch (StatusRuntimeException e) {
+            Assert.fail("fail");
+            return;
+        }
+    }
 }
