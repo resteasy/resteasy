@@ -21,17 +21,15 @@ package org.jboss.resteasy.test.client;
 
 import java.io.IOException;
 import java.util.List;
-
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.MediaType;
-
+import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -62,7 +60,7 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
 
         @GET
         void methodWithLists(@QueryParam("listA") List<String> listA, @QueryParam("listB") List<String> listB,
-                @QueryParam("listC") List<String> listC);
+                             @QueryParam("listC") List<String> listC);
     }
 
     @Deployment
@@ -92,6 +90,7 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
                 Assert.assertEquals("listA=stuff1&listA=stuff2&listB=stuff1&listB=stuff2&listC=stuff1&listC=stuff2",
                         requestContext.getUri().getQuery());
             }
+            requestContext.abortWith(Response.accepted().build());
         }
 
         AssertFilter(final testType setting) {
@@ -110,14 +109,10 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
     public void testWithEmptyNamedQueryParameters() {
         ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         ResteasyClient client = builder.build();
-        client.register(new AssertFilter(testType.NOPARAMETERS));
 
-        try {
-            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of(), List.of(), List.of());
-        } catch (ProcessingException e) {
-            //The address for the request does not exist so this is expected to throw a Processing Exception.
-        } finally {
-            client.close();
+        try (client) {
+            client.register(new AssertFilter(testType.NOPARAMETERS));
+            client.target("").proxy(SomeResource.class).methodWithLists(List.of(), List.of(), List.of());
         }
 
     }
@@ -134,15 +129,11 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
     public void testWithMixedNamedQueryParameters() {
         ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         ResteasyClient client = builder.build();
-        client.register(new AssertFilter(testType.MIXEDPARAMETERS));
 
-        try {
-            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"),
+        try (client) {
+            client.register(new AssertFilter(testType.MIXEDPARAMETERS));
+            client.target("").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"),
                     List.of(), List.of("stuff1", "stuff2"));
-        } catch (ProcessingException e) {
-            //The address for the request does not exist so this is expected to throw a Processing Exception.
-        } finally {
-            client.close();
         }
 
     }
@@ -157,15 +148,10 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
     public void testWithFullNamedQueryParameters() {
         ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         ResteasyClient client = builder.build();
-        client.register(new AssertFilter(testType.FULLPARAMETERS));
 
-        try {
-            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"),
-                    List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"));
-        } catch (ProcessingException e) {
-            //The address for the request does not exist so this is expected to throw a Processing Exception.
-        } finally {
-            client.close();
+        try (client) {
+            client.register(new AssertFilter(testType.FULLPARAMETERS));
+            client.target("").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"));
         }
 
     }
