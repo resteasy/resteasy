@@ -567,6 +567,9 @@ public interface Messages {
     @Message(id = BASE + 720, value = "path param %s has not been provided by the parameter map")
     String pathParameterNotProvided(String param);
 
+    @Message(id = BASE + 723, value = "path param %s regex expression %s yields an empty string")
+    String regexPathParameterResultEmpty(String param, String regexText);
+
     @Message(id = BASE + 725, value = "pattern is null")
     String patternNull();
 
