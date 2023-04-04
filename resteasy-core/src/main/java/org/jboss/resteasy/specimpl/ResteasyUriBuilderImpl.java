@@ -58,6 +58,21 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
 
     }
 
+    /**
+     * Represents portions of a path.
+     */
+    static class PathSegments {
+        final String path;
+        final String query;
+        final String fragment;
+
+        PathSegments(final String path, final String query, final String fragment) {
+            this.path = path;
+            this.query = query;
+            this.fragment = fragment;
+        }
+    }
+
     private String host;
     private String scheme;
     private int port = -1;
@@ -180,20 +195,18 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
             }
         }
 
-        HashMap<String, String> pathComponentsMap;
+        final PathSegments pathComponents;
         if (match.group(6) == null && match.group(8) == null) {
-            pathComponentsMap = new HashMap<>();
-            pathComponentsMap.put("path", match.group(5).toString());
+            pathComponents = new PathSegments(match.group(5), null, null);
         } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append(match.group(5) == null ? "" : match.group(5));
-            sb.append(match.group(6) == null ? "" : match.group(6));
-            sb.append(match.group(8) == null ? "" : match.group(8));
-            pathComponentsMap = pathSegementParser(sb.toString());
+            final String sb = (match.group(5) == null ? "" : match.group(5)) +
+                    (match.group(6) == null ? "" : match.group(6)) +
+                    (match.group(8) == null ? "" : match.group(8));
+            pathComponents = pathSegmentParser(sb);
         }
 
-        if (pathComponentsMap.get("path") != null) {
-            String group = pathComponentsMap.get("path");
+        if (pathComponents.path != null) {
+            String group = pathComponents.path;
             if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1 &&
                     group.indexOf('/') > -1 && group.indexOf(':') < group.indexOf('/'))
                 throw new IllegalArgumentException(Messages.MESSAGES.illegalUriTemplate(uriTemplate));
@@ -201,12 +214,12 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
                 replacePath(group);
         }
 
-        if (pathComponentsMap.get("query") != null) {
-            replaceQuery(pathComponentsMap.get("query"));
+        if (pathComponents.query != null) {
+            replaceQuery(pathComponents.query);
         }
 
-        if (pathComponentsMap.get("fragment") != null) {
-            fragment(pathComponentsMap.get("fragment"));
+        if (pathComponents.fragment != null) {
+            fragment(pathComponents.fragment);
         }
 
         return this;
@@ -1110,58 +1123,6 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
     }
 
     /**
-     * The URI spec rfc3986, section 3.4 Query notes it may not be possible,
-     * "to distinguish query data from path data when looking for hierarchical separators."
-     * (e.g. http://http://127.0.0.1:8080/something/{string:[a-z]?}/cust?q={"status":"GOLD"})
-     * Parsing the uri and differentiating the regex expression "{string:[a-z]?}" from
-     * the query expression "cust?q={"status":"GOLD"}" is difficult. This method performs
-     * extra processing to identify path regex expressions from query expressions and
-     * encode them as appropriate.
-     *
-     * @param group5 uri path after "http://host:port/
-     * @param group6 proposed query text from "?" designator and following text
-     * @param group7 proposed query text following "?"
-     */
-    /*
-     * rls
-     * private void processRegexVsQueryText(String group5, String group6, String group7) {
-     *
-     * String tmpGroup5 = group5;
-     * String tmpGroup6 = group6;
-     *
-     * if (group5 != null && group6 != null) {
-     * int posBracketClose = group6.indexOf("}");
-     * if (posBracketClose > -1) {
-     * int posSlash = group5.lastIndexOf("/");
-     * if (group5.regionMatches(posSlash + 1, "{", 0, 1)) {
-     * tmpGroup5 = group5 + group6.substring(0, posBracketClose + 1);
-     * String tmpTmpGroup6 = group6.substring(posBracketClose + 1);
-     *
-     * int posQmark = tmpTmpGroup6.indexOf("?");
-     * if (posQmark != -1) {
-     * tmpGroup6 = tmpTmpGroup6.substring(posQmark + 1);
-     * } else {
-     * tmpGroup6 = "";
-     * }
-     * } else {
-     * tmpGroup6 = group7;
-     * }
-     * } else {
-     * tmpGroup6 = group7;
-     * }
-     * }
-     *
-     * if (tmpGroup5 != null && !tmpGroup5.isEmpty()) {
-     * replacePath(tmpGroup5);
-     * }
-     *
-     * if (tmpGroup6 != null && !tmpGroup6.isEmpty()) {
-     * replaceQuery(tmpGroup6);
-     * }
-     * }
-     * rls
-     */
-    /**
      * A regex expression can be provided as part of a path parameter
      * (e.g. http://host:port/book/{string:[a-z]?[1-9]+}). This method
      * extracts the regex expression and applies it to the srcStringValue
@@ -1205,21 +1166,20 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
      * @param uriTemplate all text after the authority component
      * @return a map that contains key/value pairs for path, query and fragment
      */
-    public HashMap<String, String> pathSegementParser(CharSequence uriTemplate) {
-        HashMap<String, String> pathComponentsMap = new HashMap<>();
-
+    PathSegments pathSegmentParser(final String uriTemplate) {
+        String query = null;
+        String fragment = null;
         // check for a fragment text
-        String[] fragmentComponentParts = fragmentComponentParser(uriTemplate.toString());
+        String[] fragmentComponentParts = fragmentComponentParser(uriTemplate);
         if (fragmentComponentParts[0] != null) {
-            pathComponentsMap.put("fragment", fragmentComponentParts[0]);
+            fragment = fragmentComponentParts[0];
         }
         // check for query text
         String[] queryComponentParts = queryComponentParser(fragmentComponentParts[1]);
         if (queryComponentParts[0] != null) {
-            pathComponentsMap.put("query", queryComponentParts[0]);
+            query = queryComponentParts[0];
         }
-        pathComponentsMap.put("path", queryComponentParts[1]);
-        return pathComponentsMap;
+        return new PathSegments(queryComponentParts[1], query, fragment);
     }
 
     /**
@@ -1279,7 +1239,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
             // evaluate text around ? determine if query or pathParam text
             for (int i = 0; i < cnt; i++) {
                 if (!isPathParamWithRegex(pathParamText, questionMarkLoc[i])) {
-                    String queryText = pathParamText.substring(questionMarkLoc[i], pathParamText.length());
+                    String queryText = pathParamText.substring(questionMarkLoc[i]);
                     if (!queryText.isEmpty()) {
                         componentParts[0] = queryText;
                     }

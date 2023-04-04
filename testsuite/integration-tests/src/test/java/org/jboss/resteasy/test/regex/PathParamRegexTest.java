@@ -21,18 +21,21 @@ package org.jboss.resteasy.test.regex;
 
 import static junit.framework.TestCase.assertEquals;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.regex.resource.ProxyPathParamRegexResource;
 import org.jboss.resteasy.test.regex.resource.RegexInterface;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -50,11 +53,14 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class PathParamRegexTest {
 
-    static ResteasyClient client;
+    static Client client;
+
+    @ArquillianResource
+    private URI uri;
 
     @Before
     public void setUp() {
-        client = (ResteasyClient) ClientBuilder.newClient();
+        client = ClientBuilder.newClient();
     }
 
     @After
@@ -70,16 +76,16 @@ public class PathParamRegexTest {
                 ProxyPathParamRegexResource.class);
     }
 
-    private String generatePathURL(String path) {
-        return PortProviderUtil.generateURL(path, PathParamRegexTest.class.getSimpleName());
+    private URI generatePathURL(String path) throws URISyntaxException {
+        return TestUtil.generateUri(uri, path);
     }
 
     /**
      * As a control check that a simple query works.
      */
     @Test
-    public void queryControlTest() {
-        ResteasyWebTarget target = client.target(generatePathURL("/encoded/query?m=q p"));
+    public void queryControlTest() throws Exception {
+        WebTarget target = client.target(generatePathURL("/encoded/query?m=q%20p"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -91,8 +97,8 @@ public class PathParamRegexTest {
      * As a control check that a simple reqex using ? is processed correctly
      */
     @Test
-    public void questionMarkControlTest() {
-        ResteasyWebTarget target = client.target(generatePathURL("/w"));
+    public void questionMarkControlTest() throws Exception {
+        WebTarget target = client.target(generatePathURL("/w"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -105,8 +111,8 @@ public class PathParamRegexTest {
      * @tpPassCrit Expected string is returned
      */
     @Test
-    public void testQuestionMarkInMultiplePathParamRegex() {
-        ResteasyWebTarget target = client.target(generatePathURL("/xpath/x"));
+    public void testQuestionMarkInMultiplePathParamRegex() throws Exception {
+        WebTarget target = client.target(generatePathURL("/xpath/x"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -119,8 +125,8 @@ public class PathParamRegexTest {
      * are handled properly.
      */
     @Test
-    public void questionMarkAndQueryTest() {
-        ResteasyWebTarget target = client.target(generatePathURL("/regex/query/x/cust"))
+    public void questionMarkAndQueryTest() throws Exception {
+        WebTarget target = client.target(generatePathURL("/regex/query/x/cust"))
                 .queryParam("m", "q p");
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
@@ -133,8 +139,8 @@ public class PathParamRegexTest {
      * Test 2 params each using a regex expression that uses a ?.
      */
     @Test
-    public void twoRegexQuestionMarkTest() {
-        ResteasyWebTarget target = client.target(generatePathURL("/two/xZ/Y"));
+    public void twoRegexQuestionMarkTest() throws Exception {
+        WebTarget target = client.target(generatePathURL("/two/xZ/Y"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -146,8 +152,8 @@ public class PathParamRegexTest {
      * Verify regex qualifier, *, is handled.
      */
     @Test
-    public void asteriskQualiferTest() {
-        ResteasyWebTarget target = client.target(generatePathURL("/asterisk/amw/xpath"));
+    public void asteriskQualifierTest() throws Exception {
+        WebTarget target = client.target(generatePathURL("/asterisk/amw/xpath"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -159,9 +165,9 @@ public class PathParamRegexTest {
      * Verify regex qualifier, {}, is handled correctly
      */
     @Test
-    public void curlyBracketQualifierTest() {
+    public void curlyBracketQualifierTest() throws Exception {
 
-        ResteasyWebTarget target = client.target(generatePathURL("/bracket/abc/xpath"));
+        WebTarget target = client.target(generatePathURL("/bracket/abc/xpath"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
