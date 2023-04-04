@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.concurrent;
+package org.jboss.resteasy.core.concurrent;
 
 import java.util.Map;
 
