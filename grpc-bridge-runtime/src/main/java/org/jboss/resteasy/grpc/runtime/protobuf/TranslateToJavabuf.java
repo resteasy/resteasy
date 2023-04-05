@@ -14,20 +14,21 @@ import com.google.protobuf.Message;
  * configuration parameters), {@code a.b.Outer_proto$a_b____C}. Then {@link JavabufTranslatorGenerator}
  * can create a class {@code Outer_JavabufTranslator} with an instance {@code a_b___CC_ToJavabuf}
  * of {@code TranslateToJavabuf}, which can be used as follows:
+ *
  * <pre>
- *    C c = new C();
- *    Message message = Outer_JavabufTranslator.translateToJavabuf(c);
+ * C c = new C();
+ * Message message = Outer_JavabufTranslator.translateToJavabuf(c);
  * </pre>
  */
 public interface TranslateToJavabuf {
 
-   /**
-    * Copies the content of a Java class to a {@code com.google.protobuf.Message}
-    */
-   Message assignToJavabuf(Object obj);
+    /**
+     * Copies the content of a Java class to a {@code com.google.protobuf.Message}
+     */
+    Message assignToJavabuf(Object obj);
 
-   /*
-    * Clears {@code com.google.protobuf.Message} builder
-    */
-   void clear();
+    /*
+     * Clears {@code com.google.protobuf.Message} builder
+     */
+    void clear();
 }

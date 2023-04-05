@@ -7,34 +7,34 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 
 public class MockServletOutputStream extends ServletOutputStream {
-   protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-   private boolean closed;
+    private boolean closed;
 
-   @Override
-   public boolean isReady() {
-      return true;
-   }
+    @Override
+    public boolean isReady() {
+        return true;
+    }
 
-   @Override
-   public void setWriteListener(WriteListener writeListener) {
-   }
+    @Override
+    public void setWriteListener(WriteListener writeListener) {
+    }
 
-   @Override
-   public void write(int b) throws IOException {
-      baos.write(b);
-   }
+    @Override
+    public void write(int b) throws IOException {
+        baos.write(b);
+    }
 
-   public ByteArrayOutputStream getDelegate() {
-      return baos;
-   }
+    public ByteArrayOutputStream getDelegate() {
+        return baos;
+    }
 
-   public void close() throws IOException {
-      super.close();
-      closed = true;
-   }
+    public void close() throws IOException {
+        super.close();
+        closed = true;
+    }
 
-   public boolean isClosed() {
-      return closed;
-   }
+    public boolean isClosed() {
+        return closed;
+    }
 }

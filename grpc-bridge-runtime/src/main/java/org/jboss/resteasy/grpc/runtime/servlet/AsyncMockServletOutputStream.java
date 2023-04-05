@@ -6,74 +6,79 @@ import java.util.ArrayList;
 
 public class AsyncMockServletOutputStream extends MockServletOutputStream {
 
-   private static final ByteArrayOutputStream CLOSE_MARKER = new ByteArrayOutputStream();
-   private enum STATE {OPEN, CLOSING, CLOSED};
+    private static final ByteArrayOutputStream CLOSE_MARKER = new ByteArrayOutputStream();
 
-   private STATE state = STATE.OPEN;
-   private volatile ArrayList<ByteArrayOutputStream> list = new ArrayList<ByteArrayOutputStream>();
+    private enum STATE {
+        OPEN,
+        CLOSING,
+        CLOSED
+    };
 
-   @Override
-   public boolean isClosed() {
-      return state == STATE.CLOSED;
-   }
+    private STATE state = STATE.OPEN;
+    private volatile ArrayList<ByteArrayOutputStream> list = new ArrayList<ByteArrayOutputStream>();
 
-   public synchronized ByteArrayOutputStream await() throws InterruptedException {
-      if (state == STATE.CLOSED) {
-         return null;
-      }
-      if (state == STATE.CLOSING) {
-         ByteArrayOutputStream baos = list.remove(0);
-         if (CLOSE_MARKER == baos) {
-            state = STATE.CLOSED;
+    @Override
+    public boolean isClosed() {
+        return state == STATE.CLOSED;
+    }
+
+    public synchronized ByteArrayOutputStream await() throws InterruptedException {
+        if (state == STATE.CLOSED) {
             return null;
-         }
-         return baos;
-      }
-      while (true) {
-         if (list.size() > 0) {
+        }
+        if (state == STATE.CLOSING) {
             ByteArrayOutputStream baos = list.remove(0);
             if (CLOSE_MARKER == baos) {
-               state = STATE.CLOSED;
-               return null;
+                state = STATE.CLOSED;
+                return null;
             }
             return baos;
-         }
-         try {
-            wait();
-         } catch (InterruptedException e) {
-            //
-         }
-      }
-   }
+        }
+        while (true) {
+            if (list.size() > 0) {
+                ByteArrayOutputStream baos = list.remove(0);
+                if (CLOSE_MARKER == baos) {
+                    state = STATE.CLOSED;
+                    return null;
+                }
+                return baos;
+            }
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                //
+            }
+        }
+    }
 
-   public synchronized void release() throws IOException {
-      if (state != STATE.OPEN) {
-         return;
-      }
-      list.add(getDelegate());
-      notify();
-   }
+    public synchronized void release() throws IOException {
+        if (state != STATE.OPEN) {
+            return;
+        }
+        list.add(getDelegate());
+        notify();
+    }
 
-   public synchronized void release(ByteArrayOutputStream baos) throws IOException {
-      if (state != STATE.OPEN) {
-         return;
-      }
-      list.add(baos);
-      notify();
-   }
+    public synchronized void release(ByteArrayOutputStream baos) throws IOException {
+        if (state != STATE.OPEN) {
+            return;
+        }
+        list.add(baos);
+        notify();
+    }
 
-   @Override
-   public synchronized void close() throws IOException {
-      if (state != STATE.OPEN) {
-         return;
-      }
-      if (list.isEmpty()) {
-         state = STATE.CLOSED;
-      } else {
-         state = STATE.CLOSING;
-      }
-      list.add(CLOSE_MARKER);
-      notifyAll();
-//      System.out.println("AsyncMockServletOutputStream.close()");
-   }
+    @Override
+    public synchronized void close() throws IOException {
+        if (state != STATE.OPEN) {
+            return;
+        }
+        if (list.isEmpty()) {
+            state = STATE.CLOSED;
+        } else {
+            state = STATE.CLOSING;
+        }
+        list.add(CLOSE_MARKER);
+        notifyAll();
+        //      System.out.println("AsyncMockServletOutputStream.close()");
+    }
 }

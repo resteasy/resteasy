@@ -7,5 +7,5 @@ import com.google.protobuf.DynamicMessage;
  */
 public interface AssignToJavabuf {
 
-   void assign(Object from, DynamicMessage.Builder builder);
+    void assign(Object from, DynamicMessage.Builder builder);
 }
