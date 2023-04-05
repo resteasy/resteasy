@@ -75,7 +75,7 @@ public class ServletConfigTest {
     public void testNullJaxb() throws Exception {
         Response response = client.target(generateURL("/my/null")).request().header("Content-Type", "application/xml")
                 .post(Entity.text(""));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
         response.close();
     }
 
