@@ -1,4 +1,4 @@
-package org.jboss.resteasy.grpc.sse.runtime;
+package org.jboss.resteasy.grpc.runtime.sse;
 
 import com.google.protobuf.Any;
 
