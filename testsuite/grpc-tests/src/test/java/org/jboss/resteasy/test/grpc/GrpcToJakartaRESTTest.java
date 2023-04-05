@@ -2,7 +2,9 @@ package org.jboss.resteasy.test.grpc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FilePermission;
 import java.io.InputStream;
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +44,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -100,6 +103,12 @@ public class GrpcToJakartaRESTTest {
                 TestUtil.resolveDependency("jakarta.rest.example:jakarta.rest.example.grpc:war:0.0.39")));
         war.addClass(CC1ServiceGrpcImplSub.class);
         WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new FilePermission("<<ALL FILES>>", "read"),
+                new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new RuntimePermission("getClassLoader"),
+                new RuntimePermission("setContextClassLoader")), "permissions.xml");
         // log.info(archive.toString(true));
         // archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
         return archive;
