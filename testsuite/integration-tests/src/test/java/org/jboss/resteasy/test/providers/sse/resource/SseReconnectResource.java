@@ -25,6 +25,8 @@ public class SseReconnectResource {
 
     private volatile boolean isServiceAvailable = false;
 
+    private static int callsCounter = 0;
+
     private volatile long startTime = 0L;
     private volatile long endTime = 0L;
     private volatile long lastEventDeliveryTime;
@@ -129,6 +131,19 @@ public class SseReconnectResource {
                     .header(HttpHeaders.RETRY_AFTER, String.valueOf(retry_cnt--))
                     .build());
         }
+    }
+
+    @GET
+    @Path("/nocontent")
+    public Response noContent() {
+        callsCounter++;
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/numberOfCalls")
+    public int getNumberOfCalls() {
+        return callsCounter;
     }
 
     private void sendEvent(SseEventSink sseEventSink, Sse sse, String eventId, Long reconnectDelayInMs) {

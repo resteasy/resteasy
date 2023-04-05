@@ -86,7 +86,7 @@ public class SseEventSinkClosingTest {
 
             try (Response response = baseTarget.path(SseEventSinkClosingTestResource.CLOSE_WITHOUT_SENDING_PATH)
                     .request(MediaType.SERVER_SENT_EVENTS_TYPE).get()) {
-                Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+                Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
             }
 
             try (Response response = baseTarget

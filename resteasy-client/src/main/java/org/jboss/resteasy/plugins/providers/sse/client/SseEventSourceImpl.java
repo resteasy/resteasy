@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -29,6 +30,9 @@ import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class SseEventSourceImpl implements SseEventSource {
+
+    private final AtomicBoolean onCompleteInvoked = new AtomicBoolean(false);
+
     public static final long RECONNECT_DEFAULT = 500;
 
     private final WebTarget target;
@@ -236,7 +240,9 @@ public class SseEventSourceImpl implements SseEventSource {
             }
         }
         sseEventSourceScheduler.shutdownNow();
-        onCompleteConsumers.forEach(Runnable::run);
+        if (!onCompleteInvoked.getAndSet(true)) {
+            onCompleteConsumers.forEach(Runnable::run);
+        }
     }
 
     private class EventHandler implements Runnable {
@@ -289,6 +295,11 @@ public class SseEventSourceImpl implements SseEventSource {
                 response = clientResponse;
                 if (Family.SUCCESSFUL.equals(clientResponse.getStatusInfo().getFamily())) {
                     onConnection();
+                    if (clientResponse.getStatus() == 204) {
+                        // only onComplete is invoked
+                        internalClose();
+                        return;
+                    }
                     eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                     //if 200<= response code <300 and response contentType is null, fail the connection.
                     if (eventInput == null) {

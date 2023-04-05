@@ -236,4 +236,28 @@ public class SseReconnectTest {
         }
     }
 
+    /**
+     * @tpTestDetails Tests if the SSE reconnects in case the target returns HTTP code 204 No Content.
+     * @tpInfo RESTEASY-2985
+     * @tpSince RESTEasy 6.3.0
+     */
+    public void testNoContentReconnect() throws Exception {
+        Client client = ClientBuilder.newBuilder().build();
+        try {
+            WebTarget noContentTarget = client.target(generateURL("/reconnect/nocontent"));
+            CountDownLatch latch = new CountDownLatch(1);
+            try (SseEventSource source = SseEventSource.target(noContentTarget).build()) {
+                source.register(event -> latch.countDown());
+                source.open();
+
+                boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            }
+            WebTarget numberOfCallsTarget = client.target(generateURL("/reconnect/numberOfCalls"));
+            Integer numberOfCalls = numberOfCallsTarget.request().get().readEntity(int.class);
+            Assert.assertEquals("Invalid number of endpoint calls", numberOfCalls, Integer.valueOf(1));
+        } finally {
+            client.close();
+        }
+    }
 }
