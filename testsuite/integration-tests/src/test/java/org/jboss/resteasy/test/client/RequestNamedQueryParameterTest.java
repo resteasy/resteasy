@@ -21,6 +21,7 @@ package org.jboss.resteasy.test.client;
 
 import java.io.IOException;
 import java.util.List;
+
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -30,6 +31,7 @@ import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -60,7 +62,7 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
 
         @GET
         void methodWithLists(@QueryParam("listA") List<String> listA, @QueryParam("listB") List<String> listB,
-                             @QueryParam("listC") List<String> listC);
+                @QueryParam("listC") List<String> listC);
     }
 
     @Deployment
@@ -110,9 +112,11 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
         ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         ResteasyClient client = builder.build();
 
-        try (client) {
+        try {
             client.register(new AssertFilter(testType.NOPARAMETERS));
-            client.target("").proxy(SomeResource.class).methodWithLists(List.of(), List.of(), List.of());
+            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of(), List.of(), List.of());
+        } finally {
+            client.close();
         }
 
     }
@@ -129,11 +133,11 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
     public void testWithMixedNamedQueryParameters() {
         ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         ResteasyClient client = builder.build();
-
-        try (client) {
+        try {
             client.register(new AssertFilter(testType.MIXEDPARAMETERS));
-            client.target("").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"),
-                    List.of(), List.of("stuff1", "stuff2"));
+            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of(), List.of("stuff1", "stuff2"));
+        } finally {
+            client.close();
         }
 
     }
@@ -149,11 +153,12 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
         ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         ResteasyClient client = builder.build();
 
-        try (client) {
+        try {
             client.register(new AssertFilter(testType.FULLPARAMETERS));
-            client.target("").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"));
+            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"));
+        } finally {
+            client.close();
         }
-
     }
 
 }
