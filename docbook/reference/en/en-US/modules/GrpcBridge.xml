@@ -503,7 +503,7 @@ message GeneralReturnMessage {
       The <code>GeneralReturnMessage</code> message type plays a role like <code>GeneralEntityMessage</code> but for return values.
       </listitem>
       <listitem>
-      [discuss cookies]
+      The world of cookie specification is somewhat fragmented, but the definitions here are intended to be generally applicable.
       </listitem>
    </orderedlist>
 </section>
