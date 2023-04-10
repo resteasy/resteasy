@@ -34,7 +34,7 @@ import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC4;
 import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC5;
 import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC7;
 import jakarta.rest.example.CC1_proto.org_jboss_resteasy_example___CC9;
-import jakarta.rest.example.CC1_proto.org_jboss_resteasy_grpc_sse_runtime___SseEvent;
+import jakarta.rest.example.CC1_proto.org_jboss_resteasy_grpc_runtime_sse___SseEvent;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
@@ -869,27 +869,27 @@ public class GrpcToJakartaRESTTest {
         CC1_proto.GeneralEntityMessage.Builder messageBuilder = CC1_proto.GeneralEntityMessage.newBuilder();
         messageBuilder.setURL("http://localhost:8080/p/sse");
         GeneralEntityMessage gem = messageBuilder.build();
-        Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> response;
+        Iterator<org_jboss_resteasy_grpc_runtime_sse___SseEvent> response;
         try {
             response = stub.sse(gem);
         } catch (StatusRuntimeException e) {
             Assert.fail("fail");
             return;
         }
-        ArrayList<org_jboss_resteasy_grpc_sse_runtime___SseEvent> list = new ArrayList<org_jboss_resteasy_grpc_sse_runtime___SseEvent>();
+        ArrayList<org_jboss_resteasy_grpc_runtime_sse___SseEvent> list = new ArrayList<org_jboss_resteasy_grpc_runtime_sse___SseEvent>();
         while (response.hasNext()) {
-            org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = response.next();
+            org_jboss_resteasy_grpc_runtime_sse___SseEvent sseEvent = response.next();
             list.add(sseEvent);
         }
         Assert.assertEquals(4, list.size());
         for (int k = 0; k < 3; k++) {
-            org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(k);
+            org_jboss_resteasy_grpc_runtime_sse___SseEvent sseEvent = list.get(k);
             Assert.assertEquals("name" + (k + 1), sseEvent.getName());
             Any any = sseEvent.getData();
             gString gString = any.unpack(gString.class);
             Assert.assertEquals("event" + (k + 1), gString.getValue());
         }
-        org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = list.get(3);
+        org_jboss_resteasy_grpc_runtime_sse___SseEvent sseEvent = list.get(3);
         Assert.assertEquals("name4", sseEvent.getName());
         Any any = sseEvent.getData();
         org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);
@@ -1288,10 +1288,10 @@ public class GrpcToJakartaRESTTest {
         GeneralEntityMessage.Builder builder = GeneralEntityMessage.newBuilder();
         GeneralEntityMessage gem = builder.build();
         CountDownLatch latch = new CountDownLatch(1);
-        GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent> grmh = new GeneralReturnMessageHolder<org_jboss_resteasy_grpc_sse_runtime___SseEvent>();
-        StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent> responseObserver = new StreamObserver<org_jboss_resteasy_grpc_sse_runtime___SseEvent>() {
+        GeneralReturnMessageHolder<org_jboss_resteasy_grpc_runtime_sse___SseEvent> grmh = new GeneralReturnMessageHolder<org_jboss_resteasy_grpc_runtime_sse___SseEvent>();
+        StreamObserver<org_jboss_resteasy_grpc_runtime_sse___SseEvent> responseObserver = new StreamObserver<org_jboss_resteasy_grpc_runtime_sse___SseEvent>() {
             @Override
-            public void onNext(org_jboss_resteasy_grpc_sse_runtime___SseEvent value) {
+            public void onNext(org_jboss_resteasy_grpc_runtime_sse___SseEvent value) {
                 grmh.addValue(value);
             }
 
@@ -1309,9 +1309,9 @@ public class GrpcToJakartaRESTTest {
             asyncStub.sse(gem, responseObserver);
             latch.await();
             Assert.assertEquals(4, grmh.size());
-            Iterator<org_jboss_resteasy_grpc_sse_runtime___SseEvent> it = grmh.iterator();
+            Iterator<org_jboss_resteasy_grpc_runtime_sse___SseEvent> it = grmh.iterator();
             for (int i = 0; i < 3; i++) {
-                org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
+                org_jboss_resteasy_grpc_runtime_sse___SseEvent sseEvent = it.next();
                 Assert.assertEquals("name" + (i + 1), sseEvent.getName());
                 byte[] bytes = sseEvent.getData().toByteArray();
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -1319,7 +1319,7 @@ public class GrpcToJakartaRESTTest {
                 gString gString = any.unpack(gString.class);
                 Assert.assertEquals("event" + (i + 1), gString.getValue());
             }
-            org_jboss_resteasy_grpc_sse_runtime___SseEvent sseEvent = it.next();
+            org_jboss_resteasy_grpc_runtime_sse___SseEvent sseEvent = it.next();
             Assert.assertEquals("name4", sseEvent.getName());
             Any any = sseEvent.getData();
             org_jboss_resteasy_example___CC5 cc5 = any.unpack(org_jboss_resteasy_example___CC5.class);

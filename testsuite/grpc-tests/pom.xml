@@ -47,7 +47,7 @@
 		<wildfly.grpc.test.feature.pack.version>0.0.8</wildfly.grpc.test.feature.pack.version>
 		<version.jakarta.rest.example.grpc>0.0.39</version.jakarta.rest.example.grpc>
 	</properties>
-	<artifactId>resteasy-grpc-tests</artifactId>
+	<artifactId>grpc-tests</artifactId>
 	<name>RESTEasy Main testsuite: gRPC tests</name>
 	<profiles>
 		<!--

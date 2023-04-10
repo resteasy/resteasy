@@ -1,2 +1,2 @@
-org.jboss.resteasy.grpc.sse.runtime.SseEventSinkInterceptor
+org.jboss.resteasy.grpc.runtime.sse.SseEventSinkInterceptor
 

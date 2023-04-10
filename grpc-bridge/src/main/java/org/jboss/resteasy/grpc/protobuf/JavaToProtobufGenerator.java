@@ -219,7 +219,7 @@ public class JavaToProtobufGenerator {
     private static boolean started = false;
     private static int counter = 1;
     private static boolean isSSE;
-    private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
+    private static String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_runtime_sse___SseEvent";
 
     static {
         TYPE_MAP.put("boolean", "bool");
@@ -386,7 +386,7 @@ public class JavaToProtobufGenerator {
         }
         if (isSSE) {
             sb.append(LS)
-                    .append("message org_jboss_resteasy_grpc_sse_runtime___SseEvent {" + LS)
+                    .append("message org_jboss_resteasy_grpc_runtime_sse___SseEvent {" + LS)
                     .append("  string comment = ").append(counter++).append(";").append(LS)
                     .append("  string id = ").append(counter++).append(";").append(LS)
                     .append("  string name = ").append(counter++).append(";").append(LS)

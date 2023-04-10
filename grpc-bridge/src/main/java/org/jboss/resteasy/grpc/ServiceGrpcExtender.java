@@ -17,7 +17,7 @@ public class ServiceGrpcExtender {
 
     private static final Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
     private static final String LS = System.lineSeparator();
-    private static final String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_sse_runtime___SseEvent";
+    private static final String SSE_EVENT_CLASSNAME = "org_jboss_resteasy_grpc_runtime_sse___SseEvent";
 
     private String packageName = "";
     private String outerClassName = "";
@@ -237,7 +237,7 @@ public class ServiceGrpcExtender {
                 .append("      try {" + LS)
                 .append("         HttpServletResponseImpl response = new HttpServletResponseImpl(\"").append(actualReturnClass)
                 .append("\", \"").append(syncType).append("\", ").append(root)
-                .append("_Server.getContext(), builder, fd);" + LS)
+                .append("_Server.getServletContext(), builder, fd);" + LS)
                 .append("         GeneratedMessageV3 actualParam = param.").append(getGetterMethod(actualEntityClass))
                 .append(";" + LS)
                 .append("         request = getHttpServletRequest(param, actualParam, \"").append(path).append("\", response, ")
