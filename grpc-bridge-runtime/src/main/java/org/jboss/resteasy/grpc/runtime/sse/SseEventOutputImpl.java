@@ -25,7 +25,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
     @Override
     public void close() {
-        //      System.out.println("SseEventOutputImpl.close()");
         closed = true;
         try {
             amsos.close();

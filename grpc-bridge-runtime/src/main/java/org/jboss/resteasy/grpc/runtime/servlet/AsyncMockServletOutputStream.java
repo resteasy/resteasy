@@ -79,6 +79,5 @@ public class AsyncMockServletOutputStream extends MockServletOutputStream {
         }
         list.add(CLOSE_MARKER);
         notifyAll();
-        //      System.out.println("AsyncMockServletOutputStream.close()");
     }
 }

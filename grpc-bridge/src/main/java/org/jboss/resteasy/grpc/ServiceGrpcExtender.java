@@ -13,6 +13,9 @@ import java.util.Set;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.grpc.runtime.servlet.HttpServletRequestImpl;
 
+/**
+ * Builds a class &lt;prefix&gt;ServiceGrpcImpl with methods that override those in &lt;prefix&gt;ServiceGrpc
+ */
 public class ServiceGrpcExtender {
 
     private static final Logger logger = Logger.getLogger(ServiceGrpcExtender.class);
@@ -24,7 +27,6 @@ public class ServiceGrpcExtender {
     private String serviceName = "";
     private String servletName = "";
     private Set<String> imports = new HashSet<String>();
-    private String artifactIdVersion;
 
     public static void main(String[] args) {
         if (args == null || (args.length != 3)) {

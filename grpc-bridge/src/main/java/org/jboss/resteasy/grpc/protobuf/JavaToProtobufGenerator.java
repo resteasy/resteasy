@@ -63,10 +63,10 @@ import com.github.javaparser.utils.Log;
 import com.github.javaparser.utils.SourceRoot;
 
 /**
- * Traverses a set of JAX-RS resources and creates a protobuf representation.
+ * Traverses a set of Jakarta REST resources and creates a protobuf representation.
  * <p/>
  * <ol>
- * <li>Find all JAX-RS resource methods and resource locators and create an rpc entry for each</li>
+ * <li>Find all Jakarta REST resource methods and resource locators and create an rpc entry for each</li>
  * <li>Find the transitive closure of the classes mentioned in the resource methods and locators
  * and create a message entry for each.</li>
  * </ol>
@@ -100,7 +100,7 @@ import com.github.javaparser.utils.SourceRoot;
  * <p/>
  *
  * <pre>
- * package io.grpc.classes;
+ * package io.grpc.examples;
  *
  * public class CC2 extends CC3 {
  *    int j;
@@ -114,7 +114,7 @@ import com.github.javaparser.utils.SourceRoot;
  * }
  *
  * ========================
- * package io.grpc.classes;
+ * package io.grpc.examples;
  *
  * public class CC3 {
  *    String s;
@@ -127,7 +127,7 @@ import com.github.javaparser.utils.SourceRoot;
  * }
  *
  * ========================
- * package io.grpc.classes;
+ * package io.grpc.examples;
  *
  * public class CC4 {
  *    private String s;
@@ -142,7 +142,7 @@ import com.github.javaparser.utils.SourceRoot;
  * }
  *
  * ========================
- * package io.grpc.classes;
+ * package io.grpc.examples;
  *
  * public class CC5 {
  *    int k;
@@ -160,31 +160,55 @@ import com.github.javaparser.utils.SourceRoot;
  *
  * <pre>
  * syntax = "proto3";
- * package io.grpc.classes;
- * option java_package = "io.grpc.classes";
+ * package io.grpc.examples;
+ * option java_package = "io.grpc.examples";
  * option java_outer_classname = "CC1_proto";
  *
  * service CC1Service {
- *    rpc m1 (io_grpc_classes___CC2) returns (String);
- *    rpc m3 (io_grpc_classes___CC4) returns (String);
+ *    rpc m1 (GeneralEntityMessage) returns (GeneralReturnMessage);
+ *    rpc m3 (GeneralEntityMessage) returns (GeneralReturnMessage);
  * }
  *
- * message io_grpc_classes___CC2 {
+ * message io_grpc_examples___CC2 {
  *    int32 j = 1;
- *    io_grpc_classes___CC3 cC3___super = 2;
+ *    io_grpc_examples___CC3 cC3___super = 2;
  * }
  *
- * message io_grpc_classes___CC4 {
+ * message io_grpc_examples___CC4 {
  *    string s = 3;
- *    io_grpc_classes___CC5 cc5 = 4;
+ *    io_grpc_examples___CC5 cc5 = 4;
  * }
  *
- * message io_grpc_classes___CC3 {
+ * message io_grpc_examples___CC3 {
  *    string s = 5;
  * }
  *
- * message io_grpc_classes___CC5 {
+ * message io_grpc_examples___CC5 {
  *    int32 k = 6;
+ * }
+ * 
+ * ...
+ * 
+ * message GeneralEntityMessage {
+ *    ServletInfo servletInfo = 39;
+ *    string URL = 40;
+ *    map<string, gHeader> headers = 41;
+ *    repeated gCookie cookies = 42;
+ *    string httpMethod = 43;
+ *    oneof messageType {
+ *       io_grpc_examples___CC4 io_grpc_examples___CC4_field = 44;
+ *       io_grpc_examples___CC2 io_grpc_examples___CC2_field = 45;
+ *       FormMap form_field = 46;
+ *    }
+ * }
+ *
+ * message GeneralReturnMessage {
+ *    map<string, gHeader> headers = 47;
+ *    repeated gNewCookie cookies = 48;
+ *    gInteger status = 49;
+ *    oneof messageType {
+ *       gString gString_field = 50;
+ *    }
  * }
  * </pre>
  * <p/>
@@ -193,7 +217,11 @@ import com.github.javaparser.utils.SourceRoot;
  * <li>{@code CC1.m2()} is not a resource method, so it does not appear in CC1.proto.
  * <li>Protobuf syntax does not support inheritance, so {@code JavaToProtobufGenerator}
  * treats a superclass as a special field. For example, {@code CC2} is a subclass of {@code CC3},
- * so each instance of {@code CC2} has a field named {@code cC3___super} of {@code type io_grpc_classes___CC3}.
+ * so each instance of {@code CC2} has a field named {@code cC3___super} of {@code type io_grpc_examples___CC3}.
+ * <li>{@code GeneralEntityMessage} and {@code GeneralReturnMessage} are general purpose classes for conveying
+ * entity parameters to the server and responses back to the client. They are defined to hold all possible entity
+ * and return types plus a variety of additional fields. For more information, see the User Guide.
+ * </ol>
  */
 public class JavaToProtobufGenerator {
 
@@ -334,7 +362,7 @@ public class JavaToProtobufGenerator {
     }
 
     /**
-     * Visit all JAX-RS resource classes discovered in project's src/main/java
+     * Visit all Jakarta REST resource classes discovered in project's src/main/java
      */
     private void processClasses(String[] args, StringBuilder sb) throws IOException {
         Log.setAdapter(new Log.StandardOutStandardErrorAdapter());
@@ -596,7 +624,7 @@ public class JavaToProtobufGenerator {
     }
 
     /**
-     * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all JAX-RS resources
+     * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all Jakarta REST resources
      */
     static class ClassVisitor extends VoidVisitorAdapter<StringBuilder> {
 
@@ -725,7 +753,7 @@ public class JavaToProtobufGenerator {
     }
 
     /**
-     * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all JAX-RS resources
+     * Visit all classes discovered by JakartaRESTResourceVisitor in the process of visiting all Jakarta REST resources
      */
     static class AdditionalClassVisitor extends VoidVisitorAdapter<StringBuilder> {
         private String dir;
