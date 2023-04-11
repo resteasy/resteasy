@@ -545,13 +545,6 @@ name: b
            of <emphasis>Reactor Netty</emphasis>, which provides a non-blocking HTTP client based
            on Netty framework.
        </para>
-       <para>
-           Finally,
-           <code class="classname">InMemoryClientEngine</code> is
-           an implementation that dispatches requests to a server in the same JVM and
-           <code class="classname">URLConnectionEngine</code> is an implementation that uses
-           <code class="classname">java.net.HttpURLConnection</code>.
-       </para>
 
        <table frame="topbot">
            <tgroup cols="2" rowsep="1" colsep="1">
@@ -582,10 +575,6 @@ name: b
                    <entry>VertxClientHttpEngine</entry>
                    <entry>Uses Eclipse Vert.x</entry>
                  </row>
-                   <row>
-                       <entry>InMemoryClientEngine</entry>
-                       <entry>Dispatches requests to a server in the same JVM</entry>
-                   </row>
                    <row>
                        <entry>URLConnectionEngine</entry>
                        <entry>Uses java.net.HttpURLConnection</entry>
