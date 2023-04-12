@@ -19,24 +19,25 @@ import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
 
 /**
- * Generates a class, &lt;prefix&gt;_JavabufTranslator, that can translate back and forth between a Java class and
+ * Generates a class, &lt;prefix&gt;JavabufTranslator, that can translate back and forth between a Java class and
  * its protobuf representation in Java (i.e., its javabuf version).
  * <p/>
- * For example, 
+ * For example,
  * <p/>
  * 1. Start with two classes:
+ *
  * <pre>
  * package example.grpc;
- * 
+ *
  * public class CC3 {
  *    String s;
  *    public CC3(String s) {
  *       this.s = s;
  *    }
  * }
- * 
+ *
  * package example.grpc;
- * 
+ *
  * public class CC2 extends CC3 {
  *    int j;
  *    public CC2(String s, int j) {
@@ -45,8 +46,9 @@ import com.google.protobuf.Message;
  *    }
  * }
  * </pre>
+ *
  * 2. Generate an Example.proto file from the two classes:
- * 
+ *
  * <pre>
  * syntax = "proto3";
  * package example.grpc;
@@ -56,39 +58,42 @@ import com.google.protobuf.Message;
  * message example.grpc___CC3 {
  *   string s = 1;
  * }
- * 
+ *
  * message example.grpc___CC2 {
  *   int32 j = 2;
  *   example.grpc___CC3 cC3___super = 3;
  * }
  * </pre>
+ *
  * 3. Use the protobuf compiler to generate class {@code Example_proto} with the javabuf versions
- *    {@code Example_proto.example.grpc___CC2} and {@code Example_proto.example.grpc___CC3} of
- *    {@code CC2} and {@code CC3}, respectively.
+ * {@code Example_proto.example.grpc___CC2} and {@code Example_proto.example.grpc___CC3} of
+ * {@code CC2} and {@code CC3}, respectively.
  * <p/>
  *
- * Now, {@code JavabufTranslatorGenerator} will generate an {@code Example_JavabufTranslator} class that
+ * Now, {@code JavabufTranslatorGenerator} will generate an {@code ExampleJavabufTranslator} class that
  * can be used as follows:
+ *
  * <pre>
- *    &#064;Test
- *    public void test() {
+ * &#064;Test
+ * public void test() {
  *
- *      // 1. Create a CC2.
- *      CC2 cc2 = new CC2("abc", 19);
+ *     // 1. Create a CC2.
+ *     CC2 cc2 = new CC2("abc", 19);
  *
- *      // 2. Translate to javabuf form
- *      Message message = Example_JavabufTranslator.translateToJavabuf(cc2);
+ *     // 2. Translate to javabuf form
+ *     Message message = ExampleJavabufTranslator.translateToJavabuf(cc2);
  *
- *      // 3. Manually create a javabuf representation of the same CC2 and demonstrate they're the same.
- *      Example_proto.example.grpc___CC3 cc3Message =  Example_proto.example.grpc___CC3.newBuilder().setS("abc").build();
- *      Example_proto.example.grpc___CC2 cc2Message =  Example_proto.example.grpc___CC2.newBuilder().setJ(19).setCC3Super(cc3Message).build();
- *      Assert.assertEquals(message, cc2Message);
+ *     // 3. Manually create a javabuf representation of the same CC2 and demonstrate they're the same.
+ *     Example_proto.example.grpc___CC3 cc3Message = Example_proto.example.grpc___CC3.newBuilder().setS("abc").build();
+ *     Example_proto.example.grpc___CC2 cc2Message = Example_proto.example.grpc___CC2.newBuilder().setJ(19)
+ *             .setCC3Super(cc3Message).build();
+ *     Assert.assertEquals(message, cc2Message);
  *
- *      // 4. A. Translate the javabuf object created in step 2 back to its original java form.
- *      //    B. Demonstrate it's the same as the java object created in step 1.
- *      CC2 cc2_new = (CC2) Example_JavabufTranslator.translateFromJavabuf(message);
- *      Assert.assertEquals(cc2, cc2_new);
- *  }
+ *     // 4. A. Translate the javabuf object created in step 2 back to its original java form.
+ *     //    B. Demonstrate it's the same as the java object created in step 1.
+ *     CC2 cc2_new = (CC2) ExampleJavabufTranslator.translateFromJavabuf(message);
+ *     Assert.assertEquals(cc2, cc2_new);
+ * }
  * </pre>
  */
 public class JavabufTranslatorGenerator {
@@ -150,7 +155,7 @@ public class JavabufTranslatorGenerator {
         try {
             int index = args[1].lastIndexOf('.');
             String simpleName = index < 0 ? args[1] : args[1].substring(index + 1);
-            String translatorClass = simpleName + "_JavabufTranslator";
+            String translatorClass = simpleName + "JavabufTranslator";
             Class<?> wrapperClass = Class.forName(args[1] + "_proto", true, Thread.currentThread().getContextClassLoader());
             StringBuilder sb = new StringBuilder();
             classHeader(args, translatorClass, wrapperClass, sb);

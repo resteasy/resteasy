@@ -186,9 +186,9 @@ import com.github.javaparser.utils.SourceRoot;
  * message io_grpc_examples___CC5 {
  *    int32 k = 6;
  * }
- * 
+ *
  * ...
- * 
+ *
  * message GeneralEntityMessage {
  *    ServletInfo servletInfo = 39;
  *    string URL = 40;

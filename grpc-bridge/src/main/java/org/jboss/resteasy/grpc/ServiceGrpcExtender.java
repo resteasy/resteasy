@@ -410,7 +410,7 @@ public class ServiceGrpcExtender {
                 .append("      return request;" + LS)
                 .append("   }" + LS + LS);
         sb.append("   private static ServletContext getServletContext() {" + LS)
-                .append("      ServletContext servletContext = CC1_Server.getServletContext();" + LS)
+                .append("      ServletContext servletContext = ").append(root).append("_Server.getServletContext();" + LS)
                 .append("      if (servletContext == null) {" + LS)
                 //                .append("         Client client = ClientBuilder.newClient();" + LS)
                 //                .append("         Response response = client.target(\"http://localhost:8080/" + artifactIdVersion
@@ -418,7 +418,7 @@ public class ServiceGrpcExtender {
                 //                .append("         if (200 != response.getStatus()) {" + LS)
                 //                .append("            throw new RuntimeException(Messages.MESSAGES.cantGetServletContext());" + LS)
                 //                .append("         }" + LS)
-                .append("         servletContext = CC1_Server.getServletContext();" + LS)
+                .append("         servletContext = ").append(root).append("_Server.getServletContext();" + LS)
                 .append("      }" + LS)
                 .append("      return servletContext;" + LS)
                 .append("   }" + LS + LS);

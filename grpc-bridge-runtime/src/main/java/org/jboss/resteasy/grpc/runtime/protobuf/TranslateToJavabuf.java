@@ -12,12 +12,12 @@ import com.google.protobuf.Message;
  * {@code a_b___C} by {@link JavaToProtobufGenerator}, which is then compiled by
  * {@code protoc} to a {@code com.google.protobuf.Message}, called, say (depending on
  * configuration parameters), {@code a.b.Outer_proto.a_b____C}. Then {@link JavabufTranslatorGenerator}
- * can create a class {@code Outer_JavabufTranslator} with an instance {@code a_b___CC_ToJavabuf}
+ * can create a class {@code OuterJavabufTranslator} with an instance {@code a_b___CC_ToJavabuf}
  * of {@code TranslateToJavabuf}, which can be used as follows:
  *
  * <pre>
  * C c = new C();
- * Message message = Outer_JavabufTranslator.translateToJavabuf(c); // {@code Uses a_b___CC_ToJavabuf}
+ * Message message = OuterJavabufTranslator.translateToJavabuf(c); // {@code Uses a_b___CC_ToJavabuf}
  * </pre>
  */
 public interface TranslateToJavabuf {
