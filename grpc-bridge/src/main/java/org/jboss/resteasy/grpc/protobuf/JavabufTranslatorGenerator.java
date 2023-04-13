@@ -595,6 +595,9 @@ public class JavabufTranslatorGenerator {
         String pkgPath = args[1].lastIndexOf(".") < 0 ? ""
                 : args[1].substring(0, args[1].lastIndexOf(".")).replace(".", File.separator);
         Path path = Files.createDirectories(Path.of(args[0], pkgPath));
+        if (path.resolve(translatorClass + ".java").toFile().exists()) {
+            return;
+        }
         Files.writeString(path.resolve(translatorClass + ".java"), sb.toString(), StandardCharsets.UTF_8);
     }
 

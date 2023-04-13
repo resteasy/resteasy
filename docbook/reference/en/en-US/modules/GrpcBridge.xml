@@ -1253,9 +1253,14 @@ mvn -Dservlet.name=GreetServlet -Dclasses=/home/bob/greet/java:org.greet.Extra c
 |  +- greet.grpc-0.0.1-SNAPSHOT-sources.jar
    </programlisting>
 
-   <para>
-      Note that the intermediary layer classes are in target/generated-sources/protobuf/grpc-java.
-   </para>
+   <para><emphasis role="bold">Notes</emphasis></para>
+   <itemizedlist>
+      <listitem>The intermediary layer classes are in target/generated-sources/protobuf/grpc-java.</listitem>
+      <listitem>For any of the files &lt;prefix&gt;.proto, &lt;prefix&gt;JavabufTranslator,
+      &lt;prefix&gt;MessageBodyReaderWriter, or &lt;prefix&gt;ServiceGrpcImpl, if the file exists, the build process
+      will not overwrite it. This makes it possible to build a file and then tweak it for subsequent
+      builds.</listitem> 
+   </itemizedlist>
 </section>
 
 <section id="output_products">

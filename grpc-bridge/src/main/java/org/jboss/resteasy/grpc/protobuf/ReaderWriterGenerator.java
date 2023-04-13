@@ -268,6 +268,9 @@ public class ReaderWriterGenerator {
             throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], wrapperClass.getPackageName().replace(".", "/")));
         path = path.resolve(args[2] + "MessageBodyReaderWriter.java");
+        if (path.toFile().exists()) {
+            return;
+        }
         Files.writeString(path, sbHeader.toString(), StandardCharsets.UTF_8);
         Files.writeString(path, sbBody.toString(), StandardCharsets.UTF_8, CREATE, APPEND, WRITE);
     }

@@ -518,6 +518,9 @@ public class JavaToProtobufGenerator {
 
     private static void writeProtoFile(String[] args, StringBuilder sb) throws IOException {
         Path path = Files.createDirectories(Path.of(args[0], "src", "main", "proto"));
+        if (path.resolve(args[3] + ".proto").toFile().exists()) {
+            return;
+        }
         Files.writeString(path.resolve(args[3] + ".proto"), sb.toString(), StandardCharsets.UTF_8);
     }
 
