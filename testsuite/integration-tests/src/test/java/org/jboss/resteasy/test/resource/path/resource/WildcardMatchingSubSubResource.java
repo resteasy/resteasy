@@ -5,8 +5,8 @@ import jakarta.ws.rs.Path;
 
 @Path("main/{key}/{subkey}")
 public class WildcardMatchingSubSubResource {
-   @GET
-   public String subresource() {
-      return this.getClass().getSimpleName();
-   }
+    @GET
+    public String subresource() {
+        return this.getClass().getSimpleName();
+    }
 }

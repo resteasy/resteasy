@@ -6,13 +6,12 @@ import jakarta.persistence.PersistenceUnit;
 
 public class WeldSubdeploymentCdiJpaInjectingBean {
 
-   @Produces
-   @PersistenceUnit(unitName = "cdiPu")
-   EntityManagerFactory emf;
+    @Produces
+    @PersistenceUnit(unitName = "cdiPu")
+    EntityManagerFactory emf;
 
-   public EntityManagerFactory entityManagerFactory() {
-      return emf;
-   }
-
+    public EntityManagerFactory entityManagerFactory() {
+        return emf;
+    }
 
 }

@@ -19,49 +19,49 @@ import org.jboss.resteasy.test.interceptor.resource.AddFeature.DoNothingGlobalRe
 @Path("/dynamic-feature")
 public class DynamicFeatureResource {
 
-   @Context
-   private Configuration configuration;
+    @Context
+    private Configuration configuration;
 
-   @Path("/hello")
-   @GET
-   @POST
-   @Produces("text/plain")
-   @Consumes("text/plain")
-   public String hello(String name) {
-      return name;
-   }
+    @Path("/hello")
+    @GET
+    @POST
+    @Produces("text/plain")
+    @Consumes("text/plain")
+    public String hello(String name) {
+        return name;
+    }
 
-   @Path("getSpecificMethodContext")
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   public Map<String, Object> getSpecificMethodContext() {
-      return getOtherMethodContext();
-   }
+    @Path("getSpecificMethodContext")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, Object> getSpecificMethodContext() {
+        return getOtherMethodContext();
+    }
 
-   @Path("getOtherMethodContext")
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   public Map<String, Object> getOtherMethodContext() {
+    @Path("getOtherMethodContext")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, Object> getOtherMethodContext() {
 
-      Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
 
-      Map<String, Object> properties = configuration.getProperties();
+        Map<String, Object> properties = configuration.getProperties();
 
-      if (properties.containsKey(AddFeature.PROPERTY)) {
-         result.put(AddFeature.PROPERTY, properties.get(AddFeature.PROPERTY));
-      }
-      if (properties.containsKey(AddDynamicFeature.PROPERTY)) {
-         result.put(AddDynamicFeature.PROPERTY, properties.get(AddDynamicFeature.PROPERTY));
-      }
+        if (properties.containsKey(AddFeature.PROPERTY)) {
+            result.put(AddFeature.PROPERTY, properties.get(AddFeature.PROPERTY));
+        }
+        if (properties.containsKey(AddDynamicFeature.PROPERTY)) {
+            result.put(AddDynamicFeature.PROPERTY, properties.get(AddDynamicFeature.PROPERTY));
+        }
 
-      Set<?> classes = configuration.getClasses();
+        Set<?> classes = configuration.getClasses();
 
-      result.put(DoNothingGlobalRequestFilter.class.getCanonicalName(),
-            classes.contains(DoNothingGlobalRequestFilter.class));
-      result.put(DoNothingMethodScopedRequestFilter.class.getCanonicalName(),
-            classes.contains(DoNothingMethodScopedRequestFilter.class));
+        result.put(DoNothingGlobalRequestFilter.class.getCanonicalName(),
+                classes.contains(DoNothingGlobalRequestFilter.class));
+        result.put(DoNothingMethodScopedRequestFilter.class.getCanonicalName(),
+                classes.contains(DoNothingMethodScopedRequestFilter.class));
 
-      return result;
-   }
+        return result;
+    }
 
 }

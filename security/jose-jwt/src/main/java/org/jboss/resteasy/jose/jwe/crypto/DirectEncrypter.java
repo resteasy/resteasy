@@ -1,27 +1,27 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
-
-import org.jboss.resteasy.jose.i18n.Messages;
-import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
-import org.jboss.resteasy.jose.jwe.EncryptionMethod;
-
-import javax.crypto.SecretKey;
-
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+import javax.crypto.SecretKey;
+
+import org.jboss.resteasy.jose.i18n.Messages;
+import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
+import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 
 /**
  * Direct encrypter with a
  * shared symmetric key. This class is thread-safe.
- * <p>Supports the following JWE algorithms:
+ * <p>
+ * Supports the following JWE algorithms:
  * </p>
  * <ul>
  * <li>DIR
  * </ul>
- * <p>Supports the following encryption methods:
+ * <p>
+ * Supports the following encryption methods:
  * </p>
  * <ul>
  * <li>A128CBC_HS256}
@@ -33,91 +33,74 @@ import java.util.Base64;
  * @author Vladimir Dzhuvinov
  * @version $version$ (2013-05-29)
  */
-public class DirectEncrypter
-{
+public class DirectEncrypter {
 
+    /**
+     * Random byte generator.
+     */
+    private static SecureRandom randomGen;
 
-   /**
-    * Random byte generator.
-    */
-   private static SecureRandom randomGen;
+    /**
+     * Initialises the secure random byte generator.
+     *
+     * @throws RuntimeException If the secure random byte generator couldn't
+     *                          be instantiated.
+     */
+    private static void initSecureRandom() {
 
+        try {
+            randomGen = SecureRandom.getInstance("SHA1PRNG");
 
-   /**
-    * Initialises the secure random byte generator.
-    *
-    * @throws RuntimeException If the secure random byte generator couldn't
-    *                          be instantiated.
-    */
-   private static void initSecureRandom()
-   {
+        } catch (NoSuchAlgorithmException e) {
 
-      try
-      {
-         randomGen = SecureRandom.getInstance("SHA1PRNG");
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
-      }
-      catch (NoSuchAlgorithmException e)
-      {
+    public static String encrypt(EncryptionMethod enc, CompressionAlgorithm compressionAlgorithm, String encodedJWEHeader,
+            final SecretKey key, final byte[] bytes) {
 
-         throw new RuntimeException(e.getMessage(), e);
-      }
-   }
+        if (randomGen == null)
+            initSecureRandom();
 
+        if (enc.getCekBitLength() != key.getEncoded().length * 8) {
 
-   public static String encrypt(EncryptionMethod enc, CompressionAlgorithm compressionAlgorithm, String encodedJWEHeader, final SecretKey key, final byte[] bytes)
-   {
+            throw new RuntimeException(Messages.MESSAGES.contentEncryptionKeyLength(enc.getCekBitLength(), enc));
+        }
 
-      if (randomGen == null) initSecureRandom();
+        // Apply compression if instructed
+        byte[] plainText = DeflateHelper.applyCompression(compressionAlgorithm, bytes);
 
-      if (enc.getCekBitLength() != key.getEncoded().length * 8)
-      {
+        // Compose the AAD
+        byte[] aad = encodedJWEHeader.getBytes(StandardCharsets.UTF_8);
 
-         throw new RuntimeException(Messages.MESSAGES.contentEncryptionKeyLength(enc.getCekBitLength(), enc));
-      }
+        // Encrypt the plain text according to the JWE enc
+        byte[] iv;
+        AuthenticatedCipherText authCipherText;
 
+        if (enc.equals(EncryptionMethod.A128CBC_HS256) || enc.equals(EncryptionMethod.A256CBC_HS512)) {
 
+            iv = AESCBC.generateIV(randomGen);
 
-      // Apply compression if instructed
-      byte[] plainText = DeflateHelper.applyCompression(compressionAlgorithm, bytes);
+            authCipherText = AESCBC.encryptAuthenticated(key, iv, plainText, aad);
 
+        } else if (enc.equals(EncryptionMethod.A128GCM) || enc.equals(EncryptionMethod.A256GCM)) {
 
-      // Compose the AAD
-      byte[] aad = encodedJWEHeader.getBytes(StandardCharsets.UTF_8);
+            iv = AESGCM.generateIV(randomGen);
 
+            authCipherText = AESGCM.encrypt(key, iv, plainText, aad);
 
-      // Encrypt the plain text according to the JWE enc
-      byte[] iv;
-      AuthenticatedCipherText authCipherText;
+        } else {
 
-      if (enc.equals(EncryptionMethod.A128CBC_HS256) || enc.equals(EncryptionMethod.A256CBC_HS512))
-      {
+            throw new RuntimeException(Messages.MESSAGES.unsupportedEncryptionMethod());
+        }
 
-         iv = AESCBC.generateIV(randomGen);
+        StringBuilder builder = new StringBuilder(encodedJWEHeader)
+                .append('.')
+                .append('.').append(Base64.getUrlEncoder().encodeToString(iv))
+                .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getCipherText()))
+                .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getAuthenticationTag()));
 
-         authCipherText = AESCBC.encryptAuthenticated(key, iv, plainText, aad);
-
-      }
-      else if (enc.equals(EncryptionMethod.A128GCM) || enc.equals(EncryptionMethod.A256GCM))
-      {
-
-         iv = AESGCM.generateIV(randomGen);
-
-         authCipherText = AESGCM.encrypt(key, iv, plainText, aad);
-
-      }
-      else
-      {
-
-         throw new RuntimeException(Messages.MESSAGES.unsupportedEncryptionMethod());
-      }
-
-      StringBuilder builder = new StringBuilder(encodedJWEHeader)
-              .append('.')
-              .append('.').append(Base64.getUrlEncoder().encodeToString(iv))
-              .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getCipherText()))
-              .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getAuthenticationTag()));
-
-      return builder.toString();
-   }
+        return builder.toString();
+    }
 }

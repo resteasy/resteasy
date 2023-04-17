@@ -46,8 +46,7 @@ public class DynamicFeatureServiceContextInjectionTest extends AbstractRegistrat
         return createDeployment(DynamicFeatureServiceContextInjectionTest.class)
                 .addClasses(
                         ContextAndInjectionFilter.class,
-                        ContextAndInjectionFilterFeature.class
-                )
+                        ContextAndInjectionFilterFeature.class)
                 .addAsServiceProvider(DynamicFeature.class, ContextAndInjectionFilterFeature.class);
     }
 

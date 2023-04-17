@@ -5,6 +5,6 @@ import jakarta.ws.rs.Path;
 
 @Path("/")
 public interface ParamConverterDefaultClient {
-   @PUT
-   void put();
+    @PUT
+    void put();
 }

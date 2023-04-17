@@ -17,49 +17,45 @@ import java.util.HashMap;
  */
 
 @SuppressWarnings("unchecked")
-public class ResponseObjectProxy<T> implements EntityExtractor
-{
-   private Class<T> returnType;
-   private HashMap<Method, EntityExtractor<?>> methodHandlers;
+public class ResponseObjectProxy<T> implements EntityExtractor {
+    private Class<T> returnType;
+    private HashMap<Method, EntityExtractor<?>> methodHandlers;
 
-   public ResponseObjectProxy(final Method method, final EntityExtractorFactory extractorFactory)
-   {
-      this.returnType = (Class<T>) method.getReturnType();
-      this.methodHandlers = new HashMap<Method, EntityExtractor<?>>();
-      for (Method interfaceMethod : this.returnType.getMethods())
-      {
-         this.methodHandlers.put(interfaceMethod, extractorFactory.createExtractor(interfaceMethod));
-      }
-   }
+    public ResponseObjectProxy(final Method method, final EntityExtractorFactory extractorFactory) {
+        this.returnType = (Class<T>) method.getReturnType();
+        this.methodHandlers = new HashMap<Method, EntityExtractor<?>>();
+        for (Method interfaceMethod : this.returnType.getMethods()) {
+            this.methodHandlers.put(interfaceMethod, extractorFactory.createExtractor(interfaceMethod));
+        }
+    }
 
-   public Object extractEntity(ClientContext context, Object... args)
-   {
-      Class<?>[] intfs = {returnType};
-      ClientResponseProxy clientProxy = new ClientResponseProxy(context, methodHandlers, returnType);
-      ClassLoader clazzLoader;
-      final SecurityManager sm = System.getSecurityManager();
-      if (sm == null) {
-         clazzLoader = returnType.getClassLoader();
-         // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
-         // In such cases we should use the TCCL.
-         if (clazzLoader == null) {
-            clazzLoader = Thread.currentThread().getContextClassLoader();
-         }
-      } else {
-         clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-            @Override
-            public ClassLoader run() {
-               ClassLoader result = returnType.getClassLoader();
-               // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
-               // In such cases we should use the TCCL.
-               if (result == null) {
-                  result = Thread.currentThread().getContextClassLoader();
-               }
-               return result;
+    public Object extractEntity(ClientContext context, Object... args) {
+        Class<?>[] intfs = { returnType };
+        ClientResponseProxy clientProxy = new ClientResponseProxy(context, methodHandlers, returnType);
+        ClassLoader clazzLoader;
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm == null) {
+            clazzLoader = returnType.getClassLoader();
+            // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
+            // In such cases we should use the TCCL.
+            if (clazzLoader == null) {
+                clazzLoader = Thread.currentThread().getContextClassLoader();
             }
-         });
-      }
-      return Proxy.newProxyInstance(clazzLoader, intfs, clientProxy);
-   }
+        } else {
+            clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    ClassLoader result = returnType.getClassLoader();
+                    // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
+                    // In such cases we should use the TCCL.
+                    if (result == null) {
+                        result = Thread.currentThread().getContextClassLoader();
+                    }
+                    return result;
+                }
+            });
+        }
+        return Proxy.newProxyInstance(clazzLoader, intfs, clientProxy);
+    }
 
 }

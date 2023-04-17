@@ -8,27 +8,24 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ConstructorParameter extends Parameter
-{
-   protected Annotation[] annotations = {};
-   protected ResourceConstructor constructor;
+public class ConstructorParameter extends Parameter {
+    protected Annotation[] annotations = {};
+    protected ResourceConstructor constructor;
 
-   protected ConstructorParameter(final ResourceConstructor constructor, final String name, final Class<?> type, final Type genericType, final Annotation[] annotations)
-   {
-      super(constructor.getResourceClass(), type, genericType);
-      this.annotations = annotations;
-      this.constructor = constructor;
-      this.paramName = name;
-   }
+    protected ConstructorParameter(final ResourceConstructor constructor, final String name, final Class<?> type,
+            final Type genericType, final Annotation[] annotations) {
+        super(constructor.getResourceClass(), type, genericType);
+        this.annotations = annotations;
+        this.constructor = constructor;
+        this.paramName = name;
+    }
 
-   @Override
-   public AccessibleObject getAccessibleObject()
-   {
-      return constructor.getConstructor();
-   }
+    @Override
+    public AccessibleObject getAccessibleObject() {
+        return constructor.getConstructor();
+    }
 
-   public Annotation[] getAnnotations()
-   {
-      return annotations;
-   }
+    public Annotation[] getAnnotations() {
+        return annotations;
+    }
 }

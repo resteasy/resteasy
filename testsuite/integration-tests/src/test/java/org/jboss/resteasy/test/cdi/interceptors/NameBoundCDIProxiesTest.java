@@ -29,33 +29,35 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class NameBoundCDIProxiesTest {
 
-   @Deployment
-   public static Archive<?> deploySimpleResource() {
-      WebArchive war = prepareArchive(NameBoundCDIProxiesTest.class.getSimpleName());
-      war.addClass(NameBoundProxiesAnnotation.class);
-      war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, NameBoundCDIProxiesResource.class, NameBoundCDIProxiesInterceptor.class);
-   }
+    @Deployment
+    public static Archive<?> deploySimpleResource() {
+        WebArchive war = prepareArchive(NameBoundCDIProxiesTest.class.getSimpleName());
+        war.addClass(NameBoundProxiesAnnotation.class);
+        war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
+        return TestUtil.finishContainerPrepare(war, null, NameBoundCDIProxiesResource.class,
+                NameBoundCDIProxiesInterceptor.class);
+    }
 
-   // Use specific Application subclass
-   private static WebArchive prepareArchive(String deploymentName) {
-      WebArchive war = ShrinkWrap.create(WebArchive.class, deploymentName + ".war");
-      war.addClass(NameBoundCDIProxiesApplication.class);
-      return war;
-   }
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, NameBoundCDIProxiesTest.class.getSimpleName());
-   }
+    // Use specific Application subclass
+    private static WebArchive prepareArchive(String deploymentName) {
+        WebArchive war = ShrinkWrap.create(WebArchive.class, deploymentName + ".war");
+        war.addClass(NameBoundCDIProxiesApplication.class);
+        return war;
+    }
 
-   /**
-    * @tpTestDetails Verify that
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testNameBoundInterceptor() throws Exception {
-      Client client = ClientBuilder.newClient();
-      String answer = client.target(generateURL("/test")).request().get(String.class);
-      Assert.assertEquals("in-test-out", answer);
-      client.close();
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, NameBoundCDIProxiesTest.class.getSimpleName());
+    }
+
+    /**
+     * @tpTestDetails Verify that
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testNameBoundInterceptor() throws Exception {
+        Client client = ClientBuilder.newClient();
+        String answer = client.target(generateURL("/test")).request().get(String.class);
+        Assert.assertEquals("in-test-out", answer);
+        client.close();
+    }
 }

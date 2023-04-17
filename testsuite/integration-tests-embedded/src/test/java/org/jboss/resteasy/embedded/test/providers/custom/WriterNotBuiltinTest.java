@@ -1,19 +1,19 @@
 package org.jboss.resteasy.embedded.test.providers.custom;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
 import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.resteasy.core.se.ConfigurationOption;
 import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
 import org.jboss.resteasy.embedded.test.TestApplication;
 import org.jboss.resteasy.embedded.test.providers.custom.resource.ReaderWriterResource;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.embedded.test.providers.custom.resource.WriterNotBuiltinTestWriter;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import jakarta.ws.rs.core.Response;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @tpSubChapter
@@ -32,10 +32,10 @@ public class WriterNotBuiltinTest extends AbstractBootstrapTest {
     }
 
     /**
-     * @tpTestDetails  TestReaderWriter has no type parameter,
-     * so it comes after DefaultPlainText in the built-in ordering.
-     * The fact that TestReaderWriter gets called verifies that
-     * DefaultPlainText gets passed over.
+     * @tpTestDetails TestReaderWriter has no type parameter,
+     *                so it comes after DefaultPlainText in the built-in ordering.
+     *                The fact that TestReaderWriter gets called verifies that
+     *                DefaultPlainText gets passed over.
      * @tpSince RESTEasy 4.1.0
      */
     @Test

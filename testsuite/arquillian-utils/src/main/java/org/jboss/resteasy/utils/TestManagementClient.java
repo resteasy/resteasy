@@ -60,8 +60,7 @@ public class TestManagementClient extends DelegatingModelControllerClient {
                 new ModelControllerClientConfiguration.Builder()
                         .setHostName(hostName)
                         .setPort(port)
-                        .build()
-        );
+                        .build());
     }
 
     /**

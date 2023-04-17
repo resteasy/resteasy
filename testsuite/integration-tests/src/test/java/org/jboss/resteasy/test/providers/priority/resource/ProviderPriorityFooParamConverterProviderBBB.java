@@ -12,9 +12,9 @@ import jakarta.ws.rs.ext.Provider;
 @Priority(20)
 public class ProviderPriorityFooParamConverterProviderBBB implements ParamConverterProvider {
 
-   @SuppressWarnings("unchecked")
-   @Override
-   public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
-      return (ParamConverter<T>) new ProviderPriorityFooParamConverter("BBB");
-   }
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+        return (ParamConverter<T>) new ProviderPriorityFooParamConverter("BBB");
+    }
 }

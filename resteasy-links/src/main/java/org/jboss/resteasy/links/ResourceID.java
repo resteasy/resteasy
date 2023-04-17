@@ -15,9 +15,10 @@ import java.lang.annotation.Target;
  * and your resource holds the <code>name</code> bean property, then your
  * <code>name</code> property should be annotated with {@link ResourceID @ResourceID}.
  * </p>
+ *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ResourceID {

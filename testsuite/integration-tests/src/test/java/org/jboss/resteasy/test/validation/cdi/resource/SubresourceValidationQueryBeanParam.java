@@ -4,11 +4,11 @@ import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.QueryParam;
 
 public class SubresourceValidationQueryBeanParam {
-   @Size(max = 5)
-   @QueryParam("limit")
-   private String limit;
+    @Size(max = 5)
+    @QueryParam("limit")
+    private String limit;
 
-   String getLimit() {
-      return limit;
-   }
+    String getLimit() {
+        return limit;
+    }
 }

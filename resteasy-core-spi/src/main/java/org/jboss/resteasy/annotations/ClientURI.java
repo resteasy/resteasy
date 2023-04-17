@@ -14,11 +14,10 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon</a>
  * @version $Revision: 1 $
- * {@literal @}GET MyDTO getDTO(@ClientURI String uri);
+ *          {@literal @}GET MyDTO getDTO(@ClientURI String uri);
  */
-@Target({ElementType.PARAMETER})
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClientURI
-{
+public @interface ClientURI {
 
 }

@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import jakarta.ejb.Local;
 import java.util.concurrent.Future;
+
+import jakarta.ejb.Local;
 
 @Local
 public interface AsynchronousStatelessLocal {
-   Future<Boolean> asynch() throws InterruptedException;
+    Future<Boolean> asynch() throws InterruptedException;
 }

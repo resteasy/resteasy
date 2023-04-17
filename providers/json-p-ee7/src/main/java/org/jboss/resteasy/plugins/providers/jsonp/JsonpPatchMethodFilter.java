@@ -71,7 +71,7 @@ public class JsonpPatchMethodFilter extends AbstractPatchMethodFilter {
         } catch (JsonException e) {
             //this is kind of hack and JsonPatch/JsonMergePatch doesn't imply this a parsing exception or patch exception
             //TODO: talk with jsonp community fix this
-            if(e.getMessage().contains("Illegal value") || e.getMessage().contains("JSON Patch must")) {
+            if (e.getMessage().contains("Illegal value") || e.getMessage().contains("JSON Patch must")) {
                 throw new BadRequestException(e.getMessage());
             }
             throw new Failure(e, HttpResponseCodes.SC_CONFLICT);

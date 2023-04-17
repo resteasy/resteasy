@@ -12,13 +12,13 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
-@Target({ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE})
+@Target({ ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LinkELProvider {
-   /**
-    * The class for the custom ELProvider that will set up the EL context for your
-    * resource discovery.
-    */
-   Class<? extends ELProvider> value();
+    /**
+     * The class for the custom ELProvider that will set up the EL context for your
+     * resource discovery.
+     */
+    Class<? extends ELProvider> value();
 }

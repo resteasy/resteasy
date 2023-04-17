@@ -1,26 +1,26 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/service")
 public class HomecontrolApplication extends Application {
 
+    @Override
+    public Set<Class<?>> getClasses() {
 
-   @Override
-   public Set<Class<?>> getClasses() {
+        Set<Class<?>> result = new HashSet<Class<?>>();
+        result.add(HomecontrolService.class);
+        return result;
+    }
 
-      Set<Class<?>> result = new HashSet<Class<?>>();
-      result.add(HomecontrolService.class);
-      return result;
-   }
-
-   @Override
-   public Set<Object> getSingletons() {
-      Set<Object> result = new HashSet<>();
-      result.add(new HomecontrolJaxbProvider());
-      return result;
-   }
+    @Override
+    public Set<Object> getSingletons() {
+        Set<Object> result = new HashSet<>();
+        result.add(new HomecontrolJaxbProvider());
+        return result;
+    }
 }

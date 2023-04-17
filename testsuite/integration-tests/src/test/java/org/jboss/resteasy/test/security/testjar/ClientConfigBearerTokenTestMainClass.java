@@ -1,16 +1,16 @@
 package org.jboss.resteasy.test.security.testjar;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.BasicAuthentication;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Assert;
-
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.Response;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Main class used in jar that is meant to test ClientConfigProvider functionality regarding Bearer token.

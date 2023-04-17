@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.security;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @tpSubChapter Security
@@ -20,12 +20,14 @@ public class ClientConfigProviderBearerTokenTest {
         Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
         String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithBearerToken();
 
-        Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(ClientConfigProviderTestJarHelper.TestType.TEST_BEARER_TOKEN_IS_USED, jarPath);
+        Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(
+                ClientConfigProviderTestJarHelper.TestType.TEST_BEARER_TOKEN_IS_USED, jarPath);
         String line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
         Assert.assertEquals("200", line);
         process.destroy();
 
-        process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(ClientConfigProviderTestJarHelper.TestType.TEST_BEARER_TOKEN_IGNORED_IF_BASIC_SET_BY_USER, jarPath);
+        process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(
+                ClientConfigProviderTestJarHelper.TestType.TEST_BEARER_TOKEN_IGNORED_IF_BASIC_SET_BY_USER, jarPath);
         line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
         Assert.assertEquals("Credentials set by user had precedence", line);
         process.destroy();

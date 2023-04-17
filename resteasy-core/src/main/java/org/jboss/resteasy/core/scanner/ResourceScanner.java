@@ -105,11 +105,12 @@ public class ResourceScanner {
 
     /**
      * Creates a new scanner. This first searches for {@code META-INF/jandex.idx} resources on the class path ignoring
-     * the  {@code filter}. If no index resources are found, the class path itself is indexed. Note that scanning the
+     * the {@code filter}. If no index resources are found, the class path itself is indexed. Note that scanning the
      * class path could have significant performance impacts.
      * <p>
      * A filter can be used to exclude certain paths from being processed. For example if you want only {@code *.class}
      * files to be processed you could add a filter like:
+     *
      * <pre>{@code final ResourceScanner.fromClassPath(Thread.currentThread().getContextClassLoader(),
      *                  (path) -> path.getFileName().toString().endsWith(".class"));}</pre>
      * </p>

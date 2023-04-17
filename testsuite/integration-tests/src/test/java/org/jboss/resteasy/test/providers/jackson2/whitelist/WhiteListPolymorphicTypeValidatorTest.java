@@ -1,6 +1,19 @@
 package org.jboss.resteasy.test.providers.jackson2.whitelist;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import jakarta.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -22,19 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import jakarta.ws.rs.client.ClientBuilder;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -54,8 +55,10 @@ public class WhiteListPolymorphicTypeValidatorTest {
         WebArchive war = TestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorTest.class.getSimpleName());
         war.addClass(WhiteListPolymorphicTypeValidatorTest.class);
         Map<String, String> contextParam = new HashMap<>();
-        contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", Automobile.class.getPackage().getName());
-        contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", Automobile.class.getPackage().getName());
+        contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix",
+                Automobile.class.getPackage().getName());
+        contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix",
+                Automobile.class.getPackage().getName());
         return TestUtil.finishContainerPrepare(war, contextParam, JaxRsActivator.class, TestRESTService.class,
                 TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Aircraft.class);
     }
@@ -75,7 +78,8 @@ public class WhiteListPolymorphicTypeValidatorTest {
     }
 
     /**
-     * @tpTestDetails Client sends POST request with polymorphic type enabled by configuration of {@link WhiteListPolymorphicTypeValidatorBuilder}.
+     * @tpTestDetails Client sends POST request with polymorphic type enabled by configuration of
+     *                {@link WhiteListPolymorphicTypeValidatorBuilder}.
      * @tpPassCrit The resource returns successfully, deserialization passed.
      * @tpSince RESTEasy 4.5.0
      */
@@ -89,8 +93,10 @@ public class WhiteListPolymorphicTypeValidatorTest {
     }
 
     /**
-     * @tpTestDetails Client sends POST request with polymorphic type not enabled by configuration of {@link WhiteListPolymorphicTypeValidatorBuilder}.
-     * @tpPassCrit The resource returns HttpResponseCodes.SC_BAD_REQUEST, deserialization failed with 'PolymorphicTypeValidator denied resolution'.
+     * @tpTestDetails Client sends POST request with polymorphic type not enabled by configuration of
+     *                {@link WhiteListPolymorphicTypeValidatorBuilder}.
+     * @tpPassCrit The resource returns HttpResponseCodes.SC_BAD_REQUEST, deserialization failed with 'PolymorphicTypeValidator
+     *             denied resolution'.
      * @tpSince RESTEasy 4.5.0
      */
     @Test
@@ -139,8 +145,10 @@ public class WhiteListPolymorphicTypeValidatorTest {
             is = http.getInputStream();
         }
 
-        String result = is == null ? "" : new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
-        String response = String.format("Response code: %s response message: %s  %s", http.getResponseCode(), http.getResponseMessage(), result);
+        String result = is == null ? ""
+                : new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+        String response = String.format("Response code: %s response message: %s  %s", http.getResponseCode(),
+                http.getResponseMessage(), result);
 
         logger.info("Response: " + response);
 

@@ -46,9 +46,8 @@ class SecurityActions {
                     .getOptionalValue(name, type)
                     .orElse(dft);
         }
-        return AccessController.doPrivileged((PrivilegedAction<T>) () ->
-                ConfigurationFactory.getInstance().getConfiguration()
-                        .getOptionalValue(name, type)
-                        .orElse(dft));
+        return AccessController.doPrivileged((PrivilegedAction<T>) () -> ConfigurationFactory.getInstance().getConfiguration()
+                .getOptionalValue(name, type)
+                .orElse(dft));
     }
 }

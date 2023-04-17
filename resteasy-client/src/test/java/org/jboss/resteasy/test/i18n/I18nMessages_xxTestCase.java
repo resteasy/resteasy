@@ -7,13 +7,11 @@ import java.util.Locale;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
- * Copyright Sep 27, 2014
+ *          Copyright Sep 27, 2014
  */
-public class I18nMessages_xxTestCase extends TestMessagesAbstract
-{
-   @Override
-   protected Locale getLocale()
-   {
-      return new Locale("xx");
-   }
+public class I18nMessages_xxTestCase extends TestMessagesAbstract {
+    @Override
+    protected Locale getLocale() {
+        return new Locale("xx");
+    }
 }

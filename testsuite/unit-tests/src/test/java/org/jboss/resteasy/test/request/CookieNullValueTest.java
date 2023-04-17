@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.request;
 
+import static org.hamcrest.CoreMatchers.containsString;
+
+import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import org.hamcrest.MatcherAssert;
 
 /**
  * @tpSubChapter Requests
@@ -14,17 +14,17 @@ import org.hamcrest.MatcherAssert;
  */
 public class CookieNullValueTest {
 
-   /**
-    * @tpTestDetails Test for creating of NewCookieHeaderDelegate.
-    * @tpSince RESTEasy 3.0.17
-    */
-   @Test
-   public void testCookie() {
-      String errorMessage = "NewCookieHeaderDelegate returns wrong data";
-      NewCookieHeaderDelegate delegate = new NewCookieHeaderDelegate();
-      Object o = delegate.fromString("a=");
-      String stringCookie = o.toString();
-      MatcherAssert.assertThat(errorMessage, stringCookie, containsString("a="));
-      MatcherAssert.assertThat(errorMessage, stringCookie, containsString("Version="));
-   }
+    /**
+     * @tpTestDetails Test for creating of NewCookieHeaderDelegate.
+     * @tpSince RESTEasy 3.0.17
+     */
+    @Test
+    public void testCookie() {
+        String errorMessage = "NewCookieHeaderDelegate returns wrong data";
+        NewCookieHeaderDelegate delegate = new NewCookieHeaderDelegate();
+        Object o = delegate.fromString("a=");
+        String stringCookie = o.toString();
+        MatcherAssert.assertThat(errorMessage, stringCookie, containsString("a="));
+        MatcherAssert.assertThat(errorMessage, stringCookie, containsString("Version="));
+    }
 }

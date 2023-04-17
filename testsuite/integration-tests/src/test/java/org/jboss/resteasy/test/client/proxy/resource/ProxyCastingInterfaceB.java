@@ -5,8 +5,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 public interface ProxyCastingInterfaceB {
-   @GET
-   @Path("bar")
-   @Produces("text/plain")
-   String getBar();
+    @GET
+    @Path("bar")
+    @Produces("text/plain")
+    String getBar();
 }

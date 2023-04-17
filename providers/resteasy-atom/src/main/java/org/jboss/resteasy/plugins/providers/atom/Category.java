@@ -1,13 +1,17 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import java.net.URI;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
 
 /**
- * <p>Per RFC4287:</p>
+ * <p>
+ * Per RFC4287:
+ * </p>
+ *
  * <pre>
  *  The "atom:category" element conveys information about a category
  *  associated with an entry or feed.  This specification assigns no
@@ -28,44 +32,37 @@ import java.net.URI;
  */
 @XmlRootElement(name = "category")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Category extends CommonAttributes
-{
-   private String term;
+public class Category extends CommonAttributes {
+    private String term;
 
-   private URI scheme;
+    private URI scheme;
 
-   private String label;
+    private String label;
 
-   @XmlAttribute
-   public String getTerm()
-   {
-      return term;
-   }
+    @XmlAttribute
+    public String getTerm() {
+        return term;
+    }
 
-   public void setTerm(String term)
-   {
-      this.term = term;
-   }
+    public void setTerm(String term) {
+        this.term = term;
+    }
 
-   @XmlAttribute
-   public URI getScheme()
-   {
-      return scheme;
-   }
+    @XmlAttribute
+    public URI getScheme() {
+        return scheme;
+    }
 
-   public void setScheme(URI scheme)
-   {
-      this.scheme = scheme;
-   }
+    public void setScheme(URI scheme) {
+        this.scheme = scheme;
+    }
 
-   @XmlAttribute
-   public String getLabel()
-   {
-      return label;
-   }
+    @XmlAttribute
+    public String getLabel() {
+        return label;
+    }
 
-   public void setLabel(String label)
-   {
-      this.label = label;
-   }
+    public void setLabel(String label) {
+        this.label = label;
+    }
 }

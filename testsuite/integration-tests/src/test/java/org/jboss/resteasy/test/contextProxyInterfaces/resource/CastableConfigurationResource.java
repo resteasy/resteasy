@@ -10,18 +10,18 @@ import org.jboss.resteasy.spi.HeaderValueProcessor;
 
 @Path("/config")
 public class CastableConfigurationResource {
-   @Context
-   Configuration config;
+    @Context
+    Configuration config;
 
-   @GET
-   public Response getConfigurationClassName() {
-      Response.ResponseBuilder builder = Response.ok(config.toString());
-      if (config instanceof HeaderValueProcessor) {
-         builder.header("Instanceof-HeaderValueProcessor", "true");
-      } else {
-         builder.header("Instanceof-HeaderValueProcessor", "false");
-      }
+    @GET
+    public Response getConfigurationClassName() {
+        Response.ResponseBuilder builder = Response.ok(config.toString());
+        if (config instanceof HeaderValueProcessor) {
+            builder.header("Instanceof-HeaderValueProcessor", "true");
+        } else {
+            builder.header("Instanceof-HeaderValueProcessor", "false");
+        }
 
-      return builder.build();
-   }
+        return builder.build();
+    }
 }

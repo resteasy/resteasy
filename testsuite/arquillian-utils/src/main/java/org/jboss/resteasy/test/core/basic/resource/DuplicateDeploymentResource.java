@@ -6,9 +6,9 @@ import jakarta.ws.rs.Produces;
 
 @Path("resource")
 public class DuplicateDeploymentResource {
-   @GET
-   @Produces("text/plain")
-   public String get() {
-      return "hello world";
-   }
+    @GET
+    @Produces("text/plain")
+    public String get() {
+        return "hello world";
+    }
 }

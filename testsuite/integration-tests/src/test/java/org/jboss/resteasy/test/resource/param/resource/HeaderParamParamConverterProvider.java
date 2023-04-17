@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import jakarta.ws.rs.ext.ParamConverter;
 import jakarta.ws.rs.ext.ParamConverterProvider;
 import jakarta.ws.rs.ext.Provider;
-import java.lang.reflect.Type;
 
 @Provider
 public class HeaderParamParamConverterProvider implements ParamConverterProvider {
@@ -15,21 +16,22 @@ public class HeaderParamParamConverterProvider implements ParamConverterProvider
             result.setValue(value + "-MORE");
             return result;
         }
+
         @Override
         public String toString(HeaderParamMyClass value) {
             return "paramConverter";
         }
     }
 
-    public HeaderParamParamConverterProvider () {
+    public HeaderParamParamConverterProvider() {
     }
 
     @Override
     public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType,
-                                              Annotation[] annotations) {
+            Annotation[] annotations) {
         final ParamConverter<T> result;
-        if (rawType.isAssignableFrom(HeaderParamMyClass .class)) {
-            result = (ParamConverter<T>)new MyClassConverter();
+        if (rawType.isAssignableFrom(HeaderParamMyClass.class)) {
+            result = (ParamConverter<T>) new MyClassConverter();
         } else {
             result = null;
         }

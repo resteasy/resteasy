@@ -1,23 +1,24 @@
 package org.jboss.resteasy.test.injection.resource;
 
-
-import org.jboss.resteasy.spi.StringParameterUnmarshaller;
-import jakarta.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 
+import jakarta.ws.rs.core.Context;
+
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+
 public class StringParameterInjectorUnmarshaller implements
-      StringParameterUnmarshaller<String> {
+        StringParameterUnmarshaller<String> {
 
-   @Context
-   private StringParameterInjectorInjected in;
+    @Context
+    private StringParameterInjectorInjected in;
 
-   @Override
-   public void setAnnotations(Annotation[] annotations) {
-   }
+    @Override
+    public void setAnnotations(Annotation[] annotations) {
+    }
 
-   @Override
-   public String fromString(String str) {
-      return in.value;
-   }
+    @Override
+    public String fromString(String str) {
+        return in.value;
+    }
 
 }

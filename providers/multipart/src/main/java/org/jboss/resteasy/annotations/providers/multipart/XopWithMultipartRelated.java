@@ -1,10 +1,11 @@
 package org.jboss.resteasy.annotations.providers.multipart;
 
-import jakarta.xml.bind.annotation.XmlMimeType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import jakarta.xml.bind.annotation.XmlMimeType;
 
 /**
  * This annotation can be used to process/produce incoming/outgoing XOP messages
@@ -27,17 +28,17 @@ import java.lang.annotation.Target;
  * &#064;XmlRootElement
  * &#064;XmlAccessorType(XmlAccessType.FIELD)
  * public static class Xop {
- *   private Customer bill;
+ *     private Customer bill;
  *
- *   private Customer monica;
+ *     private Customer monica;
  *
- *   &#064;XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
- *   private byte[] myBinary;
+ *     &#064;XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+ *     private byte[] myBinary;
  *
- *   &#064;XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
- *   private DataHandler myDataHandler;
+ *     &#064;XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+ *     private DataHandler myDataHandler;
  *
- *   // methods, other fields ...
+ *     // methods, other fields ...
  * }
  * </pre>
  *
@@ -49,7 +50,8 @@ import java.lang.annotation.Target;
  * &#064;PUT
  * &#064;Path(&quot;xop&quot;)
  * &#064;Consumes(org.jboss.resteasy.plugins.providers.multipart.MultipartConstants.MULTIPART_RELATED)
- * public void putXopWithMultipartRelated(&#064;XopWithMultipartRelated Xop xop) {}
+ * public void putXopWithMultipartRelated(&#064;XopWithMultipartRelated Xop xop) {
+ * }
  * </pre>
  *
  * <p>
@@ -60,7 +62,7 @@ import java.lang.annotation.Target;
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */
-@Target( { ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD })
+@Target({ ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XopWithMultipartRelated {
 

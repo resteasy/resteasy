@@ -20,6 +20,7 @@
 package org.jboss.resteasy.core.se;
 
 import java.net.URI;
+
 import javax.net.ssl.SSLContext;
 
 import jakarta.ws.rs.SeBootstrap;

@@ -1,5 +1,11 @@
 package org.jboss.resteasy.test.resource.resource;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.FormParam;
@@ -9,12 +15,6 @@ import jakarta.ws.rs.MatrixParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
-
 
 @Path("/optional")
 public class OptionalResource {
@@ -35,7 +35,6 @@ public class OptionalResource {
     OptionalLong headerParam;
     @CookieParam("valueC")
     OptionalLong cookieParam;
-
 
     @Path("/string")
     @GET
@@ -84,6 +83,7 @@ public class OptionalResource {
 
     public static class Holder<T> {
         private final T value;
+
         private Holder(final T value) {
             this.value = value;
         }
@@ -98,8 +98,10 @@ public class OptionalResource {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
             Holder<?> holder = (Holder<?>) o;
             return Objects.equals(value, holder.value);
         }

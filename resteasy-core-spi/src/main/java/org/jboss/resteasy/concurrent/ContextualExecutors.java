@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -139,7 +140,7 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualScheduledExecutorService scheduledThreadPool(final int poolSize,
-                                                                         final ThreadFactory threadFactory) {
+            final ThreadFactory threadFactory) {
         ScheduledExecutorService delegate = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
         boolean managed = true;
         if (delegate == null) {
@@ -220,15 +221,17 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualScheduledExecutorService wrap(final ScheduledExecutorService delegate,
-                                                          final boolean managed) {
+            final boolean managed) {
         if (delegate == null) {
             return null;
         }
-        if (delegate instanceof ContextualScheduledExecutorService && managed == ((ContextualScheduledExecutorService) delegate).isManaged()) {
+        if (delegate instanceof ContextualScheduledExecutorService
+                && managed == ((ContextualScheduledExecutorService) delegate).isManaged()) {
             if (managed == ((ContextualScheduledExecutorService) delegate).isManaged()) {
                 return (ContextualScheduledExecutorService) delegate;
             }
-            return new ContextualScheduledExecutorService(((ContextualScheduledExecutorService) delegate).getDelegate(), managed);
+            return new ContextualScheduledExecutorService(((ContextualScheduledExecutorService) delegate).getDelegate(),
+                    managed);
         }
         return new ContextualScheduledExecutorService(delegate, managed);
     }
@@ -383,11 +386,9 @@ public class ContextualExecutors {
                     .getOptionalValue(name, type)
                     .orElseGet(dft);
         }
-        return AccessController.doPrivileged((PrivilegedAction<T>) () ->
-                ConfigurationFactory.getInstance().getConfiguration()
-                        .getOptionalValue(name, type)
-                        .orElseGet(dft)
-        );
+        return AccessController.doPrivileged((PrivilegedAction<T>) () -> ConfigurationFactory.getInstance().getConfiguration()
+                .getOptionalValue(name, type)
+                .orElseGet(dft));
     }
 
     private static class ContextualThreadFactory implements ThreadFactory {

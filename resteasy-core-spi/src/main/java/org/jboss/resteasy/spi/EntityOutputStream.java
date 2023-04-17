@@ -134,7 +134,7 @@ public class EntityOutputStream extends OutputStream {
      * @param filePrefix      the file prefix if a file is created
      */
     public EntityOutputStream(final Threshold memoryThreshold, final Path tmpDir, final Threshold fileThreshold,
-                              final Supplier<String> filePrefix) {
+            final Supplier<String> filePrefix) {
         this.memoryThreshold = memoryThreshold;
         this.filePrefix = filePrefix;
         this.fileThreshold = fileThreshold;
@@ -241,7 +241,6 @@ public class EntityOutputStream extends OutputStream {
     protected Path getFile() {
         return file;
     }
-
 
     /**
      * Returns the data in memory if {@link #getFile()} returns {@code null}.

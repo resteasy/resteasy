@@ -13,6 +13,5 @@ import jakarta.ws.rs.ext.Provider;
  */
 @Provider
 @ApplicationPath("/test")
-public class TestApplication extends Application
-{
+public class TestApplication extends Application {
 }

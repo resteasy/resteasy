@@ -6,8 +6,8 @@ import jakarta.ws.rs.Path;
 
 @Path("/test")
 public class ExceptionMapperJaxbResource {
-   @POST
-   @Consumes("application/xml")
-   public void post(AbstractJaxbClassPerson person) {
-   }
+    @POST
+    @Consumes("application/xml")
+    public void post(AbstractJaxbClassPerson person) {
+    }
 }

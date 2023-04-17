@@ -7,23 +7,26 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface ResteasyAsynchronousContext
-{
-   void initialRequestStarted();
-   void initialRequestEnded();
-   boolean isOnInitialRequest();
+public interface ResteasyAsynchronousContext {
+    void initialRequestStarted();
 
-   boolean isSuspended();
-   ResteasyAsynchronousResponse getAsyncResponse();
+    void initialRequestEnded();
 
-   ResteasyAsynchronousResponse suspend() throws IllegalStateException;
+    boolean isOnInitialRequest();
 
-   ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException;
+    boolean isSuspended();
 
-   ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException;
+    ResteasyAsynchronousResponse getAsyncResponse();
 
-   void complete();
+    ResteasyAsynchronousResponse suspend() throws IllegalStateException;
 
-   CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors);
-   CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f);
+    ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException;
+
+    ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException;
+
+    void complete();
+
+    CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors);
+
+    CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f);
 }

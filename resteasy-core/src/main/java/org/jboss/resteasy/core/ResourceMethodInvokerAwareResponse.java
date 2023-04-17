@@ -2,9 +2,8 @@ package org.jboss.resteasy.core;
 
 public interface ResourceMethodInvokerAwareResponse {
 
-   ResourceMethodInvoker getMethod();
+    ResourceMethodInvoker getMethod();
 
-   void setMethod(ResourceMethodInvoker method);
-
+    void setMethod(ResourceMethodInvoker method);
 
 }

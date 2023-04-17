@@ -8,11 +8,10 @@ import org.jboss.logging.annotations.MessageBundle;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
- * Copyright Sep 1, 2015
+ *          Copyright Sep 1, 2015
  */
 @MessageBundle(projectCode = "RESTEASY")
-public interface Messages
-{
+public interface Messages {
     Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
     int BASE = 22500;
 

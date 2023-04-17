@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.async;
 
-import org.jboss.logging.Logger;
-import org.jboss.resteasy.spi.HttpRequest;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -10,88 +12,85 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.spi.HttpRequest;
 
 @Path("/")
 public class AsyncRequestFilterResource {
 
-   private static final Logger LOG = Logger.getLogger(AsyncRequestFilterResource.class);
-   @GET
-   public Response threeSyncRequestFilters(@Context HttpRequest request,
-         @HeaderParam("Filter1") @DefaultValue("") String filter1,
-         @HeaderParam("Filter2") @DefaultValue("") String filter2,
-         @HeaderParam("Filter3") @DefaultValue("") String filter3,
-         @HeaderParam("PreMatchFilter1") @DefaultValue("") String preMatchFilter1,
-         @HeaderParam("PreMatchFilter2") @DefaultValue("") String preMatchFilter2,
-         @HeaderParam("PreMatchFilter3") @DefaultValue("") String preMatchFilter3) {
-      boolean async = isAsync(filter1)
-            || isAsync(filter2)
-            || isAsync(filter3)
-            || isAsync(preMatchFilter1)
-            || isAsync(preMatchFilter2)
-            || isAsync(preMatchFilter3);
-      if(async != request.getAsyncContext().isSuspended())
-         return Response.serverError().entity("Request suspention is wrong").build();
-      return Response.ok("resource").build();
-   }
+    private static final Logger LOG = Logger.getLogger(AsyncRequestFilterResource.class);
 
-   @Path("non-response")
-   @GET
-   public String threeSyncRequestFiltersNonResponse(@Context HttpRequest request,
-         @HeaderParam("Filter1") @DefaultValue("") String filter1,
-         @HeaderParam("Filter2") @DefaultValue("") String filter2,
-         @HeaderParam("Filter3") @DefaultValue("") String filter3,
-         @HeaderParam("PreMatchFilter1") @DefaultValue("") String preMatchFilter1,
-         @HeaderParam("PreMatchFilter2") @DefaultValue("") String preMatchFilter2,
-         @HeaderParam("PreMatchFilter3") @DefaultValue("") String preMatchFilter3) {
-      boolean async = isAsync(filter1)
-            || isAsync(filter2)
-            || isAsync(filter3)
-            || isAsync(preMatchFilter1)
-            || isAsync(preMatchFilter2)
-            || isAsync(preMatchFilter3);
-      if(async != request.getAsyncContext().isSuspended())
-         throw new WebApplicationException(Response.serverError().entity("Request suspention is wrong").build());
-      return "resource";
-   }
+    @GET
+    public Response threeSyncRequestFilters(@Context HttpRequest request,
+            @HeaderParam("Filter1") @DefaultValue("") String filter1,
+            @HeaderParam("Filter2") @DefaultValue("") String filter2,
+            @HeaderParam("Filter3") @DefaultValue("") String filter3,
+            @HeaderParam("PreMatchFilter1") @DefaultValue("") String preMatchFilter1,
+            @HeaderParam("PreMatchFilter2") @DefaultValue("") String preMatchFilter2,
+            @HeaderParam("PreMatchFilter3") @DefaultValue("") String preMatchFilter3) {
+        boolean async = isAsync(filter1)
+                || isAsync(filter2)
+                || isAsync(filter3)
+                || isAsync(preMatchFilter1)
+                || isAsync(preMatchFilter2)
+                || isAsync(preMatchFilter3);
+        if (async != request.getAsyncContext().isSuspended())
+            return Response.serverError().entity("Request suspention is wrong").build();
+        return Response.ok("resource").build();
+    }
 
-   @Path("async")
-   @GET
-   public CompletionStage<Response> async() {
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      CompletableFuture<Response> resp = new CompletableFuture<>();
-      executor.submit(() -> {
-         try
-         {
-            Thread.sleep(2000);
-         } catch (InterruptedException e)
-         {
-         // TODO Auto-generated catch block
-            LOG.error("Error:", e);
-         }
-         resp.complete(Response.ok("resource").build());
-      });
-      return resp;
-   }
+    @Path("non-response")
+    @GET
+    public String threeSyncRequestFiltersNonResponse(@Context HttpRequest request,
+            @HeaderParam("Filter1") @DefaultValue("") String filter1,
+            @HeaderParam("Filter2") @DefaultValue("") String filter2,
+            @HeaderParam("Filter3") @DefaultValue("") String filter3,
+            @HeaderParam("PreMatchFilter1") @DefaultValue("") String preMatchFilter1,
+            @HeaderParam("PreMatchFilter2") @DefaultValue("") String preMatchFilter2,
+            @HeaderParam("PreMatchFilter3") @DefaultValue("") String preMatchFilter3) {
+        boolean async = isAsync(filter1)
+                || isAsync(filter2)
+                || isAsync(filter3)
+                || isAsync(preMatchFilter1)
+                || isAsync(preMatchFilter2)
+                || isAsync(preMatchFilter3);
+        if (async != request.getAsyncContext().isSuspended())
+            throw new WebApplicationException(Response.serverError().entity("Request suspention is wrong").build());
+        return "resource";
+    }
 
-   @Path("callback")
-   @GET
-   public String callback() {
-      return "hello";
-   }
+    @Path("async")
+    @GET
+    public CompletionStage<Response> async() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        CompletableFuture<Response> resp = new CompletableFuture<>();
+        executor.submit(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                LOG.error("Error:", e);
+            }
+            resp.complete(Response.ok("resource").build());
+        });
+        return resp;
+    }
 
-   @Path("callback-async")
-   @GET
-   public CompletionStage<String> callbackAsync() {
-      return CompletableFuture.completedFuture("hello");
-   }
+    @Path("callback")
+    @GET
+    public String callback() {
+        return "hello";
+    }
 
-   private boolean isAsync(String filter)
-   {
-      return filter.equals("async-pass")
-         || filter.equals("async-fail");
-   }
+    @Path("callback-async")
+    @GET
+    public CompletionStage<String> callbackAsync() {
+        return CompletableFuture.completedFuture("hello");
+    }
+
+    private boolean isAsync(String filter) {
+        return filter.equals("async-pass")
+                || filter.equals("async-fail");
+    }
 }

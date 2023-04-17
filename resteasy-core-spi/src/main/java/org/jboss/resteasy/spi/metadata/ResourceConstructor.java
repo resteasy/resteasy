@@ -5,11 +5,10 @@ import java.lang.reflect.Constructor;
 /**
  * @author Christian Kaltepoth
  */
-public interface ResourceConstructor
-{
-   ResourceClass getResourceClass();
+public interface ResourceConstructor {
+    ResourceClass getResourceClass();
 
-   Constructor getConstructor();
+    Constructor getConstructor();
 
-   ConstructorParameter[] getParams();
+    ConstructorParameter[] getParams();
 }

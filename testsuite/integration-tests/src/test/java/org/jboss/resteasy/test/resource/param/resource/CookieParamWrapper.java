@@ -8,14 +8,14 @@ package org.jboss.resteasy.test.resource.param.resource;
  */
 public class CookieParamWrapper<E> {
 
-   private final E element;
+    private final E element;
 
-   public CookieParamWrapper(final E element) {
-      this.element = element;
-   }
+    public CookieParamWrapper(final E element) {
+        this.element = element;
+    }
 
-   public E getElement() {
-      return element;
-   }
+    public E getElement() {
+        return element;
+    }
 
 }
