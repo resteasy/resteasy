@@ -13,7 +13,7 @@ public class Jackson2JsonFormatRESTEasyTracingInfo extends TextBasedRESTEasyTrac
     @Override
     public String[] getMessages() {
         try {
-            return new String[] { mapper.writeValueAsString(messageList) };
+            return new String[] { mapper.writeValueAsString(pop()) };
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
