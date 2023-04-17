@@ -12,7 +12,7 @@ public class JSONBJsonFormatRESTEasyTracingInfo extends TextBasedRESTEasyTracing
     @Override
     public String[] getMessages() {
         try {
-            return new String[] { mapper.toJson(messageList) };
+            return new String[] { mapper.toJson(pop()) };
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
