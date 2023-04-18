@@ -5,11 +5,31 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - '**'
+    branches-ignore:
+      - 'dependabot/**'
+    paths-ignore:
+      - '.gitignore'
+      - ".github/workflows/manual-*.yml"
+      - "docbook"
+      - "distribution"
+      - "CONTRIBUTING.md"
+      - "License.html"
+      - "README.md"
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - '.gitignore'
+      - "docbook"
+      - "distribution"
+      - "CONTRIBUTING.md"
+      - "License.html"
+      - "README.md"
+
+# Only run the latest job
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
 
 jobs:
   build:
