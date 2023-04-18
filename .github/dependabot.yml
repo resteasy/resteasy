@@ -20,6 +20,10 @@ updates:
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
       - dependency-name: 'jakarta.xml.bind:jakarta.xml.bind-api'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
+        # Version 4.2.x removes security manager support, currently we will not be upgrading to that version as we
+        # cannot lose that support.
+      - dependency-name: 'com.sun.istack:*'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
