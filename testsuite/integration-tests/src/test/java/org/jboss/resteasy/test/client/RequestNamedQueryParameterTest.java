@@ -135,7 +135,8 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
         ResteasyClient client = builder.build();
         try {
             client.register(new AssertFilter(testType.MIXEDPARAMETERS));
-            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of(), List.of("stuff1", "stuff2"));
+            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of(),
+                    List.of("stuff1", "stuff2"));
         } finally {
             client.close();
         }
@@ -155,7 +156,8 @@ public class RequestNamedQueryParameterTest extends ClientTestBase {
 
         try {
             client.register(new AssertFilter(testType.FULLPARAMETERS));
-            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"));
+            client.target("http://localhost").proxy(SomeResource.class).methodWithLists(List.of("stuff1", "stuff2"),
+                    List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"));
         } finally {
             client.close();
         }
