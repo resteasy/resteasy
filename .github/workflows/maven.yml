@@ -43,6 +43,11 @@ on:
       - "SECURITY.md"
       - "*/README.MD"
 
+# Only run the latest job
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
 jobs:
   build:
 
@@ -53,7 +58,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['11', '17']
-        wildfly-version: ['27.0.1.Final']
+        wildfly-version: ['27.0.1.Final', '28.0.0.Beta1']
 
     steps:
       - uses: actions/checkout@v3
@@ -86,7 +91,7 @@ jobs:
       fail-fast: false
       matrix:
         java: ['11']
-        wildfly-version: ['27.0.1.Final']
+        wildfly-version: ['27.0.1.Final', '28.0.0.Beta1']
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
