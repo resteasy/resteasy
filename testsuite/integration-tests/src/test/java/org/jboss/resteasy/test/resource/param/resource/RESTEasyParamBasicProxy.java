@@ -1,5 +1,9 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.annotations.jaxrs.CookieParam;
 import org.jboss.resteasy.annotations.jaxrs.FormParam;
 import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
@@ -7,15 +11,11 @@ import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-
 @Path("/proxy")
 public interface RESTEasyParamBasicProxy {
-   @POST
-   @Path("a/{pathParam3}")
-   Response post(
+    @POST
+    @Path("a/{pathParam3}")
+    Response post(
             @CookieParam String cookieParam3,
             @FormParam String formParam3,
             @HeaderParam String headerParam3,

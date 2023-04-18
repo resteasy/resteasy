@@ -1,5 +1,32 @@
 package org.jboss.resteasy.client.jaxrs.engines.vertx;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.InvocationCallback;
+import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -11,31 +38,6 @@ import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
-import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
@@ -68,9 +70,9 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
     @Override
     public <T> Future<T> submit(final ClientInvocation request,
-                                final boolean buffered,
-                                final InvocationCallback<T> callback,
-                                final ResultExtractor<T> extractor) {
+            final boolean buffered,
+            final InvocationCallback<T> callback,
+            final ResultExtractor<T> extractor) {
         CompletableFuture<T> future = submit(request).thenCompose(response -> {
             CompletableFuture<T> tmp = new CompletableFuture<>();
             vertx.executeBlocking(promise -> {
@@ -99,9 +101,9 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
     @Override
     public <T> CompletableFuture<T> submit(final ClientInvocation request,
-                                           final boolean buffered,
-                                           final ResultExtractor<T> extractor,
-                                           final ExecutorService executorService) {
+            final boolean buffered,
+            final ResultExtractor<T> extractor,
+            final ExecutorService executorService) {
         return submit(request).thenCompose(response -> {
             CompletableFuture<T> tmp = new CompletableFuture<>();
             if (executorService == null) {
@@ -152,7 +154,6 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         URI uri = request.getUri();
         options.setHost(uri.getHost());
 
-
         if (-1 == uri.getPort()) {
             if ("http".equals(uri.getScheme())) {
                 options.setPort(80);
@@ -164,7 +165,6 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         }
 
         options.setURI(uri.getRawPath());
-
 
         Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
         if (timeout != null) {
@@ -274,8 +274,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
     }
 
     private ClientResponse toRestEasyResponse(ClientConfiguration clientConfiguration,
-                                              HttpClientResponse clientResponse) {
-
+            HttpClientResponse clientResponse) {
 
         InputStreamAdapter adapter = new InputStreamAdapter(clientResponse, 4 * 1024);
 

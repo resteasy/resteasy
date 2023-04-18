@@ -19,51 +19,48 @@ import org.junit.Test;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class WADLNettyContainerTest {
-   private static NettyJaxrsServer netty;
-   private static int port = TestPortProvider.getPort();
-   private static Client client = ClientBuilder.newClient();
+    private static NettyJaxrsServer netty;
+    private static int port = TestPortProvider.getPort();
+    private static Client client = ClientBuilder.newClient();
 
+    @BeforeClass
+    public static void setup() throws Exception {
+        ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+        deployment.setSecurityEnabled(true);
 
+        netty = new NettyJaxrsServer();
+        netty.setDeployment(deployment);
+        netty.setPort(port);
+        netty.setRootResourcePath("");
+        netty.setSecurityDomain(null);
+        netty.start();
 
-   @BeforeClass
-   public static void setup() throws Exception {
-      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-      deployment.setSecurityEnabled(true);
+        deployment.getRegistry().addPerRequestResource(BasicResource.class);
+        deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
 
-      netty = new NettyJaxrsServer();
-      netty.setDeployment(deployment);
-      netty.setPort(port);
-      netty.setRootResourcePath("");
-      netty.setSecurityDomain(null);
-      netty.start();
+        ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
 
-      deployment.getRegistry().addPerRequestResource(BasicResource.class);
-      deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
+        deployment.getRegistry().addSingletonResource(defaultResource);
 
-      ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
+        defaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
+    }
 
-      deployment.getRegistry().addSingletonResource(defaultResource);
+    @AfterClass
+    public static void end() throws Exception {
+        try {
+            client.close();
+        } catch (Exception e) {
 
+        }
+        netty.stop();
+        netty = null;
+    }
 
-      defaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
-   }
-
-   @AfterClass
-   public static void end() throws Exception {
-      try {
-         client.close();
-      } catch (Exception e) {
-
-      }
-      netty.stop();
-      netty = null;
-   }
-
-   @Test
-   public void test() throws Exception {
-      TestWadlFunctions basicTest = new TestWadlFunctions();
-      basicTest.setClient(client);
-      basicTest.testBasicSet();
-      basicTest.testResteasy1246();
-   }
+    @Test
+    public void test() throws Exception {
+        TestWadlFunctions basicTest = new TestWadlFunctions();
+        basicTest.setClient(client);
+        basicTest.testBasicSet();
+        basicTest.testResteasy1246();
+    }
 }

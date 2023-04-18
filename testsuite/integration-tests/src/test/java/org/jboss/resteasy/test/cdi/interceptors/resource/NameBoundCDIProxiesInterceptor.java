@@ -13,20 +13,22 @@ import javax.ws.rs.core.Context;
 @NameBoundProxiesAnnotation
 public class NameBoundCDIProxiesInterceptor implements ContainerRequestFilter, ContainerResponseFilter {
 
-   private static String in = "";
+    private static String in = "";
 
-   /** The application context, used for retrieving the {@link ApplicationPath} value. */
-   @Context Application application;
+    /** The application context, used for retrieving the {@link ApplicationPath} value. */
+    @Context
+    Application application;
 
-   @Override
-   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-      Object entity = application.getClass().isSynthetic() ? in + responseContext.getEntity() + "-out" : responseContext.getEntity();
-      responseContext.setEntity(entity);
-   }
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+        Object entity = application.getClass().isSynthetic() ? in + responseContext.getEntity() + "-out"
+                : responseContext.getEntity();
+        responseContext.setEntity(entity);
+    }
 
-   @Override
-   public void filter(ContainerRequestContext requestContext) throws IOException {
-      in = "in-";
-   }
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        in = "in-";
+    }
 
 }

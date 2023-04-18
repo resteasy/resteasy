@@ -5,6 +5,6 @@ import javax.validation.executable.ValidateOnExecution;
 import javax.ws.rs.Path;
 
 @Path("")
-@ValidateOnExecution(type = {ExecutableType.NONE})
+@ValidateOnExecution(type = { ExecutableType.NONE })
 public interface TestValidationOnExecuteSubInterface {
 }

@@ -9,7 +9,7 @@ import javax.ws.rs.PathParam;
  */
 @Path("test")
 public interface ProxyNullInputStreamResource {
-   @HEAD
-   @Path("/user/{db}")
-   void getUserHead(@PathParam("db") String db);
+    @HEAD
+    @Path("/user/{db}")
+    void getUserHead(@PathParam("db") String db);
 }

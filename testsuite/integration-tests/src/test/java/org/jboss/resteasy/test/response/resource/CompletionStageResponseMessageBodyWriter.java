@@ -17,17 +17,16 @@ import javax.ws.rs.ext.Provider;
 @Produces("abc/xyz")
 public class CompletionStageResponseMessageBodyWriter implements MessageBodyWriter<CompletionStageResponseTestClass> {
 
-   @Override
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return CompletionStageResponseTestClass.class.isAssignableFrom(type);
-   }
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return CompletionStageResponseTestClass.class.isAssignableFrom(type);
+    }
 
-   @Override
-   public void writeTo(CompletionStageResponseTestClass t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-               throws IOException, WebApplicationException
-   {
-      entityStream.write(t.s.getBytes(StandardCharsets.UTF_8));
-   }
+    @Override
+    public void writeTo(CompletionStageResponseTestClass t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+        entityStream.write(t.s.getBytes(StandardCharsets.UTF_8));
+    }
 }

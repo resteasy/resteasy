@@ -42,8 +42,8 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
     protected Providers providers;
 
     protected FilterFlag readFilterDisabledFlag(ContainerRequestContext requestContext) {
-        if (requestContext.getMethod().equals("PATCH") && (
-                MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())
+        if (requestContext.getMethod().equals("PATCH")
+                && (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())
                         || APPLICATION_JSON_MERGE_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))) {
             ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
             boolean disabled = false;
@@ -166,7 +166,9 @@ public abstract class AbstractPatchMethodFilter implements ContainerRequestFilte
     }
 
     public enum FilterFlag {
-        SKIP, JACKSON, JSONP;
+        SKIP,
+        JACKSON,
+        JSONP;
     }
 
 }

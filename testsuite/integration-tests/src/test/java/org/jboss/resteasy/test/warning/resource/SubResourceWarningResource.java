@@ -10,16 +10,16 @@ import javax.ws.rs.core.Response;
 @Path("test")
 public class SubResourceWarningResource {
 
-   @GET
-   @Path("get")
-   public Response getCookie() {
-      TestSubResource sr = new TestSubResource();
-      return Response.ok().entity(sr).build();
-   }
+    @GET
+    @Path("get")
+    public Response getCookie() {
+        TestSubResource sr = new TestSubResource();
+        return Response.ok().entity(sr).build();
+    }
 
-   @Path("get")
-   public String testString() {
-      return "My test sub-locator.";
-   }
+    @Path("get")
+    public String testString() {
+        return "My test sub-locator.";
+    }
 
 }

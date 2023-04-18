@@ -12,8 +12,8 @@ import javax.ws.rs.core.Response;
  */
 public class ResteasyNotFoundException extends NotFoundException implements WebApplicationExceptionWrapper<NotFoundException> {
 
-   private static final long serialVersionUID = 8915809730318765630L;
-   private final NotFoundException wrapped;
+    private static final long serialVersionUID = 8915809730318765630L;
+    private final NotFoundException wrapped;
 
     ResteasyNotFoundException(final NotFoundException wrapped) {
         super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());

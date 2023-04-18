@@ -11,7 +11,12 @@ public class HappinessParams {
     @QueryParam("type")
     String type;
 
-    private HappinessParams() {}
-    public HappinessParams(final int duration, final String timeUnit) {}
-    public HappinessParams(final String type) {}
+    private HappinessParams() {
+    }
+
+    public HappinessParams(final int duration, final String timeUnit) {
+    }
+
+    public HappinessParams(final String type) {
+    }
 }

@@ -12,170 +12,168 @@ import javax.ws.rs.core.Application;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("rawtypes")
-public interface ResteasyDeployment
-{
-   static boolean onServer()
-   {
-      return ResteasyProviderFactory.getInstance().isOnServer();
-   }
+public interface ResteasyDeployment {
+    static boolean onServer() {
+        return ResteasyProviderFactory.getInstance().isOnServer();
+    }
 
-   void start();
+    void start();
 
-   void merge(ResteasyDeployment other);
+    void merge(ResteasyDeployment other);
 
-   void registration();
+    void registration();
 
-   void stop();
+    void stop();
 
-   boolean isUseContainerFormParams();
+    boolean isUseContainerFormParams();
 
-   void setUseContainerFormParams(boolean useContainerFormParams);
+    void setUseContainerFormParams(boolean useContainerFormParams);
 
-   List<String> getJndiComponentResources();
+    List<String> getJndiComponentResources();
 
-   void setJndiComponentResources(List<String> jndiComponentResources);
+    void setJndiComponentResources(List<String> jndiComponentResources);
 
-   String getApplicationClass();
+    String getApplicationClass();
 
-   void setApplicationClass(String applicationClass);
+    void setApplicationClass(String applicationClass);
 
-   String getInjectorFactoryClass();
+    String getInjectorFactoryClass();
 
-   void setInjectorFactoryClass(String injectorFactoryClass);
+    void setInjectorFactoryClass(String injectorFactoryClass);
 
-   boolean isDeploymentSensitiveFactoryEnabled();
+    boolean isDeploymentSensitiveFactoryEnabled();
 
-   void setDeploymentSensitiveFactoryEnabled(boolean deploymentSensitiveFactoryEnabled);
+    void setDeploymentSensitiveFactoryEnabled(boolean deploymentSensitiveFactoryEnabled);
 
-   boolean isAsyncJobServiceEnabled();
+    boolean isAsyncJobServiceEnabled();
 
-   void setAsyncJobServiceEnabled(boolean asyncJobServiceEnabled);
+    void setAsyncJobServiceEnabled(boolean asyncJobServiceEnabled);
 
-   int getAsyncJobServiceMaxJobResults();
+    int getAsyncJobServiceMaxJobResults();
 
-   void setAsyncJobServiceMaxJobResults(int asyncJobServiceMaxJobResults);
+    void setAsyncJobServiceMaxJobResults(int asyncJobServiceMaxJobResults);
 
-   long getAsyncJobServiceMaxWait();
+    long getAsyncJobServiceMaxWait();
 
-   void setAsyncJobServiceMaxWait(long asyncJobServiceMaxWait);
+    void setAsyncJobServiceMaxWait(long asyncJobServiceMaxWait);
 
-   int getAsyncJobServiceThreadPoolSize();
+    int getAsyncJobServiceThreadPoolSize();
 
-   void setAsyncJobServiceThreadPoolSize(int asyncJobServiceThreadPoolSize);
+    void setAsyncJobServiceThreadPoolSize(int asyncJobServiceThreadPoolSize);
 
-   String getAsyncJobServiceBasePath();
+    String getAsyncJobServiceBasePath();
 
-   void setAsyncJobServiceBasePath(String asyncJobServiceBasePath);
+    void setAsyncJobServiceBasePath(String asyncJobServiceBasePath);
 
-   Application getApplication();
+    Application getApplication();
 
-   void setApplication(Application application);
+    void setApplication(Application application);
 
-   boolean isRegisterBuiltin();
+    boolean isRegisterBuiltin();
 
-   void setRegisterBuiltin(boolean registerBuiltin);
+    void setRegisterBuiltin(boolean registerBuiltin);
 
-   List<String> getProviderClasses();
+    List<String> getProviderClasses();
 
-   void setProviderClasses(List<String> providerClasses);
+    void setProviderClasses(List<String> providerClasses);
 
-   List<Object> getProviders();
+    List<Object> getProviders();
 
-   void setProviders(List<Object> providers);
+    void setProviders(List<Object> providers);
 
-   List<Class> getActualProviderClasses();
+    List<Class> getActualProviderClasses();
 
-   void setActualProviderClasses(List<Class> actualProviderClasses);
+    void setActualProviderClasses(List<Class> actualProviderClasses);
 
-   List<Class> getActualResourceClasses();
+    List<Class> getActualResourceClasses();
 
-   void setActualResourceClasses(List<Class> actualResourceClasses);
+    void setActualResourceClasses(List<Class> actualResourceClasses);
 
-   boolean isSecurityEnabled();
+    boolean isSecurityEnabled();
 
-   void setSecurityEnabled(boolean securityEnabled);
+    void setSecurityEnabled(boolean securityEnabled);
 
-   List<String> getJndiResources();
+    List<String> getJndiResources();
 
-   void setJndiResources(List<String> jndiResources);
+    void setJndiResources(List<String> jndiResources);
 
-   List<String> getResourceClasses();
+    List<String> getResourceClasses();
 
-   void setResourceClasses(List<String> resourceClasses);
+    void setResourceClasses(List<String> resourceClasses);
 
-   Map<String, String> getMediaTypeMappings();
+    Map<String, String> getMediaTypeMappings();
 
-   void setMediaTypeMappings(Map<String, String> mediaTypeMappings);
+    void setMediaTypeMappings(Map<String, String> mediaTypeMappings);
 
-   List<Object> getResources();
+    List<Object> getResources();
 
-   void setResources(List<Object> resources);
+    void setResources(List<Object> resources);
 
-   Map<String, String> getLanguageExtensions();
+    Map<String, String> getLanguageExtensions();
 
-   void setLanguageExtensions(Map<String, String> languageExtensions);
+    void setLanguageExtensions(Map<String, String> languageExtensions);
 
-   Registry getRegistry();
+    Registry getRegistry();
 
-   void setRegistry(Registry registry);
+    void setRegistry(Registry registry);
 
-   Dispatcher getDispatcher();
+    Dispatcher getDispatcher();
 
-   void setDispatcher(Dispatcher dispatcher);
+    void setDispatcher(Dispatcher dispatcher);
 
-   ResteasyProviderFactory getProviderFactory();
+    ResteasyProviderFactory getProviderFactory();
 
-   void setProviderFactory(ResteasyProviderFactory providerFactory);
+    void setProviderFactory(ResteasyProviderFactory providerFactory);
 
-   void setMediaTypeParamMapping(String paramMapping);
+    void setMediaTypeParamMapping(String paramMapping);
 
-   List<ResourceFactory> getResourceFactories();
+    List<ResourceFactory> getResourceFactories();
 
-   void setResourceFactories(List<ResourceFactory> resourceFactories);
+    void setResourceFactories(List<ResourceFactory> resourceFactories);
 
-   List<String> getUnwrappedExceptions();
+    List<String> getUnwrappedExceptions();
 
-   void setUnwrappedExceptions(List<String> unwrappedExceptions);
+    void setUnwrappedExceptions(List<String> unwrappedExceptions);
 
-   Map<String, String> getConstructedDefaultContextObjects();
+    Map<String, String> getConstructedDefaultContextObjects();
 
-   void setConstructedDefaultContextObjects(Map<String, String> constructedDefaultContextObjects);
+    void setConstructedDefaultContextObjects(Map<String, String> constructedDefaultContextObjects);
 
-   Map<Class, Object> getDefaultContextObjects();
+    Map<Class, Object> getDefaultContextObjects();
 
-   void setDefaultContextObjects(Map<Class, Object> defaultContextObjects);
+    void setDefaultContextObjects(Map<Class, Object> defaultContextObjects);
 
-   List<String> getScannedResourceClasses();
+    List<String> getScannedResourceClasses();
 
-   void setScannedResourceClasses(List<String> scannedResourceClasses);
+    void setScannedResourceClasses(List<String> scannedResourceClasses);
 
-   List<String> getScannedProviderClasses();
+    List<String> getScannedProviderClasses();
 
-   void setScannedProviderClasses(List<String> scannedProviderClasses);
+    void setScannedProviderClasses(List<String> scannedProviderClasses);
 
-   List<String> getScannedJndiComponentResources();
+    List<String> getScannedJndiComponentResources();
 
-   void setScannedJndiComponentResources(List<String> scannedJndiComponentResources);
+    void setScannedJndiComponentResources(List<String> scannedJndiComponentResources);
 
-   Map<String, List<String>> getScannedResourceClassesWithBuilder();
+    Map<String, List<String>> getScannedResourceClassesWithBuilder();
 
-   void setScannedResourceClassesWithBuilder(Map<String, List<String>> scannedResourceClassesWithBuilder);
+    void setScannedResourceClassesWithBuilder(Map<String, List<String>> scannedResourceClassesWithBuilder);
 
-   boolean isWiderRequestMatching();
+    boolean isWiderRequestMatching();
 
-   void setWiderRequestMatching(boolean widerRequestMatching);
+    void setWiderRequestMatching(boolean widerRequestMatching);
 
-   boolean isAddCharset();
+    boolean isAddCharset();
 
-   void setAddCharset(boolean addCharset);
+    void setAddCharset(boolean addCharset);
 
-   InjectorFactory getInjectorFactory();
+    InjectorFactory getInjectorFactory();
 
-   void setInjectorFactory(InjectorFactory injectorFactory);
+    void setInjectorFactory(InjectorFactory injectorFactory);
 
-   Object getProperty(String key);
+    Object getProperty(String key);
 
-   void setProperty(String key, Object value);
+    void setProperty(String key, Object value);
 
-   void setStatisticsEnabled(boolean statisticsEnabled);
+    void setStatisticsEnabled(boolean statisticsEnabled);
 }

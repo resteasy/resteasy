@@ -1,5 +1,15 @@
 package org.jboss.resteasy.test.providers.multipart;
 
+import java.lang.reflect.ReflectPermission;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -25,20 +35,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.lang.reflect.ReflectPermission;
-import java.util.Iterator;
-import java.util.List;
-
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SoupMultipartMsgTest {
     protected final Logger logger = LogManager.getLogger(SoupMultipartMsgTest.class.getName());
-    static ResteasyClient  client;
+    static ResteasyClient client;
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -46,14 +47,13 @@ public class SoupMultipartMsgTest {
         war.addClasses(Soup.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")
-        ), "permissions.xml");
+                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, SoupVendorResource.class);
     }
 
     @BeforeClass
     public static void before() throws Exception {
-        client = (ResteasyClient)ClientBuilder.newClient();
+        client = (ResteasyClient) ClientBuilder.newClient();
     }
 
     @AfterClass
@@ -126,12 +126,11 @@ public class SoupMultipartMsgTest {
         StringBuilder sb = new StringBuilder();
         if (!controlList.isEmpty()) {
             sb.append("Failed: parts not found: ");
-            for (Iterator<String> it = controlList.iterator(); it.hasNext(); ) {
+            for (Iterator<String> it = controlList.iterator(); it.hasNext();) {
                 sb.append(it.next() + " ");
             }
             Assert.fail(sb.toString());
         }
-
 
     }
 
@@ -153,12 +152,13 @@ public class SoupMultipartMsgTest {
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         List<String> controlList = SoupVendorResource.getControlList();
 
-        GenericType<List<Soup>> gType = new GenericType<List<Soup>>(){};
+        GenericType<List<Soup>> gType = new GenericType<List<Soup>>() {
+        };
         for (InputPart inputPart : multipartInput.getParts()) {
             if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                 // List<Soup> soupList = inputPart.getBody(gType.getRawType(), gType.getType());
                 List<Soup> soupList = inputPart.getBody(gType);
-                for(Soup soup : soupList) {
+                for (Soup soup : soupList) {
                     String name = soup.getId();
                     if (controlList.contains(name)) {
                         controlList.remove(name);
@@ -177,7 +177,7 @@ public class SoupMultipartMsgTest {
         StringBuilder sb = new StringBuilder();
         if (!controlList.isEmpty()) {
             sb.append("Failed: parts not found: ");
-            for (Iterator<String> it = controlList.iterator(); it.hasNext(); ) {
+            for (Iterator<String> it = controlList.iterator(); it.hasNext();) {
                 sb.append(it.next() + " ");
             }
             Assert.fail(sb.toString());

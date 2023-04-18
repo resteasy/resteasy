@@ -24,59 +24,52 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class HeadContentLengthTest
-{
-   private static UndertowJaxrsServer server;
+public class HeadContentLengthTest {
+    private static UndertowJaxrsServer server;
 
-   @Path("/test")
-   public static class Resource
-   {
-      @GET
-      @Produces("text/plain")
-      public String get()
-      {
-         return "hello world";
-      }
-   }
+    @Path("/test")
+    public static class Resource {
+        @GET
+        @Produces("text/plain")
+        public String get() {
+            return "hello world";
+        }
+    }
 
-   @ApplicationPath("/base")
-   public static class MyApp extends Application
-   {
-      @Override
-      public Set<Class<?>> getClasses()
-      {
-         HashSet<Class<?>> classes = new HashSet<Class<?>>();
-         classes.add(Resource.class);
-         return classes;
-      }
-   }
+    @ApplicationPath("/base")
+    public static class MyApp extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            HashSet<Class<?>> classes = new HashSet<Class<?>>();
+            classes.add(Resource.class);
+            return classes;
+        }
+    }
 
-   @BeforeClass
-   public static void init() throws Exception
-   {
-      server = new UndertowJaxrsServer().start();
-   }
+    @BeforeClass
+    public static void init() throws Exception {
+        server = new UndertowJaxrsServer().start();
+    }
 
-   @AfterClass
-   public static void stop() throws Exception
-   {
-      server.stop();
-   }
+    @AfterClass
+    public static void stop() throws Exception {
+        server.stop();
+    }
 
-   @Test
-   public void testHeadContentLength() throws Exception
-   {
-      server.deploy(MyApp.class, "/");
+    @Test
+    public void testHeadContentLength() throws Exception {
+        server.deploy(MyApp.class, "/");
 
-      Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/base/test"));
-      Response getResponse = target.request().buildGet().invoke();
-      String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
-      Assert.assertEquals("hello world", val);
-      Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
-      Assert.assertEquals("HEAD method should return the same Content-Length as the GET method", getResponse.getLength(), headResponse.getLength());
-      Assert.assertTrue(getResponse.getLength() > 0);
-      client.close();
-   }
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(generateURL("/base/test"));
+        Response getResponse = target.request().buildGet().invoke();
+        String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
+        Assert.assertEquals("hello world", val);
+        Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
+        Assert.assertEquals("HEAD method should return the same Content-Length as the GET method", getResponse.getLength(),
+                headResponse.getLength());
+        Assert.assertTrue(getResponse.getLength() > 0);
+        client.close();
+    }
 
 }

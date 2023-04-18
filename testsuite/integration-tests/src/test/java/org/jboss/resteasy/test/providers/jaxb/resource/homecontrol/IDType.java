@@ -5,12 +5,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java-Klasse für IDType complex type.
  * <p>
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * Java-Klasse für IDType complex type.
  * <p>
+ * <p>
+ * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>
+ *
  * <pre>
  * &lt;complexType name="IDType"&gt;
  *   &lt;complexContent&gt;
@@ -25,31 +27,31 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IDType", propOrder = {
-      "id"
+        "id"
 })
 public class IDType {
 
-   @XmlElement(required = true)
-   protected String id;
+    @XmlElement(required = true)
+    protected String id;
 
-   /**
-    * Ruft den Wert der id-Eigenschaft ab.
-    *
-    * @return possible object is
-    * {@link String }
-    */
-   public String getId() {
-      return id;
-   }
+    /**
+     * Ruft den Wert der id-Eigenschaft ab.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    public String getId() {
+        return id;
+    }
 
-   /**
-    * Legt den Wert der id-Eigenschaft fest.
-    *
-    * @param value allowed object is
-    *              {@link String }
-    */
-   public void setId(String value) {
-      this.id = value;
-   }
+    /**
+     * Legt den Wert der id-Eigenschaft fest.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
 
 }

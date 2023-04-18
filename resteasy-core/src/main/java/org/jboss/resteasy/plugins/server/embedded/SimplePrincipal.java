@@ -6,34 +6,32 @@ import java.security.Principal;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SimplePrincipal implements Principal
-{
-   private String username;
+public class SimplePrincipal implements Principal {
+    private String username;
 
-   public SimplePrincipal(final String username)
-   {
-      this.username = username;
-   }
+    public SimplePrincipal(final String username) {
+        this.username = username;
+    }
 
-   public String getName()
-   {
-      return username;
-   }
+    public String getName() {
+        return username;
+    }
 
-   public boolean equals(Object o)
-   {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-      SimplePrincipal that = (SimplePrincipal) o;
+        SimplePrincipal that = (SimplePrincipal) o;
 
-      if (username != null ? !username.equals(that.username) : that.username != null) return false;
+        if (username != null ? !username.equals(that.username) : that.username != null)
+            return false;
 
-      return true;
-   }
+        return true;
+    }
 
-   public int hashCode()
-   {
-      return (username != null ? username.hashCode() : 0);
-   }
+    public int hashCode() {
+        return (username != null ? username.hashCode() : 0);
+    }
 }

@@ -10,13 +10,13 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class MultiValuedParamDefaultParamConverterParamConverterProvider implements ParamConverterProvider {
 
-   @SuppressWarnings("unchecked")
-   @Override
-   public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
 
-      if (MultiValuedParamDefaultParamConverterParamConverterClass.class.equals(rawType)) {
-         return (ParamConverter<T>) new MultiValuedParamDefaultParamConverterParamConverter();
-      }
-      return null;
-   }
+        if (MultiValuedParamDefaultParamConverterParamConverterClass.class.equals(rawType)) {
+            return (ParamConverter<T>) new MultiValuedParamDefaultParamConverterParamConverter();
+        }
+        return null;
+    }
 }

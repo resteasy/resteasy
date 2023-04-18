@@ -19,8 +19,6 @@
 
 package org.jboss.resteasy.concurrent;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +29,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * An {@linkplain ExecutorService executor} which wraps runnables and callables to capture the context of the current
@@ -43,11 +43,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <strong>Note:</strong> if the executor is consider managed, for example running in a Jakarta EE environment, the
  * following methods are effectively ignored.
  * <ul>
- *     <li>{@link #shutdown()}</li>
- *     <li>{@link #shutdownNow()}</li>
- *     <li>{@link #isShutdown()}</li>
- *     <li>{@link #isTerminated()}</li>
- *     <li>{@link #awaitTermination(long, TimeUnit)}</li>
+ * <li>{@link #shutdown()}</li>
+ * <li>{@link #shutdownNow()}</li>
+ * <li>{@link #isShutdown()}</li>
+ * <li>{@link #isTerminated()}</li>
+ * <li>{@link #awaitTermination(long, TimeUnit)}</li>
  * </ul>
  * </p>
  *
@@ -151,7 +151,7 @@ public class ContextualExecutorService implements ExecutorService {
 
     @Override
     public <T> T invokeAny(final Collection<? extends Callable<T>> tasks, final long timeout,
-                           final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return getDelegate().invokeAny(ContextualExecutors.callable(tasks), timeout, unit);
     }
 
@@ -164,11 +164,11 @@ public class ContextualExecutorService implements ExecutorService {
      * Indicates this executor is managed and the following methods are not executed. If the method has a return type
      * a default value is returned.
      * <ul>
-     *     <li>{@link #shutdown()}</li>
-     *     <li>{@link #shutdownNow()}</li>
-     *     <li>{@link #isShutdown()}</li>
-     *     <li>{@link #isTerminated()}</li>
-     *     <li>{@link #awaitTermination(long, TimeUnit)}</li>
+     * <li>{@link #shutdown()}</li>
+     * <li>{@link #shutdownNow()}</li>
+     * <li>{@link #isShutdown()}</li>
+     * <li>{@link #isTerminated()}</li>
+     * <li>{@link #awaitTermination(long, TimeUnit)}</li>
      * </ul>
      *
      * @return {@code true} if this is a managed executor, otherwise {@code false}

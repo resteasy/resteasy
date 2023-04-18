@@ -19,10 +19,10 @@
 
 package org.jboss.resteasy.concurrent;
 
+import java.util.Map;
+
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.concurrent.ThreadContext;
-
-import java.util.Map;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>

@@ -1,13 +1,14 @@
 package org.jboss.resteasy.annotations.providers.jaxb;
 
-import org.jboss.resteasy.annotations.Decorator;
-import org.jboss.resteasy.plugins.providers.jaxb.XmlHeaderProcessor;
-
-import javax.xml.bind.Marshaller;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import javax.xml.bind.Marshaller;
+
+import org.jboss.resteasy.annotations.Decorator;
+import org.jboss.resteasy.plugins.providers.jaxb.XmlHeaderProcessor;
 
 /**
  * Sets an XML header for the returned document.
@@ -18,10 +19,9 @@ import java.lang.annotation.Target;
  * @version $Revision: 1 $
  * @see org.jboss.resteasy.util.StringContextReplacement
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Decorator(processor = XmlHeaderProcessor.class, target = Marshaller.class)
-public @interface XmlHeader
-{
-   String value();
+public @interface XmlHeader {
+    String value();
 }

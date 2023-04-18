@@ -1,10 +1,11 @@
 package org.jboss.resteasy.plugins.providers.atom.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
@@ -46,11 +47,11 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AppService extends AppCommonAttributes {
 
-   private static final long serialVersionUID = 1090747778031855442L;
-   private List<AppWorkspace> workspace = new ArrayList<AppWorkspace>();
+    private static final long serialVersionUID = 1090747778031855442L;
+    private List<AppWorkspace> workspace = new ArrayList<AppWorkspace>();
 
-   public List<AppWorkspace> getWorkspace() {
-      return workspace;
-   }
+    public List<AppWorkspace> getWorkspace() {
+        return workspace;
+    }
 
 }

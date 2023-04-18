@@ -16,7 +16,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 /**
  * @tpSubChapter Providers
  * @tpChapter Unit tests
@@ -25,142 +24,146 @@ import org.junit.Test;
  */
 public class PriorityEqualityTest {
 
-   public static class TestException extends Exception {
-      private static final long serialVersionUID = 1L;
-   }
+    public static class TestException extends Exception {
+        private static final long serialVersionUID = 1L;
+    }
 
-   @Provider
-   @Priority(20)
-   public static class ExceptionMapper1 implements ExceptionMapper<TestException> {
+    @Provider
+    @Priority(20)
+    public static class ExceptionMapper1 implements ExceptionMapper<TestException> {
 
-      @Override
-      public Response toResponse(TestException exception) {
-         return Response.ok().status(444).entity("1").build();
-      }
-   }
+        @Override
+        public Response toResponse(TestException exception) {
+            return Response.ok().status(444).entity("1").build();
+        }
+    }
 
-   @Provider
-   @Priority(20)
-   public static class ExceptionMapper2 implements ExceptionMapper<TestException> {
+    @Provider
+    @Priority(20)
+    public static class ExceptionMapper2 implements ExceptionMapper<TestException> {
 
-      @Override
-      public Response toResponse(TestException exception) {
-         return Response.ok().status(444).entity("BBB").build();
-      }
-   }
+        @Override
+        public Response toResponse(TestException exception) {
+            return Response.ok().status(444).entity("BBB").build();
+        }
+    }
 
-   public static class Foo {
-      private String foo;
-      public Foo(final String foo) {this.foo = foo;}
-      public String getFoo() {return foo;}
-   }
+    public static class Foo {
+        private String foo;
 
-   public static class FooParamConverter implements ParamConverter<Foo> {
-      private String foo;
+        public Foo(final String foo) {
+            this.foo = foo;
+        }
 
-      public FooParamConverter(final String foo) {
-         this.foo = foo;
-      }
+        public String getFoo() {
+            return foo;
+        }
+    }
 
-      @Override
-      public Foo fromString(String value)
-      {
-         return new Foo(foo);
-      }
+    public static class FooParamConverter implements ParamConverter<Foo> {
+        private String foo;
 
-      @Override
-      public String toString(Foo value)
-      {
-         return value.getFoo();
-      }
-   }
+        public FooParamConverter(final String foo) {
+            this.foo = foo;
+        }
 
-   @Provider
-   @Priority(20)
-   public static class ParamConverterProvider1 implements ParamConverterProvider {
+        @Override
+        public Foo fromString(String value) {
+            return new Foo(foo);
+        }
 
-      @SuppressWarnings("unchecked")
-      @Override
-      public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
-         return (ParamConverter<T>) new FooParamConverter("1");
-      }
-   }
+        @Override
+        public String toString(Foo value) {
+            return value.getFoo();
+        }
+    }
 
-   @Provider
-   @Priority(20)
-   public static class ParamConverterProvider2 implements ParamConverterProvider {
+    @Provider
+    @Priority(20)
+    public static class ParamConverterProvider1 implements ParamConverterProvider {
 
-      @SuppressWarnings("unchecked")
-      @Override
-      public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
-         return (ParamConverter<T>) new FooParamConverter("2");
-      }
-   }
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+            return (ParamConverter<T>) new FooParamConverter("1");
+        }
+    }
 
-   //////////////////////////////////////////////////////////////////////////////
+    @Provider
+    @Priority(20)
+    public static class ParamConverterProvider2 implements ParamConverterProvider {
 
-   /**
-    * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
-    *                with the same @Priority.
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testParamConverterProvidersFromClass() throws Exception {
-      ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
-      RegisterBuiltin.register(factory);
-      ResteasyProviderFactory.setInstance(factory);
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+            return (ParamConverter<T>) new FooParamConverter("2");
+        }
+    }
 
-      factory.register(ParamConverterProvider1.class);
-      factory.register(ParamConverterProvider2.class);
-      Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider1.class));
-      Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider2.class));
-      ResteasyProviderFactory.clearInstanceIfEqual(factory);
-   }
+    //////////////////////////////////////////////////////////////////////////////
 
-   /**
-    * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
-    *                with the same @Priority.
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testParamConverterProvidersObjects() throws Exception {
-      ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
-      RegisterBuiltin.register(factory);
-      ResteasyProviderFactory.setInstance(factory);
+    /**
+     * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
+     *                with the same @Priority.
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testParamConverterProvidersFromClass() throws Exception {
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+        ResteasyProviderFactory.setInstance(factory);
 
-      ParamConverterProvider p1 = new ParamConverterProvider1();
-      ParamConverterProvider p2 = new ParamConverterProvider2();
-      factory.registerProviderInstance(p1);
-      factory.registerProviderInstance(p2);
-      Assert.assertTrue(factory.getProviderInstances().contains(p1));
-      Assert.assertTrue(factory.getProviderInstances().contains(p2));
+        factory.register(ParamConverterProvider1.class);
+        factory.register(ParamConverterProvider2.class);
+        Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider1.class));
+        Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider2.class));
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
+    }
 
-      ResteasyProviderFactory.clearInstanceIfEqual(factory);
-   }
+    /**
+     * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
+     *                with the same @Priority.
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testParamConverterProvidersObjects() throws Exception {
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+        ResteasyProviderFactory.setInstance(factory);
 
-   /**
-    * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
-    *                a given Exception and @Priority.
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testExceptionMappersFromClass() throws Exception {
-      ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
-      factory.register(ExceptionMapper1.class);
-      factory.register(ExceptionMapper2.class);
-      Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
-   }
+        ParamConverterProvider p1 = new ParamConverterProvider1();
+        ParamConverterProvider p2 = new ParamConverterProvider2();
+        factory.registerProviderInstance(p1);
+        factory.registerProviderInstance(p2);
+        Assert.assertTrue(factory.getProviderInstances().contains(p1));
+        Assert.assertTrue(factory.getProviderInstances().contains(p2));
 
-   /**
-    * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
-    *                a given Exception and @Priority.
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testExceptionObjects() throws Exception {
-      ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
-      factory.registerProviderInstance(new ExceptionMapper1());
-      factory.registerProviderInstance(new ExceptionMapper2());
-      Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
-   }
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
+    }
+
+    /**
+     * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
+     *                a given Exception and @Priority.
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testExceptionMappersFromClass() throws Exception {
+        ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
+        factory.register(ExceptionMapper1.class);
+        factory.register(ExceptionMapper2.class);
+        Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
+    }
+
+    /**
+     * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
+     *                a given Exception and @Priority.
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testExceptionObjects() throws Exception {
+        ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
+        factory.registerProviderInstance(new ExceptionMapper1());
+        factory.registerProviderInstance(new ExceptionMapper2());
+        Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
+    }
 }

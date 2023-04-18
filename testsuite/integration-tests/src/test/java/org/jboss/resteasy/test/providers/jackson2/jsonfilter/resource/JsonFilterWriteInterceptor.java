@@ -14,15 +14,16 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
  *
  */
 @Provider
-public class JsonFilterWriteInterceptor implements WriterInterceptor{
+public class JsonFilterWriteInterceptor implements WriterInterceptor {
 
-   private ObjectFilterModifier modifier = new ObjectFilterModifier();
-   @Override
-   public void aroundWriteTo(WriterInterceptorContext context)
-         throws IOException, WebApplicationException {
-      //set a threadlocal modifier
-      ObjectWriterInjector.set(modifier);
-      context.proceed();
-   }
+    private ObjectFilterModifier modifier = new ObjectFilterModifier();
+
+    @Override
+    public void aroundWriteTo(WriterInterceptorContext context)
+            throws IOException, WebApplicationException {
+        //set a threadlocal modifier
+        ObjectWriterInjector.set(modifier);
+        context.proceed();
+    }
 
 }

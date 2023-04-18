@@ -10,29 +10,27 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.ContextInjector;
 
 @Provider
-public class AsyncInjectionBooleanInjector implements ContextInjector<CompletionStage<Boolean>, Boolean>
-{
+public class AsyncInjectionBooleanInjector implements ContextInjector<CompletionStage<Boolean>, Boolean> {
 
-   @Override
-   public CompletionStage<Boolean> resolve(
-         Class<? extends CompletionStage<Boolean>> rawType, Type genericType, Annotation[] annotations)
-   {
-      for (Annotation annotation : annotations)
-      {
-         if(annotation.annotationType() == AsyncInjectionPrimitiveInjectorSpecifier.class) {
-            AsyncInjectionPrimitiveInjectorSpecifier.Type value = ((AsyncInjectionPrimitiveInjectorSpecifier)annotation).value();
-            switch(value) {
-               case NO_RESULT:
-                  return null;
-               case NULL:
-                  return CompletableFuture.completedFuture(null);
-               case VALUE:
-                  return CompletableFuture.completedFuture(true);
+    @Override
+    public CompletionStage<Boolean> resolve(
+            Class<? extends CompletionStage<Boolean>> rawType, Type genericType, Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == AsyncInjectionPrimitiveInjectorSpecifier.class) {
+                AsyncInjectionPrimitiveInjectorSpecifier.Type value = ((AsyncInjectionPrimitiveInjectorSpecifier) annotation)
+                        .value();
+                switch (value) {
+                    case NO_RESULT:
+                        return null;
+                    case NULL:
+                        return CompletableFuture.completedFuture(null);
+                    case VALUE:
+                        return CompletableFuture.completedFuture(true);
+                }
+                break;
             }
-            break;
-         }
-      }
-      return CompletableFuture.completedFuture(true);
-   }
+        }
+        return CompletableFuture.completedFuture(true);
+    }
 
 }

@@ -13,28 +13,28 @@ import io.reactivex.Single;
 @Path("dummyservice")
 public interface ClientResponseFilterExceptionResource {
 
-   @Path("sync")
-   @GET
-   @Produces("text/plain")
-   String sync();
+    @Path("sync")
+    @GET
+    @Produces("text/plain")
+    String sync();
 
-   @Path("cs")
-   @GET
-   @Produces("text/plain")
-   CompletionStage<String> cs();
+    @Path("cs")
+    @GET
+    @Produces("text/plain")
+    CompletionStage<String> cs();
 
-   @Path("single")
-   @GET
-   @Produces("text/plain")
-   Single<String> single();
+    @Path("single")
+    @GET
+    @Produces("text/plain")
+    Single<String> single();
 
-   @Path("observable")
-   @GET
-   @Produces("text/plain")
-   Observable<String> observable();
+    @Path("observable")
+    @GET
+    @Produces("text/plain")
+    Observable<String> observable();
 
-   @Path("flowable")
-   @GET
-   @Produces("text/plain")
-   Flowable<String> flowable();
+    @Path("flowable")
+    @GET
+    @Produces("text/plain")
+    Flowable<String> flowable();
 }

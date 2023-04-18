@@ -47,135 +47,140 @@ import io.reactivex.Single;
 @RunAsClient
 public class ClientResponseFilterExceptionTest {
 
-   private static Client client;
-   private static ClientResponseFilterExceptionResource service;
-   private static CountDownLatch latch;;
+    private static Client client;
+    private static ClientResponseFilterExceptionResource service;
+    private static CountDownLatch latch;;
 
-   @Deployment
-   public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(ClientResponseFilterExceptionTest.class.getSimpleName());
-      war.addClass(ClientResponseFilterExceptionResource.class);
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
-      return TestUtil.finishContainerPrepare(war, null, ClientResponseFilterExceptionFilter.class, ClientResponseFilterExceptionResourceImpl.class);
-   }
+    @Deployment
+    public static Archive<?> deploySimpleResource() {
+        WebArchive war = TestUtil.prepareArchive(ClientResponseFilterExceptionTest.class.getSimpleName());
+        war.addClass(ClientResponseFilterExceptionResource.class);
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+                + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
+        return TestUtil.finishContainerPrepare(war, null, ClientResponseFilterExceptionFilter.class,
+                ClientResponseFilterExceptionResourceImpl.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ClientResponseFilterExceptionTest.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ClientResponseFilterExceptionTest.class.getSimpleName());
+    }
 
-   @Before
-   public void before() {
-      RequestConfig requestConfig = RequestConfig.custom()
-         .setConnectionRequestTimeout(1000)
-         .setSocketTimeout(1000)
-         .setConnectTimeout(1000)
-         .build();
+    @Before
+    public void before() {
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(1000)
+                .setSocketTimeout(1000)
+                .setConnectTimeout(1000)
+                .build();
 
-      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
-         .setDefaultRequestConfig(requestConfig)
-         .setMaxConnPerRoute(2)
-         .setMaxConnTotal(2);
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
+                .setDefaultRequestConfig(requestConfig)
+                .setMaxConnPerRoute(2)
+                .setMaxConnTotal(2);
 
-      ClientHttpEngine engine = ApacheHttpClientEngine.create(httpClientBuilder.build(), true);
+        ClientHttpEngine engine = ApacheHttpClientEngine.create(httpClientBuilder.build(), true);
 
-      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine)
-         .register(ClientResponseFilterExceptionFilter.class).build();
+        client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine)
+                .register(ClientResponseFilterExceptionFilter.class).build();
 
-      WebTarget target = client.target(generateURL("/"));
-      service = ((ResteasyWebTarget)target).proxy(ClientResponseFilterExceptionResource.class);
-      latch = new CountDownLatch(10);
-   }
+        WebTarget target = client.target(generateURL("/"));
+        service = ((ResteasyWebTarget) target).proxy(ClientResponseFilterExceptionResource.class);
+        latch = new CountDownLatch(10);
+    }
 
-   @After
-   public void after() {
-      client.close();
-   }
+    @After
+    public void after() {
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails test synchronous call
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testSync() throws Exception {
-      int i = 0;
-      for (i = 0; i < 10; i++) {
-         try {
-            service.sync();
-         } catch (Exception e) {
-            incr(e);
-         }
-      }
-      Assert.assertEquals(0, latch.getCount());
-   }
+    /**
+     * @tpTestDetails test synchronous call
+     * @tpSince RESTEasy 4.0
+     */
+    @Test
+    public void testSync() throws Exception {
+        int i = 0;
+        for (i = 0; i < 10; i++) {
+            try {
+                service.sync();
+            } catch (Exception e) {
+                incr(e);
+            }
+        }
+        Assert.assertEquals(0, latch.getCount());
+    }
 
-   /**
-    * @tpTestDetails test asynchronous call: CompletionStage
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testCompletionStage() throws Exception {
-      Assert.assertTrue(
-         doTest(
-            () ->  service.cs(),
-            (CompletionStage<String> cs) -> {
-               try {cs.toCompletableFuture().get();} catch (Exception e) {incr(e);}}
-            ));
-   }
+    /**
+     * @tpTestDetails test asynchronous call: CompletionStage
+     * @tpSince RESTEasy 4.0
+     */
+    @Test
+    public void testCompletionStage() throws Exception {
+        Assert.assertTrue(
+                doTest(
+                        () -> service.cs(),
+                        (CompletionStage<String> cs) -> {
+                            try {
+                                cs.toCompletableFuture().get();
+                            } catch (Exception e) {
+                                incr(e);
+                            }
+                        }));
+    }
 
-   /**
-    * @tpTestDetails test asynchronous call: Single
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testSingle() throws Exception {
-      Assert.assertTrue(
-         doTest(
-            () ->  service.single(),
-            (Single<String> single) -> single.subscribe(o -> {}, t -> incr(t))
-            ));
-   }
+    /**
+     * @tpTestDetails test asynchronous call: Single
+     * @tpSince RESTEasy 4.0
+     */
+    @Test
+    public void testSingle() throws Exception {
+        Assert.assertTrue(
+                doTest(
+                        () -> service.single(),
+                        (Single<String> single) -> single.subscribe(o -> {
+                        }, t -> incr(t))));
+    }
 
-   /**
-    * @tpTestDetails test asynchronous call: Observable
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testObservable() throws Exception {
-      Assert.assertTrue(
-         doTest(
-            () ->  service.observable(),
-            (Observable<String> observable) -> observable.subscribe(o -> {}, t -> incr(t))
-            ));
-   }
+    /**
+     * @tpTestDetails test asynchronous call: Observable
+     * @tpSince RESTEasy 4.0
+     */
+    @Test
+    public void testObservable() throws Exception {
+        Assert.assertTrue(
+                doTest(
+                        () -> service.observable(),
+                        (Observable<String> observable) -> observable.subscribe(o -> {
+                        }, t -> incr(t))));
+    }
 
-   /**
-    * @tpTestDetails test asynchronous call: Flowable
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testFlowable() throws Exception {
-      Assert.assertTrue(
-         doTest(
-            () ->  service.flowable(),
-            (Flowable<String> flowable) -> flowable.subscribe(o -> {}, t -> incr(t))
-            ));
-   }
+    /**
+     * @tpTestDetails test asynchronous call: Flowable
+     * @tpSince RESTEasy 4.0
+     */
+    @Test
+    public void testFlowable() throws Exception {
+        Assert.assertTrue(
+                doTest(
+                        () -> service.flowable(),
+                        (Flowable<String> flowable) -> flowable.subscribe(o -> {
+                        }, t -> incr(t))));
+    }
 
-   ///////////////////////////////////////////////////////////////////////////////////
-   static void incr(Throwable t) {
-      if (t.getMessage().contains("ClientResponseFilterExceptionFilter")) {
-         latch.countDown();
-      }
-   }
+    ///////////////////////////////////////////////////////////////////////////////////
+    static void incr(Throwable t) {
+        if (t.getMessage().contains("ClientResponseFilterExceptionFilter")) {
+            latch.countDown();
+        }
+    }
 
-   static <T> boolean doTest(Supplier<T> supplier, Consumer<T> consumer) throws InterruptedException {
-      int i = 0;
-      for (i = 0; i < 10; i++) {
-         T o = supplier.get();
-         consumer.accept(o);
-      }
-      latch.await(10, TimeUnit.SECONDS);
-      return latch.getCount() == 0;
-   }
+    static <T> boolean doTest(Supplier<T> supplier, Consumer<T> consumer) throws InterruptedException {
+        int i = 0;
+        for (i = 0; i < 10; i++) {
+            T o = supplier.get();
+            consumer.accept(o);
+        }
+        latch.await(10, TimeUnit.SECONDS);
+        return latch.getCount() == 0;
+    }
 }

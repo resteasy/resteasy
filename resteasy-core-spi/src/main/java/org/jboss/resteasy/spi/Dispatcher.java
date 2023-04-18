@@ -8,18 +8,17 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface Dispatcher
-{
-   ResteasyProviderFactory getProviderFactory();
+public interface Dispatcher {
+    ResteasyProviderFactory getProviderFactory();
 
-   Registry getRegistry();
+    Registry getRegistry();
 
-   void invoke(HttpRequest in, HttpResponse response);
+    void invoke(HttpRequest in, HttpResponse response);
 
-   Response internalInvocation(HttpRequest request, HttpResponse response, Object entity);
+    Response internalInvocation(HttpRequest request, HttpResponse response, Object entity);
 
-   void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor);
+    void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor);
 
-   @SuppressWarnings("rawtypes")
-   Map<Class, Object> getDefaultContextObjects();
+    @SuppressWarnings("rawtypes")
+    Map<Class, Object> getDefaultContextObjects();
 }

@@ -13,5 +13,5 @@
     <root level="warn">
         <appender-ref ref="ASYNC" />
     </root>
-    <logger name="org.jboss.resteasy.plugins.server.reactor.netty" level="trace"/>
+    <logger name="org.jboss.resteasy.plugins.server.reactor.netty" level="trace" />
 </configuration>

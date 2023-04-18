@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.security.resource;
 
-import org.jboss.logging.Logger;
+import java.util.List;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
@@ -10,48 +10,49 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.List;
+
+import org.jboss.logging.Logger;
 
 @Path("/secured")
 public class BasicAuthBaseResource {
-   private static Logger logger = Logger.getLogger(BasicAuthBaseResource.class);
+    private static Logger logger = Logger.getLogger(BasicAuthBaseResource.class);
 
-   @GET
-   @Path("/failure")
-   @RolesAllowed("admin")
-   public List<String> getFailure() {
-      return null;
-   }
+    @GET
+    @Path("/failure")
+    @RolesAllowed("admin")
+    public List<String> getFailure() {
+        return null;
+    }
 
-   @GET
-   public String get(@Context SecurityContext ctx) {
-      logger.info("********* IN SECURE CLIENT");
-      if (!ctx.isUserInRole("admin")) {
-         logger.info("NOT IN ROLE!!!!");
-         throw new WebApplicationException(403);
-      }
-      return "hello";
-   }
+    @GET
+    public String get(@Context SecurityContext ctx) {
+        logger.info("********* IN SECURE CLIENT");
+        if (!ctx.isUserInRole("admin")) {
+            logger.info("NOT IN ROLE!!!!");
+            throw new WebApplicationException(403);
+        }
+        return "hello";
+    }
 
-   @GET
-   @Path("/authorized")
-   @RolesAllowed("admin")
-   public String getAuthorized() {
-      return "authorized";
-   }
+    @GET
+    @Path("/authorized")
+    @RolesAllowed("admin")
+    public String getAuthorized() {
+        return "authorized";
+    }
 
-   @GET
-   @Path("/deny")
-   @DenyAll
-   public String deny() {
-      return "SHOULD NOT BE REACHED";
-   }
+    @GET
+    @Path("/deny")
+    @DenyAll
+    public String deny() {
+        return "SHOULD NOT BE REACHED";
+    }
 
-   @GET
-   @Path("/denyWithContentType")
-   @Produces("application/xml")
-   @RolesAllowed("admin")
-   public String getWithContentType() {
-      return "string";
-   }
+    @GET
+    @Path("/denyWithContentType")
+    @Produces("application/xml")
+    @RolesAllowed("admin")
+    public String getWithContentType() {
+        return "string";
+    }
 }

@@ -10,14 +10,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "putFileRequest")
 public class XOPMultipartProxyPutFileRequest {
-   @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
-   private DataHandler content;
+    @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+    private DataHandler content;
 
-   public DataHandler getContent() {
-      return content;
-   }
+    public DataHandler getContent() {
+        return content;
+    }
 
-   public void setContent(DataHandler value) {
-      this.content = value;
-   }
+    public void setContent(DataHandler value) {
+        this.content = value;
+    }
 }

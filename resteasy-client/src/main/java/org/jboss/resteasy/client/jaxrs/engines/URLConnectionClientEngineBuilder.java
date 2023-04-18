@@ -1,10 +1,10 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
+import java.util.concurrent.TimeUnit;
+
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-
-import java.util.concurrent.TimeUnit;
 
 public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder {
 
@@ -19,12 +19,10 @@ public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder
     @Override
     public ClientHttpEngine build() {
         URLConnectionEngine clientEngine = new URLConnectionEngine();
-        if (resteasyClientBuilder.getReadTimeout(TimeUnit.MILLISECONDS) > -1)
-        {
+        if (resteasyClientBuilder.getReadTimeout(TimeUnit.MILLISECONDS) > -1) {
             clientEngine.setReadTimeout((int) resteasyClientBuilder.getReadTimeout(TimeUnit.MILLISECONDS));
         }
-        if (resteasyClientBuilder.getConnectionTimeout(TimeUnit.MILLISECONDS) > -1)
-        {
+        if (resteasyClientBuilder.getConnectionTimeout(TimeUnit.MILLISECONDS) > -1) {
             clientEngine.setConnectTimeout((int) resteasyClientBuilder.getConnectionTimeout(TimeUnit.MILLISECONDS));
         }
 

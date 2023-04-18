@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-
 public class BlockingAsyncOutputStream extends AsyncOutputStream {
 
     private OutputStream outputStream;

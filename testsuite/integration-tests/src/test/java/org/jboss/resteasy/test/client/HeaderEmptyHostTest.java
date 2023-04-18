@@ -1,5 +1,12 @@
 package org.jboss.resteasy.test.client;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.URL;
+import java.util.stream.Collectors;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -13,15 +20,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.URL;
-import java.util.stream.Collectors;
-
 /**
  * RESTEASY-2300 and UNDERTOW-1614
+ *
  * @author <a href="mailto:istudens@redhat.com">Ivo Studensky</a>
  */
 @RunWith(Arquillian.class)
@@ -48,7 +49,8 @@ public class HeaderEmptyHostTest extends ClientTestBase {
                 out.print("Connection: close\r\n");
                 out.print("\r\n");
                 out.flush();
-                String response = new BufferedReader(new InputStreamReader(client.getInputStream())).lines().collect(Collectors.joining("\n"));
+                String response = new BufferedReader(new InputStreamReader(client.getInputStream())).lines()
+                        .collect(Collectors.joining("\n"));
                 logger.info("response = " + response);
                 Assert.assertNotNull(response);
                 Assert.assertTrue(response.contains("HTTP/1.1 200 OK"));

@@ -6,13 +6,11 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class AsyncInjectionExceptionMapper implements ExceptionMapper<AsyncInjectionException>
-{
+public class AsyncInjectionExceptionMapper implements ExceptionMapper<AsyncInjectionException> {
 
-   @Override
-   public Response toResponse(AsyncInjectionException exception)
-   {
-      return Response.ok("exception was mapped").status(Status.ACCEPTED).build();
-   }
+    @Override
+    public Response toResponse(AsyncInjectionException exception) {
+        return Response.ok("exception was mapped").status(Status.ACCEPTED).build();
+    }
 
 }

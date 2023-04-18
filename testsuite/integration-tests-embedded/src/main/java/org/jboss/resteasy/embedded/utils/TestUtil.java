@@ -10,27 +10,25 @@ import java.io.InputStreamReader;
  */
 public class TestUtil {
 
+    /**
+     * Convert input stream to String.
+     *
+     * @param in Input stream
+     * @return Converted string
+     */
+    public static String readString(final InputStream in) throws IOException {
+        char[] buffer = new char[1024];
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        int wasRead = 0;
+        do {
+            wasRead = reader.read(buffer, 0, 1024);
+            if (wasRead > 0) {
+                builder.append(buffer, 0, wasRead);
+            }
+        } while (wasRead > -1);
 
-   /**
-    * Convert input stream to String.
-    *
-    * @param in Input stream
-    * @return Converted string
-    */
-   public static String readString(final InputStream in) throws IOException {
-      char[] buffer = new char[1024];
-      StringBuilder builder = new StringBuilder();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-      int wasRead = 0;
-      do {
-         wasRead = reader.read(buffer, 0, 1024);
-         if (wasRead > 0) {
-            builder.append(buffer, 0, wasRead);
-         }
-      }
-      while (wasRead > -1);
-
-      return builder.toString();
-   }
+        return builder.toString();
+    }
 
 }

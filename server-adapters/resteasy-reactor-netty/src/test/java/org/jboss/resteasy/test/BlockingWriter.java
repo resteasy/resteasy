@@ -1,17 +1,18 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.plugins.server.reactor.netty.NettyUtil;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.nio.charset.Charset;
+
+import org.jboss.resteasy.plugins.server.reactor.netty.NettyUtil;
 
 @Provider
 public class BlockingWriter implements MessageBodyWriter<BlockingWriterData> {

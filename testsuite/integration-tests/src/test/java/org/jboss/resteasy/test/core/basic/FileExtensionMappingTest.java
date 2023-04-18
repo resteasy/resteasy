@@ -27,55 +27,53 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class FileExtensionMappingTest
-{
-   static Client client;
+public class FileExtensionMappingTest {
+    static Client client;
 
-   @BeforeClass
-   public static void setup() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void close() {
-      client.close();
-   }
+    @AfterClass
+    public static void close() {
+        client.close();
+    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(FileExtensionMappingTest.class.getSimpleName());
-      war.addClass(FileExtensionMappingApplication.class);
-      war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
-      Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
-      return archive;
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(FileExtensionMappingTest.class.getSimpleName());
+        war.addClass(FileExtensionMappingApplication.class);
+        war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
+        Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
+        return archive;
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, FileExtensionMappingTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, FileExtensionMappingTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Map suffix .txt to Accept: text/plain
-    * @tpSince RESTEasy 3.0.20
-    */
-   @Test
-   public void testFileExtensionMappingPlain() throws Exception {
-      Response response = client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").request().get();
-      String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("plain: whosOnFirst", entity);
-   }
+    /**
+     * @tpTestDetails Map suffix .txt to Accept: text/plain
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testFileExtensionMappingPlain() throws Exception {
+        Response response = client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").request().get();
+        String entity = response.readEntity(String.class);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("plain: whosOnFirst", entity);
+    }
 
-   /**
-    * @tpTestDetails Map suffix .html to Accept: text/html
-    * @tpSince RESTEasy 3.0.20
-    */
-   @Test
-   public void testFileExtensionMappingHtml() throws Exception
-   {
-      Response response = client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").request().get();
-      String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("html: whosOnFirst", entity);
-   }
+    /**
+     * @tpTestDetails Map suffix .html to Accept: text/html
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testFileExtensionMappingHtml() throws Exception {
+        Response response = client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").request().get();
+        String entity = response.readEntity(String.class);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("html: whosOnFirst", entity);
+    }
 }

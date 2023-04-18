@@ -19,17 +19,17 @@ import org.junit.Test;
  */
 public class DefaultResteasyProviderFactoryTest {
 
-   @Test
-   public void testDefaultResteasyProviderFactory() {
-      ResteasyProviderFactory rpf = new ResteasyProviderFactoryImpl();
-      Map<String, Object> map = new HashMap<String, Object>();
-      map.put("foo", "bar");
-      rpf.setProperties(map);
-      ResteasyClientBuilderImpl.setProviderFactory(rpf);
-      Client client = ResteasyClientBuilderImpl.newClient();
-      Assert.assertEquals("bar", client.getConfiguration().getProperty("foo"));
-      client.close();
-      ResteasyClientBuilderImpl.setProviderFactory(null);
-   }
+    @Test
+    public void testDefaultResteasyProviderFactory() {
+        ResteasyProviderFactory rpf = new ResteasyProviderFactoryImpl();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("foo", "bar");
+        rpf.setProperties(map);
+        ResteasyClientBuilderImpl.setProviderFactory(rpf);
+        Client client = ResteasyClientBuilderImpl.newClient();
+        Assert.assertEquals("bar", client.getConfiguration().getProperty("foo"));
+        client.close();
+        ResteasyClientBuilderImpl.setProviderFactory(null);
+    }
 
 }

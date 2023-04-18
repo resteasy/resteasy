@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedOutput;
+import java.io.IOException;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,8 +10,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Iterator;
+
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedOutput;
 
 @Path("mpart")
 public class ComplexMultipartOutputResource {
@@ -49,7 +50,7 @@ public class ComplexMultipartOutputResource {
         MultipartRelatedOutput rtnMRelatedOutput = new MultipartRelatedOutput();
         rtnMRelatedOutput.setStartInfo("text/html");
 
-        for (Iterator<InputPart> it = customers.getParts().iterator(); it.hasNext(); ) {
+        for (Iterator<InputPart> it = customers.getParts().iterator(); it.hasNext();) {
             InputPart part = it.next();
             String name = part.getBody(String.class, null);
             rtnMRelatedOutput.addPart("Hello " + name,

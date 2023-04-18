@@ -10,22 +10,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "getFileRestResponse")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XOPMultipartProxyGetFileResponse {
-   @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
-   private DataHandler data;
+    @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+    private DataHandler data;
 
-   public XOPMultipartProxyGetFileResponse() {
-      super();
-   }
+    public XOPMultipartProxyGetFileResponse() {
+        super();
+    }
 
-   public XOPMultipartProxyGetFileResponse(final DataHandler dh) {
-      this.data = dh;
-   }
+    public XOPMultipartProxyGetFileResponse(final DataHandler dh) {
+        this.data = dh;
+    }
 
-   public void setData(DataHandler dh) {
-      this.data = dh;
-   }
+    public void setData(DataHandler dh) {
+        this.data = dh;
+    }
 
-   public DataHandler getData() {
-      return data;
-   }
+    public DataHandler getData() {
+        return data;
+    }
 }

@@ -2,17 +2,14 @@ package org.jboss.resteasy.plugins.providers.atom.app;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class BooleanAdapter extends XmlAdapter<String, Boolean>
-{
-   @Override
-   public Boolean unmarshal( String yesno )
-   {
-      return yesno == null ? null : yesno.toLowerCase().equals("yes");
-   }
+public class BooleanAdapter extends XmlAdapter<String, Boolean> {
+    @Override
+    public Boolean unmarshal(String yesno) {
+        return yesno == null ? null : yesno.toLowerCase().equals("yes");
+    }
 
-   @Override
-   public String marshal( Boolean c )
-   {
-      return c == null ? null : c ? "yes" : "no";
-   }
+    @Override
+    public String marshal(Boolean c) {
+        return c == null ? null : c ? "yes" : "no";
+    }
 }

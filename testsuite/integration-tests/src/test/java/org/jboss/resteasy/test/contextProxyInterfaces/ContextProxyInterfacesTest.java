@@ -32,42 +32,37 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ContextProxyInterfacesTest {
 
-   private static Client client;
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy()
-   {
-      WebArchive war = TestUtil.prepareArchive(ContextProxyInterfacesTest.class.getSimpleName());
-      war.addClasses(TestUtil.class, PortProviderUtil.class);
-      Map<String, String> contextParams = Collections.singletonMap("resteasy.proxy.implement.all.interfaces", "true");
-      return TestUtil.finishContainerPrepare(war, contextParams, CastableConfigurationResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(ContextProxyInterfacesTest.class.getSimpleName());
+        war.addClasses(TestUtil.class, PortProviderUtil.class);
+        Map<String, String> contextParams = Collections.singletonMap("resteasy.proxy.implement.all.interfaces", "true");
+        return TestUtil.finishContainerPrepare(war, contextParams, CastableConfigurationResource.class);
+    }
 
-   private String generateURL(String path)
-   {
-      return PortProviderUtil.generateURL(path, ContextProxyInterfacesTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ContextProxyInterfacesTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void before() throws Exception
-   {
-      client = ResteasyClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void before() throws Exception {
+        client = ResteasyClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void after() throws Exception
-   {
-      client.close();
-   }
+    @AfterClass
+    public static void after() throws Exception {
+        client.close();
+    }
 
-   @Test
-   public void testCanCastConfigurationToImplSpecificInterface() throws Exception
-   {
-      Builder builder = client.target(generateURL("/config")).request();
-      try (Response response = builder.get()){
-         Assert.assertEquals(200, response.getStatus());
-         Assert.assertTrue(response.readEntity(String.class).contains("ResteasyProviderFactoryImpl"));
-         Assert.assertEquals("true", response.getHeaderString("Instanceof-HeaderValueProcessor"));
-      }
-   }
+    @Test
+    public void testCanCastConfigurationToImplSpecificInterface() throws Exception {
+        Builder builder = client.target(generateURL("/config")).request();
+        try (Response response = builder.get()) {
+            Assert.assertEquals(200, response.getStatus());
+            Assert.assertTrue(response.readEntity(String.class).contains("ResteasyProviderFactoryImpl"));
+            Assert.assertEquals("true", response.getHeaderString("Instanceof-HeaderValueProcessor"));
+        }
+    }
 }

@@ -1,9 +1,10 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.util.DateUtil;
-import org.jboss.resteasy.util.MediaTypeHelper;
-import org.jboss.resteasy.util.ReadFromStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -13,242 +14,210 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.MediaTypeHelper;
+import org.jboss.resteasy.util.ReadFromStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilter
-{
-   protected BrowserCache cache;
+public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilter {
+    protected BrowserCache cache;
 
-   public CacheInterceptor(final BrowserCache cache)
-   {
-      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : CacheInterceptor", getClass().getName());
-      this.cache = cache;
-   }
+    public CacheInterceptor(final BrowserCache cache) {
+        LogMessages.LOGGER.debugf("Interceptor : %s,  Method : CacheInterceptor", getClass().getName());
+        this.cache = cache;
+    }
 
-   @Override
-   public void filter(ClientRequestContext request) throws IOException
-   {
-      if (!request.getMethod().equalsIgnoreCase("GET")) return;
-      try
-      {
-         BrowserCache.Entry entry = getEntry(request);
-         if (entry == null) return;
-         if (entry.expired())
-         {
-            // entry should have a remove method
-            cache.remove(request.getUri().toString(), entry.getMediaType());
-
-            // add validation headers
-            BrowserCache.Header[] headers = entry.getValidationHeaders();
-            for (BrowserCache.Header header : headers)
-            {
-               request.getHeaders().putSingle(header.getName(), header.getValue());
-            }
-            request.setProperty("expired.cache.entry", entry);
+    @Override
+    public void filter(ClientRequestContext request) throws IOException {
+        if (!request.getMethod().equalsIgnoreCase("GET"))
             return;
-         }
-         request.setProperty("cached", "cached");
-         request.abortWith(cachedResponse(entry));
-      }
-      catch (IOException io)
-      {
-         throw io;
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
+        try {
+            BrowserCache.Entry entry = getEntry(request);
+            if (entry == null)
+                return;
+            if (entry.expired()) {
+                // entry should have a remove method
+                cache.remove(request.getUri().toString(), entry.getMediaType());
 
-   private Response cachedResponse(BrowserCache.Entry entry)
-   {
-      ByteArrayInputStream bais = new ByteArrayInputStream(entry.getCached());
-      Response.ResponseBuilder builder = Response.ok().entity(bais);
-      for (Map.Entry<String, List<String>> header : entry.getHeaders().entrySet())
-      {
-         for (String val : header.getValue())
-         {
-            builder.header(header.getKey(), val);
-         }
-      }
-      return builder.build();
-   }
+                // add validation headers
+                BrowserCache.Header[] headers = entry.getValidationHeaders();
+                for (BrowserCache.Header header : headers) {
+                    request.getHeaders().putSingle(header.getName(), header.getValue());
+                }
+                request.setProperty("expired.cache.entry", entry);
+                return;
+            }
+            request.setProperty("cached", "cached");
+            request.abortWith(cachedResponse(entry));
+        } catch (IOException io) {
+            throw io;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-   @Override
-   public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException
-   {
-      if (!request.getMethod().equalsIgnoreCase("GET") || request.getProperty("cached") != null) return;
-      else if (response.getStatus() == 304)
-      {
-         BrowserCache.Entry entry = (BrowserCache.Entry)request.getProperty("expired.cache.entry");
-         updateOnNotModified(request, entry, response);
-         return;
-      }
-      else if (response.getStatus() == 200)
-      {
-         cache(request, response);
-      }
-   }
+    private Response cachedResponse(BrowserCache.Entry entry) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(entry.getCached());
+        Response.ResponseBuilder builder = Response.ok().entity(bais);
+        for (Map.Entry<String, List<String>> header : entry.getHeaders().entrySet()) {
+            for (String val : header.getValue()) {
+                builder.header(header.getKey(), val);
+            }
+        }
+        return builder.build();
+    }
 
-   private void useCacheEntry(ClientResponseContext response, BrowserCache.Entry entry)
-   {
-      ByteArrayInputStream bais = new ByteArrayInputStream(entry.getCached());
-      response.setEntityStream(bais);
-      response.setStatus(200);
+    @Override
+    public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException {
+        if (!request.getMethod().equalsIgnoreCase("GET") || request.getProperty("cached") != null)
+            return;
+        else if (response.getStatus() == 304) {
+            BrowserCache.Entry entry = (BrowserCache.Entry) request.getProperty("expired.cache.entry");
+            updateOnNotModified(request, entry, response);
+            return;
+        } else if (response.getStatus() == 200) {
+            cache(request, response);
+        }
+    }
 
-      for (Map.Entry<String, List<String>> header : entry.getHeaders().entrySet())
-      {
-         response.getHeaders().remove(header.getKey());
-         for (String val : header.getValue())
-         {
-            response.getHeaders().add(header.getKey(), val);
-         }
-      }
-   }
+    private void useCacheEntry(ClientResponseContext response, BrowserCache.Entry entry) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(entry.getCached());
+        response.setEntityStream(bais);
+        response.setStatus(200);
 
-   private void cache(ClientRequestContext request, ClientResponseContext response) throws IOException
-   {
-      if (response.getStatus() != 200) return;
-      cacheIfPossible(request, response);
-   }
+        for (Map.Entry<String, List<String>> header : entry.getHeaders().entrySet()) {
+            response.getHeaders().remove(header.getKey());
+            for (String val : header.getValue()) {
+                response.getHeaders().add(header.getKey(), val);
+            }
+        }
+    }
 
-   public void updateOnNotModified(ClientRequestContext request, BrowserCache.Entry old, ClientResponseContext response)
-   {
-      old.getHeaders().remove(HttpHeaders.CACHE_CONTROL);
-      old.getHeaders().remove(HttpHeaders.EXPIRES);
-      old.getHeaders().remove(HttpHeaders.LAST_MODIFIED);
-      String cc = (String) response.getHeaderString(HttpHeaders.CACHE_CONTROL);
-      String exp = (String) response.getHeaderString(HttpHeaders.EXPIRES);
-      int expires = -1;
+    private void cache(ClientRequestContext request, ClientResponseContext response) throws IOException {
+        if (response.getStatus() != 200)
+            return;
+        cacheIfPossible(request, response);
+    }
 
-      if (cc != null)
-      {
-         CacheControl cacheControl = CacheControl.valueOf(cc);
-         if (cacheControl.isNoCache())
-         {
+    public void updateOnNotModified(ClientRequestContext request, BrowserCache.Entry old, ClientResponseContext response) {
+        old.getHeaders().remove(HttpHeaders.CACHE_CONTROL);
+        old.getHeaders().remove(HttpHeaders.EXPIRES);
+        old.getHeaders().remove(HttpHeaders.LAST_MODIFIED);
+        String cc = (String) response.getHeaderString(HttpHeaders.CACHE_CONTROL);
+        String exp = (String) response.getHeaderString(HttpHeaders.EXPIRES);
+        int expires = -1;
+
+        if (cc != null) {
+            CacheControl cacheControl = CacheControl.valueOf(cc);
+            if (cacheControl.isNoCache()) {
+                useCacheEntry(response, old);
+                return;
+            }
+            expires = cacheControl.getMaxAge();
+        } else if (exp != null) {
+            Date date = DateUtil.parseDate(exp);
+            expires = (int) ((date.getTime() - System.currentTimeMillis()) / 1000);
+        }
+
+        if (cc != null) {
+            old.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, cc);
+        }
+        if (exp != null) {
+            old.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, exp);
+        }
+
+        String lastModified = (String) response.getHeaderString(HttpHeaders.LAST_MODIFIED);
+        String etag = (String) response.getHeaderString(HttpHeaders.ETAG);
+
+        if (etag == null)
+            etag = old.getHeaders().getFirst(HttpHeaders.ETAG);
+        else
+            old.getHeaders().putSingle(HttpHeaders.ETAG, etag);
+
+        if (lastModified != null) {
+            old.getHeaders().putSingle(HttpHeaders.LAST_MODIFIED, lastModified);
+        }
+
+        if (etag == null && lastModified == null && cc == null && exp == null) // don't cache
+        {
             useCacheEntry(response, old);
             return;
-         }
-         expires = cacheControl.getMaxAge();
-      }
-      else if (exp != null)
-      {
-         Date date = DateUtil.parseDate(exp);
-         expires = (int) ((date.getTime() - System.currentTimeMillis()) / 1000);
-      }
+        }
 
-      if (cc != null)
-      {
-         old.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, cc);
-      }
-      if (exp != null)
-      {
-         old.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, exp);
-      }
+        BrowserCache.Entry entry = cache.put(request.getUri().toString(), old.getMediaType(), old.getHeaders(), old.getCached(),
+                expires, etag, lastModified);
+        useCacheEntry(response, entry);
 
-      String lastModified = (String) response.getHeaderString(HttpHeaders.LAST_MODIFIED);
-      String etag = (String) response.getHeaderString(HttpHeaders.ETAG);
+    }
 
-      if (etag == null) etag = old.getHeaders().getFirst(HttpHeaders.ETAG);
-      else old.getHeaders().putSingle(HttpHeaders.ETAG, etag);
+    public void cacheIfPossible(ClientRequestContext request, ClientResponseContext response) throws IOException {
+        String cc = (String) response.getHeaderString(HttpHeaders.CACHE_CONTROL);
+        String exp = (String) response.getHeaderString(HttpHeaders.EXPIRES);
+        int expires = -1;
 
-      if (lastModified != null)
-      {
-         old.getHeaders().putSingle(HttpHeaders.LAST_MODIFIED, lastModified);
-      }
+        if (cc != null) {
+            CacheControl cacheControl = CacheControl.valueOf(cc);
+            if (cacheControl.isNoCache())
+                return;
+            expires = cacheControl.getMaxAge();
+        } else if (exp != null) {
+            Date date = DateUtil.parseDate(exp);
+            expires = (int) ((date.getTime() - System.currentTimeMillis()) / 1000);
+        }
 
-      if (etag == null && lastModified == null && cc == null && exp == null) // don't cache
-      {
-         useCacheEntry(response, old);
-         return;
-      }
+        String lastModified = (String) response.getHeaderString(HttpHeaders.LAST_MODIFIED);
+        String etag = (String) response.getHeaderString(HttpHeaders.ETAG);
 
+        String contentType = (String) response.getHeaderString(HttpHeaders.CONTENT_TYPE);
+        String accept = (String) request.getHeaderString(HttpHeaders.ACCEPT);
 
-      BrowserCache.Entry entry = cache.put(request.getUri().toString(), old.getMediaType(), old.getHeaders(), old.getCached(), expires, etag, lastModified);
-      useCacheEntry(response, entry);
-
-   }
-
-
-
-   public void cacheIfPossible(ClientRequestContext request, ClientResponseContext response) throws IOException
-   {
-      String cc = (String) response.getHeaderString(HttpHeaders.CACHE_CONTROL);
-      String exp = (String) response.getHeaderString(HttpHeaders.EXPIRES);
-      int expires = -1;
-
-      if (cc != null)
-      {
-         CacheControl cacheControl = CacheControl.valueOf(cc);
-         if (cacheControl.isNoCache()) return;
-         expires = cacheControl.getMaxAge();
-      }
-      else if (exp != null)
-      {
-         Date date = DateUtil.parseDate(exp);
-         expires = (int) ((date.getTime() - System.currentTimeMillis()) / 1000);
-      }
-
-      String lastModified = (String) response.getHeaderString(HttpHeaders.LAST_MODIFIED);
-      String etag = (String) response.getHeaderString(HttpHeaders.ETAG);
-
-      String contentType = (String) response.getHeaderString(HttpHeaders.CONTENT_TYPE);
-      String accept = (String) request.getHeaderString(HttpHeaders.ACCEPT);
-
-      byte[] cached = ReadFromStream.readFromStream(1024, response.getEntityStream());
-      // if Accept is present, use it, if not fallback to response Content-Type
-      MediaType mediaType = MediaType.valueOf(contentType);
-      if (accept != null) {
-         for (String acceptItem : accept.split("\\s*,\\s*")) {
-            MediaType acceptMediaType = MediaType.valueOf(acceptItem);
-            if (mediaType.isCompatible(acceptMediaType)) {
-               mediaType = acceptMediaType;
-               break;
+        byte[] cached = ReadFromStream.readFromStream(1024, response.getEntityStream());
+        // if Accept is present, use it, if not fallback to response Content-Type
+        MediaType mediaType = MediaType.valueOf(contentType);
+        if (accept != null) {
+            for (String acceptItem : accept.split("\\s*,\\s*")) {
+                MediaType acceptMediaType = MediaType.valueOf(acceptItem);
+                if (mediaType.isCompatible(acceptMediaType)) {
+                    mediaType = acceptMediaType;
+                    break;
+                }
             }
-         }
-      }
+        }
 
-      final BrowserCache.Entry entry = cache.put(request.getUri().toString(), mediaType,
-              response.getHeaders(), cached, expires, etag, lastModified);
+        final BrowserCache.Entry entry = cache.put(request.getUri().toString(), mediaType,
+                response.getHeaders(), cached, expires, etag, lastModified);
 
-      response.setEntityStream(new ByteArrayInputStream(cached));
-   }
+        response.setEntityStream(new ByteArrayInputStream(cached));
+    }
 
-   protected BrowserCache.Entry getEntry(ClientRequestContext request) throws Exception
-   {
-      String uri = request.getUri().toString();
+    protected BrowserCache.Entry getEntry(ClientRequestContext request) throws Exception {
+        String uri = request.getUri().toString();
 
-      List<MediaType> acceptableMediaTypes = request.getAcceptableMediaTypes();
-      BrowserCache.Entry entry = null;
-      if (acceptableMediaTypes.size() > 0)
-      {
-         for (MediaType accept : acceptableMediaTypes)
-         {
-            entry = cache.get(uri, accept);
-            if (entry != null) return entry;
-            if (MediaTypeHelper.isTextLike(accept))
-            {
-               entry = cache.get(uri, accept.withCharset("UTF-8"));
-               if (entry != null) return entry;
+        List<MediaType> acceptableMediaTypes = request.getAcceptableMediaTypes();
+        BrowserCache.Entry entry = null;
+        if (acceptableMediaTypes.size() > 0) {
+            for (MediaType accept : acceptableMediaTypes) {
+                entry = cache.get(uri, accept);
+                if (entry != null)
+                    return entry;
+                if (MediaTypeHelper.isTextLike(accept)) {
+                    entry = cache.get(uri, accept.withCharset("UTF-8"));
+                    if (entry != null)
+                        return entry;
+                }
             }
-         }
 
-      }
-      else
-      {
-         return cache.getAny(uri);
-      }
+        } else {
+            return cache.getAny(uri);
+        }
 
-      return null;
-   }
+        return null;
+    }
 
 }

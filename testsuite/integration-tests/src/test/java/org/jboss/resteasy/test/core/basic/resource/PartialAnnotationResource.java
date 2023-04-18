@@ -10,17 +10,17 @@ import javax.ws.rs.Produces;
  * @author pjurak
  */
 @Path("/test")
-public interface PartialAnnotationResource
-{
-   @GET
-   @Produces("text/plain")
-   String bar();
+public interface PartialAnnotationResource {
+    @GET
+    @Produces("text/plain")
+    String bar();
 
-   /** This is not REST method.
-    *
-    * @return
-    */
-   // @GET
-   // @Produces("text/plain")
-   String foo();
+    /**
+     * This is not REST method.
+     *
+     * @return
+     */
+    // @GET
+    // @Produces("text/plain")
+    String foo();
 }

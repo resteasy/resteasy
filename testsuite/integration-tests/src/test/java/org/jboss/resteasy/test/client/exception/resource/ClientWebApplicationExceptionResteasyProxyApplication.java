@@ -9,10 +9,10 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("app")
 public class ClientWebApplicationExceptionResteasyProxyApplication extends Application {
 
-   @Override
-   public Set<Class<?>> getClasses() {
-      HashSet<Class<?>> classes = new HashSet<Class<?>>();
-      classes.add(ClientWebApplicationExceptionResteasyProxyResource.class);
-      return classes;
-   }
+    @Override
+    public Set<Class<?>> getClasses() {
+        HashSet<Class<?>> classes = new HashSet<Class<?>>();
+        classes.add(ClientWebApplicationExceptionResteasyProxyResource.class);
+        return classes;
+    }
 }

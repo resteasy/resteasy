@@ -19,10 +19,10 @@
 
 package org.jboss.resteasy.spi;
 
+import java.util.concurrent.CompletionStage;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.InterceptorContext;
-
-import java.util.concurrent.CompletionStage;
 
 /**
  * Context for {@link AsyncWriterInterceptor} which supports async IO.
@@ -37,10 +37,12 @@ public interface AsyncWriterInterceptorContext extends InterceptorContext {
      * the wrapped {@link AsyncMessageBodyWriter#asyncWriteTo} method.
      *
      * @return a {@link CompletionStage} indicating completion.
-     * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
-     *                             {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned {@link CompletionStage}.
+     * @throws java.io.IOException                 if an IO error arises or is thrown by the wrapped
+     *                                             {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned
+     *                                             {@link CompletionStage}.
      * @throws javax.ws.rs.WebApplicationException
-     *                             thrown by the wrapped {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned {@link CompletionStage}.
+     *                                             thrown by the wrapped {@code AsyncMessageBodyWriter.asyncWriteTo} method, in
+     *                                             the returned {@link CompletionStage}.
      */
     CompletionStage<Void> asyncProceed();
 

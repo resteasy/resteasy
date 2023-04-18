@@ -2,7 +2,9 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import static org.junit.Assert.assertEquals;
+
 import java.util.Random;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -13,6 +15,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.AfterClass;
@@ -77,9 +80,9 @@ public class ClientUncheckedErrorTest {
 
         @Override
         public Response toResponse(ArrayIndexOutOfBoundsException ex) {
-          return Response.status(202)
-              .entity("Try again later")
-              .build();
+            return Response.status(202)
+                    .entity("Try again later")
+                    .build();
         }
     }
 

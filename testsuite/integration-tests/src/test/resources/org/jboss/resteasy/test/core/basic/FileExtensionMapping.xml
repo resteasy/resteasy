@@ -9,7 +9,7 @@
         <param-name>resteasy.media.type.mappings</param-name>
         <param-value>txt : text/plain, html : text/html</param-value>
     </context-param>
-    
+
     <context-param>
         <param-name>javax.ws.rs.core.Application</param-name>
         <param-value>org.jboss.resteasy.test.core.basic.resource.FileExtensionMappingApplication</param-value>

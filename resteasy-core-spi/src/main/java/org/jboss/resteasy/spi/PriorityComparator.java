@@ -20,6 +20,7 @@
 package org.jboss.resteasy.spi;
 
 import java.util.Comparator;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 

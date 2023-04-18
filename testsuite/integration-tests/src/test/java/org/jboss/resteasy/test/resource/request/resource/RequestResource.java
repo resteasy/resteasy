@@ -8,12 +8,10 @@ import javax.ws.rs.core.Context;
 import org.jboss.resteasy.spi.HttpRequest;
 
 @Path("/request")
-public class RequestResource
-{
-   @GET
-   @Produces("text/plain")
-   public String getRequest(@Context HttpRequest req)
-   {
-      return req.getRemoteAddress() + "/" + req.getRemoteHost();
-   }
+public class RequestResource {
+    @GET
+    @Produces("text/plain")
+    public String getRequest(@Context HttpRequest req) {
+        return req.getRemoteAddress() + "/" + req.getRemoteHost();
+    }
 }

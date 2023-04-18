@@ -20,42 +20,42 @@ import org.junit.Test;
  * It'll also pass if you remove the trailing slash in {@code generateURL("/test/")}.
  */
 public class ResteasyTrailingSlashTest {
-   private static NettyJaxrsServer server;
+    private static NettyJaxrsServer server;
 
-   @Path("/")
-   public static class Resource {
-      @GET
-      @Path("/test/")
-      @Produces(MediaType.TEXT_PLAIN)
-      public String get() {
-         return "hello world";
-      }
-   }
+    @Path("/")
+    public static class Resource {
+        @GET
+        @Path("/test/")
+        @Produces(MediaType.TEXT_PLAIN)
+        public String get() {
+            return "hello world";
+        }
+    }
 
-   @BeforeClass
-   public static void init() throws Exception {
-      server = new NettyJaxrsServer();
-      server.setPort(TestPortProvider.getPort());
-      server.setRootResourcePath("");
-      server.setSecurityDomain(null);
-      // rls   server.getDeployment().getRegistry().addPerRequestResource(Resource.class);
-      // rls   ResteasyDeployment deployment = server.getDeployment();
-      server.getDeployment().getScannedResourceClasses().add(Resource.class.getName());
-      server.start();
-   }
+    @BeforeClass
+    public static void init() throws Exception {
+        server = new NettyJaxrsServer();
+        server.setPort(TestPortProvider.getPort());
+        server.setRootResourcePath("");
+        server.setSecurityDomain(null);
+        // rls   server.getDeployment().getRegistry().addPerRequestResource(Resource.class);
+        // rls   ResteasyDeployment deployment = server.getDeployment();
+        server.getDeployment().getScannedResourceClasses().add(Resource.class.getName());
+        server.start();
+    }
 
-   @AfterClass
-   public static void stop() throws Exception {
-      server.stop();
-   }
+    @AfterClass
+    public static void stop() throws Exception {
+        server.stop();
+    }
 
-   @Test
-   public void testTrailingSlash() throws Exception {
-      Client client = ClientBuilder.newClient();
-      String val = client.target(TestPortProvider.generateURL("/test/"))
-// String val = client.target(TestPortProvider.generateURL("/test"))
-              .request().get(String.class);
-      assertEquals("hello world", val);
-      client.close();
-   }
+    @Test
+    public void testTrailingSlash() throws Exception {
+        Client client = ClientBuilder.newClient();
+        String val = client.target(TestPortProvider.generateURL("/test/"))
+                // String val = client.target(TestPortProvider.generateURL("/test"))
+                .request().get(String.class);
+        assertEquals("hello world", val);
+        client.close();
+    }
 }

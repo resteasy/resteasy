@@ -10,9 +10,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ProviderPriorityFooParamConverterProviderAAA implements ParamConverterProvider {
 
-   @SuppressWarnings("unchecked")
-   @Override
-   public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
-      return (ParamConverter<T>) new ProviderPriorityFooParamConverter("AAA");
-   }
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+        return (ParamConverter<T>) new ProviderPriorityFooParamConverter("AAA");
+    }
 }

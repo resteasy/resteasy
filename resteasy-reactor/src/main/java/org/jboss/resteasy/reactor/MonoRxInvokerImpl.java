@@ -1,14 +1,15 @@
 package org.jboss.resteasy.reactor;
 
+import java.util.concurrent.CompletionStage;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
-import reactor.core.publisher.Mono;
 
-import java.util.concurrent.CompletionStage;
+import reactor.core.publisher.Mono;
 
 public class MonoRxInvokerImpl extends PublisherRxInvokerImpl implements MonoRxInvoker {
 

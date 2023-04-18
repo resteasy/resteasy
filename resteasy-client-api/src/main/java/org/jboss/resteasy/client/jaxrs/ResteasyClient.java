@@ -8,28 +8,27 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 
-public interface ResteasyClient extends Client
-{
-   @Override
-   ResteasyWebTarget target(URI uri);
+public interface ResteasyClient extends Client {
+    @Override
+    ResteasyWebTarget target(URI uri);
 
-   @Override
-   ResteasyWebTarget target(String uri);
+    @Override
+    ResteasyWebTarget target(String uri);
 
-   @Override
-   ResteasyWebTarget target(UriBuilder uriBuilder);
+    @Override
+    ResteasyWebTarget target(UriBuilder uriBuilder);
 
-   @Override
-   ResteasyWebTarget target(Link link);
+    @Override
+    ResteasyWebTarget target(Link link);
 
-   ClientHttpEngine httpEngine();
+    ClientHttpEngine httpEngine();
 
-   ExecutorService asyncInvocationExecutor();
+    ExecutorService asyncInvocationExecutor();
 
-   ScheduledExecutorService getScheduledExecutor();
+    ScheduledExecutorService getScheduledExecutor();
 
-   void abortIfClosed();
+    void abortIfClosed();
 
-   boolean isClosed();
+    boolean isClosed();
 
 }

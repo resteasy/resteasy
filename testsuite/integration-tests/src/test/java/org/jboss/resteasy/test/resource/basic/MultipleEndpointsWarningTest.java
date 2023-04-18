@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import java.util.logging.LoggingPermission;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -21,8 +23,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.logging.LoggingPermission;
-
 /**
  * @tpSubChapter Resources
  * @tpChapter Integration tests
@@ -31,68 +31,68 @@ import java.util.logging.LoggingPermission;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class MultipleEndpointsWarningTest
-{
-   private static Client client;
+public class MultipleEndpointsWarningTest {
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
-      war.addClass(LogHandler.class);
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new LoggingPermission("control", "")
-      ), "permissions.xml");
-      // Test registers it's own LogHandler
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new LoggingPermission("control", "")), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
+        war.addClass(LogHandler.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new LoggingPermission("control", "")), "permissions.xml");
+        // Test registers it's own LogHandler
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new LoggingPermission("control", "")),
+                "permissions.xml");
+        return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
+    }
 
-   private static String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, MultipleEndpointsWarningTest.class.getSimpleName());
-   }
+    private static String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, MultipleEndpointsWarningTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void setUp() throws Exception {
-      client = ClientBuilder.newClient();
-      client.target(generateURL("/setup")).request().get();
-   }
+    @BeforeClass
+    public static void setUp() throws Exception {
+        client = ClientBuilder.newClient();
+        client.target(generateURL("/setup")).request().get();
+    }
 
-   @AfterClass
-   public static void tearDown() {
-      client.target(generateURL("/teardown")).request().get();
-      client.close();
-   }
+    @AfterClass
+    public static void tearDown() {
+        client.target(generateURL("/teardown")).request().get();
+        client.close();
+    }
 
-   @Test
-   public void testUnique() throws Exception {
-      Response response = client.target(generateURL("/unique/")).request().accept(MediaType.TEXT_PLAIN).get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+    @Test
+    public void testUnique() throws Exception {
+        Response response = client.target(generateURL("/unique/")).request().accept(MediaType.TEXT_PLAIN).get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
 
-      response = client.target(generateURL("/unique")).request().get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+        response = client.target(generateURL("/unique")).request().get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
 
-      response = client.target(generateURL("/unique")).request().accept(MediaType.TEXT_PLAIN).get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+        response = client.target(generateURL("/unique")).request().accept(MediaType.TEXT_PLAIN).get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
 
-      response = client.target(generateURL("/1")).request().get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
-   }
+        response = client.target(generateURL("/1")).request().get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+    }
 
-   @Test
-   public void testDifferentVerbs() throws Exception {
-      Response response = client.target(generateURL("/verbs")).request().accept(MediaType.TEXT_PLAIN).get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+    @Test
+    public void testDifferentVerbs() throws Exception {
+        Response response = client.target(generateURL("/verbs")).request().accept(MediaType.TEXT_PLAIN).get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
 
-      response = client.target(generateURL("/verbs")).request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+        response = client.target(generateURL("/verbs")).request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
 
-      response = client.target(generateURL("/verbs")).request().get();
-      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
-   }
+        response = client.target(generateURL("/verbs")).request().get();
+        Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, Long.valueOf(0), response.readEntity(long.class));
+    }
 
-   @Test
-   public void testDuplicate() throws Exception {
-      Response response = client.target(generateURL("/duplicate")).request().get();
-      Assert.assertEquals(LogHandler.MESSAGE_CODE + " should've been logged once", Long.valueOf(1), response.readEntity(long.class));
-   }
+    @Test
+    public void testDuplicate() throws Exception {
+        Response response = client.target(generateURL("/duplicate")).request().get();
+        Assert.assertEquals(LogHandler.MESSAGE_CODE + " should've been logged once", Long.valueOf(1),
+                response.readEntity(long.class));
+    }
 }

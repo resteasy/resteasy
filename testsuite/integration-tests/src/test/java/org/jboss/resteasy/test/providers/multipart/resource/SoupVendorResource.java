@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,10 +13,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 
 @Path("vendor")
 public class SoupVendorResource {
@@ -82,7 +83,7 @@ public class SoupVendorResource {
             sb.append("success");
         } else {
             sb.append("Failed: parts not found: ");
-            for (Iterator<String> it = controlList.iterator(); it.hasNext(); ) {
+            for (Iterator<String> it = controlList.iterator(); it.hasNext();) {
                 sb.append(it.next() + " ");
             }
         }
@@ -110,8 +111,9 @@ public class SoupVendorResource {
         List<Soup> soupList = new ArrayList<Soup>();
         soupList.add(new Soup("Chicken Noodle"));
         soupList.add(new Soup("Vegetable"));
-        multipartOutput.addPart(soupList, new GenericType<List<Soup>>(){},
-                MediaType.APPLICATION_XML_TYPE );
+        multipartOutput.addPart(soupList, new GenericType<List<Soup>>() {
+        },
+                MediaType.APPLICATION_XML_TYPE);
         multipartOutput.addPart("Granny's Soups", MediaType.TEXT_PLAIN_TYPE);
         return multipartOutput;
     }

@@ -6,9 +6,9 @@ import javax.ws.rs.Path;
 @Path("")
 public class ProviderWithNoProducesResource {
 
-   @GET
-   @Path("foo")
-   public Foo getFoo() throws Exception {
-       return new Foo("foo");
-   }
+    @GET
+    @Path("foo")
+    public Foo getFoo() throws Exception {
+        return new Foo("foo");
+    }
 }

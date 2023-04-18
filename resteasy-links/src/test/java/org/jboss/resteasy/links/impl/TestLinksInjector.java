@@ -56,5 +56,6 @@ public class TestLinksInjector {
         }
     }
 
-    private static final class EntityWithoutLinks {}
+    private static final class EntityWithoutLinks {
+    }
 }

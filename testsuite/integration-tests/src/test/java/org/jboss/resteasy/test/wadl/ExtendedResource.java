@@ -8,9 +8,8 @@ import javax.ws.rs.Path;
 public class ExtendedResource {
 
     @POST
-    @Consumes({"application/xml"})
+    @Consumes({ "application/xml" })
     public String post(ListType income) {
         return "foo";
     }
 }
-

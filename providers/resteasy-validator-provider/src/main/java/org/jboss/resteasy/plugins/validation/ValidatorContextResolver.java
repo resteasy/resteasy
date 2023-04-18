@@ -11,9 +11,8 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
- * Copyright May 23, 2013
+ *          Copyright May 23, 2013
  */
 @Provider
-public class ValidatorContextResolver extends AbstractValidatorContextResolver implements ContextResolver<GeneralValidator>
-{
+public class ValidatorContextResolver extends AbstractValidatorContextResolver implements ContextResolver<GeneralValidator> {
 }

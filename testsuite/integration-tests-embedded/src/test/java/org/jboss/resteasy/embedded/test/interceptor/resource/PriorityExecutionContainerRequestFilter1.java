@@ -1,17 +1,18 @@
 package org.jboss.resteasy.embedded.test.interceptor.resource;
 
-import org.jboss.resteasy.embedded.test.interceptor.PriorityExecutionTest;
+import java.io.IOException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import java.io.IOException;
+
+import org.jboss.resteasy.embedded.test.interceptor.PriorityExecutionTest;
 
 @Priority(-100)
 public class PriorityExecutionContainerRequestFilter1 implements ContainerRequestFilter {
-   @Override
-   public void filter(ContainerRequestContext requestContext) throws IOException {
-      PriorityExecutionTest.logger.info(this);
-      PriorityExecutionTest.interceptors.add("PriorityExecutionContainerRequestFilter1");
-   }
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        PriorityExecutionTest.logger.info(this);
+        PriorityExecutionTest.interceptors.add("PriorityExecutionContainerRequestFilter1");
+    }
 }

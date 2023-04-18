@@ -1,5 +1,11 @@
 package org.jboss.resteasy.core.registry;
 
+import static org.junit.Assert.assertEquals;
+
+import java.lang.reflect.Method;
+
+import javax.ws.rs.core.MediaType;
+
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
@@ -15,11 +21,6 @@ import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
-import java.lang.reflect.Method;
-
-import static org.junit.Assert.assertEquals;
-
 public class RootNodeCacheSizeTest {
 
     @Test
@@ -34,7 +35,7 @@ public class RootNodeCacheSizeTest {
         // Default in RootNode is CACHE_SIZE = 2048;
         assertEquals("Cache is expected to be cleared when size exceeded 2048 items", 2, rootNode.cacheSize());
         for (int i = 0; i < 10; i++) {
-           rootNode.match(MockHttpRequest.get("" + i).contentType(MediaType.valueOf("text/html;boundary=from" + i)), 0);
+            rootNode.match(MockHttpRequest.get("" + i).contentType(MediaType.valueOf("text/html;boundary=from" + i)), 0);
         }
         //MediaType with parameters won't be cached
         assertEquals("Unexpected cache item", 2, rootNode.cacheSize());
@@ -44,17 +45,21 @@ public class RootNodeCacheSizeTest {
         public int cacheSize() {
             return cache.size();
         }
+
         public void adjustRoot() {
             root = new MySegmentNode("");
         }
     }
+
     public class MySegmentNode extends SegmentNode {
         public MySegmentNode(final String segment) {
             super(segment);
         }
+
         public String foo() {
             return "foo";
         }
+
         @Override
         public MatchCache match(HttpRequest request, int start) {
 
@@ -72,7 +77,8 @@ public class RootNodeCacheSizeTest {
             InjectorFactory injectorFactory = new InjectorFactoryImpl();
             ResourceBuilder resourceBuilder = new ResourceBuilder();
             POJOResourceFactory resourceFactory = new POJOResourceFactory(resourceBuilder, clazz);
-            ResourceMethodInvoker resourceMethodInvoker = new ResourceMethodInvoker(resourceMethod, injectorFactory, resourceFactory, providerFactory);
+            ResourceMethodInvoker resourceMethodInvoker = new ResourceMethodInvoker(resourceMethod, injectorFactory,
+                    resourceFactory, providerFactory);
 
             MatchCache match = new MatchCache();
             match.match = new SegmentNode.Match(new MyMethodExpression(), null);
@@ -84,6 +90,7 @@ public class RootNodeCacheSizeTest {
             return match;
         }
     }
+
     public class MyMethodExpression extends MethodExpression {
 
         public MyMethodExpression() {

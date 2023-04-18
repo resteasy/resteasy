@@ -1,198 +1,175 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServerResponse;
-import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-public class VertxHttpResponse implements HttpResponse
-{
-   private int status = 200;
-   private OutputStream os;
-   private MultivaluedMap<String, Object> outputHeaders;
-   final HttpServerResponse response;
-   private boolean committed;
-   private ResteasyProviderFactory providerFactory;
-   private final HttpMethod method;
-   private Throwable vertxException;
-   private boolean ended;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.ext.RuntimeDelegate;
 
-   public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory)
-   {
-      this(response, providerFactory, null);
-   }
+import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-   public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory, final HttpMethod method)
-   {
-      outputHeaders = new MultivaluedMapImpl<String, Object>();
-      this.method = method;
-      os = (method == null || !method.equals(HttpMethod.HEAD)) ? new ChunkOutputStream(this, 1000) : null;
-      this.response = response;
-      this.providerFactory = providerFactory;
-      response.exceptionHandler(t -> vertxException = t);
-      response.closeHandler(v -> vertxException = new IOException("Connection closed"));
-   }
+import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerResponse;
 
-   @Override
-   public void setOutputStream(OutputStream os)
-   {
-      this.os = os;
-   }
+public class VertxHttpResponse implements HttpResponse {
+    private int status = 200;
+    private OutputStream os;
+    private MultivaluedMap<String, Object> outputHeaders;
+    final HttpServerResponse response;
+    private boolean committed;
+    private ResteasyProviderFactory providerFactory;
+    private final HttpMethod method;
+    private Throwable vertxException;
+    private boolean ended;
 
-   @Override
-   public int getStatus()
-   {
-      return status;
-   }
+    public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory) {
+        this(response, providerFactory, null);
+    }
 
-   @Override
-   public void setStatus(int status)
-   {
-      this.status = status;
-   }
+    public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory,
+            final HttpMethod method) {
+        outputHeaders = new MultivaluedMapImpl<String, Object>();
+        this.method = method;
+        os = (method == null || !method.equals(HttpMethod.HEAD)) ? new ChunkOutputStream(this, 1000) : null;
+        this.response = response;
+        this.providerFactory = providerFactory;
+        response.exceptionHandler(t -> vertxException = t);
+        response.closeHandler(v -> vertxException = new IOException("Connection closed"));
+    }
 
-   @Override
-   public MultivaluedMap<String, Object> getOutputHeaders()
-   {
-      return outputHeaders;
-   }
+    @Override
+    public void setOutputStream(OutputStream os) {
+        this.os = os;
+    }
 
-   @Override
-   public OutputStream getOutputStream() throws IOException
-   {
-      return os;
-   }
+    @Override
+    public int getStatus() {
+        return status;
+    }
 
-   @Override
-   public void addNewCookie(NewCookie cookie)
-   {
-      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
-   }
+    @Override
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
-   void checkException() throws IOException
-   {
-      if(vertxException instanceof IOException)
-         throw (IOException)vertxException;
-      if(vertxException != null)
-         throw new IOException(vertxException);
-   }
+    @Override
+    public MultivaluedMap<String, Object> getOutputHeaders() {
+        return outputHeaders;
+    }
 
-   @Override
-   public void sendError(int status) throws IOException
-   {
-      checkException();
-      sendError(status, null);
-   }
+    @Override
+    public OutputStream getOutputStream() throws IOException {
+        return os;
+    }
 
-   @Override
-   public void sendError(int status, String message) throws IOException
-   {
-      checkException();
-      if (committed)
-      {
-         throw new IllegalStateException();
-      }
-      response.setStatusCode(status);
-      if (message != null)
-      {
-         response.end(message);
-      } else
-      {
-         response.end();
-      }
-      committed = true;
-      ended = true;
-   }
+    @Override
+    public void addNewCookie(NewCookie cookie) {
+        outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
+    }
 
-   @Override
-   public boolean isCommitted()
-   {
-      return committed;
-   }
+    void checkException() throws IOException {
+        if (vertxException instanceof IOException)
+            throw (IOException) vertxException;
+        if (vertxException != null)
+            throw new IOException(vertxException);
+    }
 
-   @Override
-   public void reset()
-   {
-      if (committed)
-      {
-         throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
-      }
-      outputHeaders.clear();
-   }
+    @Override
+    public void sendError(int status) throws IOException {
+        checkException();
+        sendError(status, null);
+    }
 
-   @SuppressWarnings({"rawtypes", "unchecked"})
-   public static void transformHeaders(VertxHttpResponse vertxResponse, HttpServerResponse response, ResteasyProviderFactory factory)
-   {
-      for (Map.Entry<String, List<Object>> entry : vertxResponse.getOutputHeaders().entrySet())
-      {
-         String key = entry.getKey();
-         for (Object value : entry.getValue())
-         {
-            RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
-            if (delegate != null)
-            {
-               response.headers().add(key, delegate.toString(value));
-            } else
-            {
-               response.headers().add(key, value.toString());
+    @Override
+    public void sendError(int status, String message) throws IOException {
+        checkException();
+        if (committed) {
+            throw new IllegalStateException();
+        }
+        response.setStatusCode(status);
+        if (message != null) {
+            response.end(message);
+        } else {
+            response.end();
+        }
+        committed = true;
+        ended = true;
+    }
+
+    @Override
+    public boolean isCommitted() {
+        return committed;
+    }
+
+    @Override
+    public void reset() {
+        if (committed) {
+            throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
+        }
+        outputHeaders.clear();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static void transformHeaders(VertxHttpResponse vertxResponse, HttpServerResponse response,
+            ResteasyProviderFactory factory) {
+        for (Map.Entry<String, List<Object>> entry : vertxResponse.getOutputHeaders().entrySet()) {
+            String key = entry.getKey();
+            for (Object value : entry.getValue()) {
+                RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
+                if (delegate != null) {
+                    response.headers().add(key, delegate.toString(value));
+                } else {
+                    response.headers().add(key, value.toString());
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
-   public void prepareChunkStream()
-   {
-      committed = true;
-      response.setStatusCode(getStatus());
-      response.setChunked(true);
-      transformHeaders(this, response, providerFactory);
-   }
+    public void prepareChunkStream() {
+        committed = true;
+        response.setStatusCode(getStatus());
+        response.setChunked(true);
+        transformHeaders(this, response, providerFactory);
+    }
 
-   private void prepareEmptyResponse()
-   {
-      committed = true;
-      response.setStatusCode(getStatus());
-      transformHeaders(this, response, providerFactory);
-      response.headersEndHandler(h -> {
-         response.headers().remove(HttpHeaders.CONTENT_LENGTH);
-         response.headers().set(HttpHeaders.CONNECTION, HttpHeaders.KEEP_ALIVE);
-      });
-   }
+    private void prepareEmptyResponse() {
+        committed = true;
+        response.setStatusCode(getStatus());
+        transformHeaders(this, response, providerFactory);
+        response.headersEndHandler(h -> {
+            response.headers().remove(HttpHeaders.CONTENT_LENGTH);
+            response.headers().set(HttpHeaders.CONNECTION, HttpHeaders.KEEP_ALIVE);
+        });
+    }
 
-   public void finish() throws IOException
-   {
-      if (ended) return;
-      ended = true;
-      checkException();
-      if (os != null) {
-         os.flush();
-         if (!isCommitted())
-         {
-            prepareChunkStream();
-         }
-      } else {
-         prepareEmptyResponse();
-      }
-      response.end();
-   }
+    public void finish() throws IOException {
+        if (ended)
+            return;
+        ended = true;
+        checkException();
+        if (os != null) {
+            os.flush();
+            if (!isCommitted()) {
+                prepareChunkStream();
+            }
+        } else {
+            prepareEmptyResponse();
+        }
+        response.end();
+    }
 
-   @Override
-   public void flushBuffer() throws IOException {
-      checkException();
-      if(os != null) {
-         os.flush();
-      }
-   }
+    @Override
+    public void flushBuffer() throws IOException {
+        checkException();
+        if (os != null) {
+            os.flush();
+        }
+    }
 }

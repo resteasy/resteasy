@@ -9,11 +9,11 @@ import javax.ws.rs.ext.Provider;
 @Path("/")
 public class ValidationExceptionSubResourceWithInvalidOverride extends ValidationExceptionSuperResource {
 
-   @Provider
-   public static class ConstraintDeclarationExceptionMapper extends ValidationExceptionMapper<ConstraintDeclarationException> {
-   }
+    @Provider
+    public static class ConstraintDeclarationExceptionMapper extends ValidationExceptionMapper<ConstraintDeclarationException> {
+    }
 
-   @POST
-   public void test(@Size(max = 3) String s) {
-   }
+    @POST
+    public void test(@Size(max = 3) String s) {
+    }
 }

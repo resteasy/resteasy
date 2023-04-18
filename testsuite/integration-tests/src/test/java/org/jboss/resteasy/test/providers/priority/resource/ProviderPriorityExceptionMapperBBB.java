@@ -9,8 +9,8 @@ import javax.ws.rs.ext.Provider;
 @Priority(20)
 public class ProviderPriorityExceptionMapperBBB implements ExceptionMapper<ProviderPriorityTestException> {
 
-   @Override
-   public Response toResponse(ProviderPriorityTestException exception) {
-      return Response.ok().status(444).entity("BBB").build();
-   }
+    @Override
+    public Response toResponse(ProviderPriorityTestException exception) {
+        return Response.ok().status(444).entity("BBB").build();
+    }
 }

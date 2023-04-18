@@ -24,70 +24,54 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 @SuppressWarnings("rawtypes")
 @Provider
 @Produces("text/plain")
-public class DefaultBooleanWriter implements AsyncMessageBodyWriter<Boolean>
-{
+public class DefaultBooleanWriter implements AsyncMessageBodyWriter<Boolean> {
 
-   @Override
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return !String.class.equals(type) && !type.isArray() && !MediaTypeHelper.isBlacklisted(mediaType);
-   }
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return !String.class.equals(type) && !type.isArray() && !MediaTypeHelper.isBlacklisted(mediaType);
+    }
 
-   @Override
-   public void writeTo(Boolean t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-         WebApplicationException
-   {
-      String charset = mediaType.getParameters().get("charset");
-      if (charset == null)
-      {
-         charset = StandardCharsets.UTF_8.name();
-      }
-      try
-      {
-         entityStream.write(t.toString().getBytes(charset));
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         // Use default encoding.
-         entityStream.write(t.toString().getBytes());
-      }
-   }
-
-   public long getSize(Boolean o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      String charset = mediaType.getParameters().get("charset");
-      if (charset != null)
-         try
-         {
-            return o.toString().getBytes(charset).length;
-         }
-         catch (UnsupportedEncodingException e)
-         {
+    @Override
+    public void writeTo(Boolean t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+            WebApplicationException {
+        String charset = mediaType.getParameters().get("charset");
+        if (charset == null) {
+            charset = StandardCharsets.UTF_8.name();
+        }
+        try {
+            entityStream.write(t.toString().getBytes(charset));
+        } catch (UnsupportedEncodingException e) {
             // Use default encoding.
-         }
-      return o.toString().getBytes(StandardCharsets.UTF_8).length;
-   }
+            entityStream.write(t.toString().getBytes());
+        }
+    }
 
-   @Override
-   public CompletionStage<Void> asyncWriteTo(Boolean t, Class<?> type, Type genericType, Annotation[] annotations,
-                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-                                             AsyncOutputStream entityStream)
-   {
-      String charset = mediaType.getParameters().get("charset");
-      if (charset == null)
-      {
-         charset = StandardCharsets.UTF_8.name();
-      }
-      try
-      {
-         return entityStream.asyncWrite(t.toString().getBytes(charset));
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         // Use default encoding.
-         return entityStream.asyncWrite(t.toString().getBytes());
-      }
-   }
+    public long getSize(Boolean o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        String charset = mediaType.getParameters().get("charset");
+        if (charset != null)
+            try {
+                return o.toString().getBytes(charset).length;
+            } catch (UnsupportedEncodingException e) {
+                // Use default encoding.
+            }
+        return o.toString().getBytes(StandardCharsets.UTF_8).length;
+    }
+
+    @Override
+    public CompletionStage<Void> asyncWriteTo(Boolean t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+            AsyncOutputStream entityStream) {
+        String charset = mediaType.getParameters().get("charset");
+        if (charset == null) {
+            charset = StandardCharsets.UTF_8.name();
+        }
+        try {
+            return entityStream.asyncWrite(t.toString().getBytes(charset));
+        } catch (UnsupportedEncodingException e) {
+            // Use default encoding.
+            return entityStream.asyncWrite(t.toString().getBytes());
+        }
+    }
 
 }

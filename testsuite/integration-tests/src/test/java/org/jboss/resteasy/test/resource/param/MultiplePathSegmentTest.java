@@ -29,103 +29,97 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class MultiplePathSegmentTest {
 
-   private static Client client;
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MultiplePathSegmentTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, MultiplePathSegmentResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(MultiplePathSegmentTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, MultiplePathSegmentResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, MultiplePathSegmentTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, MultiplePathSegmentTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void setup() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void cleanup() {
-      client.close();
-   }
+    @AfterClass
+    public static void cleanup() {
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Array of PathSegments captured by wildcard
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testWildcardArray() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/a/b/c/array/3")).request();
-      Response response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails Array of PathSegments captured by wildcard
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testWildcardArray() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/a/b/c/array/3")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 
-   /**
-    * @tpTestDetails List of PathSegments captured by wildcard
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testWildcardList() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/a/b/c/list/3")).request();
-      Response response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails List of PathSegments captured by wildcard
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testWildcardList() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/a/b/c/list/3")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 
-   /**
-    * @tpTestDetails ArrayList of PathSegments captured by wildcard
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testWildcardArrayList() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/a/b/c/arraylist/3")).request();
-      Response response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails ArrayList of PathSegments captured by wildcard
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testWildcardArrayList() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/a/b/c/arraylist/3")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 
-   /**
-    * @tpTestDetails Array of PathSegments captured by two separate segments with the same name
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testTwoSegmentsArray() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/a/b/array")).request();
-      Response response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails Array of PathSegments captured by two separate segments with the same name
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testTwoSegmentsArray() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/a/b/array")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 
-   /**
-    * @tpTestDetails List of PathSegments captured by two separate segments with the same name
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testTwoSegmentsList() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/a/b/list")).request();
-      Response response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails List of PathSegments captured by two separate segments with the same name
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testTwoSegmentsList() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/a/b/list")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 
-   /**
-    * @tpTestDetails ArrayList of PathSegments captured by two separate segments with the same name
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testTwoSegmentsArrayList() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/a/b/arraylist")).request();
-      Response response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
+    /**
+     * @tpTestDetails ArrayList of PathSegments captured by two separate segments with the same name
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testTwoSegmentsArrayList() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/a/b/arraylist")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 }

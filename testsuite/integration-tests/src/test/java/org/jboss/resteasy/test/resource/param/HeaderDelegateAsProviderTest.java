@@ -31,63 +31,63 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class HeaderDelegateAsProviderTest {
 
-   private static Client client;
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(HeaderDelegateAsProviderTest.class.getSimpleName());
-      war.addClass(HeaderDelegateAsProviderHeader.class);
-      war.addClass(HeaderDelegateAsProviderHeaderDelegate.class);
-      war.addAsResource(HeaderDelegateAsProviderTest.class.getPackage(),
-         "javax.ws.rs.ext.Providers_HeaderDelegateAsProvider",
-         "META-INF/services/javax.ws.rs.ext.Providers");
-      return TestUtil.finishContainerPrepare(war, null, HeaderDelegateAsProviderResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploySimpleResource() {
+        WebArchive war = TestUtil.prepareArchive(HeaderDelegateAsProviderTest.class.getSimpleName());
+        war.addClass(HeaderDelegateAsProviderHeader.class);
+        war.addClass(HeaderDelegateAsProviderHeaderDelegate.class);
+        war.addAsResource(HeaderDelegateAsProviderTest.class.getPackage(),
+                "javax.ws.rs.ext.Providers_HeaderDelegateAsProvider",
+                "META-INF/services/javax.ws.rs.ext.Providers");
+        return TestUtil.finishContainerPrepare(war, null, HeaderDelegateAsProviderResource.class);
+    }
 
-   @BeforeClass
-   public static void init() {
-      client = ClientBuilder.newClient();
-      client.register(HeaderDelegateAsProviderHeaderDelegate.class);
-   }
+    @BeforeClass
+    public static void init() {
+        client = ClientBuilder.newClient();
+        client.register(HeaderDelegateAsProviderHeaderDelegate.class);
+    }
 
-   @AfterClass
-   public static void after() throws Exception {
-      client.close();
-   }
+    @AfterClass
+    public static void after() throws Exception {
+        client.close();
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, HeaderDelegateAsProviderTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, HeaderDelegateAsProviderTest.class.getSimpleName());
+    }
 
-   /**
-   * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from server
-   * @tpSince RESTEasy 4.0.0
-   */
-   @Test
-   public void testHeaderDelegateServer() {
-      Response response = client.target(generateURL("/server")).request().get();
-      Assert.assertEquals("toString:abc;xyz", response.getHeaderString("HeaderTest"));
-   }
+    /**
+     * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from server
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testHeaderDelegateServer() {
+        Response response = client.target(generateURL("/server")).request().get();
+        Assert.assertEquals("toString:abc;xyz", response.getHeaderString("HeaderTest"));
+    }
 
-   /**
-   * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from client, injected as @HeaderParam
-   * @tpSince RESTEasy 4.0.0
-   */
-   @Test
-   public void testHeaderDelegateClientHeader() {
-      Builder request = client.target(generateURL("/client/header")).request();
-      String response = request.header("HeaderTest", new HeaderDelegateAsProviderHeader("123", "789")).get(String.class);
-      Assert.assertEquals("fromString:toString:123|789", response);
-   }
+    /**
+     * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from client, injected as @HeaderParam
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testHeaderDelegateClientHeader() {
+        Builder request = client.target(generateURL("/client/header")).request();
+        String response = request.header("HeaderTest", new HeaderDelegateAsProviderHeader("123", "789")).get(String.class);
+        Assert.assertEquals("fromString:toString:123|789", response);
+    }
 
-   /**
-   * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from client, injected as @Context HttpHeaders
-   * @tpSince RESTEasy 4.0.0
-   */
-   @Test
-   public void testHeaderDelegateClientHeaders() {
-      Builder request = client.target(generateURL("/client/headers")).request();
-      String response = request.header("HeaderTest", new HeaderDelegateAsProviderHeader("123", "789")).get(String.class);
-      Assert.assertEquals("toString:123;789", response);
-   }
+    /**
+     * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from client, injected as @Context HttpHeaders
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testHeaderDelegateClientHeaders() {
+        Builder request = client.target(generateURL("/client/headers")).request();
+        String response = request.header("HeaderTest", new HeaderDelegateAsProviderHeader("123", "789")).get(String.class);
+        Assert.assertEquals("toString:123;789", response);
+    }
 }

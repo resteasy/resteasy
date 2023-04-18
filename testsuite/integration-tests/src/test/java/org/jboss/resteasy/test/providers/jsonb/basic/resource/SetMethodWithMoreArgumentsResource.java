@@ -8,13 +8,13 @@ import javax.ws.rs.Produces;
 @Path("/")
 public class SetMethodWithMoreArgumentsResource {
 
-   @Path("/dog")
-   @POST
-   @Produces("application/json")
-   @Consumes("application/json")
-   public Dog getDog(Dog dog) throws Exception {
-      dog.setNameAndSort("Jethro", "stafford");
-      return dog;
-   }
+    @Path("/dog")
+    @POST
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Dog getDog(Dog dog) throws Exception {
+        dog.setNameAndSort("Jethro", "stafford");
+        return dog;
+    }
 
 }

@@ -9,7 +9,7 @@ public class GenericEntityExtendingBaseEntityResource implements GenericEntityEx
 
     public static List<EntityExtendingBaseEntity> generateEntities(int count) {
         List<EntityExtendingBaseEntity> entityExtendingBaseEntities = new ArrayList<>();
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             entityExtendingBaseEntities.add(new EntityExtendingBaseEntity(FIRST_NAME, LAST_NAME));
         }
         return entityExtendingBaseEntities;

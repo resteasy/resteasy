@@ -9,15 +9,16 @@ import javax.ws.rs.core.GenericType;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface SignedInput<T>
-{
-   T getEntity();
-   <T2> T2 getEntity(Class<T2> type);
-   Object getEntity(GenericType type);
+public interface SignedInput<T> {
+    T getEntity();
 
-   boolean verify() throws Exception;
+    <T2> T2 getEntity(Class<T2> type);
 
-   boolean verify(X509Certificate certificate) throws Exception;
+    Object getEntity(GenericType type);
 
-   boolean verify(PublicKey publicKey) throws Exception;
+    boolean verify() throws Exception;
+
+    boolean verify(X509Certificate certificate) throws Exception;
+
+    boolean verify(PublicKey publicKey) throws Exception;
 }

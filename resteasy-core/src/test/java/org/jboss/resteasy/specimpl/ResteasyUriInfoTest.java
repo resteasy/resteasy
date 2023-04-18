@@ -1,10 +1,10 @@
 package org.jboss.resteasy.specimpl;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 public class ResteasyUriInfoTest {
 
@@ -32,6 +32,5 @@ public class ResteasyUriInfoTest {
         String key2 = ResteasyUriInfo.InitData.getCacheKey(absoluteUri, "");
         assertNotEquals(key1, key2);
     }
-
 
 }

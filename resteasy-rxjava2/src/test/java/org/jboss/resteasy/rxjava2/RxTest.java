@@ -30,144 +30,146 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
+public class RxTest {
+    private static NettyJaxrsServer server;
 
-public class RxTest
-{
-   private static NettyJaxrsServer server;
+    private static CountDownLatch latch;
+    private static AtomicReference<Object> value = new AtomicReference<Object>();
+    private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
 
-   private static CountDownLatch latch;
-   private static AtomicReference<Object> value = new AtomicReference<Object>();
-   private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        server = new NettyJaxrsServer();
+        server.setPort(TestPortProvider.getPort());
+        server.setRootResourcePath("/");
+        server.getDeployment().getActualResourceClasses().add(RxResource.class);
+        server.getDeployment().getActualProviderClasses().add(RxInjector.class);
+        server.getDeployment().start();
+        server.getDeployment().registration();
+        server.start();
+    }
 
-   @BeforeClass
-   public static void beforeClass() throws Exception
-   {
-      server = new NettyJaxrsServer();
-      server.setPort(TestPortProvider.getPort());
-      server.setRootResourcePath("/");
-      server.getDeployment().getActualResourceClasses().add(RxResource.class);
-      server.getDeployment().getActualProviderClasses().add(RxInjector.class);
-      server.getDeployment().start();
-      server.getDeployment().registration();
-      server.start();
-   }
+    @AfterClass
+    public static void afterClass() throws Exception {
+        server.stop();
+        server = null;
+    }
 
-   @AfterClass
-   public static void afterClass() throws Exception
-   {
-      server.stop();
-      server = null;
-   }
+    private ResteasyClient client;
 
-   private ResteasyClient client;
+    @Before
+    public void before() {
+        client = ((ResteasyClientBuilder) ClientBuilder.newBuilder())
+                .readTimeout(5, TimeUnit.SECONDS)
+                .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .build();
+        value.set(null);
+        latch = new CountDownLatch(1);
+    }
 
-   @Before
-   public void before()
-   {
-      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
-            .readTimeout(5, TimeUnit.SECONDS)
-            .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .build();
-      value.set(null);
-      latch = new CountDownLatch(1);
-   }
+    @After
+    public void after() {
+        client.close();
+    }
 
-   @After
-   public void after()
-   {
-      client.close();
-   }
+    @Test
+    public void testSingle() throws Exception {
+        Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
+        single.subscribe((Response r) -> {
+            value.set(r.readEntity(String.class));
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
+        assertEquals("got it", value.get());
+    }
 
-   @Test
-   public void testSingle() throws Exception {
-      Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
-      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-      latch.await(5, TimeUnit.SECONDS);
-      assertEquals("got it", value.get());
-   }
+    @Test
+    public void testSingleContext() throws Exception {
+        Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
+        single.subscribe((Response r) -> {
+            value.set(r.readEntity(String.class));
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
+        assertEquals("got it", value.get());
+    }
 
-   @Test
-   public void testSingleContext() throws Exception {
-      Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
-      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-      latch.await(5, TimeUnit.SECONDS);
-      assertEquals("got it", value.get());
-   }
+    @Test
+    public void testObservable() throws Exception {
+        ObservableRxInvoker invoker = client.target(generateURL("/observable")).request().rx(ObservableRxInvoker.class);
+        @SuppressWarnings("unchecked")
+        Observable<String> observable = (Observable<String>) invoker.get();
+        Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
+        observable.subscribe(
+                (String s) -> data.add(s),
+                (Throwable t) -> LOG.error(t.getMessage(), t),
+                () -> latch.countDown());
+        latch.await(5, TimeUnit.SECONDS);
+        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+    }
 
-   @Test
-   public void testObservable() throws Exception {
-      ObservableRxInvoker invoker = client.target(generateURL("/observable")).request().rx(ObservableRxInvoker.class);
-      @SuppressWarnings("unchecked")
-      Observable<String> observable = (Observable<String>) invoker.get();
-      Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
-      observable.subscribe(
-         (String s) -> data.add(s),
-         (Throwable t) -> LOG.error(t.getMessage(), t),
-         () -> latch.countDown());
-      latch.await(5, TimeUnit.SECONDS);
-      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-   }
+    @Test
+    public void testObservableContext() throws Exception {
+        ObservableRxInvoker invoker = ClientBuilder.newClient().target(generateURL("/context/observable")).request()
+                .rx(ObservableRxInvoker.class);
+        @SuppressWarnings("unchecked")
+        Observable<String> observable = (Observable<String>) invoker.get();
+        Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
+        observable.subscribe(
+                (String s) -> data.add(s),
+                (Throwable t) -> LOG.error(t.getMessage(), t),
+                () -> latch.countDown());
+        latch.await(5, TimeUnit.SECONDS);
+        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+    }
 
-   @Test
-   public void testObservableContext() throws Exception {
-      ObservableRxInvoker invoker = ClientBuilder.newClient().target(generateURL("/context/observable")).request().rx(ObservableRxInvoker.class);
-      @SuppressWarnings("unchecked")
-      Observable<String> observable = (Observable<String>) invoker.get();
-      Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
-      observable.subscribe(
-         (String s) -> data.add(s),
-         (Throwable t) -> LOG.error(t.getMessage(), t),
-         () -> latch.countDown());
-      latch.await(5, TimeUnit.SECONDS);
-      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-   }
+    @Test
+    public void testFlowable() throws Exception {
+        FlowableRxInvoker invoker = client.target(generateURL("/flowable")).request().rx(FlowableRxInvoker.class);
+        @SuppressWarnings("unchecked")
+        Flowable<String> flowable = (Flowable<String>) invoker.get();
+        Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
+        flowable.subscribe(
+                (String s) -> data.add(s),
+                (Throwable t) -> LOG.error(t.getMessage(), t),
+                () -> latch.countDown());
+        latch.await(5, TimeUnit.SECONDS);
+        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+    }
 
-   @Test
-   public void testFlowable() throws Exception {
-      FlowableRxInvoker invoker = client.target(generateURL("/flowable")).request().rx(FlowableRxInvoker.class);
-      @SuppressWarnings("unchecked")
-      Flowable<String> flowable = (Flowable<String>) invoker.get();
-      Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
-      flowable.subscribe(
-         (String s) -> data.add(s),
-         (Throwable t) -> LOG.error(t.getMessage(), t),
-         () -> latch.countDown());
-      latch.await(5, TimeUnit.SECONDS);
-      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-   }
+    @Test
+    public void testFlowablecontext() throws Exception {
+        FlowableRxInvoker invoker = client.target(generateURL("/context/flowable")).request().rx(FlowableRxInvoker.class);
+        @SuppressWarnings("unchecked")
+        Flowable<String> flowable = (Flowable<String>) invoker.get();
+        Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
+        flowable.subscribe(
+                (String s) -> data.add(s),
+                (Throwable t) -> LOG.error(t.getMessage(), t),
+                () -> {
+                    latch.countDown();
+                    LOG.info("onComplete()");
+                });
+        latch.await(5, TimeUnit.SECONDS);
+        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+    }
 
-   @Test
-   public void testFlowablecontext() throws Exception {
-      FlowableRxInvoker invoker = client.target(generateURL("/context/flowable")).request().rx(FlowableRxInvoker.class);
-      @SuppressWarnings("unchecked")
-      Flowable<String> flowable = (Flowable<String>) invoker.get();
-      Set<String> data = new TreeSet<>(); //FIXME [RESTEASY-2778] Intermittent flow / flux test failure
-      flowable.subscribe(
-         (String s) -> data.add(s),
-         (Throwable t) -> LOG.error(t.getMessage(), t),
-         () -> {latch.countDown(); LOG.info("onComplete()");});
-      latch.await(5, TimeUnit.SECONDS);
-      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-   }
+    // @Test
+    public void testChunked() throws Exception {
+        Invocation.Builder request = client.target(generateURL("/chunked")).request();
+        Response response = request.get();
+        String entity = response.readEntity(String.class);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("onetwo", entity);
+    }
 
-   // @Test
-   public void testChunked() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/chunked")).request();
-      Response response = request.get();
-      String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("onetwo", entity);
-   }
+    @Test
+    public void testInjection() {
+        Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
+        assertEquals((Integer) 42, data);
 
-   @Test
-   public void testInjection()
-   {
-      Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
-      assertEquals((Integer)42, data);
-
-      data = client.target(generateURL("/injection-async")).request().get(Integer.class);
-      assertEquals((Integer)42, data);
-   }
+        data = client.target(generateURL("/injection-async")).request().get(Integer.class);
+        assertEquals((Integer) 42, data);
+    }
 }

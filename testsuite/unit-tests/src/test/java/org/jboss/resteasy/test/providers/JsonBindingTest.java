@@ -1,11 +1,13 @@
 package org.jboss.resteasy.test.providers;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import javax.ws.rs.core.MediaType;
+
 import org.jboss.resteasy.plugins.providers.jsonb.JsonBindingProvider;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import javax.ws.rs.core.MediaType;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Check when ResteasyConfiguration.class is null in JsonBindingProvider
@@ -17,8 +19,7 @@ public class JsonBindingTest {
     private MediaType mediaType = new MediaType("application", "json");
 
     @Test
-    public void testUseJackson2() throws Exception
-    {
+    public void testUseJackson2() throws Exception {
         String origValue = System.getProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB);
 
         System.setProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
@@ -34,8 +35,7 @@ public class JsonBindingTest {
     }
 
     @Test
-    public void testUseJSONB() throws Exception
-    {
+    public void testUseJSONB() throws Exception {
         JsonBindingProvider jbp = new JsonBindingProvider();
         boolean result = jbp.isReadable(null, null, null, mediaType);
         assertTrue(result);

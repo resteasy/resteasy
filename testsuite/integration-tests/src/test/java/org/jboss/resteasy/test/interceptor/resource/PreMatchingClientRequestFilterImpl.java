@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 @PreMatching
 public class PreMatchingClientRequestFilterImpl implements ClientRequestFilter {
 
-   @Override
-   public void filter(ClientRequestContext requestContext) {
-      requestContext.abortWith(Response.status(404).build());
-   }
+    @Override
+    public void filter(ClientRequestContext requestContext) {
+        requestContext.abortWith(Response.status(404).build());
+    }
 }

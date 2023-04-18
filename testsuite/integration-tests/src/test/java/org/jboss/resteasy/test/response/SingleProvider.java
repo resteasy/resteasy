@@ -11,30 +11,25 @@ import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 
 @Provider
-public class SingleProvider implements AsyncResponseProvider<Single<?>>
-{
+public class SingleProvider implements AsyncResponseProvider<Single<?>> {
 
-   private static class SingleAdaptor<T> extends CompletableFuture<T>
-   {
-      private final Disposable subscription;
+    private static class SingleAdaptor<T> extends CompletableFuture<T> {
+        private final Disposable subscription;
 
-      SingleAdaptor(final Single<T> observable)
-      {
-         this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
-      }
+        SingleAdaptor(final Single<T> observable) {
+            this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
+        }
 
-      @Override
-      public boolean cancel(boolean mayInterruptIfRunning)
-      {
-         subscription.dispose();
-         return super.cancel(mayInterruptIfRunning);
-      }
-   }
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            subscription.dispose();
+            return super.cancel(mayInterruptIfRunning);
+        }
+    }
 
-   @Override
-   public CompletionStage toCompletionStage(Single<?> asyncResponse)
-   {
-      return new SingleAdaptor<>(asyncResponse);
-   }
+    @Override
+    public CompletionStage toCompletionStage(Single<?> asyncResponse) {
+        return new SingleAdaptor<>(asyncResponse);
+    }
 
 }

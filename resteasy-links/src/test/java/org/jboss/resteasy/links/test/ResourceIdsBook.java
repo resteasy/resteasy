@@ -1,21 +1,22 @@
 package org.jboss.resteasy.links.test;
 
-import org.jboss.resteasy.links.ResourceIDs;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jboss.resteasy.links.ResourceIDs;
+
 @XmlRootElement
-@ResourceIDs({"namea", "nameb"})
-public class ResourceIdsBook extends IdBook{
+@ResourceIDs({ "namea", "nameb" })
+public class ResourceIdsBook extends IdBook {
 
-   private String namea;
-   private String nameb;
-   public ResourceIdsBook() {
-   }
+    private String namea;
+    private String nameb;
 
-   public ResourceIdsBook(final String namea, final String nameb) {
-      this.namea = namea;
-      this.nameb = nameb;
-   }
+    public ResourceIdsBook() {
+    }
+
+    public ResourceIdsBook(final String namea, final String nameb) {
+        this.namea = namea;
+        this.nameb = nameb;
+    }
 
 }

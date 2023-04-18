@@ -1,30 +1,31 @@
 package org.jboss.resteasy.test.tracing;
 
-import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
-import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 
 @ApplicationPath("/")
 public class TracingApp extends Application {
 
-   @Override
-   public Set<Class<?>> getClasses() {
-      Set<Class<?>> set = new HashSet<>();
-      set.add(HttpMethodOverride.class);
-      set.add(GZIPEncodingInterceptor.class);
-      set.add(GZIPDecodingInterceptor.class);
-      return set;
-   }
+    @Override
+    public Set<Class<?>> getClasses() {
+        Set<Class<?>> set = new HashSet<>();
+        set.add(HttpMethodOverride.class);
+        set.add(GZIPEncodingInterceptor.class);
+        set.add(GZIPDecodingInterceptor.class);
+        return set;
+    }
 
-   @Override
-   public Set<Object> getSingletons() {
-      Set<Object> set = new HashSet<>();
-      set.add(new TracingConfigResource());
-      set.add(new FooLocator());
-      return set;
-   }
+    @Override
+    public Set<Object> getSingletons() {
+        Set<Object> set = new HashSet<>();
+        set.add(new TracingConfigResource());
+        set.add(new FooLocator());
+        return set;
+    }
 }

@@ -17,63 +17,55 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
  * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.ResponseObjectEntityExtractorFactory
  */
 @SuppressWarnings("unchecked")
-public class ClientResponseProxy implements InvocationHandler
-{
-   private ClientContext context;
-   private Map<Method, EntityExtractor<?>> methodMap;
-   private Class<?> clazz;
+public class ClientResponseProxy implements InvocationHandler {
+    private ClientContext context;
+    private Map<Method, EntityExtractor<?>> methodMap;
+    private Class<?> clazz;
 
-   public ClientResponseProxy(final ClientContext context, final Map<Method, EntityExtractor<?>> methodMap, final Class<?> clazz)
-   {
-      super();
-      this.methodMap = methodMap;
-      this.clazz = clazz;
-      this.context = context;
-   }
+    public ClientResponseProxy(final ClientContext context, final Map<Method, EntityExtractor<?>> methodMap,
+            final Class<?> clazz) {
+        super();
+        this.methodMap = methodMap;
+        this.clazz = clazz;
+        this.context = context;
+    }
 
-   public Object invoke(Object o, Method method, Object[] args) throws Throwable
-   {
-      // equals and hashCode were added for cases where the proxy is added to
-      // collections. The Spring transaction management, for example, adds
-      // transactional Resources to a Collection, and it calls equals and
-      // hashCode.
-      if (method.getName().equals("equals"))
-      {
-         return this.equals(o);
-      }
-      else if (method.getName().equals("hashCode"))
-      {
-         return this.hashCode();
-      }
+    public Object invoke(Object o, Method method, Object[] args) throws Throwable {
+        // equals and hashCode were added for cases where the proxy is added to
+        // collections. The Spring transaction management, for example, adds
+        // transactional Resources to a Collection, and it calls equals and
+        // hashCode.
+        if (method.getName().equals("equals")) {
+            return this.equals(o);
+        } else if (method.getName().equals("hashCode")) {
+            return this.hashCode();
+        }
 
-      EntityExtractor entityExtractor = methodMap.get(method);
-      if (entityExtractor == null)
-         throw new RuntimeException(Messages.MESSAGES.couldNotProcessMethod(method));
+        EntityExtractor entityExtractor = methodMap.get(method);
+        if (entityExtractor == null)
+            throw new RuntimeException(Messages.MESSAGES.couldNotProcessMethod(method));
 
-      return entityExtractor.extractEntity(context, entityExtractor, args);
-   }
+        return entityExtractor.extractEntity(context, entityExtractor, args);
+    }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == null || !(obj instanceof ClientResponseProxy))
-         return false;
-      ClientResponseProxy other = (ClientResponseProxy) obj;
-      if (other == this)
-         return true;
-      if (other.clazz != this.clazz)
-         return false;
-      return super.equals(obj);
-   }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof ClientResponseProxy))
+            return false;
+        ClientResponseProxy other = (ClientResponseProxy) obj;
+        if (other == this)
+            return true;
+        if (other.clazz != this.clazz)
+            return false;
+        return super.equals(obj);
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return clazz.hashCode();
-   }
+    @Override
+    public int hashCode() {
+        return clazz.hashCode();
+    }
 
-   public String toString()
-   {
-      return Messages.MESSAGES.clientProxyFor(clazz.getName());
-   }
+    public String toString() {
+        return Messages.MESSAGES.clientProxyFor(clazz.getName());
+    }
 }

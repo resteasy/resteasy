@@ -9,12 +9,12 @@ import javax.ws.rs.Produces;
 @Path("/")
 public class ResponseTrimmingResource {
 
-   @GET
-   @Path("/json")
-   @POST
-   @Consumes({"application/json"})
-   @Produces({"application/json"})
-   public String getJSON(int n) {
-      return "{\"result\":\"" + n + "\"}";
-   }
+    @GET
+    @Path("/json")
+    @POST
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    public String getJSON(int n) {
+        return "{\"result\":\"" + n + "\"}";
+    }
 }

@@ -29,30 +29,32 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ProviderWithNoProducesTest {
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProviderWithNoProducesTest.class.getSimpleName());
-      war.addClass(Foo.class);
-      war.addAsWebInfResource(ProviderWithNoProducesTest.class.getPackage(), "ProviderWithNoProduces_web.xml", "web.xml");
-      return TestUtil.finishContainerPrepare(war, null, ProviderWithNoProducesResource.class, ProviderWithNoProducesMessageBodyWriter.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(ProviderWithNoProducesTest.class.getSimpleName());
+        war.addClass(Foo.class);
+        war.addAsWebInfResource(ProviderWithNoProducesTest.class.getPackage(), "ProviderWithNoProduces_web.xml", "web.xml");
+        return TestUtil.finishContainerPrepare(war, null, ProviderWithNoProducesResource.class,
+                ProviderWithNoProducesMessageBodyWriter.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ProviderWithNoProducesTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ProviderWithNoProducesTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails ProviderWithNoProducesMessageBodyWriter, which has no @Pruduces annotation, should
-    *                be williing to write a Foo with media type "foo/bar" but not "bar/foo".
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testWriteFoo() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/foo"));
-      Response response = target.request().accept("foo/bar;q=0.9, bar/foo;q=1.0").get();
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("Wrong response content", "ProviderWithNoProducesMessageBodyWriter", response.readEntity(String.class));
-      client.close();
-   }
+    /**
+     * @tpTestDetails ProviderWithNoProducesMessageBodyWriter, which has no @Pruduces annotation, should
+     *                be williing to write a Foo with media type "foo/bar" but not "bar/foo".
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testWriteFoo() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(generateURL("/foo"));
+        Response response = target.request().accept("foo/bar;q=0.9, bar/foo;q=1.0").get();
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("Wrong response content", "ProviderWithNoProducesMessageBodyWriter",
+                response.readEntity(String.class));
+        client.close();
+    }
 }

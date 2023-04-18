@@ -28,51 +28,49 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
 @Provider
 @Produces("multipart/related")
 public class XopWithMultipartRelatedWriter extends
-      AbstractMultipartRelatedWriter implements AsyncMessageBodyWriter<Object>
-{
+        AbstractMultipartRelatedWriter implements AsyncMessageBodyWriter<Object> {
 
-   public long getSize(Object t, Class<?> type, Type genericType,
-                       Annotation[] annotations, MediaType mediaType)
-   {
-      return -1;
-   }
+    public long getSize(Object t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return -1;
+    }
 
-   public boolean isWriteable(Class<?> type, Type genericType,
-                              Annotation[] annotations, MediaType mediaType)
-   {
-      return FindAnnotation.findAnnotation(annotations,
-              XopWithMultipartRelated.class) != null
-              || type.isAnnotationPresent(XopWithMultipartRelated.class);
-   }
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return FindAnnotation.findAnnotation(annotations,
+                XopWithMultipartRelated.class) != null
+                || type.isAnnotationPresent(XopWithMultipartRelated.class);
+    }
 
-   public void writeTo(Object t, Class<?> type, Type genericType,
-                       Annotation[] annotations, MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders,
-                       OutputStream entityStream) throws IOException,
-         WebApplicationException
-   {
+    public void writeTo(Object t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException,
+            WebApplicationException {
 
-      MultipartRelatedOutput xopPackage = new MultipartRelatedOutput();
+        MultipartRelatedOutput xopPackage = new MultipartRelatedOutput();
 
-      XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
-              workers);
-      xopWithMultipartRelatedJAXBProvider.writeTo(t, type, genericType,
-              annotations, mediaType, httpHeaders, xopPackage);
-      writeRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
-   }
+        XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
+                workers);
+        xopWithMultipartRelatedJAXBProvider.writeTo(t, type, genericType,
+                annotations, mediaType, httpHeaders, xopPackage);
+        writeRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
+    }
 
-   @Override
-   public CompletionStage<Void> asyncWriteTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                                             MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
-       MultipartRelatedOutput xopPackage = new MultipartRelatedOutput();
+    @Override
+    public CompletionStage<Void> asyncWriteTo(Object t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
+        MultipartRelatedOutput xopPackage = new MultipartRelatedOutput();
 
-       XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(workers);
-       try {
-           xopWithMultipartRelatedJAXBProvider.writeTo(t, type, genericType,
-                                                       annotations, mediaType, httpHeaders, xopPackage);
-       } catch (IOException e) {
-           return ProviderHelper.completedException(e);
-       }
-       return asyncWriteRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
-   }
+        XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
+                workers);
+        try {
+            xopWithMultipartRelatedJAXBProvider.writeTo(t, type, genericType,
+                    annotations, mediaType, httpHeaders, xopPackage);
+        } catch (IOException e) {
+            return ProviderHelper.completedException(e);
+        }
+        return asyncWriteRelated(xopPackage, mediaType, httpHeaders, entityStream, annotations);
+    }
 }

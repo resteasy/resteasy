@@ -6,31 +6,32 @@ import javax.xml.bind.annotation.XmlEnumValue;
 @XmlEnum
 public enum XmlEnumParamLocation {
 
-   @XmlEnumValue("north")
-   NORTH("north"),
-   @XmlEnumValue("south")
-   SOUTH("south"),
-   @XmlEnumValue("east")
-   EAST("east"),
-   @XmlEnumValue("west")
-   WEST("west");
-   private final String value;
+    @XmlEnumValue("north")
+    NORTH("north"),
+    @XmlEnumValue("south")
+    SOUTH("south"),
+    @XmlEnumValue("east")
+    EAST("east"),
+    @XmlEnumValue("west")
+    WEST("west");
 
-   XmlEnumParamLocation(final String v) {
-      value = v;
-   }
+    private final String value;
 
-   public String value() {
-      return value;
-   }
+    XmlEnumParamLocation(final String v) {
+        value = v;
+    }
 
-   public static XmlEnumParamLocation fromValue(String v) {
-      for (XmlEnumParamLocation c : XmlEnumParamLocation.values()) {
-         if (c.value.equals(v)) {
-            return c;
-         }
-      }
-      throw new IllegalArgumentException(v.toString());
-   }
+    public String value() {
+        return value;
+    }
+
+    public static XmlEnumParamLocation fromValue(String v) {
+        for (XmlEnumParamLocation c : XmlEnumParamLocation.values()) {
+            if (c.value.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v.toString());
+    }
 
 }

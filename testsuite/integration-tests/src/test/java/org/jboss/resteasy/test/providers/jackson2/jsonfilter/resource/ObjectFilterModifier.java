@@ -11,22 +11,24 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
+
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  *
  */
 public class ObjectFilterModifier extends ObjectWriterModifier {
-   public ObjectFilterModifier() {
-   }
-   @Override
-   public ObjectWriter modify(EndpointConfigBase<?> endpoint,
-         MultivaluedMap<String, Object> httpHeaders, Object valueToWrite,
-         ObjectWriter w, JsonGenerator jg) throws IOException {
+    public ObjectFilterModifier() {
+    }
 
-      FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
-            "nameFilter",
-            SimpleBeanPropertyFilter.filterOutAllExcept("name"));
-      return w.with(filterProvider);
+    @Override
+    public ObjectWriter modify(EndpointConfigBase<?> endpoint,
+            MultivaluedMap<String, Object> httpHeaders, Object valueToWrite,
+            ObjectWriter w, JsonGenerator jg) throws IOException {
 
-   }
+        FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+                "nameFilter",
+                SimpleBeanPropertyFilter.filterOutAllExcept("name"));
+        return w.with(filterProvider);
+
+    }
 }

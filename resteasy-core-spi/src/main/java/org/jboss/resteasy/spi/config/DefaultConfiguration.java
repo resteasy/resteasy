@@ -19,20 +19,20 @@
 
 package org.jboss.resteasy.spi.config;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 /**
  * A default configuration which searches for a property in the following order:
  * <ol>
- *     <li>System properties</li>
- *     <li>Environment variables</li>
- *     <li>{@link ResteasyConfiguration}</li>
+ * <li>System properties</li>
+ * <li>Environment variables</li>
+ * <li>{@link ResteasyConfiguration}</li>
  * </ol>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>

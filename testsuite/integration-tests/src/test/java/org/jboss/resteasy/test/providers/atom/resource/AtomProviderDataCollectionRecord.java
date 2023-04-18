@@ -15,6 +15,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * this class.
  * <p>
  * <p>
+ *
  * <pre>
  * &lt;complexType name=&quot;AtomProviderDataCollectionRecord&quot;&gt;
  *   &lt;complexContent&gt;
@@ -29,48 +30,48 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "AtomProviderDataCollectionRecord", propOrder = {"timestamp", "collectedData"})
+@XmlType(name = "AtomProviderDataCollectionRecord", propOrder = { "timestamp", "collectedData" })
 public class AtomProviderDataCollectionRecord {
 
-   @XmlElement(required = true)
-   protected XMLGregorianCalendar timestamp;
-   @XmlElement(required = true)
-   protected String collectedData;
+    @XmlElement(required = true)
+    protected XMLGregorianCalendar timestamp;
+    @XmlElement(required = true)
+    protected String collectedData;
 
-   /**
-    * Gets the value of the timestamp property.
-    *
-    * @return possible object is {@link XMLGregorianCalendar }
-    */
-   public XMLGregorianCalendar getTimestamp() {
-      return timestamp;
-   }
+    /**
+     * Gets the value of the timestamp property.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    public XMLGregorianCalendar getTimestamp() {
+        return timestamp;
+    }
 
-   /**
-    * Sets the value of the timestamp property.
-    *
-    * @param value allowed object is {@link XMLGregorianCalendar }
-    */
-   public void setTimestamp(XMLGregorianCalendar value) {
-      this.timestamp = value;
-   }
+    /**
+     * Sets the value of the timestamp property.
+     *
+     * @param value allowed object is {@link XMLGregorianCalendar }
+     */
+    public void setTimestamp(XMLGregorianCalendar value) {
+        this.timestamp = value;
+    }
 
-   /**
-    * Gets the value of the collectedData property.
-    *
-    * @return possible object is {@link String }
-    */
-   public String getCollectedData() {
-      return collectedData;
-   }
+    /**
+     * Gets the value of the collectedData property.
+     *
+     * @return possible object is {@link String }
+     */
+    public String getCollectedData() {
+        return collectedData;
+    }
 
-   /**
-    * Sets the value of the collectedData property.
-    *
-    * @param value allowed object is {@link String }
-    */
-   public void setCollectedData(String value) {
-      this.collectedData = value;
-   }
+    /**
+     * Sets the value of the collectedData property.
+     *
+     * @param value allowed object is {@link String }
+     */
+    public void setCollectedData(String value) {
+        this.collectedData = value;
+    }
 
 }

@@ -7,7 +7,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 /**
  * @tpSubChapter Providers
  * @tpChapter Unit tests
@@ -16,44 +15,44 @@ import org.junit.Test;
  */
 public class HeaderDelegateTest {
 
-   public static class TestHeader {
-   }
+    public static class TestHeader {
+    }
 
-   public static class TestHeaderDelegate implements HeaderDelegate<TestHeader> {
+    public static class TestHeaderDelegate implements HeaderDelegate<TestHeader> {
 
-      @Override
-      public TestHeader fromString(String value) {
-         return new TestHeader();
-      }
+        @Override
+        public TestHeader fromString(String value) {
+            return new TestHeader();
+        }
 
-      @Override
-      public String toString(TestHeader value) {
-         return "";
-      }
-   }
+        @Override
+        public String toString(TestHeader value) {
+            return "";
+        }
+    }
 
-   //////////////////////////////////////////////////////////////////////////////
-   /**
-    * @tpTestDetails Register HeaderDelegate class
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testProviderClass() {
-      ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
-      factory.register(TestHeaderDelegate.class);
-      HeaderDelegate<?> delegate = factory.getHeaderDelegate(TestHeader.class);
-      Assert.assertTrue(delegate instanceof TestHeaderDelegate);
-   }
+    //////////////////////////////////////////////////////////////////////////////
+    /**
+     * @tpTestDetails Register HeaderDelegate class
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testProviderClass() {
+        ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
+        factory.register(TestHeaderDelegate.class);
+        HeaderDelegate<?> delegate = factory.getHeaderDelegate(TestHeader.class);
+        Assert.assertTrue(delegate instanceof TestHeaderDelegate);
+    }
 
-   /**
-    * @tpTestDetails Register HeaderDelegate object
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testProviderObject() {
-      ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
-      factory.register(new TestHeaderDelegate());
-      HeaderDelegate<?> delegate = factory.getHeaderDelegate(TestHeader.class);
-      Assert.assertTrue(delegate instanceof TestHeaderDelegate);
-   }
+    /**
+     * @tpTestDetails Register HeaderDelegate object
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testProviderObject() {
+        ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
+        factory.register(new TestHeaderDelegate());
+        HeaderDelegate<?> delegate = factory.getHeaderDelegate(TestHeader.class);
+        Assert.assertTrue(delegate instanceof TestHeaderDelegate);
+    }
 }

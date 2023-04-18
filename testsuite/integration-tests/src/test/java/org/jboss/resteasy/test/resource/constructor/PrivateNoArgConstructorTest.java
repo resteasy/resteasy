@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.resource.constructor;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -16,9 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
 
 @RunWith(Arquillian.class)
 @RunAsClient

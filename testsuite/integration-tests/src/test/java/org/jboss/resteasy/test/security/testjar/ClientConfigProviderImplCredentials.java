@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.security.testjar;
 
-import org.jboss.resteasy.client.jaxrs.spi.ClientConfigException;
-import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+import java.net.URI;
 
 import javax.net.ssl.SSLContext;
-import java.net.URI;
+
+import org.jboss.resteasy.client.jaxrs.spi.ClientConfigException;
+import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
 
 /**
  * ClientConfigProvider implementation used in jar that tests ClientConfigProvider functionality regarding HTTP BASIC auth.

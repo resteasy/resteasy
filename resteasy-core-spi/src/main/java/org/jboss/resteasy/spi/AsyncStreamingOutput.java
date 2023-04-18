@@ -21,11 +21,11 @@ public interface AsyncStreamingOutput {
      * Called to write the message body.
      *
      * @param output the OutputStream to write to.
-     * @throws java.io.IOException if an IO error is encountered
+     * @throws java.io.IOException                 if an IO error is encountered
      * @throws javax.ws.rs.WebApplicationException
-     *                             if a specific
-     *                             HTTP error response needs to be produced. Only effective if thrown prior
-     *                             to any bytes being written to output.
+     *                                             if a specific
+     *                                             HTTP error response needs to be produced. Only effective if thrown prior
+     *                                             to any bytes being written to output.
      */
     CompletionStage<Void> asyncWrite(AsyncOutputStream output);
 }

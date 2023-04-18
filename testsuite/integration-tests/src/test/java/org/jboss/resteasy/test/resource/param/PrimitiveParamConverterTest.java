@@ -28,41 +28,41 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class PrimitiveParamConverterTest {
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PrimitiveParamConverterTest.class.getSimpleName());
-      war.addClass(ParamConverterIntegerConverter.class);
-      war.addClass(ParamConverterDefaultClient.class);
-      war.addClass(ParamConverterClient.class);
-      return TestUtil.finishContainerPrepare(war, null, ParamConverterIntegerConverterProvider.class,
-            ParamConverterIntegerResource.class, ParamConverterDefaultIntegerResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(PrimitiveParamConverterTest.class.getSimpleName());
+        war.addClass(ParamConverterIntegerConverter.class);
+        war.addClass(ParamConverterDefaultClient.class);
+        war.addClass(ParamConverterClient.class);
+        return TestUtil.finishContainerPrepare(war, null, ParamConverterIntegerConverterProvider.class,
+                ParamConverterIntegerResource.class, ParamConverterDefaultIntegerResource.class);
+    }
 
-   private String generateBaseUrl() {
-      return PortProviderUtil.generateBaseUrl(PrimitiveParamConverterTest.class.getSimpleName());
-   }
+    private String generateBaseUrl() {
+        return PortProviderUtil.generateBaseUrl(PrimitiveParamConverterTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Set specific values
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test
-   public void testIt() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilderImpl().build();
-      ParamConverterClient proxy = client.target(generateBaseUrl()).proxy(ParamConverterClient.class);
-      proxy.put("4", "4", "4", "4");
-      client.close();
-   }
+    /**
+     * @tpTestDetails Set specific values
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void testIt() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilderImpl().build();
+        ParamConverterClient proxy = client.target(generateBaseUrl()).proxy(ParamConverterClient.class);
+        proxy.put("4", "4", "4", "4");
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Check default values
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test
-   public void testDefault() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilderImpl().build();
-      ParamConverterDefaultClient proxy = client.target(generateBaseUrl()).proxy(ParamConverterDefaultClient.class);
-      proxy.put();
-      client.close();
-   }
+    /**
+     * @tpTestDetails Check default values
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void testDefault() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilderImpl().build();
+        ParamConverterDefaultClient proxy = client.target(generateBaseUrl()).proxy(ParamConverterDefaultClient.class);
+        proxy.put();
+        client.close();
+    }
 }

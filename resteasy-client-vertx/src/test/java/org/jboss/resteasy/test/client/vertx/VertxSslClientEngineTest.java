@@ -32,6 +32,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServer;
@@ -39,10 +44,6 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.SelfSignedCertificate;
-import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class VertxSslClientEngineTest {
     private Vertx vertx;
@@ -58,8 +59,7 @@ public class VertxSslClientEngineTest {
                 .setKeyCertOptions(certificate.keyCertOptions())
                 .setTrustOptions(certificate.trustOptions())
                 .setSsl(true)
-                .setUseAlpn(true)
-        );
+                .setUseAlpn(true));
         executorService = Executors.newSingleThreadScheduledExecutor();
         server.requestHandler(req -> {
             final HttpServerResponse response = req.response();

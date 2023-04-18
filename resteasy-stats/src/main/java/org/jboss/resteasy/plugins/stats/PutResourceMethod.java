@@ -7,6 +7,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "put")
-public class PutResourceMethod extends ResourceMethodEntry
-{
+public class PutResourceMethod extends ResourceMethodEntry {
 }

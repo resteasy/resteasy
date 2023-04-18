@@ -10,29 +10,27 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.ContextInjector;
 
 @Provider
-public class AsyncInjectionShortInjector implements ContextInjector<CompletionStage<Short>, Short>
-{
+public class AsyncInjectionShortInjector implements ContextInjector<CompletionStage<Short>, Short> {
 
-   @Override
-   public CompletionStage<Short> resolve(
-         Class<? extends CompletionStage<Short>> rawType, Type genericType, Annotation[] annotations)
-   {
-      for (Annotation annotation : annotations)
-      {
-         if(annotation.annotationType() == AsyncInjectionPrimitiveInjectorSpecifier.class) {
-            AsyncInjectionPrimitiveInjectorSpecifier.Type value = ((AsyncInjectionPrimitiveInjectorSpecifier)annotation).value();
-            switch(value) {
-               case NO_RESULT:
-                  return null;
-               case NULL:
-                  return CompletableFuture.completedFuture(null);
-               case VALUE:
-                  return CompletableFuture.completedFuture((short)42);
+    @Override
+    public CompletionStage<Short> resolve(
+            Class<? extends CompletionStage<Short>> rawType, Type genericType, Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType() == AsyncInjectionPrimitiveInjectorSpecifier.class) {
+                AsyncInjectionPrimitiveInjectorSpecifier.Type value = ((AsyncInjectionPrimitiveInjectorSpecifier) annotation)
+                        .value();
+                switch (value) {
+                    case NO_RESULT:
+                        return null;
+                    case NULL:
+                        return CompletableFuture.completedFuture(null);
+                    case VALUE:
+                        return CompletableFuture.completedFuture((short) 42);
+                }
+                break;
             }
-            break;
-         }
-      }
-      return CompletableFuture.completedFuture((short)42);
-   }
+        }
+        return CompletableFuture.completedFuture((short) 42);
+    }
 
 }

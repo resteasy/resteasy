@@ -4,14 +4,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class AsyncRootResourceImpl extends AbstractAsyncRootResource
-{
-   @Inject
-   private AsyncSubResourceImpl subResource;
+public class AsyncRootResourceImpl extends AbstractAsyncRootResource {
+    @Inject
+    private AsyncSubResourceImpl subResource;
 
-   @Override
-   public AsyncSubResource getSubResource()
-   {
-      return subResource;
-   }
+    @Override
+    public AsyncSubResource getSubResource() {
+        return subResource;
+    }
 }

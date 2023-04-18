@@ -6,13 +6,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 @Path("/employeeinfo")
-public class EmailResource
-{
-   @GET
-   @Path("/employees/{firstname}.{lastname}@{domain}.com")
-   @Produces("text/plain")
-   public String getEmployeeLastName(@PathParam("lastname") String lastName)
-   {
-      return lastName;
-   }
+public class EmailResource {
+    @GET
+    @Path("/employees/{firstname}.{lastname}@{domain}.com")
+    @Produces("text/plain")
+    public String getEmployeeLastName(@PathParam("lastname") String lastName) {
+        return lastName;
+    }
 }

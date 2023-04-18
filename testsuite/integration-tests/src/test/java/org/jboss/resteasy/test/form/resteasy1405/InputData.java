@@ -7,20 +7,17 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class InputData
-{
-   private List<String> items;
+public class InputData {
+    private List<String> items;
 
-   @XmlElementWrapper(name = "items")
-   @XmlElement(name = "item")
-   public List<String> getItems()
-   {
-      return items;
-   }
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
+    public List<String> getItems() {
+        return items;
+    }
 
-   public void setItems(List<String> items)
-   {
-      this.items = items;
-   }
+    public void setItems(List<String> items) {
+        this.items = items;
+    }
 
 }

@@ -1,5 +1,10 @@
 package org.jboss.resteasy.test.core.basic;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -21,11 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
 /**
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
@@ -36,117 +36,118 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ApplicationTest {
 
-   private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";
+    private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";
 
-   @Deployment
-   public static Archive<?> deploySimpleResource() {
-      WebArchive war = ShrinkWrap.create(WebArchive.class, ApplicationTest.class.getSimpleName() + ".war");
-      war.addAsWebInfResource(ApplicationTest.class.getPackage(), "ApplicationWeb.xml", "web.xml");
-      war.addClasses(ApplicationTestAExplicitApplication.class,
-            ApplicationTestBExplicitApplication.class,
-            ApplicationTestIgnoredApplication.class,
-            ApplicationTestMappedApplication.class,
-            ApplicationTestResourceA.class,
-            ApplicationTestResourceB.class,
-            ApplicationTestSingletonA.class,
-            ApplicationTestSingletonB.class,
-            ApplicationTestScannedApplication.class);
-      return war;
-   }
+    @Deployment
+    public static Archive<?> deploySimpleResource() {
+        WebArchive war = ShrinkWrap.create(WebArchive.class, ApplicationTest.class.getSimpleName() + ".war");
+        war.addAsWebInfResource(ApplicationTest.class.getPackage(), "ApplicationWeb.xml", "web.xml");
+        war.addClasses(ApplicationTestAExplicitApplication.class,
+                ApplicationTestBExplicitApplication.class,
+                ApplicationTestIgnoredApplication.class,
+                ApplicationTestMappedApplication.class,
+                ApplicationTestResourceA.class,
+                ApplicationTestResourceB.class,
+                ApplicationTestSingletonA.class,
+                ApplicationTestSingletonB.class,
+                ApplicationTestScannedApplication.class);
+        return war;
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ApplicationTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ApplicationTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Test first application in deployment
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testExplicitA() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(generateURL("/a/explicit"));
+    /**
+     * @tpTestDetails Test first application in deployment
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testExplicitA() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget base = client.target(generateURL("/a/explicit"));
 
-      String value = base.path("resources/a").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        String value = base.path("resources/a").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
 
-      Response response = base.path("resources/b").request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Response response = base.path("resources/b").request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
-      value = base.path("singletons/a").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        value = base.path("singletons/a").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
 
-      response = base.path("singletons/b").request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
-      client.close();
-   }
+        response = base.path("singletons/b").request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Test second application in deployment
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testExplicitB() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(generateURL("/b/explicit"));
+    /**
+     * @tpTestDetails Test second application in deployment
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testExplicitB() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget base = client.target(generateURL("/b/explicit"));
 
-      String value = base.path("resources/b").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        String value = base.path("resources/b").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
 
-      Response response = base.path("resources/a").request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Response response = base.path("resources/a").request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
-      value = base.path("singletons/b").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        value = base.path("singletons/b").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
 
-      response = base.path("singletons/a").request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
-      client.close();
-   }
+        response = base.path("singletons/a").request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Test scanned application in deployment: getClasses and getSingletons methods are not used.
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testScanned() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(generateURL("/scanned"));
+    /**
+     * @tpTestDetails Test scanned application in deployment: getClasses and getSingletons methods are not used.
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testScanned() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget base = client.target(generateURL("/scanned"));
 
-      String value = base.path("resources/a").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        String value = base.path("resources/a").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
 
-      value = base.path("resources/b").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        value = base.path("resources/b").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
 
-      value = base.path("singletons/a").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        value = base.path("singletons/a").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
 
-      value = base.path("singletons/b").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
-      client.close();
-   }
+        value = base.path("singletons/b").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Test scanned application in deployment: getClasses and getSingletons methods are not used. This application is mapped to different location.
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testMapped() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(generateURL("/mapped"));
+    /**
+     * @tpTestDetails Test scanned application in deployment: getClasses and getSingletons methods are not used. This
+     *                application is mapped to different location.
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testMapped() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget base = client.target(generateURL("/mapped"));
 
-      String value = base.path("resources/a").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        String value = base.path("resources/a").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
 
-      value = base.path("resources/b").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        value = base.path("resources/b").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
 
-      value = base.path("singletons/a").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        value = base.path("singletons/a").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
 
-      value = base.path("singletons/b").request().get(String.class);
-      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
-      client.close();
-   }
+        value = base.path("singletons/b").request().get(String.class);
+        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        client.close();
+    }
 }

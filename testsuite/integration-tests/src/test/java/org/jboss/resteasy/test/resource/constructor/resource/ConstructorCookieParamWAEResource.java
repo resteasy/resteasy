@@ -11,6 +11,7 @@ public class ConstructorCookieParamWAEResource {
     public ConstructorCookieParamWAEResource(@CookieParam("cookieP") final Item2 cookieP) {
         throw new RuntimeException("force an constructor exception");
     }
+
     @GET
     @Path("get")
     public Response getIt() {

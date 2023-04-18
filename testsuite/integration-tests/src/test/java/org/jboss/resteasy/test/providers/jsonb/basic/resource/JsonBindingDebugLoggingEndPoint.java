@@ -10,23 +10,23 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class JsonBindingDebugLoggingEndPoint {
 
-   @GET
-   @Path("/get/ok")
-   @Produces(MediaType.APPLICATION_JSON)
-   public JsonBindingDebugLoggingItem getOk() {
-      return new JsonBindingDebugLoggingItem().setA(5);
-   }
+    @GET
+    @Path("/get/ok")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonBindingDebugLoggingItem getOk() {
+        return new JsonBindingDebugLoggingItem().setA(5);
+    }
 
-   @GET
-   @Path("/get/nok")
-   @Produces(MediaType.APPLICATION_JSON)
-   public JsonBindingDebugLoggingItemCorruptedGet getNok() {
-      return new JsonBindingDebugLoggingItemCorruptedGet().setA(5);
-   }
+    @GET
+    @Path("/get/nok")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonBindingDebugLoggingItemCorruptedGet getNok() {
+        return new JsonBindingDebugLoggingItemCorruptedGet().setA(5);
+    }
 
-   @POST
-   @Path("/post")
-   @Consumes(MediaType.APPLICATION_JSON)
-   public void post(JsonBindingDebugLoggingItemCorruptedSet item) {
-   }
+    @POST
+    @Path("/post")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void post(JsonBindingDebugLoggingItemCorruptedSet item) {
+    }
 }

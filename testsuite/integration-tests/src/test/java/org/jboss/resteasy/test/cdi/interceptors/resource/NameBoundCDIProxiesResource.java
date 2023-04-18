@@ -6,9 +6,9 @@ import javax.ws.rs.Path;
 @Path("")
 public class NameBoundCDIProxiesResource {
 
-   @Path("test")
-   @GET
-   public String test() {
-      return "test";
-   }
+    @Path("test")
+    @GET
+    public String test() {
+        return "test";
+    }
 }

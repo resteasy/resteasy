@@ -22,24 +22,24 @@
 <module xmlns="urn:jboss:module:1.9" name="org.jboss.resteasy.resteasy-json-binding-provider">
 
     <properties>
-        <property name="jboss.api" value="private"/>
+        <property name="jboss.api" value="private" />
     </properties>
 
     <resources>
-        <artifact name="${org.jboss.resteasy:resteasy-json-binding-provider}"/>
+        <artifact name="${org.jboss.resteasy:resteasy-json-binding-provider}" />
     </resources>
 
     <dependencies>
-        <module name="javax.annotation.api"/>
-        <module name="javax.enterprise.api"/>
-        <module name="javax.json.api"/>
-        <module name="javax.json.bind.api"/>
-        <module name="javax.ws.rs.api"/>
-        <module name="javax.xml.bind.api"/>
-        <module name="org.apache.commons.io"/>
-        <module name="org.eclipse.yasson" services="import"/>
-        <module name="org.jboss.logging"/>
-        <module name="org.jboss.resteasy.resteasy-core"/>
-        <module name="org.jboss.resteasy.resteasy-core-spi"/>
+        <module name="javax.annotation.api" />
+        <module name="javax.enterprise.api" />
+        <module name="javax.json.api" />
+        <module name="javax.json.bind.api" />
+        <module name="javax.ws.rs.api" />
+        <module name="javax.xml.bind.api" />
+        <module name="org.apache.commons.io" />
+        <module name="org.eclipse.yasson" services="import" />
+        <module name="org.jboss.logging" />
+        <module name="org.jboss.resteasy.resteasy-core" />
+        <module name="org.jboss.resteasy.resteasy-core-spi" />
     </dependencies>
 </module>

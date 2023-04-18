@@ -10,107 +10,89 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
 
 /**
-*
-* @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
-* @version $Revision: 1.1 $
-*
-* Copyright July 27, 2013
-*/
-@XmlRootElement(name="violationReport")
+ *
+ * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
+ * @version $Revision: 1.1 $
+ *
+ *          Copyright July 27, 2013
+ */
+@XmlRootElement(name = "violationReport")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ViolationReport
-{
-   private String exception;
+public class ViolationReport {
+    private String exception;
 
-   private ArrayList<ResteasyConstraintViolation> propertyViolations = new ArrayList<ResteasyConstraintViolation>();
-   private ArrayList<ResteasyConstraintViolation> classViolations = new ArrayList<ResteasyConstraintViolation>();
-   private ArrayList<ResteasyConstraintViolation> parameterViolations = new ArrayList<ResteasyConstraintViolation>();
-   private ArrayList<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
+    private ArrayList<ResteasyConstraintViolation> propertyViolations = new ArrayList<ResteasyConstraintViolation>();
+    private ArrayList<ResteasyConstraintViolation> classViolations = new ArrayList<ResteasyConstraintViolation>();
+    private ArrayList<ResteasyConstraintViolation> parameterViolations = new ArrayList<ResteasyConstraintViolation>();
+    private ArrayList<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
 
-   public ViolationReport(final ResteasyViolationException exception)
-   {
-      Exception e = exception.getException();
-      if (e != null)
-      {
-         this.exception = e.toString();
-      }
-      this.propertyViolations =  new ArrayList<>(exception.getPropertyViolations());
-      this.classViolations =  new ArrayList<>(exception.getClassViolations());
-      this.parameterViolations =  new ArrayList<>(exception.getParameterViolations());
-      this.returnValueViolations =  new ArrayList<>(exception.getReturnValueViolations());
-   }
+    public ViolationReport(final ResteasyViolationException exception) {
+        Exception e = exception.getException();
+        if (e != null) {
+            this.exception = e.toString();
+        }
+        this.propertyViolations = new ArrayList<>(exception.getPropertyViolations());
+        this.classViolations = new ArrayList<>(exception.getClassViolations());
+        this.parameterViolations = new ArrayList<>(exception.getParameterViolations());
+        this.returnValueViolations = new ArrayList<>(exception.getReturnValueViolations());
+    }
 
-   public ViolationReport(final String s)
-   {
-      this(new ResteasyViolationException(s)
-      {
-         private static final long serialVersionUID = 1L;
+    public ViolationReport(final String s) {
+        this(new ResteasyViolationException(s) {
+            private static final long serialVersionUID = 1L;
 
-         @Override
-         public ConstraintTypeUtil getConstraintTypeUtil()
-         {
-            return null;
-         }
+            @Override
+            public ConstraintTypeUtil getConstraintTypeUtil() {
+                return null;
+            }
 
-         @Override
-         protected ResteasyConfiguration getResteasyConfiguration()
-         {
-            return null;
-         }
-      });
-   }
+            @Override
+            protected ResteasyConfiguration getResteasyConfiguration() {
+                return null;
+            }
+        });
+    }
 
-   public ViolationReport()
-   {
-   }
+    public ViolationReport() {
+    }
 
-   public String getException()
-   {
-      return exception;
-   }
+    public String getException() {
+        return exception;
+    }
 
-   public ArrayList<ResteasyConstraintViolation> getPropertyViolations()
-   {
-      return propertyViolations;
-   }
+    public ArrayList<ResteasyConstraintViolation> getPropertyViolations() {
+        return propertyViolations;
+    }
 
-   public ArrayList<ResteasyConstraintViolation> getClassViolations()
-   {
-      return classViolations;
-   }
+    public ArrayList<ResteasyConstraintViolation> getClassViolations() {
+        return classViolations;
+    }
 
-   public ArrayList<ResteasyConstraintViolation> getParameterViolations()
-   {
-      return parameterViolations;
-   }
+    public ArrayList<ResteasyConstraintViolation> getParameterViolations() {
+        return parameterViolations;
+    }
 
-   public ArrayList<ResteasyConstraintViolation> getReturnValueViolations()
-   {
-      return returnValueViolations;
-   }
+    public ArrayList<ResteasyConstraintViolation> getReturnValueViolations() {
+        return returnValueViolations;
+    }
 
-   public void setException(String exception)
-   {
-      this.exception = exception;
-   }
+    public void setException(String exception) {
+        this.exception = exception;
+    }
 
-   public void setPropertyViolations(ArrayList<ResteasyConstraintViolation> propertyViolations)
-   {
-      this.propertyViolations = propertyViolations;
-   }
+    public void setPropertyViolations(ArrayList<ResteasyConstraintViolation> propertyViolations) {
+        this.propertyViolations = propertyViolations;
+    }
 
-   public void setClassViolations(ArrayList<ResteasyConstraintViolation> classViolations)
-   {
-      this.classViolations = classViolations;
-   }
+    public void setClassViolations(ArrayList<ResteasyConstraintViolation> classViolations) {
+        this.classViolations = classViolations;
+    }
 
-   public void setParameterViolations(ArrayList<ResteasyConstraintViolation> parameterViolations)
-   {
-      this.parameterViolations = parameterViolations;
-   }
+    public void setParameterViolations(ArrayList<ResteasyConstraintViolation> parameterViolations) {
+        this.parameterViolations = parameterViolations;
+    }
 
-   public void setReturnValueViolations(ArrayList<ResteasyConstraintViolation> returnValueViolations)
-   {
-      this.returnValueViolations = returnValueViolations;
-   }
+    public void setReturnValueViolations(ArrayList<ResteasyConstraintViolation> returnValueViolations) {
+        this.returnValueViolations = returnValueViolations;
+    }
 }

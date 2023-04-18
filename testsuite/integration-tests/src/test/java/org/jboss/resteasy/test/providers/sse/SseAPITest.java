@@ -46,35 +46,33 @@ public class SseAPITest {
 
     // test for RESTEASY-2017:SSE doesn't work with inherited annotations
     @Test
-    public void testAnnotaitonInherited() throws Exception
-    {
-       final CountDownLatch latch = new CountDownLatch(1);
-       final List<String> results = new ArrayList<String>();
-       Client client = ClientBuilder.newBuilder().build();
-       WebTarget target = client.target(generateURL("/apitest/events"));
-       SseEventSource msgEventSource = SseEventSource.target(target).build();
-       try (SseEventSource eventSource = msgEventSource)
-       {
-          eventSource.register(event -> {
-             results.add(event.readData(String.class));
-             latch.countDown();
-          }, ex -> {
+    public void testAnnotaitonInherited() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<String> results = new ArrayList<String>();
+        Client client = ClientBuilder.newBuilder().build();
+        WebTarget target = client.target(generateURL("/apitest/events"));
+        SseEventSource msgEventSource = SseEventSource.target(target).build();
+        try (SseEventSource eventSource = msgEventSource) {
+            eventSource.register(event -> {
+                results.add(event.readData(String.class));
+                latch.countDown();
+            }, ex -> {
                 throw new RuntimeException(ex);
-             }) ;
-          eventSource.open();
-          Thread.sleep(1000);
-          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
-          WebTarget messageTarget = messageClient.target(generateURL("/apitest/send"));
-          Response response = messageTarget.request().post(Entity.text("apimsg"));
-          Assert.assertEquals(204,response.getStatus());
-          boolean result = latch.await(10, TimeUnit.SECONDS);
-          Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
-          messageClient.close();
-       }
-       Assert.assertEquals("One event message was expected.", 1, results.size());
-       Assert.assertTrue("Expected event contains apimsg, but is:" + results.get(0),
-               results.get(0).contains("apimsg"));
-       client.close();
+            });
+            eventSource.open();
+            Thread.sleep(1000);
+            Client messageClient = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
+            WebTarget messageTarget = messageClient.target(generateURL("/apitest/send"));
+            Response response = messageTarget.request().post(Entity.text("apimsg"));
+            Assert.assertEquals(204, response.getStatus());
+            boolean result = latch.await(10, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
+            messageClient.close();
+        }
+        Assert.assertEquals("One event message was expected.", 1, results.size());
+        Assert.assertTrue("Expected event contains apimsg, but is:" + results.get(0),
+                results.get(0).contains("apimsg"));
+        client.close();
     }
 
 }

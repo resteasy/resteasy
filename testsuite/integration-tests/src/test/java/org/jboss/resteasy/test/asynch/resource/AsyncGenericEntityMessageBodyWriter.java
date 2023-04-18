@@ -17,23 +17,24 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AsyncGenericEntityMessageBodyWriter implements MessageBodyWriter<List<String>> {
 
-   private static final Type stringListType;
+    private static final Type stringListType;
 
-   static {
-      List<String> list = new ArrayList<String>();
-      GenericEntity<List<String>> entity = new GenericEntity<List<String>>(list) {};
-      stringListType = entity.getType();
-   }
+    static {
+        List<String> list = new ArrayList<String>();
+        GenericEntity<List<String>> entity = new GenericEntity<List<String>>(list) {
+        };
+        stringListType = entity.getType();
+    }
 
-   @Override
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-      return stringListType.equals(genericType);
-   }
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return stringListType.equals(genericType);
+    }
 
-   @Override
-   public void writeTo(List<String> t, Class<?> type, Type genericType, Annotation[] annotations,
-         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-               throws IOException, WebApplicationException {
-      entityStream.write("ok".getBytes());
-   }
+    @Override
+    public void writeTo(List<String> t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+        entityStream.write("ok".getBytes());
+    }
 }

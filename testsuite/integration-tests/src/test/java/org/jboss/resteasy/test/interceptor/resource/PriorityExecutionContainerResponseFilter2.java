@@ -1,18 +1,19 @@
 package org.jboss.resteasy.test.interceptor.resource;
 
-import org.jboss.resteasy.test.interceptor.PriorityExecutionTest;
+import java.io.IOException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
-import java.io.IOException;
+
+import org.jboss.resteasy.test.interceptor.PriorityExecutionTest;
 
 @Priority(0)
 public class PriorityExecutionContainerResponseFilter2 implements ContainerResponseFilter {
-   @Override
-   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-      PriorityExecutionTest.logger.info(this);
-      PriorityExecutionTest.interceptors.add("PriorityExecutionContainerResponseFilter2");
-   }
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+        PriorityExecutionTest.logger.info(this);
+        PriorityExecutionTest.interceptors.add("PriorityExecutionContainerResponseFilter2");
+    }
 }
