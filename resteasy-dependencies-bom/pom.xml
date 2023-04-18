@@ -45,7 +45,7 @@
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.1.0</version.jakarta.mail>
         <version.org.glassfish.jaxb>4.0.1</version.org.glassfish.jaxb>
-        <version.com.sun.istack>4.1.1</version.com.sun.istack>
+        <version.com.sun.istack>4.1.2</version.com.sun.istack>
         <version.com.sun.xml.fastinfoset>2.1.0</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.11.0</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.15</version.commons-codec.commons-codec>
@@ -71,16 +71,16 @@
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.angus.angus-activation>2.0.0</version.org.eclipse.angus.angus-activation>
         <version.org.eclipse.angus.angus-mail>1.1.0</version.org.eclipse.angus.angus-mail>
-        <version.org.eclipse.jetty>11.0.14</version.org.eclipse.jetty>
+        <version.org.eclipse.jetty>11.0.15</version.org.eclipse.jetty>
         <version.org.eclipse.parsson>1.1.1</version.org.eclipse.parsson>
-        <version.org.eclipse.yasson>3.0.2</version.org.eclipse.yasson>
+        <version.org.eclipse.yasson>3.0.3</version.org.eclipse.yasson>
         <version.org.glassfish.jakarta.el>4.0.2</version.org.glassfish.jakarta.el>
         <version.jakarta.persistence.persistence-api>3.0.0</version.jakarta.persistence.persistence-api>
         <version.org.jacoco>0.8.9</version.org.jacoco>
         <version.org.jboss.logging.jboss-logging>3.5.0.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.logmanager>2.1.19.Final</version.org.jboss.logmanager>
-        <version.org.jboss.resteasy.extensions>2.0.0.Final</version.org.jboss.resteasy.extensions>
+        <version.org.jboss.resteasy.extensions>2.0.1.Final</version.org.jboss.resteasy.extensions>
         <version.jakarta.annotation.jakarta-annotation-api>2.1.1</version.jakarta.annotation.jakarta-annotation-api>
         <version.jakarta.el.el-api>4.0.0</version.jakarta.el.el-api>
         <version.jakarta.ejb.ejb-api>4.0.1</version.jakarta.ejb.ejb-api>
@@ -90,7 +90,7 @@
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
         <version.jakarta.servlet.servlet-api>5.0.0</version.jakarta.servlet.servlet-api>
         <version.org.jboss.shrinkwrap.resolver>3.1.4</version.org.jboss.shrinkwrap.resolver>
-        <version.org.mockito>5.2.0</version.org.mockito>
+        <version.org.mockito>5.3.0</version.org.mockito>
         <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>
         <version.org.wildfly.security>2.1.0.Final</version.org.wildfly.security>
         <version.weld.api>5.0.SP2</version.weld.api>
@@ -99,12 +99,12 @@
         <version.com.github.java-json-tools.jackson-coreutils>2.0</version.com.github.java-json-tools.jackson-coreutils>
         <version.com.github.java-json-tools.json-patch>1.13</version.com.github.java-json-tools.json-patch>
         <version.com.github.java-json-tools.msg-simple>1.2</version.com.github.java-json-tools.msg-simple>
-        <version.io.smallrye.jandex>3.0.5</version.io.smallrye.jandex>
+        <version.io.smallrye.jandex>3.1.1</version.io.smallrye.jandex>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
         <version.org.hibernate.validator>8.0.0.Final</version.org.hibernate.validator>
-        <version.io.projectreactor>2022.0.5</version.io.projectreactor>
+        <version.io.projectreactor>2022.0.6</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
     </properties>

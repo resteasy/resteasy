@@ -50,7 +50,7 @@
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.9</version.org.jacoco.plugin>
         <version.org.jboss.galleon>5.1.0.Final</version.org.jboss.galleon>
-        <version.org.wildfly.galleon-plugins>6.3.3.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>6.4.0.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>4.0.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
         <!-- Test options -->
