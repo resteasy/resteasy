@@ -53,10 +53,11 @@ public interface WebApplicationExceptionWrapper<T extends WebApplicationExceptio
      * @param e the exception to possibly wrapped
      *
      * @return the wrapped exception or the original exception if the exception has already been wrapped the the
-     * wrapping feature is turned off
+     *         wrapping feature is turned off
      */
     static WebApplicationException wrap(final WebApplicationException e) {
-        final boolean originalBehavior = SecurityActions.getConfigValue("resteasy.original.webapplicationexception.behavior", boolean.class, false);
+        final boolean originalBehavior = SecurityActions.getConfigValue("resteasy.original.webapplicationexception.behavior",
+                boolean.class, false);
         final boolean serverSide = ResteasyDeployment.onServer();
         if (originalBehavior || !serverSide) {
             return e;

@@ -1,10 +1,13 @@
 package org.jboss.resteasy.test.exception;
 
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebRuntimeExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebRuntimeExceptionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -14,9 +17,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -28,28 +28,29 @@ import jakarta.ws.rs.core.Response;
 @RunAsClient
 public class ExceptionMapperWebRuntimeExceptionTest {
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(ExceptionMapperWebRuntimeExceptionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperWebRuntimeExceptionMapper.class,
-            ExceptionMapperWebRuntimeExceptionResource.class);
-   }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchive(ExceptionMapperWebRuntimeExceptionTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, ExceptionMapperWebRuntimeExceptionMapper.class,
+                ExceptionMapperWebRuntimeExceptionResource.class);
+    }
 
-   /**
-    * @tpTestDetails Check ExceptionMapper for WebApplicationException
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testWebAPplicationException() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      WebTarget base = client.target(PortProviderUtil.generateURL("/test", ExceptionMapperWebRuntimeExceptionTest.class.getSimpleName()));
-      Response response = base.request().get();
+    /**
+     * @tpTestDetails Check ExceptionMapper for WebApplicationException
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testWebAPplicationException() throws Exception {
+        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
+        WebTarget base = client
+                .target(PortProviderUtil.generateURL("/test", ExceptionMapperWebRuntimeExceptionTest.class.getSimpleName()));
+        Response response = base.request().get();
 
-      Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
-      Assert.assertEquals("Wrong headers", response.getHeaders().getFirst("custom"), "header");
+        Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
+        Assert.assertEquals("Wrong headers", response.getHeaders().getFirst("custom"), "header");
 
-      response.close();
-      client.close();
-   }
+        response.close();
+        client.close();
+    }
 
 }

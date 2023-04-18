@@ -1,21 +1,21 @@
 package org.jboss.resteasy.reactor;
 
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.PublisherRxInvokerImpl;
+import org.reactivestreams.Publisher;
+
+import reactor.core.publisher.Mono;
+
 public class MonoRxInvokerImpl implements MonoRxInvoker {
 
-
     private final MonoPublisherInvoker monoInvoker;
-
 
     static class MonoPublisherInvoker extends PublisherRxInvokerImpl {
         MonoPublisherInvoker(final ClientInvocationBuilder builder) {
@@ -31,7 +31,6 @@ public class MonoRxInvokerImpl implements MonoRxInvoker {
     public MonoRxInvokerImpl(final ClientInvocationBuilder builder) {
         monoInvoker = new MonoPublisherInvoker(Objects.requireNonNull(builder));
     }
-
 
     @Override
     public Mono<Response> get() {

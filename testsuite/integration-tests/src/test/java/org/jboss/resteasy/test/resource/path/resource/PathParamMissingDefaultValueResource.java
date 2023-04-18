@@ -7,12 +7,12 @@ import jakarta.ws.rs.Path;
 @Path("resource")
 public class PathParamMissingDefaultValueResource {
 
-   @BeanParam
-   PathParamMissingDefaultValueBeanParamEntity beanParam;
+    @BeanParam
+    PathParamMissingDefaultValueBeanParamEntity beanParam;
 
-   @GET
-   @Path("test")
-   public String defaultParams() {
-      return beanParam.toString();
-   }
+    @GET
+    @Path("test")
+    public String defaultParams() {
+        return beanParam.toString();
+    }
 }

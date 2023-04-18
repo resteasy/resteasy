@@ -1,5 +1,19 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+
+import java.io.File;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
+
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -12,23 +26,10 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.Assert;
-
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Response;
-import java.io.File;
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
-
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
  * Verify that setting resteasy config flag, resteasy_fail_fast to 'true' causes
@@ -53,8 +54,7 @@ public class MultipleGetResourceTest {
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("jboss.home.dir", "read"),
                 new PropertyPermission("jboss.server.base.dir", "read"),
-                new RuntimePermission("accessDeclaredMembers")
-        ), "permissions.xml");
+                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, MultipleGetResource.class);
     }
 
@@ -77,7 +77,7 @@ public class MultipleGetResourceTest {
     public void testFailFast() throws Exception {
 
         WebTarget base = client.target(generateURL("/api"));
-        try (Response  response = base.request().get()) {
+        try (Response response = base.request().get()) {
             Assert.assertEquals(500, response.getStatus());
             final String error = response.readEntity(String.class);
             Assert.assertTrue("RESTEASY005042 not found in: " + error, error.contains("RESTEASY005042"));

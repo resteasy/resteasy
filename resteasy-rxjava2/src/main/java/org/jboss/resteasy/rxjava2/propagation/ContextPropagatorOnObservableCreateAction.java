@@ -1,12 +1,13 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
+import java.util.concurrent.Executor;
+
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import org.jboss.resteasy.concurrent.ContextualExecutors;
-
-import java.util.concurrent.Executor;
 
 @SuppressWarnings("rawtypes")
 class ContextPropagatorOnObservableCreateAction implements BiFunction<Observable, Observer, Observer> {
@@ -26,7 +27,7 @@ class ContextPropagatorOnObservableCreateAction implements BiFunction<Observable
         private final Executor contextExecutor;
 
         private ContextCapturerObservable(final Observable<T> observable, final Observer<T> observer,
-                                          final Executor contextExecutor) {
+                final Executor contextExecutor) {
             this.source = observer;
             this.contextExecutor = contextExecutor;
         }

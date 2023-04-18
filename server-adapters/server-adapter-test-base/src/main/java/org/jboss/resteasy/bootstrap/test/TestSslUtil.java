@@ -27,6 +27,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -124,7 +125,8 @@ public class TestSslUtil {
     }
 
     private static X509TrustManager getTrustManager() throws Exception {
-        final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        final TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
         trustManagerFactory.init(loadKeyStore(CLIENT_TRUSTSTORE_FILE));
 
         for (TrustManager current : trustManagerFactory.getTrustManagers()) {
@@ -146,7 +148,8 @@ public class TestSslUtil {
     private static void createKeyStoreTrustStore(final KeyStore keyStore, final KeyStore trustStore, final String name)
             throws Exception {
         final X500Principal principal = new X500Principal(name);
-        final SelfSignedX509CertificateAndSigningKey selfSignedX509CertificateAndSigningKey = SelfSignedX509CertificateAndSigningKey.builder()
+        final SelfSignedX509CertificateAndSigningKey selfSignedX509CertificateAndSigningKey = SelfSignedX509CertificateAndSigningKey
+                .builder()
                 .setKeyAlgorithmName("RSA")
                 .setSignatureAlgorithmName("SHA256withRSA")
                 .setDn(principal)
@@ -154,7 +157,8 @@ public class TestSslUtil {
                 .build();
         final X509Certificate certificate = selfSignedX509CertificateAndSigningKey.getSelfSignedCertificate();
 
-        keyStore.setKeyEntry(ALIAS, selfSignedX509CertificateAndSigningKey.getSigningKey(), KEYSTORE_PASSWORD.toCharArray(), new X509Certificate[] {certificate});
+        keyStore.setKeyEntry(ALIAS, selfSignedX509CertificateAndSigningKey.getSigningKey(), KEYSTORE_PASSWORD.toCharArray(),
+                new X509Certificate[] { certificate });
         trustStore.setCertificateEntry(ALIAS, certificate);
     }
 

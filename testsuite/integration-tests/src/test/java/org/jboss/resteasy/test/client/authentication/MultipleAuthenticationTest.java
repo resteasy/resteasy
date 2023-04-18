@@ -30,7 +30,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import dev.resteasy.client.util.authentication.HttpAuthenticators;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -44,6 +43,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import dev.resteasy.client.util.authentication.HttpAuthenticators;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -69,8 +70,7 @@ public class MultipleAuthenticationTest {
         return ShrinkWrap.create(WebArchive.class, MultipleAuthenticationTest.class.getSimpleName() + "-basic.war")
                 .addClasses(
                         RestActivator.class,
-                        UserResource.class
-                )
+                        UserResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource(TestAuth.createJBossWebXml(), "jboss-web.xml")
                 .addAsWebInfResource(TestAuth.createWebXml("BASIC"), "web.xml");
@@ -81,8 +81,7 @@ public class MultipleAuthenticationTest {
         return ShrinkWrap.create(WebArchive.class, MultipleAuthenticationTest.class.getSimpleName() + "-digest.war")
                 .addClasses(
                         RestActivator.class,
-                        UserResource.class
-                )
+                        UserResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsWebInfResource(TestAuth.createJBossWebXml(), "jboss-web.xml")
                 .addAsWebInfResource(TestAuth.createWebXml("DIGEST-SHA-256"), "web.xml");
@@ -93,8 +92,7 @@ public class MultipleAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.digest(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(digestUrl, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -109,8 +107,7 @@ public class MultipleAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.basic(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(basicUrl, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -125,8 +122,7 @@ public class MultipleAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.available(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(digestUrl, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -141,8 +137,7 @@ public class MultipleAuthenticationTest {
         try (
                 Client client = ClientBuilder.newBuilder()
                         .register(HttpAuthenticators.available(CREDENTIALS_USER_1))
-                        .build()
-        ) {
+                        .build()) {
             final Response response = client.target(TestUtil.generateUri(basicUrl, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
@@ -155,7 +150,8 @@ public class MultipleAuthenticationTest {
     private void validateDigest(final JsonObject json) {
         Assert.assertEquals(USER_1, json.getString("username"));
         final String authHeader = json.getString("authHeader");
-        Assert.assertTrue(String.format("Expected header to start with \"Digest\" but was \"%s\"", authHeader), authHeader.startsWith("Digest"));
+        Assert.assertTrue(String.format("Expected header to start with \"Digest\" but was \"%s\"", authHeader),
+                authHeader.startsWith("Digest"));
     }
 
     private void validateBasic(final JsonObject json) {

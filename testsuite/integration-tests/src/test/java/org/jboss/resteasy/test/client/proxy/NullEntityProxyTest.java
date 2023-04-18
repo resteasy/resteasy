@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.client.proxy;
 
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import jakarta.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxy;
 import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyGreeter;
@@ -31,38 +31,38 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class NullEntityProxyTest {
 
-   private static ResteasyClient client;
+    private static ResteasyClient client;
 
-   @BeforeClass
-   public static void before() throws Exception {
-      client = (ResteasyClient)ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void before() throws Exception {
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void after() throws Exception {
-      client.close();
-   }
+    @AfterClass
+    public static void after() throws Exception {
+        client.close();
+    }
 
-   @Deployment
-   public static Archive<?> deployUriInfoSimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(NullEntityProxyTest.class.getSimpleName());
-      war.addClasses(NullEntityProxy.class, NullEntityProxyGreeting.class, NullEntityProxyGreeter.class);
-      return TestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
-   }
+    @Deployment
+    public static Archive<?> deployUriInfoSimpleResource() {
+        WebArchive war = TestUtil.prepareArchive(NullEntityProxyTest.class.getSimpleName());
+        war.addClasses(NullEntityProxy.class, NullEntityProxyGreeting.class, NullEntityProxyGreeter.class);
+        return TestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
+    }
 
-   private static String generateBaseUrl() {
-      return PortProviderUtil.generateBaseUrl(NullEntityProxyTest.class.getSimpleName());
-   }
+    private static String generateBaseUrl() {
+        return PortProviderUtil.generateBaseUrl(NullEntityProxyTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Test to send null Entity with proxy
-    * @tpSince RESTEasy 3.0.24
-    */
-   @Test
-   public void testNullEntityWithProxy() {
-      ResteasyWebTarget target = client.target(generateBaseUrl());
-      NullEntityProxy proxy = target.proxy(NullEntityProxy.class);
-      NullEntityProxyGreeting greeting = proxy.helloEntity(null);
-      Assert.assertEquals("Response has wrong content", null, greeting.getGreeter());
-   }
+    /**
+     * @tpTestDetails Test to send null Entity with proxy
+     * @tpSince RESTEasy 3.0.24
+     */
+    @Test
+    public void testNullEntityWithProxy() {
+        ResteasyWebTarget target = client.target(generateBaseUrl());
+        NullEntityProxy proxy = target.proxy(NullEntityProxy.class);
+        NullEntityProxyGreeting greeting = proxy.helloEntity(null);
+        Assert.assertEquals("Response has wrong content", null, greeting.getGreeter());
+    }
 }

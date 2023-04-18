@@ -28,35 +28,32 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
  */
 @Provider
 @Consumes("multipart/related")
-public class XopWithMultipartRelatedReader implements MessageBodyReader<Object>
-{
-   protected @Context Providers workers;
+public class XopWithMultipartRelatedReader implements MessageBodyReader<Object> {
+    protected @Context Providers workers;
 
-   public boolean isReadable(Class<?> type, Type genericType,
-                             Annotation[] annotations, MediaType mediaType)
-   {
-      return FindAnnotation.findAnnotation(annotations,
-              XopWithMultipartRelated.class) != null
-              || type.isAnnotationPresent(XopWithMultipartRelated.class);
-   }
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return FindAnnotation.findAnnotation(annotations,
+                XopWithMultipartRelated.class) != null
+                || type.isAnnotationPresent(XopWithMultipartRelated.class);
+    }
 
-   public Object readFrom(Class<Object> type, Type genericType,
-                          Annotation[] annotations, MediaType mediaType,
-                          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-         throws IOException, WebApplicationException
-   {
-      String boundary = mediaType.getParameters().get("boundary");
-      if (boundary == null)
-         throw new IOException(Messages.MESSAGES.unableToGetBoundary());
-      MultipartRelatedInputImpl input = new MultipartRelatedInputImpl(
-              mediaType, workers);
-      Providers providers = ResteasyContext.getContextData(Providers.class);
-      input.setProviders(providers);
-      input.parse(entityStream);
+    public Object readFrom(Class<Object> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException, WebApplicationException {
+        String boundary = mediaType.getParameters().get("boundary");
+        if (boundary == null)
+            throw new IOException(Messages.MESSAGES.unableToGetBoundary());
+        MultipartRelatedInputImpl input = new MultipartRelatedInputImpl(
+                mediaType, workers);
+        Providers providers = ResteasyContext.getContextData(Providers.class);
+        input.setProviders(providers);
+        input.parse(entityStream);
 
-      XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
-              workers);
-      return xopWithMultipartRelatedJAXBProvider.readFrom(type, genericType,
-              annotations, mediaType, httpHeaders, entityStream, input);
-   }
+        XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
+                workers);
+        return xopWithMultipartRelatedJAXBProvider.readFrom(type, genericType,
+                annotations, mediaType, httpHeaders, entityStream, input);
+    }
 }

@@ -12,8 +12,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DoNotUseJAXBProvider
-{
+public @interface DoNotUseJAXBProvider {
 }

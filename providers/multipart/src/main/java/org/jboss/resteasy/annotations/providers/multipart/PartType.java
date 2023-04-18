@@ -12,9 +12,8 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
+@Target({ ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PartType
-{
-   String value();
+public @interface PartType {
+    String value();
 }

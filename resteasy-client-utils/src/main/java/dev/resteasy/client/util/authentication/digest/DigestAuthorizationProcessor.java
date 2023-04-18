@@ -82,7 +82,7 @@ public class DigestAuthorizationProcessor implements AuthorizationProcessor {
 
     @Override
     public String createRequestHeader(final ClientRequestContext requestContext,
-                                      final List<String> authenticateHeader) {
+            final List<String> authenticateHeader) {
         for (String authHeader : authenticateHeader) {
             if (!authHeader.regionMatches(true, 0, CHALLENGE_PREFIX, 0, CHALLENGE_PREFIX.length())) {
                 continue;

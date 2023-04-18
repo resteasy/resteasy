@@ -5,6 +5,6 @@ import jakarta.validation.executable.ValidateOnExecution;
 import jakarta.ws.rs.Path;
 
 @Path("")
-@ValidateOnExecution(type = {ExecutableType.NONE})
+@ValidateOnExecution(type = { ExecutableType.NONE })
 public interface TestValidationOnExecuteSubInterface {
 }

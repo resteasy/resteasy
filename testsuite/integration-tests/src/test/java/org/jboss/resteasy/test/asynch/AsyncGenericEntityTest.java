@@ -28,31 +28,31 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class AsyncGenericEntityTest {
 
-   @Deployment()
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(AsyncGenericEntityTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null,
-            AsyncGenericEntityMessageBodyWriter.class,
-            AsyncGenericEntityResource.class);
-   }
+    @Deployment()
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(AsyncGenericEntityTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null,
+                AsyncGenericEntityMessageBodyWriter.class,
+                AsyncGenericEntityResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, AsyncGenericEntityTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, AsyncGenericEntityTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Test getting GenericType from return entity.
-    * @tpSince RESTEasy 3.7.0
-    */
-   @Test
-   public void testCalls() {
-       Client client = ClientBuilder.newClient();
-       Builder request = client.target(generateURL("/test")).request();
-       Response response = request.get();
-       Assert.assertEquals(200, response.getStatus());
-       Assert.assertEquals("ok", response.readEntity(String.class));
-       response.close();
-       client.close();
-   }
+    /**
+     * @tpTestDetails Test getting GenericType from return entity.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void testCalls() {
+        Client client = ClientBuilder.newClient();
+        Builder request = client.target(generateURL("/test")).request();
+        Response response = request.get();
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("ok", response.readEntity(String.class));
+        response.close();
+        client.close();
+    }
 
 }

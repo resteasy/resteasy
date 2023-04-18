@@ -25,7 +25,6 @@ package org.jboss.resteasy.spi.resources;
 public abstract class AbstractResolver {
     private final String value;
 
-
     protected AbstractResolver(final String value) {
         this.value = value;
     }

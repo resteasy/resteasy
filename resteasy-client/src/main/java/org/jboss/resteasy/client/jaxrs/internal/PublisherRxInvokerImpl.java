@@ -1,5 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
+
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -7,9 +10,6 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.PublisherRxInvoker;
 import org.reactivestreams.Publisher;
-
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
 public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
@@ -23,10 +23,9 @@ public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
     protected abstract <T> Publisher<T> toPublisher(CompletionStage<T> completable);
 
     private <T> Publisher<T> mkPublisher(
-        final String method,
-        final Entity<?> entity,
-        final Function<ClientInvocation, Publisher<T>> mkPublisher
-    ) {
+            final String method,
+            final Entity<?> entity,
+            final Function<ClientInvocation, Publisher<T>> mkPublisher) {
         ClientInvocation invocation = builder.createClientInvocation(builder.invocation);
         invocation.setMethod(method);
         invocation.setEntity(entity);
@@ -34,27 +33,21 @@ public abstract class PublisherRxInvokerImpl implements PublisherRxInvoker {
     }
 
     private Publisher<Response> mkPublisher(final String method, final Entity<?> entity) {
-        return mkPublisher(method, entity, invocation ->
-            invocation.reactive()
+        return mkPublisher(method, entity, invocation -> invocation.reactive()
                 .map(ClientInvocation.ReactiveInvocation::submit)
-                .orElseGet(() -> toPublisher(invocation.submitCF()))
-        );
+                .orElseGet(() -> toPublisher(invocation.submitCF())));
     }
 
     private <T> Publisher<T> mkPublisher(final String method, final Entity<?> entity, final Class<T> responseType) {
-        return mkPublisher(method, entity, invocation ->
-            invocation.reactive()
+        return mkPublisher(method, entity, invocation -> invocation.reactive()
                 .map(r -> r.submit(responseType))
-                .orElseGet(() -> toPublisher(invocation.submitCF(responseType)))
-        );
+                .orElseGet(() -> toPublisher(invocation.submitCF(responseType))));
     }
 
     private <T> Publisher<T> mkPublisher(final String method, final Entity<?> entity, final GenericType<T> responseType) {
-        return mkPublisher(method, entity, invocation ->
-            invocation.reactive()
+        return mkPublisher(method, entity, invocation -> invocation.reactive()
                 .map(r -> r.submit(responseType))
-                .orElseGet(() -> toPublisher(invocation.submitCF(responseType)))
-        );
+                .orElseGet(() -> toPublisher(invocation.submitCF(responseType))));
     }
 
     @Override

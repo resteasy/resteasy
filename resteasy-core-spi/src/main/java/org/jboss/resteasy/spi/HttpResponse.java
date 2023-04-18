@@ -13,46 +13,47 @@ import jakarta.ws.rs.core.NewCookie;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface HttpResponse extends Closeable
-{
-   int getStatus();
+public interface HttpResponse extends Closeable {
+    int getStatus();
 
-   void setStatus(int status);
+    void setStatus(int status);
 
-   MultivaluedMap<String, Object> getOutputHeaders();
+    MultivaluedMap<String, Object> getOutputHeaders();
 
-   OutputStream getOutputStream() throws IOException;
-   void setOutputStream(OutputStream os);
+    OutputStream getOutputStream() throws IOException;
 
-   default AsyncOutputStream getAsyncOutputStream() throws IOException {
-       OutputStream os = getOutputStream();
-       return os instanceof AsyncOutputStream ? (AsyncOutputStream)os : new BlockingAsyncOutputStream(os);
-   }
+    void setOutputStream(OutputStream os);
 
-   void addNewCookie(NewCookie cookie);
+    default AsyncOutputStream getAsyncOutputStream() throws IOException {
+        OutputStream os = getOutputStream();
+        return os instanceof AsyncOutputStream ? (AsyncOutputStream) os : new BlockingAsyncOutputStream(os);
+    }
 
-   void sendError(int status) throws IOException;
+    void addNewCookie(NewCookie cookie);
 
-   void sendError(int status, String message) throws IOException;
+    void sendError(int status) throws IOException;
 
-   boolean isCommitted();
+    void sendError(int status, String message) throws IOException;
 
-   /**
-    * reset status and headers.  Will fail if response is committed
-    */
-   void reset();
+    boolean isCommitted();
 
-   default void close() throws IOException {
-      // RESTEASY-1650
-      getOutputStream().close();
-   }
+    /**
+     * reset status and headers. Will fail if response is committed
+     */
+    void reset();
 
-   void flushBuffer() throws IOException;
+    default void close() throws IOException {
+        // RESTEASY-1650
+        getOutputStream().close();
+    }
 
-   // RESTEASY-1784
-   default void setSuppressExceptionDuringChunkedTransfer(boolean suppressExceptionDuringChunkedTransfer) {};
+    void flushBuffer() throws IOException;
 
-   default boolean suppressExceptionDuringChunkedTransfer() {
-      return true;
-   }
+    // RESTEASY-1784
+    default void setSuppressExceptionDuringChunkedTransfer(boolean suppressExceptionDuringChunkedTransfer) {
+    };
+
+    default boolean suppressExceptionDuringChunkedTransfer() {
+        return true;
+    }
 }

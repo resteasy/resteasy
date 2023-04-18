@@ -1,11 +1,13 @@
 package org.jboss.resteasy.jose.jws.util;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import java.security.Security;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class BouncyIntegration {
     static {
-        if (Security.getProvider("BC") == null) Security.addProvider(new BouncyCastleProvider());
+        if (Security.getProvider("BC") == null)
+            Security.addProvider(new BouncyCastleProvider());
     }
 
     public static void init() {

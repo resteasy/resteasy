@@ -136,8 +136,9 @@ public class ContextInjectionTest {
         final Response response = get("providers");
         Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
         final String value = response.readEntity(String.class);
-        Assert.assertTrue(String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value)
-                , value.contains(TestExceptionMapper.class.getSimpleName()));
+        Assert.assertTrue(
+                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value),
+                value.contains(TestExceptionMapper.class.getSimpleName()));
     }
 
     @Test
@@ -222,7 +223,6 @@ public class ContextInjectionTest {
             return Collections.singletonMap("test.property", "test value");
         }
     }
-
 
     @Path("/inject")
     @Produces(MediaType.TEXT_PLAIN)

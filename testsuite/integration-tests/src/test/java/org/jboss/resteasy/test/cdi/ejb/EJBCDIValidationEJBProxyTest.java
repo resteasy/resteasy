@@ -36,64 +36,63 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class EJBCDIValidationEJBProxyTest {
 
-   private static final String VALID_REQUEST = "{\n"
-         + "\"name\":\"Hugo\"\n"
-         + "}";
+    private static final String VALID_REQUEST = "{\n"
+            + "\"name\":\"Hugo\"\n"
+            + "}";
 
-   private static final String INVALID_REQUEST = "{\n"
-         + "\"name\":\"123456789010\"\n"
-         + "}";
+    private static final String INVALID_REQUEST = "{\n"
+            + "\"name\":\"123456789010\"\n"
+            + "}";
 
-   private static Client client;
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
-      WebArchive war = TestUtil.prepareArchive(EJBCDIValidationEJBProxyTest.class.getSimpleName());
-      war.addClass(EJBCDIValidationEJBProxyGreeting.class);
-      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      war.setWebXML(EJBCDIValidationEJBProxyTest.class.getPackage(), "web.xml");
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new HibernateValidatorPermission("accessPrivateMembers")
-            ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null,
-            EJBCDIValidationEJBProxyGreeterResource.class);
-   }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchive(EJBCDIValidationEJBProxyTest.class.getSimpleName());
+        war.addClass(EJBCDIValidationEJBProxyGreeting.class);
+        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war.setWebXML(EJBCDIValidationEJBProxyTest.class.getPackage(), "web.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
+        return TestUtil.finishContainerPrepare(war, null,
+                EJBCDIValidationEJBProxyGreeterResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, EJBCDIValidationEJBProxyTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, EJBCDIValidationEJBProxyTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void init() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void init() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void close() {
-      client.close();
-   }
+    @AfterClass
+    public static void close() {
+        client.close();
+    }
 
-   @Test
-   public void buggyBeanValidation() {
-      final WebTarget greeterTarget = client.target(generateURL("/greeter"));
+    @Test
+    public void buggyBeanValidation() {
+        final WebTarget greeterTarget = client.target(generateURL("/greeter"));
 
-      Response response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
-      String answer = response.readEntity(String.class);
-      ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+        Response response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
+        String answer = response.readEntity(String.class);
+        ViolationReport r = new ViolationReport(answer);
+        TestUtil.countViolations(r, 0, 0, 1, 0);
 
-      response = greeterTarget.request().post(Entity.entity(VALID_REQUEST, MediaType.APPLICATION_JSON));
-      final String helloHugo = response.readEntity(String.class);
-      Assert.assertEquals("Hello Hugo!", helloHugo);
+        response = greeterTarget.request().post(Entity.entity(VALID_REQUEST, MediaType.APPLICATION_JSON));
+        final String helloHugo = response.readEntity(String.class);
+        Assert.assertEquals("Hello Hugo!", helloHugo);
 
-      response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
-      answer = response.readEntity(String.class);
-      r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
+        response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
+        answer = response.readEntity(String.class);
+        r = new ViolationReport(answer);
+        TestUtil.countViolations(r, 0, 0, 1, 0);
 
-      response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
-      answer = response.readEntity(String.class);
-      r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 1, 0);
-   }
+        response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
+        answer = response.readEntity(String.class);
+        r = new ViolationReport(answer);
+        TestUtil.countViolations(r, 0, 0, 1, 0);
+    }
 }

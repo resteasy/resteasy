@@ -6,9 +6,9 @@ import jakarta.ws.rs.Produces;
 
 @Path("/")
 public class AcceptMultipleResource {
-   @Produces({"application/foo", "application/bar"})
-   @GET
-   public String get() {
-      return "GET";
-   }
+    @Produces({ "application/foo", "application/bar" })
+    @GET
+    public String get() {
+        return "GET";
+    }
 }

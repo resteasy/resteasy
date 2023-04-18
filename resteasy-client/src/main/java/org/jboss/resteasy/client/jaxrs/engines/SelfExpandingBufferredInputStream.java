@@ -14,102 +14,87 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  *
  * @author ul8b
  */
-public class SelfExpandingBufferredInputStream extends BufferedInputStream
-{
-   private static int defaultBufferSize = 8192;
+public class SelfExpandingBufferredInputStream extends BufferedInputStream {
+    private static int defaultBufferSize = 8192;
 
-   public SelfExpandingBufferredInputStream(final InputStream in)
-   {
-      super(in);
-      super.mark(defaultBufferSize);
-   }
+    public SelfExpandingBufferredInputStream(final InputStream in) {
+        super(in);
+        super.mark(defaultBufferSize);
+    }
 
-   public SelfExpandingBufferredInputStream(final InputStream in, final int size)
-   {
-      super(in, size);
-      super.mark(size);
-   }
+    public SelfExpandingBufferredInputStream(final InputStream in, final int size) {
+        super(in, size);
+        super.mark(size);
+    }
 
-   /**
-    * Not supported. Mark position is always zero.
-    */
-   @Override
-   public synchronized void mark(int readlimit)
-   {
-      throw new UnsupportedOperationException(Messages.MESSAGES.alwaysMarkedAtIndex0());
-   }
+    /**
+     * Not supported. Mark position is always zero.
+     */
+    @Override
+    public synchronized void mark(int readlimit) {
+        throw new UnsupportedOperationException(Messages.MESSAGES.alwaysMarkedAtIndex0());
+    }
 
-   @Override
-   public synchronized int read() throws IOException
-   {
-      if (pos == marklimit)
-      {
-         expand();
-      }
-      return super.read();
-   }
+    @Override
+    public synchronized int read() throws IOException {
+        if (pos == marklimit) {
+            expand();
+        }
+        return super.read();
+    }
 
-   @Override
-   public synchronized int read(byte[] b, int off, int len) throws IOException
-   {
-      while (pos + len > marklimit)
-      {
-         expand();
-      }
-      return super.read(b, off, len);
-   }
+    @Override
+    public synchronized int read(byte[] b, int off, int len) throws IOException {
+        while (pos + len > marklimit) {
+            expand();
+        }
+        return super.read(b, off, len);
+    }
 
-   @Override
-   public synchronized int read(byte[] b) throws IOException
-   {
-      while (pos + b.length > marklimit)
-      {
-         expand();
-      }
-      return super.read(b);
-   }
+    @Override
+    public synchronized int read(byte[] b) throws IOException {
+        while (pos + b.length > marklimit) {
+            expand();
+        }
+        return super.read(b);
+    }
 
-   /**
-    * Double the current buffer size limit. Reset to zero, then double the
-    * buffer size and restore last position in the buffer.
-    *
-    * @throws IOException
-    */
-   private void expand() throws IOException
-   {
-      int lastPos = pos;
-      super.reset();
-      super.mark((marklimit < (Integer.MAX_VALUE - 8) / 2) ? (marklimit * 2) : (Integer.MAX_VALUE - 8));
-      pos = lastPos;
-   }
+    /**
+     * Double the current buffer size limit. Reset to zero, then double the
+     * buffer size and restore last position in the buffer.
+     *
+     * @throws IOException
+     */
+    private void expand() throws IOException {
+        int lastPos = pos;
+        super.reset();
+        super.mark((marklimit < (Integer.MAX_VALUE - 8) / 2) ? (marklimit * 2) : (Integer.MAX_VALUE - 8));
+        pos = lastPos;
+    }
 
-   /**
-    * Return the current maximum size of the internal buffer. This is
-    * independent of how much data is actually contained within the buffer.
-    * @return internal buffer size
-    */
-   public int getBufSize()
-   {
-      return buf.length;
-   }
+    /**
+     * Return the current maximum size of the internal buffer. This is
+     * independent of how much data is actually contained within the buffer.
+     *
+     * @return internal buffer size
+     */
+    public int getBufSize() {
+        return buf.length;
+    }
 
-   public int getCount()
-   {
-      return count;
-   }
+    public int getCount() {
+        return count;
+    }
 
-   public int getPos()
-   {
-      return pos;
-   }
+    public int getPos() {
+        return pos;
+    }
 
-   public int getMarkLimit()
-   {
-      return marklimit;
-   }
+    public int getMarkLimit() {
+        return marklimit;
+    }
 
-   public int getMarkPos()
-   {
-      return markpos;
-   }
+    public int getMarkPos() {
+        return markpos;
+    }
 }

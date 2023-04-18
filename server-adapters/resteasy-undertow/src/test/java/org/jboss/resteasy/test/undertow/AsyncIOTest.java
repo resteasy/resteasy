@@ -17,84 +17,73 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class AsyncIOTest
-{
+public class AsyncIOTest {
 
-   static Client client;
-   static UndertowJaxrsServer server;
+    static Client client;
+    static UndertowJaxrsServer server;
 
-   @ApplicationPath("/")
-   public static class MyApp extends Application
-   {
-      @Override
-      public Set<Class<?>> getClasses()
-      {
-         HashSet<Class<?>> classes = new HashSet<Class<?>>();
-         classes.add(AsyncIOResource.class);
-         classes.add(AsyncWriter.class);
-         classes.add(BlockingWriter.class);
-         return classes;
-      }
-   }
+    @ApplicationPath("/")
+    public static class MyApp extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            HashSet<Class<?>> classes = new HashSet<Class<?>>();
+            classes.add(AsyncIOResource.class);
+            classes.add(AsyncWriter.class);
+            classes.add(BlockingWriter.class);
+            return classes;
+        }
+    }
 
-   @BeforeClass
-   public static void init() throws Exception
-   {
-      server = new UndertowJaxrsServer().start();
-      server.deploy(MyApp.class);
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void init() throws Exception {
+        server = new UndertowJaxrsServer().start();
+        server.deploy(MyApp.class);
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void stop() throws Exception
-   {
-       try
-       {
-          client.close();
-       }
-       catch (Exception e)
-       {
+    @AfterClass
+    public static void stop() throws Exception {
+        try {
+            client.close();
+        } catch (Exception e) {
 
-       }
-      server.stop();
-   }
+        }
+        server.stop();
+    }
 
+    @Test
+    public void testAsyncIo() throws Exception {
+        WebTarget target = client.target(generateURL("/async-io/blocking-writer-on-worker-thread"));
+        String val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
 
-   @Test
-   public void testAsyncIo() throws Exception
-   {
-      WebTarget target = client.target(generateURL("/async-io/blocking-writer-on-worker-thread"));
-      String val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+        target = client.target(generateURL("/async-io/async-writer-on-worker-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
 
-      target = client.target(generateURL("/async-io/async-writer-on-worker-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+        target = client.target(generateURL("/async-io/slow-async-writer-on-worker-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
+    }
 
-      target = client.target(generateURL("/async-io/slow-async-writer-on-worker-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
-   }
+    @Test
+    public void testAsyncIoWrites() throws Exception {
+        // 10M
+        WebTarget target = client.target(generateURL("/async-io/io/10000000"));
+        byte[] val = target.request().get(byte[].class);
+        Assert.assertEquals(10_000_000, val.length);
+        // 100M
+        target = client.target(generateURL("/async-io/io/100000000"));
+        val = target.request().get(byte[].class);
+        Assert.assertEquals(100_000_000, val.length);
 
-   @Test
-   public void testAsyncIoWrites() throws Exception
-   {
-       // 10M
-       WebTarget target = client.target(generateURL("/async-io/io/10000000"));
-       byte[] val = target.request().get(byte[].class);
-       Assert.assertEquals(10_000_000, val.length);
-       // 100M
-       target = client.target(generateURL("/async-io/io/100000000"));
-       val = target.request().get(byte[].class);
-       Assert.assertEquals(100_000_000, val.length);
-
-       // 10M
-       target = client.target(generateURL("/async-io/io/file-range/10000000"));
-       val = target.request().get(byte[].class);
-       Assert.assertEquals(10_000_000, val.length);
-       // 100M
-       target = client.target(generateURL("/async-io/io/file-range/100000000"));
-       val = target.request().get(byte[].class);
-       Assert.assertEquals(100_000_000, val.length);
-   }
+        // 10M
+        target = client.target(generateURL("/async-io/io/file-range/10000000"));
+        val = target.request().get(byte[].class);
+        Assert.assertEquals(10_000_000, val.length);
+        // 100M
+        target = client.target(generateURL("/async-io/io/file-range/100000000"));
+        val = target.request().get(byte[].class);
+        Assert.assertEquals(100_000_000, val.length);
+    }
 }

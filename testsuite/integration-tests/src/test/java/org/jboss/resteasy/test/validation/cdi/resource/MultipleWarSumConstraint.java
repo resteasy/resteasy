@@ -1,22 +1,23 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 @Target(TYPE)
 @Retention(RUNTIME)
 @Constraint(validatedBy = MultipleWarSumValidator.class)
 public @interface MultipleWarSumConstraint {
-   String message() default "{org.jboss.resteasy.resteasy1058.MultipleWarSumConstraint}";
+    String message() default "{org.jboss.resteasy.resteasy1058.MultipleWarSumConstraint}";
 
-   Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-   Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 
-   int min() default 0;
+    int min() default 0;
 }

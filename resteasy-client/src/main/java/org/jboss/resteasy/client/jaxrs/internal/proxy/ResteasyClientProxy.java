@@ -8,11 +8,10 @@ import java.util.Collection;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface ResteasyClientProxy
-{
-   Collection<ClientInvoker> getResteasyClientInvokers();
+public interface ResteasyClientProxy {
+    Collection<ClientInvoker> getResteasyClientInvokers();
 
-   void applyClientInvokerModifier(ClientInvokerModifier modifier);
+    void applyClientInvokerModifier(ClientInvokerModifier modifier);
 
-   <T> T as(Class<T> iface);
+    <T> T as(Class<T> iface);
 }

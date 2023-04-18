@@ -1,11 +1,12 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
+import java.util.concurrent.Executor;
+
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.functions.Function;
-import org.jboss.resteasy.concurrent.ContextualExecutors;
-
-import java.util.concurrent.Executor;
 
 @SuppressWarnings("rawtypes")
 class ContextPropagatorOnObservableAssemblyAction implements Function<Observable, Observable> {

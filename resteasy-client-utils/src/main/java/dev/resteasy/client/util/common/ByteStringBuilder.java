@@ -207,7 +207,8 @@ public final class ByteStringBuilder {
     }
 
     public byte byteAt(final int index) {
-        if (index < 0 || index > length) throw new IndexOutOfBoundsException();
+        if (index < 0 || index > length)
+            throw new IndexOutOfBoundsException();
         return content[index];
     }
 
@@ -232,7 +233,8 @@ public final class ByteStringBuilder {
     }
 
     public boolean contentEquals(final byte[] other, final int offs, final int length) {
-        if (length != this.length) return false;
+        if (length != this.length)
+            return false;
         for (int i = 0; i < length; i++) {
             if (content[i] != other[offs + i]) {
                 return false;
@@ -242,7 +244,7 @@ public final class ByteStringBuilder {
     }
 
     private ByteStringBuilder appendASCII(final int asciiLen, final String s, final int offs, final int len,
-                                          final int maxLen) {
+            final int maxLen) {
         reserve(len, false);
         char c;
         for (int i = 0; i < len; i++) {
@@ -264,15 +266,18 @@ public final class ByteStringBuilder {
         final byte[] content = this.content;
         int cl = content.length;
         if (cl - length >= count) {
-            if (clear) Arrays.fill(content, length, length + count, (byte) 0);
+            if (clear)
+                Arrays.fill(content, length, length + count, (byte) 0);
             return;
         }
         // clear remainder
-        if (clear) Arrays.fill(content, length, cl, (byte) 0);
+        if (clear)
+            Arrays.fill(content, length, cl, (byte) 0);
         do {
             // not enough space... grow by 1.5x
             cl = cl + (cl + 1 >> 1);
-            if (cl < 0) throw new IllegalStateException("Too large");
+            if (cl < 0)
+                throw new IllegalStateException("Too large");
         } while (cl - length < count);
         this.content = Arrays.copyOf(content, cl);
     }

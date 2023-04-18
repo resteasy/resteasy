@@ -36,16 +36,17 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
+import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class VertxClientEngineTest {
     Vertx vertx;
@@ -113,7 +114,6 @@ public class VertxClientEngineTest {
         assertEquals("Success", response.readEntity(String.class));
     }
 
-
     @Test
     public void testHTTP() throws Exception {
         server.requestHandler(req -> {
@@ -150,7 +150,6 @@ public class VertxClientEngineTest {
         assertEquals(200, response.getStatus());
         assertEquals("Success", response.readEntity(String.class));
     }
-
 
     @Test
     public void testSimpleStringRx() throws Exception {
@@ -214,7 +213,8 @@ public class VertxClientEngineTest {
         final Random r = new Random();
         for (int i = 0; i < 20 * 1024 * 1024; i++) {
             builder.append((char) ('a' + (char) r.nextInt('z' - 'a')));
-            if (i % 100 == 0) builder.append('\n');
+            if (i % 100 == 0)
+                builder.append('\n');
         }
         return builder.toString();
     }

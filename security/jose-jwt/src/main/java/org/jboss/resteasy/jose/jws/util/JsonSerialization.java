@@ -1,10 +1,10 @@
 package org.jboss.resteasy.jose.jws.util;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Copied from keycloak
@@ -39,7 +39,5 @@ public class JsonSerialization {
     public static <T> T readValue(InputStream bytes, Class<T> type) throws IOException {
         return mapper.readValue(bytes, type);
     }
-
-
 
 }

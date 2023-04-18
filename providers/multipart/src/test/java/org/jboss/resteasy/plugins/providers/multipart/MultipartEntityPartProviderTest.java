@@ -85,14 +85,12 @@ public class MultipartEntityPartProviderTest {
                     EntityPart.withName("content")
                             .content("test content".getBytes(StandardCharsets.UTF_8))
                             .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build()
-            );
+                            .build());
             try (
                     Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))
-            ) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
                 Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
@@ -141,16 +139,14 @@ public class MultipartEntityPartProviderTest {
                     EntityPart.withName("input-stream-part")
                             .content("test input stream".getBytes(StandardCharsets.UTF_8))
                             .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build()
-            );
+                            .build());
             try (
                     Response response = client.target(INSTANCE.configuration()
-                                    .baseUriBuilder()
-                                    .path("test/multi-injected"))
+                            .baseUriBuilder()
+                            .path("test/multi-injected"))
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))
-            ) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
                 Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
@@ -188,14 +184,12 @@ public class MultipartEntityPartProviderTest {
                     EntityPart.withName("content")
                             .content("test content")
                             .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build()
-            );
+                            .build());
             try (
                     Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/injected"))
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))
-            ) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
                 Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
@@ -295,8 +289,7 @@ public class MultipartEntityPartProviderTest {
                     EntityPart.withName("added-content")
                             .content("test added content".getBytes(StandardCharsets.UTF_8))
                             .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build()
-            );
+                            .build());
             return Response.ok(new GenericEntity<>(multipart) {
             }, MediaType.MULTIPART_FORM_DATA).build();
         }
@@ -306,8 +299,8 @@ public class MultipartEntityPartProviderTest {
         @Produces(MediaType.MULTIPART_FORM_DATA)
         @Path("/multi-injected")
         public Response multipleInjectable(@FormParam("string-part") final String string,
-                                           @FormParam("entity-part") final EntityPart entityPart,
-                                           @FormParam("input-stream-part") final InputStream in) throws IOException {
+                @FormParam("entity-part") final EntityPart entityPart,
+                @FormParam("input-stream-part") final InputStream in) throws IOException {
             final List<EntityPart> multipart = List.of(
                     EntityPart.withName("received-entity-part")
                             .content(entityPart.getContent(String.class))
@@ -321,8 +314,7 @@ public class MultipartEntityPartProviderTest {
                     EntityPart.withName("received-string")
                             .content(string)
                             .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build()
-            );
+                            .build());
             return Response.ok(new GenericEntity<>(multipart) {
             }, MediaType.MULTIPART_FORM_DATA).build();
         }
@@ -332,8 +324,8 @@ public class MultipartEntityPartProviderTest {
         @Produces(MediaType.MULTIPART_FORM_DATA)
         @Path("/injected")
         public List<EntityPart> injected(@FormParam("content") final String string,
-                                         @FormParam("content") final EntityPart entityPart,
-                                         @FormParam("content") final InputStream in) throws IOException {
+                @FormParam("content") final EntityPart entityPart,
+                @FormParam("content") final InputStream in) throws IOException {
             return List.of(
                     EntityPart.withName("received-entity-part")
                             .content(entityPart.getContent(String.class))
@@ -347,8 +339,7 @@ public class MultipartEntityPartProviderTest {
                     EntityPart.withName("received-string")
                             .content(string)
                             .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build()
-            );
+                            .build());
         }
     }
 }

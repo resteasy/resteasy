@@ -7,14 +7,14 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
 @Path("")
-@ValidateOnExecution(type = {ExecutableType.NONE})
+@ValidateOnExecution(type = { ExecutableType.NONE })
 public class TestValidateOnExecutionErrorOneLevel_Class extends TestValidateOnExecutionResource {
-   @POST
-   @Path("override")
-   @Size(min = 1)
-   @Override
-   @ValidateOnExecution(type = {ExecutableType.IMPLICIT})
-   public String override(@Size(max = 1) String s) {
-      return s;
-   }
+    @POST
+    @Path("override")
+    @Size(min = 1)
+    @Override
+    @ValidateOnExecution(type = { ExecutableType.IMPLICIT })
+    public String override(@Size(max = 1) String s) {
+        return s;
+    }
 }

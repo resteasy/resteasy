@@ -1,11 +1,12 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
+import java.util.concurrent.Executor;
+
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.functions.Function;
-import org.jboss.resteasy.concurrent.ContextualExecutors;
-
-import java.util.concurrent.Executor;
 
 @SuppressWarnings("rawtypes")
 class ContextPropagatorOnMaybeAssemblyAction implements Function<Maybe, Maybe> {

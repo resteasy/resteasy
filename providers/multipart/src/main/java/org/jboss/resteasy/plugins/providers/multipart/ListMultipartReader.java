@@ -27,43 +27,43 @@ import org.jboss.resteasy.spi.util.Types;
 @Provider
 @Consumes("multipart/*")
 public class ListMultipartReader implements MessageBodyReader<List<?>> {
-   protected @Context Providers workers;
+    protected @Context Providers workers;
 
-   public boolean isReadable(Class<?> type, Type genericType,
-         Annotation[] annotations, MediaType mediaType) {
-      return type.equals(List.class) && genericType != null
-            && genericType instanceof ParameterizedType;
-   }
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return type.equals(List.class) && genericType != null
+                && genericType instanceof ParameterizedType;
+    }
 
-   public List<?> readFrom(Class<List<?>> type, Type genericType,
-         Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-         throws IOException, WebApplicationException {
-      String boundary = mediaType.getParameters().get("boundary");
-      if (boundary == null)
-         throw new IOException(Messages.MESSAGES.unableToGetBoundary());
+    public List<?> readFrom(Class<List<?>> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException, WebApplicationException {
+        String boundary = mediaType.getParameters().get("boundary");
+        if (boundary == null)
+            throw new IOException(Messages.MESSAGES.unableToGetBoundary());
 
-      if (!(genericType instanceof ParameterizedType))
-         throw new IllegalArgumentException(Messages.MESSAGES.receivedGenericType(this, genericType, ParameterizedType.class));
+        if (!(genericType instanceof ParameterizedType))
+            throw new IllegalArgumentException(
+                    Messages.MESSAGES.receivedGenericType(this, genericType, ParameterizedType.class));
 
-      ParameterizedType param = (ParameterizedType) genericType;
-      Type baseType = param.getActualTypeArguments()[0];
-      Class<?> rawType = Types.getRawType(baseType);
+        ParameterizedType param = (ParameterizedType) genericType;
+        Type baseType = param.getActualTypeArguments()[0];
+        Class<?> rawType = Types.getRawType(baseType);
 
-      MultipartInputImpl input = new MultipartInputImpl(mediaType, workers);
-      input.parse(entityStream);
+        MultipartInputImpl input = new MultipartInputImpl(mediaType, workers);
+        input.parse(entityStream);
 
-      List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<Object>();
 
-      for (InputPart part : input.getParts())
-         list.add(part.getBody(rawType, baseType));
+        for (InputPart part : input.getParts())
+            list.add(part.getBody(rawType, baseType));
 
-      if (!InputStream.class.equals(rawType))
-      {
-         // make sure any temporary files are discarded
-         input.close();
-      }
+        if (!InputStream.class.equals(rawType)) {
+            // make sure any temporary files are discarded
+            input.close();
+        }
 
-      return list;
-   }
+        return list;
+    }
 }

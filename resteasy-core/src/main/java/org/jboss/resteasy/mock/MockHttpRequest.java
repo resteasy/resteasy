@@ -1,22 +1,5 @@
 package org.jboss.resteasy.mock;
 
-import org.jboss.resteasy.plugins.server.BaseHttpRequest;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.specimpl.ResteasyUriInfo;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.RunnableWithException;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.ReadFromStream;
-
-import jakarta.ws.rs.core.Cookie;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,401 +14,362 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.NotImplementedYetException;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.RunnableWithException;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.ReadFromStream;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MockHttpRequest extends BaseHttpRequest
-{
-   protected ResteasyHttpHeaders httpHeaders;
-   protected InputStream inputStream;
-   protected String httpMethod;
-   protected Map<String, Object> attributes = new HashMap<String, Object>();
-   protected ResteasyAsynchronousContext asynchronousContext;
+public class MockHttpRequest extends BaseHttpRequest {
+    protected ResteasyHttpHeaders httpHeaders;
+    protected InputStream inputStream;
+    protected String httpMethod;
+    protected Map<String, Object> attributes = new HashMap<String, Object>();
+    protected ResteasyAsynchronousContext asynchronousContext;
 
+    protected MockHttpRequest() {
+        super(null);
+    }
 
-   protected MockHttpRequest()
-   {
-      super(null);
-   }
+    protected static final URI EMPTY_URI = URI.create("");
 
-   protected static final URI EMPTY_URI = URI.create("");
+    protected static MockHttpRequest initWithUri(String uri) throws URISyntaxException {
+        URI absoluteUri = new URI(uri);
+        //URI baseUri = absoluteUri;
+        URI baseUri = EMPTY_URI;
+        return initWithUri(absoluteUri, baseUri);
+    }
 
-   protected static MockHttpRequest initWithUri(String uri) throws URISyntaxException
-   {
-      URI absoluteUri = new URI(uri);
-      //URI baseUri = absoluteUri;
-      URI baseUri = EMPTY_URI;
-      return initWithUri(absoluteUri, baseUri);
-   }
+    public static MockHttpRequest create(String httpMethod, String absolute, String query, String contextPath) {
+        MockHttpRequest request = new MockHttpRequest();
+        request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
+        if (query != null && query.length() > 0) {
+            absolute = absolute + "?" + query;
+        }
+        request.uri = new ResteasyUriInfo(absolute, contextPath);
+        request.httpMethod = httpMethod;
+        return request;
+    }
 
-   public static MockHttpRequest create(String httpMethod, String absolute, String query, String contextPath) {
-      MockHttpRequest request = new MockHttpRequest();
-      request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
-      if (query != null && query.length() > 0) {
-         absolute = absolute + "?" + query;
-      }
-      request.uri = new ResteasyUriInfo(absolute, contextPath);
-      request.httpMethod = httpMethod;
-      return request;
-   }
+    private static MockHttpRequest initWithUri(URI absoluteUri, URI baseUri) {
+        if (baseUri == null)
+            baseUri = EMPTY_URI;
+        MockHttpRequest request = new MockHttpRequest();
+        request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
+        request.uri = new ResteasyUriInfo(absoluteUri.toString(), baseUri.getRawPath());
+        return request;
+    }
 
-   private static MockHttpRequest initWithUri(URI absoluteUri, URI baseUri)
-   {
-      if (baseUri == null) baseUri = EMPTY_URI;
-      MockHttpRequest request = new MockHttpRequest();
-      request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
-      request.uri = new ResteasyUriInfo(absoluteUri.toString(), baseUri.getRawPath());
-      return request;
-   }
+    public static MockHttpRequest create(String httpMethod, String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = httpMethod;
+        return request;
+    }
 
-   public static MockHttpRequest create(String httpMethod, String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = httpMethod;
-      return request;
-   }
+    public static MockHttpRequest create(String httpMethod, URI uriObj, URI baseUri) {
+        MockHttpRequest request = initWithUri(uriObj, baseUri);
+        request.httpMethod = httpMethod;
+        return request;
+    }
 
-   public static MockHttpRequest create(String httpMethod, URI uriObj, URI baseUri)
-   {
-      MockHttpRequest request = initWithUri(uriObj, baseUri);
-      request.httpMethod = httpMethod;
-      return request;
-   }
+    public static MockHttpRequest options(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "OPTIONS";
+        return request;
+    }
 
-   public static MockHttpRequest options(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "OPTIONS";
-      return request;
-   }
+    public static MockHttpRequest get(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "GET";
+        return request;
+    }
 
+    public static MockHttpRequest post(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "POST";
+        return request;
+    }
 
+    public static MockHttpRequest put(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "PUT";
+        return request;
+    }
 
-   public static MockHttpRequest get(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "GET";
-      return request;
-   }
+    public static MockHttpRequest patch(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "PATCH";
+        return request;
+    }
 
-   public static MockHttpRequest post(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "POST";
-      return request;
-   }
+    public static MockHttpRequest delete(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "DELETE";
+        return request;
+    }
 
-   public static MockHttpRequest put(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "PUT";
-      return request;
-   }
-   public static MockHttpRequest patch(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "PATCH";
-      return request;
-   }
+    public static MockHttpRequest head(String uri) throws URISyntaxException {
+        MockHttpRequest request = initWithUri(uri);
+        request.httpMethod = "HEAD";
+        return request;
+    }
 
-   public static MockHttpRequest delete(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "DELETE";
-      return request;
-   }
+    public static MockHttpRequest deepCopy(HttpRequest request) throws IOException {
+        MockHttpRequest mock = new MockHttpRequest();
+        mock.uri = (ResteasyUriInfo) request.getUri();
+        mock.httpHeaders = (ResteasyHttpHeaders) request.getHttpHeaders();
+        mock.httpMethod = request.getHttpMethod();
+        byte[] bytes = ReadFromStream.readFromStream(1024, request.getInputStream());
+        mock.inputStream = new ByteArrayInputStream(bytes);
+        return mock;
+    }
 
-   public static MockHttpRequest head(String uri) throws URISyntaxException
-   {
-      MockHttpRequest request = initWithUri(uri);
-      request.httpMethod = "HEAD";
-      return request;
-   }
+    @Override
+    public void setHttpMethod(String method) {
+        httpMethod = method;
+    }
 
-   public static MockHttpRequest deepCopy(HttpRequest request) throws IOException
-   {
-      MockHttpRequest mock = new MockHttpRequest();
-      mock.uri = (ResteasyUriInfo) request.getUri();
-      mock.httpHeaders = (ResteasyHttpHeaders) request.getHttpHeaders();
-      mock.httpMethod = request.getHttpMethod();
-      byte[] bytes = ReadFromStream.readFromStream(1024, request.getInputStream());
-      mock.inputStream = new ByteArrayInputStream(bytes);
-      return mock;
-   }
+    public ResteasyAsynchronousContext getAsynchronousContext() {
+        return asynchronousContext;
+    }
 
-   @Override
-   public void setHttpMethod(String method)
-   {
-      httpMethod = method;
-   }
+    public void setAsynchronousContext(ResteasyAsynchronousContext asynchronousContext) {
+        this.asynchronousContext = asynchronousContext;
+    }
 
-   public ResteasyAsynchronousContext getAsynchronousContext()
-   {
-      return asynchronousContext;
-   }
+    public MockHttpRequest header(String name, String value) {
+        httpHeaders.getMutableHeaders().add(name, value);
+        return this;
+    }
 
-   public void setAsynchronousContext(ResteasyAsynchronousContext asynchronousContext)
-   {
-      this.asynchronousContext = asynchronousContext;
-   }
+    public MockHttpRequest accept(List<MediaType> accepts) {
+        for (MediaType accept : accepts) {
+            accept(accept);
+        }
+        return this;
+    }
 
-   public MockHttpRequest header(String name, String value)
-   {
-      httpHeaders.getMutableHeaders().add(name, value);
-      return this;
-   }
+    public MockHttpRequest accept(MediaType accept) {
+        httpHeaders.getMutableHeaders().add(HttpHeaders.ACCEPT, accept.toString());
+        return this;
+    }
 
-   public MockHttpRequest accept(List<MediaType> accepts)
-   {
-      for (MediaType accept : accepts)
-      {
-         accept(accept);
-      }
-      return this;
-   }
+    public MockHttpRequest accept(String type) {
+        httpHeaders.getMutableHeaders().add(HttpHeaderNames.ACCEPT, type);
+        return this;
+    }
 
-   public MockHttpRequest accept(MediaType accept)
-   {
-      httpHeaders.getMutableHeaders().add(HttpHeaders.ACCEPT, accept.toString());
-      return this;
-   }
+    public MockHttpRequest language(String language) {
+        httpHeaders.getMutableHeaders().add(HttpHeaderNames.ACCEPT_LANGUAGE, language);
+        return this;
+    }
 
-   public MockHttpRequest accept(String type)
-   {
-      httpHeaders.getMutableHeaders().add(HttpHeaderNames.ACCEPT, type);
-      return this;
-   }
+    public MockHttpRequest cookie(String name, String value) {
+        Cookie cookie = new Cookie.Builder(name)
+                .value(value)
+                .build();
+        httpHeaders.getMutableCookies().put(name, cookie);
+        return this;
+    }
 
-   public MockHttpRequest language(String language)
-   {
-      httpHeaders.getMutableHeaders().add(HttpHeaderNames.ACCEPT_LANGUAGE, language);
-      return this;
-   }
+    public MockHttpRequest contentType(String type) {
+        httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type);
+        return this;
+    }
 
-   public MockHttpRequest cookie(String name, String value)
-   {
-      Cookie cookie = new Cookie.Builder(name)
-           .value(value)
-           .build();
-      httpHeaders.getMutableCookies().put(name, cookie);
-      return this;
-   }
+    public MockHttpRequest contentType(MediaType type) {
+        if (type == null) {
+            httpHeaders.getMutableHeaders().remove(HttpHeaderNames.CONTENT_TYPE);
+            return this;
+        }
+        httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type.toString());
+        return this;
+    }
 
-   public MockHttpRequest contentType(String type)
-   {
-      httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type);
-      return this;
-   }
+    public MockHttpRequest content(byte[] bytes) {
+        inputStream = new ByteArrayInputStream(bytes);
+        return this;
+    }
 
-   public MockHttpRequest contentType(MediaType type)
-   {
-      if (type == null)
-      {
-         httpHeaders.getMutableHeaders().remove(HttpHeaderNames.CONTENT_TYPE);
-         return this;
-      }
-      httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type.toString());
-      return this;
-   }
+    public MockHttpRequest content(InputStream stream) {
+        inputStream = stream;
+        return this;
+    }
 
-   public MockHttpRequest content(byte[] bytes)
-   {
-      inputStream = new ByteArrayInputStream(bytes);
-      return this;
-   }
+    /**
+     * Set CONTENT-TYPE to ""application/x-www-form-urlencoded"
+     *
+     * @param name  form param name
+     * @param value form param value
+     * @return {@link MockHttpRequest}
+     */
+    public MockHttpRequest addFormHeader(String name, String value) {
+        if (decodedFormParameters == null) {
+            decodedFormParameters = new MultivaluedMapImpl<String, String>();
+            contentType("application/x-www-form-urlencoded");
+        }
+        decodedFormParameters.add(name, value);
+        return this;
+    }
 
-   public MockHttpRequest content(InputStream stream)
-   {
-      inputStream = stream;
-      return this;
-   }
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders;
+    }
 
-   /**
-    * Set CONTENT-TYPE to ""application/x-www-form-urlencoded"
-    *
-    * @param name form param name
-    * @param value form param value
-    * @return {@link MockHttpRequest}
-    */
-   public MockHttpRequest addFormHeader(String name, String value)
-   {
-      if (decodedFormParameters == null)
-      {
-         decodedFormParameters = new MultivaluedMapImpl<String, String>();
-         contentType("application/x-www-form-urlencoded");
-      }
-      decodedFormParameters.add(name, value);
-      return this;
-   }
+    @Override
+    public MultivaluedMap<String, String> getMutableHeaders() {
+        return httpHeaders.getMutableHeaders();
+    }
 
-   public HttpHeaders getHttpHeaders()
-   {
-      return httpHeaders;
-   }
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 
-   @Override
-   public MultivaluedMap<String, String> getMutableHeaders()
-   {
-      return httpHeaders.getMutableHeaders();
-   }
+    public void setInputStream(InputStream stream) {
+        this.inputStream = stream;
+    }
 
-   public InputStream getInputStream()
-   {
-      return inputStream;
-   }
+    public ResteasyUriInfo getUri() {
+        return uri;
+    }
 
-   public void setInputStream(InputStream stream)
-   {
-      this.inputStream = stream;
-   }
+    public String getHttpMethod() {
+        return httpMethod;
+    }
 
-   public ResteasyUriInfo getUri()
-   {
-      return uri;
-   }
+    public void initialRequestThreadFinished() {
+    }
 
-   public String getHttpMethod()
-   {
-      return httpMethod;
-   }
+    public Object getAttribute(String attribute) {
+        return attributes.get(attribute);
+    }
 
-   public void initialRequestThreadFinished()
-   {
-   }
+    public void setAttribute(String name, Object value) {
+        attributes.put(name, value);
+    }
 
-   public Object getAttribute(String attribute)
-   {
-      return attributes.get(attribute);
-   }
+    public void removeAttribute(String name) {
+        attributes.remove(name);
+    }
 
-   public void setAttribute(String name, Object value)
-   {
-      attributes.put(name, value);
-   }
+    @Override
+    public Enumeration<String> getAttributeNames() {
+        Enumeration<String> en = new Enumeration<String>() {
+            private Iterator<String> it = attributes.keySet().iterator();
 
-   public void removeAttribute(String name)
-   {
-      attributes.remove(name);
-   }
-
-   @Override
-   public Enumeration<String> getAttributeNames()
-   {
-      Enumeration<String> en = new Enumeration<String>()
-      {
-         private Iterator<String> it = attributes.keySet().iterator();
-         @Override
-         public boolean hasMoreElements()
-         {
-            return it.hasNext();
-         }
-
-         @Override
-         public String nextElement()
-         {
-            return it.next();
-         }
-      };
-      return en;
-   }
-
-   @Override
-   public ResteasyAsynchronousContext getAsyncContext()
-   {
-      if (asynchronousContext != null) return asynchronousContext;
-      else return  new ResteasyAsynchronousContext()
-      {
-         @Override
-         public boolean isSuspended()
-         {
-            return false;
-         }
-
-         @Override
-         public ResteasyAsynchronousResponse getAsyncResponse()
-         {
-            return null;
-         }
-
-         @Override
-         public ResteasyAsynchronousResponse suspend() throws IllegalStateException
-         {
-            return null;
-         }
-
-         @Override
-         public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException
-         {
-            return null;
-         }
-
-         @Override
-         public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
-         {
-            return null;
-         }
-
-         @Override
-         public void complete() {
-         }
-
-         @Override
-         public void initialRequestStarted()
-         {
-         }
-
-         @Override
-         public void initialRequestEnded()
-         {
-         }
-
-         @Override
-         public boolean isOnInitialRequest()
-         {
-            return true;
-         }
-
-        @Override
-        public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
-            CompletableFuture<Void> ret = new CompletableFuture<>();
-            try {
-                f.run();
-                ret.complete(null);
-            } catch (Exception e) {
-                ret.completeExceptionally(e);
+            @Override
+            public boolean hasMoreElements() {
+                return it.hasNext();
             }
-            return ret;
-        }
 
-        @Override
-        public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
-            return f;
-        }
-      };
-   }
+            @Override
+            public String nextElement() {
+                return it.next();
+            }
+        };
+        return en;
+    }
 
-   @Override
-   public void forward(String path)
-   {
-      throw new NotImplementedYetException();
-   }
+    @Override
+    public ResteasyAsynchronousContext getAsyncContext() {
+        if (asynchronousContext != null)
+            return asynchronousContext;
+        else
+            return new ResteasyAsynchronousContext() {
+                @Override
+                public boolean isSuspended() {
+                    return false;
+                }
 
-   @Override
-   public boolean wasForwarded()
-   {
-      return false;
-   }
+                @Override
+                public ResteasyAsynchronousResponse getAsyncResponse() {
+                    return null;
+                }
 
-   @Override
-   public String getRemoteHost()
-   {
-      return null;
-   }
+                @Override
+                public ResteasyAsynchronousResponse suspend() throws IllegalStateException {
+                    return null;
+                }
 
-   @Override
-   public String getRemoteAddress()
-   {
-      return null;
-   }
+                @Override
+                public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException {
+                    return null;
+                }
+
+                @Override
+                public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
+                    return null;
+                }
+
+                @Override
+                public void complete() {
+                }
+
+                @Override
+                public void initialRequestStarted() {
+                }
+
+                @Override
+                public void initialRequestEnded() {
+                }
+
+                @Override
+                public boolean isOnInitialRequest() {
+                    return true;
+                }
+
+                @Override
+                public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+                    CompletableFuture<Void> ret = new CompletableFuture<>();
+                    try {
+                        f.run();
+                        ret.complete(null);
+                    } catch (Exception e) {
+                        ret.completeExceptionally(e);
+                    }
+                    return ret;
+                }
+
+                @Override
+                public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+                    return f;
+                }
+            };
+    }
+
+    @Override
+    public void forward(String path) {
+        throw new NotImplementedYetException();
+    }
+
+    @Override
+    public boolean wasForwarded() {
+        return false;
+    }
+
+    @Override
+    public String getRemoteHost() {
+        return null;
+    }
+
+    @Override
+    public String getRemoteAddress() {
+        return null;
+    }
 }

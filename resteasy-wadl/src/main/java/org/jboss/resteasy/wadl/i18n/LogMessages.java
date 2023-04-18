@@ -9,10 +9,9 @@ import org.jboss.logging.annotations.MessageLogger;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
- * Copyright January 6, 2016
+ *          Copyright January 6, 2016
  */
 @MessageLogger(projectCode = "RESTEASY")
-public interface LogMessages extends BasicLogger
-{
-   LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
+public interface LogMessages extends BasicLogger {
+    LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
 }

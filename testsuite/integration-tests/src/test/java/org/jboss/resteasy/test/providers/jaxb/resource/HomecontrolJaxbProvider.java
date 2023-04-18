@@ -12,8 +12,8 @@ import jakarta.xml.bind.JAXBContext;
 @Consumes(MediaType.APPLICATION_XML)
 public class HomecontrolJaxbProvider implements ContextResolver<JAXBContext> {
 
-   @Override
-   public JAXBContext getContext(Class<?> type) {
-      return new HomecontrolCustomJAXBContext(type);
-   }
+    @Override
+    public JAXBContext getContext(Class<?> type) {
+        return new HomecontrolCustomJAXBContext(type);
+    }
 }

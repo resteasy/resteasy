@@ -46,7 +46,8 @@ class SingletonConfigurationFactory {
             final PrivilegedAction<ConfigurationFactory> action = () -> {
                 // We must use this class loader for environments where the TCCL might pick up an instance from a source
                 // that is not meant to be shared.
-                final ServiceLoader<ConfigurationFactory> loader = ServiceLoader.load(ConfigurationFactory.class, Holder.class.getClassLoader());
+                final ServiceLoader<ConfigurationFactory> loader = ServiceLoader.load(ConfigurationFactory.class,
+                        Holder.class.getClassLoader());
                 ConfigurationFactory current = null;
                 for (ConfigurationFactory factory : loader) {
                     if (current == null) {

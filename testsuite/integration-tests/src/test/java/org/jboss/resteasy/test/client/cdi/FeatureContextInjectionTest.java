@@ -46,8 +46,7 @@ public class FeatureContextInjectionTest extends AbstractRegistrationTest {
         return createDeployment(FeatureContextInjectionTest.class)
                 .addClasses(
                         ContextAndInjectionFilter.class,
-                        ContextAndInjectionFilterFeature.class
-                );
+                        ContextAndInjectionFilterFeature.class);
     }
 
     @Provider

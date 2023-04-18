@@ -57,7 +57,7 @@ public class ResteasySeInstance implements Instance {
     private final ExecutorService executor;
 
     private ResteasySeInstance(final EmbeddedServer server, final Configuration configuration,
-                               final ExecutorService executor) {
+            final ExecutorService executor) {
         this.server = server;
         this.configuration = configuration;
         this.executor = executor;
@@ -80,7 +80,7 @@ public class ResteasySeInstance implements Instance {
      * @return a {@link CompletionStage} which asynchronously produces and {@link Instance}
      */
     public static CompletionStage<Instance> create(final Application application,
-                                                   final Configuration configuration) {
+            final Configuration configuration) {
         final ExecutorService executor = ContextualExecutors.threadPool();
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -127,7 +127,7 @@ public class ResteasySeInstance implements Instance {
      * @return a {@link CompletionStage} which asynchronously produces and {@link Instance}
      */
     public static CompletionStage<Instance> create(final Class<? extends Application> applicationClass,
-                                                   final Configuration configuration) {
+            final Configuration configuration) {
         final ExecutorService executor = ContextualExecutors.threadPool();
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -198,7 +198,7 @@ public class ResteasySeInstance implements Instance {
 
     @SuppressWarnings("deprecation")
     private static void scanForResources(final ResteasyDeployment deployment, final Application application,
-                                         final Configuration configuration)
+            final Configuration configuration)
             throws IOException {
         // If the application is not null we may not need to scan
         if ((application.getClasses() != null && !application.getClasses().isEmpty()) ||

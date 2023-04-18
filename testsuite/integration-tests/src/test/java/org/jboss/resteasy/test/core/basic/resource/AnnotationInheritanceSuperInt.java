@@ -5,8 +5,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 public interface AnnotationInheritanceSuperInt {
-   @Path("foo")
-   @GET
-   @Produces("application/json")
-   String getFoo();
+    @Path("foo")
+    @GET
+    @Produces("application/json")
+    String getFoo();
 }

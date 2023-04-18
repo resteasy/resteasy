@@ -38,7 +38,7 @@ class DigestScheme {
     final boolean userhash;
 
     private DigestScheme(final String realm, final String qop, final String nonce, final String opaque,
-                         final Algorithm algorithm, final boolean stale, final boolean userhash) {
+            final Algorithm algorithm, final boolean stale, final boolean userhash) {
         this.realm = realm;
         this.nonce = nonce;
         this.opaque = opaque;

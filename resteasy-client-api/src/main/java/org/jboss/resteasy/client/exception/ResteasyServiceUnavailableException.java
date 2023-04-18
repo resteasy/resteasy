@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.exception;
 import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.sanitize;
 
 import java.util.Date;
+
 import jakarta.ws.rs.ServiceUnavailableException;
 import jakarta.ws.rs.core.Response;
 
@@ -11,10 +12,11 @@ import jakarta.ws.rs.core.Response;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyServiceUnavailableException extends ServiceUnavailableException implements WebApplicationExceptionWrapper<ServiceUnavailableException> {
+public class ResteasyServiceUnavailableException extends ServiceUnavailableException
+        implements WebApplicationExceptionWrapper<ServiceUnavailableException> {
 
-   private static final long serialVersionUID = -4477873328299557209L;
-   private final ServiceUnavailableException wrapped;
+    private static final long serialVersionUID = -4477873328299557209L;
+    private final ServiceUnavailableException wrapped;
 
     ResteasyServiceUnavailableException(final ServiceUnavailableException wrapped) {
         super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());

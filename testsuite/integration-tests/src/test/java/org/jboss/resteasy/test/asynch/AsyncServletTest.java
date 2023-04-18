@@ -1,12 +1,14 @@
 package org.jboss.resteasy.test.asynch;
 
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import jakarta.ws.rs.client.ClientBuilder;
-import org.jboss.resteasy.test.asynch.resource.AsyncServletResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.asynch.resource.AsyncServletResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -16,9 +18,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import jakarta.ws.rs.core.Response;
-
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -30,46 +29,46 @@ import jakarta.ws.rs.core.Response;
 @RunAsClient
 public class AsyncServletTest {
 
-   static ResteasyClient client;
+    static ResteasyClient client;
 
-   @Before
-   public void init() {
-      client = (ResteasyClient)ClientBuilder.newClient();
-   }
+    @Before
+    public void init() {
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   @After
-   public void after() throws Exception {
-      client.close();
-   }
+    @After
+    public void after() throws Exception {
+        client.close();
+    }
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
-      WebArchive war =  TestUtil.prepareArchive(AsyncServletTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AsyncServletResource.class);
-   }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchive(AsyncServletTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, AsyncServletResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, AsyncServletTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, AsyncServletTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Test for correct response
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testAsync() throws Exception {
-      Response response = client.target(generateURL("/async")).request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("Wrong response content", "hello", response.readEntity(String.class));
-   }
+    /**
+     * @tpTestDetails Test for correct response
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testAsync() throws Exception {
+        Response response = client.target(generateURL("/async")).request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("Wrong response content", "hello", response.readEntity(String.class));
+    }
 
-   /**
-    * @tpTestDetails Service unavailable test
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testTimeout() throws Exception {
-      Response response = client.target(generateURL("/async/timeout")).request().get();
-      Assert.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
-   }
+    /**
+     * @tpTestDetails Service unavailable test
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testTimeout() throws Exception {
+        Response response = client.target(generateURL("/async/timeout")).request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
+    }
 }

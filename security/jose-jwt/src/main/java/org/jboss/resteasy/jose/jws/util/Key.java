@@ -14,7 +14,6 @@ public class Key implements Serializable {
         private String privateKeyPassword;
         private String certificateAlias;
 
-
         public String getFile() {
             return file;
         }
@@ -80,14 +79,12 @@ public class Key implements Serializable {
         }
     }
 
-
     private boolean signing;
     private boolean encryption;
     private KeyStoreConfig keystore;
     private String privateKeyPem;
     private String publicKeyPem;
     private String certificatePem;
-
 
     public boolean isSigning() {
         return signing;

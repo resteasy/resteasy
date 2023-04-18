@@ -7,10 +7,10 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/")
 public class ResteasyTrailingSlashResource {
-   @GET
-   @Path("/test/")
-   @Produces(MediaType.TEXT_PLAIN)
-   public String get() {
-      return "hello world";
-   }
+    @GET
+    @Path("/test/")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String get() {
+        return "hello world";
+    }
 }

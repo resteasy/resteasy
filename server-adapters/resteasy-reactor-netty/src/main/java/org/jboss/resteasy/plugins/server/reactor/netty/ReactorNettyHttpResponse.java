@@ -1,18 +1,5 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import org.jboss.logging.Logger;
-import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
-import org.jboss.resteasy.spi.HttpResponse;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
-import reactor.netty.http.server.HttpServerResponse;
-
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -22,9 +9,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.NewCookie;
+
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.plugins.server.reactor.netty.i18n.Messages;
+import org.jboss.resteasy.spi.HttpResponse;
+
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+import reactor.netty.http.server.HttpServerResponse;
+
 /**
  * This is the 1-way bridge from RestEasy to reactor-netty's {@link
- * HttpServerResponse}.  Headers come via direct call.  RestEasy will write the
+ * HttpServerResponse}. Headers come via direct call. RestEasy will write the
  * response body to the output stream it gets from {@link #getOutputStream}.
  */
 public class ReactorNettyHttpResponse implements HttpResponse {
@@ -38,8 +40,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
     public ReactorNettyHttpResponse(
             final HttpMethod method,
             final HttpServerResponse resp,
-            final Sinks.Empty<Void> completionSink
-    ) {
+            final Sinks.Empty<Void> completionSink) {
         this.resp = resp;
         this.completionSink = completionSink;
         if (method == null || !method.equals(HttpMethod.HEAD)) {
@@ -95,7 +96,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
 
             @Override
             public void addFirst(String key, Object value) {
-                headers.getAll(key).add(0, (String)value);
+                headers.getAll(key).add(0, (String) value);
             }
 
             @Override
@@ -115,7 +116,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
 
             @Override
             public boolean containsKey(Object key) {
-                return headers.contains((String)key);
+                return headers.contains((String) key);
             }
 
             @Override
@@ -135,7 +136,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
                     return null;
                 }
 
-                return (List)headers.getAll(key.toString());
+                return (List) headers.getAll(key.toString());
             }
 
             @Override
@@ -176,7 +177,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
             }
 
             /**
-             * Please note, this method is quite costly.  It is a better
+             * Please note, this method is quite costly. It is a better
              * to iterate over keys and lookup values.
              *
              * @return
@@ -230,8 +231,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
     }
 
     @Override
-    public void addNewCookie(NewCookie cookie)
-    {
+    public void addNewCookie(NewCookie cookie) {
         resp.responseHeaders().add(jakarta.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
     }
 
@@ -285,7 +285,7 @@ public class ReactorNettyHttpResponse implements HttpResponse {
             out.flush();
             out.close();
         } else {
-            SinkSubscriber.subscribe(completionSink, Mono.<Void>empty());
+            SinkSubscriber.subscribe(completionSink, Mono.<Void> empty());
         }
     }
 

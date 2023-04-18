@@ -6,10 +6,10 @@ import jakarta.ws.rs.Produces;
 
 @Path("/test")
 public class ProxyInputStreamResource {
-   @GET
-   @Produces("text/plain")
-   public String get() {
-      return "hello world";
-   }
+    @GET
+    @Produces("text/plain")
+    public String get() {
+        return "hello world";
+    }
 
 }

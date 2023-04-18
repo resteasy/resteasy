@@ -1,9 +1,17 @@
 package org.jboss.resteasy.test.resource.param;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.test.resource.param.resource.UserDefinedHeaderParamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -13,16 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.test.resource.param.resource.UserDefinedHeaderParamResource;
-
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -43,25 +41,25 @@ public class UserDefinedHeaderParamTest {
 
         @POST
         @Path("/header-first")
-        @Consumes({"application/json", "text/plain", "image/jpeg"})
+        @Consumes({ "application/json", "text/plain", "image/jpeg" })
         String sendHeaderFirst(@HeaderParam("Content-Type") String contentType, String text);
 
         @POST
         @Path("/text-first")
-        @Consumes({"application/json", "text/plain", "image/jpeg"})
+        @Consumes({ "application/json", "text/plain", "image/jpeg" })
         String sendTextFirst(String text, @HeaderParam("Content-Type") String contentType);
 
         @POST
         @Path("/header")
-        @Consumes({"application/json", "text/plain", "image/jpeg"})
+        @Consumes({ "application/json", "text/plain", "image/jpeg" })
         String sendDefaultType(String text);
 
         @POST
         @Path("/header")
-        @Consumes({"application/json", "text/plain", "image/jpeg"})
+        @Consumes({ "application/json", "text/plain", "image/jpeg" })
         String sendMultipleTypes(String text, @HeaderParam("Content-Type") String contentType,
-                                 @HeaderParam("Content-Type") String secondContentType,
-                                 @HeaderParam("Content-Type") String thirdContentType);
+                @HeaderParam("Content-Type") String secondContentType,
+                @HeaderParam("Content-Type") String thirdContentType);
     }
 
     @Before
@@ -86,12 +84,12 @@ public class UserDefinedHeaderParamTest {
 
     /**
      * @tpTestDetails Checks whether the correct content type header is returned in case user specified header param
-     * as a first argument in proxy method.
+     *                as a first argument in proxy method.
      * @tpPassCrit Expected header is returned
      * @tpSince RESTEasy 5.0.5
      */
     @Test
-    public void testHeaderParamFirst(){
+    public void testHeaderParamFirst() {
         ResteasyWebTarget target = client.target(generateURL());
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
@@ -101,12 +99,12 @@ public class UserDefinedHeaderParamTest {
 
     /**
      * @tpTestDetails Checks whether the correct content type header is returned in case user specified header param
-     * as a second argument in proxy method.
+     *                as a second argument in proxy method.
      * @tpPassCrit Expected header is returned
      * @tpSince RESTEasy 5.0.5
      */
     @Test
-    public void testTextFirst(){
+    public void testTextFirst() {
         ResteasyWebTarget target = client.target(generateURL());
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
@@ -116,12 +114,12 @@ public class UserDefinedHeaderParamTest {
 
     /**
      * @tpTestDetails Checks whether the correct content type header is returned in case user didn't specify header
-     * param in proxy method. This should be the first content type in case of multiple @Consumes values.
+     *                param in proxy method. This should be the first content type in case of multiple @Consumes values.
      * @tpPassCrit Expected header is returned
      * @tpSince RESTEasy 5.0.5
      */
     @Test
-    public void testDefaultHeaderParam(){
+    public void testDefaultHeaderParam() {
         ResteasyWebTarget target = client.target(generateURL());
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
@@ -131,18 +129,18 @@ public class UserDefinedHeaderParamTest {
 
     /**
      * @tpTestDetails Checks whether the correct content type header is returned in case user specified header
-     * param in proxy method with multiple other header params. This should be the last content type in arguments.
+     *                param in proxy method with multiple other header params. This should be the last content type in
+     *                arguments.
      * @tpPassCrit Expected header is returned
      * @tpSince RESTEasy 5.0.5
      */
     @Test
-    public void testMultipleHeaderParams(){
+    public void testMultipleHeaderParams() {
         ResteasyWebTarget target = client.target(generateURL());
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
-        String response = proxy.sendMultipleTypes("text", "text/plain","application/json","image/jpeg");
+        String response = proxy.sendMultipleTypes("text", "text/plain", "application/json", "image/jpeg");
         Assert.assertEquals("Incorrect header param returned,", HEADER_PARAM, response);
     }
-
 
 }

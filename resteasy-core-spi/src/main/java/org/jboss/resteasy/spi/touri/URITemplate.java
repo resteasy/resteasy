@@ -11,12 +11,12 @@ import java.lang.annotation.Target;
  * transformation between URI template and bean properties. For example, take
  * the following bean:
  * </p>
+ *
  * <pre>
  * &#064;URITemplate(&quot;/foo/{id}&quot;)
- * public class Foo
- * {
- *    private int id;
- *    // getters and setters
+ * public class Foo {
+ *     private int id;
+ *     // getters and setters
  * }
  * </pre>
  * <p>
@@ -27,10 +27,8 @@ import java.lang.annotation.Target;
  * @version $Revision: 1 $
  */
 
-@Target(
-      {ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface URITemplate
-{
-   String value();
+public @interface URITemplate {
+    String value();
 }

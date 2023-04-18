@@ -38,7 +38,8 @@ import org.jboss.dmr.ModelNode;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 public class LoggingSetupTask extends SnapshotServerSetupTask implements ServerSetupTask {
-    private static final Map<String, Set<String>> DEFAULT_LOG_LEVELS = Map.of("DEBUG", Collections.singleton("org.jboss.resteasy"));
+    private static final Map<String, Set<String>> DEFAULT_LOG_LEVELS = Map.of("DEBUG",
+            Collections.singleton("org.jboss.resteasy"));
 
     @Override
     protected void doSetup(final ManagementClient client, final String containerId) throws Exception {

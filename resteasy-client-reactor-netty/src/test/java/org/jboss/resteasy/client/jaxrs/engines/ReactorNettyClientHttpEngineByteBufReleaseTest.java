@@ -1,36 +1,13 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.util.ReferenceCountUtil;
-import io.netty.util.ResourceLeakDetector;
-import io.netty.util.concurrent.DefaultEventExecutor;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.netty.DisposableServer;
-import reactor.netty.http.HttpProtocol;
-import reactor.netty.http.HttpResources;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.http.server.HttpServer;
-import reactor.netty.resources.ConnectionProvider;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.ClientRequestContext;
-import jakarta.ws.rs.client.ClientResponseContext;
-import jakarta.ws.rs.client.ClientResponseFilter;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
@@ -40,13 +17,38 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.concurrent.DefaultEventExecutor;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.netty.DisposableServer;
+import reactor.netty.http.HttpProtocol;
+import reactor.netty.http.HttpResources;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.resources.ConnectionProvider;
 
 public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
@@ -101,11 +103,10 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
             }
         };
 
-        final WebTarget webTarget =
-                client.target("/hello")
-                        .register(exceptionThrowerFilter, Integer.MAX_VALUE);
+        final WebTarget webTarget = client.target("/hello")
+                .register(exceptionThrowerFilter, Integer.MAX_VALUE);
 
-        for(int i=0; i < CALL_COUNT; i++) {
+        for (int i = 0; i < CALL_COUNT; i++) {
             try {
                 webTarget.request()
                         .rx()
@@ -138,18 +139,15 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         final Response FALL_BACK_RESPONSE = Response.status(500).entity("TimeoutException").build();
 
         Flux.range(1, CALL_COUNT)
-                .flatMap(i ->
-                        Mono.fromCompletionStage(webTarget.request().rx().get())
-                                .onErrorReturn(t -> t instanceof TimeoutException, FALL_BACK_RESPONSE)
-                        , CONNECTION_POOL_SIZE)
+                .flatMap(i -> Mono.fromCompletionStage(webTarget.request().rx().get())
+                        .onErrorReturn(t -> t instanceof TimeoutException, FALL_BACK_RESPONSE), CONNECTION_POOL_SIZE)
                 .map(r -> {
                     r.close();
                     return r;
                 })
                 .collectList()
                 .block()
-                .forEach(response ->
-                        assertEquals("A TimeoutException was expected!", FALL_BACK_RESPONSE, response));
+                .forEach(response -> assertEquals("A TimeoutException was expected!", FALL_BACK_RESPONSE, response));
 
         Thread.sleep(2000);
 
@@ -163,14 +161,14 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     @Test
     public void testLeakDetectionOnMissingClientResponseClose() throws Exception {
         final Client client = setupClient(Duration.ofSeconds(10), false);
-        for(int i=0; i < CALL_COUNT; i++) {
+        for (int i = 0; i < CALL_COUNT; i++) {
             final Response response = client
-                .target("/hello")
-                .request()
-                .rx()
-                .get()
-                .toCompletableFuture()
-                .get(10, TimeUnit.SECONDS);
+                    .target("/hello")
+                    .request()
+                    .rx()
+                    .get()
+                    .toCompletableFuture()
+                    .get(10, TimeUnit.SECONDS);
         }
         // It's a ByteBuf leak that is actually asserted here on missing close on response.
         assertThat(errContent.toString(), containsString("LEAK"));
@@ -210,8 +208,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             out.write(("-> " + i).getBytes(Charset.defaultCharset()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return ByteBufAllocator.DEFAULT
@@ -224,10 +221,9 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         return HttpServer.create()
                 .host("localhost")
                 .route(routes -> routes
-                        .get("/hello", (request, response) ->
-                                response.addHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain")
-                                        .addHeader("did-it-hit-the-hello-endpoint", "yes")
-                                        .sendString(Mono.just(HELLO_WORLD)))
+                        .get("/hello", (request, response) -> response.addHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain")
+                                .addHeader("did-it-hit-the-hello-endpoint", "yes")
+                                .sendString(Mono.just(HELLO_WORLD)))
                         .get("/slowstream", (request, response) -> {
                             numOfTimeStreamingEndpointCalled.incrementAndGet();
                             return response.addHeader("did-it-hit-the-streaming-endpoint", "yes")
@@ -236,9 +232,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                                             .delayElements(SERVER_DELAY_BETWEEN_ELEMENTS_WHILE_STREAMING)
                                             .map(i -> toByteBuf(i))
                                             .doOnDiscard(ByteBuf.class, b -> ReferenceCountUtil.safeRelease(b)));
-                                }
-                        )
-                )
+                        }))
                 .bindNow();
     }
 
@@ -250,25 +244,22 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
         final String connectionPoolName = "ReactorNettyClientHttpEngineByteBufReleaseTest-Connection-Pool";
 
-        final HttpClient httpClient =
-                HttpClient.create(ConnectionProvider.create(connectionPoolName, CONNECTION_POOL_SIZE))
-                        .protocol(HttpProtocol.HTTP11)
-                        .keepAlive(true)
-                        .baseUrl("http://localhost:" + mockServer.port())
-                        .doOnConnected(con ->
-                                con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
-                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000);
+        final HttpClient httpClient = HttpClient.create(ConnectionProvider.create(connectionPoolName, CONNECTION_POOL_SIZE))
+                .protocol(HttpProtocol.HTTP11)
+                .keepAlive(true)
+                .baseUrl("http://localhost:" + mockServer.port())
+                .doOnConnected(con -> con.addHandlerLast(new ReadTimeoutHandler(1, TimeUnit.MINUTES)))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000);
 
-        final ReactorNettyClientHttpEngine engine =
-                new ReactorNettyClientHttpEngine(
-                        httpClient,
-                        new DefaultChannelGroup(new DefaultEventExecutor()),
-                        HttpResources.get(),
-                        timeout,
-                        finalizedResponse);
+        final ReactorNettyClientHttpEngine engine = new ReactorNettyClientHttpEngine(
+                httpClient,
+                new DefaultChannelGroup(new DefaultEventExecutor()),
+                HttpResources.get(),
+                timeout,
+                finalizedResponse);
 
         final ClientBuilder builder = ClientBuilder.newBuilder();
-        final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
+        final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) builder;
         clientBuilder.httpEngine(engine);
         return builder.build();
     }

@@ -1,12 +1,13 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
+import java.util.concurrent.Executor;
+
+import org.jboss.resteasy.concurrent.ContextualExecutors;
+
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import org.jboss.resteasy.concurrent.ContextualExecutors;
-
-import java.util.concurrent.Executor;
 
 @SuppressWarnings("rawtypes")
 class ContextPropagatorOnMaybeCreateAction implements BiFunction<Maybe, MaybeObserver, MaybeObserver> {
@@ -26,7 +27,7 @@ class ContextPropagatorOnMaybeCreateAction implements BiFunction<Maybe, MaybeObs
         private final Executor contextExecutor;
 
         private ContextCapturerMaybe(final Maybe<T> observable, final MaybeObserver<T> observer,
-                                     final Executor contextExecutor) {
+                final Executor contextExecutor) {
             this.source = observer;
             this.contextExecutor = contextExecutor;
         }

@@ -8,10 +8,10 @@ import jakarta.ws.rs.Path;
  */
 @Path("/")
 public class PreMatchingClientResource {
-   @GET
-   @Path("testIt")
-   public String get() {
-      return "OK";
-   }
+    @GET
+    @Path("testIt")
+    public String get() {
+        return "OK";
+    }
 
 }

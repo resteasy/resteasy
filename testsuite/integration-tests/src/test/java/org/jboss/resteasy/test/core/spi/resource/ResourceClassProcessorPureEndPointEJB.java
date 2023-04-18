@@ -6,10 +6,10 @@ import jakarta.ws.rs.Produces;
 
 @Path("/pure")
 public class ResourceClassProcessorPureEndPointEJB {
-   @GET
-   @Path("pure")
-   @Produces("text/plain")
-   public String getLocating() {
-      return "<a></a>";
-   }
+    @GET
+    @Path("pure")
+    @Produces("text/plain")
+    public String getLocating() {
+        return "<a></a>";
+    }
 }

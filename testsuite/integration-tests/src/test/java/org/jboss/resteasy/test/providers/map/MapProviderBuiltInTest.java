@@ -1,5 +1,13 @@
 package org.jboss.resteasy.test.providers.map;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -14,14 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedHashMap;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
@@ -31,67 +31,67 @@ import jakarta.ws.rs.core.Response;
 @RunAsClient
 public class MapProviderBuiltInTest {
 
-   static Client client;
+    static Client client;
 
-   @BeforeClass
-   public static void setup() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void close() {
-      client.close();
-   }
+    @AfterClass
+    public static void close() {
+        client.close();
+    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(MapProviderBuiltInTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, MapProviderBuiltInResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(MapProviderBuiltInTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, MapProviderBuiltInResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, MapProviderBuiltInTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, MapProviderBuiltInTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Client creates request of type "POST" with entity of type MultiValuesMap and sends it to the
-    * server using invocation method. The server returns response containing MultiValuedMap. The builtin Resteasy MapProvider
-    * is used for reading request and writing response.
-    * @tpPassCrit Correct response is returned from the server and map contains original item
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testMapInvoke() {
-      // writers sorted by type, mediatype, and then by app over builtin
-      MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
-      map.add("map", "map");
-      Response response = client.target(generateURL("/map")).request(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
-            .build("POST", Entity.entity(map, MediaType.APPLICATION_FORM_URLENCODED)).invoke();
-      Assert.assertEquals(response.getStatus(), 200);
-      String data = response.readEntity(String.class);
-      Assert.assertTrue(data.contains("map"));
-      response.close();
-   }
+    /**
+     * @tpTestDetails Client creates request of type "POST" with entity of type MultiValuesMap and sends it to the
+     *                server using invocation method. The server returns response containing MultiValuedMap. The builtin
+     *                Resteasy MapProvider
+     *                is used for reading request and writing response.
+     * @tpPassCrit Correct response is returned from the server and map contains original item
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testMapInvoke() {
+        // writers sorted by type, mediatype, and then by app over builtin
+        MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
+        map.add("map", "map");
+        Response response = client.target(generateURL("/map")).request(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
+                .build("POST", Entity.entity(map, MediaType.APPLICATION_FORM_URLENCODED)).invoke();
+        Assert.assertEquals(response.getStatus(), 200);
+        String data = response.readEntity(String.class);
+        Assert.assertTrue(data.contains("map"));
+        response.close();
+    }
 
-   /**
-    * @tpTestDetails Client sends POST request with specified mediatype and entity of type APPLICATION_FORM_URLENCODED_TYPE
-    * using post method. The server returns response containing MultiValuedMap. The builtin Resteasy MapProvider
-    * is used for reading request and writing response.
-    * @tpPassCrit Correct response is returned from the server and map contains original item
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testMapPost() {
-      // writers sorted by type, mediatype, and then by app over builtin
-      MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
-      map.add("map", "map");
-      Response response = client.target(generateURL("/map")).request(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
-            .post(Entity.entity(map, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-      Assert.assertEquals(response.getStatus(), 200);
-      String data = response.readEntity(String.class);
-      Assert.assertTrue(data.contains("map"));
-      response.close();
-   }
-
+    /**
+     * @tpTestDetails Client sends POST request with specified mediatype and entity of type APPLICATION_FORM_URLENCODED_TYPE
+     *                using post method. The server returns response containing MultiValuedMap. The builtin Resteasy MapProvider
+     *                is used for reading request and writing response.
+     * @tpPassCrit Correct response is returned from the server and map contains original item
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testMapPost() {
+        // writers sorted by type, mediatype, and then by app over builtin
+        MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
+        map.add("map", "map");
+        Response response = client.target(generateURL("/map")).request(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
+                .post(Entity.entity(map, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        Assert.assertEquals(response.getStatus(), 200);
+        String data = response.readEntity(String.class);
+        Assert.assertTrue(data.contains("map"));
+        response.close();
+    }
 
 }

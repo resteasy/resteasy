@@ -5,11 +5,12 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for favoriteMovieXmlType complex type.
+ * <p>
+ * Java class for favoriteMovieXmlType complex type.
  *
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
  * &lt;complexType name="favoriteMovieXmlType">
@@ -27,35 +28,35 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "favoriteMovieXmlType", propOrder = {
-   "title"
+        "title"
 })
 public class FavoriteMovieXmlType {
 
-   @XmlElement(required = true)
-   protected String title;
+    @XmlElement(required = true)
+    protected String title;
 
-   /**
-    * Gets the value of the title property.
-    *
-    * @return
-    *     possible object is
-    *     {@link String }
-    *
-    */
-   public String getTitle() {
-      return title;
-   }
+    /**
+     * Gets the value of the title property.
+     *
+     * @return
+     *         possible object is
+     *         {@link String }
+     *
+     */
+    public String getTitle() {
+        return title;
+    }
 
-   /**
-    * Sets the value of the title property.
-    *
-    * @param value
-    *     allowed object is
-    *     {@link String }
-    *
-    */
-   public void setTitle(String value) {
-      this.title = value;
-   }
+    /**
+     * Sets the value of the title property.
+     *
+     * @param value
+     *              allowed object is
+     *              {@link String }
+     *
+     */
+    public void setTitle(String value) {
+        this.title = value;
+    }
 
 }

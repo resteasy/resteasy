@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.cdi.validation;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -46,112 +46,106 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ValidationWithCDITest
-{
-   @Deployment(testable = false)
-   public static Archive<?> createTestArchive()
-   {
-      WebArchive war = TestUtil.prepareArchive(ValidationWithCDITest.class.getSimpleName());
-      war.addClasses(TestApplication.class)
-         .addClasses(QueryBeanParam.class, QueryBeanParamImpl.class)
-         .addClasses(RootResource.class, RootResourceImpl.class, ValidResource.class)
-         .addClasses(SubResource.class, SubResourceImpl.class)
-         .addClass(AbstractAsyncRootResource.class)
-         .addClasses(AsyncRootResource.class, AsyncRootResourceImpl.class)
-         .addClasses(AsyncSubResource.class, AsyncSubResourceImpl.class)
-         .addClasses(AsyncValidResource.class)
-              .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-         .addAsWebInfResource(ValidationWithCDITest.class.getPackage(), "web.xml", "/web.xml");
-      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-   }
+public class ValidationWithCDITest {
+    @Deployment(testable = false)
+    public static Archive<?> createTestArchive() {
+        WebArchive war = TestUtil.prepareArchive(ValidationWithCDITest.class.getSimpleName());
+        war.addClasses(TestApplication.class)
+                .addClasses(QueryBeanParam.class, QueryBeanParamImpl.class)
+                .addClasses(RootResource.class, RootResourceImpl.class, ValidResource.class)
+                .addClasses(SubResource.class, SubResourceImpl.class)
+                .addClass(AbstractAsyncRootResource.class)
+                .addClasses(AsyncRootResource.class, AsyncRootResourceImpl.class)
+                .addClasses(AsyncSubResource.class, AsyncSubResourceImpl.class)
+                .addClasses(AsyncValidResource.class)
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                .addAsWebInfResource(ValidationWithCDITest.class.getPackage(), "web.xml", "/web.xml");
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+    }
 
-   protected Client client;
+    protected Client client;
 
-   @Before
-   public void beforeTest()
-   {
-      client = ClientBuilder.newClient();
-   }
+    @Before
+    public void beforeTest() {
+        client = ClientBuilder.newClient();
+    }
 
-   @After
-   public void afterTest()
-   {
-      client.close();
-      client = null;
-   }
+    @After
+    public void afterTest() {
+        client.close();
+        client = null;
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ValidationWithCDITest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ValidationWithCDITest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Tests Bean Validation constraints on method parameters
-    * @tpSince RESTEasy 3.1.0
-    */
-   @Test
-   public void testRoot() throws Exception
-   {
-      WebTarget base = client.target(generateURL("/test/root/sub?foo=x"));
-      Builder builder = base.request();
-      builder.accept(MediaType.APPLICATION_XML);
-      Response response = builder.get();
-      Assert.assertEquals(400, response.getStatus());
-      Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
-      Assert.assertTrue(header instanceof String);
-      Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
-      ViolationReport report = response.readEntity(ViolationReport.class);
-      countViolations(report, 0, 0, 1, 0);
-   }
+    /**
+     * @tpTestDetails Tests Bean Validation constraints on method parameters
+     * @tpSince RESTEasy 3.1.0
+     */
+    @Test
+    public void testRoot() throws Exception {
+        WebTarget base = client.target(generateURL("/test/root/sub?foo=x"));
+        Builder builder = base.request();
+        builder.accept(MediaType.APPLICATION_XML);
+        Response response = builder.get();
+        Assert.assertEquals(400, response.getStatus());
+        Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
+        Assert.assertTrue(header instanceof String);
+        Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
+        ViolationReport report = response.readEntity(ViolationReport.class);
+        countViolations(report, 0, 0, 1, 0);
+    }
 
-   /**
-    * @tpTestDetails Tests Bean Validation constraints on method parameters
-    * @tpSince RESTEasy 3.1.0
-    */
-   @Test
-   public void testAsynch() throws Exception
-   {
-      WebTarget base = client.target(generateURL("/test/async/sub"));
+    /**
+     * @tpTestDetails Tests Bean Validation constraints on method parameters
+     * @tpSince RESTEasy 3.1.0
+     */
+    @Test
+    public void testAsynch() throws Exception {
+        WebTarget base = client.target(generateURL("/test/async/sub"));
 
-      {
-         Builder builder = base.queryParam("foo", "x").request();
-         builder.accept(MediaType.APPLICATION_XML);
-         Response response = builder.get();
-         Assert.assertEquals(400, response.getStatus());
-         Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
-         Assert.assertTrue(header instanceof String);
-         Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
-         ViolationReport report = response.readEntity(ViolationReport.class);
-         countViolations(report, 0, 0, 1, 0);
-         response.close();
-      }
+        {
+            Builder builder = base.queryParam("foo", "x").request();
+            builder.accept(MediaType.APPLICATION_XML);
+            Response response = builder.get();
+            Assert.assertEquals(400, response.getStatus());
+            Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
+            Assert.assertTrue(header instanceof String);
+            Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
+            ViolationReport report = response.readEntity(ViolationReport.class);
+            countViolations(report, 0, 0, 1, 0);
+            response.close();
+        }
 
-      {
-         Builder builder = base.queryParam("foo", "xy").request();
-         builder.accept(MediaType.APPLICATION_XML);
-         Response response = builder.get();
-         Assert.assertEquals(200, response.getStatus());
-         response.close();
-      }
+        {
+            Builder builder = base.queryParam("foo", "xy").request();
+            builder.accept(MediaType.APPLICATION_XML);
+            Response response = builder.get();
+            Assert.assertEquals(200, response.getStatus());
+            response.close();
+        }
 
-      {
-         Builder builder = base.queryParam("foo", "x").request();
-         builder.accept(MediaType.APPLICATION_XML);
-         Response response = builder.get();
-         Assert.assertEquals(400, response.getStatus());
-         Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
-         Assert.assertTrue(header instanceof String);
-         Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
-         ViolationReport report = response.readEntity(ViolationReport.class);
-         countViolations(report, 0, 0, 1, 0);
-         response.close();
-      }
-   }
+        {
+            Builder builder = base.queryParam("foo", "x").request();
+            builder.accept(MediaType.APPLICATION_XML);
+            Response response = builder.get();
+            Assert.assertEquals(400, response.getStatus());
+            Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
+            Assert.assertTrue(header instanceof String);
+            Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
+            ViolationReport report = response.readEntity(ViolationReport.class);
+            countViolations(report, 0, 0, 1, 0);
+            response.close();
+        }
+    }
 
-   private void countViolations(ViolationReport e, int propertyCount, int classCount, int parameterCount, int returnValueCount)
-   {
-      Assert.assertEquals(propertyCount, e.getPropertyViolations().size());
-      Assert.assertEquals(classCount, e.getClassViolations().size());
-      Assert.assertEquals(parameterCount, e.getParameterViolations().size());
-      Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
-   }
+    private void countViolations(ViolationReport e, int propertyCount, int classCount, int parameterCount,
+            int returnValueCount) {
+        Assert.assertEquals(propertyCount, e.getPropertyViolations().size());
+        Assert.assertEquals(classCount, e.getClassViolations().size());
+        Assert.assertEquals(parameterCount, e.getParameterViolations().size());
+        Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+    }
 }

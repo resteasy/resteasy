@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.annotation.Priority;
+
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.util.Functions;
@@ -62,13 +63,14 @@ import org.jboss.resteasy.spi.util.Functions;
  * </p>
  * <p>
  * Example:
+ *
  * <pre>{@code
  * PriorityServiceLoader.load(Service.class, (service) -> {
- *      try {
- *          return service.getConstructor(String.class).newInstance("init value");
- *      } catch (Exception e) {
- *          throw new RuntimeException(e);
- *      }
+ *     try {
+ *         return service.getConstructor(String.class).newInstance("init value");
+ *     } catch (Exception e) {
+ *         throw new RuntimeException(e);
+ *     }
  * });
  * }</pre>
  * </p>
@@ -92,8 +94,8 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
         size = holders.length;
         toString = Functions.singleton(() -> "PriorityServiceLoader[type=" + service.getName()
                 + ", implementations=" + Stream.of(holders)
-                .map((holder) -> holder.type.getName())
-                .collect(Collectors.toList())
+                        .map((holder) -> holder.type.getName())
+                        .collect(Collectors.toList())
                 + "]");
     }
 
@@ -135,7 +137,7 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      *                           retrieving the class loader
      */
     public static <S> PriorityServiceLoader<S> load(final Class<S> type,
-                                                    final Function<Class<? extends S>, S> constructor) {
+            final Function<Class<? extends S>, S> constructor) {
         return load(type, classLoader(type), constructor);
     }
 
@@ -165,7 +167,7 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      * @throws SecurityException if the security manager is enabled and there is a security issue loading the class
      */
     public static <S> PriorityServiceLoader<S> load(final Class<S> type, final ClassLoader cl,
-                                                    final Function<Class<? extends S>, S> constructor) {
+            final Function<Class<? extends S>, S> constructor) {
         try {
             final Holder<S>[] holders = findClasses(type, cl, constructor);
             return new PriorityServiceLoader<>(type, holders);
@@ -173,7 +175,6 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
             throw Messages.MESSAGES.failedToLoadService(e, type);
         }
     }
-
 
     /**
      * If there are services available the first one is returned.
@@ -269,7 +270,7 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
 
     @SuppressWarnings("unchecked")
     private static <S> Holder<S>[] findClasses(final Class<S> type, final ClassLoader cl,
-                                               final Function<Class<? extends S>, S> constructor) throws IOException {
+            final Function<Class<? extends S>, S> constructor) throws IOException {
         final Set<Holder<S>> holders = new TreeSet<>();
         final Enumeration<URL> resources = cl.getResources(PREFIX + type.getName());
         while (resources.hasMoreElements()) {
@@ -282,7 +283,8 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
                         line = line.substring(0, commentIdx);
                     }
                     line = line.trim();
-                    if (line.equals("")) continue;
+                    if (line.equals(""))
+                        continue;
                     try {
                         final Class<S> found = (Class<S>) cl.loadClass(line);
                         final Priority priority = found.getAnnotation(Priority.class);
@@ -363,7 +365,8 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
                         } else {
                             instance = AccessController.doPrivileged((PrivilegedExceptionAction<S>) this::createInstance, acc);
                         }
-                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | PrivilegedActionException e) {
+                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException
+                            | PrivilegedActionException e) {
                         throw Messages.MESSAGES.failedToConstructClass(e, type);
                     }
                 }

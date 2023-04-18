@@ -27,6 +27,7 @@ import org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper;
 class AtomNamespacePrefixMapper extends NamespacePrefixMapper {
 
     static AtomNamespacePrefixMapper INSTANCE = new AtomNamespacePrefixMapper();
+
     @Override
     public String getPreferredPrefix(final String namespaceUri, final String suggestion, final boolean requirePrefix) {
         if ("http://www.w3.org/2005/Atom".equals(namespaceUri)) {

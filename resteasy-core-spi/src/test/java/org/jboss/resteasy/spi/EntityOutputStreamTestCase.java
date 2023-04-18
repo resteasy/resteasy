@@ -60,8 +60,7 @@ public class EntityOutputStreamTestCase {
     public void writeToMemoryDefaults() throws Exception {
         try (
                 EntityOutputStream out = new EntityOutputStream();
-                BufferedOutputStream buffered = new BufferedOutputStream(out);
-        ) {
+                BufferedOutputStream buffered = new BufferedOutputStream(out);) {
             final int len = (int) SizeUnit.MEGABYTE.toBytes(4L);
             for (int i = 0; i < len; i++) {
                 buffered.write('a');
@@ -120,8 +119,7 @@ public class EntityOutputStreamTestCase {
     public void writeToFileDefaults() throws Exception {
         try (
                 EntityOutputStream out = new EntityOutputStream();
-                BufferedOutputStream buffered = new BufferedOutputStream(out);
-        ) {
+                BufferedOutputStream buffered = new BufferedOutputStream(out);) {
             final int len = (int) SizeUnit.MEGABYTE.toBytes(10L);
             for (int i = 0; i < len; i++) {
                 buffered.write('a');
@@ -211,8 +209,7 @@ public class EntityOutputStreamTestCase {
         final long size = 60L;
         try (
                 EntityOutputStream out = new EntityOutputStream();
-                BufferedOutputStream buffered = new BufferedOutputStream(out)
-        ) {
+                BufferedOutputStream buffered = new BufferedOutputStream(out)) {
             // This will be a very large file, we'll write it in chunks instead of a byte at a time
             final long len = SizeUnit.MEGABYTE.toBytes(size);
             for (long i = 0; i < len; i++) {
@@ -225,8 +222,9 @@ public class EntityOutputStreamTestCase {
             Assert.assertNotNull("Expected data to be written to a file.", file);
             Assert.assertEquals("Expected the memory to be cleared", 0, out.getAndClearMemory().length);
             Assert.assertEquals("File size differs from from the output size.", fileSize, out.getContentLength());
-            Assert.assertEquals(String.format("Expected %s got %s", SizeUnit.toHumanReadable(SizeUnit.MEGABYTE.toBytes(size)), SizeUnit.
-                            toHumanReadable(fileSize)),
+            Assert.assertEquals(
+                    String.format("Expected %s got %s", SizeUnit.toHumanReadable(SizeUnit.MEGABYTE.toBytes(size)),
+                            SizeUnit.toHumanReadable(fileSize)),
                     SizeUnit.MEGABYTE.toBytes(size), fileSize);
             // Just consume the InputStream in order to delete the file
             try (InputStream in = out.toInputStream()) {

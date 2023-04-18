@@ -5,11 +5,10 @@ import org.reactivestreams.Publisher;
 
 public class ReactiveStreamProvider implements AsyncStreamProvider<Publisher<?>> {
 
-   @SuppressWarnings("rawtypes")
-   @Override
-   public Publisher toAsyncStream(Publisher<?> asyncResponse)
-   {
-      return asyncResponse;
-   }
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Publisher toAsyncStream(Publisher<?> asyncResponse) {
+        return asyncResponse;
+    }
 
 }

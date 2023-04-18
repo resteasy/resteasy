@@ -23,42 +23,36 @@ import org.junit.Test;
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
-public class Expect100Test
-{
-   @Path("/")
-   public static class Resource
-   {
-      @POST
-      @Path("/test")
-      @Produces("text/plain")
-      public String hello(@Context HttpHeaders headers, String s)
-      {
-         return "hello world";
-      }
-   }
+public class Expect100Test {
+    @Path("/")
+    public static class Resource {
+        @POST
+        @Path("/test")
+        @Produces("text/plain")
+        public String hello(@Context HttpHeaders headers, String s) {
+            return "hello world";
+        }
+    }
 
-   static Client client;
+    static Client client;
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() throws Exception {
+        NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void end() throws Exception
-   {
-      client.close();
-      NettyContainer.stop();
-   }
+    @AfterClass
+    public static void end() throws Exception {
+        client.close();
+        NettyContainer.stop();
+    }
 
-   @Test
-   public void testExpect100() throws Exception
-   {
-      WebTarget target = client.target(generateURL("/test"));
-      Response response = target.request().header("Expect", "100-continue").post(Entity.entity("hi", "text/plain"));
-      Assert.assertEquals(200,  response.getStatus());
-      Assert.assertEquals("hello world", response.readEntity(String.class));
-   }
+    @Test
+    public void testExpect100() throws Exception {
+        WebTarget target = client.target(generateURL("/test"));
+        Response response = target.request().header("Expect", "100-continue").post(Entity.entity("hi", "text/plain"));
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("hello world", response.readEntity(String.class));
+    }
 }

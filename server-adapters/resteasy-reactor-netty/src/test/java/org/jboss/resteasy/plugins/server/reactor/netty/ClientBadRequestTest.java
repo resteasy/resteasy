@@ -1,10 +1,7 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.junit.Assert.assertEquals;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -14,8 +11,11 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.assertEquals;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class ClientBadRequestTest {
     private static Client client;
@@ -49,8 +49,8 @@ public class ClientBadRequestTest {
         @Produces("text/plain")
         public Response badRequest() {
             return Response.status(Response.Status.BAD_REQUEST)
-                .entity("Everything you do is bad!")
-                .build();
+                    .entity("Everything you do is bad!")
+                    .build();
         }
     }
 }

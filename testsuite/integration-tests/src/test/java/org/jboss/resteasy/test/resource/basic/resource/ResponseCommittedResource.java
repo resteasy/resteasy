@@ -13,14 +13,14 @@ import org.jboss.resteasy.test.resource.basic.ResponseCommittedTest;
 @Path("")
 public class ResponseCommittedResource {
 
-   @GET
-   @Path("")
-   public Response works() throws Exception {
+    @GET
+    @Path("")
+    public Response works() throws Exception {
 
-      Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
-      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
-      httpResponse.sendError(ResponseCommittedTest.TEST_STATUS);
-      Response response = Response.ok("ok").build();
-      return response;
-   }
+        Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
+        HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+        httpResponse.sendError(ResponseCommittedTest.TEST_STATUS);
+        Response response = Response.ok("ok").build();
+        return response;
+    }
 }

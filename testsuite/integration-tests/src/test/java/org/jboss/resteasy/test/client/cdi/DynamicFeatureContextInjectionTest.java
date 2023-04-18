@@ -44,7 +44,8 @@ public class DynamicFeatureContextInjectionTest extends AbstractRegistrationTest
 
     @Deployment
     public static WebArchive deployment() {
-        return createDeployment(DynamicFeatureContextInjectionTest.class).addClasses(ContextAndInjectionFilter.class, ContextAndInjectionFilterFeature.class);
+        return createDeployment(DynamicFeatureContextInjectionTest.class).addClasses(ContextAndInjectionFilter.class,
+                ContextAndInjectionFilterFeature.class);
     }
 
     @Provider

@@ -17,43 +17,39 @@ import se.unlogic.eagledns.EagleDNS;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class EagleDnsTest
-{
-   private static Logger log = Logger.getLogger(EagleDnsTest.class);
-   private static EagleDNS dns;
+public class EagleDnsTest {
+    private static Logger log = Logger.getLogger(EagleDnsTest.class);
+    private static EagleDNS dns;
 
-   @Test
-   public void testBoot() throws Exception
-   {
+    @Test
+    public void testBoot() throws Exception {
 
-      log.info("HELLO!!!!!!");
-      final URL path = Thread.currentThread().getContextClassLoader().getResource("dns/conf/config.xml");
+        log.info("HELLO!!!!!!");
+        final URL path = Thread.currentThread().getContextClassLoader().getResource("dns/conf/config.xml");
 
-      dns = new EagleDNS();
-      dns.setConfigClassPath("dns/conf/config.xml");
-      dns.start();
-      checkDNS("mail._domainKey.samplezone.org");
+        dns = new EagleDNS();
+        dns.setConfigClassPath("dns/conf/config.xml");
+        dns.start();
+        checkDNS("mail._domainKey.samplezone.org");
 
-      //if (true) throw new Exception("failed");
+        //if (true) throw new Exception("failed");
 
+        dns.shutdown();
+    }
 
-      dns.shutdown();
-   }
+    public void checkDNS(String domain) throws Exception {
+        log.info("IN CHECK DNS!!!!");
+        Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+        env.put("java.naming.provider.url", "dns://localhost:6363");
+        DirContext dnsContext = new InitialDirContext(env);
 
-   public void checkDNS(String domain) throws Exception
-   {
-      log.info("IN CHECK DNS!!!!");
-      Hashtable<String, String> env = new Hashtable<String, String>();
-      env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
-      env.put("java.naming.provider.url", "dns://localhost:6363");
-      DirContext dnsContext = new InitialDirContext(env);
-
-      log.info("Check domain: " + domain);
-      Attributes attrs1 = dnsContext.getAttributes(domain, new String[]{"TXT"});
-      log.info("Attributes size: " + attrs1.size());
-      Assert.assertTrue(attrs1 != null);
-      Assert.assertTrue(attrs1.size() > 0);
-      javax.naming.directory.Attribute txtrecord = attrs1.get("txt");
-      log.info("TEXT RECORD: " + txtrecord.get());
-   }
+        log.info("Check domain: " + domain);
+        Attributes attrs1 = dnsContext.getAttributes(domain, new String[] { "TXT" });
+        log.info("Attributes size: " + attrs1.size());
+        Assert.assertTrue(attrs1 != null);
+        Assert.assertTrue(attrs1.size() > 0);
+        javax.naming.directory.Attribute txtrecord = attrs1.get("txt");
+        log.info("TEXT RECORD: " + txtrecord.get());
+    }
 }
