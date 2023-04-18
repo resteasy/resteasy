@@ -47,9 +47,9 @@ public class JSAPIWriter {
 
         for (Map.Entry<String, ServiceRegistry> entry : serviceRegistries.entrySet()) {
             String uri = base;
-            if (entry.getKey() != null)
-                uri += entry.getKey();
-
+            if (entry.getKey() != null) {
+                uri = resolveDoubleSlash(uri, entry.getKey(), true);
+            }
             StringWriter stringWriter = new StringWriter();
             PrintWriter writer = new PrintWriter(new BufferedWriter(stringWriter));
             writeJavaScript(uri, writer, entry.getValue());
@@ -98,7 +98,7 @@ public class JSAPIWriter {
         LogMessages.LOGGER.debug(Messages.MESSAGES.restApiUrl(uri));
         writer.println("REST.apiURL = '" + uri + "';");
         Set<String> declaredPrefixes = new HashSet<String>();
-        printService(writer, serviceRegistry, declaredPrefixes);
+        printService(writer, serviceRegistry, declaredPrefixes, uri);
 
     }
 
@@ -124,7 +124,7 @@ public class JSAPIWriter {
     }
 
     private void printService(PrintWriter writer,
-            ServiceRegistry serviceRegistry, Set<String> declaredPrefixes) {
+            ServiceRegistry serviceRegistry, Set<String> declaredPrefixes, String uri) {
 
         for (MethodMetaData methodMetaData : serviceRegistry.getMethodMetaData()) {
             LogMessages.LOGGER.debug(Messages.MESSAGES.path(methodMetaData.getUri()));
@@ -133,11 +133,11 @@ public class JSAPIWriter {
             declarePrefix(writer, declaringPrefix, declaredPrefixes);
 
             for (String httpMethod : methodMetaData.getHttpMethods()) {
-                print(writer, httpMethod, methodMetaData);
+                print(writer, httpMethod, methodMetaData, uri);
             }
         }
         for (ServiceRegistry subService : serviceRegistry.getLocators())
-            printService(writer, subService, declaredPrefixes);
+            printService(writer, subService, declaredPrefixes, uri);
     }
 
     private void declarePrefix(PrintWriter writer, String declaringPrefix, Set<String> declaredPrefixes) {
@@ -166,9 +166,9 @@ public class JSAPIWriter {
     }
 
     private void print(PrintWriter writer, String httpMethod,
-            MethodMetaData methodMetaData) {
-        String uri = methodMetaData.getUri();
-        writer.println("// " + httpMethod + " " + uri);
+            MethodMetaData methodMetaData, String uri) {
+        String methodUri = methodMetaData.getUri();
+        writer.println("// " + httpMethod + " " + methodUri);
         writer
                 .println(methodMetaData.getFunctionName() + " = function(_params){");
         writer.println(" var params = _params ? _params : {};");
@@ -176,10 +176,11 @@ public class JSAPIWriter {
         writer.println(" request.setMethod('" + httpMethod + "');");
         writer
                 .println(" var uri = params.$apiURL ? params.$apiURL : REST.apiURL;");
-        if (uri.contains("{")) {
-            printURIParams(uri, writer);
+        if (methodUri.contains("{")) {
+            printURIParams(methodUri, writer);
         } else {
-            writer.println(" uri += '" + uri + "';");
+            String resolvedMethodUri = resolveDoubleSlash(uri, methodUri, false);
+            writer.println(" uri += '" + resolvedMethodUri + "';");
         }
         printOtherParams(methodMetaData, writer);
         writer.println(" request.setURI(uri);");
@@ -283,5 +284,48 @@ public class JSAPIWriter {
         }
         if (i < replacedCurlyURI.length())
             writer.println(" uri += '" + replacedCurlyURI.substring(i) + "';");
+    }
+
+    /**
+     * Resolves the case of {@code uri} ending with "/" and {@code uriToAppend} starting with "/" so that the combination
+     * of both ends up with only one "/" instead of "//".
+     *
+     * <br>
+     * <br>
+     * Example:
+     * http://localhost:8080/Uri//UriToAppend -> http://localhost:8080/Uri/UriToAppend
+     *
+     * @param uri         the base URI with the possible extra "/" at the end.
+     * @param uriToAppend the URI being appended to the base one, with possible extra "/" at the beginning.
+     * @param appendToUri true if the {@code uriToAppend} should be appended to the {@code uri}, false if the
+     *                    {@code uriToAppend} should have the "/" removed without appending it to the {@code uri}.
+     * @return The {@code uriToAppend} appended to the {@code uri} if the {@code appendToUri} is true, the {@code uriToAppend}
+     *         without the extra "/" at the beginning if the {@code appendToUri} is false. In both cases there are no two "//"
+     *         between the {@code uri} and the {@code uriToAppend}.
+     */
+    private String resolveDoubleSlash(String uri, String uriToAppend, boolean appendToUri) {
+        if (uri.endsWith("/") && uriToAppend.startsWith("/")) {
+            // Remove the extra "/" at the beginning of uriToAppend
+            if (uriToAppend.length() > 1) {
+                if (appendToUri) {
+                    return uri.concat(uriToAppend.substring(1));
+                } else {
+                    return uriToAppend.substring(1);
+                }
+            }
+            // Edge case if the uriToAppend is just "/"
+            else {
+                if (appendToUri) {
+                    return uri;
+                }
+                return "";
+            }
+        }
+
+        // If the
+        if (appendToUri) {
+            return uri.concat(uriToAppend);
+        }
+        return uriToAppend;
     }
 }
