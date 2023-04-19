@@ -115,6 +115,47 @@ public class VertxClientEngineTest {
     }
 
     @Test
+    public void testQueryParams() throws Exception {
+        final String queryParam = "testQueryParam";
+        final String queryParamValue = "testQueryParamValue";
+        server.requestHandler(req -> {
+            HttpServerResponse response = req.response();
+            if (String.format("%s=%s", queryParam, queryParamValue).equals(req.query())) {
+                response.setStatusCode(200).end("Success");
+            } else {
+                response.setStatusCode(503).end("fail");
+            }
+        });
+
+        final Response response = client().target(baseUri())
+                .queryParam(queryParam, queryParamValue)
+                .request()
+                .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Success", response.readEntity(String.class));
+    }
+
+    @Test
+    public void testSimpleCustomUserAgent() throws Exception {
+        final String customUserAgent = "CUSTOM_USER_AGENT";
+        server.requestHandler(req -> {
+            HttpServerResponse response = req.response();
+            if (req.getHeader(HttpHeaders.USER_AGENT).equals(customUserAgent)) {
+                response.setStatusCode(200).end("Success");
+            } else {
+                response.setStatusCode(503).end("fail");
+            }
+        });
+
+        final Response response = client().target(baseUri()).request()
+                .header(HttpHeaders.USER_AGENT.toString(), customUserAgent)
+                .get();
+
+        assertEquals(200, response.getStatus());
+        assertEquals("Success", response.readEntity(String.class));
+    }
+
+    @Test
     public void testHTTP() throws Exception {
         server.requestHandler(req -> {
             HttpServerResponse response = req.response();
