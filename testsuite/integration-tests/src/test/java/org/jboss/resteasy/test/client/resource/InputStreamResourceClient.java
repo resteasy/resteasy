@@ -14,15 +14,15 @@ import javax.ws.rs.core.Response;
 @Consumes("text/plain")
 public interface InputStreamResourceClient {
 
-   @GET
-   String getAsString();
+    @GET
+    String getAsString();
 
-   @GET
-   Response getAsInputStream();
+    @GET
+    Response getAsInputStream();
 
-   @POST
-   Response postInputStream(InputStream is);
+    @POST
+    Response postInputStream(InputStream is);
 
-   @POST
-   Response postString(String s);
+    @POST
+    Response postString(String s);
 }

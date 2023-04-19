@@ -10,31 +10,29 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 @Path("/")
-public class ClientResource
-{
-   @Context
-   private UriInfo uriInfo;
+public class ClientResource {
+    @Context
+    private UriInfo uriInfo;
 
-   @GET
-   @Path("testIt")
-   public Response get()
-   {
-      // we need to create new client to verify that @Provider works
-      Client client = ClientBuilder.newClient();
-      try {
-         WebTarget base = client.target(uriInfo.getBaseUriBuilder().path("clientInvoke").build());
-         Response response = base.request().get();
+    @GET
+    @Path("testIt")
+    public Response get() {
+        // we need to create new client to verify that @Provider works
+        Client client = ClientBuilder.newClient();
+        try {
+            WebTarget base = client.target(uriInfo.getBaseUriBuilder().path("clientInvoke").build());
+            Response response = base.request().get();
 
-         // return the client invocation response to make the verification in test class
-         return response;
-      } finally {
-         client.close();
-      }
-   }
+            // return the client invocation response to make the verification in test class
+            return response;
+        } finally {
+            client.close();
+        }
+    }
 
-   @GET
-   @Path("clientInvoke")
-   public Response clientInvoke() {
-      return Response.ok().build();
-   }
+    @GET
+    @Path("clientInvoke")
+    public Response clientInvoke() {
+        return Response.ok().build();
+    }
 }

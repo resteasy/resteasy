@@ -4,21 +4,21 @@ import javax.validation.constraints.NotEmpty;
 
 public class EmptyArrayValidationFoo {
 
-   @NotEmpty
-   Object[] array;
+    @NotEmpty
+    Object[] array;
 
-   public EmptyArrayValidationFoo(final Object[] array) {
-      this.array = array;
-   }
+    public EmptyArrayValidationFoo(final Object[] array) {
+        this.array = array;
+    }
 
-   public EmptyArrayValidationFoo() {
-   }
+    public EmptyArrayValidationFoo() {
+    }
 
-   public Object[] getArray() {
-      return array;
-   }
+    public Object[] getArray() {
+        return array;
+    }
 
-   public void setArray(final Object[] array) {
-      this.array = array;
-   }
+    public void setArray(final Object[] array) {
+        this.array = array;
+    }
 }

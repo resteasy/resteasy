@@ -3,13 +3,13 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 /**
  * A AbstractEntityProvider.
@@ -19,12 +19,10 @@ import java.lang.reflect.Type;
  * @version $Revision: $
  */
 public abstract class AbstractEntityProvider<T>
-      implements MessageBodyReader<T>, AsyncMessageBodyWriter<T>
-{
+        implements MessageBodyReader<T>, AsyncMessageBodyWriter<T> {
 
-   public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return -1;
-   }
+    public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return -1;
+    }
 
 }

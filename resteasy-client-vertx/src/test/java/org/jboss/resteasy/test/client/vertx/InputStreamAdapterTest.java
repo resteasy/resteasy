@@ -1,20 +1,21 @@
 package org.jboss.resteasy.test.client.vertx;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.test.core.TestUtils;
-import io.vertx.test.fakestream.FakeStream;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
 import org.jboss.resteasy.client.jaxrs.engines.vertx.InputStreamAdapter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.test.core.TestUtils;
+import io.vertx.test.fakestream.FakeStream;
 
 public class InputStreamAdapterTest {
 
@@ -36,13 +37,13 @@ public class InputStreamAdapterTest {
         InputStreamAdapter adapter = new InputStreamAdapter(stream);
         Thread th = Thread.currentThread();
         vertx.setTimer(10, id -> {
-           while (th.getState() != Thread.State.WAITING) {
-               try {
-                   Thread.sleep(1);
-               } catch (InterruptedException ignore) {
-               }
-           }
-           stream.emit(Buffer.buffer().appendByte((byte)5));
+            while (th.getState() != Thread.State.WAITING) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ignore) {
+                }
+            }
+            stream.emit(Buffer.buffer().appendByte((byte) 5));
         });
         int val = adapter.read();
         assertEquals(5, val);

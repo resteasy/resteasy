@@ -17,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-
 /**
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
@@ -28,44 +27,44 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class AsyncUnhandledExceptionTest {
 
-   @Deployment
-   public static Archive<?> createTestArchive() {
+    @Deployment
+    public static Archive<?> createTestArchive() {
 
-      WebArchive war = TestUtil.prepareArchive(AsyncUnhandledExceptionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AsyncUnhandledExceptionResource.class);
-   }
+        WebArchive war = TestUtil.prepareArchive(AsyncUnhandledExceptionTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, AsyncUnhandledExceptionResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, AsyncUnhandledExceptionTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, AsyncUnhandledExceptionTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Unhandled exception is thrown from a ReadListener
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testPost() {
-      Client client = ClientBuilder.newClient();
-      try {
-         Response response = client.target(generateURL("/listener")).request().post(Entity.entity("aaa", "text/plain"));
-         Assert.assertEquals(500, response.getStatus());
-      } finally {
-         client.close();
-      }
-   }
+    /**
+     * @tpTestDetails Unhandled exception is thrown from a ReadListener
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testPost() {
+        Client client = ClientBuilder.newClient();
+        try {
+            Response response = client.target(generateURL("/listener")).request().post(Entity.entity("aaa", "text/plain"));
+            Assert.assertEquals(500, response.getStatus());
+        } finally {
+            client.close();
+        }
+    }
 
-   /**
-   * @tpTestDetails Unhandled exception is thrown from a separate thread
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testGet() {
-      Client client = ClientBuilder.newClient();
-      try {
-         Response response = client.target(generateURL("/thread")).request().get();
-         Assert.assertEquals(500, response.getStatus());
-      } finally {
-         client.close();
-      }
-   }
+    /**
+     * @tpTestDetails Unhandled exception is thrown from a separate thread
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testGet() {
+        Client client = ClientBuilder.newClient();
+        try {
+            Response response = client.target(generateURL("/thread")).request().get();
+            Assert.assertEquals(500, response.getStatus());
+        } finally {
+            client.close();
+        }
+    }
 }

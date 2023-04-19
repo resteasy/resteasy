@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <servlet>
@@ -14,7 +13,7 @@
             <param-value>org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestApplication</param-value>
         </init-param>
     </servlet>
-    
+
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -26,18 +25,18 @@
         <servlet-class>org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
- 
+
+
     <servlet-mapping>
         <servlet-name>Resteasy</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>Test Servlet</servlet-name>
         <url-pattern>/test/*</url-pattern>
     </servlet-mapping>
-    
+
 
 
     <session-config>

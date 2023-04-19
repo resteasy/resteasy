@@ -1,18 +1,19 @@
 package org.jboss.resteasy.test.multipart;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInputImpl;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.ws.rs.core.MediaType;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Base64;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Base64EncoderMultiPartTest {
 

@@ -8,17 +8,17 @@ import javax.ws.rs.Path;
 @Path("/normal")
 public class PostConstructInjectionResource {
 
-   @Size(max=3)
-   private String s = "ab";
+    @Size(max = 3)
+    private String s = "ab";
 
-   @Path("get")
-   @GET
-   public String get() {
-      return s;
-   }
+    @Path("get")
+    @GET
+    public String get() {
+        return s;
+    }
 
-   @PostConstruct
-   public void postConstruct() {
-      s = "abcd";
-   }
+    @PostConstruct
+    public void postConstruct() {
+        s = "abcd";
+    }
 }

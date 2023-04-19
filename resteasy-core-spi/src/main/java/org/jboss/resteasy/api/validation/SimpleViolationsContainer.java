@@ -6,70 +6,58 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-public class SimpleViolationsContainer implements Serializable
-{
-   private static final long serialVersionUID = -7895854137980651540L;
+public class SimpleViolationsContainer implements Serializable {
+    private static final long serialVersionUID = -7895854137980651540L;
 
-   private Set<ConstraintViolation<Object>> violations = new HashSet<ConstraintViolation<Object>>();
+    private Set<ConstraintViolation<Object>> violations = new HashSet<ConstraintViolation<Object>>();
 
-   private Exception exception;
+    private Exception exception;
 
-   private Object target;
+    private Object target;
 
-   private boolean fieldsValidated;
+    private boolean fieldsValidated;
 
-   public SimpleViolationsContainer(final Object target)
-   {
-      this.target = target;
-   }
+    public SimpleViolationsContainer(final Object target) {
+        this.target = target;
+    }
 
-   public SimpleViolationsContainer(final Set<ConstraintViolation<Object>> cvs)
-   {
-      addViolations(cvs);
-   }
+    public SimpleViolationsContainer(final Set<ConstraintViolation<Object>> cvs) {
+        addViolations(cvs);
+    }
 
-   public void addViolations(Set<ConstraintViolation<Object>> cvs)
-   {
-      violations.addAll(cvs);
-   }
+    public void addViolations(Set<ConstraintViolation<Object>> cvs) {
+        violations.addAll(cvs);
+    }
 
-   public int size()
-   {
-      return violations.size();
-   }
+    public int size() {
+        return violations.size();
+    }
 
-   public Exception getException()
-   {
-      return exception;
-   }
+    public Exception getException() {
+        return exception;
+    }
 
-   public void setException(Exception exception)
-   {
-      this.exception = exception;
-   }
+    public void setException(Exception exception) {
+        this.exception = exception;
+    }
 
-   public Object getTarget()
-   {
-      return target;
-   }
+    public Object getTarget() {
+        return target;
+    }
 
-   public void setTarget(Object target)
-   {
-      this.target = target;
-   }
+    public void setTarget(Object target) {
+        this.target = target;
+    }
 
-   public Set<ConstraintViolation<Object>> getViolations()
-   {
-      return violations;
-   }
+    public Set<ConstraintViolation<Object>> getViolations() {
+        return violations;
+    }
 
-   public boolean isFieldsValidated()
-   {
-      return fieldsValidated;
-   }
+    public boolean isFieldsValidated() {
+        return fieldsValidated;
+    }
 
-   public void setFieldsValidated(boolean fieldsValidated)
-   {
-      this.fieldsValidated = fieldsValidated;
-   }
+    public void setFieldsValidated(boolean fieldsValidated) {
+        this.fieldsValidated = fieldsValidated;
+    }
 }

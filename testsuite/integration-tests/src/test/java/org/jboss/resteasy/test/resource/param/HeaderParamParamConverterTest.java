@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.resource.param;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -15,7 +17,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import javax.ws.rs.client.ClientBuilder;
 
 /**
  * Provides a ParamConverter for an input parameter using annotation @HeaderParam
@@ -24,6 +25,7 @@ import javax.ws.rs.client.ClientBuilder;
 @RunAsClient
 public class HeaderParamParamConverterTest {
     private static String testSimpleName = HeaderParamParamConverterTest.class.getSimpleName();
+
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(testSimpleName);
@@ -37,6 +39,7 @@ public class HeaderParamParamConverterTest {
     private String generateURL(String path) {
         return PortProviderUtil.generateURL(path, testSimpleName);
     }
+
     private static String generateBaseUrl() {
         return PortProviderUtil.generateBaseUrl(testSimpleName);
     }
@@ -48,7 +51,7 @@ public class HeaderParamParamConverterTest {
         // test
         ResteasyClient proxyClient = (ResteasyClient) ClientBuilder.newClient();
         HeaderParamParamConverterTestService service = proxyClient.target(generateBaseUrl())
-                .proxyBuilder(HeaderParamParamConverterTestService .class).build();
+                .proxyBuilder(HeaderParamParamConverterTestService.class).build();
 
         Assert.assertTrue(service.test(header));
         proxyClient.close();

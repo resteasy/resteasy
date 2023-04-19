@@ -1,15 +1,15 @@
 package org.jboss.resteasy.test.resource;
 
 import javax.ws.rs.core.MediaType;
+
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.resource.resource.FormParamResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.jboss.resteasy.test.resource.resource.FormParamResource;
 
 /**
  * @tpSubChapter Resource tests
@@ -37,7 +37,8 @@ public class FormParamInjectionTest {
      * Builds an instance of {@code MockHttpRequest} properly configured to make sure that all
      * the {@code FormParam} are properly injected in all test cases otherwise we end up with
      * a {@code NullPointerException}.
-     * @param uri the uri of the endpoint to test.
+     *
+     * @param uri  the uri of the endpoint to test.
      * @param form the encoded form that shall be sent in the form body.
      * @return an instance of {@code MockHttpRequest} properly configured.
      * @throws Exception in case the provided uri is not properly formed.

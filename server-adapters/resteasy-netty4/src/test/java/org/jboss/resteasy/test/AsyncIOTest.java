@@ -14,60 +14,54 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class AsyncIOTest
-{
+public class AsyncIOTest {
 
-   static Client client;
-   @BeforeClass
-   public static void setup() throws Exception
-   {
-      ResteasyDeployment deployment = NettyContainer.start();
-      deployment.getProviderFactory().register(BlockingWriter.class);
-      deployment.getProviderFactory().register(AsyncWriter.class);
-      Registry registry = deployment.getRegistry();
-      registry.addPerRequestResource(AsyncIOResource.class);
-      client = ClientBuilder.newClient();
-   }
+    static Client client;
 
-   @AfterClass
-   public static void end() throws Exception
-   {
-      try
-      {
-         client.close();
-      }
-      catch (Exception e)
-      {
+    @BeforeClass
+    public static void setup() throws Exception {
+        ResteasyDeployment deployment = NettyContainer.start();
+        deployment.getProviderFactory().register(BlockingWriter.class);
+        deployment.getProviderFactory().register(AsyncWriter.class);
+        Registry registry = deployment.getRegistry();
+        registry.addPerRequestResource(AsyncIOResource.class);
+        client = ClientBuilder.newClient();
+    }
 
-      }
-      NettyContainer.stop();
-   }
+    @AfterClass
+    public static void end() throws Exception {
+        try {
+            client.close();
+        } catch (Exception e) {
 
-   @Test
-   public void testAsyncIo() throws Exception
-   {
-      WebTarget target = client.target(generateURL("/async-io/blocking-writer-on-io-thread"));
-      String val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+        }
+        NettyContainer.stop();
+    }
 
-      target = client.target(generateURL("/async-io/async-writer-on-io-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+    @Test
+    public void testAsyncIo() throws Exception {
+        WebTarget target = client.target(generateURL("/async-io/blocking-writer-on-io-thread"));
+        String val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
 
-      target = client.target(generateURL("/async-io/slow-async-writer-on-io-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+        target = client.target(generateURL("/async-io/async-writer-on-io-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
 
-      target = client.target(generateURL("/async-io/blocking-writer-on-worker-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+        target = client.target(generateURL("/async-io/slow-async-writer-on-io-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
 
-      target = client.target(generateURL("/async-io/async-writer-on-worker-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
+        target = client.target(generateURL("/async-io/blocking-writer-on-worker-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
 
-      target = client.target(generateURL("/async-io/slow-async-writer-on-worker-thread"));
-      val = target.request().get(String.class);
-      Assert.assertEquals("OK", val);
-   }
+        target = client.target(generateURL("/async-io/async-writer-on-worker-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
+
+        target = client.target(generateURL("/async-io/slow-async-writer-on-worker-thread"));
+        val = target.request().get(String.class);
+        Assert.assertEquals("OK", val);
+    }
 }

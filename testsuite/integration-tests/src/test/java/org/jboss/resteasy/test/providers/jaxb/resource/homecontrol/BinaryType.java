@@ -4,11 +4,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java-Klasse für BinaryType complex type.
+ * <p>
+ * Java-Klasse für BinaryType complex type.
  *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>
+ * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  *
  * <pre>
  * &lt;complexType name="BinaryType"&gt;
@@ -25,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BinaryType")
 public class BinaryType
-      extends Base64Binary {
-
+        extends Base64Binary {
 
 }

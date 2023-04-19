@@ -5,28 +5,26 @@ import java.io.InputStream;
 import java.util.Stack;
 
 import org.apache.james.mime4j.MimeException;
-import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.codec.Base64InputStream;
+import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.dom.Body;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.Header;
 import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.dom.Multipart;
-import org.apache.james.mime4j.parser.ContentHandler;
-import org.apache.james.mime4j.stream.BodyDescriptor;
-import org.apache.james.mime4j.stream.Field;
-import org.apache.james.mime4j.stream.RawField;
-import org.apache.james.mime4j.util.ByteArrayBuffer;
-import org.apache.james.mime4j.util.ByteSequence;
-
 // Imports added due to repackaging
 import org.apache.james.mime4j.message.BodyFactory;
 import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.message.HeaderImpl;
 import org.apache.james.mime4j.message.MessageImpl;
 import org.apache.james.mime4j.message.MultipartImpl;
+import org.apache.james.mime4j.parser.ContentHandler;
+import org.apache.james.mime4j.stream.BodyDescriptor;
+import org.apache.james.mime4j.stream.Field;
+import org.apache.james.mime4j.stream.RawField;
+import org.apache.james.mime4j.util.ByteArrayBuffer;
+import org.apache.james.mime4j.util.ByteSequence;
 import org.apache.james.mime4j.util.MimeUtil;
-
 
 /**
  * A <code>ContentHandler</code> for building an <code>Entity</code> to be
@@ -47,7 +45,8 @@ import org.apache.james.mime4j.util.MimeUtil;
  * <li>body(BodyDescriptor bd, final InputStream is) - Method which unilaterally returns a BinaryBody.</li>
  * </ul>
  * <p>
- * This file may not follow RESTEasy formatting standards. This is to make it easier to diff against the original EntityBuilder in the future when mime4j is updated again.
+ * This file may not follow RESTEasy formatting standards. This is to make it easier to diff against the original EntityBuilder
+ * in the future when mime4j is updated again.
  */
 class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
 
@@ -132,7 +131,8 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
     }
 
     /**
-     * @see org.apache.james.mime4j.parser.ContentHandler#body(org.apache.james.mime4j.stream.BodyDescriptor, java.io.InputStream)
+     * @see org.apache.james.mime4j.parser.ContentHandler#body(org.apache.james.mime4j.stream.BodyDescriptor,
+     *      java.io.InputStream)
      */
     public void body(BodyDescriptor bd, final InputStream is) throws MimeException, IOException {
         expect(Entity.class);
@@ -149,7 +149,6 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
         } else {
             decodedStream = is;
         }
-
 
         //Code change here to unilaterally use binaryBody
         //Code left commented out here to make diffs easy in the future when apache-mime4j updates.
@@ -209,6 +208,7 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
 
     /**
      * Unsupported.
+     *
      * @see org.apache.james.mime4j.parser.ContentHandler#raw(java.io.InputStream)
      */
     public void raw(InputStream is) throws MimeException, IOException {

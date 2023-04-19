@@ -8,9 +8,9 @@ import javax.ws.rs.Path;
  */
 public class TestSubResource {
 
-   @POST
-   @Path("")
-   public String sub(String s) {
-      return "sub(" + s + ")";
-   }
+    @POST
+    @Path("")
+    public String sub(String s) {
+        return "sub(" + s + ")";
+    }
 }

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.rx.rxjava2.resource;
 
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,13 +14,13 @@ import io.reactivex.Flowable;
 @Path("")
 public interface Rx2FlowableableSSECompatibilityResource {
 
-   @GET
-   @Path("eventStream/thing")
-   @Produces("text/event-stream;element-type=application/json")
-   void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
+    @GET
+    @Path("eventStream/thing")
+    @Produces("text/event-stream;element-type=application/json")
+    void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
 
-   @GET
-   @Path("flowable/thing")
-   @Produces("text/event-stream;element-type=application/json")
-   Flowable<Thing> flowableSSE();
+    @GET
+    @Path("flowable/thing")
+    @Produces("text/event-stream;element-type=application/json")
+    Flowable<Thing> flowableSSE();
 }

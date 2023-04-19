@@ -28,87 +28,87 @@ import org.xnio.streams.Streams;
  * @tpTestCaseDetails Verify request is sent in chunked format
  * @tpSince RESTEasy 3.1.4
  */
-public class ChunkedTransferEncodingUnitTest
-{
-   private static final String testFilePath;
+public class ChunkedTransferEncodingUnitTest {
+    private static final String testFilePath;
 
-   static {
-      testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
-   }
+    static {
+        testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
+    }
 
-   @Rule
-   public FakeHttpServer fakeHttpServer = new FakeHttpServer(server -> {
+    @Rule
+    public FakeHttpServer fakeHttpServer = new FakeHttpServer(server -> {
 
-      FakeHttpServer.dummyMethods(server);
+        FakeHttpServer.dummyMethods(server);
 
-      // for ChunkedTransferEncodingUnitTest
-      server.createContext("/chunked", exchange -> {
-         final byte[] response;
-         final int length;
-         final int status;
-         switch (exchange.getRequestMethod().toUpperCase()) {
-            case "POST": {
-               ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-               Streams.copyStream(exchange.getRequestBody(), buffer);
+        // for ChunkedTransferEncodingUnitTest
+        server.createContext("/chunked", exchange -> {
+            final byte[] response;
+            final int length;
+            final int status;
+            switch (exchange.getRequestMethod().toUpperCase()) {
+                case "POST": {
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    Streams.copyStream(exchange.getRequestBody(), buffer);
 
-               String transferEncoding = exchange.getRequestHeaders().getFirst("Transfer-Encoding");
-               if ("chunked".equalsIgnoreCase(transferEncoding)
-                       && Arrays.equals(buffer.toByteArray(), "file entity".getBytes())) {
-                  response = "ok".getBytes();
-                  status = 200;
-               } else {
-                  response = "not ok".getBytes();
-                  status = 400;
-               }
+                    String transferEncoding = exchange.getRequestHeaders().getFirst("Transfer-Encoding");
+                    if ("chunked".equalsIgnoreCase(transferEncoding)
+                            && Arrays.equals(buffer.toByteArray(), "file entity".getBytes())) {
+                        response = "ok".getBytes();
+                        status = 200;
+                    } else {
+                        response = "not ok".getBytes();
+                        status = 400;
+                    }
 
-               length = response.length;
-               break;
+                    length = response.length;
+                    break;
+                }
+
+                default:
+                    response = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
+                    length = response.length;
+                    status = 405;
+                    break;
             }
 
-            default:
-               response = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
-               length = response.length;
-               status = 405;
-               break;
-         }
+            exchange.sendResponseHeaders(status, length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(response);
+            os.close();
+        });
+    });
 
-         exchange.sendResponseHeaders(status, length);
-         OutputStream os = exchange.getResponseBody();
-         os.write(response);
-         os.close();
-      });});
+    @Test
+    public void testChunkedTarget() throws Exception {
+        fakeHttpServer.start();
 
-   @Test
-   public void testChunkedTarget() throws Exception {
-      fakeHttpServer.start();
+        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
+        ResteasyWebTarget target = client.target("http://" + fakeHttpServer.getHostAndPort() + "/chunked");
+        target.setChunked(true);
+        ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
+        File file = new File(testFilePath);
+        Response response = request.post(Entity.entity(file, "text/plain"));
+        String header = response.readEntity(String.class);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("ok", header);
+        response.close();
+        client.close();
+    }
 
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      ResteasyWebTarget target = client.target("http://" + fakeHttpServer.getHostAndPort() + "/chunked");
-      target.setChunked(true);
-      ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
-      File file = new File(testFilePath);
-      Response response = request.post(Entity.entity(file, "text/plain"));
-      String header = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ok", header);
-      response.close();
-      client.close();
-   }
+    @Test
+    public void testChunkedRequest() throws Exception {
+        fakeHttpServer.start();
 
-   @Test
-   public void testChunkedRequest() throws Exception {
-      fakeHttpServer.start();
-
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      ResteasyWebTarget target = client.target("http://" + fakeHttpServer.getHostAndPort() + "/chunked");
-      ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
-      request.setChunked(true);
-      File file = new File(testFilePath);
-      Response response = request.post(Entity.entity(file, "text/plain"));
-      String header = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ok", header);
-      response.close();
-      client.close();
-   }
+        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
+        ResteasyWebTarget target = client.target("http://" + fakeHttpServer.getHostAndPort() + "/chunked");
+        ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
+        request.setChunked(true);
+        File file = new File(testFilePath);
+        Response response = request.post(Entity.entity(file, "text/plain"));
+        String header = response.readEntity(String.class);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("ok", header);
+        response.close();
+        client.close();
+    }
 }

@@ -30,6 +30,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.util.FindAnnotation;
@@ -45,23 +46,23 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
 public class GreeterAsyncMessageBodyWriter implements AsyncMessageBodyWriter<Greeter> {
     @Override
     public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations,
-                               final MediaType mediaType) {
+            final MediaType mediaType) {
         return Greeter.class.isAssignableFrom(type) && FindAnnotation.findAnnotation(annotations, GreetAsync.class) != null;
     }
 
     @Override
     public void writeTo(final Greeter greeter, final Class<?> type, final Type genericType,
-                        final Annotation[] annotations, final MediaType mediaType,
-                        final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream)
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream)
             throws IOException, WebApplicationException {
         throw new WebApplicationException("Only asyncWriteTo should be invoked");
     }
 
     @Override
     public CompletionStage<Void> asyncWriteTo(final Greeter greeter, final Class<?> type, final Type genericType,
-                                              final Annotation[] annotations, final MediaType mediaType,
-                                              final MultivaluedMap<String, Object> httpHeaders,
-                                              final AsyncOutputStream entityStream) {
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders,
+            final AsyncOutputStream entityStream) {
         return entityStream.asyncWrite(greeter.greet("Async"));
     }
 }

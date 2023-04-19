@@ -16,19 +16,18 @@ import javax.ws.rs.core.Response.Status;
 @Consumes("application/json")
 public class ManagedBeanValidationResource {
 
-   private static boolean visited = false;
+    private static boolean visited = false;
 
-   @GET
-   @Path("validate")
-   public Response validate(@Min(value = 1) @QueryParam("q") int n)
-   {
-      visited = true;
-      return Response.status(Status.OK).entity(n).build();
-   }
+    @GET
+    @Path("validate")
+    public Response validate(@Min(value = 1) @QueryParam("q") int n) {
+        visited = true;
+        return Response.status(Status.OK).entity(n).build();
+    }
 
-   @GET
-   @Path("visited")
-   public Response visited() {
-      return Response.ok(visited).build();
-   }
+    @GET
+    @Path("visited")
+    public Response visited() {
+        return Response.ok(visited).build();
+    }
 }

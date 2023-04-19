@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.core.smoke;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithMultipleInterfacesEmpty;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithMultipleInterfacesIntA;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithMultipleInterfacesRootResource;
@@ -28,37 +29,38 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ResourceWithMultipleInterfacesTest {
 
-   static ResteasyClient client;
+    static ResteasyClient client;
 
-   @Deployment(name = "LocatingResource")
-   public static Archive<?> deployLocatingResource() {
-      WebArchive war = TestUtil.prepareArchive(ResourceWithMultipleInterfacesTest.class.getSimpleName());
-      war.addClass(ResourceWithMultipleInterfacesIntA.class);
-      war.addClass(ResourceWithMultipleInterfacesEmpty.class);
-      return TestUtil.finishContainerPrepare(war, null, ResourceWithMultipleInterfacesRootResource.class);
-   }
+    @Deployment(name = "LocatingResource")
+    public static Archive<?> deployLocatingResource() {
+        WebArchive war = TestUtil.prepareArchive(ResourceWithMultipleInterfacesTest.class.getSimpleName());
+        war.addClass(ResourceWithMultipleInterfacesIntA.class);
+        war.addClass(ResourceWithMultipleInterfacesEmpty.class);
+        return TestUtil.finishContainerPrepare(war, null, ResourceWithMultipleInterfacesRootResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ResourceWithMultipleInterfacesTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ResourceWithMultipleInterfacesTest.class.getSimpleName());
+    }
 
-   @Before
-   public void init() {
-      client = (ResteasyClient)ClientBuilder.newClient();
-   }
+    @Before
+    public void init() {
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   @After
-   public void after() throws Exception {
-      client.close();
-   }
+    @After
+    public void after() throws Exception {
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Check result from resource with multiple interfaces.
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testNoDefaultsResource() throws Exception {
-      ResourceWithMultipleInterfacesIntA proxy = client.target(generateURL("/")).proxyBuilder(ResourceWithMultipleInterfacesIntA.class).build();
-      Assert.assertEquals("Wrong client answer.", "FOO", proxy.getFoo());
-   }
+    /**
+     * @tpTestDetails Check result from resource with multiple interfaces.
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testNoDefaultsResource() throws Exception {
+        ResourceWithMultipleInterfacesIntA proxy = client.target(generateURL("/"))
+                .proxyBuilder(ResourceWithMultipleInterfacesIntA.class).build();
+        Assert.assertEquals("Wrong client answer.", "FOO", proxy.getFoo());
+    }
 }

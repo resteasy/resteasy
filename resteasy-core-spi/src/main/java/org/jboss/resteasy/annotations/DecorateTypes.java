@@ -13,9 +13,8 @@ import java.lang.annotation.Target;
  * @see org.jboss.resteasy.spi.DecoratorProcessor
  * @see org.jboss.resteasy.annotations.Decorator
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DecorateTypes
-{
-   String[] value();
+public @interface DecorateTypes {
+    String[] value();
 }

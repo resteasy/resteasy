@@ -1,15 +1,16 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
-import org.jboss.resteasy.util.BasicAuthHelper;
+import java.io.IOException;
+import java.net.URI;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
-import java.io.IOException;
-import java.net.URI;
+
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
+import org.jboss.resteasy.util.BasicAuthHelper;
 
 /**
  * Client filter that will attach authorization header with either HTTP Basic auth or Bearer token auth.
@@ -40,7 +41,8 @@ public class ClientConfigProviderFilter implements ClientRequestFilter {
                 String username = clientConfigProvider.getUsername(uri);
                 String password = clientConfigProvider.getPassword(uri);
                 if (username != null && password != null) {
-                    requestContext.getHeaders().putSingle(HttpHeaders.AUTHORIZATION, BasicAuthHelper.createHeader(username, password));
+                    requestContext.getHeaders().putSingle(HttpHeaders.AUTHORIZATION,
+                            BasicAuthHelper.createHeader(username, password));
                 }
             }
         }

@@ -10,4 +10,5 @@ import javax.ws.rs.NameBinding;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(value = RetentionPolicy.RUNTIME)
 @NameBinding
-public @interface NameBoundProxiesAnnotation {}
+public @interface NameBoundProxiesAnnotation {
+}

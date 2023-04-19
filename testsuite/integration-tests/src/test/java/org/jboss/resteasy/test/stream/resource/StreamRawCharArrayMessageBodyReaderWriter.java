@@ -20,33 +20,36 @@ import javax.ws.rs.ext.Provider;
 @Consumes("*/*")
 @Produces("*/*")
 @Provider
-public class StreamRawCharArrayMessageBodyReaderWriter implements MessageBodyReader<Character[]>, MessageBodyWriter<Character[]> {
+public class StreamRawCharArrayMessageBodyReaderWriter
+        implements MessageBodyReader<Character[]>, MessageBodyWriter<Character[]> {
 
-   @Override
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-      return char[].class.equals(type) || Character[].class.equals(type);
-   }
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return char[].class.equals(type) || Character[].class.equals(type);
+    }
 
-   @Override
-   public Character[] readFrom(Class<Character[]> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-      List<Character> chars = new ArrayList<Character>();
-      int c = entityStream.read();
-      while (c != -1) {
-         chars.add((char) c);
-         c = entityStream.read();
-      }
-      return chars.toArray(new Character[chars.size()]);
-   }
+    @Override
+    public Character[] readFrom(Class<Character[]> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+        List<Character> chars = new ArrayList<Character>();
+        int c = entityStream.read();
+        while (c != -1) {
+            chars.add((char) c);
+            c = entityStream.read();
+        }
+        return chars.toArray(new Character[chars.size()]);
+    }
 
-   @Override
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-      return char[].class.equals(type) || Character[].class.equals(type);
-   }
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return char[].class.equals(type) || Character[].class.equals(type);
+    }
 
-   @Override
-   public void writeTo(Character[] t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-      for (Character c : t) {
-         entityStream.write(Character.toString(c).getBytes());
-      }
-   }
+    @Override
+    public void writeTo(Character[] t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+        for (Character c : t) {
+            entityStream.write(Character.toString(c).getBytes());
+        }
+    }
 }

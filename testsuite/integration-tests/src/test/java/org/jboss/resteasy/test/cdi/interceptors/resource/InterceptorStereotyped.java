@@ -1,14 +1,15 @@
 package org.jboss.resteasy.test.cdi.interceptors.resource;
 
-import javax.inject.Inject;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 @InterceptorClassMethodInterceptorStereotype
 public class InterceptorStereotyped {
-   @Inject
-   private Logger log;
+    @Inject
+    private Logger log;
 
-   public void test() {
-      log.info("Stereotyped.test()");
-   }
+    public void test() {
+        log.info("Stereotyped.test()");
+    }
 }

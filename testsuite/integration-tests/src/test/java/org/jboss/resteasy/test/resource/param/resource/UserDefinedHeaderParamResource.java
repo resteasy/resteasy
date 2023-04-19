@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import org.jboss.resteasy.test.resource.param.UserDefinedHeaderParamTest;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+
+import org.jboss.resteasy.test.resource.param.UserDefinedHeaderParamTest;
 
 public class UserDefinedHeaderParamResource implements UserDefinedHeaderParamTest.UserHeaderParamInterface {
 
@@ -34,8 +34,8 @@ public class UserDefinedHeaderParamResource implements UserDefinedHeaderParamTes
     @GET
     @Path("/header")
     public String sendMultipleTypes(String text, @HeaderParam("Content-Type") String contentType,
-                                    @HeaderParam("Content-Type") String secondContentType,
-                                    @HeaderParam("Content-Type") String thirdContentType) {
+            @HeaderParam("Content-Type") String secondContentType,
+            @HeaderParam("Content-Type") String thirdContentType) {
         return httpHeaders.getHeaderString("Content-Type");
     }
 }

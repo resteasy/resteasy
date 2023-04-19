@@ -14,14 +14,15 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ProviderWithNoProducesMessageBodyWriter implements MessageBodyWriter<Foo> {
 
-   @Override
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-      return "foo".equals(mediaType.getType()) && Foo.class.equals(type);
-   }
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return "foo".equals(mediaType.getType()) && Foo.class.equals(type);
+    }
 
-   @Override
-   public void writeTo(Foo t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-         OutputStream entityStream) throws IOException, WebApplicationException {
-      entityStream.write("ProviderWithNoProducesMessageBodyWriter".getBytes());
-   }
+    @Override
+    public void writeTo(Foo t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException, WebApplicationException {
+        entityStream.write("ProviderWithNoProducesMessageBodyWriter".getBytes());
+    }
 }

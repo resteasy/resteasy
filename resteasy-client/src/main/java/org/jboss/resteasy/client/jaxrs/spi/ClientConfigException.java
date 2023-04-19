@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.spi;
 
 /**
  * General client configuration exception
+ *
  * @author dvilkola@redhat.com
  */
 public class ClientConfigException extends RuntimeException {

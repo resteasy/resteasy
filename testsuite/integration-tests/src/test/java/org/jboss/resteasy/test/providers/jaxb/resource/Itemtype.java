@@ -2,17 +2,20 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for itemtype complex type.
  * <p>
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * Java class for itemtype complex type.
  * <p>
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ *
  * <pre>
  * &lt;complexType name="itemtype">
  *   &lt;complexContent>
@@ -30,99 +33,99 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "itemtype", propOrder = {
-      "title",
-      "note",
-      "quantity",
-      "price"
+        "title",
+        "note",
+        "quantity",
+        "price"
 })
 public class Itemtype {
 
-   @XmlElement(required = true)
-   protected String title;
-   protected String note;
-   @XmlElement(required = true)
-   protected BigInteger quantity;
-   @XmlElement(required = true)
-   protected BigDecimal price;
+    @XmlElement(required = true)
+    protected String title;
+    protected String note;
+    @XmlElement(required = true)
+    protected BigInteger quantity;
+    @XmlElement(required = true)
+    protected BigDecimal price;
 
-   /**
-    * Gets the value of the title property.
-    *
-    * @return possible object is
-    * {@link String }
-    */
-   public String getTitle() {
-      return title;
-   }
+    /**
+     * Gets the value of the title property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    public String getTitle() {
+        return title;
+    }
 
-   /**
-    * Sets the value of the title property.
-    *
-    * @param value allowed object is
-    *              {@link String }
-    */
-   public void setTitle(String value) {
-      this.title = value;
-   }
+    /**
+     * Sets the value of the title property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setTitle(String value) {
+        this.title = value;
+    }
 
-   /**
-    * Gets the value of the note property.
-    *
-    * @return possible object is
-    * {@link String }
-    */
-   public String getNote() {
-      return note;
-   }
+    /**
+     * Gets the value of the note property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    public String getNote() {
+        return note;
+    }
 
-   /**
-    * Sets the value of the note property.
-    *
-    * @param value allowed object is
-    *              {@link String }
-    */
-   public void setNote(String value) {
-      this.note = value;
-   }
+    /**
+     * Sets the value of the note property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setNote(String value) {
+        this.note = value;
+    }
 
-   /**
-    * Gets the value of the quantity property.
-    *
-    * @return possible object is
-    * {@link BigInteger }
-    */
-   public BigInteger getQuantity() {
-      return quantity;
-   }
+    /**
+     * Gets the value of the quantity property.
+     *
+     * @return possible object is
+     *         {@link BigInteger }
+     */
+    public BigInteger getQuantity() {
+        return quantity;
+    }
 
-   /**
-    * Sets the value of the quantity property.
-    *
-    * @param value allowed object is
-    *              {@link BigInteger }
-    */
-   public void setQuantity(BigInteger value) {
-      this.quantity = value;
-   }
+    /**
+     * Sets the value of the quantity property.
+     *
+     * @param value allowed object is
+     *              {@link BigInteger }
+     */
+    public void setQuantity(BigInteger value) {
+        this.quantity = value;
+    }
 
-   /**
-    * Gets the value of the price property.
-    *
-    * @return possible object is
-    * {@link BigDecimal }
-    */
-   public BigDecimal getPrice() {
-      return price;
-   }
+    /**
+     * Gets the value of the price property.
+     *
+     * @return possible object is
+     *         {@link BigDecimal }
+     */
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-   /**
-    * Sets the value of the price property.
-    *
-    * @param value allowed object is
-    *              {@link BigDecimal }
-    */
-   public void setPrice(BigDecimal value) {
-      this.price = value;
-   }
+    /**
+     * Sets the value of the price property.
+     *
+     * @param value allowed object is
+     *              {@link BigDecimal }
+     */
+    public void setPrice(BigDecimal value) {
+        this.price = value;
+    }
 
 }

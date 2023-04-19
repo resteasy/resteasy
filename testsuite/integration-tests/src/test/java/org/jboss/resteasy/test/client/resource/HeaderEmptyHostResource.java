@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.client.resource;
 
-import org.jboss.logging.Logger;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+
+import org.jboss.logging.Logger;
 
 @Path("/headeremptyhostresource")
 public class HeaderEmptyHostResource {

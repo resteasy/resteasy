@@ -1,15 +1,5 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
-import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.config.ConfigurationFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.ext.Providers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,174 +16,154 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
+import javax.ws.rs.RuntimeType;
+import javax.ws.rs.ext.Providers;
+
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RegisterBuiltin
-{
-   private static final Map<ClassLoader, ResteasyProviderFactory> configuredClientFactories = new WeakHashMap<>();
-   private static final boolean gzipForCachedFactories = isGZipEnabled();
+public class RegisterBuiltin {
+    private static final Map<ClassLoader, ResteasyProviderFactory> configuredClientFactories = new WeakHashMap<>();
+    private static final boolean gzipForCachedFactories = isGZipEnabled();
 
-   public static synchronized ResteasyProviderFactory getClientInitializedResteasyProviderFactory(ClassLoader cl)
-   {
-      ResteasyProviderFactory rpf = null;
-      final boolean gzip = isGZipEnabled();
-      if (gzipForCachedFactories == gzip) {
-         rpf = configuredClientFactories.get(cl);
-      }
-      if (rpf == null) {
-         rpf = new ResteasyProviderFactoryImpl(RuntimeType.CLIENT) {
-            @Override
-            public RuntimeType getRuntimeType()
-            {
-               return RuntimeType.CLIENT;
+    public static synchronized ResteasyProviderFactory getClientInitializedResteasyProviderFactory(ClassLoader cl) {
+        ResteasyProviderFactory rpf = null;
+        final boolean gzip = isGZipEnabled();
+        if (gzipForCachedFactories == gzip) {
+            rpf = configuredClientFactories.get(cl);
+        }
+        if (rpf == null) {
+            rpf = new ResteasyProviderFactoryImpl(RuntimeType.CLIENT) {
+                @Override
+                public RuntimeType getRuntimeType() {
+                    return RuntimeType.CLIENT;
+                }
+            };
+            if (!rpf.isBuiltinsRegistered()) {
+                register(rpf);
             }
-         };
-         if (!rpf.isBuiltinsRegistered()) {
-            register(rpf);
-         }
-         if (gzipForCachedFactories == gzip) {
-            configuredClientFactories.put(cl, rpf);
-         }
-      }
-      return rpf;
-   }
-
-   public static void register(ResteasyProviderFactory factory)
-   {
-      final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory)
-            ? ((ThreadLocalResteasyProviderFactory) factory).getDelegate()
-            : factory;
-      synchronized (monitor)
-      {
-         if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins())
-            return;
-         try
-         {
-            registerProviders(factory);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-         factory.setBuiltinsRegistered(true);
-      }
-   }
-
-   public static void registerProviders(ResteasyProviderFactory factory) throws Exception
-   {
-      Map<String, URL> origins = scanBuiltins();
-      for (final Entry<String, URL> entry : origins.entrySet())
-      {
-         final String line = entry.getKey();
-         try
-         {
-            Class<?> clazz;
-            if (System.getSecurityManager() == null)
-            {
-               clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
+            if (gzipForCachedFactories == gzip) {
+                configuredClientFactories.put(cl, rpf);
             }
-            else
-            {
-               clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
-               {
-                  @Override
-                  public Class<?> run() throws ClassNotFoundException
-                  {
-                     return Thread.currentThread().getContextClassLoader().loadClass(line);
-                  }
-               });
+        }
+        return rpf;
+    }
+
+    public static void register(ResteasyProviderFactory factory) {
+        final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory)
+                ? ((ThreadLocalResteasyProviderFactory) factory).getDelegate()
+                : factory;
+        synchronized (monitor) {
+            if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins())
+                return;
+            try {
+                registerProviders(factory);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
+            factory.setBuiltinsRegistered(true);
+        }
+    }
 
-            factory.registerProvider(clazz, true);
-         }
-         catch (NoClassDefFoundError e)
-         {
-            LogMessages.LOGGER.noClassDefFoundErrorError(line, entry.getValue(), e);
-         }
-         catch (ClassNotFoundException | PrivilegedActionException ex)
-         {
-            LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
-         }
-      }
-      if (isGZipEnabled()) {
-         factory.registerProvider(GZIPDecodingInterceptor.class, true);
-         factory.registerProvider(GZIPEncodingInterceptor.class, true);
-      }
-   }
+    public static void registerProviders(ResteasyProviderFactory factory) throws Exception {
+        Map<String, URL> origins = scanBuiltins();
+        for (final Entry<String, URL> entry : origins.entrySet()) {
+            final String line = entry.getKey();
+            try {
+                Class<?> clazz;
+                if (System.getSecurityManager() == null) {
+                    clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
+                } else {
+                    clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+                        @Override
+                        public Class<?> run() throws ClassNotFoundException {
+                            return Thread.currentThread().getContextClassLoader().loadClass(line);
+                        }
+                    });
+                }
 
-   public static Map<String, URL> scanBuiltins() throws IOException, PrivilegedActionException {
-      Enumeration<URL> en;
-      if (System.getSecurityManager() == null)
-      {
-         en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
-      }
-      else
-      {
-         en = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>()
-         {
-            @Override
-            public Enumeration<URL> run() throws IOException
-            {
-               return Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+                factory.registerProvider(clazz, true);
+            } catch (NoClassDefFoundError e) {
+                LogMessages.LOGGER.noClassDefFoundErrorError(line, entry.getValue(), e);
+            } catch (ClassNotFoundException | PrivilegedActionException ex) {
+                LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
             }
-         });
-      }
+        }
+        if (isGZipEnabled()) {
+            factory.registerProvider(GZIPDecodingInterceptor.class, true);
+            factory.registerProvider(GZIPEncodingInterceptor.class, true);
+        }
+    }
 
-      Map<String, URL> origins = new HashMap<String, URL>();
-      while (en.hasMoreElements())
-      {
-         final URL url = en.nextElement();
-         InputStream is;
-         if (System.getSecurityManager() == null)
-         {
-            is = url.openStream();
-         }
-         else
-         {
-            is = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>()
-            {
-               @Override
-               public InputStream run() throws IOException
-               {
-                  return url.openStream();
-               }
+    public static Map<String, URL> scanBuiltins() throws IOException, PrivilegedActionException {
+        Enumeration<URL> en;
+        if (System.getSecurityManager() == null) {
+            en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+        } else {
+            en = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
+                @Override
+                public Enumeration<URL> run() throws IOException {
+                    return Thread.currentThread().getContextClassLoader()
+                            .getResources("META-INF/services/" + Providers.class.getName());
+                }
             });
-         }
+        }
 
-         try
-         {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-               int commentIdx = line.indexOf('#');
-               if (commentIdx >= 0) {
-                  line = line.substring(0, commentIdx);
-               }
-               line = line.trim();
-               if (line.equals("")) continue;
-               origins.put(line, url);
+        Map<String, URL> origins = new HashMap<String, URL>();
+        while (en.hasMoreElements()) {
+            final URL url = en.nextElement();
+            InputStream is;
+            if (System.getSecurityManager() == null) {
+                is = url.openStream();
+            } else {
+                is = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
+                    @Override
+                    public InputStream run() throws IOException {
+                        return url.openStream();
+                    }
+                });
             }
-         }
-         finally
-         {
-            is.close();
-         }
-      }
-      return origins;
-   }
 
-   public static boolean isGZipEnabled() {
-      return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-         @Override
-         public Boolean run() {
-            final String value = ConfigurationFactory.getInstance().getConfiguration().getOptionalValue("resteasy.allowGzip", String.class).orElse(null);
-            if ("".equals(value)) return Boolean.FALSE;
-            return Boolean.parseBoolean(value);
-         }
-      });
-   }
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    int commentIdx = line.indexOf('#');
+                    if (commentIdx >= 0) {
+                        line = line.substring(0, commentIdx);
+                    }
+                    line = line.trim();
+                    if (line.equals(""))
+                        continue;
+                    origins.put(line, url);
+                }
+            } finally {
+                is.close();
+            }
+        }
+        return origins;
+    }
+
+    public static boolean isGZipEnabled() {
+        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            @Override
+            public Boolean run() {
+                final String value = ConfigurationFactory.getInstance().getConfiguration()
+                        .getOptionalValue("resteasy.allowGzip", String.class).orElse(null);
+                if ("".equals(value))
+                    return Boolean.FALSE;
+                return Boolean.parseBoolean(value);
+            }
+        });
+    }
 
 }

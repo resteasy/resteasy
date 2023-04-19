@@ -1,5 +1,9 @@
 package org.jboss.resteasy.test.interceptor;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -18,11 +22,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
 /**
  * @tpSubChapter Interceptor
  * @tpChapter Integration tests
@@ -33,38 +32,38 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class PreMatchingClientRequestFilterTest extends ClientTestBase {
 
-   @Rule
-   public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-   static Client client;
+    static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PreMatchingClientRequestFilterTest.class.getSimpleName());
-      //rls //war.addClass(ClientExceptionsData.class);
-      return TestUtil.finishContainerPrepare(war, null, PreMatchingClientResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(PreMatchingClientRequestFilterTest.class.getSimpleName());
+        //rls //war.addClass(ClientExceptionsData.class);
+        return TestUtil.finishContainerPrepare(war, null, PreMatchingClientResource.class);
+    }
 
-   @Before
-   public void before() {
-      client = ClientBuilder.newClient();
-   }
+    @Before
+    public void before() {
+        client = ClientBuilder.newClient();
+    }
 
-   @After
-   public void close() {
-      client.close();
-   }
+    @After
+    public void close() {
+        client.close();
+    }
 
-   /**
-    * @tpTestDetails Test that annotation @PreMatching on an implementation of ClientRequestFilter
-    *                is ignored. This annotation is only valid on ContainerRequestFilter implementations.
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void preMatchingTest() throws Exception {
-      WebTarget base = client.target(generateURL("/") + "testIt");
-      Response response = base.register(PreMatchingClientRequestFilterImpl.class).request().get();
-      Assert.assertEquals(404, response.getStatus());
-   }
+    /**
+     * @tpTestDetails Test that annotation @PreMatching on an implementation of ClientRequestFilter
+     *                is ignored. This annotation is only valid on ContainerRequestFilter implementations.
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void preMatchingTest() throws Exception {
+        WebTarget base = client.target(generateURL("/") + "testIt");
+        Response response = base.register(PreMatchingClientRequestFilterImpl.class).request().get();
+        Assert.assertEquals(404, response.getStatus());
+    }
 
 }

@@ -7,8 +7,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AsyncResponseFilter2 extends AsyncResponseFilter {
 
-   public AsyncResponseFilter2()
-   {
-      super("ResponseFilter2");
-   }
+    public AsyncResponseFilter2() {
+        super("ResponseFilter2");
+    }
 }

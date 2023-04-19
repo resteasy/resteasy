@@ -12,60 +12,53 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
 
-public class ResteasyViolationExceptionImpl extends ResteasyViolationException
-{
-   private static final long serialVersionUID = 657697354453281559L;
+public class ResteasyViolationExceptionImpl extends ResteasyViolationException {
+    private static final long serialVersionUID = 657697354453281559L;
 
-   public ResteasyViolationExceptionImpl(final Set<? extends ConstraintViolation<?>> constraintViolations)
-   {
-      super(constraintViolations);
-   }
+    public ResteasyViolationExceptionImpl(final Set<? extends ConstraintViolation<?>> constraintViolations) {
+        super(constraintViolations);
+    }
 
-   /**
-    * New constructor
-    *
-    * @param constraintViolations set of constraint violations
-    * @param accept list of accept media types
-    */
-   public ResteasyViolationExceptionImpl(final Set<? extends ConstraintViolation<?>> constraintViolations, final List<MediaType> accept)
-   {
-      super(constraintViolations, accept);
-   }
+    /**
+     * New constructor
+     *
+     * @param constraintViolations set of constraint violations
+     * @param accept               list of accept media types
+     */
+    public ResteasyViolationExceptionImpl(final Set<? extends ConstraintViolation<?>> constraintViolations,
+            final List<MediaType> accept) {
+        super(constraintViolations, accept);
+    }
 
-   /**
-    * New constructor
-    *
-    * @param container violation container
-    */
-   public ResteasyViolationExceptionImpl(final SimpleViolationsContainer container)
-   {
-      super(container);
-   }
+    /**
+     * New constructor
+     *
+     * @param container violation container
+     */
+    public ResteasyViolationExceptionImpl(final SimpleViolationsContainer container) {
+        super(container);
+    }
 
-   /**
-    * New constructor
-    *
-    * @param container violation container
-    * @param accept list of accept media types
-    */
+    /**
+     * New constructor
+     *
+     * @param container violation container
+     * @param accept    list of accept media types
+     */
 
-   public ResteasyViolationExceptionImpl(final SimpleViolationsContainer container, final List<MediaType> accept)
-   {
-      super(container, accept);
-   }
+    public ResteasyViolationExceptionImpl(final SimpleViolationsContainer container, final List<MediaType> accept) {
+        super(container, accept);
+    }
 
-   public ResteasyViolationExceptionImpl(final String stringRep)
-   {
-      super(stringRep);
-   }
+    public ResteasyViolationExceptionImpl(final String stringRep) {
+        super(stringRep);
+    }
 
-   public ConstraintTypeUtil getConstraintTypeUtil()
-   {
-      return new ConstraintTypeUtilImpl();
-   }
+    public ConstraintTypeUtil getConstraintTypeUtil() {
+        return new ConstraintTypeUtilImpl();
+    }
 
-   protected ResteasyConfiguration getResteasyConfiguration()
-   {
-      return ResteasyContext.getContextData(ResteasyConfiguration.class);
-   }
+    protected ResteasyConfiguration getResteasyConfiguration() {
+        return ResteasyContext.getContextData(ResteasyConfiguration.class);
+    }
 }

@@ -2,17 +2,20 @@ package org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for JaxbNameSpacePrefixItems complex type.
  * <p>
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * Java class for JaxbNameSpacePrefixItems complex type.
  * <p>
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ *
  * <pre>
  * &lt;complexType name="JaxbNameSpacePrefixItems">
  *   &lt;complexContent>
@@ -27,38 +30,39 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "JaxbNameSpacePrefixItems", propOrder = {
-      "jaxbNameSpacePrefixItem"
+        "jaxbNameSpacePrefixItem"
 })
 public class JaxbNameSpacePrefixItems {
 
-   @XmlElement(required = true)
-   protected List<JaxbNameSpacePrefixItem> jaxbNameSpacePrefixItem;
+    @XmlElement(required = true)
+    protected List<JaxbNameSpacePrefixItem> jaxbNameSpacePrefixItem;
 
-   /**
-    * Gets the value of the jaxbNameSpacePrefixItem property.
-    * <p>
-    * <p>
-    * This accessor method returns a reference to the live list,
-    * not a snapshot. Therefore any modification you make to the
-    * returned list will be present inside the JAXB object.
-    * This is why there is not a <CODE>set</CODE> method for the jaxbNameSpacePrefixItem property.
-    * <p>
-    * <p>
-    * For example, to add a new jaxbNameSpacePrefixItem, do as follows:
-    * <pre>
-    *    getJaxbNameSpacePrefixItem().add(newItem);
-    * </pre>
-    * <p>
-    * <p>
-    * <p>
-    * Objects of the following type(s) are allowed in the list
-    * {@link JaxbNameSpacePrefixItem }
-    */
-   public List<JaxbNameSpacePrefixItem> getJaxbNameSpacePrefixItem() {
-      if (jaxbNameSpacePrefixItem == null) {
-         jaxbNameSpacePrefixItem = new ArrayList<JaxbNameSpacePrefixItem>();
-      }
-      return this.jaxbNameSpacePrefixItem;
-   }
+    /**
+     * Gets the value of the jaxbNameSpacePrefixItem property.
+     * <p>
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the jaxbNameSpacePrefixItem property.
+     * <p>
+     * <p>
+     * For example, to add a new jaxbNameSpacePrefixItem, do as follows:
+     *
+     * <pre>
+     * getJaxbNameSpacePrefixItem().add(newItem);
+     * </pre>
+     * <p>
+     * <p>
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link JaxbNameSpacePrefixItem }
+     */
+    public List<JaxbNameSpacePrefixItem> getJaxbNameSpacePrefixItem() {
+        if (jaxbNameSpacePrefixItem == null) {
+            jaxbNameSpacePrefixItem = new ArrayList<JaxbNameSpacePrefixItem>();
+        }
+        return this.jaxbNameSpacePrefixItem;
+    }
 
 }

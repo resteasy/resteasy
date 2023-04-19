@@ -82,8 +82,7 @@ abstract class AbstractRegistrationTest {
                         AbstractRegistrationTest.class,
                         FailingResource.class,
                         TestApplication.class,
-                        TestBean.class
-                )
+                        TestBean.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 

@@ -1,60 +1,56 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
+import java.io.Serializable;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.Serializable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface BrowserCache
-{
-   class Header implements Serializable
-   {
-      private static final long serialVersionUID = 4145981086454860081L;
+public interface BrowserCache {
+    class Header implements Serializable {
+        private static final long serialVersionUID = 4145981086454860081L;
 
-      private String name;
-      private String value;
+        private String name;
+        private String value;
 
-      public Header(final String name, final String value)
-      {
-         this.name = name;
-         this.value = value;
-      }
+        public Header(final String name, final String value) {
+            this.name = name;
+            this.value = value;
+        }
 
-      public String getName()
-      {
-         return name;
-      }
+        public String getName() {
+            return name;
+        }
 
-      public String getValue()
-      {
-         return value;
-      }
-   }
+        public String getValue() {
+            return value;
+        }
+    }
 
-   interface Entry
-   {
-      MultivaluedMap<String, String> getHeaders();
+    interface Entry {
+        MultivaluedMap<String, String> getHeaders();
 
-      boolean expired();
+        boolean expired();
 
-      Header[] getValidationHeaders();
+        Header[] getValidationHeaders();
 
-      byte[] getCached();
+        byte[] getCached();
 
-      MediaType getMediaType();
-   }
+        MediaType getMediaType();
+    }
 
-   Entry getAny(String key);
+    Entry getAny(String key);
 
-   Entry get(String key, MediaType accept);
+    Entry get(String key, MediaType accept);
 
-   Entry put(String key, MediaType mediaType, MultivaluedMap<String, String> headers, byte[] cached, int expires, String etag, String lastModified);
+    Entry put(String key, MediaType mediaType, MultivaluedMap<String, String> headers, byte[] cached, int expires, String etag,
+            String lastModified);
 
-   Entry remove(String key, MediaType type);
+    Entry remove(String key, MediaType type);
 
-   void clear();
+    void clear();
 
 }

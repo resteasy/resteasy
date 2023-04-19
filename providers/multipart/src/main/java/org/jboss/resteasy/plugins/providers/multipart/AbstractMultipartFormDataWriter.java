@@ -1,11 +1,5 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.AsyncOutputStream;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -16,72 +10,80 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
-   @Override
-   protected void writeParts(MultipartOutput multipartOutput,
-                             OutputStream entityStream, byte[] boundaryBytes, Annotation[] annotations) throws IOException {
-      if (!(multipartOutput instanceof MultipartFormDataOutput))
-         throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
-      MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
-      for (Map.Entry<String, List<OutputPart>> entry : form.getFormDataMap().entrySet()) {
-         for (OutputPart outputPart : entry.getValue()) {
-            if (outputPart.getEntity() == null) {
-               continue;
+    @Override
+    protected void writeParts(MultipartOutput multipartOutput,
+            OutputStream entityStream, byte[] boundaryBytes, Annotation[] annotations) throws IOException {
+        if (!(multipartOutput instanceof MultipartFormDataOutput))
+            throw new IllegalArgumentException(
+                    Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
+        MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
+        for (Map.Entry<String, List<OutputPart>> entry : form.getFormDataMap().entrySet()) {
+            for (OutputPart outputPart : entry.getValue()) {
+                if (outputPart.getEntity() == null) {
+                    continue;
+                }
+                MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
+                headers.putSingle("Content-Disposition", "form-data; name=\""
+                        + entry.getKey() + "\""
+                        + getFilename(outputPart));
+                writePart(entityStream, boundaryBytes, outputPart, headers, annotations);
             }
-            MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
-            headers.putSingle("Content-Disposition", "form-data; name=\""
-                  + entry.getKey() + "\""
-                  + getFilename(outputPart));
-            writePart(entityStream, boundaryBytes, outputPart, headers, annotations);
-         }
-      }
-   }
+        }
+    }
 
-   @Override
-   protected CompletionStage<Void> asyncWriteParts(MultipartOutput multipartOutput, AsyncOutputStream entityStream,
-                                                   byte[] boundaryBytes, Annotation[] annotations) {
-       if (!(multipartOutput instanceof MultipartFormDataOutput))
-           throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
-       MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
-       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
-       for (Map.Entry<String, List<OutputPart>> entry : form.getFormDataMap().entrySet()) {
-           for (OutputPart outputPart : entry.getValue()) {
-               if (outputPart.getEntity() == null) {
-                   continue;
-               }
-               MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
-               headers.putSingle("Content-Disposition", "form-data; name=\""
-                       + entry.getKey() + "\""
-                       + getFilename(outputPart));
-               ret = ret.thenCompose(v -> asyncWritePart(entityStream, boundaryBytes, outputPart, headers, annotations));
-           }
-       }
-       return ret;
-   }
-
-   private String getFilename(OutputPart part) {
-      String filename = part.getFilename();
-      if (filename == null) {
-         return "";
-      } else {
-         if (part.isUtf8Encode()) {
-            String encodedFilename = filename;
-            try {
-               encodedFilename = URLEncoder.encode(filename, "UTF-8");
-               // append encoding charset into the value if and only if encoding was needed
-               if (!encodedFilename.equals(filename)) {
-               // encoding was needed, so per rfc5987 we have to prepend charset
-                  return "; filename*=utf-8''" + encodedFilename.replaceAll("\\+", "%20");
-               }
-            } catch (UnsupportedEncodingException e) {
-               // should not happen
+    @Override
+    protected CompletionStage<Void> asyncWriteParts(MultipartOutput multipartOutput, AsyncOutputStream entityStream,
+            byte[] boundaryBytes, Annotation[] annotations) {
+        if (!(multipartOutput instanceof MultipartFormDataOutput))
+            throw new IllegalArgumentException(
+                    Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
+        MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
+        CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+        for (Map.Entry<String, List<OutputPart>> entry : form.getFormDataMap().entrySet()) {
+            for (OutputPart outputPart : entry.getValue()) {
+                if (outputPart.getEntity() == null) {
+                    continue;
+                }
+                MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
+                headers.putSingle("Content-Disposition", "form-data; name=\""
+                        + entry.getKey() + "\""
+                        + getFilename(outputPart));
+                ret = ret.thenCompose(v -> asyncWritePart(entityStream, boundaryBytes, outputPart, headers, annotations));
             }
-         }
-         return "; filename=\"" + filename + "\"";
-      }
-   }
+        }
+        return ret;
+    }
+
+    private String getFilename(OutputPart part) {
+        String filename = part.getFilename();
+        if (filename == null) {
+            return "";
+        } else {
+            if (part.isUtf8Encode()) {
+                String encodedFilename = filename;
+                try {
+                    encodedFilename = URLEncoder.encode(filename, "UTF-8");
+                    // append encoding charset into the value if and only if encoding was needed
+                    if (!encodedFilename.equals(filename)) {
+                        // encoding was needed, so per rfc5987 we have to prepend charset
+                        return "; filename*=utf-8''" + encodedFilename.replaceAll("\\+", "%20");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    // should not happen
+                }
+            }
+            return "; filename=\"" + filename + "\"";
+        }
+    }
 }

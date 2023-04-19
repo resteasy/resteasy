@@ -16,27 +16,28 @@ import javax.ws.rs.core.GenericEntity;
 @Path("")
 public class AsyncGenericEntityResource {
 
-   @GET
-   @Produces("application/xml")
-   @Path("test")
-   public void get(@Suspended final AsyncResponse response) {
-      response.setTimeout(10000, TimeUnit.MILLISECONDS);
-      Thread t = new Thread() {
+    @GET
+    @Produces("application/xml")
+    @Path("test")
+    public void get(@Suspended final AsyncResponse response) {
+        response.setTimeout(10000, TimeUnit.MILLISECONDS);
+        Thread t = new Thread() {
 
-         @Override
-         public void run() {
-            try {
-               Thread.sleep(100);
-               List<String> list = new ArrayList<String>();
-               list.add("abc");
-               GenericEntity<List<String>> entity = new GenericEntity<List<String>>(list) {};
-               response.resume(entity);
-            } catch (Exception e) {
-               StringWriter errors = new StringWriter();
-               e.printStackTrace(new PrintWriter(errors));
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                    List<String> list = new ArrayList<String>();
+                    list.add("abc");
+                    GenericEntity<List<String>> entity = new GenericEntity<List<String>>(list) {
+                    };
+                    response.resume(entity);
+                } catch (Exception e) {
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                }
             }
-         }
-      };
-      t.start();
-   }
+        };
+        t.start();
+    }
 }

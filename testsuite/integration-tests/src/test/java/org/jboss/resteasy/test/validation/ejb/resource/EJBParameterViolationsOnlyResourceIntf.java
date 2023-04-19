@@ -12,17 +12,16 @@ import javax.ws.rs.core.MediaType;
 @Remote
 @Produces(MediaType.TEXT_PLAIN)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface EJBParameterViolationsOnlyResourceIntf
-{
-   @POST
-   @Path("validation")
-   String testValidation(@Valid EJBParameterViolationsOnlyDataObject payload);
+public interface EJBParameterViolationsOnlyResourceIntf {
+    @POST
+    @Path("validation")
+    String testValidation(@Valid EJBParameterViolationsOnlyDataObject payload);
 
-   @GET
-   @Path("used")
-   boolean used();
+    @GET
+    @Path("used")
+    boolean used();
 
-   @GET
-   @Path("reset")
-   void reset();
+    @GET
+    @Path("reset")
+    void reset();
 }

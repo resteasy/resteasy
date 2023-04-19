@@ -1,5 +1,23 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+
+import java.io.FilePermission;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -23,23 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.FilePermission;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThan;
-
 /**
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
@@ -48,264 +49,261 @@ import static org.hamcrest.Matchers.greaterThan;
  * @tpSince RESTEasy 4.0.0.Beta7
  */
 @RunWith(Arquillian.class)
-@ServerSetup({DebugLoggingServerSetup.class}) // TBD: remove debug logging activation?
+@ServerSetup({ DebugLoggingServerSetup.class }) // TBD: remove debug logging activation?
 public class JsonBindingDebugLoggingTest {
 
-   static ResteasyClient client;
+    static ResteasyClient client;
 
-   @Deployment
-   public static Archive<?> createTestArchive1() {
-      WebArchive war = TestUtil.prepareArchive(JsonBindingDebugLoggingTest.class.getSimpleName());
-      war.addClass(JsonBindingDebugLoggingItem.class);
-      war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
-      war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
-      war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
-      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new ReflectPermission("suppressAccessChecks"),
-              new RuntimePermission("accessDeclaredMembers"),
-              new PropertyPermission("arquillian.debug", "read"),
-              new PropertyPermission("user.dir", "read"),
-              new FilePermission("<<ALL FILES>>", "read"), // required to read jbossas-managed/log/server.log file
-              new PropertyPermission("node", "read"),
-              new PropertyPermission("ipv6", "read"),
-              new RuntimePermission("getenv.RESTEASY_PORT"),
-              new PropertyPermission("org.jboss.resteasy.port", "read"),
-              new PropertyPermission("jboss.server.base.dir", "read")
-      ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
-   }
+    @Deployment
+    public static Archive<?> createTestArchive1() {
+        WebArchive war = TestUtil.prepareArchive(JsonBindingDebugLoggingTest.class.getSimpleName());
+        war.addClass(JsonBindingDebugLoggingItem.class);
+        war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
+        war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
+        war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.debug", "read"),
+                new PropertyPermission("user.dir", "read"),
+                new FilePermission("<<ALL FILES>>", "read"), // required to read jbossas-managed/log/server.log file
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new PropertyPermission("org.jboss.resteasy.port", "read"),
+                new PropertyPermission("jboss.server.base.dir", "read")), "permissions.xml");
+        return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
+    }
 
-   @Before
-   public void init() {
-      client = (ResteasyClient) ClientBuilder.newClient();
-   }
+    @Before
+    public void init() {
+        client = (ResteasyClient) ClientBuilder.newClient();
+    }
 
-   @After
-   public void after() throws Exception {
-      client.close();
-   }
+    @After
+    public void after() throws Exception {
+        client.close();
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, JsonBindingDebugLoggingTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, JsonBindingDebugLoggingTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Check exception during server sending
-    * @tpSince RESTEasy 4.0.0.Beta7
-    */
-   @Test
-   public void exceptionDuringServerSend() throws Exception {
-      // count log messages before request
-      LogCounter errorStringLog = new LogCounter("ERROR",
-              false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+    /**
+     * @tpTestDetails Check exception during server sending
+     * @tpSince RESTEasy 4.0.0.Beta7
+     */
+    @Test
+    public void exceptionDuringServerSend() throws Exception {
+        // count log messages before request
+        LogCounter errorStringLog = new LogCounter("ERROR",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      LogCounter resteasyExceptionLog = new LogCounter(
-              ".*ERROR .* RESTEASY002025.*", true,
-              ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+        LogCounter resteasyExceptionLog = new LogCounter(
+                ".*ERROR .* RESTEASY002025.*", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter yassonExceptionLog = new LogCounter(
-              "Caused by: javax.json.bind.JsonbException",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter(
-              "at org.eclipse.yasson", true,
-              ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter yassonExceptionLog = new LogCounter(
+                "Caused by: javax.json.bind.JsonbException",
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter yassonStacktraceLog = new LogCounter(
+                "at org.eclipse.yasson", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      LogCounter applicationExcpetionLog = new LogCounter(
-              "Caused by: java.lang.RuntimeException: "
-            + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter applicationExcpetionLog = new LogCounter(
+                "Caused by: java.lang.RuntimeException: "
+                        + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      // perform request
-      WebTarget base = client.target(generateURL("/get/nok"));
-      Response response = base.request().get();
-      // check response
-      MatcherAssert.assertThat("Wrong response code", response.getStatus(), is(500));
-      MatcherAssert.assertThat("Response message doesn't contains full stacktrace",
-              response.readEntity(String.class), allOf(
-            containsString("org.eclipse.yasson.internal"),
-            containsString("java.lang.RuntimeException: "
-                              + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
-            containsString("javax.json.bind.JsonbException: Error getting value on"),
-            containsString("RESTEASY008205")
-      ));
+        // perform request
+        WebTarget base = client.target(generateURL("/get/nok"));
+        Response response = base.request().get();
+        // check response
+        MatcherAssert.assertThat("Wrong response code", response.getStatus(), is(500));
+        MatcherAssert.assertThat("Response message doesn't contains full stacktrace",
+                response.readEntity(String.class), allOf(
+                        containsString("org.eclipse.yasson.internal"),
+                        containsString("java.lang.RuntimeException: "
+                                + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
+                        containsString("javax.json.bind.JsonbException: Error getting value on"),
+                        containsString("RESTEASY008205")));
 
-      MatcherAssert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(1));
-      MatcherAssert.assertThat("RESTEasy exception should be logged",
-              resteasyExceptionLog.count(), is(0));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), greaterThan(0));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("Application Exception should be logged",
+                applicationExcpetionLog.count(), is(1));
+        MatcherAssert.assertThat("RESTEasy exception should be logged",
+                resteasyExceptionLog.count(), is(0));
+        MatcherAssert.assertThat("Yasson exception should be logged",
+                yassonExceptionLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
+                yassonStacktraceLog.count(), greaterThan(0));
 
-      MatcherAssert.assertThat("There are not only 1 error logs in server",
-              errorStringLog.count(), is(1));
-   }
+        MatcherAssert.assertThat("There are not only 1 error logs in server",
+                errorStringLog.count(), is(1));
+    }
 
+    /**
+     * @tpTestDetails Check exception during server receiving
+     * @tpSince RESTEasy 4.0.0.Beta7
+     */
+    @Test
+    public void exceptionDuringServerReceive() throws Exception {
 
-   /**
-    * @tpTestDetails Check exception during server receiving
-    * @tpSince RESTEasy 4.0.0.Beta7
-    */
-   @Test
-   public void exceptionDuringServerReceive() throws Exception {
+        // count log messages before request
+        LogCounter errorStringLog = new LogCounter("ERROR", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      // count log messages before request
-      LogCounter errorStringLog = new LogCounter("ERROR", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter resteasyExceptionLog = new LogCounter(".*DEBUG .* RESTEASY002305.*", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter resteasyExceptionLog = new LogCounter(".*DEBUG .* RESTEASY002305.*", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+        LogCounter yassonExceptionLog = new LogCounter("Caused by: javax.json.bind.JsonbException", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter applicationExcpetionLog = new LogCounter(
+                "Caused by: java.lang.RuntimeException: "
+                        + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(),
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      LogCounter yassonExceptionLog = new LogCounter("Caused by: javax.json.bind.JsonbException", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson", true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter applicationExcpetionLog = new LogCounter(
-              "Caused by: java.lang.RuntimeException: "
-            + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(), true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        // perform request
+        WebTarget base = client.target(generateURL("/post"));
+        JsonBindingDebugLoggingItem wrongItem = new JsonBindingDebugLoggingItem();
+        wrongItem.setA(5);
+        Response response = base.request().post(Entity.entity(wrongItem,
+                MediaType.APPLICATION_JSON));
 
-      // perform request
-      WebTarget base = client.target(generateURL("/post"));
-      JsonBindingDebugLoggingItem wrongItem = new JsonBindingDebugLoggingItem();
-      wrongItem.setA(5);
-      Response response = base.request().post(Entity.entity(wrongItem,
-              MediaType.APPLICATION_JSON));
+        // check response
+        MatcherAssert.assertThat("Response message doesn't contains proper message",
+                response.readEntity(String.class), allOf(
+                        containsString("RESTEASY008200: JSON Binding deserialization error"),
+                        containsString(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
+                        containsString("javax.json.bind.JsonbException: ")));
 
-      // check response
-      MatcherAssert.assertThat("Response message doesn't contains proper message",
-              response.readEntity(String.class), allOf(
-                      containsString("RESTEASY008200: JSON Binding deserialization error"),
-                      containsString(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
-                      containsString("javax.json.bind.JsonbException: ")
-              ));
+        // assert log messages after request
+        MatcherAssert.assertThat("Application Exception should be logged",
+                applicationExcpetionLog.count(), is(1));
+        MatcherAssert.assertThat("RESTEasy exception should be logged",
+                resteasyExceptionLog.count(), is(1));
+        MatcherAssert.assertThat("Yasson exception should be logged",
+                yassonExceptionLog.count(), is(1));
+        MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
+                yassonStacktraceLog.count(), greaterThan(0));
 
-      // assert log messages after request
-      MatcherAssert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(1));
-      MatcherAssert.assertThat("RESTEasy exception should be logged",
-              resteasyExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("There shouldn't be any error logs in server",
+                errorStringLog.count(), is(0));
+    }
 
-      MatcherAssert.assertThat("There shouldn't be any error logs in server",
-              errorStringLog.count(), is(0));
-   }
+    /**
+     * @tpTestDetails Check exception during client receiving
+     * @tpSince RESTEasy 4.0.0.Beta7
+     */
+    @Test
+    public void exceptionDuringClientReceive() throws Exception {
+        // perform request
+        WebTarget base = client.target(generateURL("/get/ok"));
+        Response response = base.request().get();
 
-   /**
-    * @tpTestDetails Check exception during client receiving
-    * @tpSince RESTEasy 4.0.0.Beta7
-    */
-   @Test
-   public void exceptionDuringClientReceive() throws Exception {
-      // perform request
-      WebTarget base = client.target(generateURL("/get/ok"));
-      Response response = base.request().get();
+        // count log messages before request
+        LogCounter errorStringLog = new LogCounter("ERROR",
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      // count log messages before request
-      LogCounter errorStringLog = new LogCounter("ERROR",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter resteasyExceptionLog = new LogCounter(
+                ".*DEBUG .* RESTEASY002340.*", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-      LogCounter resteasyExceptionLog = new LogCounter(
-              ".*DEBUG .* RESTEASY002340.*", true,
-              ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+        LogCounter yassonExceptionLog = new LogCounter(
+                "Caused by: javax.json.bind.JsonbException",
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter applicationExcpetionLog = new LogCounter(
+                "Caused by: java.lang.RuntimeException: "
+                        + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(),
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
+        // use JsonBindingProvider to get exception
+        try {
+            response.readEntity(JsonBindingDebugLoggingItemCorruptedSet.class);
+            Assert.fail("Client doesn't throw Exception during reading of corrupted data");
+        } catch (ProcessingException e) {
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            String stackTrace = errors.toString();
 
-      LogCounter yassonExceptionLog = new LogCounter(
-              "Caused by: javax.json.bind.JsonbException",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter applicationExcpetionLog = new LogCounter(
-              "Caused by: java.lang.RuntimeException: "
-            + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(),
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+            MatcherAssert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
+                    containsString("javax.json.bind.JsonbException"));
+            MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
+                    containsString("org.eclipse.yasson.internal"));
+            MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
+                    containsString("Caused by: java.lang.RuntimeException: "
+                            + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()));
+        }
 
+        // assert log messages after request
+        MatcherAssert.assertThat("Application Exception should be logged",
+                applicationExcpetionLog.count(), is(1));
+        MatcherAssert.assertThat("RESTEasy exception should be logged",
+                resteasyExceptionLog.count(), is(1));
+        MatcherAssert.assertThat("Yasson exception should be logged",
+                yassonExceptionLog.count(), is(1));
+        MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
+                yassonStacktraceLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("There shouldn't be any error logs in client",
+                errorStringLog.count(), is(0));
+    }
 
-      // use JsonBindingProvider to get exception
-      try {
-         response.readEntity(JsonBindingDebugLoggingItemCorruptedSet.class);
-         Assert.fail("Client doesn't throw Exception during reading of corrupted data");
-      } catch (ProcessingException e) {
-         StringWriter errors = new StringWriter();
-         e.printStackTrace(new PrintWriter(errors));
-         String stackTrace = errors.toString();
+    /**
+     * @tpTestDetails Check exception during client sending
+     * @tpSince RESTEasy 4.0.0.Beta7
+     */
+    @Test
+    public void exceptionDuringClientSend() throws Exception {
 
-         MatcherAssert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
-               containsString("javax.json.bind.JsonbException"));
-         MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
-               containsString("org.eclipse.yasson.internal"));
-         MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
-               containsString("Caused by: java.lang.RuntimeException: "
-                       + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()));
-      }
+        // count log messages before request
+        LogCounter errorStringLog = new LogCounter("ERROR",
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      // assert log messages after request
-      MatcherAssert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(1));
-      MatcherAssert.assertThat("RESTEasy exception should be logged",
-         resteasyExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
-      MatcherAssert.assertThat("There shouldn't be any error logs in client",
-         errorStringLog.count(), is(0));
-   }
+        LogCounter resteasyExceptionLog = new LogCounter(
+                ".*DEBUG .* RESTEASY004672.*", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
 
-   /**
-    * @tpTestDetails Check exception during client sending
-    * @tpSince RESTEasy 4.0.0.Beta7
-    */
-   @Test
-   public void exceptionDuringClientSend() throws Exception {
+        LogCounter yassonExceptionLog = new LogCounter(
+                "Caused by: javax.json.bind.JsonbException", true,
+                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter applicationExcpetionLog = new LogCounter(
+                "Caused by: java.lang.RuntimeException: " +
+                        JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
+                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
-      // count log messages before request
-      LogCounter errorStringLog = new LogCounter("ERROR",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        // use JsonBindingProvider to get exception
+        try {
+            // perform request
+            WebTarget base = client.target(generateURL("/get/ok"));
+            base.request().post(Entity.entity(new JsonBindingDebugLoggingItemCorruptedGet(), MediaType.APPLICATION_JSON));
+        } catch (ProcessingException e) {
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            String stackTrace = errors.toString();
 
-      LogCounter resteasyExceptionLog = new LogCounter(
-              ".*DEBUG .* RESTEASY004672.*", true,
-              ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+            MatcherAssert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
+                    containsString("javax.json.bind.JsonbException"));
+            MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
+                    containsString("org.eclipse.yasson.internal"));
+            MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
+                    containsString("Caused by: java.lang.RuntimeException: "
+                            + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()));
+        }
 
-      LogCounter yassonExceptionLog = new LogCounter(
-              "Caused by: javax.json.bind.JsonbException", true,
-              ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter yassonStacktraceLog = new LogCounter("at org.eclipse.yasson",
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-      LogCounter applicationExcpetionLog = new LogCounter(
-              "Caused by: java.lang.RuntimeException: "+
-              JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
-              true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
-
-
-      // use JsonBindingProvider to get exception
-      try {
-         // perform request
-         WebTarget base = client.target(generateURL("/get/ok"));
-         base.request().post(Entity.entity(new JsonBindingDebugLoggingItemCorruptedGet(), MediaType.APPLICATION_JSON));
-      } catch (ProcessingException e) {
-         StringWriter errors = new StringWriter();
-         e.printStackTrace(new PrintWriter(errors));
-         String stackTrace = errors.toString();
-
-         MatcherAssert.assertThat("Stracktrace doesn't contain javax.json.bind.JsonbException", stackTrace,
-               containsString("javax.json.bind.JsonbException"));
-         MatcherAssert.assertThat("Stracktrace doesn't contain yasson part", stackTrace,
-               containsString("org.eclipse.yasson.internal"));
-         MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
-               containsString("Caused by: java.lang.RuntimeException: "
-                       + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()));
-      }
-
-      // assert log messages after request
-      MatcherAssert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), greaterThan(0));
-      MatcherAssert.assertThat("RESTEasy exception should be logged",
-         resteasyExceptionLog.count(), is(1));
-      MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
-              yassonStacktraceLog.count(), greaterThan(0));
-      MatcherAssert.assertThat("There shouldn't be any error logs in client",
-         errorStringLog.count(), is(0));
-   }
+        // assert log messages after request
+        MatcherAssert.assertThat("Application Exception should be logged",
+                applicationExcpetionLog.count(), is(1));
+        MatcherAssert.assertThat("Yasson exception should be logged",
+                yassonExceptionLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("RESTEasy exception should be logged",
+                resteasyExceptionLog.count(), is(1));
+        MatcherAssert.assertThat("Yasson exception stacktrace should be logged",
+                yassonStacktraceLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("There shouldn't be any error logs in client",
+                errorStringLog.count(), is(0));
+    }
 }

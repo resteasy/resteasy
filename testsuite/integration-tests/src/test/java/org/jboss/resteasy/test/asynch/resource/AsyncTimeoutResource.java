@@ -9,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 
-
 @Path("/")
 public class AsyncTimeoutResource {
     private static boolean timeout = false;
@@ -43,9 +42,9 @@ public class AsyncTimeoutResource {
     public void extendedTimeout(@Suspended AsyncResponse response) {
         response.setTimeoutHandler(ar -> {
             if (timeoutExtended.getAndSet(true)) {
-               ar.resume("Extended timeout hello");
+                ar.resume("Extended timeout hello");
             } else {
-               ar.setTimeout(2, TimeUnit.SECONDS); // wait 2 more seconds
+                ar.setTimeout(2, TimeUnit.SECONDS); // wait 2 more seconds
             }
         });
         response.setTimeout(2, TimeUnit.SECONDS);
@@ -55,7 +54,7 @@ public class AsyncTimeoutResource {
     @Path("resumeAfterSettingTimeoutHandler")
     public void resumeAfterSettingTimeoutHandler(@Suspended AsyncResponse response) {
         response.setTimeoutHandler(ar -> {
-           ar.resume("From TimeoutHandler");
+            ar.resume("From TimeoutHandler");
         });
         response.setTimeout(2, TimeUnit.SECONDS);
         response.resume("From initial");

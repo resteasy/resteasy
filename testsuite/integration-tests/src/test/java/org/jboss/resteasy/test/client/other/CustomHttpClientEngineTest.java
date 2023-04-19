@@ -1,12 +1,13 @@
 package org.jboss.resteasy.test.client.other;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4Resource;
 import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4ResourceImpl;
@@ -29,31 +30,31 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class CustomHttpClientEngineTest {
 
-   @Deployment
-   public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(CustomHttpClientEngineTest.class.getSimpleName());
-      war.addClass(ApacheHttpClient4Resource.class);
-      return TestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
-   }
+    @Deployment
+    public static Archive<?> deploySimpleResource() {
+        WebArchive war = TestUtil.prepareArchive(CustomHttpClientEngineTest.class.getSimpleName());
+        war.addClass(ApacheHttpClient4Resource.class);
+        return TestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, CustomHttpClientEngineTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, CustomHttpClientEngineTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Create custom ClientHttpEngine and set it to the resteasy-client
-    * @tpSince RESTEasy 3.0.24
-    */
-   @Test
-   public void test() {
-      ResteasyClientBuilder clientBuilder = ((ResteasyClientBuilder)ClientBuilder.newBuilder());
-      ClientHttpEngine engine = new CustomHttpClientEngineBuilder().resteasyClientBuilder(clientBuilder).build();
-      ResteasyClient client = clientBuilder.httpEngine(engine).build();
-      Assert.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));
+    /**
+     * @tpTestDetails Create custom ClientHttpEngine and set it to the resteasy-client
+     * @tpSince RESTEasy 3.0.24
+     */
+    @Test
+    public void test() {
+        ResteasyClientBuilder clientBuilder = ((ResteasyClientBuilder) ClientBuilder.newBuilder());
+        ClientHttpEngine engine = new CustomHttpClientEngineBuilder().resteasyClientBuilder(clientBuilder).build();
+        ResteasyClient client = clientBuilder.httpEngine(engine).build();
+        Assert.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));
 
-      ApacheHttpClient4Resource proxy = client.target(generateURL("")).proxy(ApacheHttpClient4Resource.class);
-      Assert.assertEquals("Unexpected response", "hello world", proxy.get());
+        ApacheHttpClient4Resource proxy = client.target(generateURL("")).proxy(ApacheHttpClient4Resource.class);
+        Assert.assertEquals("Unexpected response", "hello world", proxy.get());
 
-      client.close();
-   }
+        client.close();
+    }
 }

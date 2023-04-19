@@ -10,10 +10,11 @@ import javax.ws.rs.core.Response;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyBadRequestException extends BadRequestException implements WebApplicationExceptionWrapper<BadRequestException> {
+public class ResteasyBadRequestException extends BadRequestException
+        implements WebApplicationExceptionWrapper<BadRequestException> {
 
-   private static final long serialVersionUID = -6250430572164780061L;
-   private final BadRequestException wrapped;
+    private static final long serialVersionUID = -6250430572164780061L;
+    private final BadRequestException wrapped;
 
     ResteasyBadRequestException(final BadRequestException wrapped) {
         super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());

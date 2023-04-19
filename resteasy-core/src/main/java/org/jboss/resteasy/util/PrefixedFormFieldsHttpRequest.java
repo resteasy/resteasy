@@ -1,21 +1,21 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.spi.HttpRequest;
-
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.spi.HttpRequest;
 
 public class PrefixedFormFieldsHttpRequest extends DelegatingHttpRequest {
 
-   private final String prefix;
+    private final String prefix;
 
-   public PrefixedFormFieldsHttpRequest(final String prefix, final HttpRequest request) {
-      super(request);
-      this.prefix = prefix;
-   }
+    public PrefixedFormFieldsHttpRequest(final String prefix, final HttpRequest request) {
+        super(request);
+        this.prefix = prefix;
+    }
 
-   @Override
-   public MultivaluedMap<String, String> getDecodedFormParameters() {
-      return new PrefixedMultivaluedMap<String>(prefix, super.getDecodedFormParameters());
-   }
+    @Override
+    public MultivaluedMap<String, String> getDecodedFormParameters() {
+        return new PrefixedMultivaluedMap<String>(prefix, super.getDecodedFormParameters());
+    }
 
 }

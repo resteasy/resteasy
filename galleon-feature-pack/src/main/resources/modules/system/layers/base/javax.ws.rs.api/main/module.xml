@@ -22,15 +22,15 @@
 <module xmlns="urn:jboss:module:1.9" name="javax.ws.rs.api">
 
     <resources>
-        <artifact name="${org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.1_spec}"/>
+        <artifact name="${org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.1_spec}" />
     </resources>
 
     <dependencies>
-        <module name="java.logging"/>
-        <module name="java.xml"/>
-        <module name="javax.xml.bind.api"/>
+        <module name="java.logging" />
+        <module name="java.xml" />
+        <module name="javax.xml.bind.api" />
         <!-- Export the services for RESTful Web Services implementation -->
-        <module name="org.jboss.resteasy.resteasy-client" services="export"/>
-        <module name="org.jboss.resteasy.resteasy-core" services="export"/>
+        <module name="org.jboss.resteasy.resteasy-client" services="export" />
+        <module name="org.jboss.resteasy.resteasy-core" services="export" />
     </dependencies>
 </module>

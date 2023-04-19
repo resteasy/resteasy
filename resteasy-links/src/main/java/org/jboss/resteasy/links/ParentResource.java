@@ -15,9 +15,10 @@ import java.lang.annotation.Target;
  * will use this entity's {@link javax.xml.bind.annotation.XmlID @XmlID} id, and its parent's, in
  * reverse order, to form the path parameter list (from the furthest parent, to this entity).
  * </p>
+ *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ParentResource {

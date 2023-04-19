@@ -13,6 +13,7 @@ public class AsyncOutputWriter {
 
     /**
      * Creates a new async writer using the default charset.
+     *
      * @param asyncOutputStream the async output stream on which to write
      */
     public AsyncOutputWriter(final AsyncOutputStream asyncOutputStream) {
@@ -21,8 +22,9 @@ public class AsyncOutputWriter {
 
     /**
      * Creates a new async writer using the specified charset.
+     *
      * @param asyncOutputStream the async output stream on which to write
-     * @param charset the charset to use
+     * @param charset           the charset to use
      */
     public AsyncOutputWriter(final AsyncOutputStream asyncOutputStream, final Charset charset) {
         this.asyncOutputStream = asyncOutputStream;
@@ -31,18 +33,20 @@ public class AsyncOutputWriter {
 
     /**
      * Writes the given string to the underlying async output stream.
+     *
      * @param string the string to write, using the specified charset
      * @return a {@link CompletionStage} indicating completion.
      */
-    public CompletionStage<Void> asyncWrite(String s){
+    public CompletionStage<Void> asyncWrite(String s) {
         return asyncOutputStream.asyncWrite(s.getBytes(charset));
     }
 
     /**
      * Flushes the underlying async output stream.
+     *
      * @return a {@link CompletionStage} indicating completion.
      */
-    public CompletionStage<Void> asyncFlush(){
+    public CompletionStage<Void> asyncFlush() {
         return asyncOutputStream.asyncFlush();
     }
 }

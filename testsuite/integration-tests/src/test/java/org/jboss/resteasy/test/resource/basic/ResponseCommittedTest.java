@@ -27,40 +27,36 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ResponseCommittedTest
-{
-   public static int TEST_STATUS = 444;
-   private static Client client;
+public class ResponseCommittedTest {
+    public static int TEST_STATUS = 444;
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() throws Exception
-   {
-      WebArchive war = TestUtil.prepareArchive(ResponseCommittedTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ResponseCommittedResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() throws Exception {
+        WebArchive war = TestUtil.prepareArchive(ResponseCommittedTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, ResponseCommittedResource.class);
+    }
 
-   private String generateBaseUrl()
-   {
-      return PortProviderUtil.generateBaseUrl(ResponseCommittedTest.class.getSimpleName());
-   }
+    private String generateBaseUrl() {
+        return PortProviderUtil.generateBaseUrl(ResponseCommittedTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void setup() {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void setup() {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void close() {
-      client.close();
-   }
+    @AfterClass
+    public static void close() {
+        client.close();
+    }
 
-   @Test
-   public void testWorks() throws Exception
-   {
-      Invocation.Builder request = client.target(generateBaseUrl()).request();
-      Response response = request.get();
-      Assert.assertEquals(TEST_STATUS, response.getStatus());
-      response.close();
-      client.close();
-   }
+    @Test
+    public void testWorks() throws Exception {
+        Invocation.Builder request = client.target(generateBaseUrl()).request();
+        Response response = request.get();
+        Assert.assertEquals(TEST_STATUS, response.getStatus());
+        response.close();
+        client.close();
+    }
 }

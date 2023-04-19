@@ -1,19 +1,21 @@
 package org.jboss.resteasy.test.security.testjar;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.BasicAuthentication;
-
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.BasicAuthentication;
+
 /**
- * ClientConfigProvider implementation used in jar that tests ClientConfigProvider functionality regarding HTTP BASIC auth and SSLContext.
+ * ClientConfigProvider implementation used in jar that tests ClientConfigProvider functionality regarding HTTP BASIC auth and
+ * SSLContext.
  */
 public class ClientConfigTestMainClass {
     public static void main(String[] args) throws IOException, URISyntaxException, NoSuchAlgorithmException {

@@ -5,9 +5,9 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 
 @Path("/")
-public class HeaderParamParamConverterTestServiceImpl implements HeaderParamParamConverterTestService{
+public class HeaderParamParamConverterTestServiceImpl implements HeaderParamParamConverterTestService {
     @GET
-    public boolean test(@HeaderParam("test-header") HeaderParamMyClass someValue){
+    public boolean test(@HeaderParam("test-header") HeaderParamMyClass someValue) {
         return "someValue-MORE".equals(someValue.toString());
     }
 }

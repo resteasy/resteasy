@@ -4,6 +4,7 @@ import static org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 
@@ -12,10 +13,11 @@ import javax.ws.rs.core.Response;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ResteasyNotAuthorizedException extends NotAuthorizedException implements WebApplicationExceptionWrapper<NotAuthorizedException> {
+public class ResteasyNotAuthorizedException extends NotAuthorizedException
+        implements WebApplicationExceptionWrapper<NotAuthorizedException> {
 
-   private static final long serialVersionUID = 7034604450379314101L;
-   private final NotAuthorizedException wrapped;
+    private static final long serialVersionUID = 7034604450379314101L;
+    private final NotAuthorizedException wrapped;
 
     ResteasyNotAuthorizedException(final NotAuthorizedException wrapped) {
         super(wrapped.getMessage(), sanitize(wrapped.getResponse()), wrapped.getCause());

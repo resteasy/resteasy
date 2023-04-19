@@ -17,14 +17,13 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Produces("application/xml")
 @Priority(Priorities.USER + 100)
-public class ReaderWriterLowPriorityCustomerWriter extends ReaderWriterCustomerWriter implements MessageBodyWriter<ReaderWriterCustomer>
-{
-   @Override
-   public void writeTo(ReaderWriterCustomer customer, Class<?> type, Type genericType, Annotation[] annotations,
-         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-         throws IOException, WebApplicationException
-   {
-      String out = "<customer><name>low priority</name></customer>";
-      entityStream.write(out.getBytes());
-   }
+public class ReaderWriterLowPriorityCustomerWriter extends ReaderWriterCustomerWriter
+        implements MessageBodyWriter<ReaderWriterCustomer> {
+    @Override
+    public void writeTo(ReaderWriterCustomer customer, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+        String out = "<customer><name>low priority</name></customer>";
+        entityStream.write(out.getBytes());
+    }
 }

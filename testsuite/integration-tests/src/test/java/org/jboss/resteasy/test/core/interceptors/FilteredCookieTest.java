@@ -30,43 +30,44 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class FilteredCookieTest {
 
-   private static final String OLD_COOKIE_NAME = "old-cookie";
-   private static final String NEW_COOKIE_NAME = "new-cookie";
+    private static final String OLD_COOKIE_NAME = "old-cookie";
+    private static final String NEW_COOKIE_NAME = "new-cookie";
 
-   @Deployment
-   public static Archive<?> deploySimpleResource() {
-      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
-   }
+    @Deployment
+    public static Archive<?> deploySimpleResource() {
+        WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class,
+                FilteredCookieContainerRequestFilter.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, FilteredCookieTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, FilteredCookieTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Tests if multiple cookies are returned by the server
-    * @tpSince RESTEasy 3.1.0.Final
-    */
-   @Test
-   public void testServerHeaders() {
+    /**
+     * @tpTestDetails Tests if multiple cookies are returned by the server
+     * @tpSince RESTEasy 3.1.0.Final
+     */
+    @Test
+    public void testServerHeaders() {
 
-      Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/test/get"));
-      Response response = target.request().get();
-      NewCookie cookie = response.getCookies().get(OLD_COOKIE_NAME);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertNotNull(cookie);
-      client.close();
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(generateURL("/test/get"));
+        Response response = target.request().get();
+        NewCookie cookie = response.getCookies().get(OLD_COOKIE_NAME);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertNotNull(cookie);
+        client.close();
 
-      client = ClientBuilder.newClient();
-      target = client.target(generateURL("/test/return"));
-      Builder builder = target.request();
-      response = builder.cookie(cookie).get();
-      NewCookie oldCookie = response.getCookies().get(OLD_COOKIE_NAME);
-      NewCookie newCookie = response.getCookies().get(NEW_COOKIE_NAME);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertNotNull(oldCookie);
-      Assert.assertNotNull(newCookie);
-      client.close();
-   }
+        client = ClientBuilder.newClient();
+        target = client.target(generateURL("/test/return"));
+        Builder builder = target.request();
+        response = builder.cookie(cookie).get();
+        NewCookie oldCookie = response.getCookies().get(OLD_COOKIE_NAME);
+        NewCookie newCookie = response.getCookies().get(NEW_COOKIE_NAME);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertNotNull(oldCookie);
+        Assert.assertNotNull(newCookie);
+        client.close();
+    }
 }

@@ -27,34 +27,34 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ReaderInterceptorContextTest
-{
-   private static Client client;
+public class ReaderInterceptorContextTest {
+    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ReaderInterceptorContextTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, ReaderInterceptorContextInterceptor.class, ReaderInterceptorContextResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(ReaderInterceptorContextTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, ReaderInterceptorContextInterceptor.class,
+                ReaderInterceptorContextResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ReaderInterceptorContextTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, ReaderInterceptorContextTest.class.getSimpleName());
+    }
 
-   @BeforeClass
-   public static void before() throws Exception {
-      client = ClientBuilder.newClient();
-   }
+    @BeforeClass
+    public static void before() throws Exception {
+        client = ClientBuilder.newClient();
+    }
 
-   @AfterClass
-   public static void after() throws Exception {
-      client.close();
-   }
+    @AfterClass
+    public static void after() throws Exception {
+        client.close();
+    }
 
-   @Test
-   public void testInterceptorHeaderMap() throws Exception {
-      Response response = client.target(generateURL("/post")).request().post(Entity.entity("dummy", "text/plain"));
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("123789", response.readEntity(String.class));
-   }
+    @Test
+    public void testInterceptorHeaderMap() throws Exception {
+        Response response = client.target(generateURL("/post")).request().post(Entity.entity("dummy", "text/plain"));
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("123789", response.readEntity(String.class));
+    }
 }

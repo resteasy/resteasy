@@ -1,13 +1,14 @@
 package org.jboss.resteasy.plugins.stats;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -16,63 +17,53 @@ import java.util.List;
  */
 @XmlRootElement(name = "error")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso({GetResourceMethod.class, DeleteResourceMethod.class, HeadResourceMethod.class, OptionsResourceMethod.class, PostResourceMethod.class, PutResourceMethod.class, TraceResourceMethod.class})
-public class ResourceMethodEntry
-{
-   @XmlAttribute(name = "class")
-   private String clazz;
+@XmlSeeAlso({ GetResourceMethod.class, DeleteResourceMethod.class, HeadResourceMethod.class, OptionsResourceMethod.class,
+        PostResourceMethod.class, PutResourceMethod.class, TraceResourceMethod.class })
+public class ResourceMethodEntry {
+    @XmlAttribute(name = "class")
+    private String clazz;
 
-   @XmlAttribute
-   private String method;
+    @XmlAttribute
+    private String method;
 
-   @XmlAttribute
-   private long invocations;
+    @XmlAttribute
+    private long invocations;
 
-   @XmlElement
-   private List<String> produces = new ArrayList<String>();
+    @XmlElement
+    private List<String> produces = new ArrayList<String>();
 
-   @XmlElement
-   private List<String> consumes = new ArrayList<String>();
+    @XmlElement
+    private List<String> consumes = new ArrayList<String>();
 
+    public String getClazz() {
+        return clazz;
+    }
 
-   public String getClazz()
-   {
-      return clazz;
-   }
+    public String getMethod() {
+        return method;
+    }
 
-   public String getMethod()
-   {
-      return method;
-   }
+    public long getInvocations() {
+        return invocations;
+    }
 
+    public void setClazz(String clazz) {
+        this.clazz = clazz;
+    }
 
-   public long getInvocations()
-   {
-      return invocations;
-   }
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
-   public void setClazz(String clazz)
-   {
-      this.clazz = clazz;
-   }
+    public void setInvocations(long invocations) {
+        this.invocations = invocations;
+    }
 
-   public void setMethod(String method)
-   {
-      this.method = method;
-   }
+    public List<String> getProduces() {
+        return produces;
+    }
 
-   public void setInvocations(long invocations)
-   {
-      this.invocations = invocations;
-   }
-
-   public List<String> getProduces()
-   {
-      return produces;
-   }
-
-   public List<String> getConsumes()
-   {
-      return consumes;
-   }
+    public List<String> getConsumes() {
+        return consumes;
+    }
 }

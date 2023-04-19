@@ -1,12 +1,13 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
-import io.reactivex.Flowable;
-import io.reactivex.functions.BiFunction;
+import java.util.concurrent.Executor;
+
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.util.concurrent.Executor;
+import io.reactivex.Flowable;
+import io.reactivex.functions.BiFunction;
 
 @SuppressWarnings("rawtypes")
 class ContextPropagatorOnFlowableCreateAction implements BiFunction<Flowable, Subscriber, Subscriber> {
@@ -27,7 +28,7 @@ class ContextPropagatorOnFlowableCreateAction implements BiFunction<Flowable, Su
         private final Executor contextExecutor;
 
         private ContextCapturerFlowable(final Flowable<T> observable, final Subscriber<T> observer,
-                                        final Executor contextExecutor) {
+                final Executor contextExecutor) {
             this.source = observer;
             this.contextExecutor = contextExecutor;
         }

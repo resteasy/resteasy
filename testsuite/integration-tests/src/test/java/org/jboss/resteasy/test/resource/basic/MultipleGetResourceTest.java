@@ -1,5 +1,20 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+
+import java.io.File;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -15,24 +30,10 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.Assert;
-
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
  * Verify that setting resteasy config flag, resteasy_fail_fast to 'true' causes
@@ -57,8 +58,7 @@ public class MultipleGetResourceTest {
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("jboss.home.dir", "read"),
                 new PropertyPermission("jboss.server.base.dir", "read"),
-                new RuntimePermission("accessDeclaredMembers")
-        ), "permissions.xml");
+                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, MultipleGetResource.class);
     }
 
@@ -83,7 +83,7 @@ public class MultipleGetResourceTest {
                 false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
 
         WebTarget base = client.target(generateURL("/api"));
-        Response  response = base.request().get();
+        Response response = base.request().get();
         Assert.assertEquals(500, response.getStatus());
         response.close();
         MatcherAssert.assertThat(errorStringLog.count(), is(2));

@@ -8,31 +8,26 @@ import java.lang.reflect.Field;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class FieldParameter extends Parameter
-{
-   protected Field field;
+public class FieldParameter extends Parameter {
+    protected Field field;
 
-   protected FieldParameter(final ResourceClass declaredClass, final Field field)
-   {
-      super(declaredClass, field.getType(), field.getGenericType());
-      this.field = field;
-      this.paramName = field.getName();
-   }
+    protected FieldParameter(final ResourceClass declaredClass, final Field field) {
+        super(declaredClass, field.getType(), field.getGenericType());
+        this.field = field;
+        this.paramName = field.getName();
+    }
 
-   @Override
-   public AccessibleObject getAccessibleObject()
-   {
-      return field;
-   }
+    @Override
+    public AccessibleObject getAccessibleObject() {
+        return field;
+    }
 
-   @Override
-   public Annotation[] getAnnotations()
-   {
-      return field.getAnnotations();
-   }
+    @Override
+    public Annotation[] getAnnotations() {
+        return field.getAnnotations();
+    }
 
-   public Field getField()
-   {
-      return field;
-   }
+    public Field getField() {
+        return field;
+    }
 }

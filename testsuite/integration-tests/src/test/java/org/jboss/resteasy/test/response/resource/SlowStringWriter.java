@@ -17,35 +17,29 @@ import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 @Provider
-public class SlowStringWriter implements AsyncMessageBodyWriter<SlowString>
-{
-   @Override
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return type == SlowString.class;
-   }
+public class SlowStringWriter implements AsyncMessageBodyWriter<SlowString> {
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return type == SlowString.class;
+    }
 
-   @Override
-   public void writeTo(SlowString t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-         throws IOException, WebApplicationException
-   {
-      entityStream.write(t.string.getBytes(StandardCharsets.UTF_8));
-   }
+    @Override
+    public void writeTo(SlowString t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+        entityStream.write(t.string.getBytes(StandardCharsets.UTF_8));
+    }
 
-   @Override
-   public CompletionStage<Void> asyncWriteTo(SlowString t, Class<?> type, Type genericType, Annotation[] annotations,
-                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-                                             AsyncOutputStream entityStream)
-   {
-      return CompletableFuture.runAsync(() -> {
-         try
-         {
-            Thread.sleep(100);
-         } catch (InterruptedException e)
-         {
-         }
-      }).thenCompose(v -> entityStream.asyncWrite(t.string.getBytes(StandardCharsets.UTF_8)));
-   }
+    @Override
+    public CompletionStage<Void> asyncWriteTo(SlowString t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+            AsyncOutputStream entityStream) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+        }).thenCompose(v -> entityStream.asyncWrite(t.string.getBytes(StandardCharsets.UTF_8)));
+    }
 
 }

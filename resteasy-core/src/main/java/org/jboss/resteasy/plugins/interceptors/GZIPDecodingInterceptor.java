@@ -28,131 +28,106 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
  */
 @Provider
 @Priority(Priorities.ENTITY_CODER)
-public class GZIPDecodingInterceptor implements ReaderInterceptor
-{
-   private static final int DEFAULT_MAX_SIZE = 10000000;
-   private int maxSize;
+public class GZIPDecodingInterceptor implements ReaderInterceptor {
+    private static final int DEFAULT_MAX_SIZE = 10000000;
+    private int maxSize;
 
-   public GZIPDecodingInterceptor(final int maxSize)
-   {
-      this.maxSize = maxSize;
-   }
+    public GZIPDecodingInterceptor(final int maxSize) {
+        this.maxSize = maxSize;
+    }
 
-   public GZIPDecodingInterceptor()
-   {
-      this.maxSize = -1;
-   }
+    public GZIPDecodingInterceptor() {
+        this.maxSize = -1;
+    }
 
-   public static class FinishableGZIPInputStream extends GZIPInputStream
-   {
-      private int maxSize;
-      private int count;
-      private boolean server;
+    public static class FinishableGZIPInputStream extends GZIPInputStream {
+        private int maxSize;
+        private int count;
+        private boolean server;
 
-      public FinishableGZIPInputStream(final InputStream is) throws IOException
-      {
-         this(is, true, DEFAULT_MAX_SIZE);
-      }
+        public FinishableGZIPInputStream(final InputStream is) throws IOException {
+            this(is, true, DEFAULT_MAX_SIZE);
+        }
 
-      public FinishableGZIPInputStream(final InputStream is, final boolean server) throws IOException
-      {
-         this(is, server, DEFAULT_MAX_SIZE);
-      }
+        public FinishableGZIPInputStream(final InputStream is, final boolean server) throws IOException {
+            this(is, server, DEFAULT_MAX_SIZE);
+        }
 
-      public FinishableGZIPInputStream(final InputStream is, final boolean server, final int maxSize) throws IOException
-      {
-         super(is);
-         this.server = server;
-         this.maxSize = maxSize;
-      }
+        public FinishableGZIPInputStream(final InputStream is, final boolean server, final int maxSize) throws IOException {
+            super(is);
+            this.server = server;
+            this.maxSize = maxSize;
+        }
 
-      public int read(byte[] buf, int off, int len) throws IOException
-      {
-         LogMessages.LOGGER.debugf("Interceptor : %s,  Method : read", getClass().getName());
-         int n = super.read(buf, off, len);
-         if (n > -1)
-         {
-            count += n;
-         }
-         if (count > maxSize)
-         {
-            finish();
-            close();
-            if (server)
-            {
-               throw new WebApplicationException(Response.status(Status.REQUEST_ENTITY_TOO_LARGE).entity(Messages.MESSAGES.gzipExceedsMaxSize(maxSize)).build());
+        public int read(byte[] buf, int off, int len) throws IOException {
+            LogMessages.LOGGER.debugf("Interceptor : %s,  Method : read", getClass().getName());
+            int n = super.read(buf, off, len);
+            if (n > -1) {
+                count += n;
             }
-            else
-            {
-               throw new ProcessingException(Messages.MESSAGES.gzipExceedsMaxSize(maxSize));
+            if (count > maxSize) {
+                finish();
+                close();
+                if (server) {
+                    throw new WebApplicationException(Response.status(Status.REQUEST_ENTITY_TOO_LARGE)
+                            .entity(Messages.MESSAGES.gzipExceedsMaxSize(maxSize)).build());
+                } else {
+                    throw new ProcessingException(Messages.MESSAGES.gzipExceedsMaxSize(maxSize));
+                }
             }
-         }
-         return n;
-      }
+            return n;
+        }
 
-      public void finish()
-      {
-         inf.end(); // make sure on finish the inflater's end() is called to release the native code pointer
-      }
-   }
+        public void finish() {
+            inf.end(); // make sure on finish the inflater's end() is called to release the native code pointer
+        }
+    }
 
-   @Override
-   public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
-   {
-      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
-      Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
-      if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))
-      {
-         InputStream old = context.getInputStream();
-         FinishableGZIPInputStream is = new FinishableGZIPInputStream(old, context instanceof ServerReaderInterceptorContext, getMaxSize());
-         context.setInputStream(is);
-         try
-         {
+    @Override
+    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
+        Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
+        if (encoding != null && encoding.toString().equalsIgnoreCase("gzip")) {
+            InputStream old = context.getInputStream();
+            FinishableGZIPInputStream is = new FinishableGZIPInputStream(old, context instanceof ServerReaderInterceptorContext,
+                    getMaxSize());
+            context.setInputStream(is);
+            try {
+                return context.proceed();
+            } finally {
+                // Don't finish() an InputStream - TODO this still will require a garbage collect to finish the stream
+                // see RESTEASY-554 for more details
+                if (!context.getType().equals(InputStream.class))
+                    is.finish();
+                context.setInputStream(old);
+            }
+        } else {
             return context.proceed();
-         }
-         finally
-         {
-            // Don't finish() an InputStream - TODO this still will require a garbage collect to finish the stream
-            // see RESTEASY-554 for more details
-            if (!context.getType().equals(InputStream.class)) is.finish();
-            context.setInputStream(old);
-         }
-      }
-      else
-      {
-         return context.proceed();
-      }
-   }
+        }
+    }
 
-   private int getMaxSize()
-   {
-      if (maxSize != -1)
-      {
-         return maxSize;
-      }
+    private int getMaxSize() {
+        if (maxSize != -1) {
+            return maxSize;
+        }
 
-      int size = -1;
-      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
-      if (context != null)
-      {
-         String s = context.getParameter(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT);
-         if (s != null)
-         {
-            try
-            {
-               size = Integer.parseInt(s);
+        int size = -1;
+        ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
+        if (context != null) {
+            String s = context.getParameter(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT);
+            if (s != null) {
+                try {
+                    size = Integer.parseInt(s);
+                } catch (NumberFormatException e) {
+                    LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT,
+                            Integer.toString(DEFAULT_MAX_SIZE));
+                }
             }
-            catch (NumberFormatException e)
-            {
-               LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT, Integer.toString(DEFAULT_MAX_SIZE));
-            }
-         }
-      }
-      if (size == -1)
-      {
-         size = DEFAULT_MAX_SIZE;
-      }
+        }
+        if (size == -1) {
+            size = DEFAULT_MAX_SIZE;
+        }
 
-      return size;
-   }
+        return size;
+    }
 }

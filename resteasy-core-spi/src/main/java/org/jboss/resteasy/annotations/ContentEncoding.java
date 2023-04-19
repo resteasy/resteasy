@@ -11,9 +11,8 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Target({ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ContentEncoding
-{
-   String value();
+public @interface ContentEncoding {
+    String value();
 }

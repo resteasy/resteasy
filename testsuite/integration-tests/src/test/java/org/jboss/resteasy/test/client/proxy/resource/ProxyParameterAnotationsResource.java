@@ -1,15 +1,15 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
 import org.jboss.resteasy.annotations.jaxrs.CookieParam;
 import org.jboss.resteasy.annotations.jaxrs.FormParam;
 import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 
 /**
  * Created by Marek Marusic <mmarusic@redhat.com> on 1/16/19.
@@ -42,24 +42,24 @@ public class ProxyParameterAnotationsResource {
 
     @Path("FormParam")
     @POST
-    public String  getFormParam(@FormParam("formParam") String formParam) {
+    public String getFormParam(@FormParam("formParam") String formParam) {
         return "FormParam = " + formParam;
     }
 
     @Path("MatrixParam")
     @GET
-    public String  getMatrixParam(@MatrixParam("matrixParam") String matrixParam) {
+    public String getMatrixParam(@MatrixParam("matrixParam") String matrixParam) {
         return "MatrixParam = " + matrixParam;
     }
 
     @Path("AllParams/{pathParam}")
     @POST
     public String getAllParams(@QueryParam String queryParam,
-                               @HeaderParam String headerParam,
-                               @CookieParam String cookieParam,
-                               @PathParam String pathParam,
-                               @FormParam String formParam,
-                               @MatrixParam String matrixParam) {
-        return queryParam+" "+headerParam+" "+cookieParam+" "+pathParam+" "+formParam+" "+matrixParam;
+            @HeaderParam String headerParam,
+            @CookieParam String cookieParam,
+            @PathParam String pathParam,
+            @FormParam String formParam,
+            @MatrixParam String matrixParam) {
+        return queryParam + " " + headerParam + " " + cookieParam + " " + pathParam + " " + formParam + " " + matrixParam;
     }
 }

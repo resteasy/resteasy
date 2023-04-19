@@ -31,160 +31,139 @@ import org.junit.Test;
  * @author Nicolas NESMON
  *
  */
-public class DynamicFeatureContextDelegateTest
-{
+public class DynamicFeatureContextDelegateTest {
 
-   public static class CustomObject
-   {
+    public static class CustomObject {
 
-   }
+    }
 
-   public static class CustomException extends Exception
-   {
+    public static class CustomException extends Exception {
 
-   }
+    }
 
-   @Provider
-   @Produces(MediaType.WILDCARD)
-   public static class CustomObjectContextResolver implements ContextResolver<CustomObject>
-   {
+    @Provider
+    @Produces(MediaType.WILDCARD)
+    public static class CustomObjectContextResolver implements ContextResolver<CustomObject> {
 
-      @Override
-      public CustomObject getContext(Class<?> type)
-      {
-         return new CustomObject();
-      }
+        @Override
+        public CustomObject getContext(Class<?> type) {
+            return new CustomObject();
+        }
 
-   }
+    }
 
-   @Provider
-   @Produces(MediaType.APPLICATION_JSON)
-   public static class CustomObjectMessageBodyWriter implements MessageBodyWriter<CustomObject>
-   {
+    @Provider
+    @Produces(MediaType.APPLICATION_JSON)
+    public static class CustomObjectMessageBodyWriter implements MessageBodyWriter<CustomObject> {
 
-      @Override
-      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-      {
-         return true;
-      }
+        @Override
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return true;
+        }
 
-      @Override
-      public void writeTo(CustomObject t, Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException
-      {
-      }
+        @Override
+        public void writeTo(CustomObject t, Class<?> type, Type genericType, Annotation[] annotations,
+                MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                throws IOException, WebApplicationException {
+        }
 
-      @Override
-      public long getSize(CustomObject t, Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType)
-      {
-         return 0;
-      }
+        @Override
+        public long getSize(CustomObject t, Class<?> type, Type genericType, Annotation[] annotations,
+                MediaType mediaType) {
+            return 0;
+        }
 
-   }
+    }
 
-   @Provider
-   @Consumes(MediaType.APPLICATION_JSON)
-   public static class CustomObjectMessageBodyReader implements MessageBodyReader<CustomObject>
-   {
+    @Provider
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class CustomObjectMessageBodyReader implements MessageBodyReader<CustomObject> {
 
-      @Override
-      public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-      {
-         return true;
-      }
+        @Override
+        public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return true;
+        }
 
-      @Override
-      public CustomObject readFrom(Class<CustomObject> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException
-      {
-         return null;
-      }
+        @Override
+        public CustomObject readFrom(Class<CustomObject> type, Type genericType, Annotation[] annotations,
+                MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+                throws IOException, WebApplicationException {
+            return null;
+        }
 
-   }
+    }
 
-   @Provider
-   public static class CustomExceptionMapper implements ExceptionMapper<CustomException>
-   {
+    @Provider
+    public static class CustomExceptionMapper implements ExceptionMapper<CustomException> {
 
-      @Override
-      public Response toResponse(CustomException exception)
-      {
-         return null;
-      }
+        @Override
+        public Response toResponse(CustomException exception) {
+            return null;
+        }
 
-   }
+    }
 
-   @Provider
-   public static class CustomDynamicFeature implements DynamicFeature
-   {
+    @Provider
+    public static class CustomDynamicFeature implements DynamicFeature {
 
-      @Override
-      public void configure(ResourceInfo resourceInfo, FeatureContext context)
-      {
-      }
+        @Override
+        public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+        }
 
-   }
+    }
 
-   @Test
-   public void testContextResolverRegistration() throws Exception
-   {
-      ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
-      DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
-      featureContext.register(new CustomObjectContextResolver());
-      Assert.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
-      featureContext.register(CustomObjectContextResolver.class);
-      Assert.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
-   }
+    @Test
+    public void testContextResolverRegistration() throws Exception {
+        ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
+        DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
+        featureContext.register(new CustomObjectContextResolver());
+        Assert.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
+        featureContext.register(CustomObjectContextResolver.class);
+        Assert.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
+    }
 
-   @Test
-   public void testExceptionMapperRegistration() throws Exception
-   {
-      ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
-      DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
-      featureContext.register(new CustomExceptionMapper());
-      Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
-      featureContext.register(CustomExceptionMapper.class);
-      Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
-   }
+    @Test
+    public void testExceptionMapperRegistration() throws Exception {
+        ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
+        DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
+        featureContext.register(new CustomExceptionMapper());
+        Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
+        featureContext.register(CustomExceptionMapper.class);
+        Assert.assertNull(resteasyProviderFactory.getExceptionMapper(CustomException.class));
+    }
 
-   @Test
-   public void testMessageBodyWriterRegistration() throws Exception
-   {
-      ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
-      DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
-      featureContext.register(new CustomObjectMessageBodyWriter());
-      Assert.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
-            MediaType.APPLICATION_JSON_TYPE));
-      featureContext.register(CustomObjectMessageBodyWriter.class);
-      Assert.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
-            MediaType.APPLICATION_JSON_TYPE));
-   }
+    @Test
+    public void testMessageBodyWriterRegistration() throws Exception {
+        ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
+        DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
+        featureContext.register(new CustomObjectMessageBodyWriter());
+        Assert.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
+                MediaType.APPLICATION_JSON_TYPE));
+        featureContext.register(CustomObjectMessageBodyWriter.class);
+        Assert.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
+                MediaType.APPLICATION_JSON_TYPE));
+    }
 
-   @Test
-   public void testMessageBodyReaderRegistration() throws Exception
-   {
-      ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
-      DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
-      featureContext.register(new CustomObjectMessageBodyReader());
-      Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
-            MediaType.APPLICATION_JSON_TYPE));
-      featureContext.register(CustomObjectMessageBodyReader.class);
-      Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
-            MediaType.APPLICATION_JSON_TYPE));
-   }
+    @Test
+    public void testMessageBodyReaderRegistration() throws Exception {
+        ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
+        DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
+        featureContext.register(new CustomObjectMessageBodyReader());
+        Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
+                MediaType.APPLICATION_JSON_TYPE));
+        featureContext.register(CustomObjectMessageBodyReader.class);
+        Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
+                MediaType.APPLICATION_JSON_TYPE));
+    }
 
-   @Test
-   public void testDynamicFeatureRegistration() throws Exception
-   {
-      ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
-      DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
-      featureContext.register(new CustomDynamicFeature());
-      Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
-      featureContext.register(CustomDynamicFeature.class);
-      Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
-   }
+    @Test
+    public void testDynamicFeatureRegistration() throws Exception {
+        ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
+        DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
+        featureContext.register(new CustomDynamicFeature());
+        Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
+        featureContext.register(CustomDynamicFeature.class);
+        Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
+    }
 
 }

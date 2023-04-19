@@ -1,14 +1,13 @@
 package org.jboss.resteasy.core.registry;
 
+import java.util.List;
+import java.util.Objects;
+
+import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResourceInvoker;
-
-import javax.ws.rs.core.MediaType;
-
-import java.util.List;
-import java.util.Objects;
 
 public class MatchCache {
     public MediaType chosen;
@@ -33,16 +32,21 @@ public class MatchCache {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
             Key key = (Key) o;
             boolean b = start == key.start &&
                     path.equals(key.path) &&
                     method.equals(key.method) &&
                     Objects.equals(contentType, key.contentType);
-            if (!b) return false;
-            if (accepts.isEmpty() && key.accepts.isEmpty()) return true;
-            if (accepts.size() != key.accepts.size()) return false;
+            if (!b)
+                return false;
+            if (accepts.isEmpty() && key.accepts.isEmpty())
+                return true;
+            if (accepts.size() != key.accepts.size())
+                return false;
             // todo improve this
             return b &&
                     accepts.equals(key.accepts);

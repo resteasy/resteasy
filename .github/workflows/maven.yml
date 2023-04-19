@@ -5,11 +5,31 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - '**'
+    branches-ignore:
+      - 'dependabot/**'
+    paths-ignore:
+      - '.gitignore'
+      - ".github/workflows/manual-*.yml"
+      - "docbook"
+      - "distribution"
+      - "CONTRIBUTING.md"
+      - "License.html"
+      - "README.md"
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - '.gitignore'
+      - "docbook"
+      - "distribution"
+      - "CONTRIBUTING.md"
+      - "License.html"
+      - "README.md"
+
+# Only run the latest job
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -126,3 +146,18 @@ jobs:
       - name: Build Java Docs with Java 11
         run: mvn clean install -U -B -DskipTests '-Dmaven.javadoc.skip=false' javadoc:javadoc
 
+  format-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Validate Formatting
+        run: |
+          mvn -B validate -Pformat-check -Denforcer.skip=true

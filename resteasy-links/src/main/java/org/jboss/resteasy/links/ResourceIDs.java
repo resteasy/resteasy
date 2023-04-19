@@ -16,11 +16,12 @@ import java.lang.annotation.Target;
  * and your resource holds the two bean properties <code>name</code> and <code>id</code>, then your
  * resource class should be annotated with {@link ResourceIDs @ResourceIDs({"name", "value"})}.
  * </p>
+ *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ResourceIDs {
-   String[] value();
+    String[] value();
 }

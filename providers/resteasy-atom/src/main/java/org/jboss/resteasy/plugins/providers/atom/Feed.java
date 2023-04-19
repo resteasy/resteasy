@@ -1,14 +1,18 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * <p>Per RFC4287:</p>
+ * <p>
+ * Per RFC4287:
+ * </p>
+ *
  * <pre>
  * The "atom:feed" element is the document (i.e., top-level) element of
  * an Atom Feed Document, acting as a container for metadata and data
@@ -83,15 +87,13 @@ import java.util.List;
  */
 @XmlRootElement(name = "feed")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Feed extends Source
-{
+public class Feed extends Source {
 
-   private List<Entry> entries = new ArrayList<Entry>();
+    private List<Entry> entries = new ArrayList<Entry>();
 
-   @XmlElementRef
-   public List<Entry> getEntries()
-   {
-      return entries;
-   }
+    @XmlElementRef
+    public List<Entry> getEntries() {
+        return entries;
+    }
 
 }

@@ -11,8 +11,8 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.providers.file.resource.TempFileDeletionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.providers.file.resource.TempFileDeletionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,27 +30,28 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class TempFileDeletionTest {
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(TempFileDeletionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, TempFileDeletionResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(TempFileDeletionTest.class.getSimpleName());
+        return TestUtil.finishContainerPrepare(war, null, TempFileDeletionResource.class);
+    }
 
-   /**
-    * @tpTestDetails Resource method contains parameter of the type File. This triggers File provider, which creates
-    * temporary file on the server side, which is automatically deleted in the end of the resource method invocation.
-    * @tpInfo Regression test for RESTEASY-1464
-    * @tpSince RESTEasy 3.1.3.Final
-    */
-   @Test
-   public void testDeleteOnServer() throws Exception {
-      Client client = ClientBuilder.newClient();
-      WebTarget base = client.target(PortProviderUtil.generateURL("/test/post", TempFileDeletionTest.class.getSimpleName()));
-      Response response = base.request().post(Entity.entity("hello", "text/plain"));
-      Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-      String path = response.readEntity(String.class);
-      File file = new File(path);
-      Assert.assertFalse(file.exists());
-      client.close();
-   }
+    /**
+     * @tpTestDetails Resource method contains parameter of the type File. This triggers File provider, which creates
+     *                temporary file on the server side, which is automatically deleted in the end of the resource method
+     *                invocation.
+     * @tpInfo Regression test for RESTEASY-1464
+     * @tpSince RESTEasy 3.1.3.Final
+     */
+    @Test
+    public void testDeleteOnServer() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget base = client.target(PortProviderUtil.generateURL("/test/post", TempFileDeletionTest.class.getSimpleName()));
+        Response response = base.request().post(Entity.entity("hello", "text/plain"));
+        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        String path = response.readEntity(String.class);
+        File file = new File(path);
+        Assert.assertFalse(file.exists());
+        client.close();
+    }
 }

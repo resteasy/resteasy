@@ -6,7 +6,6 @@ package org.jboss.resteasy.spi.touri;
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */
-public interface URIable
-{
-   String toURI();
+public interface URIable {
+    String toURI();
 }

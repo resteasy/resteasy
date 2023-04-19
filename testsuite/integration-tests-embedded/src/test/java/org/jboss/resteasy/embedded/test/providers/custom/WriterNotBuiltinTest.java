@@ -1,21 +1,21 @@
 package org.jboss.resteasy.embedded.test.providers.custom;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
-import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
-import org.jboss.resteasy.embedded.test.providers.custom.resource.ReaderWriterResource;
-import org.jboss.resteasy.embedded.test.providers.custom.resource.WriterNotBuiltinTestWriter;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
+import org.jboss.resteasy.embedded.test.providers.custom.resource.ReaderWriterResource;
+import org.jboss.resteasy.embedded.test.providers.custom.resource.WriterNotBuiltinTestWriter;
+import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @tpSubChapter
@@ -55,10 +55,10 @@ public class WriterNotBuiltinTest extends EmbeddedServerTestBase {
     }
 
     /**
-     * @tpTestDetails  TestReaderWriter has no type parameter,
-     * so it comes after DefaultPlainText in the built-in ordering.
-     * The fact that TestReaderWriter gets called verifies that
-     * DefaultPlainText gets passed over.
+     * @tpTestDetails TestReaderWriter has no type parameter,
+     *                so it comes after DefaultPlainText in the built-in ordering.
+     *                The fact that TestReaderWriter gets called verifies that
+     *                DefaultPlainText gets passed over.
      * @tpSince RESTEasy 4.1.0
      */
     @Test

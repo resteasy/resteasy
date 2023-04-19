@@ -2,6 +2,8 @@ package org.jboss.resteasy.test.resource;
 
 import java.io.ByteArrayInputStream;
 
+import javax.ws.rs.NotFoundException;
+
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -11,8 +13,6 @@ import org.jboss.resteasy.test.resource.resource.OptionalResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.NotFoundException;
 
 /**
  * @tpSubChapter Resource tests
@@ -35,7 +35,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
-
 
     @Test
     public void testOptionalStringPresent() throws Exception {
@@ -108,7 +107,6 @@ public class OptionalInjectionTest {
                 .getEntity());
     }
 
-
     @Test
     public void testHeaderParamPresent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/header");
@@ -137,7 +135,6 @@ public class OptionalInjectionTest {
                 .invoke(httpRequest, resp)
                 .getEntity());
     }
-
 
     @Test
     public void testOptionalLongPresent() throws Exception {
@@ -184,6 +181,7 @@ public class OptionalInjectionTest {
      * Builds an instance of {@code MockHttpRequest} for {@code GET} calls, properly configured to make
      * sure that all the {@code FormParam} are properly injected in all test cases otherwise we
      * end up with a {@code NullPointerException}.
+     *
      * @param uri the uri of the endpoint to test.
      * @return an instance of {@code MockHttpRequest} properly configured.
      * @throws Exception in case the provided uri is not properly formed.
@@ -196,7 +194,8 @@ public class OptionalInjectionTest {
      * Builds an instance of {@code MockHttpRequest} properly configured to make sure that all
      * the {@code FormParam} are properly injected in all test cases otherwise we end up with
      * a {@code NullPointerException}.
-     * @param uri the uri of the endpoint to test.
+     *
+     * @param uri   the uri of the endpoint to test.
      * @param isGet the flag indicating whether a GET call is expected otherwise a POST call will be
      *              performed.
      * @return an instance of {@code MockHttpRequest} properly configured.

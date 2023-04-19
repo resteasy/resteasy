@@ -10,12 +10,16 @@ import javax.ws.rs.core.GenericType;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("rawtypes")
-public interface EnvelopedInput<T>
-{
-   T getEntity();
-   T getEntity(PrivateKey key, X509Certificate cert);
-   <T2> T2 getEntity(Class<T2> type);
-   <T2> T2 getEntity(Class<T2> type, PrivateKey key, X509Certificate cert);
-   Object getEntity(GenericType type);
-   Object getEntity(GenericType type, PrivateKey key, X509Certificate cert);
+public interface EnvelopedInput<T> {
+    T getEntity();
+
+    T getEntity(PrivateKey key, X509Certificate cert);
+
+    <T2> T2 getEntity(Class<T2> type);
+
+    <T2> T2 getEntity(Class<T2> type, PrivateKey key, X509Certificate cert);
+
+    Object getEntity(GenericType type);
+
+    Object getEntity(GenericType type, PrivateKey key, X509Certificate cert);
 }

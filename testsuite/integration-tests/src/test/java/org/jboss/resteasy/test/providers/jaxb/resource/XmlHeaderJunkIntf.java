@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
-import org.jboss.resteasy.annotations.Decorator;
-
 import javax.xml.bind.Marshaller;
+
+import org.jboss.resteasy.annotations.Decorator;
 
 /**
  * Test correct type (Marshaller), but incorrect media type

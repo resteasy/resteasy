@@ -1,16 +1,17 @@
 package org.jboss.resteasy.test.validation.resource;
 
-import javax.validation.Constraint;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.validation.Constraint;
 
 @Documented
 @Constraint(validatedBy = ValidationExceptionClassValidator.class)
-@Target({TYPE})
+@Target({ TYPE })
 @Retention(RUNTIME)
 public @interface ValidationExceptionIncorrectConstraint {
 }

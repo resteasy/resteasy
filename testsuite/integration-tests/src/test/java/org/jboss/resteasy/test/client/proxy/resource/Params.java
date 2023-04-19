@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
-import org.jboss.resteasy.annotations.jaxrs.QueryParam;
-
 import javax.ws.rs.PathParam;
+
+import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
 /**
  * Created by Marek Marusic <mmarusic@redhat.com> on 3/4/19.

@@ -20,23 +20,20 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
  * @version $Revision: 1 $
  */
 @Provider
-@Consumes({"application/fastinfoset", "application/*+fastinfoset"})
-@Produces({"application/fastinfoset", "application/*+fastinfoset"})
-public class FastinfoSetJAXBContextFinder extends XmlJAXBContextFinder implements ContextResolver<JAXBContextFinder>
-{
-   @Override
-   protected JAXBContext createContextObject(Annotation[] annotations, Class... classes) throws JAXBException
-   {
-      JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
-      JAXBContext context = new FastinfoSetContext(classes);
-      return new JAXBContextWrapper(context, config);
-   }
+@Consumes({ "application/fastinfoset", "application/*+fastinfoset" })
+@Produces({ "application/fastinfoset", "application/*+fastinfoset" })
+public class FastinfoSetJAXBContextFinder extends XmlJAXBContextFinder implements ContextResolver<JAXBContextFinder> {
+    @Override
+    protected JAXBContext createContextObject(Annotation[] annotations, Class... classes) throws JAXBException {
+        JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
+        JAXBContext context = new FastinfoSetContext(classes);
+        return new JAXBContextWrapper(context, config);
+    }
 
-   @Override
-   protected JAXBContext createContextObject(Annotation[] annotations, String contextPath) throws JAXBException
-   {
-      JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
-      JAXBContext context = new FastinfoSetContext(contextPath);
-      return new JAXBContextWrapper(context, config);
-   }
+    @Override
+    protected JAXBContext createContextObject(Annotation[] annotations, String contextPath) throws JAXBException {
+        JAXBConfig config = FindAnnotation.findAnnotation(annotations, JAXBConfig.class);
+        JAXBContext context = new FastinfoSetContext(contextPath);
+        return new JAXBContextWrapper(context, config);
+    }
 }

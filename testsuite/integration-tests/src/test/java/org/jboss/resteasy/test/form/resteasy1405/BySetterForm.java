@@ -4,32 +4,27 @@ import javax.ws.rs.FormParam;
 
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
-public class BySetterForm
-{
-   private String name;
+public class BySetterForm {
+    private String name;
 
-   private InputPart data;
+    private InputPart data;
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 
-   @FormParam("name")
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+    @FormParam("name")
+    public void setName(String name) {
+        this.name = name;
+    }
 
-   public InputPart getData()
-   {
-      return data;
-   }
+    public InputPart getData() {
+        return data;
+    }
 
-   @FormParam("data")
-   public void setData(InputPart data)
-   {
-      this.data = data;
-   }
+    @FormParam("data")
+    public void setData(InputPart data) {
+        this.data = data;
+    }
 
 }

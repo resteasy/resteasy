@@ -12,19 +12,19 @@ import javax.ws.rs.core.UriInfo;
 @Path("/test-client")
 public class InContainerClientResource {
 
-   @Context
-   private UriInfo uriInfo;
+    @Context
+    private UriInfo uriInfo;
 
-   @POST
-   @Consumes("text/plain")
-   public String post(String str) throws Exception {
-      Client client = ClientBuilder.newClient();
-      String result = null;
-      try {
-         result = client.target(uriInfo.getBaseUri() + "test").request().post(Entity.text(str)).readEntity(String.class);
-      } finally {
-         client.close();
-      }
-      return "client-post " + result;
-   }
+    @POST
+    @Consumes("text/plain")
+    public String post(String str) throws Exception {
+        Client client = ClientBuilder.newClient();
+        String result = null;
+        try {
+            result = client.target(uriInfo.getBaseUri() + "test").request().post(Entity.text(str)).readEntity(String.class);
+        } finally {
+            client.close();
+        }
+        return "client-post " + result;
+    }
 }

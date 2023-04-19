@@ -1,10 +1,11 @@
 package org.jboss.resteasy.test.client.proxy.resource.GenericEntities;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("/")
 public interface GenericEntityExtendingBaseEntity<T extends BaseEntity> {

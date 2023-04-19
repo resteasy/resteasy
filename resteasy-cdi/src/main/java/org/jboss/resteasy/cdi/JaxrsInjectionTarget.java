@@ -31,120 +31,102 @@ import org.jboss.resteasy.util.GetRestful;
  * @author Jozef Hartinger
  *
  */
-public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
-{
+public class JaxrsInjectionTarget<T> implements InjectionTarget<T> {
 
-   private InjectionTarget<T> delegate;
-   private Class<T> clazz;
-   private PropertyInjector propertyInjector;
-   private GeneralValidatorCDI validator;
+    private InjectionTarget<T> delegate;
+    private Class<T> clazz;
+    private PropertyInjector propertyInjector;
+    private GeneralValidatorCDI validator;
 
-   private boolean hasPostConstruct;
+    private boolean hasPostConstruct;
 
-   private static final Function<Method, Boolean> validatePostConstructParameters
-      = (Method m) -> {if (m.getParameterCount() == 0) return true;
-                       else if (m.getParameterCount() == 1
-                             && InvocationContext.class.equals(m.getParameterTypes()[0])
-                             && m.getAnnotation(AroundInvoke.class) != null) return true;
-                       else return false;};
+    private static final Function<Method, Boolean> validatePostConstructParameters = (Method m) -> {
+        if (m.getParameterCount() == 0)
+            return true;
+        else if (m.getParameterCount() == 1
+                && InvocationContext.class.equals(m.getParameterTypes()[0])
+                && m.getAnnotation(AroundInvoke.class) != null)
+            return true;
+        else
+            return false;
+    };
 
-   public JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz)
-   {
-      this.delegate = delegate;
-      this.clazz = clazz;
-      hasPostConstruct = Types.hasPostConstruct(clazz, validatePostConstructParameters);
-   }
+    public JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz) {
+        this.delegate = delegate;
+        this.clazz = clazz;
+        hasPostConstruct = Types.hasPostConstruct(clazz, validatePostConstructParameters);
+    }
 
-   public void inject(T instance, CreationalContext<T> ctx)
-   {
-      delegate.inject(instance, ctx);
+    public void inject(T instance, CreationalContext<T> ctx) {
+        delegate.inject(instance, ctx);
 
-      // We need to load PropertyInjector lazily since RESTEasy starts
-      // after the CDI lifecycle events are executed
-      if (propertyInjector == null)
-      {
-         propertyInjector = getPropertyInjector();
-      }
+        // We need to load PropertyInjector lazily since RESTEasy starts
+        // after the CDI lifecycle events are executed
+        if (propertyInjector == null) {
+            propertyInjector = getPropertyInjector();
+        }
 
-      HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
-      HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
+        HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
+        HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
 
-      if ((request != null) && (response != null))
-      {
-         propertyInjector.inject(request, response, instance, false);
-      }
-      else
-      {
-         propertyInjector.inject(instance, false);
-      }
+        if ((request != null) && (response != null)) {
+            propertyInjector.inject(request, response, instance, false);
+        } else {
+            propertyInjector.inject(instance, false);
+        }
 
-      if (request != null && !hasPostConstruct)
-      {
-         validate(request, instance);
-      }
-      else
-      {
-         LogMessages.LOGGER.debug(Messages.MESSAGES.skippingValidationOutsideResteasyContext());
-      }
-   }
-
-   public void postConstruct(T instance)
-   {
-      delegate.postConstruct(instance);
-      if (hasPostConstruct)
-      {
-         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
-         if (request != null)
-         {
+        if (request != null && !hasPostConstruct) {
             validate(request, instance);
-         }
-         else
-         {
+        } else {
             LogMessages.LOGGER.debug(Messages.MESSAGES.skippingValidationOutsideResteasyContext());
-         }
-      }
-   }
+        }
+    }
 
-   public void preDestroy(T instance)
-   {
-      delegate.preDestroy(instance);
-   }
+    public void postConstruct(T instance) {
+        delegate.postConstruct(instance);
+        if (hasPostConstruct) {
+            HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
+            if (request != null) {
+                validate(request, instance);
+            } else {
+                LogMessages.LOGGER.debug(Messages.MESSAGES.skippingValidationOutsideResteasyContext());
+            }
+        }
+    }
 
-   public void dispose(T instance)
-   {
-      delegate.dispose(instance);
-   }
+    public void preDestroy(T instance) {
+        delegate.preDestroy(instance);
+    }
 
-   public Set<InjectionPoint> getInjectionPoints()
-   {
-      return delegate.getInjectionPoints();
-   }
+    public void dispose(T instance) {
+        delegate.dispose(instance);
+    }
 
-   public T produce(CreationalContext<T> ctx)
-   {
-      return delegate.produce(ctx);
-   }
+    public Set<InjectionPoint> getInjectionPoints() {
+        return delegate.getInjectionPoints();
+    }
 
-   private PropertyInjector getPropertyInjector()
-   {
-      return new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
-   }
+    public T produce(CreationalContext<T> ctx) {
+        return delegate.produce(ctx);
+    }
 
-   private void validate(HttpRequest request, T instance)
-   {
-      if (GetRestful.isRootResource(clazz))
-      {
-         ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
-         ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
-         if (resolver != null)
-         {
-            validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE).getContext(null);
-         }
-         if (validator != null && validator.isValidatableFromCDI(clazz))
-         {
-            validator.validate(request, instance);
-            validator.checkViolationsfromCDI(request);
-         }
-      }
-   }
+    private PropertyInjector getPropertyInjector() {
+        return new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
+    }
+
+    private void validate(HttpRequest request, T instance) {
+        if (GetRestful.isRootResource(clazz)) {
+            ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+            ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class,
+                    MediaType.WILDCARD_TYPE);
+            if (resolver != null) {
+                validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE)
+                        .getContext(null);
+            }
+            if (validator != null && validator.isValidatableFromCDI(clazz)) {
+                validator.validate(request, instance);
+                validator.checkViolationsfromCDI(request);
+            }
+        }
+    }
 }

@@ -35,32 +35,33 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class EmptyArrayValidationTest {
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(EmptyArrayValidationTest.class.getSimpleName());
-      war.addClass(EmptyArrayValidationFoo.class);
-      return TestUtil.finishContainerPrepare(war, null, EmptyArrayValidationResource.class);
-   }
+    @Deployment
+    public static Archive<?> deploy() {
+        WebArchive war = TestUtil.prepareArchive(EmptyArrayValidationTest.class.getSimpleName());
+        war.addClass(EmptyArrayValidationFoo.class);
+        return TestUtil.finishContainerPrepare(war, null, EmptyArrayValidationResource.class);
+    }
 
-   private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, EmptyArrayValidationTest.class.getSimpleName());
-   }
+    private String generateURL(String path) {
+        return PortProviderUtil.generateURL(path, EmptyArrayValidationTest.class.getSimpleName());
+    }
 
-   /**
-    * @tpTestDetails Verify validation of empty array doesn't throw ArrayIndexOutOfBoundsException.
-    * @tpSince RESTEasy 4.6.0
-    */
-   @Test
-   public void testEmptyArray() throws Exception {
-      Client client = ClientBuilder.newClient();
-      EmptyArrayValidationFoo foo = new EmptyArrayValidationFoo(new Object[] {});
-      Response response = client.target(generateURL("/emptyarray")).request().post(Entity.entity(foo, MediaType.APPLICATION_JSON), Response.class);
-      Object header = response.getHeaderString(Validation.VALIDATION_HEADER);
-      Assert.assertTrue("Header has wrong format", header instanceof String);
-      Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
-      String answer = response.readEntity(String.class);
-      assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
-      TestUtil.countViolations(e, 1, 0, 0, 1, 0);
-   }
+    /**
+     * @tpTestDetails Verify validation of empty array doesn't throw ArrayIndexOutOfBoundsException.
+     * @tpSince RESTEasy 4.6.0
+     */
+    @Test
+    public void testEmptyArray() throws Exception {
+        Client client = ClientBuilder.newClient();
+        EmptyArrayValidationFoo foo = new EmptyArrayValidationFoo(new Object[] {});
+        Response response = client.target(generateURL("/emptyarray")).request()
+                .post(Entity.entity(foo, MediaType.APPLICATION_JSON), Response.class);
+        Object header = response.getHeaderString(Validation.VALIDATION_HEADER);
+        Assert.assertTrue("Header has wrong format", header instanceof String);
+        Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
+        String answer = response.readEntity(String.class);
+        assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
+        TestUtil.countViolations(e, 1, 0, 0, 1, 0);
+    }
 }

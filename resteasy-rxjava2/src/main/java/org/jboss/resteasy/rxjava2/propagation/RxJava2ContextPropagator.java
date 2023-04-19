@@ -1,18 +1,19 @@
 package org.jboss.resteasy.rxjava2.propagation;
 
+import javax.ws.rs.RuntimeType;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.spi.Dispatcher;
+
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.spi.Dispatcher;
-
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.ext.Provider;
 
 /**
  * Reactive Context propagator for RxJava 2. Supports propagating context to all

@@ -14,23 +14,23 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 public class EJBCDIValidationStatelessResource {
 
-   @Size(min=3)
-   @PathParam("name")
-   private String name;
+    @Size(min = 3)
+    @PathParam("name")
+    private String name;
 
-   public String getName() {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 
-   @POST
-   @Path("/post/{name}")
-   @Consumes(MediaType.APPLICATION_JSON)
-   public void post(@Min(1) long id, String from, String to) {
-      // nothing to do
-   }
+    @POST
+    @Path("/post/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void post(@Min(1) long id, String from, String to) {
+        // nothing to do
+    }
 
-   @GET
-   @Path("set/{name}")
-   public void get() {
-   }
+    @GET
+    @Path("set/{name}")
+    public void get() {
+    }
 }

@@ -1,11 +1,16 @@
 package org.jboss.resteasy.test.resource.basic;
 
+import static org.hamcrest.CoreMatchers.is;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorBaseCrudService;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorBaseService;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorFoo;
@@ -21,11 +26,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
-import static org.hamcrest.CoreMatchers.is;
-
 /**
  * @tpSubChapter Resources
  * @tpChapter Integration tests
@@ -36,30 +36,30 @@ import static org.hamcrest.CoreMatchers.is;
 @RunAsClient
 public class SubResourceLocatorTest {
 
-   @Deployment
-   public static Archive<?> testReturnValuesDeploy() throws Exception {
-      WebArchive war = TestUtil.prepareArchive(SubResourceLocatorTest.class.getSimpleName());
-      war.addClasses(SubResourceLocatorBaseCrudService.class, SubResourceLocatorBaseService.class,
-            SubResourceLocatorFoo.class, SubResourceLocatorOhaUserModel.class,
-            SubResourceLocatorPlatformServiceResource.class, SubResourceLocatorUserResource.class);
-      return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorImpFoo.class,
-            SubResourceLocatorPlatformServiceImpl.class);
-   }
+    @Deployment
+    public static Archive<?> testReturnValuesDeploy() throws Exception {
+        WebArchive war = TestUtil.prepareArchive(SubResourceLocatorTest.class.getSimpleName());
+        war.addClasses(SubResourceLocatorBaseCrudService.class, SubResourceLocatorBaseService.class,
+                SubResourceLocatorFoo.class, SubResourceLocatorOhaUserModel.class,
+                SubResourceLocatorPlatformServiceResource.class, SubResourceLocatorUserResource.class);
+        return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorImpFoo.class,
+                SubResourceLocatorPlatformServiceImpl.class);
+    }
 
-   /**
-    * @tpTestDetails Sub resource locator should not fail
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void test657() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      WebTarget base = client.target(PortProviderUtil.generateURL("/platform/users/89080/data/ada/jsanchez110",
-            SubResourceLocatorTest.class.getSimpleName()));
+    /**
+     * @tpTestDetails Sub resource locator should not fail
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void test657() throws Exception {
+        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
+        WebTarget base = client.target(PortProviderUtil.generateURL("/platform/users/89080/data/ada/jsanchez110",
+                SubResourceLocatorTest.class.getSimpleName()));
 
-      Response response = base.request().get();
-      String s = response.readEntity(String.class);
-      MatcherAssert.assertThat("Wrong response content", s, is("bill"));
-      response.close();
-      client.close();
-   }
+        Response response = base.request().get();
+        String s = response.readEntity(String.class);
+        MatcherAssert.assertThat("Wrong response content", s, is("bill"));
+        response.close();
+        client.close();
+    }
 }

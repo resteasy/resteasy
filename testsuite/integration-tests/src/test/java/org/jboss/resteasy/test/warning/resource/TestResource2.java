@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.warning.resource;
 
-import org.jboss.resteasy.test.core.interceptors.resource.TestSubResource;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
+import org.jboss.resteasy.test.core.interceptors.resource.TestSubResource;
 
 /**
  * Created by rsearls on 9/5/17.
@@ -11,9 +11,9 @@ import javax.ws.rs.Produces;
 @Path("test")
 public class TestResource2 {
 
-   @Path("x")
-   @Produces("text/plain")
-   public TestSubResource locator() {
-      return new TestSubResource();
-   }
+    @Path("x")
+    @Produces("text/plain")
+    public TestSubResource locator() {
+        return new TestSubResource();
+    }
 }

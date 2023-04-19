@@ -8,32 +8,31 @@ import javax.ws.rs.container.ContainerResponseContext;
  *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
-public interface SuspendableContainerResponseContext extends ContainerResponseContext
-{
-   /**
-    * Suspends the current response. This makes the current request asynchronous. No
-    * further response filter is executed until this response is resumed.
-    *
-    * No reply is going to be sent to the client until this response is resumed either
-    * with {@link #resume()} or aborted with {@link #resume(Throwable)} or
-    * {@link ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
-    */
-   void suspend();
+public interface SuspendableContainerResponseContext extends ContainerResponseContext {
+    /**
+     * Suspends the current response. This makes the current request asynchronous. No
+     * further response filter is executed until this response is resumed.
+     *
+     * No reply is going to be sent to the client until this response is resumed either
+     * with {@link #resume()} or aborted with {@link #resume(Throwable)} or
+     * {@link ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
+     */
+    void suspend();
 
-   /**
-    * Resumes the current response, and proceeds to the next response filter, if any,
-    * or to send the response.
-    */
-   void resume();
+    /**
+     * Resumes the current response, and proceeds to the next response filter, if any,
+     * or to send the response.
+     */
+    void resume();
 
-   /**
-    * Aborts the current response with the given exception. This behaves as if the request
-    * filter threw this exception synchronously, which means that the exception will not
-    * be mapped by exception mappers, the response filters will stop running, and the
-    * async response callbacks will be called with this exception.
-    *
-    * @param t the exception to send back to the client, as an internal server error.
-    */
-   void resume(Throwable t);
+    /**
+     * Aborts the current response with the given exception. This behaves as if the request
+     * filter threw this exception synchronously, which means that the exception will not
+     * be mapped by exception mappers, the response filters will stop running, and the
+     * async response callbacks will be called with this exception.
+     *
+     * @param t the exception to send back to the client, as an internal server error.
+     */
+    void resume(Throwable t);
 
 }

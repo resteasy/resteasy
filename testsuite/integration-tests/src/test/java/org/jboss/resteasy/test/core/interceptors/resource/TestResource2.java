@@ -9,9 +9,9 @@ import javax.ws.rs.Produces;
 @Path("test")
 public class TestResource2 {
 
-   @Path("x")
-   @Produces("text/plain")
-   public TestSubResource locator() {
-      return new TestSubResource();
-   }
+    @Path("x")
+    @Produces("text/plain")
+    public TestSubResource locator() {
+        return new TestSubResource();
+    }
 }

@@ -9,8 +9,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AsyncPreMatchRequestFilter2 extends AsyncRequestFilter {
 
-   public AsyncPreMatchRequestFilter2()
-   {
-      super("PreMatchFilter2");
-   }
+    public AsyncPreMatchRequestFilter2() {
+        super("PreMatchFilter2");
+    }
 }

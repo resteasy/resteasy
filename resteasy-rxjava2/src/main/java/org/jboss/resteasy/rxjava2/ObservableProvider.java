@@ -9,12 +9,10 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 
 @Provider
-public class ObservableProvider implements AsyncStreamProvider<Observable<?>>
-{
-   @Override
-   public Publisher<?> toAsyncStream(Observable<?> asyncResponse)
-   {
-      return asyncResponse.toFlowable(BackpressureStrategy.BUFFER);
-   }
+public class ObservableProvider implements AsyncStreamProvider<Observable<?>> {
+    @Override
+    public Publisher<?> toAsyncStream(Observable<?> asyncResponse) {
+        return asyncResponse.toFlowable(BackpressureStrategy.BUFFER);
+    }
 
 }

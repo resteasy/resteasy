@@ -1,8 +1,9 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.util.FindAnnotation;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Consumes;
@@ -16,27 +17,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 @Priority(Priorities.AUTHORIZATION)
 @Provider
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
-public class JaxrsServerFormUrlEncodedProvider  implements MessageBodyReader<Form>
-{
+public class JaxrsServerFormUrlEncodedProvider implements MessageBodyReader<Form> {
     protected boolean useContainerParams;
 
-    public JaxrsServerFormUrlEncodedProvider(final boolean useContainerParams)
-    {
+    public JaxrsServerFormUrlEncodedProvider(final boolean useContainerParams) {
         this.useContainerParams = useContainerParams;
     }
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-    {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return (useContainerParams && Form.class.isAssignableFrom(type));
     }
 
@@ -45,8 +43,8 @@ public class JaxrsServerFormUrlEncodedProvider  implements MessageBodyReader<For
 
     @SuppressWarnings("unchecked")
     @Override
-    public Form readFrom(Class<Form> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
-    {
+    public Form readFrom(Class<Form> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
         MultivaluedMap<String, String> map = null;
         if (useContainerParams) {

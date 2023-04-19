@@ -6,20 +6,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.core.Response;
 
 @RequestScoped
-public class RootResourceImpl implements RootResource
-{
-   @Inject
-   private SubResource subResource;
+public class RootResourceImpl implements RootResource {
+    @Inject
+    private SubResource subResource;
 
-   @Override
-   public SubResource getSubResource()
-   {
-      return subResource;
-   }
+    @Override
+    public SubResource getSubResource() {
+        return subResource;
+    }
 
-   @GET
-   public Response entered()
-   {
-      return Response.status(SubResourceImpl.methodEntered ? 444 : 200).build();
-   }
+    @GET
+    public Response entered() {
+        return Response.status(SubResourceImpl.methodEntered ? 444 : 200).build();
+    }
 }

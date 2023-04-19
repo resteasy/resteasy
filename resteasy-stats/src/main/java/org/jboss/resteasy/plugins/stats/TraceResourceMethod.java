@@ -7,6 +7,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "trace")
-public class TraceResourceMethod extends ResourceMethodEntry
-{
+public class TraceResourceMethod extends ResourceMethodEntry {
 }

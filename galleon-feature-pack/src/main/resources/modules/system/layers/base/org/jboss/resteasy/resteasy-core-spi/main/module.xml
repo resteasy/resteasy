@@ -22,31 +22,31 @@
 <module xmlns="urn:jboss:module:1.9" name="org.jboss.resteasy.resteasy-core-spi">
 
     <resources>
-        <artifact name="${org.jboss.resteasy:resteasy-core-spi}"/>
+        <artifact name="${org.jboss.resteasy:resteasy-core-spi}" />
     </resources>
 
     <dependencies>
-        <module name="java.desktop"/>
-        <module name="java.logging"/>
-        <module name="java.management"/>
-        <module name="java.naming"/>
-        <module name="java.xml"/>
-        <module name="javax.activation.api"/>
-        <module name="javax.annotation.api"/>
-        <module name="javax.enterprise.api"/>
-        <module name="javax.servlet.api"/>
-        <module name="javax.validation.api"/>
-        <module name="javax.xml.bind.api"/>
-        <module name="javax.ws.rs.api"/>
-        <module name="org.jboss.logging"/>
-        <module name="org.reactivestreams"/>
+        <module name="java.desktop" />
+        <module name="java.logging" />
+        <module name="java.management" />
+        <module name="java.naming" />
+        <module name="java.xml" />
+        <module name="javax.activation.api" />
+        <module name="javax.annotation.api" />
+        <module name="javax.enterprise.api" />
+        <module name="javax.servlet.api" />
+        <module name="javax.validation.api" />
+        <module name="javax.xml.bind.api" />
+        <module name="javax.ws.rs.api" />
+        <module name="org.jboss.logging" />
+        <module name="org.reactivestreams" />
         <!-- If present, this loads a different ConfigurationFactory to use the MP Config API for configuration
              properties.
          -->
-        <module name="org.jboss.resteasy.microprofile.config" services="import" optional="true"/>
+        <module name="org.jboss.resteasy.microprofile.config" services="import" optional="true" />
         <!-- If a deployment wants to use this it needs to be exported. However, the way it's loaded in the RESTEasyTracingLogger
              it also needs to be available for this module. This is the reason we export it here.
         -->
-        <module name="org.jboss.resteasy.resteasy-tracing-api" export="true" services="import" optional="true"/>
+        <module name="org.jboss.resteasy.resteasy-tracing-api" export="true" services="import" optional="true" />
     </dependencies>
 </module>

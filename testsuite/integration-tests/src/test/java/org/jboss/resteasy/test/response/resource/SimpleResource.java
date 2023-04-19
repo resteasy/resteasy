@@ -10,9 +10,9 @@ import javax.ws.rs.Produces;
 @Path("/simpleresource")
 public class SimpleResource {
 
-   @GET
-   @Produces("text/plain")
-   public String get() {
-      return "hello";
-   }
+    @GET
+    @Produces("text/plain")
+    public String get() {
+        return "hello";
+    }
 }

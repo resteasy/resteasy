@@ -2,10 +2,12 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import static org.junit.Assert.assertEquals;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.AfterClass;

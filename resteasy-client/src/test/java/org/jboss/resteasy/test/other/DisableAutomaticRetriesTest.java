@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.other;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
 public class DisableAutomaticRetriesTest {
     @Test
