@@ -16,7 +16,7 @@ public class ContextService {
     @GET
     @Path("/forward")
     public void forward(@Context HttpRequest request) {
-        request.forward("/WEB-INF/index.html");
+        request.forward("/WEB-INF/index.txt");
     }
 
     @GET

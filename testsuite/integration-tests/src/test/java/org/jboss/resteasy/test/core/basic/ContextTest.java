@@ -44,7 +44,7 @@ public class ContextTest {
         WebArchive war = ShrinkWrap.create(WebArchive.class, ContextTest.class.getSimpleName() + ".war");
         war.addClasses(ContextAfterEncoderInterceptor.class, ContextBeforeEncoderInterceptor.class, ContextService.class,
                 ContextEncoderInterceptor.class, ContextEndInterceptor.class);
-        war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.html", "index.html");
+        war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.txt", "index.txt");
         war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextWeb.xml", "web.xml");
         // undertow requires read permission in order to perform forward request.
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(

@@ -1,9 +1,8 @@
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <display-name>RESTEASY-903</display-name>
-    
+
     <servlet>
         <servlet-name>Test</servlet-name>
         <servlet-class>
@@ -17,7 +16,7 @@
             org.jboss.resteasy.test.core.servlet.resource.FilterForwardServlet
         </servlet-class>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
         <url-pattern>/test/*</url-pattern>
