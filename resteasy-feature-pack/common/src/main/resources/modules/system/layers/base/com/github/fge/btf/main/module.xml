@@ -22,10 +22,10 @@
 <module xmlns="urn:jboss:module:1.9" name="com.github.fge.btf">
 
     <properties>
-        <property name="jboss.api" value="private"/>
+        <property name="jboss.api" value="private" />
     </properties>
 
     <resources>
-        <artifact name="${com.github.java-json-tools:btf}"/>
+        <artifact name="${com.github.java-json-tools:btf}" />
     </resources>
 </module>

@@ -18,4 +18,5 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<module-alias xmlns="urn:jboss:module:1.9" name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider" target-name="com.fasterxml.jackson.jakarta.jackson-jakarta-json-provider"/>
+<module-alias xmlns="urn:jboss:module:1.9" name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"
+    target-name="com.fasterxml.jackson.jakarta.jackson-jakarta-json-provider" />
