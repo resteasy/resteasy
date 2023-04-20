@@ -18,12 +18,12 @@ on:
         options:
           - "11"
           - "17"
-      wildflyBranch:
+      wildfly-branch:
         description: "WildFly Branch"
         required: true
         default: "main"
         type: string
-      wildflyRepo:
+      wildfly-repo:
         description: "WildFly Repository"
         required: true
         default: "wildfly/wildfly"
@@ -31,32 +31,10 @@ on:
 
 jobs:
   wildfly-build:
-    runs-on: ubuntu-latest
-    outputs:
-      wildfly-version: ${{steps.version.outputs.wildfly-version}}
-    steps:
-      - name: Checkout WildFly
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ inputs.wildflyRepo }}
-          ref: ${{ inputs.wildflyBranch }}
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: 11
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Build WildFly
-        run: mvn clean install -DskipTests -Dcheckstyle.skip=true -Denforcer.skip=true
-      - id: version
-        run: echo "::set-output name=wildfly-version::$(mvn -B help:evaluate -Dexpression=project.version -pl . | grep -v '^\[')"
-      - name: Archive the repository
-        run: tar -czf maven-repository.tgz -C ~ .m2/repository
-      - uses: actions/upload-artifact@v3
-        with:
-          name: maven-repository
-          path: maven-repository.tgz
-          retention-days: 5
+    uses: wildfly/wildfly/.github/workflows/shared-wildfly-build.yml@main
+    with:
+      wildfly-branch: ${{ inputs.wildfly-branch }}
+      wildfly-repo: ${{ inputs.wildfly-repo }}
 
   resteasy-build:
     runs-on: ${{ inputs.os }}
@@ -65,12 +43,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
+        id: download-m2
         with:
-          name: maven-repository
+          name: wildfly-maven-repository
           path: .
       - name: Extract Maven Repo
         shell: bash
-        run: tar -xzf maven-repository.tgz -C ~
+        run: |
+          tar -xzf wildfly-maven-repository.tar.gz -C ~
       - name: Set up JDK ${{ inputs.javaVersion }}
         uses: actions/setup-java@v3
         with:
