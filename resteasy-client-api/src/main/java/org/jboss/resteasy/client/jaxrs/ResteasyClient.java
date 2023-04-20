@@ -8,7 +8,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 
-public interface ResteasyClient extends Client {
+public interface ResteasyClient extends Client, AutoCloseable {
     @Override
     ResteasyWebTarget target(URI uri);
 

@@ -872,7 +872,8 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
 
         if (name == null)
             throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
-
+        if (values == null)
+            throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
         for (Object value : values) {
             if (value == null)
                 throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
