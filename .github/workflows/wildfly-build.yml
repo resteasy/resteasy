@@ -33,6 +33,9 @@ concurrency:
 jobs:
   wildfly-build:
     uses: wildfly/wildfly/.github/workflows/shared-wildfly-build.yml@main
+    with:
+      wildfly-branch: "main"
+      wildfly-repo: "wildfly/wildfly"
 
   resteasy-build:
     runs-on: ${{ matrix.os }}
