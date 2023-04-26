@@ -1101,15 +1101,15 @@ public void suspend(@Suspended final AsyncResponse response) {
    
    <programlisting>
 mvn archetype:generate -B \
-   -DarchetypeGroupId=org.jboss.resteasy \
+   -DarchetypeGroupId=dev.resteasy.grpc \
    -DarchetypeArtifactId=gRPCtoJakartaREST-archetype \
    -DarchetypeVersion=1.0.0.Final \
    -DgroupId=org.greet \
    -DartifactId=greet \
-   -Dversion=0.0.1-SNAPSHOT \
+   -Dversion=0.0.8-SNAPSHOT \
    -Dgenerate-prefix=Greet \
    -Dgenerate-package=org.greet \
-   -Dresteasy-version=6.2.0.Final
+   -Dresteasy-version=6.3.0.Alpha1-SNAPSHOT
    </programlisting>
 
    <para>
@@ -1149,7 +1149,7 @@ mvn archetype:generate -B \
 |  +- buildjar
 |  +- deployjar
 +- src/test/java
-   +- org.jboss.resteasy.grpc.server
+   +- dev.resteasy.grpc.server
       +- Greet_Server.java 
    </programlisting>
        
@@ -1235,7 +1235,7 @@ mvn -Dclasses=/home/bob/greet/java:org.greet.Extra clean install
 |  +- buildjar
 |  +- deployjar
 +- src/test/java
-|  +- org.jboss.resteasy.grpc.server
+|  +- dev.resteasy.grpc.server
 |     +- Greet_Server.java 
 +- target/generated-sources/protobuf
 |  +- java
@@ -1315,7 +1315,7 @@ fi
       Once <code>GreetServiceGrpcImpl</code> is registered, a gRPC client can send requests, but
       there's one more thing to do to set up the intermediary layer. The overriding methods in
       <code>GreetServiceGrpcImpl</code> need to be able to dispatch the request to the appropriate
-      servlet. A Jakarta REST request to <code>org.jboss.resteasy.grpc.server.Greet_Server</code>
+      servlet. A Jakarta REST request to <code>dev.resteasy.grpc.server.Greet_Server</code>
       in the bridge project's src/test/java directory will cause the handling
       servlet to be stored by <code>GrpcHttpServletDispatcher</code> so that it can be retrieved by
       the intermediary code for subsequent gRPC requests. For example,

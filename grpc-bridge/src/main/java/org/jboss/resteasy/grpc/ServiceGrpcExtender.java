@@ -137,7 +137,7 @@ public class ServiceGrpcExtender {
                 .append("import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;" + LS)
                 .append("import jakarta.enterprise.inject.spi.CDI;" + LS)
                 .append("import com.google.protobuf.Any;" + LS)
-                .append("import org.jboss.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
+                .append("import dev.resteasy.grpc.server.").append(fileName).append("_Server;" + LS)
                 .append("import ").append(packageName).append(".").append(outerClassName).append(".gInteger;" + LS)
                 .append("import ").append(packageName).append(".").append(outerClassName).append(".gNewCookie;" + LS)
                 .append("import ").append(packageName).append(".").append(outerClassName).append(".gHeader;" + LS)
