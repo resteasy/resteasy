@@ -1169,16 +1169,15 @@ mvn archetype:generate -B \
    
    <para>
       Once the new project is created, the pom.xml can be used to copy the Java classes from the target project and
-      generate the intermediary classes. For example:
+      generate the intermediary classes:
    </para>
    
    <programlisting>
-mvn -Dservlet.name=GreetServlet clean install 
+mvn clean install 
    </programlisting>
    
    <para>
-   servlet.name is the name of the servlet associated with the target project. There are also some optional
-   parameters:
+   There are also some optional parameters:
    </para>
    
    <itemizedlist>
@@ -1211,7 +1210,7 @@ mvn -Dservlet.name=GreetServlet clean install
    </para>
    
    <programlisting>
-mvn -Dservlet.name=GreetServlet -Dclasses=/home/bob/greet/java:org.greet.Extra clean install 
+mvn -Dclasses=/home/bob/greet/java:org.greet.Extra clean install 
    </programlisting>
    
    <para>
@@ -1348,6 +1347,23 @@ curl http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJakartaRest/grpcserve
       the gRPC and Jakarta REST worlds, but there are some situations in which manual intervention is required,
       for one reason or another.
    </para>
+
+<section id="creation_time">
+<title>Bridge project creation time</title>
+
+   <para>
+      The bridge project is meant to be an extension of the target project. Now,
+      the main reason for installing a pom.xml file in the bridge project is to capture the sequence of events
+      necessary to create the various classes in the intermediary layer. But it may be necessary to merge into it pieces
+      of the target project pom.xml, dependencies, for example, in order to capture the construction of the target project.
+   </para>
+
+   <para>
+      One function of the bridge pom.xml is to copy the classes from the target project. Those are clearly
+      necessary. But there may be other pieces of the target project like resource files that are also needed.
+      They could be copied manually, or the bridge pom.xml could be extended.
+   </para>
+</section>
 
 <section id="compile_time">
 <title>Compile time</title>
