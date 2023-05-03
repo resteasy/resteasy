@@ -149,7 +149,10 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         if (body != null) {
             headers.set(HttpHeaders.CONTENT_LENGTH, "" + body.length());
         }
-        options.addHeader(HttpHeaders.USER_AGENT.toString(), "Vertx");
+
+        if (!headers.contains(HttpHeaders.USER_AGENT)) {
+            options.addHeader(HttpHeaders.USER_AGENT.toString(), "Vertx");
+        }
 
         URI uri = request.getUri();
         options.setHost(uri.getHost());
@@ -164,7 +167,11 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
             options.setPort(uri.getPort());
         }
 
-        options.setURI(uri.getRawPath());
+        String relativeUri = uri.getRawPath();
+        if (uri.getRawQuery() != null && !uri.getRawQuery().trim().isEmpty()) {
+            relativeUri = relativeUri + "?" + uri.getRawQuery();
+        }
+        options.setURI(relativeUri);
 
         Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
         if (timeout != null) {

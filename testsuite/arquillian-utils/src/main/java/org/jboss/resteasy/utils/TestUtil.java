@@ -555,7 +555,40 @@ public class TestUtil {
         if (path == null || path.isEmpty()) {
             return base.toURI();
         }
-        final StringBuilder builder = new StringBuilder(base.toString());
+        return generateUri(base.toString(), path);
+    }
+
+    /**
+     * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+     *
+     * @param base the base URL
+     * @param path the path to append
+     *
+     * @return the newly create URI
+     *
+     * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+     * @see URI
+     */
+    public static URI generateUri(final URI base, final String path) throws URISyntaxException {
+        if (path == null || path.isEmpty()) {
+            return base;
+        }
+        return generateUri(base.toString(), path);
+    }
+
+    /**
+     * Generate a URI based on the URL passed appending the path if its value is not {@code null}.
+     *
+     * @param base the base URL
+     * @param path the path to append
+     *
+     * @return the newly create URI
+     *
+     * @throws URISyntaxException If the given string violates RFC 2396, as augmented by the above deviations
+     * @see URI
+     */
+    private static URI generateUri(final String base, final String path) throws URISyntaxException {
+        final StringBuilder builder = new StringBuilder(base);
         if (builder.charAt(builder.length() - 1) == '/') {
             if (path.charAt(0) == '/') {
                 builder.append(path.substring(1));

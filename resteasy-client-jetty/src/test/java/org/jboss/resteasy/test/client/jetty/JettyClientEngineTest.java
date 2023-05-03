@@ -182,6 +182,7 @@ public class JettyClientEngineTest {
                 .submit(String.class);
 
         final String result = response.get(10, TimeUnit.SECONDS);
+        assertEquals(valuableData.length(), result.length());
         assertEquals(valuableData, result);
     }
 

@@ -31,6 +31,13 @@ public class MessageBodyParameterProcessor implements InvocationProcessor {
     @SuppressWarnings("unchecked")
     @Override
     public void process(ClientInvocation invocation, Object param) {
+        // Check if a previous HTTP header was set for the media type. This could have been done with a
+        // @HeaderParam("Content-Type") annotation on a method parameter in the proxy. If so, we'll use that over the
+        // assumed media type.
+        MediaType mediaType = invocation.getHeaders().getMediaType();
+        if (mediaType == null) {
+            mediaType = this.mediaType;
+        }
         invocation.setEntity(
                 Entity.entity(param == null ? null : new GenericEntity<Object>(param, genericType), mediaType, annotations));
     }
