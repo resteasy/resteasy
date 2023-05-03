@@ -30,7 +30,6 @@ import org.jboss.resteasy.util.WeightedLanguage;
 public class ClientRequestHeaders {
     protected CaseInsensitiveMap<Object> headers = new CaseInsensitiveMap<Object>();
     protected ClientConfiguration configuration;
-    private boolean contentTypeSet = false;
 
     public ClientRequestHeaders(final ClientConfiguration configuration) {
         this.configuration = configuration;
@@ -68,9 +67,7 @@ public class ClientRequestHeaders {
             headers.remove(HttpHeaders.CONTENT_TYPE);
             return;
         }
-        if (!contentTypeSet) {
-            headers.putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
-        }
+        headers.putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
     }
 
     public void acceptLanguage(Locale... locales) {
@@ -157,7 +154,6 @@ public class ClientRequestHeaders {
             acceptLanguage(configuration.toHeaderString(value));
         else if (name.equalsIgnoreCase(HttpHeaders.CONTENT_TYPE)) {
             headers.putSingle(HttpHeaders.CONTENT_TYPE, value);
-            contentTypeSet = true;
         } else
             headers.add(name, value);
     }
