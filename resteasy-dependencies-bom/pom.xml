@@ -52,7 +52,7 @@
         <version.io.netty.netty4>4.1.91.Final</version.io.netty.netty4>
         <version.io.vertx>4.2.7</version.io.vertx>
         <version.io.undertow>2.2.24.Final</version.io.undertow>
-        <version.jakarta.activation>1.2.1</version.jakarta.activation>
+        <version.jakarta.activation>1.2.2</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>1.0.5</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>1.1.6</version.jakarta.json-api>
