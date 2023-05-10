@@ -38,13 +38,13 @@
 
     <properties>
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson>2.14.2</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.14.3</version.com.fasterxml.jackson>
         <version.com.fasterxml.jackson.databind>${version.com.fasterxml.jackson}</version.com.fasterxml.jackson.databind>
         <version.com.google.guava>31.0.1-jre</version.com.google.guava>
         <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.1.0</version.jakarta.mail>
-        <version.org.glassfish.jaxb>4.0.1</version.org.glassfish.jaxb>
+        <version.org.glassfish.jaxb>4.0.2</version.org.glassfish.jaxb>
         <version.com.sun.istack>4.1.2</version.com.sun.istack>
         <version.com.sun.xml.fastinfoset>2.1.0</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.11.0</version.commons-io.commons-io>
@@ -53,7 +53,7 @@
         <version.io.netty.netty4>4.1.91.Final</version.io.netty.netty4>
         <version.io.vertx>4.3.4</version.io.vertx>
         <version.io.undertow>2.3.5.Final</version.io.undertow>
-        <version.jakarta.activation>2.1.0</version.jakarta.activation>
+        <version.jakarta.activation>2.1.2</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>4.0.1</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.1</version.jakarta.inject.jakarta.inject-api>
         <version.jakarta.json-api>2.1.1</version.jakarta.json-api>
