@@ -71,7 +71,7 @@ public class ContextualExecutorService implements ExecutorService {
     @Override
     public void shutdown() {
         if (shutdown.compareAndSet(false, true)) {
-            if (managed) {
+            if (isManaged()) {
                 // Clear the delegate as we're done with it
                 delegate = null;
             } else {
@@ -87,7 +87,7 @@ public class ContextualExecutorService implements ExecutorService {
     @Override
     public List<Runnable> shutdownNow() {
         if (shutdown.compareAndSet(false, true)) {
-            if (managed) {
+            if (isManaged()) {
                 // Clear the delegate as we're done with it
                 delegate = null;
             } else {
@@ -100,7 +100,7 @@ public class ContextualExecutorService implements ExecutorService {
 
     @Override
     public boolean isShutdown() {
-        if (managed) {
+        if (isManaged()) {
             return shutdown.get();
         }
         return getDelegate().isShutdown();
@@ -108,7 +108,7 @@ public class ContextualExecutorService implements ExecutorService {
 
     @Override
     public boolean isTerminated() {
-        if (managed) {
+        if (isManaged()) {
             return false;
         }
         return getDelegate().isTerminated();
@@ -116,7 +116,7 @@ public class ContextualExecutorService implements ExecutorService {
 
     @Override
     public boolean awaitTermination(final long timeout, final TimeUnit unit) throws InterruptedException {
-        if (managed) {
+        if (isManaged()) {
             return false;
         }
         return getDelegate().awaitTermination(timeout, unit);
