@@ -19,8 +19,6 @@
 
 package org.jboss.resteasy.concurrent;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,8 +39,6 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.concurrent.ThreadContext;
 import org.jboss.resteasy.spi.concurrent.ThreadContexts;
-import org.jboss.resteasy.spi.config.Configuration;
-import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
  * A utility to create and/or wrap {@linkplain ExecutorService executors} in a contextual executor.
@@ -87,12 +82,10 @@ public class ContextualExecutors {
      */
     public static ContextualExecutorService threadPool() {
         ExecutorService delegate = lookup(EXECUTOR_SERVICE_JNDI);
-        boolean managed = true;
         if (delegate == null) {
-            delegate = Executors.newCachedThreadPool(new ContextualThreadFactory("contextual-pool"));
-            managed = false;
+            delegate = GlobalContextualExecutorService.INSTANCE;
         }
-        return wrap(delegate, managed);
+        return wrap(delegate, true);
     }
 
     /**
@@ -115,10 +108,11 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualScheduledExecutorService scheduledThreadPool() {
-        final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
-        final int poolSize = config.getOptionalValue("resteasy.async.timeout.scheduler.min.pool.size", Integer.class)
-                .orElse(1);
-        return scheduledThreadPool(poolSize, new ContextualThreadFactory("contextual-scheduled-pool"));
+        ScheduledExecutorService delegate = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
+        if (delegate == null) {
+            delegate = GlobalContextualScheduledExecutorService.INSTANCE;
+        }
+        return wrap(delegate, true);
     }
 
     /**
@@ -380,29 +374,4 @@ public class ContextualExecutors {
         return null;
     }
 
-    private static class ContextualThreadFactory implements ThreadFactory {
-        private static final AtomicInteger POOL_COUNTER = new AtomicInteger(0);
-        private final AtomicInteger threadCounter = new AtomicInteger(0);
-        private final String prefix;
-
-        private ContextualThreadFactory(final String prefix) {
-            this.prefix = prefix;
-        }
-
-        @Override
-        public Thread newThread(final Runnable r) {
-            final Thread thread = new Thread(r, String.format("%s-%d-thread-%d", prefix, POOL_COUNTER.incrementAndGet(),
-                    threadCounter.incrementAndGet()));
-            if (System.getSecurityManager() == null) {
-                thread.setDaemon(true);
-                thread.setPriority(Thread.NORM_PRIORITY);
-                return thread;
-            }
-            return AccessController.doPrivileged((PrivilegedAction<Thread>) () -> {
-                thread.setDaemon(true);
-                thread.setPriority(Thread.NORM_PRIORITY);
-                return thread;
-            });
-        }
-    }
 }
