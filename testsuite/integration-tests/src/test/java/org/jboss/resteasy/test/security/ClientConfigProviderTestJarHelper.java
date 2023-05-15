@@ -9,11 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
 
 /**
  * Contains utility methods used for creating, running and getting results of jars meant to test ClientConfigProvider functionality.
@@ -40,7 +44,7 @@ class ClientConfigProviderTestJarHelper {
 
     private static final String PACKAGE_NAME = "org.jboss.resteasy.test.security.testjar";
     private static final String PACKAGE_PATH = "org/jboss/resteasy/test/security/testjar/";
-    private static final String JAR_NAME = "client-config-provider-test.jar";
+    private static final String JAR_NAME = "clientconf.jar";
 
     private static ConfigProviderProperties bearerJarConfigProperties = new ConfigProviderProperties();
     private static ConfigProviderProperties basicAuthJarConfigProperties = new ConfigProviderProperties();
@@ -115,10 +119,28 @@ class ClientConfigProviderTestJarHelper {
     }
 
     static Process runClientConfigProviderTestJar(String jarPath, String[] args) throws IOException {
+        final Pattern pattern = Pattern.compile(
+                ".*(maven|plexus|sisu|xnio|jsoup|compress|shrinkwrap|IntelliJ|mockito|arquillian|aether|wildfly|hibernate|netty|xerces|xalan|hamcrest|io7m|slf4j|objenesis|sshd|marshalling|remoting|bytebuddy).*");
+
+        final String cp = jarPath + File.pathSeparator + System.getProperty("java.class.path");
+        final String[] paths = cp.split(Pattern.quote(File.pathSeparator));
+        final StringBuilder newCp = new StringBuilder();
+        for (String s : paths) {
+            final Path path = Paths.get(s);
+            if (pattern.matcher(path.toString()).matches()) {
+                continue;
+            }
+            newCp.append(path).append(File.pathSeparator);
+        }
         // use quotation marks for classpath on windows because folder names can have spaces
-        String classPath = System.getProperty("os.name").contains("indows") ? "\"" + jarPath + ";" + System.getProperty("java.class.path") + "\"" : jarPath + ":" + System.getProperty("java.class.path");
-        return Runtime.getRuntime()
-                .exec("java -cp "  +  classPath + " " + ClientConfigProviderTestJarHelper.PACKAGE_NAME + "." + String.join(" ", args) );
+        ProcessBuilder pb;
+        String[] rest = Arrays.copyOfRange(args, 1, args.length);
+        pb = new ProcessBuilder("java", "-ea", "-cp", newCp.toString(),
+                ClientConfigProviderTestJarHelper.PACKAGE_NAME + "." + args[0]);
+        for (String arg : rest) {
+            pb.command().add(arg);
+        }
+        return pb.start();
     }
 
     static String getResultOfProcess(Process proc) throws IOException {
