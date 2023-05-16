@@ -14,3 +14,8 @@ mvn archetype:generate -B \
 mvn -Dservlet.name=CCS1ervlet \
   -Dextra.classes=/home/rsigal/git.grpc.test/restful.example.grpc/restful.example/src/main/java:jakarta.rest.example.CC7,/home/rsigal/git.grpc.test/restful.example.grpc/restful.example/src/main/java:jakarta.rest.example.CC6 \
   -Drelease.type=release clean install
+  
+export SRC=/home/rsigal/git.grpc.test/restful.example.grpc/restful.example/src/main/java
+mvn -Dservlet.name=CCS1ervlet \
+  -Dextra.classes=${SRC}:jakarta.rest.example.CC7,${SRC}:jakarta.rest.example.CC6 \
+  -Drelease.type=release clean install
