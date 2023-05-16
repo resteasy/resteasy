@@ -1,0 +1,16 @@
+
+mvn archetype:generate -B \
+   -DarchetypeGroupId=dev.resteasy.grpc \
+   -DarchetypeArtifactId=gRPCtoJakartaREST-archetype \
+   -DarchetypeVersion=0.0.8-SNAPSHOT \
+   -DgroupId=dev.resteasy.grpc \
+   -DartifactId=restful.example \
+   -Dversion=0.0.40 \
+   -Dgenerate-prefix=CC1 \
+   -Dgenerate-package=jakarta.rest.example \
+   -Dresteasy-version=6.2.0.Final \
+   -Dgrpc-bridge-version=1.0.0.Alpha1-SNAPSHOT
+   
+mvn -Dservlet.name=CCS1ervlet \
+  -Dextra.classes=/home/rsigal/git.grpc.test/restful.example.grpc/restful.example/src/main/java:jakarta.rest.example.CC7,/home/rsigal/git.grpc.test/restful.example.grpc/restful.example/src/main/java:jakarta.rest.example.CC6 \
+  -Drelease.type=release clean install

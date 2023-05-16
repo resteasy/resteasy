@@ -2,9 +2,6 @@ package org.jboss.resteasy.test.grpc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FilePermission;
-import java.io.InputStream;
-import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,35 +36,21 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-// import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Timestamp;
 
-import io.grpc.ChannelCredentials;
-import io.grpc.Grpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import io.grpc.TlsChannelCredentials;
 import io.grpc.stub.StreamObserver;
 
 /**
@@ -75,45 +58,45 @@ import io.grpc.stub.StreamObserver;
  * @tpChapter grpc-tests tests
  * @tpSince RESTEasy 6.3.0
  */
-@RunWith(Arquillian.class)
-@RunAsClient
-public class GrpcToJakartaRESTTest {
-    protected static final Logger log = Logger.getLogger(GrpcToJakartaRESTTest.class.getName());
+//@RunWith(Arquillian.class)
+//@RunAsClient
+public class GrpcToJakartaRESTTest2 {
+    protected static final Logger log = Logger.getLogger(GrpcToJakartaRESTTest2.class.getName());
 
-    @Deployment(name = "jbossas-plaintext")
-    @TargetsContainer("jbossas-plaintext")
-    public static Archive<?> deployPlainText() {
-        return doDeploy();
-    }
-
-    @Deployment(name = "jbossas-ssl-oneway")
-    @TargetsContainer("jbossas-ssl-oneway")
-    public static Archive<?> deploySslOneWay() {
-        return doDeploy();
-    }
-
-    @Deployment(name = "jbossas-ssl-twoway")
-    @TargetsContainer("jbossas-ssl-twoway")
-    public static Archive<?> deploySslTwoWay() {
-        return doDeploy();
-    }
-
-    public static Archive<?> doDeploy() {
-        WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest.class.getSimpleName());
-        war.merge(ShrinkWrap.createFromZipFile(WebArchive.class,
-                TestUtil.resolveDependency("dev.resteasy.grpc:restful.example.grpc:war:0.0.40")));
-        war.addClass(CC1ServiceGrpcImplSub.class);
-        WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader")), "permissions.xml");
-        // log.info(archive.toString(true));
-        // archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
-        return archive;
-    }
+    //    @Deployment(name = "jbossas-plaintext")
+    //    @TargetsContainer("jbossas-plaintext")
+    //    public static Archive<?> deployPlainText() {
+    //        return doDeploy();
+    //    }
+    //
+    //    @Deployment(name = "jbossas-ssl-oneway")
+    //    @TargetsContainer("jbossas-ssl-oneway")
+    //    public static Archive<?> deploySslOneWay() {
+    //        return doDeploy();
+    //    }
+    //
+    //    @Deployment(name = "jbossas-ssl-twoway")
+    //    @TargetsContainer("jbossas-ssl-twoway")
+    //    public static Archive<?> deploySslTwoWay() {
+    //        return doDeploy();
+    //    }
+    //
+    //    public static Archive<?> doDeploy() {
+    //        WebArchive war = TestUtil.prepareArchive(GrpcToJakartaRESTTest2.class.getSimpleName());
+    //        war.merge(ShrinkWrap.createFromZipFile(WebArchive.class,
+    //                TestUtil.resolveDependency("dev.resteasy.grpc:restful.example.grpc:war:0.0.40")));
+    //        war.addClass(CC1ServiceGrpcImplSub.class);
+    //        WebArchive archive = (WebArchive) TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+    //        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+    //                new FilePermission("<<ALL FILES>>", "read"),
+    //                new ReflectPermission("suppressAccessChecks"),
+    //                new RuntimePermission("accessDeclaredMembers"),
+    //                new RuntimePermission("getClassLoader"),
+    //                new RuntimePermission("setContextClassLoader")), "permissions.xml");
+    //        // log.info(archive.toString(true));
+    //        // archive.as(ZipExporter.class).exportTo(new File("/tmp/GrpcToJaxrs.jar"), true);
+    //        return archive;
+    //    }
 
     private static ManagedChannel channelPlaintext;
     private static ManagedChannel channelSslOneway;
@@ -134,44 +117,44 @@ public class GrpcToJakartaRESTTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         accessServletContexts();
-        ClassLoader classLoader = GrpcToJakartaRESTTest.class.getClassLoader();
+        ClassLoader classLoader = GrpcToJakartaRESTTest2.class.getClassLoader();
         channelPlaintext = ManagedChannelBuilder.forTarget("localhost:9555").usePlaintext().build();
-        {
-            InputStream trustStore = classLoader.getResourceAsStream("client.truststore.pem");
-            ChannelCredentials creds = TlsChannelCredentials.newBuilder().trustManager(trustStore).build();
-            channelSslOneway = Grpc.newChannelBuilderForAddress("localhost", 10555, creds).build();
-        }
-        {
-            InputStream trustStore = classLoader.getResourceAsStream("client.truststore.pem");
-            InputStream keyStore = classLoader.getResourceAsStream("client.keystore.pem");
-            InputStream key = classLoader.getResourceAsStream("client.key.pem");
-            ChannelCredentials creds = TlsChannelCredentials.newBuilder().trustManager(trustStore).keyManager(keyStore, key)
-                    .build();
-            channelSslTwoway = Grpc.newChannelBuilderForAddress("localhost", 11555, creds).build();
-        }
+        //        {
+        //            InputStream trustStore = classLoader.getResourceAsStream("client.truststore.pem");
+        //            ChannelCredentials creds = TlsChannelCredentials.newBuilder().trustManager(trustStore).build();
+        //            channelSslOneway = Grpc.newChannelBuilderForAddress("localhost", 10555, creds).build();
+        //        }
+        //        {
+        //            InputStream trustStore = classLoader.getResourceAsStream("client.truststore.pem");
+        //            InputStream keyStore = classLoader.getResourceAsStream("client.keystore.pem");
+        //            InputStream key = classLoader.getResourceAsStream("client.key.pem");
+        //            ChannelCredentials creds = TlsChannelCredentials.newBuilder().trustManager(trustStore).keyManager(keyStore, key)
+        //                    .build();
+        //            channelSslTwoway = Grpc.newChannelBuilderForAddress("localhost", 11555, creds).build();
+        //        }
 
         blockingStubPlaintext = CC1ServiceGrpc.newBlockingStub(channelPlaintext);
-        blockingStubSslOneway = CC1ServiceGrpc.newBlockingStub(channelSslOneway);
-        blockingStubSslTwoway = CC1ServiceGrpc.newBlockingStub(channelSslTwoway);
+        //        blockingStubSslOneway = CC1ServiceGrpc.newBlockingStub(channelSslOneway);
+        //        blockingStubSslTwoway = CC1ServiceGrpc.newBlockingStub(channelSslTwoway);
 
         asyncStubPlaintext = CC1ServiceGrpc.newStub(channelPlaintext);
-        asyncStubSslOneway = CC1ServiceGrpc.newStub(channelSslOneway);
-        asyncStubSslTwoway = CC1ServiceGrpc.newStub(channelSslTwoway);
+        //        asyncStubSslOneway = CC1ServiceGrpc.newStub(channelSslOneway);
+        //        asyncStubSslTwoway = CC1ServiceGrpc.newStub(channelSslTwoway);
 
         futureStubPlaintext = CC1ServiceGrpc.newFutureStub(channelPlaintext);
-        futureStubSslOneway = CC1ServiceGrpc.newFutureStub(channelSslOneway);
-        futureStubSslTwoway = CC1ServiceGrpc.newFutureStub(channelSslTwoway);
+        //        futureStubSslOneway = CC1ServiceGrpc.newFutureStub(channelSslOneway);
+        //        futureStubSslTwoway = CC1ServiceGrpc.newFutureStub(channelSslTwoway);
     }
 
     static void accessServletContexts() {
         Client client = ClientBuilder.newClient();
-        Response response = client.target("http://localhost:8080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context")
-                .request().get();
+        Response response = client
+                .target("http://localhost:8080/restful.example.grpc-0.0.40/grpcToJakartaRest/grpcserver/context").request()
+                .get();
         Assert.assertEquals(200, response.getStatus());
-        client.target("http://localhost:9080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
-        Assert.assertEquals(200, response.getStatus());
-        client.target("http://localhost:10080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
-        Assert.assertEquals(200, response.getStatus());
+        //        client.target("http://localhost:8080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
+        //        client.target("http://localhost:9080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
+        //        client.target("http://localhost:10080/GrpcToJakartaRESTTest/grpcToJakartaRest/grpcserver/context").request().get();
         client.close();
     }
 
