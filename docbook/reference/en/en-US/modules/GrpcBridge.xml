@@ -2,11 +2,13 @@
    <title>gRPC Bridge</title>
    
    <para>
-      The RESTEasy modules <emphasis role="bold">grpc-bridge</emphasis> and <emphasis role="bold">grpc-bridge-runtime</emphasis>
-      have been developed to enable communication between gRPC clients and Jakarta REST servers. The
-      classes in the former module are able to scan a directory tree of Jakarta REST resource classes and
-      generate classes that form an intermediary layer between the gRPC runtime and a Jakarta REST server. Those
-      generated classes are supported by grpc-bridge-runtime. The process of generating the files is facilitated
+      The RESTEasy <emphasis role="bold">resteasy-grpc</emphasis> project
+      (<ulink url="https://github.com/resteasy/resteasy-grpc">https://github.com/resteasy/resteasy-grpc</ulink>)
+      has been developed to enable communication between gRPC clients and Jakarta REST servers. The
+      classes in resteasy-grpc's <emphasis role="bold">grpc-bridge</emphasis> module are able to scan a directory tree
+      of Jakarta REST resource classes and generate classes that form an intermediary layer between the gRPC runtime
+      and a Jakarta REST server. Those generated classes are supported by the <emphasis role="bold">grpc-bridge-runtime</emphasis>
+      module. The process of generating the files is facilitated
       by the maven archetype <ulink url="https://github.com/resteasy/gRPCtoJakartaREST-archetype">
       https://github.com/resteasy/gRPCtoJakartaREST-archetype</ulink>.
    </para>
@@ -31,7 +33,7 @@
       gRPC shares with CORBA the concept of a programming language independent 
       <emphasis role="bold">Interface Definition Language</emphasis> (IDL)
       that can be translated into code in any language for which a compiler exists. gRPC is built on
-      top of <ulink url="https://developers.google.com/protocol-buffers">protobuf</ulink>, a data definion framework,
+      top of <ulink url="https://developers.google.com/protocol-buffers">protobuf</ulink>, a data definiton framework,
       also from Google, which has an IDL and a precisely defined wire format. For example,
    </para>
    
@@ -294,7 +296,7 @@ if (any.getTypeUrl().endsWith("org.greet.gString")) {
       starts with an IDL file. Where does the IDL file come from? In a typical case, the IDL file is part of
       the design and is created manually early in the process. In the situation we are addressing here, though,
       we have a pre-existing Jakarta REST service to which the IDL file must conform. Now, in principle, it could be
-      generated manually from the Jakarta REST server classes, but that would be tedious and error prone. RESTEasy's
+      generated manually from the Jakarta REST server classes, but that would be tedious and error prone. resteasy-grpc's
       grpc-bridge module automates the process.
    </para>
    
@@ -302,7 +304,7 @@ if (any.getTypeUrl().endsWith("org.greet.gString")) {
 <title>Generating an IDL file</title>
    
    <para>
-      The class <code>org.jboss.resteasy.grpc.protobuf.JavaToProtobufGenerator</code> traverses,
+      The class <code>dev.resteasy.grpc.bridge.generator.protobuf.JavaToProtobufGenerator</code> traverses,
       with the help of the Java parser <ulink url="https://github.com/javaparser/javaparser">https://github.com/javaparser/javaparser</ulink>,
       a set of Jakarta REST resource classes. For each class that appears as an entity type or a return type of a resource method 
       or resource locator, <code>JavaToProtobufGenerator</code> generates a protobuf message. For each resource 
@@ -611,7 +613,7 @@ message GeneralReturnMessage {
       The gRPC runtime accepts a gRPC request and dispatches it to <code>GreetServiceGrpc</code>, whose methods are
       meant to be overridden by "business logic" methods. Here, though, we mean for the request to be forwarded to a Jakarta
       REST resource method, so we need code that transforms a gRPC request to a Jakarta REST request. The class
-      <code>org.jboss.resteasy.grpc.ServiceGrpcExtender</code> in grpc-bridge will generate 
+      <code>dev.resteasy.grpc.bridge.generator.ServiceGrpcExtender</code> in grpc-bridge will generate 
       <code>org.greet.GreetServiceGrpcImpl</code> with the necessary methods.
    </para>
    
@@ -695,7 +697,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
    
    <para>
       Two classes are generated to translate back and forth between a Java class and its javabuf counterpart. In particular, the
-      class <code>org.jboss.resteasy.grpc.protobuf.JavabufTranslatorGenerator</code> generates a class like
+      class <code>dev.resteasy.grpc.bridge.generator.protobuf.JavabufTranslatorGenerator</code> generates a class like
       <code>org.greet.GreetJavabufTranslator</code>, which has two static methods
    </para>
    
@@ -722,7 +724,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
    <para>
       <code>GreetJavabufTranslator</code> does the heavy lifting of the translations. It is called from
       the class <code>org.greet.GreetMessageBodyReaderWriter</code>, which is generated by
-      <code>org.jboss.resteasy.grpc.protobuf.ReaderWriterGenerator</code>. <code>GreetMessageBodyReaderWriter</code>
+      <code>dev.resteasy.grpc.bridge.generator.protobuf.ReaderWriterGenerator</code>. <code>GreetMessageBodyReaderWriter</code>
       implements <code>jakarta.ws.rs.ext.MessageBodyReader</code> and
       <code>jakarta.ws.rs.ext.MessageBodyWriter</code>, so it's registered as a provider with the 
       RESTEasy runtime. The request entity and the response entity are instances of javabuf classes, so it's
@@ -738,7 +740,7 @@ public void greet(org.greet.Greet_proto.GeneralEntityMessage param, StreamObserv
     &lt;servlet&gt;
        &lt;servlet-name&gt;GreetServlet&lt;/servlet-name&gt;
        &lt;servlet-class&gt;
-          org.jboss.resteasy.grpc.runtime.servlet.GrpcHttpServletDispatcher
+          dev.resteasy.grpc.bridge.runtime.servlet.GrpcHttpServletDispatcher
        &lt;/servlet-class&gt;
     &lt;/servlet&gt;
     
@@ -1103,13 +1105,14 @@ public void suspend(@Suspended final AsyncResponse response) {
 mvn archetype:generate -B \
    -DarchetypeGroupId=dev.resteasy.grpc \
    -DarchetypeArtifactId=gRPCtoJakartaREST-archetype \
-   -DarchetypeVersion=1.0.0.Final \
+   -DarchetypeVersion=1.0.0.Alpha1 \
    -DgroupId=org.greet \
    -DartifactId=greet \
-   -Dversion=0.0.8-SNAPSHOT \
+   -Dversion=0.0.1-SNAPSHOT \
    -Dgenerate-prefix=Greet \
    -Dgenerate-package=org.greet \
-   -Dresteasy-version=6.3.0.Alpha1-SNAPSHOT
+   -Dresteasy-version=6.2.4.Final \
+   -Dgrpc-bridge-version=1.0.0.Alpha1
    </programlisting>
 
    <para>
@@ -1126,15 +1129,16 @@ mvn archetype:generate -B \
       <listitem>generate-prefix: the prefix for generated classes</listitem>
       <listitem>generate-package: Java package for generated classes</listitem>
       <listitem>resteasy-version: version of RESTEasy to use</listitem>
+      <listitem>grpc-bridge-version: version of resteasy-grpc</listitem>
    </itemizedlist>
 
    <para>
-      [The values of archetypeVersion and resteasy-version, of course, are subject to change.]
+      [The values of archetypeVersion, resteasy-version, and grpc-bridge-version, of course, are subject to change.]
    </para>
 
    <para>
       The result of running the archetype is a new project with GAV groupId:artifactId.grpc:version.
-      For example, from target project org.greet:greet:0.0.1-SNAPSHOT we will get generated project
+      For example, from target project org.greet:greet:0.0.1-SNAPSHOT we will get generated bridge project
       org.greet:greet.grpc:0.0.1-SNAPSHOT. At this point, the layout of the new project is
    </para>
    
@@ -1148,9 +1152,6 @@ mvn archetype:generate -B \
 +- src/main/resources
 |  +- buildjar
 |  +- deployjar
-+- src/test/java
-   +- dev.resteasy.grpc.server
-      +- Greet_Server.java 
    </programlisting>
        
    <para>
@@ -1164,7 +1165,6 @@ mvn archetype:generate -B \
       <listitem>buildjar: a bash script that produces a JAR file (See <xref linkend="output_products"/>.)</listitem>
       <listitem>deployjar: a bash script that deploys the JAR built by buildjar to a maven repository
                            (See <xref linkend="output_products"/>.)</listitem>
-      <listitem><code>Greet_Server.java</code>: a Jakarta REST resource class that can turn on the gRPC server runtime</listitem>
    </itemizedlist>
    
    <para>
@@ -1234,15 +1234,13 @@ mvn -Dclasses=/home/bob/greet/java:org.greet.Extra clean install
 +- src/main/resources
 |  +- buildjar
 |  +- deployjar
-+- src/test/java
-|  +- dev.resteasy.grpc.server
-|     +- Greet_Server.java 
 +- target/generated-sources/protobuf
 |  +- java
 |     +- org.greet
 |     |  +- Greet_proto.java
 |  +- grpc-java
 |     +- org.greet
+|        +- Greet_Server.java 
 |        +- GreetJavabufTranslator.java
 |        +- GreetMessageBodyReaderWriter.java
 |        +- GreetServiceGrpc.java
@@ -1254,9 +1252,10 @@ mvn -Dclasses=/home/bob/greet/java:org.greet.Extra clean install
 
    <para><emphasis role="bold">Notes</emphasis></para>
    <itemizedlist>
-      <listitem>The intermediary layer classes are in target/generated-sources/protobuf/grpc-java.</listitem>
-      <listitem>For any of the files &lt;prefix&gt;.proto, &lt;prefix&gt;JavabufTranslator,
-      &lt;prefix&gt;MessageBodyReaderWriter, or &lt;prefix&gt;ServiceGrpcImpl, if the file exists, the build process
+      <listitem>The intermediary layer classes discussed above are in target/generated-sources/protobuf/grpc-java.</listitem>
+      <listitem>We'll discuss <code>Greet_Server</code> below in <xref linkend="using_war"/></listitem>
+      <listitem>For any of the files &lt;prefix&gt;.proto, &lt;prefix&gt;JavabufTranslator.java,
+      &lt;prefix&gt;MessageBodyReaderWriter.java, or &lt;prefix&gt;ServiceGrpcImpl.java, if the file exists, the build process
       will not overwrite it. This makes it possible to build a file and then tweak it for subsequent
       builds.</listitem> 
    </itemizedlist>
@@ -1316,9 +1315,11 @@ fi
       there's one more thing to do to set up the intermediary layer. The overriding methods in
       <code>GreetServiceGrpcImpl</code> need to be able to dispatch the request to the appropriate
       servlet. A Jakarta REST request to <code>dev.resteasy.grpc.server.Greet_Server</code>
-      in the bridge project's src/test/java directory will cause the handling
+      in the bridge project's target/generated-sources/protobuf/grpc-java directory will cause the handling
       servlet to be stored by <code>GrpcHttpServletDispatcher</code> so that it can be retrieved by
-      the intermediary code for subsequent gRPC requests. For example,
+      the intermediary code for subsequent gRPC requests. Moreover, calling <code>Greet_Server.startContext()</code>
+      in particular will accomplish the other initial requirement, which is storing a reference to the servlet's
+      <code>jakarta.servlet.ServletContext</code>. For example,
    </para>
    
    <programlisting>
@@ -1379,8 +1380,8 @@ curl http://localhost:8080/greet.grpc-0.0.1-SNAPSHOT/grpcToJakartaRest/grpcserve
 
    <para>
       Also, we mentioned in <xref linkend="building_bridge"/> that running maven to build the bridge project results
-      in copying Java classes from the target project. It should be noted that if other files, for example, resources,
-      are needed, that would need to be handled separately.
+      in copying Java classes from the target project. It should be noted that if other files are needed,
+      that would need to be handled separately.
    </para>
 </section>
 
