@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 /**
  * @tpSubChapter DataSource provider
@@ -109,6 +110,47 @@ public class DataSourceProviderInputStreamTest {
       } finally {
          IOUtils.closeQuietly(inputStream);
       }
+   }
+
+   /**
+    * @tpTestDetails Check DataSource provider throws with RESTEasy client.
+    * @tpSince RESTEasy 3.15
+    */
+   @Test
+   public void testDataSourceProviderThrowsNoOutputStreamAllowed() throws Exception {
+      InputStream inputStream = getInputStream();
+      try {
+         DataSource dataSource = DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
+         assertThrows(IOException.class, dataSource::getOutputStream);
+      }
+      finally {
+         IOUtils.closeQuietly(inputStream);
+      }
+   }
+
+   /**
+    * @tpTestDetails Check DataSource provider content type with RESTEasy client.
+    * @tpSince RESTEasy 3.15
+    */
+   @Test
+   public void testDataSourceProviderType() throws Exception {
+      InputStream inputStream = getInputStream();
+      MediaType contentType = MediaType.TEXT_PLAIN_TYPE;
+      try {
+         DataSource dataSource = DataSourceProvider.readDataSource(inputStream, contentType);
+         assertEquals(contentType.toString(), dataSource.getContentType());
+      }
+      finally {
+         IOUtils.closeQuietly(inputStream);
+      }
+   }
+
+   private InputStream getInputStream() {
+      Client client = new ResteasyClientBuilder().build();
+      client.register(DataSourceProvider.class);
+      WebTarget target = client.target(generateURL("/"));
+      Response response = target.request().get();
+      return response.readEntity(InputStream.class);
    }
 
    private int findSizeOfRemainingDataInStream(InputStream inputStream) throws IOException {
