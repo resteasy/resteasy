@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers;
 
 import org.jboss.resteasy.plugins.providers.DefaultBooleanWriter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceBase;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceIntegerPlainTextWriter;
@@ -14,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import java.lang.annotation.Annotation;
 
 /**
  * @tpSubChapter Providers
@@ -37,6 +39,8 @@ public class ProviderFactoryPrecedenceTest {
 
    public static class ConcreteMultiple extends BaseMultiple<String, Short> {
    }
+
+   private static final Annotation[] EMPTY_ANNOTATION = new Annotation[0];
 
    /**
     * @tpTestDetails Test that classes which extends generic MessageBodyWriter of generic type are of the correct type
@@ -66,6 +70,12 @@ public class ProviderFactoryPrecedenceTest {
       RegisterBuiltin.register(factory);
 
       MessageBodyWriter<Boolean> writer = factory.getMessageBodyWriter(Boolean.class, null, null, new MediaType("text", "plain"));
+      boolean isNotWritable = writer.isWriteable(String.class, String.class, EMPTY_ANNOTATION, MediaType.TEXT_PLAIN_TYPE);
+      Assert.assertFalse(isNotWritable);
+
+      boolean isWritable = writer.isWriteable(MultipartFormDataOutput.class, MultipartFormDataOutput.class, EMPTY_ANNOTATION, MediaType.TEXT_PLAIN_TYPE);
+      Assert.assertTrue(isWritable);
+
       Assert.assertNotNull("No writer exists for the given media type", writer);
       Assert.assertEquals("The type of the writer is incorrect", writer.getClass(), DefaultBooleanWriter.class);
    }
