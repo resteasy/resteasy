@@ -264,16 +264,9 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
                        OutputStream entityStream) throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-      InputStream in = dataSource.getInputStream();
-      try
-      {
-         ProviderHelper.writeTo(in, entityStream);
+      try (InputStream inputStream = dataSource.getInputStream()) {
+         ProviderHelper.writeTo(inputStream, entityStream);
       }
-      finally
-      {
-         in.close();
-      }
-
    }
 
    private static class TempFileCleanable implements Cleanable {
