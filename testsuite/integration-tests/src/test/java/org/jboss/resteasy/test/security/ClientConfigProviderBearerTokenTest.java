@@ -3,9 +3,7 @@ package org.jboss.resteasy.test.security;
 import java.io.File;
 import java.io.IOException;
 
-import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
 
 /**
@@ -17,7 +15,6 @@ public class ClientConfigProviderBearerTokenTest {
 
     @Test
     public void testClientConfigProviderBearerToken() throws IOException {
-        Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
         String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithBearerToken();
 
         Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(
