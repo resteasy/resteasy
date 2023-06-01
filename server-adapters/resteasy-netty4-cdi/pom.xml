@@ -4,7 +4,7 @@
     <parent>
         <artifactId>resteasy-http-adapter-pom</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>3.15.7-SNAPSHOT</version>
+        <version>3.15.7.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
