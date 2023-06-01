@@ -144,10 +144,14 @@ public class ResourceLocatorInvoker implements ResourceInvoker
             methodStatisticsLogger.duration(timeStamp);
          }
       }
-      else
+      else if (invoker instanceof ResourceMethodInvoker)
       {
          ResourceMethodInvoker method = (ResourceMethodInvoker) invoker;
          return method.invoke(request, response, target);
+      }
+      else
+      {
+         return invoker.invoke(request, response, target);
       }
    }
 
