@@ -43,6 +43,10 @@
         <container.qualifier.manual.ssl.sni>jbossas-manual-ssl-sni</container.qualifier.manual.ssl.sni>
         <!-- https://issues.jboss.org/browse/RESTEASY-2411 -->
         <additionalJvmArgs>-Dresteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land -Dresteasy.jackson.deserialization.whitelist.allowIfSubType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land</additionalJvmArgs>
+
+        <!-- Debug properties -->
+        <debugArgs/>
+        <debug.port>8787</debug.port>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -394,6 +398,31 @@
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
+        </profile>
+
+        <profile>
+            <id>debug</id>
+            <activation>
+                <property>
+                    <name>debug</name>
+                </property>
+            </activation>
+            <properties>
+                <debugArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${debug.port}</debugArgs>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>debug-jdk8</id>
+            <activation>
+                <property>
+                    <name>debug</name>
+                </property>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <debugArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${debug.port}</debugArgs>
+            </properties>
         </profile>
     </profiles>
 
