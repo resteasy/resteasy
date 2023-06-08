@@ -42,7 +42,7 @@
         <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
     </properties>
 
-    <url>http://rest-easy.org</url>
+    <url>https://resteasy.dev</url>
 
     <licenses>
         <license>
