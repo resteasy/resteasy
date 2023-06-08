@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Stack;
 
+import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.dom.Body;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.Header;
@@ -39,6 +41,7 @@ import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.RawField;
 import org.apache.james.mime4j.util.ByteArrayBuffer;
 import org.apache.james.mime4j.util.ByteSequence;
+import org.apache.james.mime4j.util.MimeUtil;
 
 
 /**
@@ -154,11 +157,11 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
         // The parser has a "setContentDecoding" method. We should
         // simply instantiate the MimeStreamParser with that method.
 
-        // final String enc = bd.getTransferEncoding();
+        final String enc = bd.getTransferEncoding();
 
         final Body body;
 
-        /*
+
         final InputStream decodedStream;
         if (MimeUtil.ENC_BASE64.equals(enc)) {
             decodedStream = new Base64InputStream(is);
@@ -167,14 +170,13 @@ class Mime4jWorkaroundBinaryEntityBuilder implements ContentHandler {
         } else {
             decodedStream = is;
         }
-        */
 
         //Code change here to unilaterally use binaryBody
         //Code left commented out here to make diffs easy in the future when apache-mime4j updates.
         //if (bd.getMimeType().startsWith("text/")) {
         //    body = bodyFactory.textBody(is, bd.getCharset());
         //} else {
-        body = bodyFactory.binaryBody(is);
+        body = bodyFactory.binaryBody(decodedStream);
         //}
 
         Entity entity = ((Entity) stack.peek());
