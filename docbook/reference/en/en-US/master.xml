@@ -50,6 +50,7 @@
                 <!ENTITY Json SYSTEM "modules/Json.xml">
                 <!ENTITY Json-p SYSTEM "modules/Json-p.xml">
                 <!ENTITY Xml-Binding SYSTEM "modules/xml-binding.xml">
+                <!ENTITY Guice SYSTEM "modules/Guice.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
@@ -154,6 +155,7 @@ This one is short
    &RESTEasy_Enterprise_Bean_Integration;
    &RESTEasy_Spring_Integration;
    &CDI;
+    &Guice;
    &RESTEasy_Client_Framework;
    &MicroProfile_Rest_Client;
    &AJAX_Client;
