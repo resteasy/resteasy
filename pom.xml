@@ -26,7 +26,7 @@
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
         <server.version>25.0.1.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
-        <version.org.wildfly.arquillian.wildfly-arquillian>4.0.0.Alpha2</version.org.wildfly.arquillian.wildfly-arquillian>
+        <version.org.wildfly.arquillian.wildfly-arquillian>4.0.0.Alpha6</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
         <!-- print logs to file by default -->
