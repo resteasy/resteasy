@@ -35,6 +35,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 public class JettyClientEngine implements AsyncClientHttpEngine {
     public static final String REQUEST_TIMEOUT_MS = JettyClientEngine.class + "$RequestTimeout";
+    public static final String IDLE_TIMEOUT_MS = JettyClientEngine.class + "$IdleTimeout";
     // Yeah, this is the Jersey one, but there's no standard one and it makes more sense to reuse than make our own...
     public static final String FOLLOW_REDIRECTS = "jersey.config.client.followRedirects";
 
@@ -187,6 +188,19 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
 
     private void configureTimeout(final Request request) {
         final Object timeout = request.getAttributes().get(REQUEST_TIMEOUT_MS);
+        final Object idleTimeout = request.getAttributes().get(IDLE_TIMEOUT_MS);
+        final long timeoutMs = parseTimeoutMs(timeout);
+        final long idleTimeoutMs = parseTimeoutMs(idleTimeout);
+        if (timeoutMs > 0) {
+            request.timeout(timeoutMs, TimeUnit.MILLISECONDS);
+        }
+
+        if (idleTimeoutMs > 0) {
+            request.idleTimeout(idleTimeoutMs, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private long parseTimeoutMs(final Object timeout) {
         final long timeoutMs;
         if (timeout instanceof Duration) {
             timeoutMs = ((Duration) timeout).toMillis();
@@ -197,9 +211,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         } else {
             timeoutMs = -1;
         }
-        if (timeoutMs > 0) {
-            request.timeout(timeoutMs, TimeUnit.MILLISECONDS);
-        }
+        return timeoutMs;
     }
 
     @Override
