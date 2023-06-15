@@ -224,6 +224,44 @@ public class JettyClientEngineTest {
     }
 
     @Test
+    public void testIdleTimeout() throws Exception {
+        server.setHandler(new AbstractHandler() {
+            @Override
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                    throws IOException {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError(e);
+                }
+                baseRequest.setHandled(true);
+                response.setStatus(200);
+                response.getWriter().println("Success");
+            }
+        });
+
+        try {
+            client().target(baseUri()).request()
+                    .property(JettyClientEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(2000))
+                    .property(JettyClientEngine.IDLE_TIMEOUT_MS, Duration.ofMillis(500))
+                    .get();
+            fail();
+        } catch (ProcessingException e) {
+            assertTrue(e.getCause() instanceof TimeoutException);
+        }
+
+        final Response response = client().target(baseUri()).request()
+                .property(JettyClientEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(2000))
+                .property(JettyClientEngine.IDLE_TIMEOUT_MS, Duration.ofMillis(1500))
+                .get();
+
+        assertEquals(200, response.getStatus());
+        assertEquals("Success" + System.lineSeparator(), response.readEntity(String.class));
+
+    }
+
+    @Test
     public void testDeferContent() throws Exception {
         server.setHandler(new EchoHandler());
         final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
