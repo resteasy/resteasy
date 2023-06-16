@@ -1025,9 +1025,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         while (mapper == null) {
             if (asyncType == null)
                 break;
-            Map<Class<?>, AsyncResponseProvider> asyncResponseProviders = getAsyncResponseProviders();
-            if (asyncResponseProviders != null)
-                mapper = asyncResponseProviders.get(asyncType);
+            mapper = findProvider(asyncType, getAsyncResponseProviders());
             if (mapper == null)
                 asyncType = asyncType.getSuperclass();
         }
@@ -1040,9 +1038,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         while (mapper == null) {
             if (asyncType == null)
                 break;
-            Map<Class<?>, AsyncClientResponseProvider> asyncClientResponseProviders = getAsyncClientResponseProviders();
-            if (asyncClientResponseProviders != null)
-                mapper = asyncClientResponseProviders.get(asyncType);
+            mapper = findProvider(asyncType, getAsyncClientResponseProviders());
             if (mapper == null)
                 asyncType = asyncType.getSuperclass();
         }
@@ -1056,9 +1052,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         while (mapper == null) {
             if (asyncType == null)
                 break;
-            Map<Class<?>, AsyncStreamProvider> asyncStreamProviders = getAsyncStreamProviders();
-            if (asyncStreamProviders != null)
-                mapper = asyncStreamProviders.get(asyncType);
+            mapper = findProvider(asyncType, getAsyncStreamProviders());
             if (mapper == null)
                 asyncType = asyncType.getSuperclass();
         }
@@ -1156,6 +1150,17 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             MediaType mediaType) {
         MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getClientMessageBodyWriters();
         return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+    }
+
+    private <T> T findProvider(Class asyncType, Map<Class<?>, T> asyncResponseProviders) {
+        if (asyncResponseProviders != null) {
+            for (Class<?> aClass : asyncResponseProviders.keySet()) {
+                if (aClass.isAssignableFrom(asyncType)) {
+                    return asyncResponseProviders.get(aClass);
+                }
+            }
+        }
+        return null;
     }
 
     @Deprecated

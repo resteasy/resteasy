@@ -205,4 +205,20 @@ public class CompletionStageResponseResource {
         });
         return cs;
     }
+
+    @GET
+    @Path("cftext")
+    @Produces("text/plain")
+    public CompletableFuture<String> completableFutureText(@Context HttpRequest req) {
+        req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("cftext"));
+        CompletableFuture<String> cs = new CompletableFuture<>();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(
+                new Runnable() {
+                    public void run() {
+                        cs.complete(HELLO);
+                    }
+                });
+        return cs;
+    }
 }
