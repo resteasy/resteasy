@@ -119,6 +119,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
     public <T> Mono<T> submitRx(final ClientInvocation request,
             final boolean buffered,
             final ResultExtractor<T> extractor) {
+
         final Mono<ClientResponse> responseMono = send(request)
                 .responseSingle((response, bytes) -> bytes
                         .asInputStream()
@@ -146,7 +147,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         return requestTimeout
                 .map(responseMono::timeout)
                 .orElse(responseMono)
-                .handle((response, sink) -> {
+                .<T> handle((response, sink) -> {
                     try {
                         sink.next(extractor.extractResult(response));
                     } catch (final Exception e) {
@@ -164,7 +165,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                         }
                         sink.error(e);
                     }
-                });
+                }).onErrorMap(err -> clientException(err, null));
     }
 
     /**
@@ -327,7 +328,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
         }
     }
 
-    static RuntimeException clientException(Throwable ex, Response clientResponse) {
+    static RuntimeException clientException(final Throwable ex, final Response clientResponse) {
         RuntimeException ret;
         if (ex == null) {
             ret = new ProcessingException(new NullPointerException());
