@@ -1,9 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -57,10 +55,12 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import reactor.core.publisher.Mono;
+import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
 import reactor.netty.NettyOutbound;
 import reactor.netty.http.HttpResources;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.client.PrematureCloseException;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
@@ -162,7 +162,11 @@ public class ReactorNettyClientHttpEngineTest {
                         .post("/headers/content-encoding",
                                 (req, resp) -> headerEcho(req, resp, HttpHeaderNames.CONTENT_ENCODING.toString()))
                         .post("/headers/content-type",
-                                (req, resp) -> allHeaderEcho(req, resp, HttpHeaderNames.CONTENT_TYPE.toString())))
+                                (req, resp) -> allHeaderEcho(req, resp, HttpHeaderNames.CONTENT_TYPE.toString()))
+                        .get("/kill-conn", (req, resp) -> {
+                            req.withConnection(Connection::disposeNow);
+                            return Mono.empty();
+                        }))
                 .bindNow();
     }
 
@@ -305,24 +309,24 @@ public class ReactorNettyClientHttpEngineTest {
     }
 
     @Test
-    public void testAsyncGetWithInvocationCallbackFailed() throws ExecutionException, InterruptedException {
+    public void testAsyncGetWithInvocationCallbackFailed() {
         final Client client = setupClient(HttpClient.create().baseUrl("invalid"));
-        final AtomicReference<String> entity = new AtomicReference<>();
+        final AtomicReference<Throwable> entity = new AtomicReference<>();
         final Future<String> future = client.target("/hello")
                 .request()
                 .async()
                 .get(new InvocationCallback<String>() {
                     @Override
                     public void completed(String s) {
-                        entity.set(s);
+                        entity.set(new RuntimeException("should have failed!"));
                     }
 
                     @Override
                     public void failed(Throwable throwable) {
                         if (throwable instanceof CompletionException) {
-                            entity.set(throwable.getCause().getClass().getName());
+                            entity.set(throwable.getCause());
                         } else {
-                            entity.set(throwable.getClass().getName());
+                            entity.set(throwable);
                         }
                     }
                 });
@@ -330,7 +334,11 @@ public class ReactorNettyClientHttpEngineTest {
         while (!future.isDone()) {
             // Wait till the result is ready.
         }
-        assertEquals(UnknownHostException.class.getName(), entity.get());
+
+        final Throwable err = entity.get();
+        assertEquals(ProcessingException.class, err.getClass());
+        assertEquals("Expected cause to be an UnknownHostException",
+                UnknownHostException.class, err.getCause().getClass());
     }
 
     @Test
@@ -708,6 +716,19 @@ public class ReactorNettyClientHttpEngineTest {
                 }
             }
             throw e;
+        }
+    }
+
+    @Test
+    public void testConnKilledBeforeResponse() throws Exception {
+        try {
+            final Response response = Mono.fromCompletionStage(client.target(url("/kill-conn")).request()
+                    .rx()
+                    .get()).block();
+            fail("An exception should have been thrown.");
+        } catch (final ProcessingException pe) {
+            assertEquals("Expected ProcessingException with cause: PrematureCloseException",
+                    pe.getCause().getClass(), PrematureCloseException.class);
         }
     }
 
