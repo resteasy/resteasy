@@ -99,7 +99,6 @@ public class Encode {
                 case '.':
                 case '_':
                 case '~':
-                case '?':
                     continue;
                 case ' ':
                     queryNameValueEncoding[i] = "+";
