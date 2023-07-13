@@ -144,12 +144,7 @@ public class SslSniHostNamesTest extends SslTestBase {
       // create SSLContext with trusted certificate
       TestUtil.runCmd(client, String.format("/subsystem=elytron/key-store=httpsKS1:add(path=%s,credential-reference={clear-text=%s},type=JKS)", SERVER_TRUSTED_KEYSTORE_PATH, PASSWORD));
       TestUtil.runCmd(client, String.format("/subsystem=elytron/key-manager=httpsKM1:add(key-store=httpsKS1,credential-reference={clear-text=%s})", PASSWORD));
-      if (TestUtil.isIbmJdk()) {
-         TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1\"])");
-      } else {
-         TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1.2\"])");
-      }
-
+      TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-context=httpsSSC1:add(key-manager=httpsKM1,protocols=[\"TLSv1.2\"])");
 
       // set untrusted SSLContext as default and trusted SSLContext to be activated with sniHostNames("localhost")
       TestUtil.runCmd(client, "/subsystem=elytron/server-ssl-sni-context=test-sni:add(default-ssl-context=httpsSSC,host-context-map={localhost=httpsSSC1})");
