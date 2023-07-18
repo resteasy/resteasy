@@ -50,6 +50,8 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public static final String PROPERTY_PROXY_SCHEME = "org.jboss.resteasy.jaxrs.client.proxy.scheme";
 
+    public static final String PROPERTY_FOLLOW_REDIRECTS = "dev.resteasy.client.follow.redirects";
+
     /**
      * Changing the providerFactory will wipe clean any registered components or properties.
      *

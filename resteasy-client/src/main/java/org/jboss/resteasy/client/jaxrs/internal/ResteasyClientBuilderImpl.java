@@ -383,6 +383,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
             }
         }
 
+        final Object localFollowRedirects = config.getProperty(PROPERTY_FOLLOW_REDIRECTS);
+        if (localFollowRedirects != null) {
+            this.followRedirects = Boolean.parseBoolean(String.valueOf(localFollowRedirects));
+        }
+
         ClientHttpEngine engine = httpEngine != null ? httpEngine
                 : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
         if (resetProxy) {
