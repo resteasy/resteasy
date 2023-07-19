@@ -227,6 +227,18 @@ public class QueryParamAsPrimitiveTest {
         testDefault("/wrappers/", type, value);
     }
 
+    public void testWrappersDefaultNull(String type) {
+        Invocation.Builder request = client.target(generateURL("/wrappers/default/null")).request();
+        request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+        try {
+            Response response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void testListDefault(String type, String value) {
         testDefault("/list/", type, value);
     }
@@ -269,6 +281,15 @@ public class QueryParamAsPrimitiveTest {
     @Test
     public void testGetBooleanPrimitiveWrapperDefault() {
         testWrappersDefault("boolean", "true");
+    }
+
+    /**
+     * @tpTestDetails Test boolean primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetBooleanPrimitivesMissingValue() {
+        testWrappersDefaultNull("boolean");
     }
 
     /**
@@ -344,6 +365,15 @@ public class QueryParamAsPrimitiveTest {
     }
 
     /**
+     * @tpTestDetails Test byte primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetBytePrimitivesMissingValue() {
+        testWrappersDefaultNull("byte");
+    }
+
+    /**
      * @tpTestDetails Test byte primitive objects in list
      * @tpSince RESTEasy 3.0.16
      */
@@ -375,8 +405,17 @@ public class QueryParamAsPrimitiveTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    public void testGetShortPrimtivesDefault() {
+    public void testGetShortPrimitivesDefault() {
         testDefault("short", "32767");
+    }
+
+    /**
+     * @tpTestDetails Test short primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetShortPrimitivesMissingValue() {
+        testWrappersDefaultNull("short");
     }
 
     /**
@@ -384,7 +423,7 @@ public class QueryParamAsPrimitiveTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    public void testGetShortPrimtiveWrappersDefault() {
+    public void testGetShortPrimitiveWrappersDefault() {
         testWrappersDefault("short", "32767");
     }
 
@@ -393,7 +432,7 @@ public class QueryParamAsPrimitiveTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    public void testGetShortPrimtiveListDefault() {
+    public void testGetShortPrimitiveListDefault() {
         testListDefault("short", "32767");
     }
 
@@ -422,6 +461,15 @@ public class QueryParamAsPrimitiveTest {
     @Test
     public void testGetIntPrimitiveWrappersDefault() {
         testWrappersDefault("int", "2147483647");
+    }
+
+    /**
+     * @tpTestDetails Test int primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetIntPrimitivesMissingValue() {
+        testWrappersDefaultNull("int");
     }
 
     /**
@@ -461,6 +509,15 @@ public class QueryParamAsPrimitiveTest {
     }
 
     /**
+     * @tpTestDetails Test long primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetLongPrimitivesMissingValue() {
+        testWrappersDefaultNull("long");
+    }
+
+    /**
      * @tpTestDetails Test long primitive objects in list
      * @tpSince RESTEasy 3.0.16
      */
@@ -494,6 +551,15 @@ public class QueryParamAsPrimitiveTest {
     @Test
     public void testGetFloatPrimitiveWrappersDefault() {
         testWrappersDefault("float", "3.14159265");
+    }
+
+    /**
+     * @tpTestDetails Test float primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetFloatPrimitivesMissingValue() {
+        testWrappersDefaultNull("float");
     }
 
     /**
@@ -533,6 +599,15 @@ public class QueryParamAsPrimitiveTest {
     }
 
     /**
+     * @tpTestDetails Test double primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetDoublePrimitivesMissingValue() {
+        testWrappersDefaultNull("double");
+    }
+
+    /**
      * @tpTestDetails Test double primitive objects in list
      * @tpSince RESTEasy 3.0.16
      */
@@ -566,6 +641,15 @@ public class QueryParamAsPrimitiveTest {
     @Test
     public void testGetCharPrimitiveWrappersDefault() {
         testWrappersDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test char primitive object missing value
+     * @tpSince RESTEasy 6.3.0
+     */
+    @Test
+    public void testGetCharPrimitivesMissingValue() {
+        testWrappersDefaultNull("char");
     }
 
     /**
