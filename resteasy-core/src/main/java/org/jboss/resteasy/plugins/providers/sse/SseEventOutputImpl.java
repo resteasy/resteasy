@@ -387,20 +387,21 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
         if (state.getAndSet(CLOSED) != CLOSED) {
             if (error != null) {
                 drainQueue(error);
-            } else {
-                synchronized (lock) {
-                    events.clear();
-                }
             }
             if (flushBeforeClose && responseFlushed) {
                 try (CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)) {
                     // make sure we flush to await for any queued data being sent
                     AsyncOutputStream aos = response.getAsyncOutputStream();
-                    aos.asyncFlush().toCompletableFuture().get();
+                    aos.asyncFlush().toCompletableFuture().thenRun(() -> drainQueue(null)).get();
                 } catch (IOException | InterruptedException | ExecutionException x) {
                     // ignore it and let's just close
                 }
+            } else {
+                synchronized (lock) {
+                    events.clear();
+                }
             }
+
             if (asyncContext.isSuspended()) {
                 ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
                 if (asyncResponse != null) {
