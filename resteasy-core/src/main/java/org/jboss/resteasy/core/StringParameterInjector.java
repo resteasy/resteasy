@@ -801,6 +801,9 @@ public class StringParameterInjector {
                     throw ((WebApplicationException) targetException);
                 }
                 LogMessages.LOGGER.unableToExtractParameter(e, getParamSignature(), strVal, target);
+                if (strVal.isBlank()) {
+                    return null;
+                }
                 throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal)),
                         targetException);
             }
