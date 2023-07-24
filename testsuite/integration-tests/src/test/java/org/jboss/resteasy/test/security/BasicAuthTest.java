@@ -272,7 +272,7 @@ public class BasicAuthTest {
     public void testContentTypeWithForbiddenMessage() {
         Response response = unauthorizedClient.target(generateURL("/secured/denyWithContentType")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        Assert.assertEquals("Incorrect Content-type header", "text/html;charset=UTF-8",
+        Assert.assertEquals("Incorrect Content-type header", "text/plain;charset=UTF-8",
                 response.getHeaderString("Content-type"));
         Assert.assertEquals("Missing forbidden message in the response", ACCESS_FORBIDDEN_MESSAGE,
                 response.readEntity(String.class));
