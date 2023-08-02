@@ -57,6 +57,10 @@ public abstract class AbstractCollectionProcessor<T> {
                 target = apply(target, arr);
             }
         } else {
+            ParamConverter<Object> paramConverter = config.getParamConverter(object.getClass(), type, annotations);
+            if (paramConverter != null) {
+                object = paramConverter.toString(object);
+            }
             target = apply(target, object);
         }
         return target;
