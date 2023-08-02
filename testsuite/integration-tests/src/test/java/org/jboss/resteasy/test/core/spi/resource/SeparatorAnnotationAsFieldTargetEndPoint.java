@@ -36,12 +36,6 @@ public class SeparatorAnnotationAsFieldTargetEndPoint {
     @GET
     @Produces("text/plain")
     public String getSentence() {
-        StringBuilder sb = new StringBuilder();
-
-        for (String id : ids) {
-            sb.append(id);
-        }
-
         return "This is your sentence:" + String.join("", ids);
     }
 }

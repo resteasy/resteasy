@@ -32,12 +32,6 @@ public class SeparatorAnnotationAsParameterTargetEndPoint {
     @GET
     @Produces("text/plain")
     public String getSentence(@PathParam("ids") @Separator(",") List<String> ids) {
-        StringBuilder sb = new StringBuilder();
-
-        for (String id : ids) {
-            sb.append(id);
-        }
-
         return "This is your sentence:" + String.join("", ids);
     }
 }

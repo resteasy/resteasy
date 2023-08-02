@@ -39,12 +39,6 @@ public class SeparatorAnnotationBeanParam {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (String id : this.ids) {
-            sb.append(id);
-        }
-
         return "This is your sentence:" + String.join("", ids);
     }
 }
