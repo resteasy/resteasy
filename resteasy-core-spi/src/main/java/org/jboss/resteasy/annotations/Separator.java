@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Determines a separator for String representations of multivalued parameters.
  */
-@Target({ ElementType.PARAMETER })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Separator {
     String value() default "";
