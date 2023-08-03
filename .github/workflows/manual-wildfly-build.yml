@@ -14,10 +14,7 @@ on:
         description: "Java Version"
         required: true
         default: "11"
-        type: choice
-        options:
-          - "11"
-          - "17"
+        type: string
       wildfly-branch:
         description: "WildFly Branch"
         required: true
