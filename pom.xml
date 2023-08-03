@@ -24,7 +24,7 @@
         <dep.arquillian-bom.version>1.7.0.Final</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
-        <server.version>28.0.1.Final</server.version>
+        <server.version>29.0.0.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.1.Final</version.org.wildfly.arquillian.wildfly-arquillian>
 
@@ -50,9 +50,9 @@
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.10</version.org.jacoco.plugin>
-        <version.org.jboss.galleon>5.1.0.Final</version.org.jboss.galleon>
+        <version.org.jboss.galleon>5.2.0.Final</version.org.jboss.galleon>
         <version.org.wildfly.galleon-plugins>6.4.2.Final</version.org.wildfly.galleon-plugins>
-        <version.org.wildfly.plugins.wildfly-maven-plugin>4.0.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>4.2.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
         <!-- Test options -->
         <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
