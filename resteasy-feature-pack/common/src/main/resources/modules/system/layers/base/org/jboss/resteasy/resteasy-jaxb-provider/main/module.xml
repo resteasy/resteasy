@@ -32,10 +32,6 @@
         <module name="jakarta.servlet.api" />
         <module name="jakarta.ws.rs.api" />
         <module name="jakarta.xml.bind.api" />
-        <!-- Some features are used in the SecureUnmarshaller that only work with Xerces. However, it's optional
-             because if these features are not used then it doesn't need to use Xerces.
-        -->
-        <module name="org.apache.xerces" optional="true" services="import" />
         <module name="org.jboss.logging" />
         <module name="org.jboss.resteasy.resteasy-core" />
         <module name="org.jboss.resteasy.resteasy-core-spi" />

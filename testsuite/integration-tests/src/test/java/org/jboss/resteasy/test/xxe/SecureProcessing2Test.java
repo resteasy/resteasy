@@ -6,6 +6,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
 import java.io.File;
+import java.util.List;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -26,6 +27,7 @@ import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingResource;
+import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -270,7 +272,16 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityDefaultDTDsFalseExpansionDefault() throws Exception {
-        doTestFailsFailsPassesFails("dfd");
+        // Leaving this heere because Xerces allows this, however new versions of JAXP do not and should not.
+        //doTestFailsFailsPassesFails("dfd");
+        final String ext = "dfd";
+        doEntityExpansionFails(ext);
+        doMaxAttributesFails(ext);
+        // Expect a different failure as resteasy.document.secure.processing.feature is set to true. This setting
+        // enables XMLConstants.FEATURE_SECURE_PROCESSING which does not allow external DTD's. With the JDK's
+        // implementation, you cannot set this to true and expect external expansion to work.
+        doDTDFails(ext, List.of("External DTD", "accessExternalDTD"));
+        doExternalEntityExpansionFails(ext);
     }
 
     /**
@@ -281,7 +292,16 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityDefaultDTDsFalseExpansionFalse() throws Exception {
-        doTestFailsFailsPassesFails("dff");
+        // Leaving this heere because Xerces allows this, however new versions of JAXP do not and should not.
+        //doTestFailsFailsPassesFails("dff");
+        final String ext = "dff";
+        doEntityExpansionFails(ext);
+        doMaxAttributesFails(ext);
+        // Expect a different failure as resteasy.document.secure.processing.feature is set to true. This setting
+        // enables XMLConstants.FEATURE_SECURE_PROCESSING which does not allow external DTD's. With the JDK's
+        // implementation, you cannot set this to true and expect external expansion to work.
+        doDTDFails(ext, List.of("External DTD", "accessExternalDTD"));
+        doExternalEntityExpansionFails(ext);
     }
 
     /**
@@ -336,6 +356,7 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionDefault() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("fdd");
     }
 
@@ -347,6 +368,7 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionFalse() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("fdf");
     }
 
@@ -358,6 +380,7 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionTrue() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("fdt");
     }
 
@@ -369,6 +392,7 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsFalseExpansionDefault() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestPassesPassesPassesFails("ffd");
     }
 
@@ -543,6 +567,10 @@ public class SecureProcessing2Test {
     }
 
     void doDTDFails(String ext) throws Exception {
+        doDTDFails(ext, List.of("DOCTYPE", "true"));
+    }
+
+    void doDTDFails(final String ext, final List<String> expected) {
         logger.info("entering doDTDFails(" + ext + ")");
         Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
                 .post(Entity.entity(bar, "application/xml"));
@@ -551,8 +579,9 @@ public class SecureProcessing2Test {
         logger.info("doDTDFails(): result: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         MatcherAssert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
-        MatcherAssert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
-        MatcherAssert.assertThat("Wrong content of response", entity, containsString("true"));
+        for (String s : expected) {
+            MatcherAssert.assertThat("Wrong content of response", entity, containsString(s));
+        }
     }
 
     void doDTDFailsWithApacheLinkMessage(String ext) throws Exception {

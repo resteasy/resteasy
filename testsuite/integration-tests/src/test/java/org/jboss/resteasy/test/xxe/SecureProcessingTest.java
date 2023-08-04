@@ -6,6 +6,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
 import java.io.File;
+import java.util.List;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -26,6 +27,7 @@ import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingResource;
+import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -242,6 +244,7 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityFalseDTDsFalseExpansionFalse() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestPassesPassesPassesFails("fff");
     }
 
@@ -253,6 +256,7 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityFalseDTDsFalseExpansionTrue() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestPassesPassesPassesPasses("fft");
     }
 
@@ -264,6 +268,7 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityFalseDTDsTrueExpansionDefault() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("ftd");
     }
 
@@ -275,6 +280,7 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityFalseDTDsTrueExpansionFalse() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("ftf");
     }
 
@@ -286,6 +292,7 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityFalseDTDsTrueExpansionTrue() throws Exception {
+        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("ftt");
     }
 
@@ -330,7 +337,16 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityTrueDTDsFalseExpansionDefault() throws Exception {
-        doTestFailsFailsPassesFails("tfd");
+        // Leaving this heere because Xerces allows this, however new versions of JAXP do not and should not.
+        //doTestFailsFailsPassesFails("tfd");
+        final String ext = "tfd";
+        doEntityExpansionFails(ext);
+        doMaxAttributesFails(ext);
+        // Expect a different failure as resteasy.document.secure.processing.feature is set to true. This setting
+        // enables XMLConstants.FEATURE_SECURE_PROCESSING which does not allow external DTD's. With the JDK's
+        // implementation, you cannot set this to true and expect external expansion to work.
+        doDTDFails(ext, List.of("External DTD", "accessExternalDTD"));
+        doExternalEntityExpansionFails(ext);
     }
 
     /**
@@ -341,7 +357,16 @@ public class SecureProcessingTest {
      */
     @Test
     public void testSecurityTrueDTDsFalseExpansionFalse() throws Exception {
-        doTestFailsFailsPassesFails("tff");
+        // Leaving this heere because Xerces allows this, however new versions of JAXP do not and should not.
+        //doTestFailsFailsPassesFails("tff");
+        final String ext = "tff";
+        doEntityExpansionFails(ext);
+        doMaxAttributesFails(ext);
+        // Expect a different failure as resteasy.document.secure.processing.feature is set to true. This setting
+        // enables XMLConstants.FEATURE_SECURE_PROCESSING which does not allow external DTD's. With the JDK's
+        // implementation, you cannot set this to true and expect external expansion to work.
+        doDTDFails(ext, List.of("External DTD", "accessExternalDTD"));
+        doExternalEntityExpansionFails(ext);
     }
 
     /**
@@ -448,7 +473,8 @@ public class SecureProcessingTest {
         logger.info("entering doEntityExpansionFails(" + ext + ")");
         {
             logger.info("Request body: " + bigXmlRootElement);
-            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
+            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext))
+                    .request()
                     .post(Entity.entity(bigXmlRootElement, "application/xml"));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
@@ -493,7 +519,8 @@ public class SecureProcessingTest {
         logger.info("entering doEntityExpansionFails(" + ext + ")");
         {
             logger.info("Request body: " + bigXmlRootElement);
-            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
+            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext))
+                    .request()
                     .post(Entity.entity(bigXmlRootElement, "application/xml"));
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String entity = response.readEntity(String.class);
@@ -559,6 +586,10 @@ public class SecureProcessingTest {
     }
 
     void doDTDFails(String ext) throws Exception {
+        doDTDFails(ext, List.of("DOCTYPE", "true"));
+    }
+
+    void doDTDFails(final String ext, final List<String> expected) {
         logger.info("entering doDTDFails(" + ext + ")");
         Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
                 .post(Entity.entity(bar, "application/xml"));
@@ -567,8 +598,9 @@ public class SecureProcessingTest {
         logger.info("doDTDFails(): result: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         MatcherAssert.assertThat("Wrong exception in response", entity, containsString("jakarta.xml.bind.UnmarshalException"));
-        MatcherAssert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
-        MatcherAssert.assertThat("Wrong content of response", entity, containsString("true"));
+        for (String s : expected) {
+            MatcherAssert.assertThat("Wrong content of response", entity, containsString(s));
+        }
     }
 
     void doDTDFailsWithApacheLinkMessage(String ext) throws Exception {
@@ -600,7 +632,8 @@ public class SecureProcessingTest {
     void doExternalEntityExpansionFails(String ext) throws Exception {
         logger.info("entering doExternalEntityExpansionFails(" + ext + ")");
         {
-            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
+            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext))
+                    .request()
                     .post(Entity.entity(externalXmlRootElement, "application/xml"));
             String entity = response.readEntity(String.class);
             logger.info("doExternalEntityExpansionFails() result: " + entity);
@@ -645,7 +678,8 @@ public class SecureProcessingTest {
         logger.info("entering doExternalEntityExpansionPasses(" + ext + ")");
         {
             logger.info("externalXmlRootElement: " + externalXmlRootElement);
-            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
+            Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext))
+                    .request()
                     .post(Entity.entity(externalXmlRootElement, "application/xml"));
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
