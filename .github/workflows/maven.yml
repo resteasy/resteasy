@@ -10,9 +10,9 @@ on:
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
-      - ".mvn"
-      - "docbook"
-      - "distribution"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
       - "CODEOWNERS"
       - "CODE_OF_CONDUCT.md"
       - "CONTRIBUTING.adoc"
@@ -22,16 +22,16 @@ on:
       - "mvnw.cmd"
       - "README.md"
       - "SECURITY.md"
-      - "*/README.MD"
+      - "**/README.MD"
   pull_request:
     branches:
       - '**'
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
-      - ".mvn"
-      - "docbook"
-      - "distribution"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
       - "CODEOWNERS"
       - "CODE_OF_CONDUCT.md"
       - "CONTRIBUTING.adoc"
@@ -41,7 +41,7 @@ on:
       - "mvnw.cmd"
       - "README.md"
       - "SECURITY.md"
-      - "*/README.MD"
+      - "**/README.MD"
 
 # Only run the latest job
 concurrency:
