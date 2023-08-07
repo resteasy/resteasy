@@ -106,9 +106,7 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
-          echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
