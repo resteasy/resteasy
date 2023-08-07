@@ -446,7 +446,6 @@
                 </property>
             </activation>
             <properties>
-                <galleon.skip>true</galleon.skip>
                 <wildfly.skip>true</wildfly.skip>
             </properties>
         </profile>

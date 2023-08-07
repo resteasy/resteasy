@@ -87,6 +87,7 @@ jobs:
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
+          - '-am -Pprovision-without-resteasy,without-jackson -pl testsuite/integration-tests'
 
     steps:
       - uses: actions/checkout@v3

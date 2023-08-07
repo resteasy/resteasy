@@ -79,8 +79,8 @@
           <build>
             <plugins>
                 <plugin>
-                    <groupId>org.jboss.galleon</groupId>
-                    <artifactId>galleon-maven-plugin</artifactId>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
                     <executions>
                         <execution>
                             <id>server-provisioning</id>
@@ -88,6 +88,37 @@
                             <goals>
                                 <goal>provision</goal>
                             </goals>
+                            <configuration>
+                                <feature-packs>
+                                    <feature-pack>
+                                        <groupId>${server.test.feature.pack.groupId}</groupId>
+                                        <artifactId>${server.test.feature.pack.artifactId}</artifactId>
+                                        <version>${server.test.feature.pack.version}</version>
+                                        <inherit-configs>false</inherit-configs>
+                                        <included-configs>
+                                            <config>
+                                                <model>standalone</model>
+                                                <name>standalone-full.xml</name>
+                                            </config>
+                                            <config>
+                                                <model>standalone</model>
+                                                <name>standalone.xml</name>
+                                            </config>
+                                        </included-configs>
+                                        <excluded-packages>
+                                            <name>docs.schema</name>
+                                            <name>appclient</name>
+                                            <name>domain</name>
+                                        </excluded-packages>
+                                    </feature-pack>
+                                    <feature-pack>
+                                        <groupId>${resteasy.test.feature.pack.groupId}</groupId>
+                                        <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
+                                        <version>${resteasy.test.feature.pack.version}</version>
+                                        <inherit-configs>false</inherit-configs>
+                                    </feature-pack>
+                                </feature-packs>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -110,6 +141,88 @@
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
                 <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
             </properties>
+        </profile>
+        <profile>
+            <id>provision-without-resteasy</id>
+            <properties>
+                <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>server-provisioning</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>provision</goal>
+                                </goals>
+                                <configuration>
+                                    <feature-packs>
+                                        <feature-pack>
+                                            <groupId>${server.test.feature.pack.groupId}</groupId>
+                                            <artifactId>${server.test.feature.pack.artifactId}</artifactId>
+                                            <version>${server.test.feature.pack.version}</version>
+                                            <inherit-configs>false</inherit-configs>
+                                            <included-configs>
+                                                <config>
+                                                    <model>standalone</model>
+                                                    <name>standalone-full.xml</name>
+                                                </config>
+                                                <config>
+                                                    <model>standalone</model>
+                                                    <name>standalone.xml</name>
+                                                </config>
+                                            </included-configs>
+                                            <excluded-packages>
+                                                <name>docs.schema</name>
+                                                <name>appclient</name>
+                                                <name>domain</name>
+                                            </excluded-packages>
+                                        </feature-pack>
+                                    </feature-packs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>without-jackson</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <!-- default test execution -->
+                            <execution>
+                                <id>default-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <excludes>
+                                        <!-- Tests requires excluding JsonBindingProvider-->
+                                        <exclude>**/JaxbXmlRootElementProviderTest.java</exclude>
+                                        <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
+                                        <exclude>**/SseJsonEventTest</exclude>
+                                        <!-- The CustomJackson2Provider doesn't work with this if the full project is not built. -->
+                                        <exclude>**/CustomJackson2ProviderTest.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>skip.tracing.tests</id>
@@ -451,52 +564,16 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.jboss.galleon</groupId>
-                <artifactId>galleon-maven-plugin</artifactId>
-                <configuration>
-                    <install-dir>${jboss.home}</install-dir>
-                    <skip>${galleon.skip}</skip>
-                    <record-state>false</record-state>
-                    <log-time>${galleon.log.time}</log-time>
-                    <offline>${galleon.offline}</offline>
-                    <plugin-options>
-                        <!--<jboss-maven-dist/> -->
-                        <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
-                    </plugin-options>
-                    <feature-packs>
-                        <feature-pack>
-                            <groupId>${server.test.feature.pack.groupId}</groupId>
-                            <artifactId>${server.test.feature.pack.artifactId}</artifactId>
-                            <version>${server.test.feature.pack.version}</version>
-                            <inherit-configs>false</inherit-configs>
-                            <included-configs>
-                                <config>
-                                    <model>standalone</model>
-                                    <name>standalone-full.xml</name>
-                                </config>
-                                <config>
-                                    <model>standalone</model>
-                                    <name>standalone.xml</name>
-                                </config>
-                            </included-configs>
-                            <excluded-packages>
-                                <name>docs.schema</name>
-                                <name>appclient</name>
-                                <name>domain</name>
-                            </excluded-packages>
-                        </feature-pack>
-                        <feature-pack>
-                            <groupId>${resteasy.test.feature.pack.groupId}</groupId>
-                            <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
-                            <version>${resteasy.test.feature.pack.version}</version>
-                            <inherit-configs>false</inherit-configs>
-                        </feature-pack>
-                    </feature-packs>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
+                <configuration>
+                    <provisioning-dir>${jboss.home}</provisioning-dir>
+                    <skip>${wildfly.skip}</skip>
+                    <offline>${galleon.offline}</offline>
+                    <galleon-options>
+                        <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
+                    </galleon-options>
+                </configuration>
                 <executions>
                     <execution>
                         <id>enable-elytron-full-cli</id>
