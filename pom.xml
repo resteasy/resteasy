@@ -40,16 +40,13 @@
         <skipTests>${maven.test.skip}</skipTests>
         <wildfly.skip>${skipTests}</wildfly.skip>
 
-        <!-- Galleon -->
+        <!-- Provisioning settings -->
         <galleon.fork.embedded>true</galleon.fork.embedded>
-        <galleon.log.time>true</galleon.log.time>
         <galleon.offline>false</galleon.offline>
-        <galleon.skip>${skipTests}</galleon.skip>
 
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.10</version.org.jacoco.plugin>
-        <version.org.jboss.galleon>5.2.0.Final</version.org.jboss.galleon>
         <version.org.wildfly.galleon-plugins>6.4.2.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>4.2.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
@@ -364,11 +361,6 @@
                     <version>${version.org.jacoco.plugin}</version>
                 </plugin>
 
-                <plugin>
-                    <groupId>org.jboss.galleon</groupId>
-                    <artifactId>galleon-maven-plugin</artifactId>
-                    <version>${version.org.jboss.galleon}</version>
-                </plugin>
                 <plugin>
                     <groupId>org.wildfly.galleon-plugins</groupId>
                     <artifactId>wildfly-galleon-maven-plugin</artifactId>

@@ -9,9 +9,9 @@ on:
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
-      - ".mvn"
-      - "docbook"
-      - "distribution"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
       - "CODEOWNERS"
       - "CODE_OF_CONDUCT.md"
       - "CONTRIBUTING.adoc"
@@ -21,7 +21,7 @@ on:
       - "mvnw.cmd"
       - "README.md"
       - "SECURITY.md"
-      - "*/README.MD"
+      - "**/README.MD"
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 
@@ -87,6 +87,7 @@ jobs:
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
+          - '-am -Pprovision-without-resteasy,without-jackson -pl testsuite/integration-tests'
 
     steps:
       - uses: actions/checkout@v3
@@ -105,9 +106,7 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
-          echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()
         with:

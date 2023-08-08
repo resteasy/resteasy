@@ -10,9 +10,9 @@ on:
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
-      - ".mvn"
-      - "docbook"
-      - "distribution"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
       - "CODEOWNERS"
       - "CODE_OF_CONDUCT.md"
       - "CONTRIBUTING.adoc"
@@ -22,16 +22,16 @@ on:
       - "mvnw.cmd"
       - "README.md"
       - "SECURITY.md"
-      - "*/README.MD"
+      - "**/README.MD"
   pull_request:
     branches:
       - '**'
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
-      - ".mvn"
-      - "docbook"
-      - "distribution"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
       - "CODEOWNERS"
       - "CODE_OF_CONDUCT.md"
       - "CONTRIBUTING.adoc"
@@ -41,7 +41,7 @@ on:
       - "mvnw.cmd"
       - "README.md"
       - "SECURITY.md"
-      - "*/README.MD"
+      - "**/README.MD"
 
 # Only run the latest job
 concurrency:
@@ -70,9 +70,7 @@ jobs:
           cache: 'maven'
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
         run:  |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
-          echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -106,9 +104,7 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }} - WildFly ${{ matrix.wildfly-version }}
         run:  |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
-          echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
