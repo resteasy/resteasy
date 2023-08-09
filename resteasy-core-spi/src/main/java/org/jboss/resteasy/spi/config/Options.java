@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.util.Functions;
 
 /**
@@ -126,8 +127,17 @@ public class Options<T> {
     }
 
     private static <T> Optional<T> getProperty(final String name, final Class<T> returnType) {
-        return ConfigurationFactory.getInstance()
-                .getConfiguration()
-                .getOptionalValue(name, returnType);
+        // If the MicroProfile Config is available, we might not have Converters for these types. If an error occurs
+        // attempting to get the value, log it, but return an empty optional.
+        try {
+            return ConfigurationFactory.getInstance()
+                    .getConfiguration()
+                    .getOptionalValue(name, returnType);
+        } catch (SecurityException e) {
+            throw e;
+        } catch (Exception e) {
+            LogMessages.LOGGER.tracef(e, "Failed to get property for %s of type %s.", name, returnType);
+        }
+        return Optional.empty();
     }
 }
