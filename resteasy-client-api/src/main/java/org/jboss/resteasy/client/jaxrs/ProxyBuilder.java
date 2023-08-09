@@ -12,30 +12,17 @@ public abstract class ProxyBuilder<T> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> ProxyBuilder<T> builder(Class<T> iface, WebTarget webTarget) {
-        try {
-            ClassLoader loader = null;
-            if (System.getSecurityManager() == null) {
-                loader = Thread.currentThread().getContextClassLoader();
-            } else {
-                try {
-                    loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-                        @Override
-                        public ClassLoader run() throws Exception {
-                            return Thread.currentThread().getContextClassLoader();
-                        }
-                    });
-                } catch (PrivilegedActionException pae) {
-                    throw new RuntimeException(pae);
-                }
-            }
-
-            Class clazz = loader.loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
-            Constructor c = clazz.getConstructor(Class.class, WebTarget.class);
-            return (ProxyBuilder<T>) c.newInstance(iface, webTarget);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+      try
+      {
+         Class clazz = ProxyBuilder.class.getClassLoader().loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
+         Constructor c = clazz.getConstructor(Class.class, WebTarget.class);
+         return (ProxyBuilder<T>) c.newInstance(iface, webTarget);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
 
     public static <T> T proxy(final Class<T> iface, WebTarget base, final ProxyConfig config) {
         return builder(iface, base).build(config);
