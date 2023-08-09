@@ -48,7 +48,7 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:dkafetzi@redhat.com">Dimitris Kafetzis</a>
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince RESTEasy 6.3.0
+ * @tpSince RESTEasy 7.0.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -78,7 +78,7 @@ public class RequestNamedQueryParameterTest {
      * @tpPassCrit The query for this request invocation should be empty.
      *             The empty Named Query Parameters should be Ignored
      *             (no stray or duplicate '&'s should be present)
-     * @tpSince RESTEasy 6.3.0
+     * @tpSince RESTEasy 7.0.0
      */
     @Test
     public void testWithEmptyNamedQueryParameters() {
@@ -97,7 +97,7 @@ public class RequestNamedQueryParameterTest {
      * @tpPassCrit The query for this request invocation contains only the parameters with content.
      *             The empty Named Query Parameters should be Ignored
      *             (no stray or duplicate '&'s should be present)
-     * @tpSince RESTEasy 6.3.0
+     * @tpSince RESTEasy 7.0.0
      */
     @Test
     public void testWithMixedNamedQueryParameters() {
@@ -115,7 +115,7 @@ public class RequestNamedQueryParameterTest {
      * @tpTestDetails Sanity check to make sure that normal behaviour where all the parameters have content did not break.
      * @tpPassCrit The query for this request invocation should have the contents from all the parameters.
      *
-     * @tpSince RESTEasy 6.3.0
+     * @tpSince RESTEasy 7.0.0
      */
     @Test
     public void testWithFullNamedQueryParameters() {
