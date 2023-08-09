@@ -35,7 +35,7 @@ jobs:
         if: failure()
         with:
           name: surefire-reports
-          path: '**/surefire-reports/*.txt'
+          path: '**/surefire-reports/'
       - name: Upload server logs
         uses: actions/upload-artifact@v3
         if: failure()

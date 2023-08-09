@@ -75,7 +75,7 @@ jobs:
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/surefire-reports/*.txt'
+          path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -109,7 +109,7 @@ jobs:
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/surefire-reports/*.txt'
+          path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
