@@ -87,7 +87,7 @@ public class JSAPIGetBasicJsapiHandlingScriptTest {
     /**
      * @tpTestDetails Tests whether the {@code request.setURI(uri)} would contain "//" in case the combination of
      *                {@code Path} and {@code ApplicationPath} would produce "//" or if the extra "/" was removed
-     * @tpSince RESTEasy 6.3.0
+     * @tpSince RESTEasy 7.0.0
      */
     @Test
     @OperateOnDeployment(DOUBLESLASH)
