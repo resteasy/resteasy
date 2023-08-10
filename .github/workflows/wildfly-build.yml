@@ -1,6 +1,6 @@
 # This workflow is for a nightly run against WildFly upstream
 
-name: WildFly Test Build
+name: WildFly Test Build - 6.2
 
 on:
   push:
