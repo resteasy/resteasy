@@ -1,0 +1,99 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Jakarta REST TCK
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '.gitignore'
+      - ".github/workflows/manual-*.yml"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
+      - "CODEOWNERS"
+      - "CODE_OF_CONDUCT.md"
+      - "CONTRIBUTING.adoc"
+      - "dco.txt"
+      - "LICENSE"
+      - "mvnw"
+      - "mvnw.cmd"
+      - "README.md"
+      - "SECURITY.md"
+      - "**/README.MD"
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - '.gitignore'
+      - ".github/workflows/manual-*.yml"
+      - ".mvn/**"
+      - "docbook/**"
+      - "distribution/**"
+      - "CODEOWNERS"
+      - "CODE_OF_CONDUCT.md"
+      - "CONTRIBUTING.adoc"
+      - "dco.txt"
+      - "LICENSE"
+      - "mvnw"
+      - "mvnw.cmd"
+      - "README.md"
+      - "SECURITY.md"
+      - "**/README.MD"
+  schedule:
+    - cron: '0 0 * * *' # Every day at 00:00 UTC
+
+# Only run the latest job
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21-ea']
+
+    steps:
+      - name: Checkout RESTEasy
+        uses: actions/checkout@v3
+        with:
+          path: resteasy
+      - name: Checkout RESTEasy TCK Runner
+        uses: actions/checkout@v3
+        with:
+          repository: resteasy/resteasy-tck-runner
+          path: resteasy-tck-runner
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build RESTEasy - JDK ${{ matrix.java }}
+        run:  |
+          cd resteasy
+          mvn clean install -U -B -fae -DskipTests
+          echo "RESTEASY_VERSION=$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)" >> $GITHUB_OUTPUT
+      - name: Run the Jakarta REST TCK - JDK ${{ matrix.java }}
+        run:  |
+          cd resteasy-tck-runner
+          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy=$RESTEASY_VERSION
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: test-reports-${{ matrix.os }}-${{ matrix.java }}
+          path: |
+            '**/surefire-reports/'
+            '**/failsafe-reports/'
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
+          path: '**/server.log'
