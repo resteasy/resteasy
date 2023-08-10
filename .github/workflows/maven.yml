@@ -5,8 +5,8 @@ name: Build and Test RESTEasy
 
 on:
   push:
-    branches-ignore:
-      - 'dependabot/**'
+    branches:
+      - 'main'
     paths-ignore:
       - '.gitignore'
       - ".github/workflows/manual-*.yml"
