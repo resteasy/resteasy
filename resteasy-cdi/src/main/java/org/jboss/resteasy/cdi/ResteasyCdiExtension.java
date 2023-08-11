@@ -51,7 +51,6 @@ import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
  * Sesion Bean JAX-RS components.
  *
  * @author Jozef Hartinger
- *
  */
 public class ResteasyCdiExtension implements Extension {
     private static boolean active;
@@ -73,6 +72,7 @@ public class ResteasyCdiExtension implements Extension {
     private final Map<Class<?>, Type> sessionBeanInterface = new HashMap<>();
     private boolean generateClientBean = true;
     private boolean addContextProducers = true;
+    private boolean noApplicationFound = true;
 
     /**
      * Obtain BeanManager reference for future use.
@@ -135,6 +135,11 @@ public class ResteasyCdiExtension implements Extension {
                     .createAnnotatedType(ContextProducers.class);
             event.addAnnotatedType(producersAnnotatedType, ContextProducers.class.getCanonicalName());
         }
+        if (noApplicationFound) {
+            // Add a generic Application if no application was defined
+            final AnnotatedType<Application> annotatedType = beanManager.createAnnotatedType(Application.class);
+            event.addAnnotatedType(annotatedType, Application.class.getCanonicalName());
+        }
     }
 
     /**
@@ -190,6 +195,7 @@ public class ResteasyCdiExtension implements Extension {
      */
     public <T extends Application> void observeApplications(@Observes ProcessAnnotatedType<T> event,
             BeanManager beanManager) {
+        noApplicationFound = false;
         if (!Utils.isScopeDefined(event.getAnnotatedType(), beanManager)) {
             event.configureAnnotatedType().add(applicationScopedLiteral);
         }
@@ -220,7 +226,6 @@ public class ResteasyCdiExtension implements Extension {
      *
      * @param <T>   type
      * @param event event
-     *
      */
     public <T> void observeSessionBeans(@Observes ProcessSessionBean<T> event) {
         Bean<Object> sessionBean = event.getBean();
