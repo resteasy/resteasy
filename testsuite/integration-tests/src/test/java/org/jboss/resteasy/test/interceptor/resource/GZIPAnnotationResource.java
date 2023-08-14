@@ -1,17 +1,21 @@
 package org.jboss.resteasy.test.interceptor.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.jboss.resteasy.annotations.GZIP;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 
 @Path("")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class GZIPAnnotationResource implements GZIPAnnotationInterface {
-    @Context
+    @Inject
     HttpHeaders headers;
 
     @Path("/foo")

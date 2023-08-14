@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
@@ -14,7 +14,7 @@ public class LazyInitUriInfoInjectionResource {
 
     private UriInfo info;
 
-    @Context
+    @Inject
     public void setUriInfo(UriInfo i) {
         this.info = i;
         logger.info(i.getClass().getName());

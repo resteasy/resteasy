@@ -9,14 +9,16 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.Providers;
+
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 
 @Provider
 @Produces("text/plain")
@@ -24,11 +26,16 @@ public class ProviderInjectionSimpleMessageBodyWriter implements MessageBodyWrit
 
     // just in case there was a pool of instances - we want to test all of them
     private static Set<ProviderInjectionSimpleMessageBodyWriter> instances = new HashSet<ProviderInjectionSimpleMessageBodyWriter>();
-    @Context
-    private Providers fieldProviders = null;
+    @Inject
+    private Providers fieldProviders;
     private Providers constructorProviders = null;
 
-    public ProviderInjectionSimpleMessageBodyWriter(@Context final Providers providers) {
+    @FollowUpRequired("This can be removed when RESTEasy no longer requires a no-arg constructor")
+    public ProviderInjectionSimpleMessageBodyWriter() {
+    }
+
+    @Inject
+    public ProviderInjectionSimpleMessageBodyWriter(final Providers providers) {
         constructorProviders = providers;
         instances.add(this);
     }

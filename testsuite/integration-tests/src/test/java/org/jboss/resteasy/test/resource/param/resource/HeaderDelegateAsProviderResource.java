@@ -1,17 +1,22 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
+
 @Path("")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class HeaderDelegateAsProviderResource {
 
-    @Context
+    @Inject
     HttpHeaders headers;
 
     @GET

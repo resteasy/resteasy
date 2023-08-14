@@ -59,7 +59,7 @@ public class ProviderContextInjectionTest {
     }
 
     /**
-     * @tpTestDetails Providers are injected into Resource with @Context injection. The resource gets ContextResolver
+     * @tpTestDetails Providers are injected into Resource with @Inject injection. The resource gets ContextResolver
      *                provider for user defined enum type EnumProvider and verifies that correct application provider was
      *                chosen.
      * @tpPassCrit Correct application provider was chosen
@@ -73,7 +73,7 @@ public class ProviderContextInjectionTest {
     }
 
     /**
-     * @tpTestDetails Providers are injected into Resource with @Context injection. The resource gets ExceptionMapper
+     * @tpTestDetails Providers are injected into Resource with @Inject injection. The resource gets ExceptionMapper
      *                provider for RuntimeException and verifies that the correct application provider was chosen.
      * @tpPassCrit Correct application provider was chosen
      * @tpSince RESTEasy 3.0.16

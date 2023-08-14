@@ -4,22 +4,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Configuration;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.interceptor.resource.AddDynamicFeature.DoNothingMethodScopedRequestFilter;
 import org.jboss.resteasy.test.interceptor.resource.AddFeature.DoNothingGlobalRequestFilter;
 
 @Path("/dynamic-feature")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class DynamicFeatureResource {
 
-    @Context
+    @Inject
     private Configuration configuration;
 
     @Path("/hello")

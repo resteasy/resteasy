@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * @tpSubChapter @Context injection
+ * @tpSubChapter context injection
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression tests for RESTEASY-2866
  * @tpSince RESTEasy 3.7

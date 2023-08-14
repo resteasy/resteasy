@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.core.encoding.resource;
 
 import jakarta.annotation.Resource;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
@@ -17,7 +17,7 @@ import org.junit.Assert;
 public class SpecialCharactersResource {
     private static final String QUERY = "select p from VirtualMachineEntity p where guest.guestId = :id";
 
-    @Context
+    @Inject
     UriInfo info;
 
     @GET

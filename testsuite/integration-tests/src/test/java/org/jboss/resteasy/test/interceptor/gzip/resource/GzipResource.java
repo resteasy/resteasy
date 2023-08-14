@@ -2,16 +2,18 @@ package org.jboss.resteasy.test.interceptor.gzip.resource;
 
 import java.util.Optional;
 
-import jakarta.ws.rs.core.Context;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.jboss.logging.Logger;
 
+@RequestScoped
 public class GzipResource implements GzipInterface {
 
     private static Logger log = Logger.getLogger(GzipResource.class);
 
-    @Context
+    @Inject
     HttpHeaders headers;
 
     public String process(String message) {

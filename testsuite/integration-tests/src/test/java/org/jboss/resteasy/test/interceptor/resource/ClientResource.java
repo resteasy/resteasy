@@ -1,17 +1,22 @@
 package org.jboss.resteasy.test.interceptor.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
+
 @Path("/")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class ClientResource {
-    @Context
+    @Inject
     private UriInfo uriInfo;
 
     @GET

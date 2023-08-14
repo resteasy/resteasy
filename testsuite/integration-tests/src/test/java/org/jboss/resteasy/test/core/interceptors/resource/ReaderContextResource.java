@@ -3,16 +3,21 @@ package org.jboss.resteasy.test.core.interceptors.resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
+
 @Path("resource")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class ReaderContextResource {
 
     public static final String HEADERNAME = "FILTER_HEADER";
@@ -49,7 +54,7 @@ public class ReaderContextResource {
     // ///////////////////////////////////////////////////////////////////////////
     // Send header that would have the power to enable filter / interceptor
     // The header is passed from client request
-    @Context
+    @Inject
     private HttpHeaders headers;
 
     private Response buildResponse(Object content) {

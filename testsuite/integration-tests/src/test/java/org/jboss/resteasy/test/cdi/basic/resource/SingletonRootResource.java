@@ -4,11 +4,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
 import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
 @Singleton
@@ -30,7 +30,7 @@ public class SingletonRootResource {
         return rl;
     }
 
-    @Context
+    @Inject
     private Application injectedApplication;
     private boolean isJaxrsInjectedPriorToPostConstruct = false;
 
