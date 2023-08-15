@@ -2,20 +2,26 @@ package org.jboss.resteasy.test.exception.resource;
 
 import java.util.ArrayList;
 
-import jakarta.ws.rs.core.Context;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Variant;
 import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 
+@Provider
+@ApplicationScoped
+@FollowUpRequired("The @ApplicationScope annotation can be removed once @Provider is a bean defining annotation.")
 public class ExceptionMapperInjectionCustomMapper implements ExceptionMapper<ExceptionMapperCustomRuntimeException> {
 
     private static Logger logger = Logger.getLogger(ExceptionMapperInjectionCustomMapper.class);
 
-    @Context
+    @Inject
     Request request;
 
     public Response toResponse(ExceptionMapperCustomRuntimeException exception) {

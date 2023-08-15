@@ -1,14 +1,18 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.client.proxy.DefaultMediaTypesTest;
 
 @Path("foo")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class DefaultMediaTypesResource implements DefaultMediaTypesTest.Foo {
-    @Context
+    @Inject
     HttpRequest request;
 
     @Override

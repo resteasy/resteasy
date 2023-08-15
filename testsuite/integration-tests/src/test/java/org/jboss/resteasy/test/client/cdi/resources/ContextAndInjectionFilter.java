@@ -27,7 +27,6 @@ import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
@@ -37,7 +36,7 @@ import jakarta.ws.rs.core.UriInfo;
 @RequestScoped
 public class ContextAndInjectionFilter implements ContainerRequestFilter {
 
-    @Context
+    @Inject
     private UriInfo uriInfo;
 
     @Inject

@@ -1,20 +1,22 @@
 package org.jboss.resteasy.test.core.smoke.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
 
+@RequestScoped
 public class WireSmokeSimpleSubresource {
     private static Logger logger = Logger.getLogger(WireSmokeSimpleSubresource.class);
 
     @SuppressWarnings("unused")
     private String foo;
 
-    @Context
+    @Inject
     private UriInfo uriInfo;
 
     @GET

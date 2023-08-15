@@ -1,19 +1,23 @@
 package org.jboss.resteasy.test.client.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.client.TraceTest;
 
 @Path("resource")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class TraceResource {
 
     private static Logger logger = Logger.getLogger(TraceResource.class);
 
-    @Context
+    @Inject
     UriInfo uriInfo;
 
     @TraceTest.TRACE

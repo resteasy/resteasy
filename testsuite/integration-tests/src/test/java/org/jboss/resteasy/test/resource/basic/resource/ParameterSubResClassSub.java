@@ -21,7 +21,7 @@ public class ParameterSubResClassSub {
     @Inject
     RequestScopedObject requestScope;
 
-    @Context
+    @Inject
     UriInfo uriInfo;
 
     @GET

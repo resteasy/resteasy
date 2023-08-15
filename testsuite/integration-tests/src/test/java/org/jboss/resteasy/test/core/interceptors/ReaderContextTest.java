@@ -85,11 +85,14 @@ public class ReaderContextTest {
         target.register(ReaderContextArrayListEntityProvider.class);
         target.register(ReaderContextLinkedListEntityProvider.class);
         Response response = target.request().post(Entity.text("plaintext"));
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+            Assert.fail("Response was not OK (200): " + response.readEntity(String.class));
+        }
         response.getHeaders().add(ReaderContextResource.HEADERNAME,
                 ReaderContextFirstReaderInterceptor.class.getName());
         @SuppressWarnings("unchecked")
         List<String> list = response.readEntity(List.class);
-        Assert.assertTrue("Returned list in not instance of ArrayList", ArrayList.class.isInstance(list));
+        Assert.assertTrue("Returned list in not instance of ArrayList", list instanceof ArrayList);
         String entity = list.get(0);
         Assert.assertTrue("Wrong interceptor type in response",
                 entity.contains(ReaderContextSecondReaderInterceptor.class.getName()));

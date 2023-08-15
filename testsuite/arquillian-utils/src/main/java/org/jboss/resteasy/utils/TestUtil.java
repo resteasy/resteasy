@@ -536,9 +536,9 @@ public class TestUtil {
         return new StringAsset("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\"\n" +
                 "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd\"\n"
+                "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd\"\n"
                 +
-                "       version=\"3.0\" bean-discovery-mode=\"all\">\n" +
+                "       version=\"4.0\" bean-discovery-mode=\"all\">\n" +
                 "</beans>");
     }
 

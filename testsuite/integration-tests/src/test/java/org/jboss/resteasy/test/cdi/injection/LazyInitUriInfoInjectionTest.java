@@ -14,6 +14,7 @@ import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionRe
 import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionSingletonResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +32,8 @@ public class LazyInitUriInfoInjectionTest {
 
     @Deployment
     public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(LazyInitUriInfoInjectionTest.class.getSimpleName());
+        WebArchive war = TestUtil.prepareArchive(LazyInitUriInfoInjectionTest.class.getSimpleName())
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         return TestUtil.finishContainerPrepare(war, null, LazyInitUriInfoInjectionSingletonResource.class,
                 LazyInitUriInfoInjectionResource.class);
     }

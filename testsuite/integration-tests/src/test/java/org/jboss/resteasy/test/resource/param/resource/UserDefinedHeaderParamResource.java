@@ -1,16 +1,20 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.resource.param.UserDefinedHeaderParamTest;
 
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class UserDefinedHeaderParamResource implements UserDefinedHeaderParamTest.UserHeaderParamInterface {
 
-    @Context
+    @Inject
     private HttpHeaders httpHeaders;
 
     @GET

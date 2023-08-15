@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.resource.param.resource;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -10,14 +12,16 @@ import jakarta.ws.rs.MatrixParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.annotations.Separator;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.junit.Assert;
 
 @Path("misc")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class MultiValuedParamDefaultParamConverterMiscResource {
 
     /**
@@ -40,9 +44,9 @@ public class MultiValuedParamDefaultParamConverterMiscResource {
     // will be sent according to the default syntax, and the use of @Separator("-") will not
     // apply, so that parameters will be parsed as single elements.
 
-    @Context
+    @Inject
     UriInfo info;
-    @Context
+    @Inject
     HttpHeaders headers;
 
     @Path("regex/client/cookie")

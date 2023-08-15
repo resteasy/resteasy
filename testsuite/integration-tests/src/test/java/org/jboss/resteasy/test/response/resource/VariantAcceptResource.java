@@ -5,24 +5,24 @@ import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 
 import java.util.List;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Variant;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.response.VariantAcceptTest;
 
 @Path("")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class VariantAcceptResource {
-    @Context
+    @Inject
     private Request request;
-
-    @Context
-    private HttpHeaders headers;
 
     @GET
     @Path("variant")

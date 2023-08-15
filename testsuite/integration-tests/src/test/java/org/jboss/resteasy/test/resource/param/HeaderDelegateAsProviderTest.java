@@ -81,7 +81,7 @@ public class HeaderDelegateAsProviderTest {
     }
 
     /**
-     * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from client, injected as @Context HttpHeaders
+     * @tpTestDetails Verify HeaderDelegate is discovered and used sending header from client, injected as @Inject HttpHeaders
      * @tpSince RESTEasy 4.0.0
      */
     @Test

@@ -8,22 +8,26 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 
 @Path(value = "/HeadersTest")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class HttpHeadersResource {
     private static Logger logger = Logger.getLogger(HttpHeadersResource.class);
 
-    @Context
+    @Inject
     HttpHeaders hs;
     StringBuffer sb;
 

@@ -1,14 +1,19 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
+
 @Path("base/resource")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class SetRequestUriResource {
 
-    @Context
+    @Inject
     protected UriInfo uriInfo;
 
     @GET

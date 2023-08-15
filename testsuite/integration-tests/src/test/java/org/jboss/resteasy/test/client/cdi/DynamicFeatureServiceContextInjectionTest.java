@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 
 /**
  * Tests that a {@link DynamicFeature} can inject {@link jakarta.ws.rs.core.UriInfo} via
- * {@link jakarta.ws.rs.core.Context @Context} and in a CDI bean. The feature is registered as a provider with via a
+ * {@link jakarta.inject.Inject @Inject} and in a CDI bean. The feature is registered as a provider with via a
  * {@link java.util.ServiceLoader service}.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>

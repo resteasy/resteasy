@@ -2,8 +2,8 @@ package org.jboss.resteasy.test.cdi.basic.resource;
 
 import jakarta.ejb.Local;
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 @Stateless(name = "SingletonTestBean")
@@ -16,7 +16,7 @@ public class SingletonTestBean implements SingletonLocalIF {
     public void remove() {
     }
 
-    @Context
+    @Inject
     private UriInfo ui;
 
     @Override
