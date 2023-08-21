@@ -27,7 +27,7 @@
         <maven.compiler.source>17</maven.compiler.source>
 
         <!-- Dependency versions -->
-        <dep.arquillian-bom.version>1.7.0.Final</dep.arquillian-bom.version>
+        <dep.arquillian-bom.version>1.7.1.Final</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <server.version>29.0.0.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
