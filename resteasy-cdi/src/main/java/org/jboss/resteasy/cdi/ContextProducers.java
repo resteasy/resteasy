@@ -20,6 +20,7 @@
 package org.jboss.resteasy.cdi;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
@@ -45,10 +46,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 @Singleton
 public class ContextProducers {
 
-    @ApplicationScoped
+    @Dependent
     @Produces
     public Configuration configuration() {
-        return getProviderFactory();
+        return getProviderFactory().getContextData(Configuration.class);
     }
 
     @RequestScoped

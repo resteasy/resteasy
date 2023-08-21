@@ -687,13 +687,20 @@ ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient,
            }
 });
        </programlisting>
-
-    <section id="http_redirect">
+       <section id="http_redirect">
       <title>HTTP redirect</title>
       <para>
          The <classname>ClientHttpEngine</classname> implementations based on Apache
          <classname>HttpClient</classname> support HTTP redirection.
-         The feature is disabled by default and has to be enabled by users explicitly:
+         The feature is disabled by default and has to be enabled by users explicitly.
+          Either by setting up the following property:
+          <itemizedlist>
+              <listitem><classname>dev.resteasy.client.follow.redirects</classname></listitem>
+          </itemizedlist>
+          <programlisting>
+Client client = ClientBuilder.newBuilder().property("dev.resteasy.client.follow.redirects", "true").build();
+          </programlisting>
+          or by explicitly calling the API method as following:
          <programlisting>
 ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
 engine.setFollowRedirects(true);

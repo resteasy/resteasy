@@ -115,7 +115,8 @@ public class ExternalParameterEntityTest {
         logger.info(String.format("Request body: %s", this.request.replace('\r', '\n')));
         Response response = client.target(generateURL("/test", NO_EXPAND)).request()
                 .post(Entity.entity(this.request, MediaType.APPLICATION_XML));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        // Expect a 500 because resteasy.document.expand.entity.references is set to false
+        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info(String.format("Result: \"%s\"", entity.replace('\r', '\n')));
         Assert.assertEquals("", entity.trim());
