@@ -57,7 +57,6 @@ public class SseBroadcasterImpl implements SseBroadcaster {
             //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
             //is it necessay to close the subsribed SseEventSink ?
             outputQueue.forEach(eventSink -> {
-                eventSink.close();
                 try {
                     eventSink.close();
                 } catch (RuntimeException e) {
