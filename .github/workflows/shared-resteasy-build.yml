@@ -39,7 +39,7 @@
 #      - name: Build on Linux with Java 11 using RESTEasy ${{ needs.resteasy-build.outputs.resteasy-version }}
 #        run: mvn clean verify '-Dversion.dev.resteasy=${{ needs.resteasy-build.outputs.resteasy-version }}'
 
-name: Build RESTEasy Upstream
+name: Build RESTEasy Upstream - 6.2
 
 on:
   workflow_call:
