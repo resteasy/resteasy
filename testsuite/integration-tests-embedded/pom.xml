@@ -6,7 +6,7 @@
    <parent>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-testsuite</artifactId>
-      <version>5.0.8.Final</version>
+      <version>5.0.9.Final-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
