@@ -21,7 +21,7 @@
 
     <properties>
         <!-- Version properties -->
-        <version.arquillian.jetty>1.0.0.Final</version.arquillian.jetty>
+        <version.arquillian.jetty>2.0.0.Final</version.arquillian.jetty>
     </properties>
 
     <dependencyManagement>
