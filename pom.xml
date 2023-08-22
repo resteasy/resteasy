@@ -14,7 +14,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>5.0.8.Final-SNAPSHOT</version>
+    <version>5.0.8.Final</version>
     <packaging>pom</packaging>
 
     <properties>
