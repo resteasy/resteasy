@@ -19,10 +19,11 @@ public class CacheControlFeature implements DynamicFeature {
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext configurable) {
         final Class<?> declaring = resourceInfo.getResourceClass();
-        final Method method = resourceInfo.getResourceMethod();
 
-        if (declaring == null || method == null)
+        if (declaring == null || resourceInfo.getResourceMethod() == null)
             return;
+
+        final Method method = findInterfaceBasedMethod(declaring, resourceInfo.getResourceMethod());
         if (!method.isAnnotationPresent(GET.class))
             return;
 
@@ -73,5 +74,26 @@ public class CacheControlFeature implements DynamicFeature {
         for (String field : value.fields())
             cacheControl.getNoCacheFields().add(field);
         return cacheControl;
+    }
+
+    private Method findInterfaceBasedMethod(Class<?> root, Method method) {
+        if (method.getAnnotation(Cache.class) != null || method.getAnnotation(NoCache.class) != null) {
+            return method;
+        }
+
+        if (method.getDeclaringClass().isInterface() || root.isInterface()) {
+            return method;
+        }
+
+        for (Class<?> intf : root.getInterfaces()) {
+            try {
+                return intf.getMethod(method.getName(), method.getParameterTypes());
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+
+        if (root.getSuperclass() == null || root.getSuperclass().equals(Object.class))
+            return method;
+        return findInterfaceBasedMethod(root.getSuperclass(), method);
     }
 }
