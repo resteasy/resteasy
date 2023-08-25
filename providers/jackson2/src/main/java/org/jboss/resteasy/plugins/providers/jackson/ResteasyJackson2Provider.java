@@ -191,6 +191,11 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
                 });
             }
         } catch (PrivilegedActionException pae) {
+            final Exception thrown = pae.getException();
+            // If the thrown exception was an IOException, re-throw it and not the wrapped exception
+            if (thrown instanceof IOException) {
+                throw (IOException) thrown;
+            }
             throw new IOException(pae);
         } finally {
             jp.close();
@@ -343,6 +348,11 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
                 });
             }
         } catch (PrivilegedActionException pae) {
+            final Exception thrown = pae.getException();
+            // If the thrown exception was an IOException, re-throw it and not the wrapped exception
+            if (thrown instanceof IOException) {
+                throw (IOException) thrown;
+            }
             throw new IOException(pae);
         } finally {
             jg.close();
