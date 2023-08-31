@@ -2,19 +2,28 @@ package org.jboss.resteasy.test.cookie;
 
 import static org.junit.Assert.assertEquals;
 
-import jakarta.ws.rs.core.NewCookie;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
-import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.ext.RuntimeDelegate;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class NewCookieHeaderDelegateTest {
 
-    private NewCookieHeaderDelegate delegate;
+    private RuntimeDelegate.HeaderDelegate<NewCookie> delegate;
 
     @Before
     public void setUp() throws Exception {
-        delegate = new NewCookieHeaderDelegate();
+        delegate = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class);
     }
 
     @Test
@@ -27,6 +36,70 @@ public class NewCookieHeaderDelegateTest {
 
         assertEquals(expectedCookieName, newCookie.getName());
         assertEquals(expectedCookieValue, newCookie.getValue());
+    }
+
+    @Test
+    public void cookieToString() {
+        // Create a formatter for the expiry date
+        final SimpleDateFormat sdf = createDateFormatter();
+        // Set up the dates
+        final ZonedDateTime now = ZonedDateTime.now();
+        final int maxAge = Math.toIntExact(Duration.between(now, now.plusDays(1L)).toSeconds());
+        final Date expires = new Date(now.plusDays(1L).truncatedTo(ChronoUnit.SECONDS).toInstant().toEpochMilli());
+
+        // Create the cookie
+        final NewCookie newCookie = new NewCookie.Builder("test-cookie")
+                .comment("Test Comment")
+                .domain("local-domain")
+                .expiry(expires)
+                .httpOnly(true)
+                .maxAge(maxAge)
+                .path("/test")
+                .sameSite(NewCookie.SameSite.STRICT)
+                .secure(true)
+                .value("Test Value")
+                .version(1)
+                .build();
+        // Create the expected string, note the order here is important as this is what the NewCookieHeaderDelegate generates
+        final var expected = "test-cookie=\"Test Value\";Version=1;Comment=\"Test Comment\";Domain=local-domain;Path=/test;Max-Age="
+                + maxAge + ";Expires=" + sdf.format(expires)
+                + ";Secure;HttpOnly;SameSite=Strict";
+        Assert.assertEquals(expected, delegate.toString(newCookie));
+    }
+
+    @Test
+    public void cookieFromString() {
+        // Create a formatter for the expiry date
+        final SimpleDateFormat sdf = createDateFormatter();
+        // Set up the dates
+        final ZonedDateTime now = ZonedDateTime.now();
+        final int maxAge = Math.toIntExact(Duration.between(now, now.plusDays(1L)).toSeconds());
+        final Date expires = new Date(now.plusDays(1L).truncatedTo(ChronoUnit.SECONDS).toInstant().toEpochMilli());
+
+        // Create the cookie
+        final NewCookie expected = new NewCookie.Builder("test-cookie")
+                .comment("Test Comment")
+                .domain("local-domain")
+                .expiry(expires)
+                .httpOnly(true)
+                .maxAge(maxAge)
+                .path("/test")
+                .sameSite(NewCookie.SameSite.STRICT)
+                .secure(true)
+                .value("Test Value")
+                .version(1)
+                .build();
+        // Create the expected string, note the order here is important as this is what the NewCookieHeaderDelegate generates
+        final var value = "test-cookie=\"Test Value\";Version=1;Comment=\"Test Comment\";Domain=local-domain;Path=/test;Max-Age="
+                + maxAge + ";Expires=" + sdf.format(expires)
+                + ";Secure;HttpOnly;SameSite=Strict";
+        Assert.assertEquals(expected, delegate.fromString(value));
+    }
+
+    private static SimpleDateFormat createDateFormatter() {
+        final SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss z", Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return sdf;
     }
 
 }
