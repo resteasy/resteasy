@@ -96,6 +96,12 @@
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
+                                <resource>
+                                    <directory>${common.resources.directory}</directory>
+                                    <includes>
+                                        <include>configs/**/model.xml</include>
+                                    </includes>
+                                </resource>
                             </resources>
                             <overwrite>true</overwrite>
                         </configuration>
