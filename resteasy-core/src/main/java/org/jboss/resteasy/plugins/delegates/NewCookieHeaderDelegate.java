@@ -35,6 +35,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
         int version = NewCookie.DEFAULT_VERSION;
         boolean httpOnly = false;
         Date expiry = null;
+        NewCookie.SameSite sameSite = null;
 
         ParameterParser parser = new ParameterParser();
         Map<String, String> map = parser.parse(newCookie, ';');
@@ -65,6 +66,8 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
                     expiry = new SimpleDateFormat(OLD_COOKIE_PATTERN, Locale.US).parse(value);
                 } catch (ParseException e) {
                 }
+            } else if (name.equalsIgnoreCase("SameSite")) {
+                sameSite = NewCookie.SameSite.valueOf(value.toUpperCase(Locale.ROOT));
             }
 
         }
@@ -83,6 +86,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
                 .expiry(expiry)
                 .secure(secure)
                 .httpOnly(httpOnly)
+                .sameSite(sameSite)
                 .build();
     }
 
@@ -134,6 +138,23 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
             b.append(";Secure");
         if (cookie.isHttpOnly())
             b.append(";HttpOnly");
+
+        if (cookie.getSameSite() != null) {
+            b.append(";SameSite=");
+            appendCorrectCase(b, cookie.getSameSite());
+        }
         return b.toString();
+    }
+
+    private static void appendCorrectCase(final StringBuilder sb, final Enum<?> e) {
+        boolean first = true;
+        for (char c : e.name().toCharArray()) {
+            if (first) {
+                sb.append(c);
+                first = false;
+            } else {
+                sb.append(Character.toLowerCase(c));
+            }
+        }
     }
 }
