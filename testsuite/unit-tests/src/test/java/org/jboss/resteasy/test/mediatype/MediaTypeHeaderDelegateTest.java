@@ -74,4 +74,9 @@ public class MediaTypeHeaderDelegateTest {
         // Verify that getting retrieving the media type returns the expected media type
         assertEquals("application/json", delegate.toString(new MediaType("application", "json")));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThrowingIllegalArgumentExceptionWhenNoSlashAndNotMajor() {
+        MediaTypeHeaderDelegate.parse("invalid");
+    }
 }

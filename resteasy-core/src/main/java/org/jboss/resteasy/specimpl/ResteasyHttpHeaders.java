@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -95,7 +96,11 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     public void testParsing() {
         // test parsing should throw an exception on error
-        getAcceptableMediaTypes();
+        try {
+            getAcceptableMediaTypes();
+        } catch (IllegalArgumentException e) {
+            throw new NotAcceptableException(e);
+        }
         getMediaType();
         getLanguage();
         getAcceptableLanguages();
