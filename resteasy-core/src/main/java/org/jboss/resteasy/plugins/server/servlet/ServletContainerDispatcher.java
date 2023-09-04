@@ -201,6 +201,11 @@ public class ServletContainerDispatcher {
             try {
                 headers = ServletUtil.extractHttpHeaders(request);
                 uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
+            } catch (IllegalArgumentException e) {
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                // made it warn so that people can filter this.
+                LogMessages.LOGGER.failedToParseRequest(e);
+                return;
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 // made it warn so that people can filter this.

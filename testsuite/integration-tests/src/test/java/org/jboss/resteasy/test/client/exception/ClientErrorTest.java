@@ -199,7 +199,7 @@ public class ClientErrorTest {
         Response response = null;
         try {
             response = builder.get();
-            Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

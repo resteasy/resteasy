@@ -8,6 +8,7 @@ import java.util.Map;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -73,5 +74,12 @@ public class MediaTypeHeaderDelegateTest {
 
         // Verify that getting retrieving the media type returns the expected media type
         assertEquals("application/json", delegate.toString(new MediaType("application", "json")));
+    }
+
+    @Test
+    public void testThrowingIllegalArgumentExceptionWhenNoSlashAndNotMajor() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> MediaTypeHeaderDelegate.parse("invalid"));
     }
 }

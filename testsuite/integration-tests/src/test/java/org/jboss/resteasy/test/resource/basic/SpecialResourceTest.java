@@ -118,7 +118,7 @@ public class SpecialResourceTest {
             method.setEntity(
                     new StringEntity("hello", ContentType.create("vnd.net.juniper.space.target-management.targets+xml")));
             response = client.execute(method);
-            Assertions.assertEquals(response.getStatusLine().getStatusCode(), HttpResponseCodes.SC_BAD_REQUEST);
+            Assertions.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatusLine().getStatusCode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

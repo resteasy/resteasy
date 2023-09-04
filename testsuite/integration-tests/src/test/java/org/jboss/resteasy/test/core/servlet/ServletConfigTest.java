@@ -86,7 +86,7 @@ public class ServletConfigTest {
     @Test
     public void testBadMediaTypeNoSubtype() throws Exception {
         Response response = client.target(generateURL("/my/application/count")).request().accept("text").get();
-        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
         response.close();
 
         response = client.target(generateURL("/my/application/count")).request().accept("text/plain; q=bad").get();
