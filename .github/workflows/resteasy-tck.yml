@@ -74,11 +74,11 @@ jobs:
 
     steps:
       - name: Checkout RESTEasy
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: resteasy
       - name: Checkout RESTEasy TCK Runner
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
