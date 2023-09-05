@@ -16,7 +16,7 @@ jobs:
       wildfly-version: ${{steps.version.outputs.wildfly-version}}
     steps:
       - name: Checkout WildFly
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: wildfly/wildfly
           fetch-depth: 0
@@ -48,7 +48,7 @@ jobs:
         java: ['11', '17']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: maven-repository
