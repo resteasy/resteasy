@@ -93,7 +93,11 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate<M
         } else {
             major = type.substring(0, typeIndex);
             if (paramIndex > -1) {
-                subtype = type.substring(typeIndex + 1, paramIndex);
+                int beginIndex = typeIndex + 1;
+                if (beginIndex > paramIndex) {
+                    throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
+                }
+                subtype = type.substring(beginIndex, paramIndex);
             } else {
                 subtype = type.substring(typeIndex + 1);
             }
