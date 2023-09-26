@@ -101,7 +101,7 @@
         <version.com.github.java-json-tools.jackson-coreutils>2.0</version.com.github.java-json-tools.jackson-coreutils>
         <version.com.github.java-json-tools.json-patch>1.13</version.com.github.java-json-tools.json-patch>
         <version.com.github.java-json-tools.msg-simple>1.2</version.com.github.java-json-tools.msg-simple>
-        <version.org.jboss.jandex>2.4.3.Final</version.org.jboss.jandex>
+        <version.org.jboss.jandex>2.4.4.Final</version.org.jboss.jandex>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
