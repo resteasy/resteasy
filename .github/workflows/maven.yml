@@ -116,6 +116,53 @@ jobs:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/server.log'
 
+  cloud-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17']
+        wildfly-version: ['28.0.1.Final', '29.0.0.Final']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Setup minikube
+        id: minikube
+        uses: manusa/actions-setup-minikube@v2.9.0
+        with:
+          driver: docker
+          container runtime: containerd
+          minikube version: 'v1.31.2'
+          # Downgrade K8s since 1.25 has some problems with https
+          kubernetes version: 'v1.28.1'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+          start args: "--memory='4gb' --cpus='2'"
+
+      - name: Enable minikube registry
+        run: |
+          minikube addons enable registry
+          kubectl port-forward --namespace kube-system service/registry 5000:80 &
+      - name: Cloud Tests - JDK ${{ matrix.java }} - WildFly ${{ matrix.wildfly-version }}
+        run:  |
+          mvn clean install -Pcloud-tests -pl resteasy-feature-pack/common,resteasy-feature-pack/galleon-feature-pack,testsuite/cloud-tests -amd -am '-Dserver.version=${{ matrix.wildfly-version }}' '-Ddebug.logs'
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          path: '**/surefire-reports/'
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          path: '**/server.log'
+
   build-java-docs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
