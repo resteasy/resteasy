@@ -19,7 +19,7 @@ on:
       - 'resteasy-dependencies-bom/**'
       - 'resteasy-feature-pack/**'
       - 'resteasy-security/**'
-      - 'resteasy-testsuite/cloud-tests/**'
+      - 'testsuite/cloud-tests/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 
