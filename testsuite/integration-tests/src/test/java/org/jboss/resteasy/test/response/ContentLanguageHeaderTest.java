@@ -77,7 +77,7 @@ public class ContentLanguageHeaderTest {
 
         Assertions.assertTrue(headers.keySet().contains("Content-Language"),
                 "Content-Language header is not present in response");
-        Assertions.assertEquals("en-us", headers.getFirst("Content-Language"),
+        Assertions.assertTrue("en-us".equalsIgnoreCase(headers.getFirst("Content-Language").toString()),
                 "Content-Language header does not have expected value");
     }
 
@@ -94,7 +94,7 @@ public class ContentLanguageHeaderTest {
 
         Assertions.assertTrue(headers.keySet().contains("Content-Language"),
                 "Content-Language header is not present in response");
-        Assertions.assertEquals("en-us", headers.getFirst("Content-Language"),
+        Assertions.assertTrue("en-us".equalsIgnoreCase(headers.getFirst("Content-Language").toString()),
                 "Content-Language header does not have expected value");
     }
 

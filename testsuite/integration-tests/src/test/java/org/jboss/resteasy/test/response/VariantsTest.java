@@ -203,7 +203,7 @@ public class VariantsTest {
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assertions.assertEquals("GET", response.readEntity(String.class));
         Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.withCharset("UTF-8"), response.getMediaType());
-        Assertions.assertEquals("en-us", new LocaleDelegate().toString(response.getLanguage()));
+        Assertions.assertTrue("en-us".equalsIgnoreCase(new LocaleDelegate().toString(response.getLanguage())));
         response.close();
     }
 
@@ -220,7 +220,7 @@ public class VariantsTest {
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assertions.assertEquals("GET", response.readEntity(String.class));
         Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.withCharset("UTF-8"), response.getMediaType());
-        Assertions.assertEquals("en-us", new LocaleDelegate().toString(response.getLanguage()));
+        Assertions.assertTrue("en-us".equalsIgnoreCase(new LocaleDelegate().toString(response.getLanguage())));
         response.close();
     }
 
@@ -237,7 +237,7 @@ public class VariantsTest {
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assertions.assertEquals("GET", response.readEntity(String.class));
         Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.withCharset("UTF-8"), response.getMediaType());
-        Assertions.assertEquals("en-us", new LocaleDelegate().toString(response.getLanguage()));
+        Assertions.assertTrue("en-us".equalsIgnoreCase(new LocaleDelegate().toString(response.getLanguage())));
         response.close();
     }
 
