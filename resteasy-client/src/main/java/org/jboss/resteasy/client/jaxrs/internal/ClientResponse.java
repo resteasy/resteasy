@@ -42,6 +42,16 @@ public abstract class ClientResponse extends BuiltResponse {
     protected ClientConfiguration configuration;
     protected RESTEasyTracingLogger tracingLogger;
 
+    public String getResolvedURI() {
+        return resolvedURI;
+    }
+
+    public void setResolvedURI(String resolvedURI) {
+        this.resolvedURI = resolvedURI;
+    }
+
+    protected String resolvedURI;
+
     @Deprecated
     protected ClientResponse(final ClientConfiguration configuration) {
         setClientConfiguration(configuration);

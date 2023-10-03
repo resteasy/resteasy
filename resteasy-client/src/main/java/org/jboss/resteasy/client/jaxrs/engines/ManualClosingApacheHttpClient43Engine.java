@@ -365,7 +365,6 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
         ClientResponse response = new FinalizedClientResponse(request.getClientConfiguration(), request.getTracingLogger()) {
             InputStream stream;
-
             InputStream hc4Stream;
 
             @Override
@@ -446,6 +445,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
         response.setReasonPhrase(res.getStatusLine().getReasonPhrase());
         response.setHeaders(extractHeaders(res));
         response.setClientConfiguration(request.getClientConfiguration());
+        response.setResolvedURI(uri);
         return response;
     }
 
