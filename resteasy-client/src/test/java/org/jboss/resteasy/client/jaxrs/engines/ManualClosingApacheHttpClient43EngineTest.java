@@ -1,21 +1,21 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import static org.jboss.resteasy.client.jaxrs.engines.ManualClosingApacheHttpClient43Engine.FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ManualClosingApacheHttpClient43EngineTest {
 
     private static final Map<String, String> preTestProperties = new HashMap<>();
 
-    @BeforeClass
+    @BeforeAll
     public static void saveCurrentStateOfMemThresholdProperty() {
         if (System.getProperties().containsKey(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY)) {
             String value = System.getProperty(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY);
@@ -23,7 +23,7 @@ public class ManualClosingApacheHttpClient43EngineTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void resetPropertiesToPreTestValues() {
         if (!preTestProperties.containsKey(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY)) {
             System.clearProperty(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY);
@@ -32,7 +32,7 @@ public class ManualClosingApacheHttpClient43EngineTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void unsetMemThresholdProperty() {
         System.clearProperty(ManualClosingApacheHttpClient43Engine.FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY);
     }
