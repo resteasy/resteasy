@@ -1,6 +1,8 @@
 package org.jboss.resteasy.core;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
@@ -11,6 +13,7 @@ import java.util.Optional;
 
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.core.EntityPart;
+import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -45,6 +48,17 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
         } else if (InputStream.class.isAssignableFrom(type)) {
             final Optional<EntityPart> part = request.getFormEntityPart(paramName);
             return part.map(EntityPart::getContent).orElse(null);
+        } else if (String.class.isAssignableFrom(type) &&
+        // request.getHttpHeaders().getMediaType() may return null, but the isCompatible handles this check
+                MediaType.MULTIPART_FORM_DATA_TYPE.isCompatible(request.getHttpHeaders().getMediaType())) {
+            final Optional<EntityPart> part = request.getFormEntityPart(paramName);
+            return part.map(p -> {
+                try {
+                    return p.getContent(String.class);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(Messages.MESSAGES.unableToExtractParameter(paramName, null), e);
+                }
+            }).orElse(null);
         }
         List<String> list = request.getDecodedFormParameters().get(paramName);
         if (list != null && encode) {

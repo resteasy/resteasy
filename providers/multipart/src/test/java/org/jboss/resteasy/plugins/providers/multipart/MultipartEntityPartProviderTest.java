@@ -166,6 +166,61 @@ public class MultipartEntityPartProviderTest {
     }
 
     /**
+     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Three parts are sent
+     * and injected as {@link FormParam @FormParam} method parameters. Each part send is different and injected as a
+     * specific type.
+     * <p>
+     * The result from the REST endpoint is {@code multipart/form-data} content with a new name and the content for the
+     * injected field.
+     * </p>
+     *
+     * @throws Exception if an error occurs in the test
+     */
+    @Test
+    public void multiAllFilesInjection() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("entity-part")
+                            .fileName("file1.txt")
+                            .content("test entity part file1.txt")
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .build(),
+                    EntityPart.withName("string-part")
+                            .fileName("file2.txt")
+                            .content("test string file2.txt")
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .build(),
+                    EntityPart.withName("input-stream-part")
+                            .fileName("file3.txt")
+                            .content("test input stream file3.txt".getBytes(StandardCharsets.UTF_8))
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration()
+                            .baseUriBuilder()
+                            .path("test/multi-injected"))
+                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+                });
+                if (entityParts.size() != 3) {
+                    final String msg = "Expected 3 entries got " +
+                            entityParts.size() +
+                            '.' +
+                            System.lineSeparator() +
+                            getMessage(entityParts);
+                    Assert.fail(msg);
+                }
+                checkEntity(entityParts, "received-entity-part", "test entity part file1.txt");
+                checkEntity(entityParts, "received-string", "test string file2.txt");
+                checkEntity(entityParts, "received-input-stream", "test input stream file3.txt");
+            }
+        }
+    }
+
+    /**
      * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. One part is sent
      * and injected as {@link FormParam @FormParam} method parameters. The same part should be injected in different
      * formats; {@link String}, {@link EntityPart} and {@link InputStream}. The content should be the same for each
