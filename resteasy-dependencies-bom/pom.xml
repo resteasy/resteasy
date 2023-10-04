@@ -79,7 +79,6 @@
         <version.org.javassist>3.23.2-GA</version.org.javassist>
         <version.org.jboss.logging.jboss-logging>3.4.3.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
-        <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.13.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
         <version.org.jboss.resteasy.tracing.api>1.0.0.Final</version.org.jboss.resteasy.tracing.api>
         <version.org.jboss.resteasy.eagledns>1.0.0.Final</version.org.jboss.resteasy.eagledns>
         <version.org.jboss.threads>2.3.6.Final</version.org.jboss.threads>
@@ -107,7 +106,6 @@
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
         <version.org.hibernate.validator>6.2.5.Final</version.org.hibernate.validator>
-        <version.org.jboss.marshalling.jboss-marshalling>2.0.13.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.io.projectreactor>2020.0.8</version.io.projectreactor>
 
@@ -621,11 +619,6 @@
                 <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.marshalling</groupId>
-                <artifactId>jboss-marshalling-osgi</artifactId>
-                <version>${version.org.jboss.marshalling.jboss-marshalling-osgi}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
                 <version>${version.org.bouncycastle}</version>
@@ -932,16 +925,6 @@
                 <groupId>io.reactivex.rxjava2</groupId>
                 <artifactId>rxjava</artifactId>
                 <version>${version.io.reactivex.rxjava2-rxjava}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.marshalling</groupId>
-                <artifactId>jboss-marshalling</artifactId>
-                <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.marshalling</groupId>
-                <artifactId>jboss-marshalling-river</artifactId>
-                <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
