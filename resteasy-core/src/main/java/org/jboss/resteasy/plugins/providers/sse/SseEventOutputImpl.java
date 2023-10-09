@@ -40,9 +40,11 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink {
@@ -306,43 +308,45 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
     private BuiltResponse createResponse() {
         BuiltResponse jaxrsResponse;
+        final int responseCode;
         if (state.get() == CLOSED) {
-            jaxrsResponse = (BuiltResponse) Response.noContent().build();
+            responseCode = Options.SSE_CLOSED_RESPONSE_CODE.getValue();
         } else //set back to client 200 OK to implies the SseEventOutput is ready
         {
-            ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
-            MediaType[] mediaTypes = method.getProduces();
-            if (mediaTypes != null && getSseEventType(mediaTypes) != null) {
-                // @Produces("text/event-stream")
-                SseElementType sseElementType = FindAnnotation.findAnnotation(method.getMethodAnnotations(),
-                        SseElementType.class);
-                if (sseElementType != null) {
-                    // Get element media type from @SseElementType.
-                    Map<String, String> parameterMap = new HashMap<>();
-                    parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, sseElementType.value());
-                    MediaType mediaType = new MediaType(MediaType.SERVER_SENT_EVENTS_TYPE.getType(),
-                            MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype(), parameterMap);
-                    jaxrsResponse = (BuiltResponse) Response.ok().type(mediaType).build();
-                } else {
-                    // No element media type declared.
-                    jaxrsResponse = (BuiltResponse) Response.ok().type(getSseEventType(mediaTypes)).build();
-                    //                   // use "element-type=text/plain"?
-                }
+            responseCode = HttpResponseCodes.SC_OK;
+        }
+        ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
+        MediaType[] mediaTypes = method.getProduces();
+        if (mediaTypes != null && getSseEventType(mediaTypes) != null) {
+            // @Produces("text/event-stream")
+            SseElementType sseElementType = FindAnnotation.findAnnotation(method.getMethodAnnotations(),
+                    SseElementType.class);
+            if (sseElementType != null) {
+                // Get element media type from @SseElementType.
+                Map<String, String> parameterMap = new HashMap<>();
+                parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, sseElementType.value());
+                MediaType mediaType = new MediaType(MediaType.SERVER_SENT_EVENTS_TYPE.getType(),
+                        MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype(), parameterMap);
+                jaxrsResponse = (BuiltResponse) Response.status(responseCode).type(mediaType).build();
             } else {
-                Stream stream = FindAnnotation.findAnnotation(method.getMethodAnnotations(), Stream.class);
-                if (stream != null) {
-                    // Get element media type from @Produces.
-                    jaxrsResponse = (BuiltResponse) Response.ok("").build();
-                    MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response,
-                            providerFactory, method);
-                    Map<String, String> parameterMap = new HashMap<>();
-                    parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType.toString());
-                    String[] streamType = getStreamType(method);
-                    MediaType mediaType = new MediaType(streamType[0], streamType[1], parameterMap);
-                    jaxrsResponse = (BuiltResponse) Response.ok().type(mediaType).build();
-                } else {
-                    throw new RuntimeException(Messages.MESSAGES.expectedStreamOrSseMediaType());
-                }
+                // No element media type declared.
+                jaxrsResponse = (BuiltResponse) Response.status(responseCode).type(getSseEventType(mediaTypes)).build();
+                //                   // use "element-type=text/plain"?
+            }
+        } else {
+            Stream stream = FindAnnotation.findAnnotation(method.getMethodAnnotations(), Stream.class);
+            if (stream != null) {
+                // Get element media type from @Produces.
+                jaxrsResponse = (BuiltResponse) Response.ok("").build();
+                MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response,
+                        providerFactory, method);
+                Map<String, String> parameterMap = new HashMap<>();
+                parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType.toString());
+                String[] streamType = getStreamType(method);
+                MediaType mediaType = new MediaType(streamType[0], streamType[1], parameterMap);
+                jaxrsResponse = (BuiltResponse) Response.status(responseCode).type(mediaType).build();
+            } else {
+                throw new RuntimeException(Messages.MESSAGES.expectedStreamOrSseMediaType());
             }
         }
         return jaxrsResponse;
