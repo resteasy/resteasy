@@ -8,6 +8,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.ServiceUnavailableException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -96,7 +97,8 @@ public class SseReconnectResource {
     public void sseLost(@Context SseEventSink sink, @Context Sse sse) {
         if (tryCount != 0) {
             tryCount--;
-            sink.close();
+            // Throw a service unavailable, 503, with a 1 second retry.
+            throw new ServiceUnavailableException(1L);
         } else {
             try (SseEventSink s = sink) {
                 s.send(sse.newEvent("MESSAGE"));

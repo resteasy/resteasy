@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import jakarta.ws.rs.sse.SseEventSink;
+
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.util.Functions;
 
@@ -62,6 +64,18 @@ public class Options<T> {
     public static final Options<Threshold> ENTITY_FILE_THRESHOLD = new Options<>("dev.resteasy.entity.file.threshold",
             Threshold.class,
             Functions.singleton(() -> Threshold.of(50L, SizeUnit.MEGABYTE)));
+
+    /**
+     * An option which allows which HTTP status code should be sent when the {@link SseEventSink#close()} is invoked.
+     * In some implementations 200 (OK) is the default. However, RESTEasy prefers 204 (No Content) as no content has
+     * been sent the response.
+     * <p>
+     * The default is 204 - No Content
+     * </p>
+     */
+    public static final Options<Integer> SSE_CLOSED_RESPONSE_CODE = new Options<>("dev.resteasy.sse.closed.response.code",
+            Integer.class,
+            Functions.singleton(() -> 204));
 
     private final String key;
     private final Class<T> name;
