@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,15 +18,15 @@ import org.jboss.resteasy.plugins.server.servlet.ConfigurationBootstrap;
 import org.jboss.resteasy.plugins.server.servlet.ListenerBootstrap;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class ContextParameterInjectionTest {
     private static final String RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES = "resteasy.proxy.implement.all.interfaces";
     private static final Map<String, String> preTestProps = new HashMap<>();
 
-    @BeforeClass
+    @BeforeAll
     public static void enableConfigForImplementingAllInterfaces() {
         if (System.getProperties().containsKey(RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES)) {
             String value = System.getProperty(RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES);
@@ -34,7 +34,7 @@ public class ContextParameterInjectionTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         if (!preTestProps.containsKey(RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES)) {
             System.clearProperty(RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES);
@@ -48,16 +48,16 @@ public class ContextParameterInjectionTest {
     public void testInjectedProxyImplementsOnlySpecificInterfaceByDefault() {
         System.clearProperty(RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES);
         Object proxy = createProxy();
-        assertTrue("Proxy does not implemented expected JAXRS interface", proxy instanceof ContainerRequestFilter);
-        assertFalse("Proxy implements non-JAXRS interfaces", proxy instanceof CoolInterface);
+        assertTrue(proxy instanceof ContainerRequestFilter, () -> "Proxy does not implemented expected JAXRS interface");
+        assertFalse(proxy instanceof CoolInterface, () -> "Proxy implements non-JAXRS interfaces");
     }
 
     @Test
     public void testInjectedProxyImplementsAllInterfaces() {
         System.setProperty(RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES, "true");
         Object proxy = createProxy();
-        assertTrue("Proxy does not implemented expected JAXRS interface", proxy instanceof ContainerRequestFilter);
-        assertTrue("Proxy does not implement all expected interfaces", proxy instanceof CoolInterface);
+        assertTrue(proxy instanceof ContainerRequestFilter, () -> "Proxy does not implemented expected JAXRS interface");
+        assertTrue(proxy instanceof CoolInterface, () -> "Proxy does not implement all expected interfaces");
         assertEquals("cool", ((CoolInterface) proxy).coolMethod());
     }
 

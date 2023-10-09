@@ -1,12 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -26,11 +25,11 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -66,20 +65,20 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     //CHECKSTYLE.ON: RegexpSinglelineJava
     private static final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
         System.setErr(new PrintStream(errContent));
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         System.setErr(systemErr);
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         mockServer.dispose();
     }
 
-    @After
+    @AfterEach
     public void afterEach() {
         //CHECKSTYLE.OFF: RegexpSinglelineJava
         System.out.println(errContent);
@@ -122,8 +121,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         }
 
         Thread.sleep(1000);
-
-        assertThat(errContent.toString(), not(containsString("LEAK")));
+        assertFalse(errContent.toString().contains("LEAK"));
         // Connection pool size is 10.  So, being able to make all these calls also verifies that connections are
         // are not leaked, because idle-timeout is set to a high number.
         assertTrue(numOfCalls.get() >= CALL_COUNT - 50); // Some calls may have timed out.
@@ -132,7 +130,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     }
 
     @Test
-    @Ignore() // Flaky test on slow hosts (Travis)
+    @Disabled // Flaky test on slow hosts (Travis)
     public void testTimeoutWhileReadingBytesFromWireDoesNotLeakMemory() throws ExecutionException, InterruptedException {
         final Client client = setupClient(Duration.ofMillis(50));
         final WebTarget webTarget = client.target("/slowstream");
@@ -147,11 +145,11 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                 })
                 .collectList()
                 .block()
-                .forEach(response -> assertEquals("A TimeoutException was expected!", FALL_BACK_RESPONSE, response));
+                .forEach(response -> assertEquals(FALL_BACK_RESPONSE, response, () -> "A TimeoutException was expected!"));
 
         Thread.sleep(2000);
 
-        assertThat(errContent.toString(), not(containsString("LEAK")));
+        assertFalse(errContent.toString().contains("LEAK"));
         // Some calls may have timed before making the call.
         assertTrue(numOfTimeStreamingEndpointCalled.get() >= CALL_COUNT - 50);
 
@@ -171,7 +169,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                     .get(10, TimeUnit.SECONDS);
         }
         // It's a ByteBuf leak that is actually asserted here on missing close on response.
-        assertThat(errContent.toString(), containsString("LEAK"));
+        assertTrue(errContent.toString().contains("LEAK"));
         client.close();
     }
 
@@ -190,8 +188,9 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         assertTrue(response.getClass().getSimpleName().contains("FinalizedRestEasyClientResponse"));
     }
 
-    @Test(expected = java.lang.NoSuchMethodException.class)
-    public void testDefaultRestEasyClientResponseWithoutFinalize() throws Exception {
+    @Test
+    public void testDefaultRestEasyClientResponseWithoutFinalize()
+            throws ExecutionException, InterruptedException, TimeoutException {
         final Client client = setupClient(Duration.ofSeconds(10));
         final Response response = client
                 .target("/hello")
@@ -201,7 +200,8 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                 .toCompletableFuture()
                 .get(10, TimeUnit.SECONDS);
 
-        response.getClass().getDeclaredMethod("finalize");
+        assertThrows(NoSuchMethodException.class, () -> response.getClass().getDeclaredMethod("finalize"),
+                () -> "Expected a NoSuchMethodException");
     }
 
     private static ByteBuf toByteBuf(final int i) {

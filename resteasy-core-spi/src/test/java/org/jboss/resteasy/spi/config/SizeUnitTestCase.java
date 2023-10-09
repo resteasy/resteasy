@@ -22,8 +22,8 @@ package org.jboss.resteasy.spi.config;
 import java.text.DecimalFormatSymbols;
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -36,10 +36,10 @@ public class SizeUnitTestCase {
      */
     @Test
     public void humanReadable() {
-        Assert.assertEquals("1KB", SizeUnit.toHumanReadable(1024L));
-        Assert.assertEquals("10MB", SizeUnit.toHumanReadable(SizeUnit.MEGABYTE.toBytes(10L)));
-        Assert.assertEquals("1" + SYMBOLS.getDecimalSeparator() + "5KB", SizeUnit.toHumanReadable((512 * 3)));
-        Assert.assertEquals("175" + SYMBOLS.getDecimalSeparator() + "09MB", SizeUnit.toHumanReadable(183598209L));
+        Assertions.assertEquals("1KB", SizeUnit.toHumanReadable(1024L));
+        Assertions.assertEquals("10MB", SizeUnit.toHumanReadable(SizeUnit.MEGABYTE.toBytes(10L)));
+        Assertions.assertEquals("1" + SYMBOLS.getDecimalSeparator() + "5KB", SizeUnit.toHumanReadable((512 * 3)));
+        Assertions.assertEquals("175" + SYMBOLS.getDecimalSeparator() + "09MB", SizeUnit.toHumanReadable(183598209L));
     }
 
     /**
@@ -55,12 +55,12 @@ public class SizeUnitTestCase {
             final SizeUnit parent = unit.parent();
             // BYTE does not have a parent, so we will test that differently
             if (parent == null) {
-                Assert.assertEquals(1024, SizeUnit.KILOBYTE.convert(1L, unit), 0);
+                Assertions.assertEquals(1024, SizeUnit.KILOBYTE.convert(1L, unit), 0);
                 continue;
             }
             final long size = createSize(r);
-            Assert.assertEquals(String.format("Failed to convert %d from %s to %s", size, parent, unit),
-                    size, parent.convert((size * 1024L), unit), 0);
+            Assertions.assertEquals(size, parent.convert((size * 1024L), unit),
+                    String.format("Failed to convert %d from %s to %s", size, parent, unit));
         }
     }
 

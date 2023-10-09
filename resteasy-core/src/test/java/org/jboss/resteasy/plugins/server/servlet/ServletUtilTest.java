@@ -1,13 +1,13 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ServletUtilTest {
 

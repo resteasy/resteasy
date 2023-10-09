@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.interceptors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -29,8 +29,8 @@ import jakarta.ws.rs.ext.WriterInterceptorContext;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.util.io.IOUtil;
 
@@ -41,7 +41,7 @@ public class GZIPEncodingInterceptorTest {
     private CompletionStage<Void> asyncContextProceedResult;
     private GZIPEncodingInterceptor interceptor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         headers = mock(Headers.class);
         context = mock(WriterInterceptorContext.class);
