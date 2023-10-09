@@ -21,8 +21,8 @@ package org.jboss.resteasy.spi.config;
 
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -53,7 +53,7 @@ public class ThresholdTestCase {
     }
 
     private void test(final Threshold expected, final Threshold tested) {
-        Assert.assertEquals(String.format("Expected %s got %s", expected, tested), expected, tested);
+        Assertions.assertEquals(expected, tested, String.format("Expected %s got %s", expected, tested));
     }
 
     private static long createSize(final Random r) {

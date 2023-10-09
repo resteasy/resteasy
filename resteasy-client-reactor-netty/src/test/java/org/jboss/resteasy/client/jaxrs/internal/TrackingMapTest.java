@@ -1,18 +1,18 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TrackingMapTest {
 
@@ -32,7 +32,7 @@ public class TrackingMapTest {
         trackingMap.remove(CACHE_CONTROL_HEADER);
         trackingMap.remove(CONTENT_TYPE_HEADER, Collections.singletonList(CONTENT_TYPE_HEADER_VAL));
 
-        assertEquals("Removed keys list should be empty", 2, trackingMap.getRemovedKeys().size());
+        assertEquals(2, trackingMap.getRemovedKeys().size(), () -> "Removed keys list should be empty");
         assertArrayEquals(new Object[] { CACHE_CONTROL_HEADER, CONTENT_TYPE_HEADER }, trackingMap.getRemovedKeys().toArray());
     }
 
@@ -43,7 +43,7 @@ public class TrackingMapTest {
         trackingMap.remove("Cache-Control");
         trackingMap.remove("Content-Type", "application/json");
 
-        assertTrue("Removed keys list should be empty", trackingMap.getRemovedKeys().isEmpty());
+        assertTrue(trackingMap.getRemovedKeys().isEmpty(), () -> "Removed keys list should be empty");
     }
 
     @Test

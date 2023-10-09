@@ -1,16 +1,16 @@
 package org.jboss.resteasy.test.client.vertx;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
 import org.jboss.resteasy.client.jaxrs.engines.vertx.InputStreamAdapter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -21,12 +21,12 @@ public class InputStreamAdapterTest {
 
     private Vertx vertx;
 
-    @Before
+    @BeforeEach
     public void setup() {
         vertx = Vertx.vertx();
     }
 
-    @After
+    @AfterEach
     public void after() {
         vertx.close();
     }
