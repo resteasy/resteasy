@@ -24,6 +24,9 @@
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
         <test.java.home>${java.home}</test.java.home>
+
+        <!-- Test dependency versions -->
+        <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
     </properties>
 
     <dependencyManagement>
@@ -36,6 +39,13 @@
                 <type>pom</type>
             </dependency>
             <dependency>
+                <groupId>org.wildfly.cloud-tests</groupId>
+                <artifactId>bom</artifactId>
+                <version>${version.org.wildfly.cloud-tests}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-weld-embedded</artifactId>
                 <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
@@ -44,6 +54,11 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>arquillian-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.resteasy.test</groupId>
+                <artifactId>test-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -132,10 +147,22 @@
                 </property>
             </activation>
             <modules>
+                <module>test-utils</module>
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
                 <module>integration-tests</module>
                 <module>integration-tests-embedded</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>cloud-tests</id>
+            <activation>
+                <property>
+                    <name>cloud.tests</name>
+                </property>
+            </activation>
+            <modules>
+                <module>cloud-tests</module>
             </modules>
         </profile>
         <profile>
