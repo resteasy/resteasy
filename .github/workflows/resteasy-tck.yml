@@ -54,7 +54,7 @@ on:
       javaVersion:
         description: "Java Version"
         required: true
-        default: "17"
+        default: "21"
         type: string
 
 # Only run the latest job
@@ -70,7 +70,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['17', '21-ea']
+        java: ['21']
 
     steps:
       - name: Checkout RESTEasy

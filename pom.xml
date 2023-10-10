@@ -22,9 +22,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Require a minimum of Java 17 and make Java 17 the target -->
-        <jdk.min.version>17</jdk.min.version>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
+        <jdk.min.version>21</jdk.min.version>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
 
         <!-- Dependency versions -->
         <dep.arquillian-bom.version>1.7.1.Final</dep.arquillian-bom.version>
@@ -489,6 +489,10 @@
             <plugin>
                 <groupId>net.revelc.code</groupId>
                 <artifactId>impsort-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Currently there is no Java 21 compliance, so just use 17 for now -->
+                    <compliance>17</compliance>
+                </configuration>
                 <executions>
                     <execution>
                         <id>sort-resource-imports</id>
