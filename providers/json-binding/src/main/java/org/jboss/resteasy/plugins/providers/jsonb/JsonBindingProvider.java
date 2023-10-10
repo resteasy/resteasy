@@ -135,8 +135,9 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
         }
 
         @Override
-        public void close() throws IOException {
-            delegate.close();
+        public void close() {
+            // Do not close the stream as per the Jakarta REST specification, currently 3.1, the stream being used
+            // must not be closed in a MessageBodyReader.
         }
 
         @Override
