@@ -39,8 +39,6 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: 'io.projectreactor:*'
-        # Versions above 4.1.91 do not seem to work with Netty 4.3
-      - dependency-name: 'io.netty:*'
         # Allow bouncy castle to upgrade the minor versions
       - dependency-name: 'org.bouncycastle:*'
         update-types: ['version-update:semver-major']
@@ -62,8 +60,6 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: 'io.projectreactor:*'
-        # Versions above 4.1.91 do not seem to work with Netty 4.3
-      - dependency-name: 'io.netty:*'
         # Allow bouncy castle to upgrade the minor versions
       - dependency-name: 'org.bouncycastle:*'
         update-types: ['version-update:semver-major']
