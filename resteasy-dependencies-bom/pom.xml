@@ -50,7 +50,7 @@
         <version.commons-codec.commons-codec>1.15</version.commons-codec.commons-codec>
         <version.hamcrest>1.3</version.hamcrest>
         <version.io.netty.netty4>4.1.100.Final</version.io.netty.netty4>
-        <version.io.vertx>4.4.5</version.io.vertx>
+        <version.io.vertx>4.4.6</version.io.vertx>
         <version.io.undertow>2.2.26.Final</version.io.undertow>
         <version.jakarta.activation>1.2.2</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
