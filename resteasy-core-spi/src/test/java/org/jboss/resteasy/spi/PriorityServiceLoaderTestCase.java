@@ -31,8 +31,8 @@ import org.jboss.resteasy.spi.resources.TestImplFirst;
 import org.jboss.resteasy.spi.resources.TestImplLast;
 import org.jboss.resteasy.spi.resources.TestImplNoPriority;
 import org.jboss.resteasy.spi.resources.TestInterface;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -51,8 +51,8 @@ public class PriorityServiceLoaderTestCase {
         check(false, TestInterface.InnerImpl.class, loader2);
 
         final PriorityServiceLoader<NoEntriesInterface> loader3 = PriorityServiceLoader.load(NoEntriesInterface.class);
-        Assert.assertTrue("Expected no entries", loader3.first().isEmpty());
-        Assert.assertTrue("Expected no entries", loader3.last().isEmpty());
+        Assertions.assertTrue(loader3.first().isEmpty(), () -> "Expected no entries");
+        Assertions.assertTrue(loader3.last().isEmpty(), () -> "Expected no entries");
     }
 
     @Test
@@ -84,13 +84,13 @@ public class PriorityServiceLoaderTestCase {
         final PriorityServiceLoader<TestInterface> loader = PriorityServiceLoader.load(TestInterface.class);
         final Set<Class<TestInterface>> found = loader.getTypes();
         // Should have 4 implementations
-        Assert.assertEquals("Expected 4 implementations found " + found.size(), 4, found.size());
+        Assertions.assertEquals(4, found.size(), () -> "Expected 4 implementations found " + found.size());
         final Iterator<Class<TestInterface>> iterator = found.iterator();
         // These should be in a specific order
-        Assert.assertEquals(TestImplFirst.class, iterator.next());
-        Assert.assertEquals(TestImpl.class, iterator.next());
-        Assert.assertEquals(TestImplLast.class, iterator.next());
-        Assert.assertEquals(TestImplNoPriority.class, iterator.next());
+        Assertions.assertEquals(TestImplFirst.class, iterator.next());
+        Assertions.assertEquals(TestImpl.class, iterator.next());
+        Assertions.assertEquals(TestImplLast.class, iterator.next());
+        Assertions.assertEquals(TestImplNoPriority.class, iterator.next());
     }
 
     @Test
@@ -103,34 +103,36 @@ public class PriorityServiceLoaderTestCase {
             }
         })
                 .first();
-        Assert.assertTrue(resolver.isPresent());
-        Assert.assertEquals("test-value", resolver.get().resolve());
+        Assertions.assertTrue(resolver.isPresent());
+        Assertions.assertEquals("test-value", resolver.get().resolve());
     }
 
     private void checkNext(final Class<?> expected, final int count,
             final Iterator<?> iterator) {
-        Assert.assertTrue(
-                String.format("Entry %d is expected to be %s, but no more entries were found.", count, expected.getName()),
-                iterator.hasNext());
+        Assertions.assertTrue(iterator.hasNext(),
+                () -> String.format("Entry %d is expected to be %s, but no more entries were found.", count,
+                        expected.getName()));
         Object instance = iterator.next();
-        Assert.assertTrue(String.format("Expected entry %d to be %s but was %s", count, expected.getName(), instance.getClass()
-                .getName()), expected.isInstance(instance));
+        Assertions.assertTrue(expected.isInstance(instance),
+                () -> String.format("Expected entry %d to be %s but was %s", count, expected.getName(), instance.getClass()
+                        .getName()));
     }
 
     private void checkNoMore(final Iterator<?> iterator) {
-        Assert.assertFalse("Expected no more entries", iterator.hasNext());
+        Assertions.assertFalse(iterator.hasNext(), () -> "Expected no more entries");
 
         try {
             iterator.next();
-            Assert.fail("Expected a NoSuchElementException to be thrown");
+            Assertions.fail("Expected a NoSuchElementException to be thrown");
         } catch (NoSuchElementException expected) {
         }
     }
 
     private void check(final boolean first, final Class<?> expected, final PriorityServiceLoader<?> loader) {
         final Optional<?> optional = first ? loader.first() : loader.last();
-        Assert.assertTrue(String.format("Expected %s to be present in %s", expected.getName(), loader), optional.isPresent());
-        Assert.assertTrue(String.format("Expected instance %s to be an instance of %s", optional.get(), expected.getName()),
-                expected.isInstance(optional.get()));
+        Assertions.assertTrue(optional.isPresent(),
+                () -> String.format("Expected %s to be present in %s", expected.getName(), loader));
+        Assertions.assertTrue(expected.isInstance(optional.get()),
+                () -> String.format("Expected instance %s to be an instance of %s", optional.get(), expected.getName()));
     }
 }

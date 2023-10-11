@@ -1,16 +1,21 @@
 package org.jboss.resteasy.plugins.delegates;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MediaTypeHeaderDelegateTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void parsingBrokenMediaTypeShouldThrowIllegalArgumentException_minimized() {
-        MediaTypeHeaderDelegate.parse("x; /x");
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> MediaTypeHeaderDelegate.parse("x; /x"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void parsingBrokenMediaTypeShouldThrowIllegalArgumentException_actual() {
-        MediaTypeHeaderDelegate.parse("() { ::}; echo \"NS:\" $(/bin/sh -c \"expr 123456 - 123456\")");
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> MediaTypeHeaderDelegate.parse("() { ::}; echo \"NS:\" $(/bin/sh -c \"expr 123456 - 123456\")"));
     }
 }

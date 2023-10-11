@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.registry;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Method;
 
@@ -19,7 +19,7 @@ import org.jboss.resteasy.spi.metadata.DefaultResourceMethod;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RootNodeCacheSizeTest {
 
@@ -33,12 +33,13 @@ public class RootNodeCacheSizeTest {
         }
 
         // Default in RootNode is CACHE_SIZE = 2048;
-        assertEquals("Cache is expected to be cleared when size exceeded 2048 items", 2, rootNode.cacheSize());
+        assertEquals(2, rootNode.cacheSize(),
+                () -> "Cache is expected to be cleared when size exceeded 2048 items");
         for (int i = 0; i < 10; i++) {
             rootNode.match(MockHttpRequest.get("" + i).contentType(MediaType.valueOf("text/html;boundary=from" + i)), 0);
         }
         //MediaType with parameters won't be cached
-        assertEquals("Unexpected cache item", 2, rootNode.cacheSize());
+        assertEquals(2, rootNode.cacheSize(), () -> "Unexpected cache item");
     }
 
     public class MyRootNode extends RootNode {

@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.client.vertx;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,9 +37,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -54,14 +54,14 @@ public class VertxClientEngineTest {
     Client client;
     ScheduledExecutorService executorService;
 
-    @Before
+    @BeforeEach
     public void before() {
         vertx = Vertx.vertx();
         server = vertx.createHttpServer();
         executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
-    @After
+    @AfterEach
     public void stop() throws Exception {
         if (client != null) {
             client.close();

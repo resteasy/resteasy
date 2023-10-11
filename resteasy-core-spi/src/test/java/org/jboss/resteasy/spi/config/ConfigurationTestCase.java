@@ -26,9 +26,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -41,7 +41,7 @@ public class ConfigurationTestCase {
         TEST
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void configureProperties() {
         EXPECTED_CONVERSIONS.add(Property.of("test.string", String.class, "test string value"));
         EXPECTED_CONVERSIONS.add(Property.of("test.Boolean", Boolean.class, Boolean.TRUE));
@@ -70,29 +70,30 @@ public class ConfigurationTestCase {
     public void testDefaultConfiguration() {
         final Configuration configuration = new DefaultConfiguration();
 
-        Assert.assertTrue("Expected the system property test.config.prop to be present",
-                configuration.getOptionalValue("test.config.prop", String.class).isPresent());
+        Assertions.assertTrue(configuration.getOptionalValue("test.config.prop", String.class).isPresent(),
+                () -> "Expected the system property test.config.prop to be present");
 
-        Assert.assertTrue("Expected the environment variable TEST_CONFIG_ENV tobe present",
-                configuration.getOptionalValue("TEST_CONFIG_ENV", String.class).isPresent());
+        Assertions.assertTrue(configuration.getOptionalValue("TEST_CONFIG_ENV", String.class).isPresent(),
+                () -> "Expected the environment variable TEST_CONFIG_ENV tobe present");
 
-        Assert.assertFalse("Did not expect the property test.config.invalid to exist",
-                configuration.getOptionalValue("test.config.invalid", String.class).isPresent());
+        Assertions.assertFalse(configuration.getOptionalValue("test.config.invalid", String.class).isPresent(),
+                () -> "Did not expect the property test.config.invalid to exist");
 
-        Assert.assertEquals("Expected the system property value sys-prop-value", "sys-prop-value",
-                configuration.getValue("test.config.prop", String.class));
+        Assertions.assertEquals("sys-prop-value", configuration.getValue("test.config.prop", String.class),
+                () -> "Expected the system property value sys-prop-value");
 
-        Assert.assertEquals("Expected the environment variable value env-value", "env-value",
-                configuration.getValue("TEST_CONFIG_ENV", String.class));
+        Assertions.assertEquals("env-value",
+                configuration.getValue("TEST_CONFIG_ENV", String.class),
+                () -> "Expected the environment variable value env-value");
 
-        Assert.assertThrows("Expected a NoSuchElementException", NoSuchElementException.class,
-                () -> configuration.getValue("test.config.invalid", String.class));
+        Assertions.assertThrows(NoSuchElementException.class, () -> configuration.getValue("test.config.invalid", String.class),
+                () -> "Expected a NoSuchElementException");
 
     }
 
     @Test
     public void testConfigurationFactory() {
-        Assert.assertEquals(TestConfigurationFactory.class, ConfigurationFactory.getInstance().getClass());
+        Assertions.assertEquals(TestConfigurationFactory.class, ConfigurationFactory.getInstance().getClass());
     }
 
     @Test
@@ -100,13 +101,14 @@ public class ConfigurationTestCase {
         final Configuration configuration = ConfigurationFactory.getInstance().getConfiguration();
 
         for (Property<?> property : EXPECTED_CONVERSIONS) {
-            Assert.assertEquals(property.expectedValue, configuration.getValue(property.name, property.type));
+            Assertions.assertEquals(property.expectedValue, configuration.getValue(property.name, property.type));
             final Optional<?> optional = configuration.getOptionalValue(property.name, property.type);
-            Assert.assertTrue(String.format("Expected property %s to be present", property.name), optional.isPresent());
-            Assert.assertEquals(property.expectedValue, optional.get());
+            Assertions.assertTrue(optional.isPresent(), String.format("Expected property %s to be present", property.name));
+            Assertions.assertEquals(property.expectedValue, optional.get());
         }
-        Assert.assertThrows(IllegalArgumentException.class, () -> configuration.getOptionalValue("test.string", Date.class));
-        Assert.assertThrows(IllegalArgumentException.class, () -> configuration.getValue("test.string", Date.class));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> configuration.getOptionalValue("test.string", Date.class));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> configuration.getValue("test.string", Date.class));
     }
 
     private static class Property<T> {

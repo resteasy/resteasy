@@ -28,10 +28,10 @@ import java.util.Properties;
 
 import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.config.SizeUnit;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -40,13 +40,13 @@ public class EntityOutputStreamTestCase {
 
     private Properties currentProperties;
 
-    @Before
+    @BeforeEach
     public void captureProperties() {
         currentProperties = System.getProperties();
         System.setProperties(new Properties(currentProperties));
     }
 
-    @After
+    @AfterEach
     public void revertProperties() {
         System.setProperties(currentProperties);
     }
@@ -68,11 +68,11 @@ public class EntityOutputStreamTestCase {
             buffered.flush();
             // We should have been kept in memory
             final Path file = out.getFile();
-            Assert.assertNull("Expected data to be kept in memory.", file);
-            Assert.assertEquals("Memory size differs from from the output size.", len, out.getContentLength());
+            Assertions.assertNull(file, () -> "Expected data to be kept in memory.");
+            Assertions.assertEquals(len, out.getContentLength(), () -> "Memory size differs from from the output size.");
             // Just consume the InputStream in order to delete the file
             try (InputStream in = out.toInputStream()) {
-                Assert.assertNotNull(in);
+                Assertions.assertNotNull(in);
             }
         }
     }
@@ -92,20 +92,20 @@ public class EntityOutputStreamTestCase {
             out.write(bytes);
             // We should have been kept in memory
             final Path file = out.getFile();
-            Assert.assertNull("Expected data to be kept in memory.", file);
-            Assert.assertEquals("Memory size differs from from the output size.", len, out.getContentLength());
+            Assertions.assertNull(file, "Expected data to be kept in memory.");
+            Assertions.assertEquals(len, out.getContentLength(), "Memory size differs from from the output size.");
             // Check the input stream, should contain all "a"'s
             try (InputStream in = out.toInputStream()) {
                 // The in-memory data should be cleared now
-                Assert.assertEquals("Memory should have be cleared", 0, out.getContentLength());
-                Assert.assertEquals("Memory should have be cleared", 0, out.getAndClearMemory().length);
+                Assertions.assertEquals(0, out.getContentLength(), "Memory should have be cleared");
+                Assertions.assertEquals(0, out.getAndClearMemory().length, "Memory should have be cleared");
                 int b;
                 int i = 0;
                 while ((b = in.read()) != -1) {
-                    Assert.assertEquals(String.format("Byte at %d was not 'a', but '%s'.", i, b), 'a', (char) b);
+                    Assertions.assertEquals('a', (char) b, String.format("Byte at %d was not 'a', but '%s'.", i, b));
                     i++;
                 }
-                Assert.assertEquals(String.format("Expected %d bytes to be read, but %d were read.", len, i), len, i);
+                Assertions.assertEquals(len, i, String.format("Expected %d bytes to be read, but %d were read.", len, i));
             }
         }
     }
@@ -127,12 +127,12 @@ public class EntityOutputStreamTestCase {
             buffered.flush();
             // We should have been written to a file
             final Path file = out.getFile();
-            Assert.assertNotNull("Expected data to be written to a file.", file);
-            Assert.assertEquals("Expected the memory to be cleared", 0, out.getAndClearMemory().length);
-            Assert.assertEquals("File size differs from from the output size.", Files.size(file), out.getContentLength());
+            Assertions.assertNotNull(file, "Expected data to be written to a file.");
+            Assertions.assertEquals(0, out.getAndClearMemory().length, "Expected the memory to be cleared");
+            Assertions.assertEquals(Files.size(file), out.getContentLength(), "File size differs from from the output size.");
             // Just consume the InputStream in order to delete the file
             try (InputStream in = out.toInputStream()) {
-                Assert.assertNotNull(in);
+                Assertions.assertNotNull(in);
             }
         }
     }
@@ -153,18 +153,18 @@ public class EntityOutputStreamTestCase {
             out.write(bytes);
             // We should have been written to a file
             final Path file = out.getFile();
-            Assert.assertNotNull("Expected data to be written to a file.", file);
-            Assert.assertEquals("Expected the memory to be cleared", 0, out.getAndClearMemory().length);
-            Assert.assertEquals("File size differs from from the output size.", Files.size(file), out.getContentLength());
+            Assertions.assertNotNull(file, "Expected data to be written to a file.");
+            Assertions.assertEquals(0, out.getAndClearMemory().length, "Expected the memory to be cleared");
+            Assertions.assertEquals(Files.size(file), out.getContentLength(), "File size differs from from the output size.");
             // Check the input stream, should contain all "a"'s
             try (InputStream in = out.toInputStream()) {
                 int b;
                 int i = 0;
                 while ((b = in.read()) != -1) {
-                    Assert.assertEquals(String.format("Byte at %d was not 'a', but '%s'.", i, b), 'a', (char) b);
+                    Assertions.assertEquals('a', (char) b, String.format("Byte at %d was not 'a', but '%s'.", i, b));
                     i++;
                 }
-                Assert.assertEquals(String.format("Expected %d bytes to be read, but %d were read.", len, i), len, i);
+                Assertions.assertEquals(len, i, String.format("Expected %d bytes to be read, but %d were read.", len, i));
             }
         }
     }
@@ -188,13 +188,13 @@ public class EntityOutputStreamTestCase {
                         file = out.getFile();
                     }
                 }
-                Assert.fail("File threshold should have been hit");
+                Assertions.fail("File threshold should have been hit");
             } catch (IllegalStateException ignore) {
             }
             // We should have been written to a file
-            Assert.assertNotNull("Expected data to be written to a file.", file);
-            Assert.assertTrue("Expected the output stream to be closed", out.isClosed());
-            Assert.assertTrue("Expected the file to be deleted", Files.notExists(file));
+            Assertions.assertNotNull(file, "Expected data to be written to a file.");
+            Assertions.assertTrue(out.isClosed(), "Expected the output stream to be closed");
+            Assertions.assertTrue(Files.notExists(file), "Expected the file to be deleted");
         }
     }
 
@@ -219,16 +219,15 @@ public class EntityOutputStreamTestCase {
             // We should have been written to a file
             final Path file = out.getFile();
             final long fileSize = Files.size(file);
-            Assert.assertNotNull("Expected data to be written to a file.", file);
-            Assert.assertEquals("Expected the memory to be cleared", 0, out.getAndClearMemory().length);
-            Assert.assertEquals("File size differs from from the output size.", fileSize, out.getContentLength());
-            Assert.assertEquals(
+            Assertions.assertNotNull(file, "Expected data to be written to a file.");
+            Assertions.assertEquals(0, out.getAndClearMemory().length, "Expected the memory to be cleared");
+            Assertions.assertEquals(fileSize, out.getContentLength(), "File size differs from from the output size.");
+            Assertions.assertEquals(SizeUnit.MEGABYTE.toBytes(size), fileSize,
                     String.format("Expected %s got %s", SizeUnit.toHumanReadable(SizeUnit.MEGABYTE.toBytes(size)),
-                            SizeUnit.toHumanReadable(fileSize)),
-                    SizeUnit.MEGABYTE.toBytes(size), fileSize);
+                            SizeUnit.toHumanReadable(fileSize)));
             // Just consume the InputStream in order to delete the file
             try (InputStream in = out.toInputStream()) {
-                Assert.assertNotNull(in);
+                Assertions.assertNotNull(in);
             }
         }
     }
@@ -238,7 +237,7 @@ public class EntityOutputStreamTestCase {
      *
      * @throws Exception if a test failure occurs
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void writeByteToClosedStream() throws Exception {
         System.setProperty(Options.ENTITY_MEMORY_THRESHOLD.name(), "30B");
         try (EntityOutputStream out = new EntityOutputStream()) {
@@ -248,9 +247,9 @@ public class EntityOutputStreamTestCase {
             out.write(bytes);
             out.close();
             // The stream should be closed now
-            Assert.assertTrue("The stream was not closed.", out.isClosed());
+            Assertions.assertTrue(out.isClosed(), "The stream was not closed.");
             // This should fail to write as the stream is closed
-            out.write('x');
+            Assertions.assertThrows(IllegalStateException.class, () -> out.write('x'));
         }
     }
 
@@ -259,7 +258,7 @@ public class EntityOutputStreamTestCase {
      *
      * @throws Exception if a test failure occurs
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void writeByteArrayToClosedStream() throws Exception {
         System.setProperty(Options.ENTITY_MEMORY_THRESHOLD.name(), "30B");
         try (EntityOutputStream out = new EntityOutputStream()) {
@@ -269,9 +268,9 @@ public class EntityOutputStreamTestCase {
             out.write(bytes);
             out.close();
             // The stream should be closed now
-            Assert.assertTrue("The stream was not closed.", out.isClosed());
+            Assertions.assertTrue(out.isClosed(), "The stream was not closed.");
             // This should fail to write as the stream is closed
-            out.write(bytes);
+            Assertions.assertThrows(IllegalStateException.class, () -> out.write(bytes));
         }
     }
 
@@ -280,7 +279,7 @@ public class EntityOutputStreamTestCase {
      *
      * @throws Exception if a test failure occurs
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void writeByteArrayWithOffsetToClosedStream() throws Exception {
         System.setProperty(Options.ENTITY_MEMORY_THRESHOLD.name(), "30B");
         try (EntityOutputStream out = new EntityOutputStream()) {
@@ -290,9 +289,10 @@ public class EntityOutputStreamTestCase {
             out.write(bytes);
             out.close();
             // The stream should be closed now
-            Assert.assertTrue("The stream was not closed.", out.isClosed());
+            Assertions.assertTrue(out.isClosed(), "The stream was not closed.");
             // This should fail to write as the stream is closed
-            out.write(bytes, 0, 10);
+            Assertions.assertThrows(IllegalStateException.class, () -> out.write(bytes, 0, 10));
+
         }
     }
 }
