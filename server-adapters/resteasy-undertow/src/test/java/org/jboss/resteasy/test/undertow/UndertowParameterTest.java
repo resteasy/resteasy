@@ -20,10 +20,10 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * RESTEASY-1629
@@ -83,7 +83,7 @@ public class UndertowParameterTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new UndertowJaxrsServer().start();
         ResteasyDeployment deployment = new ResteasyDeploymentImpl();
@@ -103,7 +103,7 @@ public class UndertowParameterTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         client.close();
@@ -112,14 +112,14 @@ public class UndertowParameterTest {
     @Test
     public void testContextParameters() throws Exception {
         Response response = client.target("http://localhost:8081/context").request().get(Response.class);
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
     @Test
     public void testInitParameters() throws Exception {
         Response response = client.target("http://localhost:8081/init").request().get(Response.class);
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 }

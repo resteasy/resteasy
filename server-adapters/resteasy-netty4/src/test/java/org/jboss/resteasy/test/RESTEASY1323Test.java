@@ -4,15 +4,17 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -36,27 +38,27 @@ public class RESTEASY1323Test {
 
     static final int REQUEST_TIMEOUT = 6000;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupSuite() throws Exception {
         NettyContainer.start().getRegistry().addSingletonResource(new AsyncJaxrsResource());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownSuite() throws Exception {
         NettyContainer.stop();
     }
 
-    @Before
+    @BeforeEach
     public void setupTest() throws Exception {
     }
 
-    @After
+    @AfterEach
     public void tearDownTest() throws Exception {
     }
 
-    @Test(timeout = REQUEST_TIMEOUT * 10)
+    @Test
     public void testAsyncKeepConnection() throws Exception {
-        callAsyncTwiceWithKeepAlive();
+        Assertions.assertTimeout(Duration.ofMillis(10 * REQUEST_TIMEOUT), () -> callAsyncTwiceWithKeepAlive());
     }
 
     // use netty to better monitor channel connection.
@@ -114,9 +116,9 @@ public class RESTEASY1323Test {
         }
     }
 
-    @Test(timeout = REQUEST_TIMEOUT * 5)
+    @Test
     public void testAsyncCloseConnection() throws Exception {
-        callAsyncWithCloseConnection();
+        Assertions.assertTimeout(Duration.ofMillis(5 * REQUEST_TIMEOUT), () -> callAsyncWithCloseConnection());
     }
 
     // use netty to better monitor channel connection.

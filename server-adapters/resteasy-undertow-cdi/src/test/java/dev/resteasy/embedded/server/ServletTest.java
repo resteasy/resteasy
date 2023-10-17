@@ -42,10 +42,10 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.core.se.ConfigurationOption;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -57,7 +57,7 @@ public class ServletTest {
 
     private static Instance INSTANCE;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws Exception {
         final Index index = Index.of(TestServlet.class, RootApplication.class, TestResource.class);
         final DeploymentInfo deploymentInfo = new DeploymentInfo()
@@ -72,7 +72,7 @@ public class ServletTest {
                 .get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() throws Exception {
         if (INSTANCE != null) {
             INSTANCE.stop()
@@ -87,8 +87,8 @@ public class ServletTest {
         final HttpResponse<String> response = client.send(HttpRequest
                 .newBuilder(INSTANCE.configuration().baseUriBuilder().path("test-servlet").build()).GET().build(),
                 HttpResponse.BodyHandlers.ofString());
-        Assert.assertEquals(200, response.statusCode());
-        Assert.assertEquals("test-servlet", response.body());
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertEquals("test-servlet", response.body());
     }
 
     @Test
@@ -96,8 +96,8 @@ public class ServletTest {
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("/test"))
                     .request().get();
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertEquals("test-resource", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("test-resource", response.readEntity(String.class));
         }
     }
 

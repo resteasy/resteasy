@@ -36,10 +36,10 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -48,7 +48,7 @@ public class InjectionTest {
     private static SeBootstrap.Instance INSTANCE;
     private static Client CLIENT;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         final Index index = Index.of(Greeter.class, RootApplication.class, GreeterResource.class);
         INSTANCE = SeBootstrap.start(RootApplication.class, TestEnvironment.createConfig(index))
@@ -57,7 +57,7 @@ public class InjectionTest {
         CLIENT = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() throws Exception {
         if (INSTANCE != null) {
             INSTANCE.stop().toCompletableFuture().get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
@@ -72,8 +72,8 @@ public class InjectionTest {
         try (Response response = CLIENT.target(INSTANCE.configuration().baseUriBuilder().path("/inject/greet/app"))
                 .request()
                 .get()) {
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("Hello App", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("Hello App", response.readEntity(String.class));
         }
     }
 
@@ -82,8 +82,8 @@ public class InjectionTest {
         try (Response response = CLIENT.target(INSTANCE.configuration().baseUriBuilder().path("/inject/greet/Violet"))
                 .request()
                 .get()) {
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("Hello Violet", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("Hello Violet", response.readEntity(String.class));
         }
     }
 

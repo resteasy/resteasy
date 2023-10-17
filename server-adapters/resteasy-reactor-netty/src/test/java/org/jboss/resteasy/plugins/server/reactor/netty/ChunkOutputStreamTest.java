@@ -21,8 +21,8 @@ import java.util.stream.IntStream;
 
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.spi.WriterException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 
 import io.netty.buffer.ByteBuf;
@@ -69,7 +69,7 @@ public class ChunkOutputStreamTest {
             StepVerifier
                     .create(Mono.fromCompletionStage(ProviderHelper.writeToAndCloseInput(in, chunkOutputStream)))
                     .verifyComplete();
-            Assert.assertEquals(inputData, baos.toString());
+            Assertions.assertEquals(inputData, baos.toString());
         } finally {
             baos.close();
         }
@@ -153,7 +153,7 @@ public class ChunkOutputStreamTest {
         StepVerifier.create(Mono.fromCompletionStage(asyncWriteFuture))
                 .thenCancel()
                 .verify();
-        Assert.assertEquals(WriterException.class.getName(), buffer.toString());
+        Assertions.assertEquals(WriterException.class.getName(), buffer.toString());
     }
 
     public String mkInputData() {
@@ -356,7 +356,7 @@ public class ChunkOutputStreamTest {
                 try {
                     byteBuf.readBytes(baos, byteBuf.readableBytes());
                 } catch (final IOException e) {
-                    Assert.fail("Error writing bytes to outputstream : " + e.getMessage());
+                    Assertions.fail("Error writing bytes to outputstream : " + e.getMessage());
                 } finally {
                     byteBuf.release();
                 }

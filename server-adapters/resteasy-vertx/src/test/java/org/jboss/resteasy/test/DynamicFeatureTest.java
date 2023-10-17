@@ -32,10 +32,10 @@ import jakarta.ws.rs.ext.WriterInterceptorContext;
 
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that dynamic feature doesn't add to all resource methods
@@ -171,7 +171,7 @@ public class DynamicFeatureTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         VertxResteasyDeployment deployment = new VertxResteasyDeployment();
         deployment.getActualProviderClasses().add(AddDynamicFeature.class);
@@ -180,7 +180,7 @@ public class DynamicFeatureTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -194,7 +194,7 @@ public class DynamicFeatureTest {
     public void testBasic() throws Exception {
         WebTarget target = client.target(generateURL("/resource/nobinding"));
         String val = target.request().post(Entity.text("0"), String.class);
-        Assert.assertEquals("0", val);
+        Assertions.assertEquals("0", val);
 
     }
 }

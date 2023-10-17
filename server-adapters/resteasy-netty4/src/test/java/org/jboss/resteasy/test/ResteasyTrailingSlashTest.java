@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test;
 
-import static org.junit.Assert.assertEquals;
-
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -10,9 +8,10 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Copy this class in a project using resteasy-netty or resteasy-netty4 and run the test.
@@ -32,7 +31,7 @@ public class ResteasyTrailingSlashTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -44,7 +43,7 @@ public class ResteasyTrailingSlashTest {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() throws Exception {
         server.stop();
     }
@@ -55,7 +54,7 @@ public class ResteasyTrailingSlashTest {
         String val = client.target(TestPortProvider.generateURL("/test/"))
                 // String val = client.target(TestPortProvider.generateURL("/test"))
                 .request().get(String.class);
-        assertEquals("hello world", val);
+        Assertions.assertEquals("hello world", val);
         client.close();
     }
 }

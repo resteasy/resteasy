@@ -16,10 +16,10 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -37,7 +37,7 @@ public class HeadContentLengthTest {
     private static HttpServer httpServer;
     private static HttpContextBuilder contextBuilder;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         int port = TestPortProvider.getPort();
         httpServer = HttpServer.create(new InetSocketAddress(port), 10);
@@ -48,7 +48,7 @@ public class HeadContentLengthTest {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         contextBuilder.cleanup();
         httpServer.stop(1);
@@ -59,7 +59,7 @@ public class HeadContentLengthTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/test"));
         String val = target.request().get(String.class);
-        Assert.assertEquals("hello world", val);
+        Assertions.assertEquals("hello world", val);
     }
 
     @Test
@@ -68,8 +68,8 @@ public class HeadContentLengthTest {
         WebTarget target = client.target(generateURL("/test"));
         Response getResponse = target.request().buildGet().invoke();
         String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
-        Assert.assertEquals("hello world", val);
+        Assertions.assertEquals("hello world", val);
         Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
-        Assert.assertNull(headResponse.getHeaderString("Content-Length"));
+        Assertions.assertNull(headResponse.getHeaderString("Content-Length"));
     }
 }

@@ -20,10 +20,10 @@ import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that dynamic feature doesn't add to all resource methods
@@ -136,7 +136,7 @@ public class ContextResolverTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         VertxResteasyDeployment deployment = new VertxResteasyDeployment();
         deployment.getActualProviderClasses().add(HolderResolver.class);
@@ -145,7 +145,7 @@ public class ContextResolverTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -159,6 +159,6 @@ public class ContextResolverTest {
     public void testBasic() throws Exception {
         WebTarget target = client.target(generateURL("/resource/contextresolver"));
         String val = target.request().get(String.class);
-        Assert.assertEquals("11110", val);
+        Assertions.assertEquals("11110", val);
     }
 }

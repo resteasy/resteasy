@@ -34,8 +34,8 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -53,16 +53,16 @@ public class StartStopTest {
         try (Client client = ClientBuilder.newClient()) {
             Response response = client.target(configuration.baseUriBuilder().path("/greet/Nina"))
                     .request().get();
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertEquals("Hello Nina", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("Hello Nina", response.readEntity(String.class));
 
             // Stop the server, then restart it
             server.stop();
             server.start(configuration);
             response = client.target(configuration.baseUriBuilder().path("/greet/Nina"))
                     .request().get();
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertEquals("Hello Nina", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("Hello Nina", response.readEntity(String.class));
         } finally {
             server.stop();
         }

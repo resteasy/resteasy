@@ -16,10 +16,10 @@ import jakarta.ws.rs.core.HttpHeaders;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class HeadersLowerCasedTest {
     private static final String RESPONSE_PREFIX = "headerNames: ";
@@ -47,12 +47,12 @@ public class HeadersLowerCasedTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         ReactorNettyContainer.stop();
     }
@@ -61,7 +61,7 @@ public class HeadersLowerCasedTest {
     public void testHeadersLowerCased() throws Exception {
         final Optional<String> maybeResp = mkCall("/headers/lowercased");
 
-        Assert.assertTrue(maybeResp.isPresent());
+        Assertions.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String value = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
         MatcherAssert.assertThat(value, CoreMatchers.is("connection,dummy-key,host"));
@@ -71,7 +71,7 @@ public class HeadersLowerCasedTest {
     public void testCaseInsensitiveHeaderLookup() throws IOException {
 
         final Optional<String> maybeResp = mkCall("/headers/lookup");
-        Assert.assertTrue(maybeResp.isPresent());
+        Assertions.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String headerValue = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
         MatcherAssert.assertThat(headerValue, CoreMatchers.is("dummyValue"));
@@ -89,7 +89,7 @@ public class HeadersLowerCasedTest {
                 out.flush();
 
                 final String statusLine = in.readLine();
-                Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
+                Assertions.assertEquals("HTTP/1.1 200 OK", statusLine);
 
                 final Optional<String> maybeResp = in.lines().filter(line -> line.startsWith(RESPONSE_PREFIX)).findAny();
                 client.close();

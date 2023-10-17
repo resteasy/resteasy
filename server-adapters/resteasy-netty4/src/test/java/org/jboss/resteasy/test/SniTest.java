@@ -16,10 +16,10 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.netty.SniConfiguration;
 import org.jboss.resteasy.test.util.SSLCerts;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests SNI capabilities for Netty based JaxRS server.
@@ -31,7 +31,7 @@ public class SniTest {
 
     private static NettyJaxrsServer server;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         SniConfiguration sniConfiguration = new SniConfiguration(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext());
         sniConfiguration.addSniMapping("sni", SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
@@ -46,7 +46,7 @@ public class SniTest {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() throws Exception {
         server.stop();
     }
@@ -60,16 +60,18 @@ public class SniTest {
         String returnValue = callRestService(client);
 
         //then
-        Assert.assertNotNull(returnValue);
+        Assertions.assertNotNull(returnValue);
     }
 
-    @Test(expected = ProcessingException.class)
+    @Test
     public void testTrustedClientButWithNoSNI() {
-        //given
-        Client client = createClientWithCertificate(SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
+        Assertions.assertThrows(ProcessingException.class, () -> {
+            //given
+            Client client = createClientWithCertificate(SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
 
-        //when
-        callRestService(client);
+            //when
+            callRestService(client);
+        });
     }
 
     @Test
@@ -81,7 +83,7 @@ public class SniTest {
         String returnValue = callRestService(client);
 
         //then
-        Assert.assertNotNull(returnValue);
+        Assertions.assertNotNull(returnValue);
     }
 
     private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName) {
