@@ -15,15 +15,15 @@ import jakarta.ws.rs.sse.SseEventSource;
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class SSETest {
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ResteasyDeployment deployment = VertxContainer.start();
         Registry registry = deployment.getRegistry();
@@ -31,7 +31,7 @@ public class SSETest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -75,7 +75,7 @@ public class SSETest {
                 });
         source.open();
         try (SseEventSource x = source) {
-            Assert.assertEquals(message, cf.get(5, TimeUnit.SECONDS));
+            Assertions.assertEquals(message, cf.get(5, TimeUnit.SECONDS));
         }
     }
 }

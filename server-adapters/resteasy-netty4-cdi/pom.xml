@@ -37,9 +37,10 @@
         </dependency>
 
         <!-- Test dependencies -->
+        <!-- Have to stay on Junit4 for this module due to arquillian dependency. see issue https://issues.redhat.com/browse/RESTEASY-3398-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

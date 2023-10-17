@@ -9,8 +9,8 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.util.SSLCerts;
 import org.jboss.resteasy.util.PortProvider;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
@@ -20,7 +20,7 @@ public class BasicSSLTest extends BasicTest {
 
     private static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         final SSLContext clientContext = SSLCerts.DEFAULT_TRUSTSTORE.getSslContext();
         final SSLContext serverContext = SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext();
@@ -48,7 +48,7 @@ public class BasicSSLTest extends BasicTest {
         BasicTest.setupBaseUrl("https://%s:%d%s");
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() {
         client.close();
         ReactorNettyContainer.stop();

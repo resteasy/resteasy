@@ -13,10 +13,10 @@ import jakarta.ws.rs.client.WebTarget;
 
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import reactor.core.publisher.Mono;
 
@@ -36,7 +36,7 @@ public class MonoTest {
 
     private static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ResteasyDeployment deployment = ReactorNettyContainer.start();
         Registry registry = deployment.getRegistry();
@@ -44,23 +44,27 @@ public class MonoTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() {
         client.close();
         ReactorNettyContainer.stop();
     }
 
-    @Test(timeout = 5_000)
+    @Test
     public void testNoDelayMono() {
-        WebTarget target = client.target(generateURL("/mono"));
-        String val = target.request().get(String.class);
-        Assert.assertEquals("Mono says hello!", val);
+        Assertions.assertTimeout(Duration.ofMillis(5000), () -> {
+            WebTarget target = client.target(generateURL("/mono"));
+            String val = target.request().get(String.class);
+            Assertions.assertEquals("Mono says hello!", val);
+        });
     }
 
-    @Test(timeout = 5_000)
+    @Test
     public void testDelayedMono() {
-        WebTarget target = client.target(generateURL("/mono")).queryParam("delay", "1000");
-        String val = target.request().get(String.class);
-        Assert.assertEquals("Mono says hello!", val);
+        Assertions.assertTimeout(Duration.ofMillis(5000), () -> {
+            WebTarget target = client.target(generateURL("/mono")).queryParam("delay", "1000");
+            String val = target.request().get(String.class);
+            Assertions.assertEquals("Mono says hello!", val);
+        });
     }
 }

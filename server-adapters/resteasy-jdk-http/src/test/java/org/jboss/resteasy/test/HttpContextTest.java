@@ -11,10 +11,10 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -29,7 +29,7 @@ public class HttpContextTest {
     private static HttpServer httpServer;
     private static HttpContextBuilder contextBuilder;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         int port = TestPortProvider.getPort();
         httpServer = HttpServer.create(new InetSocketAddress(port), 10);
@@ -40,7 +40,7 @@ public class HttpContextTest {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         contextBuilder.cleanup();
         httpServer.stop(1);
@@ -52,35 +52,35 @@ public class HttpContextTest {
 
         {
             Response response = client.target(generateURL("/basic")).request().get();
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertEquals("basic", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("basic", response.readEntity(String.class));
         }
 
         {
             Response response = client.target(generateURL("/basic")).request().put(Entity.entity("basic", "text/plain"));
-            Assert.assertEquals(204, response.getStatus());
+            Assertions.assertEquals(204, response.getStatus());
             response.close();
         }
 
         {
             Response response = client.target(generateURL("/queryParam")).queryParam("param", "hello world").request().get();
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertEquals("hello world", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("hello world", response.readEntity(String.class));
         }
 
         {
             Response response = client.target(generateURL("/uriParam/1234")).request().get();
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertEquals("1234", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals("1234", response.readEntity(String.class));
         }
 
         {
             Response response = client.target(generateURL("/request")).request().get();
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             final String val = response.readEntity(String.class);
             final String pattern = "^127.0.0.1/.+";
-            Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern),
-                    Pattern.matches(pattern, val));
+            Assertions.assertTrue(Pattern.matches(pattern, val),
+                    String.format("Expected value '%s' to match pattern '%s'", val, pattern));
         }
     }
 

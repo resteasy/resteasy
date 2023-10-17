@@ -8,22 +8,22 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class AsyncTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         VertxContainer.start().getRegistry().addPerRequestResource(AsyncResource.class);
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -40,8 +40,8 @@ public class AsyncTest {
     @Test
     public void testAsync() throws Exception {
         Response response = client.target(generateURL("/async")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response content", "hello", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("hello", response.readEntity(String.class), "Wrong response content");
     }
 
     /**
@@ -51,6 +51,6 @@ public class AsyncTest {
     @Test
     public void testTimeout() throws Exception {
         Response response = client.target(generateURL("/async/timeout")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
     }
 }

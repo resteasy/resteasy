@@ -18,8 +18,8 @@ import jakarta.ws.rs.core.Context;
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -62,10 +62,10 @@ public class DeploymentTest {
                 } finally {
                     client.close();
                 }
-                Assert.assertTrue(val.startsWith("vert.x-eventloop-thread-"));
+                Assertions.assertTrue(val.startsWith("vert.x-eventloop-thread-"));
                 results.add(val);
             }
-            Assert.assertEquals(VertxOptions.DEFAULT_EVENT_LOOP_POOL_SIZE, results.size());
+            Assertions.assertEquals(VertxOptions.DEFAULT_EVENT_LOOP_POOL_SIZE, results.size());
         } finally {
             try {
                 VertxContainer.stop();
@@ -96,7 +96,7 @@ public class DeploymentTest {
             listenLatch.get(10, TimeUnit.SECONDS);
             WebTarget target = client.target(generateURL("/test"));
             String val = target.request().get(String.class);
-            Assert.assertTrue(val.startsWith("vert.x-eventloop-thread-"));
+            Assertions.assertTrue(val.startsWith("vert.x-eventloop-thread-"));
         } finally {
             client.close();
             if (server != null) {

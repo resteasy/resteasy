@@ -9,16 +9,16 @@ import jakarta.ws.rs.client.WebTarget;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class AsyncIOTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ResteasyDeployment deployment = NettyContainer.start();
         deployment.getProviderFactory().register(BlockingWriter.class);
@@ -28,7 +28,7 @@ public class AsyncIOTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -42,26 +42,26 @@ public class AsyncIOTest {
     public void testAsyncIo() throws Exception {
         WebTarget target = client.target(generateURL("/async-io/blocking-writer-on-io-thread"));
         String val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
 
         target = client.target(generateURL("/async-io/async-writer-on-io-thread"));
         val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
 
         target = client.target(generateURL("/async-io/slow-async-writer-on-io-thread"));
         val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
 
         target = client.target(generateURL("/async-io/blocking-writer-on-worker-thread"));
         val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
 
         target = client.target(generateURL("/async-io/async-writer-on-worker-thread"));
         val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
 
         target = client.target(generateURL("/async-io/slow-async-writer-on-worker-thread"));
         val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
     }
 }

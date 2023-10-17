@@ -16,10 +16,10 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyJaxrsServer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -45,7 +45,7 @@ public class HeaderTooLongTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         final ReactorNettyJaxrsServer reactorNettyJaxrsServer = new ReactorNettyJaxrsServer();
         reactorNettyJaxrsServer.setDecoderSpecFn(spec -> spec.maxHeaderSize(MAX_HEADER_SIZE));
@@ -53,7 +53,7 @@ public class HeaderTooLongTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         client.close();
         ReactorNettyContainer.stop();
@@ -71,6 +71,6 @@ public class HeaderTooLongTest {
         //              .tcpConfiguration(this::configure)
         //              .port(configuredPort)
         //              .httpRequestDecoder(spec -> spec.maxHeaderSize(Integer.MAX_VALUE));
-        Assert.assertEquals(431, response.getStatus());
+        Assertions.assertEquals(431, response.getStatus());
     }
 }
