@@ -47,7 +47,7 @@
 
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
-        <version.org.jacoco.plugin>0.8.10</version.org.jacoco.plugin>
+        <version.org.jacoco.plugin>0.8.11</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>6.4.4.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>4.2.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
