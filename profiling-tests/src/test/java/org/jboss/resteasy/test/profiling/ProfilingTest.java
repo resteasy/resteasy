@@ -10,7 +10,7 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation.Builder;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

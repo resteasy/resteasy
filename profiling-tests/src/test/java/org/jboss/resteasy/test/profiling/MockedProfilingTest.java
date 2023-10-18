@@ -15,8 +15,8 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,10 +39,10 @@ public class MockedProfilingTest {
     @Test
     public void testUri() throws Exception {
         URI uri = URI.create("/foo");
-        Assert.assertEquals(uri.toString(), "/foo");
+        Assertions.assertEquals(uri.toString(), "/foo");
 
         uri = URI.create("foo");
-        Assert.assertEquals(uri.toString(), "foo");
+        Assertions.assertEquals(uri.toString(), "foo");
     }
 
     @Test
