@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -50,6 +51,7 @@ public class SseEventSourceImpl implements SseEventSource {
     private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
 
     private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
+    private final AtomicBoolean completeListenersInvoked = new AtomicBoolean(false);
 
     private final boolean alwaysReconnect;
 
@@ -221,6 +223,12 @@ public class SseEventSourceImpl implements SseEventSource {
         }
     }
 
+    private void runCompleteConsumers() {
+        if (completeListenersInvoked.compareAndSet(false, true)) {
+            onCompleteConsumers.forEach(Runnable::run);
+        }
+    }
+
     private void internalClose() {
         if (state.getAndSet(State.CLOSED) == State.CLOSED) {
             return;
@@ -236,7 +244,7 @@ public class SseEventSourceImpl implements SseEventSource {
             }
         }
         sseEventSourceScheduler.shutdownNow();
-        onCompleteConsumers.forEach(Runnable::run);
+        runCompleteConsumers();
     }
 
     private class EventHandler implements Runnable {
@@ -289,6 +297,11 @@ public class SseEventSourceImpl implements SseEventSource {
                 response = clientResponse;
                 if (Family.SUCCESSFUL.equals(clientResponse.getStatusInfo().getFamily())) {
                     onConnection();
+                    if (clientResponse.getStatus() == 204) {
+                        // On a 204, only the onComplete() should be invoked
+                        runCompleteConsumers();
+                        return;
+                    }
                     eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                     //if 200<= response code <300 and response contentType is null, fail the connection.
                     if (eventInput == null) {
@@ -320,10 +333,9 @@ public class SseEventSourceImpl implements SseEventSource {
                 onUnrecoverableError(e);
                 return;
             }
-
             final Providers providers = (ClientConfiguration) target.getConfiguration();
             while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN) {
-                if (eventInput != null && eventInput.isClosed()) {
+                if (eventInput == null || eventInput.isClosed()) {
                     if (alwaysReconnect) {
                         reconnect(reconnectDelay);
                     } else {
