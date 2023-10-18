@@ -41,7 +41,7 @@
         <version.com.fasterxml.jackson>2.15.3</version.com.fasterxml.jackson>
         <version.com.fasterxml.jackson.databind>${version.com.fasterxml.jackson}</version.com.fasterxml.jackson.databind>
         <version.com.google.guava>31.0.1-jre</version.com.google.guava>
-        <version.com.google.guava.failureaccess>1.0.1</version.com.google.guava.failureaccess>
+        <version.com.google.guava.failureaccess>1.0.2</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.1.2</version.jakarta.mail>
         <version.org.glassfish.jaxb>4.0.3</version.org.glassfish.jaxb>
