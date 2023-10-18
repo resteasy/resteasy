@@ -16,8 +16,8 @@ import org.jboss.resteasy.spi.metadata.DefaultResourceMethod;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -56,11 +56,11 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "impossibleToGenerateJsapi", "class", "method"),
+        Assertions.assertEquals(getExpected(BASE + "00", "impossibleToGenerateJsapi", "class", "method"),
                 Messages.MESSAGES.impossibleToGenerateJsapi("class", "method"));
-        Assert.assertEquals(getExpected(BASE + "05", "invoker", testMethod), Messages.MESSAGES.invoker(testMethod));
-        Assert.assertEquals(getExpected(BASE + "35", "restApiUrl", "http"), Messages.MESSAGES.restApiUrl("http"));
-        Assert.assertEquals(getExpected(BASE + "60", "thereAreNoResteasyDeployments"),
+        Assertions.assertEquals(getExpected(BASE + "05", "invoker", testMethod), Messages.MESSAGES.invoker(testMethod));
+        Assertions.assertEquals(getExpected(BASE + "35", "restApiUrl", "http"), Messages.MESSAGES.restApiUrl("http"));
+        Assertions.assertEquals(getExpected(BASE + "60", "thereAreNoResteasyDeployments"),
                 Messages.MESSAGES.thereAreNoResteasyDeployments());
     }
 
