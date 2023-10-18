@@ -10,10 +10,10 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by weinanli on 16/06/2017.
@@ -41,13 +41,13 @@ public class SubresourceClassInjectionTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -61,6 +61,6 @@ public class SubresourceClassInjectionTest {
     public void testQuery() throws Exception {
         WebTarget target = client.target(generateURL("/sub/val"));
         String val = target.request().get(String.class);
-        Assert.assertEquals("val", val);
+        Assertions.assertEquals("val", val);
     }
 }

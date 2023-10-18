@@ -30,10 +30,10 @@ import jakarta.ws.rs.core.UriInfo;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -119,13 +119,13 @@ public class NettyTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -141,25 +141,25 @@ public class NettyTest {
         WebTarget target = client.target(generateURL("/test"));
         Response getResponse = target.request().buildGet().invoke();
         String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
-        Assert.assertEquals("hello world", val);
-        Assert.assertEquals("chunked", getResponse.getHeaderString("transfer-encoding"));
+        Assertions.assertEquals("hello world", val);
+        Assertions.assertEquals("chunked", getResponse.getHeaderString("transfer-encoding"));
         Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
-        Assert.assertNull(headResponse.getHeaderString("Content-Length"));
-        Assert.assertNull(headResponse.getHeaderString("transfer-encoding"));
+        Assertions.assertNull(headResponse.getHeaderString("Content-Length"));
+        Assertions.assertNull(headResponse.getHeaderString("transfer-encoding"));
     }
 
     @Test
     public void testBasic() throws Exception {
         WebTarget target = client.target(generateURL("/test"));
         String val = target.request().get(String.class);
-        Assert.assertEquals("hello world", val);
+        Assertions.assertEquals("hello world", val);
     }
 
     @Test
     public void testQuery() throws Exception {
         WebTarget target = client.target(generateURL("/query"));
         String val = target.queryParam("param", "val").request().get(String.class);
-        Assert.assertEquals("val", val);
+        Assertions.assertEquals("val", val);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class NettyTest {
         WebTarget target = client.target(generateURL("/empty"));
         Response response = target.request().get();
         try {
-            Assert.assertEquals(204, response.getStatus());
+            Assertions.assertEquals(204, response.getStatus());
         } finally {
             response.close();
         }
@@ -178,14 +178,14 @@ public class NettyTest {
         WebTarget target = client.target(generateURL("/large"));
         Response response = target.request().get();
         try {
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             StringBuffer buf = new StringBuffer();
             for (int i = 0; i < 1000; i++) {
                 buf.append(i);
             }
             String expected = buf.toString();
             String have = response.readEntity(String.class);
-            Assert.assertEquals(expected, have);
+            Assertions.assertEquals(expected, have);
 
         } finally {
             response.close();
@@ -197,7 +197,7 @@ public class NettyTest {
         WebTarget target = client.target(generateURL("/exception"));
         Response resp = target.request().get();
         try {
-            Assert.assertEquals(500, resp.getStatus());
+            Assertions.assertEquals(500, resp.getStatus());
         } finally {
             resp.close();
         }
@@ -208,7 +208,7 @@ public class NettyTest {
         WebTarget target = client.target(generateURL("/post"));
         String postBody = "hello world";
         String result = (String) target.request().post(Entity.text(postBody), String.class);
-        Assert.assertEquals(postBody, result);
+        Assertions.assertEquals(postBody, result);
     }
 
     @Test
@@ -218,7 +218,7 @@ public class NettyTest {
         for (int i = 0; i < 1000; i++) {
             String putBody = "some data #" + i;
             String result = target.request().put(Entity.text(putBody), String.class);
-            Assert.assertEquals(putBody, result);
+            Assertions.assertEquals(putBody, result);
         }
     }
 
@@ -251,14 +251,14 @@ public class NettyTest {
         String statusLine = in.readLine();
         String response = in.readLine();
 
-        Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
+        Assertions.assertEquals("HTTP/1.1 200 OK", statusLine);
 
         while (!response.startsWith("uri")) {
             response = in.readLine();
         }
         client.close();
 
-        Assert.assertEquals(uri, response.subSequence(5, response.length()));
+        Assertions.assertEquals(uri, response.subSequence(5, response.length()));
     }
 
     @Test
@@ -266,7 +266,7 @@ public class NettyTest {
         WebTarget target = client.target(generateURL("/request"));
         String val = target.request().get(String.class);
         final String pattern = "^127.0.0.1/.+";
-        Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern),
-                Pattern.matches(pattern, val));
+        Assertions.assertTrue(Pattern.matches(pattern, val),
+                String.format("Expected value '%s' to match pattern '%s'", val, pattern));
     }
 }

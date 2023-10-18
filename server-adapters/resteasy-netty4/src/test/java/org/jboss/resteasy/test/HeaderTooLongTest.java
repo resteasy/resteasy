@@ -12,10 +12,10 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -42,13 +42,13 @@ public class HeaderTooLongTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         client.close();
         NettyContainer.stop();
@@ -58,6 +58,6 @@ public class HeaderTooLongTest {
     public void testLongHeader() throws Exception {
         WebTarget target = client.target(generateURL("/test"));
         Response response = target.request().header("xheader", longString).get();
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
     }
 }

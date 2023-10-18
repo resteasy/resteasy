@@ -19,10 +19,10 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -75,13 +75,13 @@ public class StreamingOutputTest {
 
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         NettyContainer.start().getRegistry().addPerRequestResource(Resteasy1029Netty4StreamingOutput.class);
         client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         client.close();
         NettyContainer.stop();
@@ -107,15 +107,15 @@ public class StreamingOutputTest {
         testStreamingOutput();
         long end = System.currentTimeMillis() - start;
         //      System.out.println(end);
-        Assert.assertTrue(end < 1000);
+        Assertions.assertTrue(end < 1000);
         t.join();
-        Assert.assertTrue(pass);
+        Assertions.assertTrue(pass);
     }
 
     @Test
     public void testStreamingOutput() throws Exception {
         Response response = client.target(BASE_URI).path("test").request().get();
-        Assert.assertTrue(response.readEntity(String.class).equals("0\n" +
+        Assertions.assertTrue(response.readEntity(String.class).equals("0\n" +
                 "\n1\n" +
                 "\n2\n" +
                 "\n3\n" +
@@ -126,6 +126,6 @@ public class StreamingOutputTest {
                 "\n8\n" +
                 "\n9\n" +
                 "\n"));
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        Assertions.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
     }
 }

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests if supplying port <code>0</code> works correctly. When using port <code>0</code> the container should take the
@@ -25,7 +25,7 @@ public class PortAssigningTest {
         server.stop();
 
         //then
-        Assert.assertTrue(ip != 0);
+        Assertions.assertTrue(ip != 0);
     }
 
 }

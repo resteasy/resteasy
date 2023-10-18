@@ -12,10 +12,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * RESTEASY-2300
@@ -35,12 +35,12 @@ public class HeaderEmptyHostTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         NettyContainer.stop();
     }
@@ -57,9 +57,9 @@ public class HeaderEmptyHostTest {
                 out.flush();
                 String response = new BufferedReader(new InputStreamReader(client.getInputStream())).lines()
                         .collect(Collectors.joining("\n"));
-                Assert.assertNotNull(response);
-                Assert.assertTrue(response.contains("HTTP/1.1 200 OK"));
-                Assert.assertTrue(response.contains("uriInfo: http://unknown" + uri));
+                Assertions.assertNotNull(response);
+                Assertions.assertTrue(response.contains("HTTP/1.1 200 OK"));
+                Assertions.assertTrue(response.contains("uriInfo: http://unknown" + uri));
             }
         }
     }

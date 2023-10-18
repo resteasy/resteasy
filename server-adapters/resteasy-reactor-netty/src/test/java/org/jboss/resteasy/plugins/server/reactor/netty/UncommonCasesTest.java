@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.assertEquals;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -10,15 +9,16 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class UncommonCasesTest {
 
     private static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         final ResteasyDeployment deployment = ReactorNettyContainer.start();
         final Registry registry = deployment.getRegistry();
@@ -26,7 +26,7 @@ public class UncommonCasesTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() {
         client.close();
         ReactorNettyContainer.stop();
@@ -40,12 +40,12 @@ public class UncommonCasesTest {
 
         final WebTarget target = client.target(generateURL("/basic"));
         final Response resp = target.request().post(null);
-        assertEquals(200, resp.getStatus());
-        assertEquals("POST ", resp.readEntity(String.class));
+        Assertions.assertEquals(200, resp.getStatus());
+        Assertions.assertEquals("POST ", resp.readEntity(String.class));
 
         final Response resp2 = target.request().put(null);
-        assertEquals(200, resp2.getStatus());
-        assertEquals("PUT ", resp2.readEntity(String.class));
+        Assertions.assertEquals(200, resp2.getStatus());
+        Assertions.assertEquals("PUT ", resp2.readEntity(String.class));
 
     }
 

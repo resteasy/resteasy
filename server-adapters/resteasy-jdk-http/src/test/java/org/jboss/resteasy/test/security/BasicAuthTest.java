@@ -45,10 +45,10 @@ import org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -129,7 +129,7 @@ public class BasicAuthTest {
 
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         SimpleSecurityDomain domain = new SimpleSecurityDomain();
         String[] roles = { "admin" };
@@ -141,7 +141,7 @@ public class BasicAuthTest {
         dispatcher.getRegistry().addPerRequestResource(BaseResource2.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         HttpServerContainer.stop();
     }
@@ -156,9 +156,9 @@ public class BasicAuthTest {
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL(""));
         BaseProxy proxy = target.proxy(BaseProxy.class);
         String val = proxy.get();
-        Assert.assertEquals(val, "hello");
+        Assertions.assertEquals(val, "hello");
         val = proxy.getAuthorized();
-        Assert.assertEquals(val, "authorized");
+        Assertions.assertEquals(val, "authorized");
     }
 
     @Test
@@ -167,7 +167,7 @@ public class BasicAuthTest {
         try {
             proxy.getFailure();
         } catch (NotAuthorizedException e) {
-            Assert.assertEquals(e.getResponse().getStatus(), 401);
+            Assertions.assertEquals(e.getResponse().getStatus(), 401);
             e.getResponse().close();
         }
     }
@@ -183,21 +183,21 @@ public class BasicAuthTest {
         {
             Builder request = client.target(generateURL("/secured")).request();
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("hello", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("hello", response.readEntity(String.class));
         }
 
         {
             Builder request = client.target(generateURL("/secured/authorized")).request();
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("authorized", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("authorized", response.readEntity(String.class));
         }
 
         {
             Builder request = client.target(generateURL("/secured/deny")).request();
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         }
     }
 
@@ -216,7 +216,7 @@ public class BasicAuthTest {
         ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
         Client client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/secured2")).request().get();
-        Assert.assertEquals(404, response.getStatus());
+        Assertions.assertEquals(404, response.getStatus());
         response.close();
     }
 
@@ -228,7 +228,7 @@ public class BasicAuthTest {
         {
             HttpGet method = new HttpGet(generateURL("/secured"));
             HttpResponse response = httpClient.execute(method);
-            Assert.assertEquals(401, response.getStatusLine().getStatusCode());
+            Assertions.assertEquals(401, response.getStatusLine().getStatusCode());
             EntityUtils.consume(response.getEntity());
         }
 
@@ -239,15 +239,15 @@ public class BasicAuthTest {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
             cp.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             Response response = client.target(generateURL("/secured/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("authorized", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("authorized", response.readEntity(String.class));
         }
 
         {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("mo", "password");
             cp.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             Response response = client.target(generateURL("/secured/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
             response.close();
         }
     }

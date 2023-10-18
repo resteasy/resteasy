@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
@@ -22,11 +21,11 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import reactor.netty.http.server.HttpServerRequest;
 
@@ -34,12 +33,12 @@ public class UriInfoTest {
 
     private static final String RESPONSE_PREFIX = "uriInfo: ";
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         ReactorNettyContainer.stop();
     }
@@ -70,7 +69,7 @@ public class UriInfoTest {
     }
 
     @Test
-    @Ignore("https://github.com/reactor/reactor-netty/issues/2723")
+    @Disabled("https://github.com/reactor/reactor-netty/issues/2723")
     public void testEmptyStringHostHeader() throws Exception {
         final Map<String, String> additionalHeaders = new HashMap<>();
         additionalHeaders.put("Host", "");
@@ -78,7 +77,7 @@ public class UriInfoTest {
     }
 
     @Test
-    @Ignore("https://github.com/reactor/reactor-netty/issues/2723")
+    @Disabled("https://github.com/reactor/reactor-netty/issues/2723")
     public void testOnlySpacesHostHeader() throws Exception {
         final Map<String, String> additionalHeaders = new HashMap<>();
         additionalHeaders.put("Host", "                  ");
@@ -92,10 +91,10 @@ public class UriInfoTest {
         when(req.hostAddress()).thenReturn(null);
         try {
             extractor.extract(req, "/contextPath");
-            fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
+            Assertions.fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
         } catch (final IllegalArgumentException ignore) {
         } catch (final Exception e) {
-            fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
+            Assertions.fail("Inability to determine a host address should have thrown an IllegalArgumentException.");
         }
     }
 
@@ -142,13 +141,13 @@ public class UriInfoTest {
                 out.flush();
 
                 final String statusLine = in.readLine();
-                Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
+                Assertions.assertEquals("HTTP/1.1 200 OK", statusLine);
 
                 final Optional<String> maybeUriInfoResp = in.lines().filter(line -> line.startsWith(RESPONSE_PREFIX)).findAny();
 
                 client.close();
 
-                Assert.assertTrue(maybeUriInfoResp.isPresent());
+                Assertions.assertTrue(maybeUriInfoResp.isPresent());
                 final String uriInfoResp = maybeUriInfoResp.get();
 
                 return uriInfoResp.subSequence(RESPONSE_PREFIX.length(), uriInfoResp.length()).toString();

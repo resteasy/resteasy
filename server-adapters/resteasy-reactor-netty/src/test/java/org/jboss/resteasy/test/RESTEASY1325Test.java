@@ -15,12 +15,12 @@ import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -45,39 +45,40 @@ public class RESTEASY1325Test {
     private static final int IDLE_TIMEOUT_SEC = 10;
     private static final Duration IDLE_TIMEOUT = Duration.ofSeconds(IDLE_TIMEOUT_SEC);
 
-    @BeforeClass
+    @BeforeAll
     public static void setupSuite() throws Exception {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownSuite() throws Exception {
     }
 
-    @Before
+    @BeforeEach
     public void setupTest() throws Exception {
     }
 
-    @After
+    @AfterEach
     public void tearDownTest() throws Exception {
     }
 
-    @Test(timeout = IDLE_TIMEOUT_SEC * 1000 + 1000)
+    @Test
     public void testIdleCloseConnection() throws Exception {
-        ReactorNettyJaxrsServer netty = new ReactorNettyJaxrsServer();
-        ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-        netty.setDeployment(deployment);
-        netty.setPort(TestPortProvider.getPort());
-        netty.setRootResourcePath("");
-        netty.setSecurityDomain(null);
-        netty.setIdleTimeout(IDLE_TIMEOUT);
-        netty.start();
-        deployment.getRegistry().addSingletonResource(new Resource());
-        try {
-            callAndIdle();
-        } finally {
-            netty.stop();
-        }
-
+        Assertions.assertTimeout(Duration.ofMillis(IDLE_TIMEOUT_SEC * 1000 + 1000), () -> {
+            ReactorNettyJaxrsServer netty = new ReactorNettyJaxrsServer();
+            ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+            netty.setDeployment(deployment);
+            netty.setPort(TestPortProvider.getPort());
+            netty.setRootResourcePath("");
+            netty.setSecurityDomain(null);
+            netty.setIdleTimeout(IDLE_TIMEOUT);
+            netty.start();
+            deployment.getRegistry().addSingletonResource(new Resource());
+            try {
+                callAndIdle();
+            } finally {
+                netty.stop();
+            }
+        });
     }
 
     /**
@@ -102,7 +103,7 @@ public class RESTEASY1325Test {
                                 @Override
                                 protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) {
                                     //                               System.out.println("HTTP response from resteasy: "+msg);
-                                    Assert.assertEquals(HttpResponseStatus.OK, msg.status());
+                                    Assertions.assertEquals(HttpResponseStatus.OK, msg.status());
                                 }
                             });
                         }

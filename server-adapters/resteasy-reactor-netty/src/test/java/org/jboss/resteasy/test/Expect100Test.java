@@ -14,10 +14,10 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -36,13 +36,13 @@ public class Expect100Test {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         client.close();
         ReactorNettyContainer.stop();
@@ -52,7 +52,7 @@ public class Expect100Test {
     public void testExpect100() throws Exception {
         WebTarget target = client.target(generateURL("/org/jboss/resteasy/test"));
         Response response = target.request().header("Expect", "100-continue").post(Entity.entity("hi", "text/plain"));
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("hello world", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("hello world", response.readEntity(String.class));
     }
 }

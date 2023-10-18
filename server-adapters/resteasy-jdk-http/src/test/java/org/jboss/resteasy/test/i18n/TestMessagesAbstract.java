@@ -4,8 +4,8 @@ import java.util.Locale;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -27,8 +27,8 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "embeddedContainerStart"), Messages.MESSAGES.embeddedContainerStart());
-        Assert.assertEquals(getExpected(BASE + "15", "wtf"), Messages.MESSAGES.wtf());
+        Assertions.assertEquals(getExpected(BASE + "00", "embeddedContainerStart"), Messages.MESSAGES.embeddedContainerStart());
+        Assertions.assertEquals(getExpected(BASE + "15", "wtf"), Messages.MESSAGES.wtf());
     }
 
     @Override

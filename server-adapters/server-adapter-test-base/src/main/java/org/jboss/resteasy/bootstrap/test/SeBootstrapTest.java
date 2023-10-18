@@ -44,13 +44,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.jandex.Index;
-import org.jboss.resteasy.bootstrap.test.category.NoSslTests;
 import org.jboss.resteasy.core.se.ConfigurationOption;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -59,7 +58,7 @@ public abstract class SeBootstrapTest {
 
     private Instance instance;
 
-    @After
+    @AfterEach
     public void shutdown() throws Exception {
         final Instance current = instance;
         instance = null;
@@ -68,7 +67,7 @@ public abstract class SeBootstrapTest {
             current.stop()
                     .thenRun(latch::countDown);
             if (!latch.await(5, TimeUnit.SECONDS)) {
-                Assert.fail("Server did not shutdown within 5 seconds");
+                Assertions.fail("Server did not shutdown within 5 seconds");
             }
         }
     }
@@ -77,7 +76,7 @@ public abstract class SeBootstrapTest {
     public void unwrap() throws Exception {
         start();
         final EmbeddedServer server = instance.unwrap(getEmbeddedServerClass());
-        Assert.assertNotNull(server);
+        Assertions.assertNotNull(server);
     }
 
     @Test
@@ -89,8 +88,8 @@ public abstract class SeBootstrapTest {
                     .path("default/test/constructed"))
                     .request()
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("Hello constructed", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("Hello constructed", response.readEntity(String.class));
         }
     }
 
@@ -98,10 +97,11 @@ public abstract class SeBootstrapTest {
     public void bootWithApplication() throws Exception {
         start(SeBootstrapApplication1.class);
         final EmbeddedServer server = instance.unwrap(getEmbeddedServerClass());
-        Assert.assertNotNull(server);
+        Assertions.assertNotNull(server);
         final Application application = server.getDeployment().getApplication();
-        Assert.assertTrue(String.format("Expected %s but found %s", SeBootstrapApplication1.class, application),
-                application instanceof SeBootstrapApplication1);
+        Assertions.assertTrue(
+                application instanceof SeBootstrapApplication1,
+                String.format("Expected %s but found %s", SeBootstrapApplication1.class, application));
     }
 
     @Test
@@ -113,15 +113,15 @@ public abstract class SeBootstrapTest {
                     .path("setest1/no-index/defined"))
                     .request()
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("Greetings defined", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("Greetings defined", response.readEntity(String.class));
 
             response = client.target(instance.configuration()
                     .baseUriBuilder()
                     .path("setest1/test/skipped"))
                     .request()
                     .get();
-            Assert.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
         }
     }
 
@@ -134,8 +134,8 @@ public abstract class SeBootstrapTest {
                     .path("setest2/test/scanned"))
                     .request()
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("Hello scanned", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("Hello scanned", response.readEntity(String.class));
         }
     }
 
@@ -148,12 +148,12 @@ public abstract class SeBootstrapTest {
                     .path("noscan/test/skipped"))
                     .request()
                     .get();
-            Assert.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
         }
     }
 
     @Test
-    @Category(NoSslTests.class)
+    @Tag("NoSslTests")
     public void httpsConnection() throws Exception {
         final Index index = Index.of(TestResource.class);
         start(new DefaultApplication(), SeBootstrap.Configuration.builder()
@@ -167,8 +167,8 @@ public abstract class SeBootstrapTest {
                     .path("default/test/secure"))
                     .request()
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("Hello secure", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("Hello secure", response.readEntity(String.class));
         }
     }
 

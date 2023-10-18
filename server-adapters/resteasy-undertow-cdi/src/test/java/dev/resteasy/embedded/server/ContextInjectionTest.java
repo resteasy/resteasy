@@ -63,10 +63,10 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests injection of the known types from the {@link org.jboss.resteasy.cdi.ContextProducers} are injectable.
@@ -77,7 +77,7 @@ public class ContextInjectionTest {
     private static Instance INSTANCE;
     private static Client CLIENT;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         final Index index = Index.of(InjectionResource.class, RootApplication.class, TestExceptionMapper.class);
         INSTANCE = SeBootstrap.start(RootApplication.class, TestEnvironment.createConfig(index))
@@ -86,7 +86,7 @@ public class ContextInjectionTest {
         CLIENT = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() throws Exception {
         if (INSTANCE != null) {
             INSTANCE.stop().toCompletableFuture().get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
@@ -99,82 +99,81 @@ public class ContextInjectionTest {
     @Test
     public void application() throws Exception {
         final Response response = get("application/test.property");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("test value", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("test value", response.readEntity(String.class));
     }
 
     @Test
     public void client() throws Exception {
         final Response response = get("client/request");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("GET", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
     public void configuration() {
         final Response response = get("configuration");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals(RuntimeType.SERVER.name(), response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(RuntimeType.SERVER.name(), response.readEntity(String.class));
     }
 
     @Test
     public void httpHeader() {
         final Response response = get("httpHeaders/test-header");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("test-value", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("test-value", response.readEntity(String.class));
     }
 
     @Test
     public void httpRequest() {
         final Response response = get("httpRequest");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("GET", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
     public void provider() throws Exception {
         final Response response = get("providers");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         final String value = response.readEntity(String.class);
-        Assert.assertTrue(
-                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value),
-                value.contains(TestExceptionMapper.class.getSimpleName()));
+        Assertions.assertTrue(value.contains(TestExceptionMapper.class.getSimpleName()),
+                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value));
     }
 
     @Test
     public void request() {
         final Response response = get("request");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("GET", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
     public void resourceContext() {
         final Response response = get("resourceContext");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertTrue(response.readEntity(String.class)
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertTrue(response.readEntity(String.class)
                 .startsWith(InjectionResource.class.getName()));
     }
 
     @Test
     public void resourceInfo() {
         final Response response = get("resourceInfo");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals(response.readEntity(String.class), "resourceInfo");
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(response.readEntity(String.class), "resourceInfo");
     }
 
     @Test
     public void securityContext() {
         final Response response = get("securityContext");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("false", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("false", response.readEntity(String.class));
     }
 
     @Test
     public void uriInfo() {
         final Response response = get("uriInfo");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("/inject/uriInfo", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("/inject/uriInfo", response.readEntity(String.class));
     }
 
     @Test
@@ -192,7 +191,7 @@ public class ContextInjectionTest {
             source.open();
             Thread.sleep(500L);
         }
-        Assert.assertEquals("test", cf.get(5, TimeUnit.SECONDS));
+        Assertions.assertEquals("test", cf.get(5, TimeUnit.SECONDS));
     }
 
     private Response get(final String path) {
