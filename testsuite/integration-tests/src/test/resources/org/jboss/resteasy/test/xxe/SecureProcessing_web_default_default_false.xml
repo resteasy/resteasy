@@ -4,13 +4,13 @@
     <display-name>RESTEASY-1103</display-name>
 
     <!--context-param>
-        <param-name>resteasy.document.secure.processing.feature</param-name>
-        <param-value></param-value>
-    </context-param-->
+                                        <param-name>resteasy.document.secure.processing.feature</param-name>
+                                        <param-value></param-value>
+                                    </context-param-->
     <!--context-param>
-        <param-name>resteasy.document.secure.disableDTDs</param-name>
-        <param-value></param-value>
-    </context-param-->
+                                        <param-name>resteasy.document.secure.disableDTDs</param-name>
+                                        <param-value></param-value>
+                                    </context-param-->
     <context-param>
         <param-name>resteasy.document.expand.entity.references</param-name>
         <param-value>false</param-value>

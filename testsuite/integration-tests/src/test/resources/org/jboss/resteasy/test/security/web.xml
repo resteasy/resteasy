@@ -12,9 +12,9 @@
     </context-param>
 
     <!--<servlet-mapping>
-        <servlet-name>Resteasy</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>-->
+                                        <servlet-name>Resteasy</servlet-name>
+                                        <url-pattern>/*</url-pattern>
+                                    </servlet-mapping>-->
 
     <security-constraint>
         <web-resource-collection>
