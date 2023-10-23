@@ -3,24 +3,6 @@
 
     <display-name>RESTEASY-903</display-name>
 
-    <!--filter>
-        <filter-name>Resteasy</filter-name>
-        <filter-class>
-            org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
-        </filter-class>
-        <init-param>
-            <param-name>jakarta.ws.rs.Application</param-name>
-            <param-value>org.jboss.resteasy.resteasy903.TestApplication</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>Resteasy</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping-->
-
     <servlet>
         <servlet-name>Resteasy</servlet-name>
         <servlet-class>
