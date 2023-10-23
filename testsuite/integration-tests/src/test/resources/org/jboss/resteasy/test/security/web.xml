@@ -11,11 +11,6 @@
         <param-value>true</param-value>
     </context-param>
 
-    <!--<servlet-mapping>
-        <servlet-name>Resteasy</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>-->
-
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Resteasy</web-resource-name>
