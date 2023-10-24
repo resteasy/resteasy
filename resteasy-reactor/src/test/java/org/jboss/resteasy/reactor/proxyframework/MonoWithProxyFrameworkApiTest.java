@@ -1,7 +1,6 @@
 package org.jboss.resteasy.reactor.proxyframework;
 
 import static org.jboss.resteasy.reactor.proxyframework.CustomResource.THE_CUSTOM_RESOURCE;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -15,11 +14,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ReactorNettyClientHttpEngine;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.DefaultEventExecutor;
@@ -41,7 +41,7 @@ public class MonoWithProxyFrameworkApiTest {
 
     private static NettyJaxrsServer server;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         port = TestPortProvider.getPort();
         server = new NettyJaxrsServer();
@@ -54,7 +54,7 @@ public class MonoWithProxyFrameworkApiTest {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         server.stop();
         server = null;
@@ -62,7 +62,7 @@ public class MonoWithProxyFrameworkApiTest {
 
     private ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         final ReactorNettyClientHttpEngine reactorEngine = new ReactorNettyClientHttpEngine(
                 HttpClient.create(),
@@ -76,7 +76,7 @@ public class MonoWithProxyFrameworkApiTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }
@@ -84,7 +84,7 @@ public class MonoWithProxyFrameworkApiTest {
     @Test
     public void givenRemoteServiceInterfaceAndWorkingRemoteServiceWhenProxyThenGenerateProxyWithMono() {
         final var proxy = client.target("http://localhost:" + port).proxy(RemoteCustomResource.class);
-        assertEquals(THE_CUSTOM_RESOURCE, proxy.getCustomResource().block());
+        Assertions.assertEquals(THE_CUSTOM_RESOURCE, proxy.getCustomResource().block());
 
     }
 }

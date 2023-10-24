@@ -4,11 +4,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -42,11 +37,12 @@ import org.jboss.resteasy.client.jaxrs.engines.ReactorNettyClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.DefaultEventExecutor;
@@ -66,7 +62,7 @@ public class ReactorTest {
     private static AtomicReference<Object> value = new AtomicReference<Object>();
     private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -78,7 +74,7 @@ public class ReactorTest {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         server = null;
@@ -86,7 +82,7 @@ public class ReactorTest {
 
     private ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         final ReactorNettyClientHttpEngine reactorEngine = new ReactorNettyClientHttpEngine(
                 HttpClient.create(),
@@ -102,25 +98,25 @@ public class ReactorTest {
         latch = new CountDownLatch(1);
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }
 
     @Test
     public void testMono() throws Exception {
-        assertEquals(0, ReactorResource.monoEndpointCounter.get());
+        Assertions.assertEquals(0, ReactorResource.monoEndpointCounter.get());
         Mono<Response> mono = client.target(generateURL("/mono")).request().rx(MonoRxInvoker.class).get();
         Thread.sleep(1_000);
         // Make HTTP call does not happen until a subscription happens.
-        assertEquals(0, ReactorResource.monoEndpointCounter.get());
+        Assertions.assertEquals(0, ReactorResource.monoEndpointCounter.get());
         mono.subscribe((Response r) -> {
             value.set(r.readEntity(String.class));
             latch.countDown();
         });
         latch.await();
-        assertEquals(1, ReactorResource.monoEndpointCounter.get());
-        assertEquals("got it", value.get());
+        Assertions.assertEquals(1, ReactorResource.monoEndpointCounter.get());
+        Assertions.assertEquals("got it", value.get());
     }
 
     @Test
@@ -134,7 +130,7 @@ public class ReactorTest {
                 (Throwable t) -> LOG.error(t.getMessage(), t),
                 () -> latch.countDown());
         latch.await();
-        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data.toArray());
     }
 
     @Test
@@ -261,7 +257,7 @@ public class ReactorTest {
                     .timeout(Duration.ofMillis(500))
                     .subscribe(
                             ignore -> {
-                                fail("Should have got timeout exception");
+                                Assertions.fail("Should have got timeout exception");
                             },
                             t -> {
                                 if (!(t instanceof TimeoutException)) {
@@ -271,10 +267,11 @@ public class ReactorTest {
                             },
                             latch::countDown);
 
-            assertNull("Inner timeout should not have occurred!", innerTimeoutException.get());
-            assertTrue("Test timed out", latch.await(innerTimeout.multipliedBy(2).toMillis(), TimeUnit.MILLISECONDS));
-            assertTrue("Server disconnect didn't happen.", serverConnDisconnectingEvent.await(
-                    serverResponseDelay.dividedBy(2).toMillis(), TimeUnit.MILLISECONDS));
+            Assertions.assertNull(innerTimeoutException.get(), "Inner timeout should not have occurred!");
+            Assertions.assertTrue(latch.await(innerTimeout.multipliedBy(2).toMillis(), TimeUnit.MILLISECONDS),
+                    "Test timed out");
+            Assertions.assertTrue(serverConnDisconnectingEvent.await(
+                    serverResponseDelay.dividedBy(2).toMillis(), TimeUnit.MILLISECONDS), "Server disconnect didn't happen.");
         } finally {
             server.disposeNow();
         }
@@ -283,10 +280,10 @@ public class ReactorTest {
     @Test
     public void testInjection() {
         Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
-        assertEquals((Integer) 24, data);
+        Assertions.assertEquals((Integer) 24, data);
 
         data = client.target(generateURL("/injection-async")).request().get(Integer.class);
-        assertEquals((Integer) 42, data);
+        Assertions.assertEquals((Integer) 42, data);
     }
 
 }
