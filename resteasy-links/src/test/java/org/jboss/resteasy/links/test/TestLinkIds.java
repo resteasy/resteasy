@@ -19,18 +19,18 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestLinkIds {
     private static NettyJaxrsServer server;
 
     private static Dispatcher dispatcher;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -49,7 +49,7 @@ public class TestLinkIds {
         client = target.proxy(IDServiceTest.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         server = null;
@@ -61,7 +61,7 @@ public class TestLinkIds {
     private static CloseableHttpClient httpClient;
 
     @SuppressWarnings("deprecation")
-    @After
+    @AfterEach
     public void after() {
         // TJWS does not support chunk encodings well so I need to kill kept
         // alive connections
@@ -105,12 +105,12 @@ public class TestLinkIds {
     }
 
     private void checkBook(IdBook book, String relativeUrl) {
-        Assert.assertNotNull(book);
+        Assertions.assertNotNull(book);
         RESTServiceDiscovery links = book.getRest();
-        Assert.assertNotNull(links);
-        Assert.assertEquals(1, links.size());
+        Assertions.assertNotNull(links);
+        Assertions.assertEquals(1, links.size());
         AtomLink link = links.get(0);
-        Assert.assertEquals("self", link.getRel());
-        Assert.assertEquals(url + relativeUrl, link.getHref());
+        Assertions.assertEquals("self", link.getRel());
+        Assertions.assertEquals(url + relativeUrl, link.getHref());
     }
 }

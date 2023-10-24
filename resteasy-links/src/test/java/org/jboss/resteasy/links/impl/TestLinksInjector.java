@@ -3,8 +3,8 @@ package org.jboss.resteasy.links.impl;
 import java.net.URI;
 
 import org.jboss.resteasy.links.RESTServiceDiscovery;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestLinksInjector {
 
@@ -24,7 +24,7 @@ public class TestLinksInjector {
 
         injector.inject(entity, links);
 
-        Assert.assertEquals(links, entity.getRestServiceDiscovery());
+        Assertions.assertEquals(links, entity.getRestServiceDiscovery());
     }
 
     @Test
@@ -38,10 +38,10 @@ public class TestLinksInjector {
 
         injector.inject(entity, newLinks);
 
-        Assert.assertEquals(2, entity.getRestServiceDiscovery().size());
-        Assert.assertEquals("https://resteasy.github.io",
+        Assertions.assertEquals(2, entity.getRestServiceDiscovery().size());
+        Assertions.assertEquals("https://resteasy.github.io",
                 entity.getRestServiceDiscovery().getLinkForRel("resteasy").getHref());
-        Assert.assertEquals("http://example.com", entity.getRestServiceDiscovery().getLinkForRel("example").getHref());
+        Assertions.assertEquals("http://example.com", entity.getRestServiceDiscovery().getLinkForRel("example").getHref());
     }
 
     private static final class EntityWithLinks {
