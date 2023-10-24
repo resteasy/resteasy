@@ -3,8 +3,6 @@ package org.jboss.resteasy.links.test;
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
 
 import jakarta.ws.rs.client.ClientBuilder;
 
@@ -34,22 +32,17 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-@RunWith(Parameterized.class)
 public class TestSecureLinks {
     private static NettyJaxrsServer server;
     private static Dispatcher dispatcher;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -72,30 +65,21 @@ public class TestSecureLinks {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         server = null;
         dispatcher = null;
     }
 
-    @Parameters
-    public static List<Class<?>[]> getParameters() {
-        return Arrays.asList(new Class<?>[] { SecureBookStore.class }, new Class<?>[] { SecureBookStoreMinimal.class });
-    }
-
-    private Class<?> resourceType;
     private String url;
     private BookStoreService client;
     private CloseableHttpClient httpClient;
     private CredentialsProvider cp;
 
-    public TestSecureLinks(final Class<?> resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    @Before
-    public void before() {
+    @ParameterizedTest
+    @ArgumentsSource(SecureBookClassProvider.class)
+    public void testSecureLinksAdmin(Class resourceType, String type) throws Exception {
         POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
         dispatcher.getRegistry().addResourceFactory(noDefaults);
         url = generateBaseUrl();
@@ -120,44 +104,37 @@ public class TestSecureLinks {
         });
         ResteasyWebTarget target = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
         client = target.proxy(BookStoreService.class);
-    }
-
-    @After
-    public void after() {
+        Book book = null;
+        switch (type) {
+            case "admin":
+                cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("admin", "asd"));
+                book = client.getBookXML("foo");
+                checkBookLinks1(url, book, "add", "update", "list", "self", "remove");
+                break;
+            case "power-user":
+                cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("power-user", "asd"));
+                book = client.getBookXML("foo");
+                checkBookLinks1(url, book, "add", "update", "list", "self");
+                break;
+            case "user":
+                cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("user", "asd"));
+                book = client.getBookXML("foo");
+                checkBookLinks1(url, book, "list", "self");
+                break;
+        }
         dispatcher.getRegistry().removeRegistrations(resourceType);
         cp = null;
     }
 
-    @Test
-    public void testSecureLinksAdmin() throws Exception {
-        cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("admin", "asd"));
-        Book book = client.getBookXML("foo");
-        checkBookLinks1(url, book, "add", "update", "list", "self", "remove");
-    }
-
-    @Test
-    public void testSecureLinksPowerUser() throws Exception {
-        cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("power-user", "asd"));
-        Book book = client.getBookXML("foo");
-        checkBookLinks1(url, book, "add", "update", "list", "self");
-    }
-
-    @Test
-    public void testSecureLinksUser() throws Exception {
-        cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("user", "asd"));
-        Book book = client.getBookXML("foo");
-        checkBookLinks1(url, book, "list", "self");
-    }
-
     private void checkBookLinks1(String url, Book book, String... expectedLinks) {
-        Assert.assertNotNull(book);
-        Assert.assertEquals("foo", book.getTitle());
-        Assert.assertEquals("bar", book.getAuthor());
+        Assertions.assertNotNull(book);
+        Assertions.assertEquals("foo", book.getTitle());
+        Assertions.assertEquals("bar", book.getAuthor());
         RESTServiceDiscovery links = book.getRest();
-        Assert.assertNotNull(links);
-        Assert.assertEquals(expectedLinks.length, links.size());
+        Assertions.assertNotNull(links);
+        Assertions.assertEquals(expectedLinks.length, links.size());
         for (String expectedLink : expectedLinks) {
-            Assert.assertNotNull(links.getLinkForRel(expectedLink));
+            Assertions.assertNotNull(links.getLinkForRel(expectedLink));
         }
     }
 

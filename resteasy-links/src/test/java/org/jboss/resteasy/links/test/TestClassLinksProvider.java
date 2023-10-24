@@ -12,12 +12,12 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestClassLinksProvider {
 
@@ -29,7 +29,7 @@ public class TestClassLinksProvider {
 
     private String baseUrl;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -40,14 +40,14 @@ public class TestClassLinksProvider {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         server.stop();
         server = null;
         dispatcher = null;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         POJOResourceFactory restServiceDiscoveryProviderServiceFactory = new POJOResourceFactory(new ResourceBuilder(),
                 ClassLinksProviderService.class);
@@ -59,7 +59,7 @@ public class TestClassLinksProvider {
         baseUrl = generateBaseUrl();
     }
 
-    @After
+    @AfterEach
     public void after() {
         dispatcher.getRegistry().removeRegistrations(ClassLinksProviderService.class);
         client.close();
@@ -72,8 +72,8 @@ public class TestClassLinksProvider {
                 .request()
                 .get(RESTServiceDiscovery.class);
 
-        Assert.assertEquals(2, restServiceDiscovery.size());
-        Assert.assertTrue(restServiceDiscovery.contains(new RESTServiceDiscovery.AtomLink(baseUrl + "/books", "list")));
-        Assert.assertTrue(restServiceDiscovery.contains(new RESTServiceDiscovery.AtomLink(baseUrl + "/books", "add")));
+        Assertions.assertEquals(2, restServiceDiscovery.size());
+        Assertions.assertTrue(restServiceDiscovery.contains(new RESTServiceDiscovery.AtomLink(baseUrl + "/books", "list")));
+        Assertions.assertTrue(restServiceDiscovery.contains(new RESTServiceDiscovery.AtomLink(baseUrl + "/books", "add")));
     }
 }
