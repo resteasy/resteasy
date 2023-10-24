@@ -6,22 +6,20 @@ on:
   push:
     branches:
       - '6.2'
-    paths-ignore:
-      - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - ".mvn"
-      - "docbook"
-      - "distribution"
-      - "CODEOWNERS"
-      - "CODE_OF_CONDUCT.md"
-      - "CONTRIBUTING.adoc"
-      - "dco.txt"
-      - "LICENSE"
-      - "mvnw"
-      - "mvnw.cmd"
-      - "README.md"
-      - "SECURITY.md"
-      - "*/README.MD"
+    paths:
+      - 'pom.xml'
+      - 'providers/**'
+      - 'resteasy-bom/**'
+      - 'resteasy-cdi/**'
+      - 'resteasy-client/**'
+      - 'resteasy-client-api/**'
+      - 'resteasy-client-utils/**'
+      - 'resteasy-core/**'
+      - 'resteasy-core-spi/**'
+      - 'resteasy-dependencies-bom/**'
+      - 'resteasy-feature-pack/**'
+      - 'testsuite/arquillian-utils/**'
+      - 'testsuite/integration-tests/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 
@@ -44,7 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: ['11', '17', '21-ea']
+        java: ['11', '21']
 
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['11', '21-ea']
+        java: ['11', '21']
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
@@ -106,9 +104,39 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
-          echo "::endgroup::"
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          path: '**/surefire-reports/'
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          path: '**/server.log'
+
+  legacy-build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest ]
+        java: ['11', '17']
+        wildfly-version: ['28.0.1.Final']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
+        run:  |
+          mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
