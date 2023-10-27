@@ -5,7 +5,7 @@ import jakarta.xml.bind.Marshaller;
 
 import org.jboss.resteasy.wadl.jaxb.Application;
 import org.jboss.resteasy.wadl.jaxb.ObjectFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
