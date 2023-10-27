@@ -4,8 +4,8 @@ import java.util.Locale;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.servlet.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -27,7 +27,7 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "defaultApplicationNotImplemented"),
+        Assertions.assertEquals(getExpected(BASE + "00", "defaultApplicationNotImplemented"),
                 Messages.MESSAGES.defaultApplicationNotImplemented());
     }
 
