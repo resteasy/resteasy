@@ -6,8 +6,8 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -29,15 +29,15 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "000", "algorithmOfSharedSymmetricKey"),
+        Assertions.assertEquals(getExpected(BASE + "000", "algorithmOfSharedSymmetricKey"),
                 Messages.MESSAGES.algorithmOfSharedSymmetricKey());
-        Assert.assertEquals(getExpected(BASE + "015", "cekKeyLengthMismatch", 3, 7),
+        Assertions.assertEquals(getExpected(BASE + "015", "cekKeyLengthMismatch", 3, 7),
                 Messages.MESSAGES.cekKeyLengthMismatch(3, 7));
-        Assert.assertEquals(getExpected(BASE + "025", "contentEncryptionKeyLength", 11, EncryptionMethod.A256GCM),
+        Assertions.assertEquals(getExpected(BASE + "025", "contentEncryptionKeyLength", 11, EncryptionMethod.A256GCM),
                 Messages.MESSAGES.contentEncryptionKeyLength(11, EncryptionMethod.A256GCM));
-        Assert.assertEquals(getExpected(BASE + "155", "unsupportedCompressionAlgorithm", CompressionAlgorithm.DEF),
+        Assertions.assertEquals(getExpected(BASE + "155", "unsupportedCompressionAlgorithm", CompressionAlgorithm.DEF),
                 Messages.MESSAGES.unsupportedCompressionAlgorithm(CompressionAlgorithm.DEF));
-        Assert.assertEquals(getExpected(BASE + "175", "unsupportedKeyLength"), Messages.MESSAGES.unsupportedKeyLength());
+        Assertions.assertEquals(getExpected(BASE + "175", "unsupportedKeyLength"), Messages.MESSAGES.unsupportedKeyLength());
     }
 
     @Override
