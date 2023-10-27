@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -49,7 +49,7 @@ public class WADLTestExistenceVerifier {
             }
         }
 
-        assertTrue(data.toString(), allTrue());
+        assertTrue(allTrue(), data.toString());
     }
 
     public boolean allTrue() {
