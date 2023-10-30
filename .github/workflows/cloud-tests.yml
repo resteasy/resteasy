@@ -4,22 +4,6 @@
 name: RESTEasy Cloud Tests
 
 on:
-  push:
-    branches:
-      - 'main'
-    paths:
-      - 'providers/**'
-      - 'resteasy-bom/**'
-      - 'resteasy-cdi/**'
-      - 'resteasy-client/**'
-      - 'resteasy-client-api/**'
-      - 'resteasy-client-utils/**'
-      - 'resteasy-core/**'
-      - 'resteasy-core-spi/**'
-      - 'resteasy-dependencies-bom/**'
-      - 'resteasy-feature-pack/**'
-      - 'resteasy-security/**'
-      - 'resteasy-testsuite/cloud-tests/**'
   pull_request:
     branches:
       - '**'
@@ -36,6 +20,8 @@ on:
       - 'resteasy-feature-pack/**'
       - 'resteasy-security/**'
       - 'resteasy-testsuite/cloud-tests/**'
+  schedule:
+    - cron: '0 0 * * *' # Every day at 00:00 UTC
 
 # Only run the latest job
 concurrency:

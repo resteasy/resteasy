@@ -4,34 +4,6 @@
 name: Build and Test RESTEasy
 
 on:
-  push:
-    branches:
-      - 'main'
-    paths:
-      - '**/pom.xml'
-      - 'arquillian/**'
-      - 'providers/**'
-      - 'resteasy-cdi/**'
-      - 'resteasy-client/**'
-      - 'resteasy-client-api/**'
-      - 'resteasy-client-jetty/**'
-      - 'resteasy-client-reactor-netty/**'
-      - 'resteasy-client-utils/**'
-      - 'resteasy-client-vertx/**'
-      - 'resteasy-core/**'
-      - 'resteasy-core-spi/**'
-      - 'resteasy-feature-pack/**'
-      - 'resteasy-jsapi/**'
-      - 'resteasy-links/**'
-      - 'resteasy-reactor/**'
-      - 'resteasy-rxjava2/**'
-      - 'resteasy-servlet-initializer/**'
-      - 'resteasy-stats/**'
-      - 'resteasy-wadl/**'
-      - 'resteasy-wadl-undertow-connector/**'
-      - 'security/**'
-      - 'server-adapters/**'
-      - 'testsuite/**'
   pull_request:
     branches:
       - '**'
@@ -60,6 +32,8 @@ on:
       - 'security/**'
       - 'server-adapters/**'
       - 'testsuite/**'
+  schedule:
+    - cron: '0 0 * * *' # Every day at 00:00 UTC
 
 # Only run the latest job
 concurrency:
@@ -76,7 +50,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['17', '21']
-        wildfly-version: ['30.0.0.Final']
 
     steps:
       - uses: actions/checkout@v4
@@ -86,18 +59,18 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
+      - name: Build with Maven Java ${{ matrix.java }} - ${{ matrix.os }}
         run:  |
-          mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
+          mvn clean install -U -B -fae '-Dgithub.actions'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
           path: '**/server.log'
 
   additional-profiles:
