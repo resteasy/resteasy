@@ -6,22 +6,20 @@ on:
   push:
     branches:
       - 'main'
-    paths-ignore:
-      - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - ".mvn/**"
-      - "docbook/**"
-      - "distribution/**"
-      - "CODEOWNERS"
-      - "CODE_OF_CONDUCT.md"
-      - "CONTRIBUTING.adoc"
-      - "dco.txt"
-      - "LICENSE"
-      - "mvnw"
-      - "mvnw.cmd"
-      - "README.md"
-      - "SECURITY.md"
-      - "**/README.MD"
+    paths:
+      - 'pom.xml'
+      - 'providers/**'
+      - 'resteasy-bom/**'
+      - 'resteasy-cdi/**'
+      - 'resteasy-client/**'
+      - 'resteasy-client-api/**'
+      - 'resteasy-client-utils/**'
+      - 'resteasy-core/**'
+      - 'resteasy-core-spi/**'
+      - 'resteasy-dependencies-bom/**'
+      - 'resteasy-feature-pack/**'
+      - 'testsuite/arquillian-utils/**'
+      - 'testsuite/integration-tests/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 
@@ -44,7 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: ['17', '21-ea']
+        java: ['17', '21']
 
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['17', '21-ea']
+        java: ['17', '21']
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'

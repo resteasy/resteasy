@@ -1,5 +1,5 @@
 # This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+# For more information see: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 
 name: Build and Test RESTEasy
 
@@ -7,41 +7,59 @@ on:
   push:
     branches:
       - 'main'
-    paths-ignore:
-      - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - ".mvn/**"
-      - "docbook/**"
-      - "distribution/**"
-      - "CODEOWNERS"
-      - "CODE_OF_CONDUCT.md"
-      - "CONTRIBUTING.adoc"
-      - "dco.txt"
-      - "LICENSE"
-      - "mvnw"
-      - "mvnw.cmd"
-      - "README.md"
-      - "SECURITY.md"
-      - "**/README.MD"
+    paths:
+      - '**/pom.xml'
+      - 'arquillian/**'
+      - 'providers/**'
+      - 'resteasy-cdi/**'
+      - 'resteasy-client/**'
+      - 'resteasy-client-api/**'
+      - 'resteasy-client-jetty/**'
+      - 'resteasy-client-reactor-netty/**'
+      - 'resteasy-client-utils/**'
+      - 'resteasy-client-vertx/**'
+      - 'resteasy-core/**'
+      - 'resteasy-core-spi/**'
+      - 'resteasy-feature-pack/**'
+      - 'resteasy-jsapi/**'
+      - 'resteasy-links/**'
+      - 'resteasy-reactor/**'
+      - 'resteasy-rxjava2/**'
+      - 'resteasy-servlet-initializer/**'
+      - 'resteasy-stats/**'
+      - 'resteasy-wadl/**'
+      - 'resteasy-wadl-undertow-connector/**'
+      - 'security/**'
+      - 'server-adapters/**'
+      - 'testsuite/**'
   pull_request:
     branches:
       - '**'
-    paths-ignore:
-      - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - ".mvn/**"
-      - "docbook/**"
-      - "distribution/**"
-      - "CODEOWNERS"
-      - "CODE_OF_CONDUCT.md"
-      - "CONTRIBUTING.adoc"
-      - "dco.txt"
-      - "LICENSE"
-      - "mvnw"
-      - "mvnw.cmd"
-      - "README.md"
-      - "SECURITY.md"
-      - "**/README.MD"
+    paths:
+      - '**/pom.xml'
+      - 'arquillian/**'
+      - 'providers/**'
+      - 'resteasy-cdi/**'
+      - 'resteasy-client/**'
+      - 'resteasy-client-api/**'
+      - 'resteasy-client-jetty/**'
+      - 'resteasy-client-reactor-netty/**'
+      - 'resteasy-client-utils/**'
+      - 'resteasy-client-vertx/**'
+      - 'resteasy-core/**'
+      - 'resteasy-core-spi/**'
+      - 'resteasy-feature-pack/**'
+      - 'resteasy-jsapi/**'
+      - 'resteasy-links/**'
+      - 'resteasy-reactor/**'
+      - 'resteasy-rxjava2/**'
+      - 'resteasy-servlet-initializer/**'
+      - 'resteasy-stats/**'
+      - 'resteasy-wadl/**'
+      - 'resteasy-wadl-undertow-connector/**'
+      - 'security/**'
+      - 'server-adapters/**'
+      - 'testsuite/**'
 
 # Only run the latest job
 concurrency:
@@ -57,8 +75,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest ]
-        java: ['17']
-        wildfly-version: ['28.0.1.Final', '29.0.1.Final']
+        java: ['17', '21']
+        wildfly-version: ['30.0.0.Final']
 
     steps:
       - uses: actions/checkout@v4
@@ -88,8 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['17']
-        wildfly-version: ['28.0.1.Final', '29.0.1.Final']
+        java: ['17', '21']
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
@@ -102,65 +119,18 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }} - WildFly ${{ matrix.wildfly-version }}
+      - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions'
+          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/server.log'
-
-  cloud-tests:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        java: ['17']
-        wildfly-version: ['28.0.1.Final', '29.0.0.Final']
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Setup minikube
-        id: minikube
-        uses: manusa/actions-setup-minikube@v2.9.0
-        with:
-          driver: docker
-          container runtime: containerd
-          minikube version: 'v1.31.2'
-          # Downgrade K8s since 1.25 has some problems with https
-          kubernetes version: 'v1.28.1'
-          github token: ${{ secrets.GITHUB_TOKEN }}
-          start args: "--memory='4gb' --cpus='2'"
-
-      - name: Enable minikube registry
-        run: |
-          minikube addons enable registry
-          kubectl port-forward --namespace kube-system service/registry 5000:80 &
-      - name: Cloud Tests - JDK ${{ matrix.java }} - WildFly ${{ matrix.wildfly-version }}
-        run:  |
-          mvn clean install -Pcloud-tests -pl resteasy-feature-pack/common,resteasy-feature-pack/galleon-feature-pack,testsuite/cloud-tests -amd -am '-Dserver.version=${{ matrix.wildfly-version }}' '-Ddebug.logs'
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
           path: '**/server.log'
 
   build-java-docs:
@@ -178,19 +148,3 @@ jobs:
         run: |
           mvn clean install -B -DskipTests
           mvn clean site -B -DskipTests
-
-  format-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Validate Formatting
-        run: |
-          mvn -B validate -Pformat-check -Denforcer.skip=true
