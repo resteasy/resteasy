@@ -7,41 +7,38 @@ on:
   push:
     branches:
       - '6.2'
-    paths-ignore:
-      - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - ".mvn/**"
-      - "docbook/**"
-      - "distribution/**"
-      - "CODEOWNERS"
-      - "CODE_OF_CONDUCT.md"
-      - "CONTRIBUTING.adoc"
-      - "dco.txt"
-      - "LICENSE"
-      - "mvnw"
-      - "mvnw.cmd"
-      - "README.md"
-      - "SECURITY.md"
-      - "**/README.MD"
+    paths:
+      - 'pom.xml'
+      - 'providers/**'
+      - 'resteasy-bom/**'
+      - 'resteasy-cdi/**'
+      - 'resteasy-client/**'
+      - 'resteasy-client-api/**'
+      - 'resteasy-client-utils/**'
+      - 'resteasy-core/**'
+      - 'resteasy-core-spi/**'
+      - 'resteasy-dependencies-bom/**'
+      - 'resteasy-feature-pack/**'
+      - 'resteasy-security/**'
+      - 'server-adapters/resteasy-undertow-cdi/**'
   pull_request:
     branches:
       - '**'
-    paths-ignore:
-      - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - ".mvn/**"
-      - "docbook/**"
-      - "distribution/**"
-      - "CODEOWNERS"
-      - "CODE_OF_CONDUCT.md"
-      - "CONTRIBUTING.adoc"
-      - "dco.txt"
-      - "LICENSE"
-      - "mvnw"
-      - "mvnw.cmd"
-      - "README.md"
-      - "SECURITY.md"
-      - "**/README.MD"
+    paths:
+      - 'pom.xml'
+      - 'providers/**'
+      - 'resteasy-bom/**'
+      - 'resteasy-cdi/**'
+      - 'resteasy-client/**'
+      - 'resteasy-client-api/**'
+      - 'resteasy-client-utils/**'
+      - 'resteasy-core/**'
+      - 'resteasy-core-spi/**'
+      - 'resteasy-dependencies-bom/**'
+      - 'resteasy-feature-pack/**'
+      - 'resteasy-security/**'
+      - 'server-adapters/resteasy-undertow-cdi/**'
+
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
   workflow_dispatch:
@@ -70,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['11', '17', '21-ea']
+        java: ['11', '17', '21']
 
     steps:
       - name: Checkout RESTEasy
