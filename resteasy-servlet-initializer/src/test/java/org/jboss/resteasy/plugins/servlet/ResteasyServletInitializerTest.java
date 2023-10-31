@@ -19,7 +19,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.plugins.servlet.testapp.AppWithAppPath;
 import org.jboss.resteasy.plugins.servlet.testapp.AppWithNoAppPath;
 import org.jboss.resteasy.plugins.servlet.testapp.Resource1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResteasyServletInitializerTest {
 
