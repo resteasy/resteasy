@@ -76,7 +76,7 @@ public class JaxrsInterceptorRegistryTest {
 
     @NameBinding
     @Retention(RUNTIME)
-    public static @interface JaxrsInterceptorRegistryTestNameBinding {
+    public @interface JaxrsInterceptorRegistryTestNameBinding {
     }
 
     @JaxrsInterceptorRegistryTestNameBinding

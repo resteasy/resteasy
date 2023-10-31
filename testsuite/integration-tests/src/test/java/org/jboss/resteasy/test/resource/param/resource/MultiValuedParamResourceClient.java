@@ -41,7 +41,7 @@ public interface MultiValuedParamResourceClient {
     PathParamResourceClient pathParam();
 
     @Path("/")
-    public interface QueryParamResourceClient {
+    interface QueryParamResourceClient {
 
         @GET
         @Path("customConversion_multiValuedParam")
@@ -82,7 +82,7 @@ public interface MultiValuedParamResourceClient {
     }
 
     @Path("/")
-    public interface HeaderParamResourceClient {
+    interface HeaderParamResourceClient {
 
         @GET
         @Path("customConversion_multiValuedParam")
@@ -123,7 +123,7 @@ public interface MultiValuedParamResourceClient {
     }
 
     @Path("/")
-    public interface MatrixParamResourceClient {
+    interface MatrixParamResourceClient {
 
         @GET
         @Path("customConversion_multiValuedParam")
@@ -164,7 +164,7 @@ public interface MultiValuedParamResourceClient {
     }
 
     @Path("/")
-    public interface CookieParamResourceClient {
+    interface CookieParamResourceClient {
 
         @GET
         @Path("customConversion_multiValuedCookieParam")
@@ -206,7 +206,7 @@ public interface MultiValuedParamResourceClient {
 
     @Path("/")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public interface FormParamResourceClient {
+    interface FormParamResourceClient {
 
         @POST
         @Path("customConversion_multiValuedParam")
@@ -247,7 +247,7 @@ public interface MultiValuedParamResourceClient {
     }
 
     @Path("/")
-    public interface PathParamResourceClient {
+    interface PathParamResourceClient {
 
         @GET
         @Path("customConversion_multiValuedPathParam/{path1}/{path2}/{path3}")

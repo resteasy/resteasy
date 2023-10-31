@@ -15,8 +15,8 @@
             <property name="bindHttpPort">0</property>
             <property name="javaVmArguments">${additionalJvmArgs}</property>
             <!--
-           <property name="javaVmArguments">${additionalJvmArgs} -Xdebug -Xrunjdwp:transport=dt_socket,address=8585,server=y, suspend=n</property>
-         -->
+              <property name="javaVmArguments">${additionalJvmArgs} -Xdebug -Xrunjdwp:transport=dt_socket,address=8585,server=y, suspend=n</property>
+            -->
         </configuration>
     </container>
 </arquillian>

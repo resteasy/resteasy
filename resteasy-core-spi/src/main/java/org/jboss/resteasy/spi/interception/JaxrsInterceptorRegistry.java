@@ -18,7 +18,7 @@ public interface JaxrsInterceptorRegistry<T> {
         public final int order;
     }
 
-    public interface InterceptorFactory {
+    interface InterceptorFactory {
         Match preMatch();
 
         Match postMatch(@SuppressWarnings("rawtypes") Class declaring, AccessibleObject target);
