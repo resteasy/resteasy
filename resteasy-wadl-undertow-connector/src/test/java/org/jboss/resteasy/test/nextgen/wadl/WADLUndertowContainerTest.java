@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +18,10 @@ import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
 import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlWriter;
 import org.jboss.resteasy.wadl.undertow.WadlUndertowConnector;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by weli on 6/14/16.
@@ -46,12 +43,12 @@ public class WADLUndertowContainerTest {
         // get Application
         org.jboss.resteasy.wadl.jaxb.Application application = response
                 .readEntity(org.jboss.resteasy.wadl.jaxb.Application.class);
-        assertNotNull("application not null", application);
-        assertEquals(1, application.getResources().size());
+        Assertions.assertNotNull(application, "application not null");
+        Assertions.assertEquals(1, application.getResources().size());
 
         // get BasicResource
         org.jboss.resteasy.wadl.jaxb.Resource basicResource = findResourceByName(application, "/basic");
-        assertNotNull("basic resouce not null", basicResource);
+        Assertions.assertNotNull(basicResource, "basic resouce not null");
 
         {
             // verify the existence of params
@@ -67,14 +64,14 @@ public class WADLUndertowContainerTest {
 
             // verify 'post' method has expected id and name
             org.jboss.resteasy.wadl.jaxb.Method post = findMethodById(basicResource, "post");
-            assertNotNull("post method not null", post);
-            assertEquals("POST", post.getName());
-            assertNotNull("post response not null", post.getResponse());
-            assertNotNull("post response representation not null", post.getResponse().get(0).getRepresentation());
+            Assertions.assertNotNull(post, "post method not null");
+            Assertions.assertEquals("POST", post.getName());
+            Assertions.assertNotNull(post.getResponse(), "post response not null");
+            Assertions.assertNotNull(post.getResponse().get(0).getRepresentation(), "post response representation not null");
 
             // verify 'get' method
             org.jboss.resteasy.wadl.jaxb.Method get = findMethodById(basicResource, "get");
-            assertEquals("GET", get.getName());
+            Assertions.assertEquals("GET", get.getName());
         }
 
         {
@@ -88,8 +85,8 @@ public class WADLUndertowContainerTest {
 
             // verify resource 'intr/{foo}'
             org.jboss.resteasy.wadl.jaxb.Resource compositeResource = findResourceByName(basicResource, compositeResourceName);
-            assertNotNull(compositeResource);
-            assertEquals(compositeResourceName, compositeResource.getPath());
+            Assertions.assertNotNull(compositeResource);
+            Assertions.assertEquals(compositeResourceName, compositeResource.getPath());
 
             WADLTestExistenceVerifier paramExistenceVerifier = new WADLTestExistenceVerifier();
             paramExistenceVerifier.createVerifier("pathParam", "matrixParam");
@@ -103,9 +100,10 @@ public class WADLUndertowContainerTest {
             org.jboss.resteasy.wadl.jaxb.Method compositeMethod = findMethodById(compositeResource, "composite");
 
             // verify response
-            assertTrue(compositeResourceName + " response contains respresentation",
-                    compositeMethod.getResponse().get(0).getRepresentation().size() > 0);
-            assertEquals("text/plain", compositeMethod.getResponse().get(0).getRepresentation().get(0).getMediaType());
+            Assertions.assertTrue(compositeMethod.getResponse().get(0).getRepresentation().size() > 0,
+                    compositeResourceName + " response contains respresentation");
+            Assertions.assertEquals("text/plain",
+                    compositeMethod.getResponse().get(0).getRepresentation().get(0).getMediaType());
 
             WADLTestExistenceVerifier requestVerifier = new WADLTestExistenceVerifier();
             requestVerifier.createVerifier("headerParam", "queryParam", "Cookie");
@@ -128,21 +126,21 @@ public class WADLUndertowContainerTest {
                 .readEntity(org.jboss.resteasy.wadl.jaxb.Application.class);
         org.jboss.resteasy.wadl.jaxb.Method multipleProvides1 = findMethodById(
                 findResourceByName(findResourceByName(application, "/issues/1246"), "/provides1"), "multipleProvides1");
-        assertEquals("Multiple representations should be present", 2,
-                multipleProvides1.getResponse().get(0).getRepresentation().size());
+        Assertions.assertEquals(2, multipleProvides1.getResponse().get(0).getRepresentation().size(),
+                "Multiple representations should be present");
         org.jboss.resteasy.wadl.jaxb.Method multipleProvides2 = findMethodById(
                 findResourceByName(findResourceByName(application, "/issues/1246"), "/provides2"), "multipleProvides2");
-        assertEquals("Multiple representations should be present", 2,
-                multipleProvides2.getResponse().get(0).getRepresentation().size());
+        Assertions.assertEquals(2, multipleProvides2.getResponse().get(0).getRepresentation().size(),
+                "Multiple representations should be present");
         client.close();
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         server = new UndertowJaxrsServer().start();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         server.stop();
         server = null;
