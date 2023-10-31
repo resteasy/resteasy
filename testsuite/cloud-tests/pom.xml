@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ JBoss, Home of Professional Open Source.
+  ~
+  ~ Copyright 2023 Red Hat, Inc., and individual contributors
+  ~ as indicated by the @author tags.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-testsuite</artifactId>
+        <version>6.2.6.Final-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>dev.resteasy.cloud.tests</groupId>
+    <artifactId>cloud-tests</artifactId>
+    <name>RESTEasy Cloud Testsuite</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <!-- Version properties -->
+        <version.io.fabric8.docker-maven-plugin>0.43.4</version.io.fabric8.docker-maven-plugin>
+        <version.wildfly.cloud.galleon.pack>4.0.2.Final</version.wildfly.cloud.galleon.pack>
+
+        <!-- Container configuration properties -->
+        <image.name.wildfly.runtime>quay.io/wildfly/wildfly-runtime:latest</image.name.wildfly.runtime>
+
+        <!-- Kubernetes registry parameters -->
+        <cloud.test.docker.host>localhost</cloud.test.docker.host>
+        <cloud.test.docker.port>5000</cloud.test.docker.port>
+        <dekorate.docker.registry>${cloud.test.docker.host}:${cloud.test.docker.port}</dekorate.docker.registry>
+        <!--
+            This needs to be true for Kubernetes. For OpenShift false is better.
+            Openshift will actually work with this as true, but it results in the annotation processors pushing up an
+            image for an unused s2i build to OpenShift, which takes extra time. Since this happens during test
+            compilation, it means images are pushed up for tests not targeting OpenShift as well.
+        -->
+        <dekorate.push>true</dekorate.push>
+        <!-- Individual tests will need to set this property -->
+        <wildfly.cloud.test.base.image.name/>
+    </properties>
+
+    <modules>
+        <!-- Images must be built first -->
+        <module>images</module>
+        <module>client-tests</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>dev.resteasy.test</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${version.io.fabric8.docker-maven-plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!--
+                    If you need to debug the annotation processor, use the following configuration, and pass in
+                        -Ddekorate.docker.registry=localhost:5000
+                        -Ddekorate.push=true
+                        -Dwildfly.cloud.test.base.image.name=<base image name>
+                    manually when running mvnDebug clean install.
+
+                    For OpenShift you will need to adjust -Ddekorate.docker.registry, and additionally pass in
+                     -Dwildfly.cloud.test.docker.group to point to your OpenShift project.
+                -->
+                <configuration>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-J-Dwildfly.cloud.test.base.image.name=${wildfly.cloud.test.base.image.name}</arg>
+                        <!--
+                            Dekorate allows specifying these with -D on the command-line.
+                            in order to not HAVE to do that, we pass them in explicitly here.
+                        -->
+                        <arg>-J-Ddekorate.docker.registry=${dekorate.docker.registry}</arg>
+                        <arg>-J-Ddekorate.push=${dekorate.push}</arg>
+
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <groups>Kubernetes</groups>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- TODO (jrp) do we want to do this> -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>cloud-debug-logs</id>
+            <activation>
+                <property>
+                    <name>debug.logs</name>
+                </property>
+            </activation>
+            <properties>
+                <surefire.system.args>-Dwildfly.test.print.logs=true -Dwildfly.test.print.server-config=true -Dio.dekorate.log.level=DEBUG</surefire.system.args>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>

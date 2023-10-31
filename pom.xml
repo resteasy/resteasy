@@ -277,6 +277,17 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>debug-logs</id>
+            <activation>
+                <property>
+                    <name>debug.logs</name>
+                </property>
+            </activation>
+            <properties>
+                <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+            </properties>
+        </profile>
     </profiles>
 
     <contributors>
