@@ -60,15 +60,11 @@ jobs:
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - Linux
         if: runner.os == 'Linux'
         run: |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae -Dserver.version=${{ matrix.wildfly-version }} -Dgithub.actions -Djava8.home="$JAVA_HOME_8_X64"
-          echo "::endgroup::"
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - Windows
         if: runner.os == 'Windows'
         run:  |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Djava8.home=%JAVA_HOME_8_X64%"'
-          echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -106,21 +102,15 @@ jobs:
           cache: 'maven'
       - name: Build with Java 11
         run: |
-          echo "::group::Build Logs"
           mvn clean install -U -B -DskipTests
-          echo "::endgroup::"
       - name: Test with Java 8 on WildFly ${{ matrix.wildfly-version }} - Linux
         if: runner.os == 'Linux'
         run:  |
-          echo "::group::Test Logs"
           mvn clean install -U -B -fae -rf ':resteasy-testsuite' -Dserver.version=${{ matrix.wildfly-version }} -Dgithub.actions -Dtest.java8.home="$JAVA_HOME_8_X64"
-          echo "::endgroup::"
       - name: Test with Java 8 on WildFly ${{ matrix.wildfly-version }} - Windows
         if: runner.os == 'Windows'
         run: |
-          echo "::group::Build Logs"
           mvn clean install -U -B -fae -rf ':resteasy-testsuite' '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Dtest.java8.home=%JAVA_HOME_8_X64%"'
-          echo "::endgroup::"
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
