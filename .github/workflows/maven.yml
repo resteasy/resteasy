@@ -1,17 +1,17 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: RESTEasy Continues Integration - 5.0
 
 on:
   push:
-    branches-ignore:
-      - 'dependabot/**'
+    branches:
+      - '5.0'
     paths-ignore:
       - '.gitignore'
-      - ".github/workflows/manual-*.yml"
-      - "docbook"
-      - "distribution"
+      - '.mvn/**'
+      - "docbook/**"
+      - "distribution/**"
       - "CONTRIBUTING.md"
       - "License.html"
       - "README.md"
@@ -20,8 +20,9 @@ on:
       - '**'
     paths-ignore:
       - '.gitignore'
-      - "docbook"
-      - "distribution"
+      - '.mvn/**'
+      - "docbook/**"
+      - "distribution/**"
       - "CONTRIBUTING.md"
       - "License.html"
       - "README.md"
@@ -41,7 +42,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest ]
         java: ['11', '17']
-        wildfly-version: ['25.0.1.Final']
 
     steps:
       - uses: actions/checkout@v4
@@ -57,27 +57,23 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - Linux
+      - name: Build with Maven Java ${{ matrix.java }} on WildFly - Linux
         if: runner.os == 'Linux'
         run: |
-          echo "::group::Build Logs"
-          mvn clean install -U -B -fae -Dserver.version=${{ matrix.wildfly-version }} -Dgithub.actions -Djava8.home="$JAVA_HOME_8_X64"
-          echo "::endgroup::"
-      - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - Windows
+          mvn clean install -U -B -fae  -Dgithub.actions -Djava8.home="$JAVA_HOME_8_X64"
+      - name: Build with Maven Java ${{ matrix.java }} on WildFly - Windows
         if: runner.os == 'Windows'
         run:  |
-          echo "::group::Build Logs"
-          mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Djava8.home=%JAVA_HOME_8_X64%"'
-          echo "::endgroup::"
+          mvn clean install -U -B -fae '-Dgithub.actions' '"-Djava8.home=%JAVA_HOME_8_X64%"'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/*.txt'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
           path: '**/server.log'
 
   test-with-java8:
@@ -88,7 +84,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest ]
-        wildfly-version: ['25.0.1.Final']
 
     steps:
       - uses: actions/checkout@v4
@@ -106,30 +101,24 @@ jobs:
           cache: 'maven'
       - name: Build with Java 11
         run: |
-          echo "::group::Build Logs"
           mvn clean install -U -B -DskipTests
-          echo "::endgroup::"
-      - name: Test with Java 8 on WildFly ${{ matrix.wildfly-version }} - Linux
+      - name: Test with Java 8 on WildFly - Linux
         if: runner.os == 'Linux'
         run:  |
-          echo "::group::Test Logs"
-          mvn clean install -U -B -fae -rf ':resteasy-testsuite' -Dserver.version=${{ matrix.wildfly-version }} -Dgithub.actions -Dtest.java8.home="$JAVA_HOME_8_X64"
-          echo "::endgroup::"
-      - name: Test with Java 8 on WildFly ${{ matrix.wildfly-version }} - Windows
+          mvn clean install -U -B -fae -rf ':resteasy-testsuite' -Dgithub.actions -Dtest.java8.home="$JAVA_HOME_8_X64"
+      - name: Test with Java 8 on WildFly - Windows
         if: runner.os == 'Windows'
         run: |
-          echo "::group::Build Logs"
-          mvn clean install -U -B -fae -rf ':resteasy-testsuite' '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Dtest.java8.home=%JAVA_HOME_8_X64%"'
-          echo "::endgroup::"
+          mvn clean install -U -B -fae -rf ':resteasy-testsuite' '-Dgithub.actions' '"-Dtest.java8.home=%JAVA_HOME_8_X64%"'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/surefire-reports/*.txt'
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
+          path: '**/surefire-reports/**'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
           path: '**/server.log'
 
   build-java-docs:

@@ -61,7 +61,7 @@ public class DecoratorMatcherTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Decorator(processor = MarshallerDecorator.Processor.class, target = Marshaller.class)
-    public static @interface MarshallerDecorator {
+    public @interface MarshallerDecorator {
         class Processor implements DecoratorProcessor<Marshaller, MarshallerDecorator> {
             @Override
             public Marshaller decorate(Marshaller target, MarshallerDecorator annotation, Class type, Annotation[] annotations,
