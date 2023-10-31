@@ -2,8 +2,6 @@ package org.jboss.resteasy.links.test.el;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -24,23 +22,19 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Parameterized.class)
 public class TestLinksNoPackage {
 
     private static NettyJaxrsServer server;
     private static Dispatcher dispatcher;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -52,18 +46,11 @@ public class TestLinksNoPackage {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         server = null;
         dispatcher = null;
-    }
-
-    @Parameters
-    public static List<Class<?>[]> getParameters() {
-        List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
-        classes.add(new Class<?>[] { BookStoreNoPackage.class });
-        return classes;
     }
 
     private Class<?> resourceType;
@@ -71,11 +58,11 @@ public class TestLinksNoPackage {
     private BookStoreService client;
     private HttpClient httpClient;
 
-    public TestLinksNoPackage(final Class<?> resourceType) {
-        this.resourceType = resourceType;
+    public TestLinksNoPackage() {
+        this.resourceType = BookStoreNoPackage.class;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
         dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -87,7 +74,7 @@ public class TestLinksNoPackage {
     }
 
     @SuppressWarnings("deprecation")
-    @After
+    @AfterEach
     public void after() {
         // TJWS does not support chunk encodings well so I need to kill kept
         // alive connections
@@ -104,15 +91,15 @@ public class TestLinksNoPackage {
     }
 
     private void checkBookLinks1(String url, Book book) {
-        Assert.assertNotNull(book);
-        Assert.assertEquals("foo", book.getTitle());
-        Assert.assertEquals("bar", book.getAuthor());
+        Assertions.assertNotNull(book);
+        Assertions.assertEquals("foo", book.getTitle());
+        Assertions.assertEquals("bar", book.getAuthor());
         RESTServiceDiscovery links = book.getRest();
-        Assert.assertNotNull(links);
-        Assert.assertEquals(1, links.size());
+        Assertions.assertNotNull(links);
+        Assertions.assertEquals(1, links.size());
         // self
         AtomLink atomLink = links.getLinkForRel("self");
-        Assert.assertNotNull(atomLink);
-        Assert.assertEquals(url + "/book/foo", atomLink.getHref());
+        Assertions.assertNotNull(atomLink);
+        Assertions.assertEquals(url + "/book/foo", atomLink.getHref());
     }
 }

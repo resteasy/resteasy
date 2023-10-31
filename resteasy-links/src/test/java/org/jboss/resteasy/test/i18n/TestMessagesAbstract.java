@@ -4,8 +4,8 @@ import java.util.Locale;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.links.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -27,12 +27,12 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "cannotGuessCollectionType"),
+        Assertions.assertEquals(getExpected(BASE + "00", "cannotGuessCollectionType"),
                 Messages.MESSAGES.cannotGuessCollectionType());
-        Assert.assertEquals(getExpected(BASE + "20", "discoveryFailedForMethod", "class", "method", "s"),
+        Assertions.assertEquals(getExpected(BASE + "20", "discoveryFailedForMethod", "class", "method", "s"),
                 Messages.MESSAGES.discoveryFailedForMethod("class", "method", "s"));
-        Assert.assertEquals(getExpected(BASE + "35", "failedToInjectLinks", 17), Messages.MESSAGES.failedToInjectLinks(17));
-        Assert.assertEquals(getExpected(BASE + "60", "notEnoughtUriParameters", 3, 5),
+        Assertions.assertEquals(getExpected(BASE + "35", "failedToInjectLinks", 17), Messages.MESSAGES.failedToInjectLinks(17));
+        Assertions.assertEquals(getExpected(BASE + "60", "notEnoughtUriParameters", 3, 5),
                 Messages.MESSAGES.notEnoughtUriParameters(3, 5));
     }
 

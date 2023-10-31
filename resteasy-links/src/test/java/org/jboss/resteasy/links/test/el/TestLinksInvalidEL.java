@@ -2,8 +2,6 @@ package org.jboss.resteasy.links.test.el;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import jakarta.ws.rs.InternalServerErrorException;
@@ -22,24 +20,20 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Parameterized.class)
 public class TestLinksInvalidEL {
 
     private static NettyJaxrsServer server;
     private static Dispatcher dispatcher;
     private static final Logger LOG = Logger.getLogger(TestLinksInvalidEL.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -50,18 +44,11 @@ public class TestLinksInvalidEL {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         server = null;
         dispatcher = null;
-    }
-
-    @Parameters
-    public static List<Class<?>[]> getParameters() {
-        List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
-        classes.add(new Class<?>[] { BookStoreInvalidEL.class });
-        return classes;
     }
 
     private Class<?> resourceType;
@@ -69,11 +56,11 @@ public class TestLinksInvalidEL {
     private BookStoreService client;
     private HttpClient httpClient;
 
-    public TestLinksInvalidEL(final Class<?> resourceType) {
-        this.resourceType = resourceType;
+    public TestLinksInvalidEL() {
+        this.resourceType = BookStoreInvalidEL.class;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
         dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -85,7 +72,7 @@ public class TestLinksInvalidEL {
     }
 
     @SuppressWarnings("deprecation")
-    @After
+    @AfterEach
     public void after() {
         // TJWS does not support chunk encodings well so I need to kill kept
         // alive connections
@@ -97,12 +84,12 @@ public class TestLinksInvalidEL {
     public void testELWorksWithoutPackageXML() throws Exception {
         try {
             client.getBookXML("foo");
-            Assert.fail("This should have caused a 500");
+            Assertions.fail("This should have caused a 500");
         } catch (InternalServerErrorException x) {
             LOG.error("Failure is " + x.getResponse().readEntity(String.class));
-            Assert.assertEquals(500, x.getResponse().getStatus());
+            Assertions.assertEquals(500, x.getResponse().getStatus());
         } catch (Exception x) {
-            Assert.fail("Expected InternalServerErrorException");
+            Assertions.fail("Expected InternalServerErrorException");
         }
     }
 
@@ -110,12 +97,12 @@ public class TestLinksInvalidEL {
     public void testELWorksWithoutPackageJSON() throws Exception {
         try {
             client.getBookJSON("foo");
-            Assert.fail("This should have caused a 500");
+            Assertions.fail("This should have caused a 500");
         } catch (InternalServerErrorException x) {
             LOG.error("Failure is " + x.getResponse().readEntity(String.class));
-            Assert.assertEquals(500, x.getResponse().getStatus());
+            Assertions.assertEquals(500, x.getResponse().getStatus());
         } catch (Exception x) {
-            Assert.fail("Expected InternalServerErrorException");
+            Assertions.fail("Expected InternalServerErrorException");
         }
     }
 }
