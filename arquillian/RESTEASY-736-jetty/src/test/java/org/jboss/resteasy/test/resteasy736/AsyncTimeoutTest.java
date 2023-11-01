@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resteasy736;
 
-import static org.junit.Assert.assertTrue;
-
 import java.net.URI;
 
 import jakarta.ws.rs.client.Invocation.Builder;
@@ -9,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -18,10 +16,10 @@ import org.jboss.resteasy.resteasy736.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -29,7 +27,7 @@ import org.junit.runner.RunWith;
  *          <p>
  *          Copyright Aug 3, 2012
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsyncTimeoutTest {
 
@@ -58,13 +56,13 @@ public class AsyncTimeoutTest {
             LOG.error(e.getMessage(), e);
         } finally {
             long elapsed = System.currentTimeMillis() - start;
-            assertTrue(response != null);
-            Assert.assertEquals("Status is wrong", 503, response.getStatus());
-            assertTrue(elapsed < 10000);
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals(503, response.getStatus(), "Status is wrong");
+            Assertions.assertTrue(elapsed < 10000);
         }
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testDefaultAsynchTimeout() throws Exception {
         Builder request = ResteasyClientBuilder.newClient().target(url.toString() + "default/").request();
@@ -76,14 +74,14 @@ public class AsyncTimeoutTest {
         } catch (Exception e) {
             LOG.error("Error: ", e);
         } finally {
+            Assertions.assertNotNull(response);
             LOG.info("finish:  " + System.currentTimeMillis());
             long elapsed = System.currentTimeMillis() - start;
             LOG.info("elapsed: " + elapsed + " ms");
             LOG.info("status: " + response.getStatus());
-            assertTrue(response != null);
             LOG.info("response: " + response.readEntity(String.class));
-            Assert.assertEquals("Wrong response", 503, response.getStatus());
-            Assert.assertTrue("Should timeout", elapsed < 36000); // Jetty async timeout defaults to 30000.
+            Assertions.assertEquals(503, response.getStatus(), "Wrong response");
+            Assertions.assertTrue(elapsed < 36000, "Should timeout"); // Jetty async timeout defaults to 30000.
         }
     }
 }

@@ -35,7 +35,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-jetty-embedded-9</artifactId>
+                <artifactId>arquillian-jetty-embedded-12-ee10</artifactId>
                 <version>${version.arquillian.jetty}</version>
             </dependency>
         </dependencies>
@@ -46,7 +46,6 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <skip>true</skip>
                     <systemPropertyVariables>
                         <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
                     </systemPropertyVariables>
