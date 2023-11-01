@@ -151,6 +151,7 @@
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
                 <module>integration-tests</module>
+                <module>jetty-integration-tests</module>
                 <module>integration-tests-embedded</module>
             </modules>
         </profile>

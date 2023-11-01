@@ -17,10 +17,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
@@ -30,16 +26,21 @@ import jakarta.ws.rs.client.ClientResponseContext;
 import jakarta.ws.rs.client.ClientResponseFilter;
 import jakarta.ws.rs.client.CompletionStageRxInvoker;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 import org.apache.http.entity.ContentType;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpField;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.Callback;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.jetty.JettyClientEngine;
 import org.junit.jupiter.api.AfterEach;
@@ -70,19 +71,21 @@ public class JettyClientEngineTest {
 
     @Test
     public void testSimple() throws Exception {
-        server.setHandler(new AbstractHandler() {
+        server.setHandler(new Handler.Abstract() {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException {
-                baseRequest.setHandled(true);
-                if (baseRequest.getHeader("User-Agent").contains("Apache")) {
+            public boolean handle(final Request request, final org.eclipse.jetty.server.Response response,
+                    final Callback callback) throws Exception {
+
+                if (request.getHeaders().get("User-Agent").contains("Apache")) {
                     response.setStatus(503);
-                } else if (!"abracadabra".equals(baseRequest.getHeader("Password"))) {
+                } else if (!"abracadabra".equals(request.getHeaders().get("Password"))) {
                     response.setStatus(403);
                 } else {
                     response.setStatus(200);
-                    response.getWriter().println("Success");
+                    Content.Sink.write(response, true, "Success", callback);
                 }
+
+                return true;
             }
         });
 
@@ -91,25 +94,26 @@ public class JettyClientEngineTest {
                 .get();
 
         assertEquals(200, response.getStatus());
-        assertEquals("Success" + System.lineSeparator(), response.readEntity(String.class));
+        assertEquals("Success", response.readEntity(String.class));
     }
 
     @Test
     public void testSimpleResponseRx() throws Exception {
-        server.setHandler(new AbstractHandler() {
+        server.setHandler(new Handler.Abstract() {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException {
-                baseRequest.setHandled(true);
-                if (baseRequest.getHeader("User-Agent").contains("Apache")) {
+            public boolean handle(final Request request, final org.eclipse.jetty.server.Response response,
+                    final Callback callback) throws Exception {
+
+                if (request.getHeaders().get("User-Agent").contains("Apache")) {
                     response.setStatus(503);
-                } else if (!"abracadabra".equals(baseRequest.getHeader("Password"))) {
+                } else if (!"abracadabra".equals(request.getHeaders().get("Password"))) {
                     response.setStatus(403);
                 } else {
                     response.setStatus(200);
-                    response.setContentType(ContentType.TEXT_PLAIN.getMimeType());
-                    response.getWriter().println("Success");
+                    response.getHeaders().put(HttpHeaders.CONTENT_TYPE, ContentType.TEXT_PLAIN.getMimeType());
+                    Content.Sink.write(response, true, "Success", callback);
                 }
+                return true;
             }
         });
 
@@ -119,25 +123,26 @@ public class JettyClientEngineTest {
 
         Response response = cs.toCompletableFuture().get();
         assertEquals(200, response.getStatus());
-        assertEquals("Success" + System.lineSeparator(), response.readEntity(String.class));
+        assertEquals("Success", response.readEntity(String.class));
     }
 
     @Test
     public void testSimpleStringRx() throws Exception {
-        server.setHandler(new AbstractHandler() {
+        server.setHandler(new Handler.Abstract() {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException {
-                baseRequest.setHandled(true);
-                if (baseRequest.getHeader("User-Agent").contains("Apache")) {
+            public boolean handle(final Request request, final org.eclipse.jetty.server.Response response,
+                    final Callback callback) throws Exception {
+
+                if (request.getHeaders().get("User-Agent").contains("Apache")) {
                     response.setStatus(503);
-                } else if (!"abracadabra".equals(baseRequest.getHeader("Password"))) {
+                } else if (!"abracadabra".equals(request.getHeaders().get("Password"))) {
                     response.setStatus(403);
                 } else {
                     response.setStatus(200);
-                    response.setContentType(ContentType.TEXT_PLAIN.getMimeType());
-                    response.getWriter().println("Success");
+                    response.getHeaders().put(HttpHeaders.CONTENT_TYPE, ContentType.TEXT_PLAIN.getMimeType());
+                    Content.Sink.write(response, true, "Success", callback);
                 }
+                return true;
             }
         });
 
@@ -146,7 +151,7 @@ public class JettyClientEngineTest {
                 .get(String.class);
 
         String response = cs.toCompletableFuture().get();
-        assertEquals("Success" + System.lineSeparator(), response);
+        assertEquals("Success", response);
     }
 
     @Test
@@ -199,17 +204,18 @@ public class JettyClientEngineTest {
 
     @Test
     public void testTimeout() throws Exception {
-        server.setHandler(new AbstractHandler() {
+        server.setHandler(new Handler.Abstract() {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException {
+            public boolean handle(final Request request, final org.eclipse.jetty.server.Response response,
+                    final Callback callback) throws Exception {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    callback.failed(e);
                     Thread.currentThread().interrupt();
                     throw new AssertionError(e);
                 }
-                baseRequest.setHandled(true);
+                return true;
             }
         });
 
@@ -225,19 +231,19 @@ public class JettyClientEngineTest {
 
     @Test
     public void testIdleTimeout() throws Exception {
-        server.setHandler(new AbstractHandler() {
+        server.setHandler(new Handler.Abstract() {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException {
+            public boolean handle(final Request request, final org.eclipse.jetty.server.Response response,
+                    final Callback callback) throws Exception {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new AssertionError(e);
                 }
-                baseRequest.setHandled(true);
                 response.setStatus(200);
-                response.getWriter().println("Success");
+                Content.Sink.write(response, true, "Success", callback);
+                return true;
             }
         });
 
@@ -257,7 +263,7 @@ public class JettyClientEngineTest {
                 .get();
 
         assertEquals(200, response.getStatus());
-        assertEquals("Success" + System.lineSeparator(), response.readEntity(String.class));
+        assertEquals("Success", response.readEntity(String.class));
 
     }
 
@@ -286,15 +292,21 @@ public class JettyClientEngineTest {
     @Test
     public void testFilterBufferReplay() throws Exception {
         final String greeting = "Success";
-        final byte[] expected = (greeting + System.lineSeparator()).getBytes(StandardCharsets.UTF_8);
-        server.setHandler(new AbstractHandler() {
+        final byte[] expected = (greeting).getBytes(StandardCharsets.UTF_8);
+        server.setHandler(new Handler.Abstract() {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                    throws IOException {
-                baseRequest.setHandled(true);
+            public boolean handle(final Request request, final org.eclipse.jetty.server.Response response,
+                    final Callback callback) throws Exception {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError(e);
+                }
                 response.setStatus(200);
-                response.setContentType(MediaType.TEXT_PLAIN);
-                response.getWriter().println(greeting);
+                response.getHeaders().put(HttpHeaders.CONTENT_TYPE, ContentType.TEXT_PLAIN.getMimeType());
+                Content.Sink.write(response, true, greeting, callback);
+                return true;
             }
         });
 
@@ -306,8 +318,9 @@ public class JettyClientEngineTest {
             }
         };
 
-        try (InputStream response = client().register(capturer).target(baseUri()).request()
-                .get(InputStream.class)) {
+        try (
+                InputStream response = client().register(capturer).target(baseUri()).request()
+                        .get(InputStream.class)) {
             // ignored, we are checking filter
         }
 
@@ -318,25 +331,32 @@ public class JettyClientEngineTest {
         return URI.create("http://localhost:" + ((ServerConnector) server.getConnectors()[0]).getLocalPort());
     }
 
-    static class EchoHandler extends AbstractHandler {
-        @Override
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                throws IOException {
-            baseRequest.setHandled(true);
-            String type = request.getContentType();
-            if (type == null) {
-                type = MediaType.TEXT_PLAIN;
-            }
+    static class EchoHandler extends Handler.Abstract {
 
-            response.setContentType(type);
+        @Override
+        public boolean handle(final Request request, final org.eclipse.jetty.server.Response response, final Callback callback)
+                throws Exception {
             response.setStatus(200);
-            int read;
-            final byte[] data = new byte[1024];
-            final ServletInputStream in = request.getInputStream();
-            final ServletOutputStream out = response.getOutputStream();
-            while ((read = in.read(data)) != -1) {
-                out.write(data, 0, read);
+            long contentLength = -1;
+            for (HttpField field : request.getHeaders()) {
+                if (field.getHeader() != null) {
+                    switch (field.getHeader()) {
+                        case CONTENT_LENGTH -> {
+                            response.getHeaders().add(field);
+                            contentLength = field.getLongValue();
+                        }
+                        case CONTENT_TYPE -> response.getHeaders().add(field);
+                        case TRAILER -> response.setTrailersSupplier(HttpFields.build());
+                        case TRANSFER_ENCODING -> contentLength = Long.MAX_VALUE;
+                    }
+                }
             }
+            if (contentLength > 0)
+                Content.copy(request, response, org.eclipse.jetty.server.Response.newTrailersChunkProcessor(response),
+                        callback);
+            else
+                callback.succeeded();
+            return true;
         }
     }
 }

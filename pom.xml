@@ -156,7 +156,6 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>resteasy-feature-pack</module>
-                <module>arquillian</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
                 <!-- Build this last -->
