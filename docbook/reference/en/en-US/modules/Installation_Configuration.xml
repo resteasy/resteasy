@@ -267,7 +267,7 @@
                 <programlisting><![CDATA[$ galleon.sh install wildfly:current]]></programlisting>
 
                 To install the RESTEasy upgrade on top of that you simply need to use the tool again with the Maven GAV:
-                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:5.0.9.Final]]></programlisting>
+                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:5.0.10.Final-SNAPSHOT]]></programlisting>
             </para>
             <para>
                 If you are using Maven to provision WildFly you can simply add the feature pack to your plugin configuration.
@@ -284,7 +284,7 @@
             <feature-pack>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>galleon-feature-pack</artifactId>
-                <version>5.0.9.Final</version>
+                <version>5.0.10.Final-SNAPSHOT</version>
             </feature-pack>
         </feature-packs>
     </configuration>
@@ -373,17 +373,17 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
-    <version>5.0.9.Final</version>
+    <version>5.0.10.Final-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-client</artifactId>
-    <version>5.0.9.Final</version>
+    <version>5.0.10.Final-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxb-provider</artifactId>
-    <version>5.0.9.Final</version>
+    <version>5.0.10.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
         <para>
@@ -416,7 +416,7 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-servlet-initializer</artifactId>
-    <version>5.0.9.Final</version>
+    <version>5.0.10.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
         </section>
@@ -1426,12 +1426,12 @@ public abstract class Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
-    <version>5.0.9.Final</version>
+    <version>5.0.10.Final-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-client</artifactId>
-    <version>5.0.9.Final</version>
+    <version>5.0.10.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
 
