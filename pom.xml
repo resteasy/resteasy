@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
-        <dep.arquillian-bom.version>1.7.1.Final</dep.arquillian-bom.version>
+        <dep.arquillian-bom.version>1.7.2.Final</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.resteasy.checkstyle>1.0.0.Final</version.org.jboss.resteasy.checkstyle>
         <server.version>30.0.0.Final</server.version>
