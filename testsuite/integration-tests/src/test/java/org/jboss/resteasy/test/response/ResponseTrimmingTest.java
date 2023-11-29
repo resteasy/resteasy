@@ -108,8 +108,9 @@ public class ResponseTrimmingTest {
       String responseText = response.readEntity(String.class);
 
       if (deployment.equals(NO_JSON_B)) {
-         Assert.assertTrue("Unrecognized token does not show", responseText.contains(trimmed));
-         Assert.assertFalse("Unrecognized token is not reasonably trimmed", responseText.contains(trimmed.concat("A")));
+            Assert.assertTrue(
+                    "Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"",
+                    responseText.contains("Not able to deserialize data provided"));
       }
       Assert.assertTrue("Response is longer than 550 characters", responseText.length() <= 550);
 
