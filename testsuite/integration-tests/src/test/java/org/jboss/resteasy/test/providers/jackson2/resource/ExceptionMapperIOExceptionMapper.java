@@ -8,14 +8,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
  * User: rsearls
  * Date: 10/26/16
  */
 @Provider
-public class ExceptionMapperIOExceptionMapper implements ExceptionMapper<Throwable> {
+public class ExceptionMapperIOExceptionMapper implements ExceptionMapper<JsonProcessingException> {
     @Override
-    public Response toResponse(Throwable e) {
+    public Response toResponse(JsonProcessingException e) {
         Map<String, Object> result = new HashMap<>();
         result.put("err_msg", "UN_KNOWN_ERR");
         result.put("err_detail", "please contact admin for help");
