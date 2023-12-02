@@ -64,7 +64,7 @@ public class InputStreamAdapter extends InputStream {
         if (val == -1) {
             return -1;
         }
-        return buffer[0];
+        return buffer[0] & 0xff;
     }
 
     @Override
