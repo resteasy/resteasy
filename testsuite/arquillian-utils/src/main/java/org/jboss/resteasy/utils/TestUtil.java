@@ -331,11 +331,6 @@ public class TestUtil {
         return System.getProperty("java.runtime.name").toLowerCase().contains("openjdk");
     }
 
-    public static boolean isWildFly9x() {
-        final String sv = System.getProperty("server.version");
-        return ("9.0.2.Final".equals(sv) || "9.0.1.Final".equals(sv) || "9.0.0.Final".equals(sv));
-    }
-
     public static boolean isOracleJDK() {
         if (isOpenJDK()) {
             return false;

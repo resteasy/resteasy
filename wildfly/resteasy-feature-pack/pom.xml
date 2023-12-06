@@ -25,6 +25,7 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
         <version>6.2.9.Final-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

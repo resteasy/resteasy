@@ -20,7 +20,6 @@ on:
       - 'resteasy-client-vertx/**'
       - 'resteasy-core/**'
       - 'resteasy-core-spi/**'
-      - 'resteasy-feature-pack/**'
       - 'resteasy-jsapi/**'
       - 'resteasy-links/**'
       - 'resteasy-reactor/**'
@@ -32,6 +31,7 @@ on:
       - 'security/**'
       - 'server-adapters/**'
       - 'testsuite/**'
+      - 'wildfly/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 
@@ -82,7 +82,6 @@ jobs:
         java: ['11', '21']
         profile:
           - '-Dsecurity.manager'
-          - '-Dprovision.preview'
 
     steps:
       - uses: actions/checkout@v4
