@@ -88,13 +88,16 @@
                                             <name>domain</name>
                                         </excluded-packages>
                                     </feature-pack>
-                                    <feature-pack>
-                                        <groupId>${resteasy.test.feature.pack.groupId}</groupId>
-                                        <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
-                                        <version>${resteasy.test.feature.pack.version}</version>
-                                        <inherit-configs>false</inherit-configs>
-                                    </feature-pack>
                                 </feature-packs>
+                                <channels>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>org.jboss.resteasy</groupId>
+                                            <artifactId>resteasy-manifest-${channel.version}</artifactId>
+                                            <version>${project.version}</version>
+                                        </manifest>
+                                    </channel>
+                                </channels>
                                 <galleon-options>
                                     <jboss-maven-dist/>
                                 </galleon-options>
@@ -113,10 +116,6 @@
                 </property>
             </activation>
             <properties>
-                <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-                <resteasy.test.feature.pack.artifactId>galleon-preview-feature-pack</resteasy.test.feature.pack.artifactId>
-                <resteasy.test.feature.pack.version>${version.resteasy.testsuite}</resteasy.test.feature.pack.version>
-
                 <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
                 <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
