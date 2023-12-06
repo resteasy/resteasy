@@ -29,9 +29,9 @@
         <!-- Dependency versions -->
         <version.org.jboss.arquillian>1.8.0.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>4.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
-        <server.version>31.0.1.Final</server.version>
-        <version.org.wildfly>${server.version}</version.org.wildfly>
+        <version.org.wildfly>32.0.0.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta2</version.org.wildfly.arquillian.wildfly-arquillian>
+        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.12</version.org.wildfly.wildfly-channel-maven-plugin>
 
         <jboss.home/>
         <!-- print logs to file by default -->
@@ -49,12 +49,14 @@
         <!-- Provisioning settings -->
         <galleon.fork.embedded>true</galleon.fork.embedded>
         <galleon.offline>false</galleon.offline>
+        <!--suppress XmlUnresolvedReference these properties are created via the build-helper-maven-plugin -->
+        <channel.stream.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</channel.stream.version>
 
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.11</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
-        <version.org.wildfly.plugins.wildfly-maven-plugin>5.0.0.Beta5</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>5.0.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
         <!-- Test options -->
         <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
@@ -155,7 +157,8 @@
                 <module>server-adapters</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
-                <module>resteasy-feature-pack</module>
+                <module>wildfly/resteasy-feature-pack</module>
+                <module>wildfly/resteasy-channel</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
                 <!-- Build this last -->
@@ -475,6 +478,20 @@
                                 <dependencyConvergence/>
                             </rules>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Change the channel.stream.version property to match the current project version major.minor -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>parse-version</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

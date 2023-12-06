@@ -18,9 +18,9 @@ on:
       - 'resteasy-core/**'
       - 'resteasy-core-spi/**'
       - 'resteasy-dependencies-bom/**'
-      - 'resteasy-feature-pack/**'
       - 'resteasy-security/**'
       - 'server-adapters/resteasy-undertow-cdi/**'
+      - 'wildfly/**'
   pull_request:
     branches:
       - '**'
@@ -36,9 +36,9 @@ on:
       - 'resteasy-core/**'
       - 'resteasy-core-spi/**'
       - 'resteasy-dependencies-bom/**'
-      - 'resteasy-feature-pack/**'
       - 'resteasy-security/**'
       - 'server-adapters/resteasy-undertow-cdi/**'
+      - 'wildfly/**'
 
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC

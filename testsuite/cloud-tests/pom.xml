@@ -37,7 +37,7 @@
     <properties>
         <!-- Version properties -->
         <version.io.fabric8.docker-maven-plugin>0.44.0</version.io.fabric8.docker-maven-plugin>
-        <version.wildfly.cloud.galleon.pack>4.0.2.Final</version.wildfly.cloud.galleon.pack>
+        <version.wildfly.cloud.galleon.pack>6.0.0.Final</version.wildfly.cloud.galleon.pack>
 
         <!-- Container configuration properties -->
         <image.name.wildfly.runtime>quay.io/wildfly/wildfly-runtime:latest</image.name.wildfly.runtime>

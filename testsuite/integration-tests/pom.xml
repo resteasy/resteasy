@@ -24,14 +24,6 @@
 
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
-        <!-- Provisioning properties -->
-        <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-        <resteasy.test.feature.pack.artifactId>galleon-feature-pack</resteasy.test.feature.pack.artifactId>
-        <resteasy.test.feature.pack.version>${project.version}</resteasy.test.feature.pack.version>
-
-        <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
-        <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
     </properties>
 
@@ -70,7 +62,7 @@
                                     <feature-pack>
                                         <groupId>${server.test.feature.pack.groupId}</groupId>
                                         <artifactId>${server.test.feature.pack.artifactId}</artifactId>
-                                        <version>${server.test.feature.pack.version}</version>
+                                        <version>${server.version}</version>
                                         <inherit-configs>false</inherit-configs>
                                         <included-configs>
                                             <config>
@@ -88,13 +80,26 @@
                                             <name>domain</name>
                                         </excluded-packages>
                                     </feature-pack>
-                                    <feature-pack>
-                                        <groupId>${resteasy.test.feature.pack.groupId}</groupId>
-                                        <artifactId>${resteasy.test.feature.pack.artifactId}</artifactId>
-                                        <version>${resteasy.test.feature.pack.version}</version>
-                                        <inherit-configs>false</inherit-configs>
-                                    </feature-pack>
                                 </feature-packs>
+                                <channels>
+                                    <!-- If the server.version is blank the newest version of WildFly will be used. Otherwise, be
+                                         explicit.
+                                     -->
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${wildfly.channel.manifest.groupId}</groupId>
+                                            <artifactId>${wildfly.channel.manifest.artifactId}</artifactId>
+                                            <version>${server.version}</version>
+                                        </manifest>
+                                    </channel>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${resteasy.channel.manifest.groupId}</groupId>
+                                            <artifactId>${resteasy.channel.manifest.artifactId}</artifactId>
+                                            <version>${resteasy.channel.manifest.version}</version>
+                                        </manifest>
+                                    </channel>
+                                </channels>
                                 <galleon-options>
                                     <jboss-maven-dist/>
                                 </galleon-options>
@@ -104,33 +109,6 @@
                 </plugin>
             </plugins>
           </build>
-        </profile>
-        <profile>
-            <id>provision-preview</id>
-            <activation>
-                <property>
-                    <name>provision.preview</name>
-                </property>
-            </activation>
-            <properties>
-                <resteasy.test.feature.pack.groupId>org.jboss.resteasy</resteasy.test.feature.pack.groupId>
-                <resteasy.test.feature.pack.artifactId>galleon-preview-feature-pack</resteasy.test.feature.pack.artifactId>
-                <resteasy.test.feature.pack.version>${version.resteasy.testsuite}</resteasy.test.feature.pack.version>
-
-                <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-                <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
-                <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludedGroups>managed-bean-support-required</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
             <id>provision-without-resteasy</id>
@@ -144,35 +122,21 @@
                         <artifactId>wildfly-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>server-provisioning</id>
+                                <id>server-provisioning-without-resteasy</id>
                                 <phase>generate-test-resources</phase>
                                 <goals>
                                     <goal>provision</goal>
                                 </goals>
                                 <configuration>
-                                    <feature-packs>
-                                        <feature-pack>
-                                            <groupId>${server.test.feature.pack.groupId}</groupId>
-                                            <artifactId>${server.test.feature.pack.artifactId}</artifactId>
-                                            <version>${server.test.feature.pack.version}</version>
-                                            <inherit-configs>false</inherit-configs>
-                                            <included-configs>
-                                                <config>
-                                                    <model>standalone</model>
-                                                    <name>standalone-full.xml</name>
-                                                </config>
-                                                <config>
-                                                    <model>standalone</model>
-                                                    <name>standalone.xml</name>
-                                                </config>
-                                            </included-configs>
-                                            <excluded-packages>
-                                                <name>docs.schema</name>
-                                                <name>appclient</name>
-                                                <name>domain</name>
-                                            </excluded-packages>
-                                        </feature-pack>
-                                    </feature-packs>
+                                    <channels>
+                                        <!-- Always use the latest version of the WildFly channel -->
+                                        <channel>
+                                            <manifest>
+                                                <groupId>${wildfly.channel.manifest.groupId}</groupId>
+                                                <artifactId>${wildfly.channel.manifest.artifactId}</artifactId>
+                                            </manifest>
+                                        </channel>
+                                    </channels>
                                 </configuration>
                             </execution>
                         </executions>
