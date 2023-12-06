@@ -87,7 +87,8 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
         logger.info("response: " + response);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
-        Assert.assertTrue(response.contains("Configured `PolymorphicTypeValidator`") && response.contains("denied resolution"));
+        Assert.assertTrue("Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"",
+                response.contains("Not able to deserialize data provided"));
     }
 
     @Test
@@ -96,7 +97,8 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
         logger.info("response: " + response);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
-        Assert.assertTrue(response.contains("Configured `PolymorphicTypeValidator`") && response.contains("denied resolution"));
+        Assert.assertTrue("Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"",
+                response.contains("Not able to deserialize data provided"));
     }
 
     private String createJSONString(TestPolymorphicType t) throws Exception {
