@@ -27,7 +27,9 @@ public class AsynchronousResponseInjector implements ValueInjector {
     @Override
     public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
         ResteasyAsynchronousResponse asynchronousResponse = null;
-        if (timeout == -1) {
+        if (request.getAsyncContext().isSuspended()) {
+            asynchronousResponse = request.getAsyncContext().getAsyncResponse();
+        } else if (timeout == -1) {
             asynchronousResponse = request.getAsyncContext().suspend();
         } else {
             asynchronousResponse = request.getAsyncContext().suspend(timeout, unit);
