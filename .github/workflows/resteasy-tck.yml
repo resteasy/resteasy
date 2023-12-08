@@ -103,8 +103,8 @@ jobs:
         with:
           name: test-reports-${{ matrix.os }}-${{ matrix.java }}
           path: |
-            '**/surefire-reports/'
-            '**/failsafe-reports/'
+            '**/surefire-reports/*'
+            '**/failsafe-reports/*'
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
