@@ -9,6 +9,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     ignore:
       - dependency-name: 'jakarta.el:jakarta.el-api'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
@@ -37,6 +41,12 @@ updates:
     target-branch: "6.2"
     schedule:
       interval: "daily"
+      dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: 'io.projectreactor:*'
         # Allow bouncy castle to upgrade the minor versions
@@ -58,6 +68,12 @@ updates:
     target-branch: "5.0"
     schedule:
       interval: "daily"
+      dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: 'io.projectreactor:*'
         # Allow bouncy castle to upgrade the minor versions
