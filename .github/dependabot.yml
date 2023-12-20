@@ -10,9 +10,10 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      dependencies:
+      netty-vertx-dependencies:
         patterns:
-          - "*"
+          - "io.netty*"
+          - "io.vertx*"
     ignore:
       - dependency-name: 'jakarta.el:jakarta.el-api'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
@@ -42,9 +43,10 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      dependencies:
+      netty-vertx-dependencies:
         patterns:
-          - "*"
+          - "io.netty*"
+          - "io.vertx*"
         update-types:
           - "minor"
           - "patch"
@@ -70,9 +72,10 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      dependencies:
+      netty-vertx-dependencies:
         patterns:
-          - "*"
+          - "io.netty*"
+          - "io.vertx*"
         update-types:
           - "minor"
           - "patch"
