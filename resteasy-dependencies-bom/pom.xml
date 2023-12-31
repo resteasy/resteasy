@@ -892,6 +892,12 @@
                 <version>${version.hamcrest}</version>
             </dependency>
             <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
+                <version>${version.hamcrest}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-api</artifactId>
                 <version>${version.weld.api}</version>
