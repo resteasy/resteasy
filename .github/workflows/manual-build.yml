@@ -31,13 +31,13 @@ jobs:
       - name: Build on ${{ inputs.os }} with Java ${{ inputs.javaVersion }}
         run: mvn clean install
       - name: Upload surefire reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: surefire-reports
           path: '**/surefire-reports/*'
       - name: Upload server logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: server-logs
