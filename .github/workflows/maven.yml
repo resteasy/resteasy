@@ -65,12 +65,12 @@ jobs:
         if: runner.os == 'Windows'
         run:  |
           mvn clean install -U -B -fae '-Dgithub.actions' '"-Djava8.home=%JAVA_HOME_8_X64%"'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/*.txt'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
@@ -110,12 +110,12 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           mvn clean install -U -B -fae -rf ':resteasy-testsuite' '-Dgithub.actions' '"-Dtest.java8.home=%JAVA_HOME_8_X64%"'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/**'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
