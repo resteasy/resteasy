@@ -48,7 +48,7 @@ jobs:
           cache: 'maven'
       - name: Setup minikube
         id: minikube
-        uses: manusa/actions-setup-minikube@v2.9.0
+        uses: manusa/actions-setup-minikube@v2.10.0
         with:
           driver: docker
           container runtime: containerd
