@@ -37,7 +37,7 @@
     </issueManagement>
 
     <properties>
-        <version.com.fasterxml.classmate>1.6.0</version.com.fasterxml.classmate>
+        <version.com.fasterxml.classmate>1.7.0</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.15.3</version.com.fasterxml.jackson>
         <version.com.google.guava>32.1.1-jre</version.com.google.guava>
         <version.com.google.guava.failureaccess>1.0.2</version.com.google.guava.failureaccess>
