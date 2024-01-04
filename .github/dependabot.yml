@@ -14,6 +14,18 @@ updates:
         patterns:
           - "io.netty*"
           - "io.vertx*"
+      fasterxml-dependencies:
+        patterns:
+          - "com.fasterxml*"
+          - "com.github.java-json-tools*"
+      guava-dependencies:
+        patterns:
+          - "com.google.guava*"
+      jakarta-json-dependencies:
+        patterns:
+          - "jakarta.json*"
+          - "org.eclipse.parsson*"
+          - "org.eclipse:yasson*"
     ignore:
       - dependency-name: 'jakarta.el:jakarta.el-api'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
@@ -36,6 +48,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
   # 6.2 branch
   - package-ecosystem: "maven"
     directory: "/"
@@ -50,6 +66,27 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      fasterxml-dependencies:
+        patterns:
+          - "com.fasterxml*"
+          - "com.github.java-json-tools*"
+        update-types:
+          - "minor"
+          - "patch"
+      guava-dependencies:
+        patterns:
+          - "com.google.guava*"
+        update-types:
+          - "minor"
+          - "patch"
+      jakarta-json-dependencies:
+        patterns:
+          - "jakarta.json*"
+          - "org.eclipse.parsson*"
+          - "org.eclipse:yasson*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: 'io.projectreactor:*'
         # Allow bouncy castle to upgrade the minor versions
@@ -65,6 +102,10 @@ updates:
     target-branch: "6.2"
     schedule:
       interval: "daily"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
   # 5.0 branch
   - package-ecosystem: "maven"
     directory: "/"
@@ -76,6 +117,27 @@ updates:
         patterns:
           - "io.netty*"
           - "io.vertx*"
+        update-types:
+          - "minor"
+          - "patch"
+      fasterxml-dependencies:
+        patterns:
+          - "com.fasterxml*"
+          - "com.github.java-json-tools*"
+        update-types:
+          - "minor"
+          - "patch"
+      guava-dependencies:
+        patterns:
+          - "com.google.guava*"
+        update-types:
+          - "minor"
+          - "patch"
+      jakarta-json-dependencies:
+        patterns:
+          - "jakarta.json*"
+          - "org.eclipse.parsson*"
+          - "org.eclipse:yasson*"
         update-types:
           - "minor"
           - "patch"
@@ -94,3 +156,7 @@ updates:
     target-branch: "5.0"
     schedule:
       interval: "daily"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
