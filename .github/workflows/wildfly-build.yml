@@ -20,6 +20,11 @@ on:
       - 'resteasy-feature-pack/**'
       - 'testsuite/arquillian-utils/**'
       - 'testsuite/integration-tests/**'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/wildfly-build.yml'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 

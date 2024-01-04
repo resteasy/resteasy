@@ -8,6 +8,7 @@ on:
     branches:
       - '**'
     paths:
+      - '.github/workflows/cloud-tests.yml'
       - 'providers/**'
       - 'resteasy-bom/**'
       - 'resteasy-cdi/**'
