@@ -25,6 +25,7 @@ on:
     branches:
       - '**'
     paths:
+      - '.github/workflows/resteasy-tck.yml'
       - 'pom.xml'
       - 'providers/**'
       - 'resteasy-bom/**'
