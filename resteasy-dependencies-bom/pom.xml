@@ -44,7 +44,7 @@
         <version.com.google.guava.failureaccess>1.0.2</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>1.6.7</version.jakarta.mail>
-        <version.org.glassfish.jaxb.jaxb>2.3.8</version.org.glassfish.jaxb.jaxb>
+        <version.org.glassfish.jaxb.jaxb>2.3.9</version.org.glassfish.jaxb.jaxb>
         <version.com.sun.xml.fastinfoset>1.2.18</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.9.0</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.15</version.commons-codec.commons-codec>
