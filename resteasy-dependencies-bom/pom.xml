@@ -43,7 +43,7 @@
         <version.com.google.guava.failureaccess>1.0.2</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>2.1.2</version.jakarta.mail>
-        <version.org.glassfish.jaxb>4.0.3</version.org.glassfish.jaxb>
+        <version.org.glassfish.jaxb>4.0.4</version.org.glassfish.jaxb>
         <version.com.sun.istack>4.1.2</version.com.sun.istack>
         <version.com.sun.xml.fastinfoset>2.1.1</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.13.0</version.commons-io.commons-io>
