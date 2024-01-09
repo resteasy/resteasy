@@ -67,5 +67,7 @@ public class InputStreamResourceTest extends ClientTestBase {
         Assert.assertEquals("new value", client.getAsString());
         client.postInputStream(new ByteArrayInputStream("new value 2".getBytes()));
         Assert.assertEquals("new value 2", client.getAsString());
+        client.postInputStream(new ByteArrayInputStream("".getBytes()));
+        Assert.assertEquals("", client.getAsString());
     }
 }

@@ -51,13 +51,6 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Asyn
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
         try {
-            int c = inputStream.read();
-            if (c == -1) {
-                httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(0));
-                entityStream.write(new byte[0]); // fix RESTEASY-204
-                return;
-            } else
-                entityStream.write(c);
             ProviderHelper.writeTo(inputStream, entityStream);
         } finally {
             inputStream.close();
