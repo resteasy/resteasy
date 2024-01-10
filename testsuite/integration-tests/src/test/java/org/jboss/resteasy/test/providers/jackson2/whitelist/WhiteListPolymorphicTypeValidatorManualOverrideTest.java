@@ -16,8 +16,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.AwaitingUpgradeInWildFly;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.AbstractVehicle;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.TestPolymorphicType;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.air.Aircraft;
@@ -31,6 +33,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +45,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(AwaitingUpgradeInWildFly.class)
+@FollowUpRequired("Caused by RESTEASY-3380. Once upgraded in WildFly, we can re-enable this test")
 public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
 
     protected static final Logger logger = Logger

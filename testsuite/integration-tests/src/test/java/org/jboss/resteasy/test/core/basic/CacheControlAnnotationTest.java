@@ -10,7 +10,9 @@ import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.AwaitingUpgradeInWildFly;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.core.basic.resource.CacheAnnotationInheritance;
 import org.jboss.resteasy.test.core.basic.resource.CacheControlAnnotationResource;
 import org.jboss.resteasy.test.core.basic.resource.CacheControlAnnotationResourceInheritance;
@@ -22,6 +24,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -119,6 +122,8 @@ public class CacheControlAnnotationTest {
      * @tpSince RESTEasy 7.0.0
      */
     @Test
+    @Category(AwaitingUpgradeInWildFly.class)
+    @FollowUpRequired("Caused by RESTEASY-3111. Once upgraded in WildFly, we can re-enable this test")
     public void testInheritedResourceValid() {
         WebTarget base = client.target(generateURL("/inheritance"));
 
