@@ -57,7 +57,7 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>dev.resteasy.test</groupId>
+                <groupId>org.jboss.resteasy.test</groupId>
                 <artifactId>test-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>

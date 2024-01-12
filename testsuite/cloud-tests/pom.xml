@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>dev.resteasy.cloud.tests</groupId>
+    <groupId>org.jboss.resteasy.cloud.tests</groupId>
     <artifactId>cloud-tests</artifactId>
     <name>RESTEasy Cloud Testsuite</name>
     <packaging>pom</packaging>
@@ -65,7 +65,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.resteasy.test</groupId>
+            <groupId>org.jboss.resteasy.test</groupId>
             <artifactId>test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
