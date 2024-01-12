@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-testsuite</artifactId>
-        <version>6.2.6.Final</version>
+        <version>6.2.7.Final-SNAPSHOT</version>
     </parent>
 
     <artifactId>arquillian-utils</artifactId>
-    <version>6.2.6.Final</version>
+    <version>6.2.7.Final-SNAPSHOT</version>
     <name>RESTEasy Main testsuite: Arquillian utils</name>
     <packaging>jar</packaging>
     <properties>
