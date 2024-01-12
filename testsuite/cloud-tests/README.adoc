@@ -1,0 +1,151 @@
+= RESTEasy Cloud Testsuite
+
+Cloud test suite for RESTEasy
+
+== Usage
+
+For complete details see the https://github.com/wildfly-extras/wildfly-cloud-tests?tab=readme-ov-file#wildfly-cloud-testsuite[WildFly Cloud Tests].
+
+=== Prerequisites for Kubernetes
+
+* Install `docker` or `podman` and `kubectl`.
+* If you are using `podman` you first need to configure it :
+
+[source,bash]
+----
+systemctl --user enable --now podman.socket
+----
+and check the status
+
+[source,bash]
+----
+systemctl status --user podman.socket
+----
+
+This should return the socket path that you need to specify for minikube to start: something like `/run/user/$+{GUID}+/podman/podman.sock`.
+You need to set the environment variable `DOCKER_HOST` to the proper URL (don't forget une `unix://` prefix).
+
+[source,bash]
+----
+export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+----
+
+Also until at least until Minikube v1.26, podman is ran using sudo (cf. https://minikube.sigs.k8s.io/docs/drivers/podman/[Minikube podman page]).
+
+Thus you need to add your current user to the */etc/sudoers* file by appending the following line to it: `$+{usernamme}+ ALL=(ALL) NOPASSWD: /usr/bin/podman`.
+
+Install and start `minikube`, making sure it has enough memory
+
+[source,bash]
+----
+minikube start --memory=4gb
+----
+
+If you are using `podman` you should specify the driver like this
+
+[source,bash]
+----
+minikube start --memory=4gb --driver=podman
+----
+
+Install https://minikube.sigs.k8s.io/docs/handbook/registry/[Minikube registry]
+
+[source,bash]
+----
+minikube addons enable registry
+----
+
+In order to push to the minikube registry and expose it on localhost:5000:
+
+[source,bash]
+----
+ # On Mac:
+docker run –rm -it –network=host alpine ash -c "apk add socat && socat TCP-LISTEN:5000,reuseaddr,fork TCP:$(minikube ip):5000"
+
+# On Linux:
+kubectl port-forward –namespace kube-system service/registry 5000:80 &
+
+# On Windows:
+kubectl port-forward –namespace kube-system service/registry 5000:80
+docker run –rm -it –network=host alpine ash -c "apk add socat && socat TCP-LISTEN:5000,reuseaddr,fork TCP:host.docker.internal:5000"
+----
+
+On linux you might need to add this registry as an insecure one by editing the file */etc/containers/registries.conf* and adding the following lines:
+
+----
+[[registry]]
+location="localhost:5000"
+insecure=true
+----
+
+==== Fedora 37+ Set Up
+
+The following steps should get you up and running on Fedora:
+
+* Install podman
+
+[source,bash]
+----
+dnf install podman podman-docker
+----
+
+* Edit the `/etc/containers/registries.conf` and add the following:
+
+----
+[[registry]]
+location="localhost:5000"
+insecure=true
+----
+
+* Start minikube
+
+[source,bash]
+----
+minikube start --container-runtime=containerd
+----
+
+* Enable addons in minikube
+
+[source,bash]
+----
+minikube addons enable registry
+----
+
+* Expose port 5000 for the tests
+
+[source,bash]
+----
+kubectl port-forward --namespace kube-system service/registry 5000:80
+----
+
+* Run the tests
+
+[source,bash]
+----
+mvn clean verify
+----
+
+=== Run the tests
+
+There are two maven profiles, which are run independently:
+
+* `kubernetes-tests` - This is active by default, and runs the tests tagged with `@Tag(WildFlyTags.KUBERNETES)`. These tests target Kubernetes, running on Minikube as outlined above.
+
+==== Kubernetes tests
+
+[source,bash]
+----
+mvn -Pimages clean install
+----
+
+By default, the tests assume that you are connecting to a registry on `localhost:5000`,
+which we set up earlier. If you wish to override the registry, you can use the
+following system properties:
+
+* `wildfly.cloud.test.docker.host` - to override the host
+* `wildfly.cloud.test.docker.port` - to override the port
+* `dekorate.docker.registry` - to override the whole `<host>:<port>` in one go. 
+
+`-Pimages` causes the images defined in the `/images` sub-directories to be built.
+To save time, when developing locally, once you have built your images,
+omit `-Pimages`.

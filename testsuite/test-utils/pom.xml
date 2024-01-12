@@ -28,7 +28,7 @@
         <version>7.0.0.Alpha1-SNAPSHOT</version>
     </parent>
 
-    <groupId>dev.resteasy.test</groupId>
+    <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>test-utils</artifactId>
     <name>RESTEasy Test: Testing utilities</name>
 
