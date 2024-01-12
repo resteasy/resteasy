@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>6.2.7.Final</version>
+        <version>6.2.8.Final-SNAPSHOT</version>
     </parent>
     <artifactId>resteasy-cdi</artifactId>
     <name>RESTEasy CDI integration module</name>
