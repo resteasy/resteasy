@@ -23,7 +23,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>dev.resteasy.cloud.tests</groupId>
+        <groupId>org.jboss.resteasy.cloud.tests</groupId>
         <artifactId>cloud-tests</artifactId>
         <version>6.2.6.Final-SNAPSHOT</version>
     </parent>
@@ -49,7 +49,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>dev.resteasy.test</groupId>
+            <groupId>org.jboss.resteasy.test</groupId>
             <artifactId>test-utils</artifactId>
             <scope>provided</scope>
         </dependency>
