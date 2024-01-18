@@ -15,7 +15,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.config.Configuration;
-import org.jboss.resteasy.spi.config.DefaultConfiguration;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 /**
@@ -26,7 +26,7 @@ import org.jboss.resteasy.util.HttpHeaderNames;
  */
 public abstract class ConfigurationBootstrap implements ResteasyConfiguration {
     private ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-    private final Configuration config = new DefaultConfiguration(this);
+    private final Configuration config = ConfigurationFactory.getInstance().getConfiguration(this);
 
     public ResteasyDeployment createDeployment() {
         String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
