@@ -30,7 +30,7 @@
         <dep.arquillian-bom.version>1.7.2.Final</dep.arquillian-bom.version>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <server.version>30.0.1.Final</server.version>
-        <version.org.wildfly>${server.version}</version.org.wildfly>
+        <version.org.wildfly>31.0.0.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.0.1.Final</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
