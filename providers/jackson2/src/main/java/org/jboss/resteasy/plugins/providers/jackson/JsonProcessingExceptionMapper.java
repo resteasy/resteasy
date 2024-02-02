@@ -35,6 +35,6 @@ public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProces
     @Override
     public Response toResponse(final JsonProcessingException exception) {
         JacksonLogger.LOGGER.logCannotDeserialize(exception);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(JacksonLogger.LOGGER.cannotDeserialize()).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(JacksonLogger.LOGGER.cannotDeserialize()).build();
     }
 }
