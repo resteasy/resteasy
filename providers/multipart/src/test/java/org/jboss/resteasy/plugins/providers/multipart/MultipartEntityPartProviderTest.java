@@ -22,6 +22,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,10 +48,10 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -59,12 +60,12 @@ public class MultipartEntityPartProviderTest {
 
     private static SeBootstrap.Instance INSTANCE;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws Exception {
         INSTANCE = SeBootstrap.start(TestApplication.class).toCompletableFuture().get(10, TimeUnit.SECONDS);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() throws Exception {
         final SeBootstrap.Instance instance = INSTANCE;
         if (instance != null) {
@@ -91,7 +92,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 2) {
@@ -100,15 +101,15 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 EntityPart part = find(entityParts, "received-content");
-                Assert.assertNotNull(getMessage(entityParts), part);
-                Assert.assertEquals("test content", part.getContent(String.class));
+                Assertions.assertNotNull(part, () -> getMessage(entityParts));
+                Assertions.assertEquals("test content", part.getContent(String.class));
 
                 part = find(entityParts, "added-content");
-                Assert.assertNotNull(getMessage(entityParts), part);
-                Assert.assertEquals("test added content", part.getContent(String.class));
+                Assertions.assertNotNull(part, () -> getMessage(entityParts));
+                Assertions.assertEquals("test added content", part.getContent(String.class));
             }
         }
     }
@@ -147,7 +148,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -156,7 +157,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test entity part");
                 checkEntity(entityParts, "received-string", "test string");
@@ -202,7 +203,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -211,7 +212,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test entity part file1.txt");
                 checkEntity(entityParts, "received-string", "test string file2.txt");
@@ -245,7 +246,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -254,7 +255,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test content");
                 checkEntity(entityParts, "received-string", "test content");
@@ -266,11 +267,12 @@ public class MultipartEntityPartProviderTest {
     private static void checkEntity(final List<EntityPart> entityParts, final String name, final String expectedText)
             throws IOException {
         final EntityPart part = find(entityParts, name);
-        Assert.assertNotNull(String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)), part);
-        Assert.assertEquals(expectedText, part.getContent(String.class));
+        Assertions.assertNotNull(part,
+                () -> String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)));
+        Assertions.assertEquals(expectedText, part.getContent(String.class));
     }
 
-    private static String getMessage(final List<EntityPart> parts) throws IOException {
+    private static String getMessage(final List<EntityPart> parts) {
         final StringBuilder msg = new StringBuilder();
         final Iterator<EntityPart> iter = parts.iterator();
         while (iter.hasNext()) {
@@ -294,19 +296,23 @@ public class MultipartEntityPartProviderTest {
         return msg.toString();
     }
 
-    private static String toString(final InputStream in) throws IOException {
-        // try-with-resources fails here due to a bug in the
-        //noinspection TryFinallyCanBeTryWithResources
+    private static String toString(final InputStream in) {
         try {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[32];
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
+            // try-with-resources fails here due to a bug in the
+            //noinspection TryFinallyCanBeTryWithResources
+            try {
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buffer = new byte[32];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, len);
+                }
+                return out.toString(StandardCharsets.UTF_8);
+            } finally {
+                in.close();
             }
-            return out.toString(StandardCharsets.UTF_8);
-        } finally {
-            in.close();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -338,7 +344,7 @@ public class MultipartEntityPartProviderTest {
         public Response form(final List<EntityPart> parts) throws IOException {
             final List<EntityPart> multipart = List.of(
                     EntityPart.withName("received-content")
-                            .content(parts.get(0).getContent(byte[].class))
+                            .content(parts.getFirst().getContent(byte[].class))
                             .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
                             .build(),
                     EntityPart.withName("added-content")
