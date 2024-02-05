@@ -25,8 +25,8 @@ import java.util.Map;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -49,9 +49,9 @@ public class MultipartFormDataOutputTest {
         // Expect the exact order
         final List<String> expectedKeys = new LinkedList<>(expectedMap.keySet());
         final List<String> outputKeys = new LinkedList<>(output.getFormDataMap().keySet());
-        Assert.assertEquals("The size of the keys do not match", expectedKeys.size(), outputKeys.size());
+        Assertions.assertEquals(expectedKeys.size(), outputKeys.size(), "The size of the keys do not match");
         for (int i = 0; i < expectedMap.size(); i++) {
-            Assert.assertEquals(expectedKeys.get(i), outputKeys.get(i));
+            Assertions.assertEquals(expectedKeys.get(i), outputKeys.get(i));
         }
     }
 }

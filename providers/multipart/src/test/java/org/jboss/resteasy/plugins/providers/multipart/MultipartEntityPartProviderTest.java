@@ -58,10 +58,10 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -70,12 +70,12 @@ public class MultipartEntityPartProviderTest {
 
     private static SeBootstrap.Instance INSTANCE;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() throws Exception {
         INSTANCE = SeBootstrap.start(TestApplication.class).toCompletableFuture().get(10, TimeUnit.SECONDS);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() throws Exception {
         final SeBootstrap.Instance instance = INSTANCE;
         if (instance != null) {
@@ -102,7 +102,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 2) {
@@ -111,13 +111,15 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 EntityPart part = find(entityParts, "received-content");
-                Assert.assertEquals("test content", part.getContent(String.class));
+                Assertions.assertNotNull(part, () -> getMessage(entityParts));
+                Assertions.assertEquals("test content", part.getContent(String.class));
 
                 part = find(entityParts, "added-content");
-                Assert.assertEquals("test added content", part.getContent(String.class));
+                Assertions.assertNotNull(part, () -> getMessage(entityParts));
+                Assertions.assertEquals("test added content", part.getContent(String.class));
             }
         }
     }
@@ -156,7 +158,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -165,7 +167,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test entity part");
                 checkEntity(entityParts, "received-string", "test string");
@@ -211,7 +213,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -220,7 +222,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test entity part file1.txt");
                 checkEntity(entityParts, "received-string", "test string file2.txt");
@@ -254,7 +256,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -263,7 +265,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test content");
                 checkEntity(entityParts, "received-string", "test content");
@@ -311,7 +313,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -320,7 +322,7 @@ public class MultipartEntityPartProviderTest {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
 
                 EntityPart part = find(entityParts, "received-entity-part");
@@ -404,7 +406,7 @@ public class MultipartEntityPartProviderTest {
                             .request(MediaType.APPLICATION_JSON_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
 
                 final JsonObject json = response.readEntity(JsonObject.class);
                 JsonObject part = json.getJsonObject("entity-part");
@@ -430,24 +432,23 @@ public class MultipartEntityPartProviderTest {
 
     private static void checkEntity(final EntityPart part, final String expectedText)
             throws IOException {
-        Assert.assertEquals(expectedText, part.getContent(String.class));
+        Assertions.assertEquals(expectedText, part.getContent(String.class));
     }
 
     private static void checkHeader(final JsonObject json, final String name, final String... expectedValues) {
         final JsonArray array = json.getJsonArray(name);
-        Assert.assertNotNull(String.format("Failed to find array %s in %s", name, json), array);
+        Assertions.assertNotNull(array, String.format("Failed to find array %s in %s", name, json));
         final List<String> found = array.stream()
                 .filter(v -> v.getValueType() == JsonValue.ValueType.STRING)
                 .map(v -> ((JsonString) v).getString())
                 .collect(Collectors.toList());
-        Assert.assertTrue(List.of(expectedValues).containsAll(found));
+        Assertions.assertTrue(List.of(expectedValues).containsAll(found));
     }
 
     private static void checkHeader(final MultivaluedMap<String, String> headers, final String name,
             final String expectedValue) {
-        Assert.assertEquals(
-                String.format("Missing header name \"%s\" in %s", name, formatHeaders(new StringBuilder(), headers)),
-                expectedValue, headers.getFirst(name));
+        Assertions.assertEquals(expectedValue, headers.getFirst(name),
+                String.format("Missing header name \"%s\" in %s", name, formatHeaders(new StringBuilder(), headers)));
     }
 
     private static StringBuilder formatHeaders(final StringBuilder builder, final MultivaluedMap<String, String> headers) {
