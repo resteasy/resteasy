@@ -83,6 +83,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>resteasy-json-p-provider</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>resteasy-undertow-cdi</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
