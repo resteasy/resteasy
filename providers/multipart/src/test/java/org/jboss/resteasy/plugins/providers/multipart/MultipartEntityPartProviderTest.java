@@ -22,13 +22,22 @@ package org.jboss.resteasy.plugins.providers.multipart;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
@@ -45,6 +54,8 @@ import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
 import org.junit.AfterClass;
@@ -103,11 +114,9 @@ public class MultipartEntityPartProviderTest {
                     Assert.fail(msg);
                 }
                 EntityPart part = find(entityParts, "received-content");
-                Assert.assertNotNull(getMessage(entityParts), part);
                 Assert.assertEquals("test content", part.getContent(String.class));
 
                 part = find(entityParts, "added-content");
-                Assert.assertNotNull(getMessage(entityParts), part);
                 Assert.assertEquals("test added content", part.getContent(String.class));
             }
         }
@@ -263,14 +272,195 @@ public class MultipartEntityPartProviderTest {
         }
     }
 
+    /**
+     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Three parts are sent
+     * and processed by the resource returning all the headers from the request.
+     * <p>
+     * The result from the REST endpoint is a list of {@link EntityPart}'s which content the content from the entity
+     * sent, plus any header beginning with "test-".
+     * </p>
+     *
+     * @throws Exception if an error occurs in the test
+     */
+    @Test
+    public void echo() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("entity-part")
+                            .content("test entity part")
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .header("test-entity-1", "part1")
+                            .header("test-content-type", MediaType.TEXT_PLAIN)
+                            .build(),
+                    EntityPart.withName("string-part")
+                            .content("test string")
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .header("test-entity-2", "part2")
+                            .header("test-content-type", MediaType.TEXT_PLAIN)
+                            .build(),
+                    EntityPart.withName("input-stream-part")
+                            .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .header("test-entity-3", "part3")
+                            .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration()
+                            .baseUriBuilder()
+                            .path("test/echo"))
+                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+                });
+                if (entityParts.size() != 3) {
+                    final String msg = "Expected 3 entries got " +
+                            entityParts.size() +
+                            '.' +
+                            System.lineSeparator() +
+                            getMessage(entityParts);
+                    Assert.fail(msg);
+                }
+
+                EntityPart part = find(entityParts, "received-entity-part");
+                checkEntity(part, "test entity part");
+                MultivaluedMap<String, String> headers = part.getHeaders();
+                checkHeader(headers, "test-entity-1", "part1");
+                checkHeader(headers, "test-content-type", MediaType.TEXT_PLAIN);
+
+                part = find(entityParts, "received-string-part");
+                checkEntity(part, "test string");
+                headers = part.getHeaders();
+                checkHeader(headers, "test-entity-2", "part2");
+                checkHeader(headers, "test-content-type", MediaType.TEXT_PLAIN);
+
+                part = find(entityParts, "received-input-stream-part");
+                checkEntity(part, "test input stream");
+                headers = part.getHeaders();
+                checkHeader(headers, "test-entity-3", "part3");
+                checkHeader(headers, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
+            }
+        }
+    }
+
+    /**
+     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Three parts are sent
+     * and processed by the resource returning all the headers from the request.
+     * <p>
+     * The result from the REST endpoint is a JSON object containing the headers for each entry.
+     * <br>
+     * Example:
+     * <code>
+     *     <pre>
+     * {
+     *     "entity-part": {
+     *         "Content-Disposition": [
+     *             "form-data; name=\"entity-part\""
+     *         ],
+     *         "Content-Type": [
+     *             "text/plain"
+     *         ],
+     *         "test-content-type": [
+     *             "text/plain"
+     *         ],
+     *         "test-entity-1": [
+     *             "part1"
+     *         ]
+     *     }
+     * }
+     *     </pre>
+     * </code>
+     * </p>
+     *
+     * @throws Exception if an error occurs in the test
+     */
+    @Test
+    public void echoHeaders() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("entity-part")
+                            .content("test entity part")
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .header("test-entity-1", "part1")
+                            .header("test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM)
+                            .build(),
+                    EntityPart.withName("string-part")
+                            .content("test string")
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .header("test-entity-2", "part2")
+                            .header("test-content-type", MediaType.TEXT_PLAIN)
+                            .build(),
+                    EntityPart.withName("input-stream-part")
+                            .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .header("test-entity-3", "part3")
+                            .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration()
+                            .baseUriBuilder()
+                            .path("test/echo-headers"))
+                            .request(MediaType.APPLICATION_JSON_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+
+                final JsonObject json = response.readEntity(JsonObject.class);
+                JsonObject part = json.getJsonObject("entity-part");
+                checkHeader(part, "test-entity-1", "part1");
+                checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM);
+
+                part = json.getJsonObject("string-part");
+                checkHeader(part, "test-entity-2", "part2");
+                checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN);
+
+                part = json.getJsonObject("input-stream-part");
+                checkHeader(part, "test-entity-3", "part3");
+                checkHeader(part, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
+            }
+        }
+    }
+
     private static void checkEntity(final List<EntityPart> entityParts, final String name, final String expectedText)
             throws IOException {
         final EntityPart part = find(entityParts, name);
-        Assert.assertNotNull(String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)), part);
+        checkEntity(part, expectedText);
+    }
+
+    private static void checkEntity(final EntityPart part, final String expectedText)
+            throws IOException {
         Assert.assertEquals(expectedText, part.getContent(String.class));
     }
 
-    private static String getMessage(final List<EntityPart> parts) throws IOException {
+    private static void checkHeader(final JsonObject json, final String name, final String... expectedValues) {
+        final JsonArray array = json.getJsonArray(name);
+        Assert.assertNotNull(String.format("Failed to find array %s in %s", name, json), array);
+        final List<String> found = array.stream()
+                .filter(v -> v.getValueType() == JsonValue.ValueType.STRING)
+                .map(v -> ((JsonString) v).getString())
+                .collect(Collectors.toList());
+        Assert.assertTrue(List.of(expectedValues).containsAll(found));
+    }
+
+    private static void checkHeader(final MultivaluedMap<String, String> headers, final String name,
+            final String expectedValue) {
+        Assert.assertEquals(
+                String.format("Missing header name \"%s\" in %s", name, formatHeaders(new StringBuilder(), headers)),
+                expectedValue, headers.getFirst(name));
+    }
+
+    private static StringBuilder formatHeaders(final StringBuilder builder, final MultivaluedMap<String, String> headers) {
+        for (var entry : headers.entrySet()) {
+            builder.append(entry.getKey())
+                    .append(": ")
+                    .append(entry.getValue())
+                    .append(System.lineSeparator());
+        }
+        return builder;
+    }
+
+    private static String getMessage(final List<EntityPart> parts) {
         final StringBuilder msg = new StringBuilder();
         final Iterator<EntityPart> iter = parts.iterator();
         while (iter.hasNext()) {
@@ -294,29 +484,33 @@ public class MultipartEntityPartProviderTest {
         return msg.toString();
     }
 
-    private static String toString(final InputStream in) throws IOException {
-        // try-with-resources fails here due to a bug in the
-        //noinspection TryFinallyCanBeTryWithResources
+    private static String toString(final InputStream in) {
         try {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[32];
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
+            // try-with-resources fails here due to a bug in the
+            //noinspection TryFinallyCanBeTryWithResources
+            try {
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buffer = new byte[32];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, len);
+                }
+                return out.toString(StandardCharsets.UTF_8);
+            } finally {
+                in.close();
             }
-            return out.toString(StandardCharsets.UTF_8);
-        } finally {
-            in.close();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
-    private static EntityPart find(final Collection<EntityPart> parts, final String name) {
+    private static EntityPart find(final List<EntityPart> parts, final String name) {
         for (EntityPart part : parts) {
             if (name.equals(part.getName())) {
                 return part;
             }
         }
-        return null;
+        throw new RuntimeException("Could not find entity part named " + name + " - " + getMessage(parts));
     }
 
     @ApplicationPath("/")
@@ -395,6 +589,54 @@ public class MultipartEntityPartProviderTest {
                             .content(string)
                             .mediaType(MediaType.TEXT_PLAIN_TYPE)
                             .build());
+        }
+
+        @POST
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        @Produces(MediaType.MULTIPART_FORM_DATA)
+        @Path("/echo")
+        public List<EntityPart> echo(final List<EntityPart> entityParts) throws IOException {
+            final List<EntityPart> resultParts = new ArrayList<>(entityParts.size());
+            for (EntityPart entityPart : entityParts) {
+                final EntityPart part = EntityPart.withName("received-" + entityPart.getName())
+                        .content(entityPart.getContent())
+                        .mediaType(entityPart.getMediaType())
+                        .fileName(entityPart.getFileName().orElse(null))
+                        .headers(filterHeaders(entityPart.getHeaders()))
+                        .build();
+                resultParts.add(part);
+            }
+            return resultParts;
+        }
+
+        @POST
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        @Produces(MediaType.APPLICATION_JSON)
+        @Path("/echo-headers")
+        public Response echoHeaders(final List<EntityPart> entityParts) {
+            final JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+            for (EntityPart entityPart : entityParts) {
+                final JsonObjectBuilder headerObjectBuilder = Json.createObjectBuilder();
+                entityPart.getHeaders().forEach((name, values) -> {
+                    final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+                    for (String value : values) {
+                        arrayBuilder.add(value);
+                    }
+                    headerObjectBuilder.add(name, arrayBuilder);
+                });
+                objectBuilder.add(entityPart.getName(), headerObjectBuilder);
+            }
+            return Response.ok(objectBuilder.build()).build();
+        }
+
+        private static MultivaluedMap<String, String> filterHeaders(final MultivaluedMap<String, String> headers) {
+            final MultivaluedMap<String, String> filtered = new MultivaluedHashMap<>();
+            for (var entry : headers.entrySet()) {
+                if (entry.getKey().startsWith("test-")) {
+                    filtered.put(entry.getKey(), entry.getValue());
+                }
+            }
+            return filtered;
         }
     }
 }
