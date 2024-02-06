@@ -64,7 +64,7 @@ public class MultipartEntityPartWriter extends AbstractMultipartFormDataWriter
             final OutputPart part = output.addFormData(entityPart.getName(), entityPart.getContent(), entityPart.getMediaType(),
                     entityPart.getFileName()
                             .orElse(null));
-            entityPart.getHeaders().forEach((name, value) -> part.getHeaders().addAll(name, value));
+            entityPart.getHeaders().forEach((name, value) -> part.getHeaders().addAll(name, value.toArray()));
         }
         return output;
     }
