@@ -109,7 +109,7 @@ public class WhiteListPolymorphicTypeValidatorTest {
         String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);
         Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_INTERNAL_SERVER_ERROR));
+        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
         Assert.assertTrue("Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"",
                 response.contains("Not able to deserialize data provided"));
     }
