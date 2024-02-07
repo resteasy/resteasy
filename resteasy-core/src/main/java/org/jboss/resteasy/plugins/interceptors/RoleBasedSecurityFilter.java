@@ -44,7 +44,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter {
                         return;
                 }
                 throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed")
-                        .type("text/html;charset=UTF-8").build());
+                        .type("text/plain;charset=UTF-8").build());
             }
         }
         return;
