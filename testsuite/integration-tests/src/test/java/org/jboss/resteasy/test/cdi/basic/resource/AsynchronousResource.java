@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -14,6 +15,7 @@ import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.Response;
 
 @Stateless
+@Dependent
 @Path("/")
 public class AsynchronousResource {
     @Inject

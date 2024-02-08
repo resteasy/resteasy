@@ -61,11 +61,11 @@ public class SseBroadcasterImpl implements SseBroadcaster {
             writeLock.lock();
             try {
                 //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
-                //is it necessay to close the subsribed SseEventSink ?
+                //is it necessary to close the subscribed SseEventSink ?
                 outputQueue.forEach(eventSink -> {
                     try {
                         eventSink.close();
-                    } catch (RuntimeException e) {
+                    } catch (IOException | RuntimeException e) {
                         LogMessages.LOGGER.debug(e.getLocalizedMessage());
                     } finally {
                         notifyOnCloseListeners(eventSink);

@@ -445,7 +445,11 @@ public abstract class AsyncResponseConsumer {
             // we can be done by exception before we've even subscribed
             if (subscription != null)
                 subscription.cancel();
-            sseEventSink.close();
+            try {
+                sseEventSink.close();
+            } catch (IOException e) {
+                complete(e);
+            }
         }
 
         @Override

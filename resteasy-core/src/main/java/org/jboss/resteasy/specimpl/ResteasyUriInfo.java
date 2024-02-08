@@ -477,6 +477,11 @@ public class ResteasyUriInfo implements UriInfo {
         return ResteasyUriBuilderImpl.relativize(from, to);
     }
 
+    @Override
+    public String getMatchedResourceTemplate() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     /**
      * Holds the data that is needed to initialize ResteasyUriInfo
      * The reason to extract this data into a separate class is that it's expensive

@@ -551,7 +551,7 @@ public class TestUtil {
     }
 
     /**
-     * Creates a {@code beans.xml} file which uses a {@code bean-discovery-mode} of "all".
+     * Creates a {@code beans.xml} file which uses a {@code bean-discovery-mode} of "annotated".
      *
      * @return a {@code beans.xml} asset
      */
@@ -561,7 +561,7 @@ public class TestUtil {
                 "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd\"\n"
                 +
-                "       version=\"4.0\" bean-discovery-mode=\"all\">\n" +
+                "       version=\"4.0\" bean-discovery-mode=\"annotated\">\n" +
                 "</beans>");
     }
 

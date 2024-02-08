@@ -312,6 +312,23 @@
                 <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
             </properties>
         </profile>
+        <!-- Enable only with caution and delete download artifacts when completed -->
+        <profile>
+            <id>jakarta-staging</id>
+            <repositories>
+                <repository>
+                    <id>jakarta-sonatype-nexus-staging</id>
+                    <name>Jakarta Sonatype Nexus Staging</name>
+                    <url>https://jakarta.oss.sonatype.org/content/repositories/staging/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
     </profiles>
 
     <contributors>

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source.
  *
- * Copyright 2022 Red Hat, Inc., and individual contributors
+ * Copyright 2024 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,23 +17,20 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.test.cdi.injection.resource;
+package org.jboss.resteasy.test.cdi.inheritence.resource;
 
-import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@Dependent
-public class TestProducer {
+@ApplicationScoped
+public class BookProducer {
 
+    @CDIInheritenceSelectBook
     @Produces
-    public Client produceClient() {
-        return ClientBuilder.newBuilder()
-                .property("test.client.property", "test value")
-                .build();
+    public CDIInheritenceBook book() {
+        return new CDIInheritenceBook();
     }
 }

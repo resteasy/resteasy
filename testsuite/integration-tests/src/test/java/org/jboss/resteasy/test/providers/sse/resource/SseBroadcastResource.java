@@ -61,7 +61,7 @@ public class SseBroadcastResource {
 
     @GET
     @Path("/closeSink")
-    public void closeSink() {
+    public void closeSink() throws IOException {
         if (this.sseBroadcaster == null) {
             throw new IllegalStateException("No Sse broadcaster created.");
         }

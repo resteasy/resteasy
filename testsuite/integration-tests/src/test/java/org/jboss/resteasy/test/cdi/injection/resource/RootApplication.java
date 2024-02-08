@@ -22,6 +22,7 @@ package org.jboss.resteasy.test.cdi.injection.resource;
 import java.util.Collections;
 import java.util.Map;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
@@ -29,6 +30,7 @@ import jakarta.ws.rs.core.Application;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 @ApplicationPath("/")
+@ApplicationScoped
 public class RootApplication extends Application {
     @Override
     public Map<String, Object> getProperties() {

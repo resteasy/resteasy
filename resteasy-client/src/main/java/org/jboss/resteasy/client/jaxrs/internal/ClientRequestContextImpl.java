@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientRequestContext;
@@ -196,6 +197,19 @@ public class ClientRequestContextImpl implements ClientRequestContext {
     @Override
     public String getHeaderString(String name) {
         return invocation.getHeaders().getHeader(name);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
+        // TODO (jrp) implement
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
+            final Predicate<String> valuePredicate) {
+        // TODO (jrp) implement
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**

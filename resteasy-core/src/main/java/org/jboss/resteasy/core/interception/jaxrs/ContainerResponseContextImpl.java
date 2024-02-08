@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.EntityTag;
@@ -255,6 +256,19 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
     @Override
     public String getHeaderString(String name) {
         return jaxrsResponse.getHeaderString(name);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
+        // TODO (jrp) implement
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
+            final Predicate<String> valuePredicate) {
+        // TODO (jrp) implement
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override

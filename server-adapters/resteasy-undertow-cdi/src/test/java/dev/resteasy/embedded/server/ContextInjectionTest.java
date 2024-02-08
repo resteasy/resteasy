@@ -19,6 +19,7 @@
 
 package dev.resteasy.embedded.server;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -316,7 +317,13 @@ public class ContextInjectionTest {
                 throw new WebApplicationException("No client connected.");
             }
             return eventSink.send(sse.newEvent("test"))
-                    .whenComplete((BiConsumer<Object, Throwable>) (unused, throwable) -> eventSink.close());
+                    .whenComplete((BiConsumer<Object, Throwable>) (unused, throwable) -> {
+                        try {
+                            eventSink.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         }
 
         @GET

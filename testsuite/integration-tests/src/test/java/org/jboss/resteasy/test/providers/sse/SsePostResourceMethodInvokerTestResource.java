@@ -53,7 +53,7 @@ public class SsePostResourceMethodInvokerTestResource {
 
     @DELETE
     @Path(CLOSE_PATH)
-    public void close() {
+    public void close() throws IOException {
         synchronized (this.outputLock) {
             if (this.eventSink != null) {
                 this.eventSink.close();

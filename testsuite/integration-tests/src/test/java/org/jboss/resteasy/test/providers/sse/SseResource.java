@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.sse;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,7 +193,11 @@ public class SseResource {
                     sink.send(sse.newEvent("domain-progress", "99%"));
                     Thread.sleep(200);
                     sink.send(sse.newEvent("domain-progress", "Done.")).thenAccept((Object obj) -> {
-                        sink.close();
+                        try {
+                            sink.close();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
                     });
                 } catch (final InterruptedException e) {
                     logger.error(e.getMessage(), e);
@@ -248,7 +253,7 @@ public class SseResource {
     @GET
     @Path("/xmlevent")
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void sendXmlType(@Context SseEventSink sink) {
+    public void sendXmlType(@Context SseEventSink sink) throws IOException {
         try (SseEventSink eventSink = sink) {
             JAXBElement<String> element = new JAXBElement<String>(new QName("name"), String.class, "xmldata");
             eventSink.send(sse.newEventBuilder().data(element).mediaType(MediaType.APPLICATION_XML_TYPE).build());
@@ -270,6 +275,8 @@ public class SseResource {
                     eventSink.send(builder.data("thing2").build());
                     eventSink.send(builder.data("thing3").build());
                     logger.info("sent 3 events");
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
                 }
             }
         });
@@ -358,7 +365,13 @@ public class SseResource {
                 sink.send(createEvent(i++, "msg-"));
             }
             sink.send(createEvent(i, "last-msg-"))
-                    .thenAccept(v -> sink.close());
+                    .thenAccept(v -> {
+                        try {
+                            sink.close();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    });
         });
     }
 

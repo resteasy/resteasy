@@ -62,7 +62,7 @@ public class SseEventSinkClosingTestResource {
     @Path(SEND_AND_CLOSE_PATH)
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void sendAndClose(@Context ContainerRequestContext requestContext, @Context Sse sse,
-            @Context SseEventSink sseEventSink) {
+            @Context SseEventSink sseEventSink) throws IOException {
         requestContext.setProperty(RESPONSE_FILTER_INVOCATION_COUNTER_PROPERTY, this.responseFilterCountInvocation);
         sseEventSink.send(sse.newEvent("message"));
         sseEventSink.close();
@@ -72,7 +72,7 @@ public class SseEventSinkClosingTestResource {
     @Path(CLOSE_WITHOUT_SENDING_PATH)
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void closedWithoutSending(@Context ContainerRequestContext requestContext, @Context Sse sse,
-            @Context SseEventSink sseEventSink) {
+            @Context SseEventSink sseEventSink) throws IOException {
         requestContext.setProperty(RESPONSE_FILTER_INVOCATION_COUNTER_PROPERTY, this.responseFilterCountInvocation);
         sseEventSink.close();
     }

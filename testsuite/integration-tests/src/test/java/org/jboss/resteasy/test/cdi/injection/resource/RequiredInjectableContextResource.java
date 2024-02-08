@@ -20,6 +20,7 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
@@ -143,7 +144,11 @@ public class RequiredInjectableContextResource {
         }
         return eventSink.send(sse.newEvent("test"))
                 .whenComplete((BiConsumer<Object, Throwable>) (unused, throwable) -> {
-                    eventSink.close();
+                    try {
+                        eventSink.close();
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
                 });
     }
 

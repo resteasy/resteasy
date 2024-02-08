@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.providers.sse;
 
+import java.io.IOException;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.Path;
@@ -88,7 +90,7 @@ public class SseEnablingTestResource {
     @Path(RESOURCE_METHOD_6_PATH)
     @GET
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void resourceMethod_6(@Context SseEventSink sseEventSink, @Context Sse sse) {
+    public void resourceMethod_6(@Context SseEventSink sseEventSink, @Context Sse sse) throws IOException {
         sseEventSink.send(sse.newEvent("data"));
         sseEventSink.close();
     }
