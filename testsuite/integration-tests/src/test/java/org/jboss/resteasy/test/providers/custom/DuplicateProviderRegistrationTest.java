@@ -16,6 +16,7 @@ import jakarta.ws.rs.ext.ReaderInterceptor;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
@@ -26,6 +27,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -35,6 +37,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
+@Category(NotForBootableJar.class)
 public class DuplicateProviderRegistrationTest {
 
     private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
