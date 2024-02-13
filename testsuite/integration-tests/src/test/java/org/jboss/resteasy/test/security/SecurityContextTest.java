@@ -11,6 +11,7 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.internal.BasicAuthentication;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -24,6 +25,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.CommandFailedException;
 
@@ -36,6 +38,7 @@ import org.wildfly.extras.creaper.core.CommandFailedException;
 @ServerSetup({ SecurityContextTest.SecurityDomainSetup.class })
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(NotForBootableJar.class)
 public class SecurityContextTest {
 
     private static final String USERNAME = "bill";

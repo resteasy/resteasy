@@ -19,6 +19,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -50,7 +51,7 @@ import org.junit.runner.RunWith;
 @ServerSetup({ BasicAuthTest.SecurityDomainSetup.class })
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({ ExpectedFailingOnWildFly18.class }) //WFLY-12655
+@Category({ ExpectedFailingOnWildFly18.class, NotForBootableJar.class }) //WFLY-12655
 public class BasicAuthTest {
 
     private static final String WRONG_RESPONSE = "Wrong response content.";

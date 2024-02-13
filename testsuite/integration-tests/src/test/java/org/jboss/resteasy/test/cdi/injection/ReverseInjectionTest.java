@@ -37,6 +37,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.NotForBootableJar;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
@@ -81,6 +82,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -98,6 +100,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @ServerSetup(JmsTestQueueSetupTask.class)
+@Category(NotForBootableJar.class)
 public class ReverseInjectionTest {
     private static Logger log = Logger.getLogger(ReverseInjectionTest.class);
 
