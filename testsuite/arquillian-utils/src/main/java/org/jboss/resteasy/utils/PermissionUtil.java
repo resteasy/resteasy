@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import nu.xom.Attribute;
 import nu.xom.Document;
@@ -119,7 +119,7 @@ public final class PermissionUtil {
     public static Collection<FilePermission> createTempDirPermission(final String actions) {
         String tempDir = System.getProperty("java.io.tmpdir");
         // This should never happen, but it's a better error message than an NPE
-        Assert.assertNotNull("The java.io.tmpdir could not be resolved", tempDir);
+        Assertions.assertNotNull(tempDir, "The java.io.tmpdir could not be resolved");
         if (tempDir.charAt(tempDir.length() - 1) != File.separatorChar) {
             tempDir += File.separatorChar;
         }
