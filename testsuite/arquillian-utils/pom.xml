@@ -60,12 +60,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>compile</scope>
-        </dependency>
         <!-- END OF arquillian general -->
 
         <!-- Used to create a web.xml in the TestUtil -->
@@ -98,8 +92,8 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>compile</scope>
         </dependency>
 

@@ -39,7 +39,7 @@ import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Base util class for RESTEasy testing.
@@ -407,21 +407,24 @@ public class TestUtil {
      */
     public static void countViolations(ResteasyViolationException e,
             int totalCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
-        Assert.assertEquals("Different total count of violations expected", totalCount, e.getViolations().size());
-        Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
-        Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
-        Assert.assertEquals("Different count of parameter violations expected", parameterCount,
-                e.getParameterViolations().size());
-        Assert.assertEquals("Different count of return value violations expected", returnValueCount,
-                e.getReturnValueViolations().size());
+        Assertions.assertEquals(totalCount, e.getViolations().size(), "Different total count of violations expected");
+        Assertions.assertEquals(propertyCount, e.getPropertyViolations().size(),
+                "Different count of property violations expected");
+        Assertions.assertEquals(classCount, e.getClassViolations().size(), "Different count of class violations expected");
+        Assertions.assertEquals(parameterCount, e.getParameterViolations().size(),
+                "Different count of parameter violations expected");
+        Assertions.assertEquals(returnValueCount, e.getReturnValueViolations().size(),
+                "Different count of return value violations expected");
     }
 
     public static void countViolations(ViolationReport e, int propertyCount, int classCount, int parameterCount,
             int returnValueCount) {
-        Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
-        Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
-        Assert.assertEquals(parameterCount, e.getParameterViolations().size());
-        Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+        Assertions.assertEquals(propertyCount, e.getPropertyViolations().size(),
+                "Different count of property violations expected");
+        Assertions.assertEquals(classCount, e.getClassViolations().size(),
+                "Different count of class violations expected");
+        Assertions.assertEquals(parameterCount, e.getParameterViolations().size());
+        Assertions.assertEquals(returnValueCount, e.getReturnValueViolations().size());
     }
 
     public static ResteasyConstraintViolation getViolationByMessage(List<ResteasyConstraintViolation> list, String message) {
@@ -486,7 +489,7 @@ public class TestUtil {
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
         if (osName == null) {
-            Assert.fail("Can't get the operating system name");
+            Assertions.fail("Can't get the operating system name");
         }
         return (osName.indexOf("Windows") > -1) || (osName.indexOf("windows") > -1);
     }
