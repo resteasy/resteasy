@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.test.core.interceptors.resource.TestResource1;
@@ -17,9 +17,9 @@ import org.jboss.resteasy.test.warning.resource.SubResourceWarningResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Miscellaneous
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 4.0.0
  *          Created by rsearls on 9/11/17.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(SubResourceWarningTest.WarnLoggingSetupTask.class)
 public class SubResourceWarningTest {
@@ -59,6 +59,6 @@ public class SubResourceWarningTest {
     @Test
     public void testWarningMsg() throws Exception {
         int cnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
-        Assert.assertEquals("Improper log WARNING count", preTestCnt + 2, cnt);
+        Assertions.assertEquals(preTestCnt + 2, cnt, "Improper log WARNING count");
     }
 }

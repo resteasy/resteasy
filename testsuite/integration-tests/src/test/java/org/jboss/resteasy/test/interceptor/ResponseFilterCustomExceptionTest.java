@@ -7,18 +7,18 @@ import jakarta.ws.rs.client.Entity;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.interceptor.resource.CustomException;
 import org.jboss.resteasy.test.interceptor.resource.ThrowCustomExceptionResponseFilter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.21
  * @tpTestCaseDetails Throw custom exception from a ClientResponseFilter [RESTEASY-1591]
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResponseFilterCustomExceptionTest {
     @Deployment
@@ -39,12 +39,12 @@ public class ResponseFilterCustomExceptionTest {
 
     static Client client;
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         client.close();
     }
@@ -63,7 +63,7 @@ public class ResponseFilterCustomExceptionTest {
             client.register(ThrowCustomExceptionResponseFilter.class);
             client.target(generateURL("/testCustomException")).request().post(Entity.text("testCustomException"));
         } catch (ProcessingException pe) {
-            Assert.assertEquals(CustomException.class, pe.getCause().getClass());
+            Assertions.assertEquals(CustomException.class, pe.getCause().getClass());
         }
     }
 }

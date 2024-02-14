@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.rx.rxjava2;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.rx.rxjava2.resource.NoStreamRx2Resource;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -15,18 +15,18 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class NoStreamRx2Test {
     private static ResteasyClient client;
@@ -48,12 +48,12 @@ public class NoStreamRx2Test {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -61,19 +61,19 @@ public class NoStreamRx2Test {
     @Test
     public void testSingle() throws InterruptedException {
         String data = client.target(generateURL("/single")).request().get(String.class);
-        Assert.assertEquals("got it", data);
+        Assertions.assertEquals("got it", data);
 
         String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
-        Assert.assertArrayEquals(new String[] { "one", "two" }, data2);
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data2);
 
         data2 = client.target(generateURL("/flowable")).request().get(String[].class);
-        Assert.assertArrayEquals(new String[] { "one", "two" }, data2);
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data2);
 
         data = client.target(generateURL("/context/single")).request().get(String.class);
-        Assert.assertEquals("got it", data);
+        Assertions.assertEquals("got it", data);
 
         data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
-        Assert.assertArrayEquals(new String[] { "one", "two" }, data2);
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data2);
 
         data2 = client.target(generateURL("/context/flowable")).request().get(String[].class);
         assertArrayEquals(new String[] { "one", "two" }, data2);

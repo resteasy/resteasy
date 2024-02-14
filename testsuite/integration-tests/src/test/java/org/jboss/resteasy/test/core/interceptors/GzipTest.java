@@ -17,7 +17,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -34,11 +34,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -46,7 +46,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Gzip compression tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class GzipTest {
 
@@ -67,7 +67,7 @@ public class GzipTest {
         return PortProviderUtil.generateURL(path, GzipTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newBuilder()
                 .register(AcceptEncodingGZIPFilter.class)
@@ -76,7 +76,7 @@ public class GzipTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -103,7 +103,7 @@ public class GzipTest {
         byte[] bytes = ReadFromStream.readFromStream(1024, is);
         is.finish();
         String str = new String(bytes);
-        Assert.assertEquals("Output stream has wrong content", "hello world", str);
+        Assertions.assertEquals("hello world", str, "Output stream has wrong content");
 
     }
 
@@ -114,17 +114,17 @@ public class GzipTest {
     @Test
     public void testProxy() throws Exception {
         GzipIGZIP proxy = client.target(generateURL("")).proxy(GzipIGZIP.class);
-        Assert.assertEquals("Proxy return wrong content", "HELLO WORLD", proxy.getText());
-        Assert.assertEquals("Proxy return wrong content", "HELLO WORLD", proxy.getGzipText());
+        Assertions.assertEquals("HELLO WORLD", proxy.getText(), "Proxy return wrong content");
+        Assertions.assertEquals("HELLO WORLD", proxy.getGzipText(), "Proxy return wrong content");
 
         // resteasy-651
         try {
             proxy.getGzipErrorText();
-            Assert.fail("Proxy is unreachable");
+            Assertions.fail("Proxy is unreachable");
         } catch (InternalServerErrorException failure) {
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, failure.getResponse().getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, failure.getResponse().getStatus());
             String txt = failure.getResponse().readEntity(String.class);
-            Assert.assertEquals("Response contain wrong content", "Hello", txt);
+            Assertions.assertEquals("Hello", txt, "Response contain wrong content");
         }
     }
 
@@ -136,12 +136,13 @@ public class GzipTest {
     public void testContentLength() throws Exception {
         {
             Response response = client.target(generateURL("/text")).request().get();
-            Assert.assertEquals("Response has wrong content", "HELLO WORLD", response.readEntity(String.class));
+            Assertions.assertEquals("HELLO WORLD", response.readEntity(String.class),
+                    "Response has wrong content");
             String cl = response.getHeaderString("Content-Length");
             if (cl != null) {
                 // make sure the content length is greater than 11 because this will be a gzipped encoding
-                Assert.assertTrue("Content length should be greater than 11 because this will be a gzipped encoding",
-                        Integer.parseInt(cl) > 11);
+                Assertions.assertTrue(Integer.parseInt(cl) > 11,
+                        "Content length should be greater than 11 because this will be a gzipped encoding");
             }
         }
         {
@@ -151,10 +152,11 @@ public class GzipTest {
                 // make sure the content length is greater than 11 because this will be a gzipped encoding
                 int integerCl = Integer.parseInt(cl);
                 logger.info("Content-Length: " + integerCl);
-                Assert.assertTrue("Content length should be greater than 11 because this will be a gzipped encoding",
-                        integerCl > 11);
+                Assertions.assertTrue(integerCl > 11,
+                        "Content length should be greater than 11 because this will be a gzipped encoding");
             }
-            Assert.assertEquals("Response contains wrong content", "HELLO WORLD", response.readEntity(String.class));
+            Assertions.assertEquals("HELLO WORLD", response.readEntity(String.class),
+                    "Response contains wrong content");
         }
     }
 
@@ -165,7 +167,7 @@ public class GzipTest {
     @Test
     public void testRequestError() throws Exception {
         Response response = client.target(generateURL("/error")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
     }
 
@@ -177,7 +179,7 @@ public class GzipTest {
     public void testPutStream() throws Exception {
         Response response = client.target(generateURL("/stream")).request().header("Content-Encoding", "gzip")
                 .put(Entity.entity("hello world", "text/plain"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -189,7 +191,7 @@ public class GzipTest {
     public void testPutText() throws Exception {
         Response response = client.target(generateURL("/text")).request().header("Content-Encoding", "gzip")
                 .put(Entity.entity("hello world", "text/plain"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -200,7 +202,7 @@ public class GzipTest {
     @Test
     public void testRequestPlain() throws Exception {
         Response response = client.target(generateURL("/text")).request().get();
-        Assert.assertEquals("HELLO WORLD", response.readEntity(String.class));
+        Assertions.assertEquals("HELLO WORLD", response.readEntity(String.class));
 
     }
 
@@ -211,7 +213,8 @@ public class GzipTest {
     @Test
     public void testRequestEncoded() throws Exception {
         Response response = client.target(generateURL("/encoded/text")).request().get();
-        Assert.assertEquals("Response contains wrong content", "HELLO WORLD", response.readEntity(String.class));
+        Assertions.assertEquals("HELLO WORLD", response.readEntity(String.class),
+                "Response contains wrong content");
     }
 
     /**
@@ -225,25 +228,27 @@ public class GzipTest {
             HttpGet get = new HttpGet(generateURL("/encoded/text"));
             get.addHeader("Accept-Encoding", "gzip, deflate");
             HttpResponse response = client.execute(get);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
-            Assert.assertEquals("Wrong encoding format", "gzip", response.getFirstHeader("Content-Encoding").getValue());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
+            Assertions.assertEquals("gzip", response.getFirstHeader("Content-Encoding").getValue(),
+                    "Wrong encoding format");
 
             // test that it is actually zipped
             String entity = EntityUtils.toString(response.getEntity());
             logger.info("Entity: " + entity);
-            Assert.assertNotSame("Wrong entity content", entity, "HELLO WORLD");
+            Assertions.assertNotSame(entity, "HELLO WORLD", "Wrong entity content");
         }
 
         {
             HttpGet get = new HttpGet(generateURL("/text"));
             get.addHeader("Accept-Encoding", "gzip, deflate");
             HttpResponse response = client.execute(get);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
-            Assert.assertEquals("Wrong encoding format", "gzip", response.getFirstHeader("Content-Encoding").getValue());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
+            Assertions.assertEquals("gzip", response.getFirstHeader("Content-Encoding").getValue(),
+                    "Wrong encoding format");
 
             // test that it is actually zipped
             String entity = EntityUtils.toString(response.getEntity());
-            Assert.assertNotSame("Wrong entity content", entity, "HELLO WORLD");
+            Assertions.assertNotSame(entity, "HELLO WORLD", "Wrong entity content");
         }
     }
 
@@ -256,12 +261,12 @@ public class GzipTest {
         CloseableHttpClient client = HttpClientBuilder.create().build();
         HttpGet get = new HttpGet(generateURL("/encoded/text"));
         HttpResponse response = client.execute(get);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
-        Assert.assertNull(response.getFirstHeader("Content-Encoding"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
+        Assertions.assertNull(response.getFirstHeader("Content-Encoding"));
 
         // test that it is actually zipped
         String entity = EntityUtils.toString(response.getEntity());
-        Assert.assertEquals("Response contains wrong content", entity, "HELLO WORLD");
+        Assertions.assertEquals(entity, "HELLO WORLD", "Response contains wrong content");
     }
 
     /**
@@ -277,8 +282,8 @@ public class GzipTest {
         data.setP2("second");
 
         Response response = gzipProxy.post(data);
-        Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 
     /**
@@ -291,9 +296,9 @@ public class GzipTest {
         byte[] b = new byte[10000001];
         Variant variant = new Variant(MediaType.APPLICATION_OCTET_STREAM_TYPE, "", "gzip");
         Response response = client.target(generateURL("/big/send")).request().post(Entity.entity(b, variant));
-        Assert.assertEquals(HttpResponseCodes.SC_REQUEST_ENTITY_TOO_LARGE, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_REQUEST_ENTITY_TOO_LARGE, response.getStatus());
         String message = response.readEntity(String.class);
-        Assert.assertTrue(message.contains("RESTEASY003357"));
-        Assert.assertTrue(message.contains("10000000"));
+        Assertions.assertTrue(message.contains("RESTEASY003357"));
+        Assertions.assertTrue(message.contains("10000000"));
     }
 }

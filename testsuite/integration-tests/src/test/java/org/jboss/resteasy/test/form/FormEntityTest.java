@@ -8,24 +8,24 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.form.resource.FormEntityResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class FormEntityTest {
 
@@ -41,12 +41,12 @@ public class FormEntityTest {
         return PortProviderUtil.generateURL(path, FormEntityTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -60,8 +60,8 @@ public class FormEntityTest {
         Invocation.Builder request = client.target(generateURL("/test/form")).request();
         Response response = request.post(Entity.entity("fp=abc&fp2=\"\"", "application/x-www-form-urlencoded"));
         String s = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(s.equals("abc|fp=abc&fp2=\"\"") || s.equals("abc|fp2=\"\"&fp=abc"));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertTrue(s.equals("abc|fp=abc&fp2=\"\"") || s.equals("abc|fp2=\"\"&fp=abc"));
     }
 
     /**
@@ -73,8 +73,8 @@ public class FormEntityTest {
         Invocation.Builder request = client.target(generateURL("/test/form")).request();
         Response response = request.post(Entity.entity("fp=abc&fp2=", "application/x-www-form-urlencoded"));
         String s = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(s.equals("abc|fp=abc&fp2") || s.equals("abc|fp2&fp=abc"));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertTrue(s.equals("abc|fp=abc&fp2") || s.equals("abc|fp2&fp=abc"));
     }
 
     /**
@@ -86,7 +86,7 @@ public class FormEntityTest {
         Invocation.Builder request = client.target(generateURL("/test/form")).request();
         Response response = request.post(Entity.entity("fp=abc&fp2", "application/x-www-form-urlencoded"));
         String s = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(s.equals("abc|fp=abc&fp2") || s.equals("abc|fp2&fp=abc"));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertTrue(s.equals("abc|fp=abc&fp2") || s.equals("abc|fp2&fp=abc"));
     }
 }

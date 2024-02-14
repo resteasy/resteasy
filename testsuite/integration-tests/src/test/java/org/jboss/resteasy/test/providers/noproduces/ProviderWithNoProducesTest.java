@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.providers.noproduces.resource.Foo;
 import org.jboss.resteasy.test.providers.noproduces.resource.ProviderWithNoProducesMessageBodyWriter;
 import org.jboss.resteasy.test.providers.noproduces.resource.ProviderWithNoProducesResource;
@@ -15,9 +15,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter MessageBodyWriters with no @Produces annotation
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-2232
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ProviderWithNoProducesTest {
 
@@ -52,9 +52,9 @@ public class ProviderWithNoProducesTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/foo"));
         Response response = target.request().accept("foo/bar;q=0.9, bar/foo;q=1.0").get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("Wrong response content", "ProviderWithNoProducesMessageBodyWriter",
-                response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("ProviderWithNoProducesMessageBodyWriter",
+                response.readEntity(String.class), "Wrong response content");
         client.close();
     }
 }

@@ -7,18 +7,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.param.resource.SpecialCharsInUrlResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for special characters in url
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SpecialCharsInUrlTest {
 
@@ -38,12 +38,12 @@ public class SpecialCharsInUrlTest {
         return TestUtil.finishContainerPrepare(war, null, SpecialCharsInUrlResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -63,9 +63,9 @@ public class SpecialCharsInUrlTest {
     public void testGet() throws Exception {
         WebTarget target = client.target(String.format("%s%s?foo=%s", generateURL("/simple/"), encodedPart, encodedPart));
         Response response = target.request().get();
-        Assert.assertEquals("The result is not correctly decoded", HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus(), "The result is not correctly decoded");
         String result = response.readEntity(String.class);
-        Assert.assertEquals("The result is not correctly decoded", decodedPart, result);
+        Assertions.assertEquals(decodedPart, result, "The result is not correctly decoded");
     }
 
 }

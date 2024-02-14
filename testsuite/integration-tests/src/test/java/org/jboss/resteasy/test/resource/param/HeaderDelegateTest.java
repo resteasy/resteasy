@@ -10,7 +10,7 @@ import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -32,11 +32,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-915
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class HeaderDelegateTest {
     private static Logger logger = Logger.getLogger(HeaderDelegateTest.class);
 
@@ -79,14 +79,14 @@ public class HeaderDelegateTest {
 
     private ResteasyProviderFactory factory;
 
-    @Before
+    @BeforeEach
     public void init() {
         factory = ResteasyProviderFactory.newInstance();
         RegisterBuiltin.register(factory);
         ResteasyProviderFactory.setInstance(factory);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         // Clear the singleton
         ResteasyProviderFactory.clearInstanceIfEqual(factory);
@@ -108,8 +108,9 @@ public class HeaderDelegateTest {
         Response response = request.get();
         logger.info("lastModified string: " + response.getHeaderString("last-modified"));
         Date last = response.getLastModified();
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertEquals("Wrong response", DateUtil.formatDate(RIGHT_AFTER_BIG_BANG), DateUtil.formatDate(last));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals(DateUtil.formatDate(RIGHT_AFTER_BIG_BANG), DateUtil.formatDate(last),
+                "Wrong response");
         client.close();
     }
 
@@ -120,19 +121,27 @@ public class HeaderDelegateTest {
     @Test
     public void localTest() throws Exception {
 
-        Assert.assertEquals("Wrong delegation", DateDelegate.class,
-                factory.getHeaderDelegate(HeaderDelegateDate.class).getClass());
-        Assert.assertEquals("Wrong delegation", DateDelegate.class,
-                factory.createHeaderDelegate(HeaderDelegateDate.class).getClass());
+        Assertions.assertEquals(DateDelegate.class,
+                factory.getHeaderDelegate(HeaderDelegateDate.class).getClass(),
+                "Wrong delegation");
+        Assertions.assertEquals(DateDelegate.class,
+                factory.createHeaderDelegate(HeaderDelegateDate.class).getClass(),
+                "Wrong delegation");
 
         @SuppressWarnings("rawtypes")
         HeaderDelegateSubDelegate<?> delegate = new HeaderDelegateSubDelegate();
         factory.addHeaderDelegate(HeaderDelegateInterface1.class, delegate);
-        Assert.assertEquals("Wrong delegation", delegate, factory.getHeaderDelegate(HeaderDelegateInterface1.class));
-        Assert.assertEquals("Wrong delegation", delegate, factory.getHeaderDelegate(HeaderDelegateInterface2.class));
-        Assert.assertEquals("Wrong delegation", delegate, factory.getHeaderDelegate(HeaderDelegateInterface3.class));
-        Assert.assertEquals("Wrong delegation", delegate, factory.getHeaderDelegate(HeaderDelegateInterface4.class));
-        Assert.assertEquals("Wrong delegation", delegate, factory.getHeaderDelegate(HeaderDelegateDelegate.class));
-        Assert.assertEquals("Wrong delegation", delegate, factory.getHeaderDelegate(HeaderDelegateSubDelegate.class));
+        Assertions.assertEquals(delegate, factory.getHeaderDelegate(HeaderDelegateInterface1.class),
+                "Wrong delegation");
+        Assertions.assertEquals(delegate, factory.getHeaderDelegate(HeaderDelegateInterface2.class),
+                "Wrong delegation");
+        Assertions.assertEquals(delegate, factory.getHeaderDelegate(HeaderDelegateInterface3.class),
+                "Wrong delegation");
+        Assertions.assertEquals(delegate, factory.getHeaderDelegate(HeaderDelegateInterface4.class),
+                "Wrong delegation");
+        Assertions.assertEquals(delegate, factory.getHeaderDelegate(HeaderDelegateDelegate.class),
+                "Wrong delegation");
+        Assertions.assertEquals(delegate, factory.getHeaderDelegate(HeaderDelegateSubDelegate.class),
+                "Wrong delegation");
     }
 }

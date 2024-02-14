@@ -13,9 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -27,12 +26,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -41,9 +40,9 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.1.0
  */
 @ServerSetup({ CustomForbiddenMessageTest.SecurityDomainSetup.class })
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Category({ ExpectedFailingOnWildFly18.class }) //WFLY-12655
+@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class CustomForbiddenMessageTest {
 
     private static ResteasyClient authorizedClient;
@@ -64,7 +63,7 @@ public class CustomForbiddenMessageTest {
                 CustomForbiddenMessageExceptionMapper.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         // authorizedClient
         {
@@ -77,7 +76,7 @@ public class CustomForbiddenMessageTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         authorizedClient.close();
     }
@@ -93,10 +92,10 @@ public class CustomForbiddenMessageTest {
     @Test
     public void testCustomExceptionMapper() throws Exception {
         Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
         String ct = response.getHeaderString("Content-Type");
-        Assert.assertEquals("text/plain;charset=UTF-8", ct);
+        Assertions.assertEquals("text/plain;charset=UTF-8", ct);
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

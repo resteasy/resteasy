@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.cdi.basic.resource.BeanReaderWriterConfigBean;
 import org.jboss.resteasy.test.cdi.basic.resource.BeanReaderWriterService;
 import org.jboss.resteasy.test.cdi.basic.resource.BeanReaderWriterXFormat;
@@ -15,9 +15,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for custom reader-writer for bean.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class BeanReaderWriterTest {
     @Deployment
@@ -49,7 +49,7 @@ public class BeanReaderWriterTest {
         Response response = client.target(PortProviderUtil.generateBaseUrl(BeanReaderWriterTest.class.getSimpleName()))
                 .request().get();
         String format = response.readEntity(String.class);
-        Assert.assertEquals("foo 1.1", format);
+        Assertions.assertEquals("foo 1.1", format);
         response.close();
         client.close();
     }

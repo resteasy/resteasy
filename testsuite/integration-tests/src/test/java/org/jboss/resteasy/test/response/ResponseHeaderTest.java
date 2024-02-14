@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapper;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapperRuntimeException;
@@ -19,9 +19,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Check that HEADS can replace existing text with new specified text
  * @tpSince RESTEasy 3.0.23
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResponseHeaderTest {
 
@@ -58,14 +58,13 @@ public class ResponseHeaderTest {
 
         if (objs instanceof ArrayList) {
             if (objs.size() != 2) {
-                Assert.fail("2 array objects expected " + objs.size() + " were returned");
+                Assertions.fail("2 array objects expected " + objs.size() + " were returned");
             }
 
-            Assert.assertEquals("Wrong headers",
-                    (String) objs.get(0) + "," + (String) objs.get(1),
-                    "WILDFLY/TEN.Full,AndOtherStuff");
+            Assertions.assertEquals((String) objs.get(0) + "," + (String) objs.get(1),
+                    "WILDFLY/TEN.Full,AndOtherStuff", "Wrong headers");
         } else {
-            Assert.fail("Expected header data value to be of type ArrayList.  It was not.");
+            Assertions.fail("Expected header data value to be of type ArrayList.  It was not.");
         }
 
         response.close();

@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.spi.HttpRequest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ContextService {
@@ -36,7 +36,7 @@ public class ContextService {
     @Path("/test/servletcontext")
     @Produces("text/plain")
     public String get(@Context ServletContext context) {
-        Assert.assertNotNull("ServletConfig was not injected", context);
+        Assertions.assertNotNull(context, "ServletConfig was not injected");
         return "ok";
     }
 
@@ -44,10 +44,10 @@ public class ContextService {
     @Path("/test/servletconfig")
     @Produces("text/plain")
     public String get(@Context ServletConfig config) {
-        Assert.assertNotNull("ServletConfig was not injected", config);
-        Assert.assertNotNull("ServletConfig don't contain servlet.greeting parameter",
-                config.getInitParameter("servlet.greeting"));
-        Assert.assertTrue("ServletConfig has some unexpected parameters", config.getInitParameterNames().hasMoreElements());
+        Assertions.assertNotNull(config, "ServletConfig was not injected");
+        Assertions.assertNotNull(config.getInitParameter("servlet.greeting"),
+                "ServletConfig don't contain servlet.greeting parameter");
+        Assertions.assertTrue(config.getInitParameterNames().hasMoreElements(), "ServletConfig has some unexpected parameters");
         return "ok";
     }
 

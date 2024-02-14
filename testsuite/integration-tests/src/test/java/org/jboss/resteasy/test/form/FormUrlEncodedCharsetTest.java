@@ -13,18 +13,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.form.resource.FormUrlEncodedCharsetResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Form tests
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for JBEAP-4693
  * @tpSince RESTEasy 3.0.17
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class FormUrlEncodedCharsetTest {
     protected static MediaType testMediaType8 = MediaType.APPLICATION_FORM_URLENCODED_TYPE
@@ -52,13 +52,13 @@ public class FormUrlEncodedCharsetTest {
         return TestUtil.finishContainerPrepare(war, null, FormUrlEncodedCharsetResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
         target = client.target(PortProviderUtil.generateURL("/test", FormUrlEncodedCharsetTest.class.getSimpleName()));
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() {
         client.close();
     }
@@ -75,7 +75,7 @@ public class FormUrlEncodedCharsetTest {
         Response response = target.request().post(entity);
         String result = response.readEntity(String.class);
         logger.info("result: " + result);
-        Assert.assertEquals("EAP is unable to encode default charset", result, alephBetGimel);
+        Assertions.assertEquals(result, alephBetGimel, "EAP is unable to encode default charset");
     }
 
     /**
@@ -90,7 +90,7 @@ public class FormUrlEncodedCharsetTest {
         Response response = target.request().post(entity);
         String result = response.readEntity(String.class);
         logger.info("result: " + result);
-        Assert.assertEquals("EAP is unable to encode UTF8 charset", result, alephBetGimel);
+        Assertions.assertEquals(result, alephBetGimel, "EAP is unable to encode UTF8 charset");
     }
 
     /**
@@ -105,6 +105,6 @@ public class FormUrlEncodedCharsetTest {
         Response response = target.request().post(entity);
         String result = response.readEntity(String.class);
         logger.info("result: " + result);
-        Assert.assertEquals("EAP is unable to encode UTF16 charset", result, alephBetGimel);
+        Assertions.assertEquals(result, alephBetGimel, "EAP is unable to encode UTF16 charset");
     }
 }

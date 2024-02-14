@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -25,11 +25,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter XXE
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  *                    RestEasy is vulnerable to XML Entity Denial of Service XXE is disabled.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class XxeJaxbTest {
 
@@ -87,12 +87,12 @@ public class XxeJaxbTest {
             "</entry>" +
             "</map>";
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
         client = null;
@@ -749,129 +749,142 @@ public class XxeJaxbTest {
         WebTarget target = client.target(PortProviderUtil.generateURL("/xmlRootElement", URL_PREFIX + ext));
         logger.info(strMovieRootElement);
         Response response = target.request().post(Entity.entity(strMovieRootElement, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doTestXmlRootElementWithoutExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/xmlRootElement", URL_PREFIX + ext));
         logger.info(strMovieRootElement);
         Response response = target.request().post(Entity.entity(strMovieRootElement, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doTestXmlRootElementWithExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/xmlRootElement", URL_PREFIX + ext));
         logger.info(strMovieRootElement);
         Response response = target.request().post(Entity.entity(strMovieRootElement, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("result: " + entity);
-        Assert.assertTrue("The entity wasn't expanded and it should be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0,
+                "The entity wasn't expanded and it should be");
     }
 
     void doTestXmlTypeDefault(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/xmlType", URL_PREFIX + ext));
         logger.info(strMovie);
         Response response = target.request().post(Entity.entity(strMovie, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doTestXmlTypeWithoutExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/xmlType", URL_PREFIX + ext));
         logger.info(strMovie);
         Response response = target.request().post(Entity.entity(strMovie, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doTestXmlTypeWithExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/xmlType", URL_PREFIX + ext));
         logger.info(strMovie);
         Response response = target.request().post(Entity.entity(strMovie, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("result: " + entity);
-        Assert.assertTrue("The entity wasn't expanded and it should be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0,
+                "The entity wasn't expanded and it should be");
     }
 
     void doTestJAXBElementDefault(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/JAXBElement", URL_PREFIX + ext));
         logger.info(strMovieXmlType);
         Response response = target.request().post(Entity.entity(strMovieXmlType, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doTestJAXBElementWithoutExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/JAXBElement", URL_PREFIX + ext));
         logger.info(strMovieXmlType);
         Response response = target.request().post(Entity.entity(strMovieXmlType, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doTestJAXBElementWithExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/JAXBElement", URL_PREFIX + ext));
         logger.info(strMovieXmlType);
         Response response = target.request().post(Entity.entity(strMovieXmlType, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity wasn't expanded and it should be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0,
+                "The entity wasn't expanded and it should be");
     }
 
     void doCollectionTestWithoutExpansion(String ext, String path) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/" + path, URL_PREFIX + ext));
         logger.info(strMovieRootElementCollection);
         Response response = target.request().post(Entity.entity(strMovieRootElementCollection, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doCollectionTestWithExpansion(String ext, String path) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/" + path, URL_PREFIX + ext));
         logger.info(strMovieRootElementCollection);
         Response response = target.request().post(Entity.entity(strMovieRootElementCollection, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity wasn't expanded and it should be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0,
+                "The entity wasn't expanded and it should be");
     }
 
     void doMapTestWithoutExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/map", URL_PREFIX + ext));
         logger.info(strMovieRootElementMap);
         Response response = target.request().post(Entity.entity(strMovieRootElementMap, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity was expanded and it shouldn't be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0,
+                "The entity was expanded and it shouldn't be");
     }
 
     void doMapTestWithExpansion(String ext) throws Exception {
         WebTarget target = client.target(PortProviderUtil.generateURL("/map", URL_PREFIX + ext));
         logger.info(strMovieRootElementMap);
         Response response = target.request().post(Entity.entity(strMovieRootElementMap, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("Result: " + entity);
-        Assert.assertTrue("The entity wasn't expanded and it should be", entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
+        Assertions.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0,
+                "The entity wasn't expanded and it should be");
     }
 }

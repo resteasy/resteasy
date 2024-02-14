@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.test.annotations.FollowUpRequired;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 @RequestScoped
@@ -27,7 +27,8 @@ public class ApplicationPropertiesConfigPropertyApplicationInjectionResource {
         if (containskey) {
             response = "true";
         }
-        Assert.assertEquals("The injected application doesn't contain property \"Prop1\"", "true", response);
+        Assertions.assertEquals("true", response,
+                "The injected application doesn't contain property \"Prop1\"");
         String value = (String) application.getProperties().get("Prop1");
         return Response.ok(value).build();
     }

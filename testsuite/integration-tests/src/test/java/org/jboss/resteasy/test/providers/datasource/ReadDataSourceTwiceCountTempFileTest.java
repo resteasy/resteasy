@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.datasource.resource.ReadDataSourceTwiceCountTempFileResource;
@@ -26,19 +26,19 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ReadDataSourceTwiceCountTempFileTest {
 
@@ -57,12 +57,12 @@ public class ReadDataSourceTwiceCountTempFileTest {
         return TestUtil.finishContainerPrepare(war, null, ReadDataSourceTwiceCountTempFileResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -90,14 +90,15 @@ public class ReadDataSourceTwiceCountTempFileTest {
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
         logger.info("The status of the response is " + response.getStatus());
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"));
         int counter = response.readEntity(int.class);
         int updated = countTempFiles();
         logger.info("counter from beginning (before request): " + beginning);
         logger.info("counter from server: " + counter);
         logger.info("counter updated: " + countTempFiles());
-        Assert.assertTrue("The number of temporary files for datasource before and after request is not the same",
-                counter > updated);
+        Assertions.assertTrue(counter > updated,
+                "The number of temporary files for datasource before and after request is not the same");
     }
 
     /**
@@ -117,7 +118,8 @@ public class ReadDataSourceTwiceCountTempFileTest {
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
         logger.info("The status of the response is " + response.getStatus());
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"));
         int counter = response.readEntity(int.class);
 
         response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
@@ -132,8 +134,8 @@ public class ReadDataSourceTwiceCountTempFileTest {
         int updated = countTempFiles();
         logger.info("counter from server: " + counter);
         logger.info("counter updated: " + countTempFiles());
-        Assert.assertTrue("The number of temporary files for datasource before and after request is not the same",
-                counter > updated);
+        Assertions.assertTrue(counter > updated,
+                "The number of temporary files for datasource before and after request is not the same");
     }
 
     static int countTempFiles() throws Exception {
@@ -146,7 +148,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
         return counter.intValue();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterclass() throws Exception {
         String tmpdir = System.getProperty("java.io.tmpdir");
         Path dir = Paths.get(tmpdir);

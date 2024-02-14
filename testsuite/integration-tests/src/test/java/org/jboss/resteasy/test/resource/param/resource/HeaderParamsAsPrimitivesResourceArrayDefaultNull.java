@@ -6,21 +6,21 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 import org.jboss.resteasy.test.resource.param.HeaderParamsAsPrimitivesTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/array/default/null")
 public class HeaderParamsAsPrimitivesResourceArrayDefaultNull {
     @GET
     @Produces("application/boolean")
     public String doGetBoolean(@HeaderParam("boolean") boolean[] v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 0, v.length);
+        Assertions.assertEquals(0, v.length, HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/short")
     public String doGetShort(@HeaderParam("short") short[] v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 0, v.length);
+        Assertions.assertEquals(0, v.length, HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 }

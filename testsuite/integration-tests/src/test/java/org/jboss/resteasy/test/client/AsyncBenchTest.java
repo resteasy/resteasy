@@ -11,18 +11,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.resource.AsyncInvokeResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpChapter Client tests
@@ -30,9 +30,9 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails https://issues.jboss.org/browse/RESTEASY-1025
  * @tpSince RESTEasy 3.5.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Ignore("Not a functional test")
+@Disabled("Not a functional test")
 public class AsyncBenchTest extends ClientTestBase {
 
     static Client client;
@@ -50,7 +50,7 @@ public class AsyncBenchTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, AsyncInvokeResource.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         if (client != null)
             client.close();
@@ -94,7 +94,7 @@ public class AsyncBenchTest extends ClientTestBase {
                 @Override
                 public void completed(Response response) {
                     String entity = response.readEntity(String.class);
-                    Assert.assertEquals("post " + m, entity);
+                    Assertions.assertEquals("post " + m, entity);
                     latch.countDown();
                 }
 

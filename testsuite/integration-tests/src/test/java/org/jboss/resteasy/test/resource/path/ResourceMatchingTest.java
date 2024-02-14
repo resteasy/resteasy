@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingAnotherResourceLocator;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingAnotherSubResource;
@@ -29,18 +29,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResourceMatchingTest {
 
@@ -58,7 +58,7 @@ public class ResourceMatchingTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
@@ -79,7 +79,7 @@ public class ResourceMatchingTest {
         return PortProviderUtil.generateURL(path, ResourceMatchingTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -93,8 +93,8 @@ public class ResourceMatchingTest {
     @Test
     public void testMediaTypeFromProvider() {
         Response response = client.target(generateURL("/nomedia/list")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(MediaType.APPLICATION_SVG_XML_TYPE, response.getMediaType());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(MediaType.APPLICATION_SVG_XML_TYPE, response.getMediaType());
         response.close();
     }
 
@@ -107,8 +107,8 @@ public class ResourceMatchingTest {
     @Test
     public void testNoProduces() {
         Response response = client.target(generateURL("/nomedia/nothing")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(MediaType.APPLICATION_OCTET_STREAM_TYPE, response.getMediaType());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(MediaType.APPLICATION_OCTET_STREAM_TYPE, response.getMediaType());
         response.close();
     }
 
@@ -123,7 +123,7 @@ public class ResourceMatchingTest {
     @Test
     public void testNonConcreteMatch() {
         Response response = client.target(generateURL("/error")).request("text/*").get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
         response.close();
     }
 
@@ -135,8 +135,8 @@ public class ResourceMatchingTest {
     @Test
     public void testWildcard() {
         Response response = client.target(generateURL("/yas")).request("testi/*").get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("test/text", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("test/text", response.readEntity(String.class));
         response.close();
     }
 
@@ -151,8 +151,8 @@ public class ResourceMatchingTest {
     @Test
     public void testQS() {
         Response response = client.target(generateURL("/yas")).request("testiii/textiii", "application/xml").get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("application/xml", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("application/xml", response.readEntity(String.class));
         response.close();
     }
 
@@ -165,9 +165,10 @@ public class ResourceMatchingTest {
     public void testOverride() {
         Response response = client.target(generateURL("/resource/subresource/sub")).request()
                 .header("Content-Type", "text/plain").post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("The incorrect subresource was chosen", ResourceMatchingAnotherSubResource.class.getSimpleName(),
-                response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(ResourceMatchingAnotherSubResource.class.getSimpleName(),
+                response.readEntity(String.class),
+                "The incorrect subresource was chosen");
         response.close();
     }
 
@@ -180,9 +181,10 @@ public class ResourceMatchingTest {
     @Test
     public void testOptions() {
         Response response = client.target(generateURL("/resource/subresource/something")).request().options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String actual = response.readEntity(String.class);
-        Assert.assertTrue("GET is not in the list of available methods for the specified resource", actual.contains("GET"));
+        Assertions.assertTrue(actual.contains("GET"),
+                "GET is not in the list of available methods for the specified resource");
         response.close();
     }
 
@@ -196,12 +198,12 @@ public class ResourceMatchingTest {
     public void testAvoidWildcard() {
         Response response = client.target(generateURL("/weight")).request("application/*;q=0.9", "application/xml;q=0.1")
                 .post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         MediaType mediaType = response.getMediaType();
         String actual = response.readEntity(String.class);
-        Assert.assertEquals("application/xml", actual);
-        Assert.assertEquals("MediaType of the response doesn't match the expected type", "application/xml;charset=UTF-8",
-                mediaType.toString());
+        Assertions.assertEquals("application/xml", actual);
+        Assertions.assertEquals("application/xml;charset=UTF-8", mediaType.toString(),
+                "MediaType of the response doesn't match the expected type");
         response.close();
     }
 

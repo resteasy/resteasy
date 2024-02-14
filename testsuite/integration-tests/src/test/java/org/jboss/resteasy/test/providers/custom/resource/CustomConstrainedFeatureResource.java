@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -23,8 +23,8 @@ public class CustomConstrainedFeatureResource {
     public Response test() {
         try {
             // only server runtime feature must be invoked
-            assertTrue(ERROR_SERVER_FEATURE, CustomServerConstrainedFeature.wasInvoked());
-            assertFalse(ERROR_CLIENT_FEATURE, CustomClientConstrainedFeature.wasInvoked());
+            assertTrue(CustomServerConstrainedFeature.wasInvoked(), ERROR_SERVER_FEATURE);
+            assertFalse(CustomClientConstrainedFeature.wasInvoked(), ERROR_CLIENT_FEATURE);
         } catch (AssertionError e) {
             logger.error(e);
             return Response.status(500).entity(e.getLocalizedMessage()).build();

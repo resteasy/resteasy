@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.exception;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -24,10 +24,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-981
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ExceptionBufferingTest {
 
@@ -70,7 +70,7 @@ public class ExceptionBufferingTest {
         return TestUtil.finishContainerPrepare(war, null, ExceptionBufferingResource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void init() throws Exception {
         client.close();
     }
@@ -94,7 +94,7 @@ public class ExceptionBufferingTest {
             logger.info("caught: " + e);
             String entity = response.readEntity(String.class);
             logger.info("exception entity: " + entity);
-            Assert.assertEquals("Wrong response content", "test", entity);
+            Assertions.assertEquals("test", entity, "Wrong response content");
         }
     }
 
@@ -120,8 +120,8 @@ public class ExceptionBufferingTest {
                 fail("Was expecting a second exception: " + s);
             } catch (ProcessingException e1) {
                 logger.info("and caught: " + e1);
-                Assert.assertTrue("Wrong exception thrown", e1.getCause() instanceof IOException);
-                Assert.assertEquals("Attempted read on closed stream.", e1.getCause().getMessage());
+                Assertions.assertTrue(e1.getCause() instanceof IOException, "Wrong exception thrown");
+                Assertions.assertEquals("Attempted read on closed stream.", e1.getCause().getMessage());
             } catch (Exception e1) {
                 fail("Was expecting a ProcessingException instead of " + e1);
             }
@@ -147,7 +147,7 @@ public class ExceptionBufferingTest {
             logger.info("caught: " + e);
             String entity = response.readEntity(String.class);
             logger.info("exception entity: " + entity);
-            Assert.assertEquals("Wrong responce content", "test", entity);
+            Assertions.assertEquals("test", entity, "Wrong responce content");
         }
     }
 }

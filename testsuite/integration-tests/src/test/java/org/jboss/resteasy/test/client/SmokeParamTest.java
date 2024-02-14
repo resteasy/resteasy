@@ -7,16 +7,16 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.client.resource.SmokeParamResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -24,13 +24,13 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Smoke parameter test.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SmokeParamTest extends ClientTestBase {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         client = ClientBuilder.newClient();
     }
@@ -41,7 +41,7 @@ public class SmokeParamTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, SmokeParamResource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         client.close();
     }
@@ -54,13 +54,13 @@ public class SmokeParamTest extends ClientTestBase {
     public void testSimple() throws Exception {
         Response response = client.target(generateURL("/foo")).request()
                 .post(Entity.entity("hello world", "text/plain"));
-        Assert.assertEquals("hello world", response.readEntity(String.class));
+        Assertions.assertEquals("hello world", response.readEntity(String.class));
         response.close();
 
         response = client.target(generateURL("/foo")).queryParam("b", "world").request()
                 .header("a", "hello")
                 .get();
-        Assert.assertEquals("hello world", response.readEntity(String.class));
+        Assertions.assertEquals("hello world", response.readEntity(String.class));
         response.close();
 
     }

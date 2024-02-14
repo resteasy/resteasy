@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -22,11 +22,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1066. If the content-type of the response is not specified in the request,
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class KeepCharsetTest {
 
@@ -73,12 +73,12 @@ public class KeepCharsetTest {
                 KeepCharsetFavoriteMovieXmlRootElement.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -113,10 +113,11 @@ public class KeepCharsetTest {
         Response response = target.request().accept(MediaType.APPLICATION_XML_TYPE)
                 .post(Entity.entity(entityXml, MediaType.APPLICATION_XML_TYPE));
         logger.info("Received response");
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         KeepCharsetFavoriteMovieXmlRootElement entity = response.readEntity(KeepCharsetFavoriteMovieXmlRootElement.class);
         logger.info("Result: " + entity);
-        Assert.assertEquals("Incorrect xml entity was returned from the server", "La Règle du Jeu", entity.getTitle());
+        Assertions.assertEquals("La Règle du Jeu", entity.getTitle(),
+                "Incorrect xml entity was returned from the server");
     }
 
     /**
@@ -148,10 +149,11 @@ public class KeepCharsetTest {
         logger.info(entityXml);
         logger.info("client default charset: " + Charset.defaultCharset());
         Response response = target.request().post(Entity.entity(entityXml, APPLICATION_XML_UTF16_TYPE));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         KeepCharsetFavoriteMovieXmlRootElement entity = response.readEntity(KeepCharsetFavoriteMovieXmlRootElement.class);
         logger.info("Result: " + entity);
-        Assert.assertEquals("Incorrect xml entity was returned from the server", "La Règle du Jeu", entity.getTitle());
+        Assertions.assertEquals("La Règle du Jeu", entity.getTitle(),
+                "Incorrect xml entity was returned from the server");
     }
 
     /**
@@ -184,9 +186,10 @@ public class KeepCharsetTest {
         logger.info("client default charset: " + Charset.defaultCharset());
         Response response = target.request().accept(APPLICATION_XML_UTF16_TYPE)
                 .post(Entity.entity(entityXml, APPLICATION_XML_UTF16_TYPE));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         KeepCharsetFavoriteMovieXmlRootElement entity = response.readEntity(KeepCharsetFavoriteMovieXmlRootElement.class);
         logger.info("Result: " + entity);
-        Assert.assertEquals("Incorrect xml entity was returned from the server", "La Règle du Jeu", entity.getTitle());
+        Assertions.assertEquals("La Règle du Jeu", entity.getTitle(),
+                "Incorrect xml entity was returned from the server");
     }
 }

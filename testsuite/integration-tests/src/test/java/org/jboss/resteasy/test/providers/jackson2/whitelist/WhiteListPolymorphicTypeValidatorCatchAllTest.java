@@ -16,7 +16,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.jackson.WhiteListPolymorphicTypeValidatorBuilder;
@@ -29,11 +29,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.5.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class WhiteListPolymorphicTypeValidatorCatchAllTest {
 
@@ -60,12 +60,12 @@ public class WhiteListPolymorphicTypeValidatorCatchAllTest {
                 TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Aircraft.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -84,18 +84,18 @@ public class WhiteListPolymorphicTypeValidatorCatchAllTest {
     public void testAutomobile() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Automobile()));
         logger.info("response: " + response);
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
-        Assert.assertTrue(response.contains("Created"));
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
+        Assertions.assertTrue(response.contains("Created"));
     }
 
     @Test
     public void testAircraft() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
-        Assert.assertTrue(response.contains("Created"));
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
+        Assertions.assertTrue(response.contains("Created"));
     }
 
     private String createJSONString(TestPolymorphicType t) throws Exception {

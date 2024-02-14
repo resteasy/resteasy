@@ -7,15 +7,15 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.context.resource.HttpServletResponseContextResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails RESTEASY-1531
  * @tpSince RESTEasy 4.7.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class HttpServletResponseContextTest {
     @Deployment
@@ -46,9 +46,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/string")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertEquals("context", s);
+        Assertions.assertEquals("context", s);
     }
 
     /**
@@ -61,9 +61,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/boolean")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertEquals("true", s);
+        Assertions.assertEquals("true", s);
     }
 
     /**
@@ -76,9 +76,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/char")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertEquals("c", s);
+        Assertions.assertEquals("c", s);
     }
 
     /**
@@ -91,9 +91,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/int")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertEquals("17", s);
+        Assertions.assertEquals("17", s);
     }
 
     /**
@@ -106,9 +106,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/long")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class).toUpperCase();
-        Assert.assertEquals("17", s);
+        Assertions.assertEquals("17", s);
     }
 
     /**
@@ -121,9 +121,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/float")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class).toUpperCase();
-        Assert.assertEquals("17.0", s);
+        Assertions.assertEquals("17.0", s);
     }
 
     /**
@@ -136,9 +136,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/print/double")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class).toUpperCase();
-        Assert.assertEquals("17.0", s);
+        Assertions.assertEquals("17.0", s);
     }
 
     /**
@@ -151,9 +151,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/eol")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertTrue(s.length() > 0);
+        Assertions.assertTrue(s.length() > 0);
     }
 
     /**
@@ -166,9 +166,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/string")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertTrue(s.startsWith("context") && s.length() > "context".length());
+        Assertions.assertTrue(s.startsWith("context") && s.length() > "context".length());
     }
 
     /**
@@ -181,9 +181,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/boolean")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertTrue(s.startsWith("true") && s.length() > "true".length());
+        Assertions.assertTrue(s.startsWith("true") && s.length() > "true".length());
     }
 
     /**
@@ -196,9 +196,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/char")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertEquals("c", s);
+        Assertions.assertEquals("c", s);
     }
 
     /**
@@ -211,9 +211,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/int")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertTrue(s.startsWith("17") && s.length() > "17".length());
+        Assertions.assertTrue(s.startsWith("17") && s.length() > "17".length());
     }
 
     /**
@@ -226,9 +226,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/long")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assert.assertTrue(s.startsWith("17") && s.length() > "17".length());
+        Assertions.assertTrue(s.startsWith("17") && s.length() > "17".length());
     }
 
     /**
@@ -241,9 +241,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/float")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class).toUpperCase();
-        Assert.assertTrue(s.startsWith("17") && s.length() > "17".length());
+        Assertions.assertTrue(s.startsWith("17") && s.length() > "17".length());
     }
 
     /**
@@ -256,9 +256,9 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/double")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class).toUpperCase();
-        Assert.assertTrue(s.startsWith("17") && s.length() > "17".length());
+        Assertions.assertTrue(s.startsWith("17") && s.length() > "17".length());
     }
 
     /**
@@ -271,8 +271,8 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/write/array/1")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("context".length(), response.readEntity(byte[].class).length);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("context".length(), response.readEntity(byte[].class).length);
     }
 
     /**
@@ -285,8 +285,8 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/write/array/3")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("context".length() - 1, response.readEntity(byte[].class).length);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("context".length() - 1, response.readEntity(byte[].class).length);
     }
 
     /**
@@ -299,7 +299,7 @@ public class HttpServletResponseContextTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/write/int")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("A", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("A", response.readEntity(String.class));
     }
 }

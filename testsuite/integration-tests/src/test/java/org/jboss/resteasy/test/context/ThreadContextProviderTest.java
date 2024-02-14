@@ -35,7 +35,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.context.resource.TestApplication;
 import org.jboss.resteasy.test.context.resource.TestResource;
@@ -45,16 +45,16 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ThreadContextProviderTest {
     private final String asyncThreadName = "Test-Async-Client-Thread";
@@ -73,7 +73,7 @@ public class ThreadContextProviderTest {
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Before
+    @BeforeEach
     public void initClient() {
         final ThreadFactory testThreadFactory = r -> {
             final Thread result = new Thread(r);
@@ -88,7 +88,7 @@ public class ThreadContextProviderTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void closeClient() {
         if (client != null) {
             client.close();
@@ -109,15 +109,15 @@ public class ThreadContextProviderTest {
                 .async()
                 .get();
         final Response response = future.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
 
         // Wait for the reset to be invoked
-        Assert.assertTrue("Timeout waiting for remove to be invoked.", reset.await(5, TimeUnit.SECONDS));
+        Assertions.assertTrue(reset.await(5, TimeUnit.SECONDS), "Timeout waiting for remove to be invoked.");
         // Test context was propagated
         final Map<String, String> data = TestThreadContextProvider.localState.get();
-        Assert.assertEquals(3, data.size());
-        Assert.assertEquals(currentThreadName, data.get("captured"));
-        Assert.assertEquals(asyncThreadName, data.get("push"));
-        Assert.assertEquals(asyncThreadName, data.get("reset"));
+        Assertions.assertEquals(3, data.size());
+        Assertions.assertEquals(currentThreadName, data.get("captured"));
+        Assertions.assertEquals(asyncThreadName, data.get("push"));
+        Assertions.assertEquals(asyncThreadName, data.get("reset"));
     }
 }

@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.path.resource.WildcardMatchingResource;
 import org.jboss.resteasy.test.resource.path.resource.WildcardMatchingSubResource;
@@ -15,11 +15,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Check class name of sub-resources, which process client request
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class WildcardResourceMatchingTest {
 
@@ -40,12 +40,12 @@ public class WildcardResourceMatchingTest {
                 WildcardMatchingSubResource.class, WildcardMatchingSubSubResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -61,8 +61,8 @@ public class WildcardResourceMatchingTest {
     @Test
     public void testMain() {
         Response response = client.target(generateURL("/main")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("WildcardMatchingResource", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("WildcardMatchingResource", response.readEntity(String.class));
         response.close();
     }
 
@@ -73,8 +73,8 @@ public class WildcardResourceMatchingTest {
     @Test
     public void testMainSub() {
         Response response = client.target(generateURL("/main/sub")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("WildcardMatchingSubResource", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("WildcardMatchingSubResource", response.readEntity(String.class));
         response.close();
     }
 
@@ -85,8 +85,8 @@ public class WildcardResourceMatchingTest {
     @Test
     public void testMainSubSub() {
         Response response = client.target(generateURL("/main/sub/sub")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("WildcardMatchingSubSubResource", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("WildcardMatchingSubSubResource", response.readEntity(String.class));
         response.close();
     }
 

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.datasource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import org.apache.http.config.ConnectionConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.test.providers.datasource.resource.DataSourceProviderInputStreamResource;
@@ -28,10 +28,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter DataSource provider
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for https://issues.jboss.org/browse/RESTEASY-779
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DataSourceProviderInputStreamTest {
 
@@ -71,14 +71,14 @@ public class DataSourceProviderInputStreamTest {
         DataSource dataSource = response.readEntity(DataSource.class);
         int length = TestUtil.readString(dataSource.getInputStream()).length();
         logger.info(String.format("Length as DataSource: %d", length));
-        Assert.assertEquals("Wrong length of response", expectedLength, length);
+        Assertions.assertEquals(expectedLength, length, "Wrong length of response");
 
         // as String
         response = target.request().get();
         String string = response.readEntity(String.class);
         length = string.length();
         logger.info(String.format("Length as String: %d", length));
-        Assert.assertEquals("Wrong length of response", expectedLength, length);
+        Assertions.assertEquals(expectedLength, length, "Wrong length of response");
 
         // as InputStream
         response = target.request().get();
@@ -86,7 +86,7 @@ public class DataSourceProviderInputStreamTest {
         dataSource = DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
         length = TestUtil.readString(dataSource.getInputStream()).length();
         logger.info(String.format("Length as InputStream: %d", length));
-        Assert.assertEquals("Wrong length of response", expectedLength, length);
+        Assertions.assertEquals(expectedLength, length, "Wrong length of response");
 
         client.close();
     }
@@ -104,8 +104,9 @@ public class DataSourceProviderInputStreamTest {
         HttpResponse response = httpClient.execute(httpGet);
         try (InputStream inputStream = response.getEntity().getContent()) {
             DataSourceProvider.readDataSource(inputStream, MediaType.TEXT_PLAIN_TYPE);
-            assertEquals("DataSourceProvider does not properly read InputStream", 0,
-                    findSizeOfRemainingDataInStream(inputStream));
+            assertEquals(0,
+                    findSizeOfRemainingDataInStream(inputStream),
+                    "DataSourceProvider does not properly read InputStream");
         }
     }
 
@@ -118,7 +119,7 @@ public class DataSourceProviderInputStreamTest {
         return totalBytesRead;
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         String tmpdir = System.getProperty("java.io.tmpdir");
         File dir = new File(tmpdir);

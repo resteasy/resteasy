@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.resource.param;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -42,11 +43,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -54,7 +55,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test all variants of primitive query parameters (boolean, int, long, float, etc.)
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class QueryParamAsPrimitiveTest {
 
@@ -96,7 +97,7 @@ public class QueryParamAsPrimitiveTest {
                 QueryParamAsPrimitiveResourceArrayDefaultOverride.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
         resourceQueryPrimitives = ProxyBuilder
@@ -110,7 +111,7 @@ public class QueryParamAsPrimitiveTest {
                 .builder(QueryParamAsPrimitiveResourceResourceArray.class, client.target(generateBaseUrl())).build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -132,7 +133,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -145,7 +146,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -158,7 +159,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -171,7 +172,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -185,7 +186,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -197,7 +198,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -211,7 +212,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/" + type);
             try {
                 Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -232,7 +233,7 @@ public class QueryParamAsPrimitiveTest {
         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
         try {
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -328,22 +329,25 @@ public class QueryParamAsPrimitiveTest {
         resourceQueryPrimitiveArray.doGetByte(array);
     }
 
-    @Test(timeout = 5000)
+    @Test()
     public void testProxyClientGetByte() {
-        final int size = 30000;
-        byte[] array = new byte[size];
-        //Test bigger sizes
-        for (int i = 0; i < size; i++) {
-            array[i] = (byte) 127;
-        }
+        Assertions.assertTimeout(Duration.ofMillis(5000),
+                () -> {
+                    final int size = 30000;
+                    byte[] array = new byte[size];
+                    //Test bigger sizes
+                    for (int i = 0; i < size; i++) {
+                        array[i] = (byte) 127;
+                    }
 
-        for (int i = 0; i < 5; i++) {
-            try {
-                resourceQueryPrimitiveArray.doPostByte(array);
-            } catch (BadRequestException | ProcessingException e) {
-                // expected
-            }
-        }
+                    for (int i = 0; i < 5; i++) {
+                        try {
+                            resourceQueryPrimitiveArray.doPostByte(array);
+                        } catch (BadRequestException | ProcessingException e) {
+                            // expected
+                        }
+                    }
+                });
     }
 
     /**
@@ -682,7 +686,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/int");
             try {
                 Response response = request.get();
-                Assert.assertEquals(404, response.getStatus());
+                Assertions.assertEquals(404, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -703,7 +707,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/int");
             try {
                 Response response = request.get();
-                Assert.assertEquals(404, response.getStatus());
+                Assertions.assertEquals(404, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -724,7 +728,7 @@ public class QueryParamAsPrimitiveTest {
             request.header(HttpHeaderNames.ACCEPT, "application/int");
             try {
                 Response response = request.get();
-                Assert.assertEquals(404, response.getStatus());
+                Assertions.assertEquals(404, response.getStatus());
                 response.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);

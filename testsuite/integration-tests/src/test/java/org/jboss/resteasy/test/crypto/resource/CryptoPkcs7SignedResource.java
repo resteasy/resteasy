@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.security.smime.SignedOutput;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/smime/pkcs7-signature")
 public class CryptoPkcs7SignedResource {
@@ -36,7 +36,7 @@ public class CryptoPkcs7SignedResource {
     @Consumes("application/pkcs7-signature")
     public void post(PKCS7SignatureInput<String> input) throws Exception {
         String str = input.getEntity(MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertEquals("input", str);
-        Assert.assertTrue(input.verify(CryptoCertResource.cert));
+        Assertions.assertEquals("input", str);
+        Assertions.assertTrue(input.verify(CryptoCertResource.cert));
     }
 }

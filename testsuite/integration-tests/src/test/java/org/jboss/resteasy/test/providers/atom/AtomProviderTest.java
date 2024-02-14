@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
@@ -30,18 +30,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Atom provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AtomProviderTest {
 
@@ -72,12 +72,12 @@ public class AtomProviderTest {
                 AtomProviderDataCollectionRecord.class, ObjectFactory.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -130,54 +130,54 @@ public class AtomProviderTest {
             + "       </atom:content>\n" + "     </atom:entry>\n" + "   </atom:feed>";
 
     public static void assertFeed(Feed feed) throws Exception {
-        Assert.assertEquals("dive into mark", feed.getTitle());
-        Assert.assertTrue(feed.getSubtitle().indexOf("effortless") > -1);
-        Assert.assertEquals(feed.getRights(), "Copyright (c) 2003, Mark Pilgrim");
-        Assert.assertEquals(feed.getGenerator().getUri(), new URI("http://www.example.com/"));
-        Assert.assertEquals(feed.getGenerator().getVersion(), "1.0");
-        Assert.assertEquals(feed.getGenerator().getText().trim(), "Example Toolkit");
-        Assert.assertNotNull(feed.getUpdated());
-        Assert.assertEquals(feed.getId().toString(), "tag:example.org,2003:3");
+        Assertions.assertEquals("dive into mark", feed.getTitle());
+        Assertions.assertTrue(feed.getSubtitle().indexOf("effortless") > -1);
+        Assertions.assertEquals(feed.getRights(), "Copyright (c) 2003, Mark Pilgrim");
+        Assertions.assertEquals(feed.getGenerator().getUri(), new URI("http://www.example.com/"));
+        Assertions.assertEquals(feed.getGenerator().getVersion(), "1.0");
+        Assertions.assertEquals(feed.getGenerator().getText().trim(), "Example Toolkit");
+        Assertions.assertNotNull(feed.getUpdated());
+        Assertions.assertEquals(feed.getId().toString(), "tag:example.org,2003:3");
         Link alternate = feed.getLinkByRel("alternate");
-        Assert.assertNotNull(alternate);
-        Assert.assertEquals(alternate.getType(), MediaType.valueOf("text/html"));
-        Assert.assertEquals(alternate.getHreflang(), "en");
-        Assert.assertEquals(alternate.getHref(), new URI("http://example.org/"));
+        Assertions.assertNotNull(alternate);
+        Assertions.assertEquals(alternate.getType(), MediaType.valueOf("text/html"));
+        Assertions.assertEquals(alternate.getHreflang(), "en");
+        Assertions.assertEquals(alternate.getHref(), new URI("http://example.org/"));
         Link self = feed.getLinkByRel("self");
-        Assert.assertNotNull(self);
-        Assert.assertEquals(self.getType(), MediaType.APPLICATION_ATOM_XML_TYPE);
-        Assert.assertEquals(self.getHreflang(), null);
-        Assert.assertEquals(self.getHref(), new URI("http://example.org/feed.atom"));
+        Assertions.assertNotNull(self);
+        Assertions.assertEquals(self.getType(), MediaType.APPLICATION_ATOM_XML_TYPE);
+        Assertions.assertEquals(self.getHreflang(), null);
+        Assertions.assertEquals(self.getHref(), new URI("http://example.org/feed.atom"));
 
-        Assert.assertEquals(1, feed.getEntries().size());
+        Assertions.assertEquals(1, feed.getEntries().size());
         Entry entry = feed.getEntries().get(0);
-        Assert.assertEquals("Atom draft-07 snapshot", entry.getTitle());
+        Assertions.assertEquals("Atom draft-07 snapshot", entry.getTitle());
         alternate = entry.getLinkByRel("alternate");
-        Assert.assertNotNull(alternate);
-        Assert.assertEquals(alternate.getType(), MediaType.valueOf("text/html"));
-        Assert.assertEquals(alternate.getHref(), new URI("http://example.org/2005/04/02/atom"));
+        Assertions.assertNotNull(alternate);
+        Assertions.assertEquals(alternate.getType(), MediaType.valueOf("text/html"));
+        Assertions.assertEquals(alternate.getHref(), new URI("http://example.org/2005/04/02/atom"));
         Link enclosure = entry.getLinkByRel("enclosure");
-        Assert.assertNotNull(enclosure);
-        Assert.assertEquals(enclosure.getType(), MediaType.valueOf("audio/mpeg"));
-        Assert.assertEquals(enclosure.getLength(), "1337");
-        Assert.assertEquals(enclosure.getHref(), new URI(
+        Assertions.assertNotNull(enclosure);
+        Assertions.assertEquals(enclosure.getType(), MediaType.valueOf("audio/mpeg"));
+        Assertions.assertEquals(enclosure.getLength(), "1337");
+        Assertions.assertEquals(enclosure.getHref(), new URI(
                 "http://example.org/audio/ph34r_my_podcast.mp3"));
-        Assert.assertEquals(entry.getId(), new URI("tag:example.org,2003:3.2397"));
-        Assert.assertNotNull(entry.getUpdated());
-        Assert.assertNotNull(entry.getPublished());
+        Assertions.assertEquals(entry.getId(), new URI("tag:example.org,2003:3.2397"));
+        Assertions.assertNotNull(entry.getUpdated());
+        Assertions.assertNotNull(entry.getPublished());
         Person author = entry.getAuthors().get(0);
-        Assert.assertEquals(author.getName(), "Mark Pilgrim");
-        Assert.assertEquals(author.getUri(), new URI("http://example.org/"));
-        Assert.assertEquals(author.getEmail(), "f8dy@example.com");
-        Assert.assertEquals(entry.getContributors().get(0).getName(), "Sam Ruby");
-        Assert.assertEquals(entry.getContributors().get(1).getName(), "Joe Gregorio");
-        Assert.assertEquals(entry.getContent().getType(), MediaType.APPLICATION_XML_TYPE);
-        Assert.assertEquals(entry.getContent().getLanguage(), "en");
-        Assert.assertEquals(entry.getContent().getBase(), new URI("http://diveintomark.org/"));
+        Assertions.assertEquals(author.getName(), "Mark Pilgrim");
+        Assertions.assertEquals(author.getUri(), new URI("http://example.org/"));
+        Assertions.assertEquals(author.getEmail(), "f8dy@example.com");
+        Assertions.assertEquals(entry.getContributors().get(0).getName(), "Sam Ruby");
+        Assertions.assertEquals(entry.getContributors().get(1).getName(), "Joe Gregorio");
+        Assertions.assertEquals(entry.getContent().getType(), MediaType.APPLICATION_XML_TYPE);
+        Assertions.assertEquals(entry.getContent().getLanguage(), "en");
+        Assertions.assertEquals(entry.getContent().getBase(), new URI("http://diveintomark.org/"));
         logger.info(entry.getContent().getElement().getNodeName());
         logger.info(entry.getContent().getElement().getNamespaceURI());
         AtomProviderCustomer cust = entry.getContent().getJAXBObject(AtomProviderCustomer.class);
-        Assert.assertEquals(cust.getName(), "bill");
+        Assertions.assertEquals(cust.getName(), "bill");
 
     }
 
@@ -194,7 +194,7 @@ public class AtomProviderTest {
         WebTarget target = client.target(generateURL("/atom/feed"));
         Response response = target.request().get();
         String stringResponse = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         logger.info(stringResponse);
 
         AtomProviderResourceInterface proxy = client.target(generateURL("")).proxy(AtomProviderResourceInterface.class);
@@ -212,7 +212,7 @@ public class AtomProviderTest {
         WebTarget target = client.target(generateURL("/atom/entry"));
         Response response = target.request().get();
         String stringResponse = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         logger.info(stringResponse);
     }
 
@@ -227,7 +227,7 @@ public class AtomProviderTest {
         WebTarget target = client.target(generateURL("/atom/xmltype"));
         Response response = target.request().get();
         logger.info(response.getHeaders().getFirst("Content-Type"));
-        Assert.assertEquals("application/atom+xml", response.getHeaders().getFirst("Content-Type"));
+        Assertions.assertEquals("application/atom+xml", response.getHeaders().getFirst("Content-Type"));
     }
 
     /**
@@ -241,6 +241,6 @@ public class AtomProviderTest {
         AtomProviderResourceInterface proxy = client.target(generateURL("")).proxy(AtomProviderResourceInterface.class);
         Entry entry = proxy.getXmlType();
         AtomProviderDataCollectionRecord record = entry.getContent().getJAXBObject(AtomProviderDataCollectionRecord.class);
-        Assert.assertEquals(record.getCollectedData(), "hello world");
+        Assertions.assertEquals(record.getCollectedData(), "hello world");
     }
 }

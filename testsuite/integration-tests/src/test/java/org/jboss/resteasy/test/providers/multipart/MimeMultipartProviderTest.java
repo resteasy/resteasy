@@ -24,7 +24,7 @@ import jakarta.xml.bind.JAXBException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
@@ -39,18 +39,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MimeMultipartProviderTest {
 
@@ -60,12 +60,12 @@ public class MimeMultipartProviderTest {
 
     private static final String ERR_NUMBER = "The number of enclosed bodypart objects doesn't match to the expectation";
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -100,7 +100,7 @@ public class MimeMultipartProviderTest {
     public void testPutForm() throws Exception {
         // prepare file
         File file = new File(testFilePath);
-        Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
+        Assertions.assertTrue(file.exists(), "File " + testFilePath + " doesn't exists");
 
         MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
         mpfdo.addFormData("part1", "This is Value 1", MediaType.TEXT_PLAIN_TYPE);
@@ -109,9 +109,9 @@ public class MimeMultipartProviderTest {
 
         Response response = client.target(TEST_URI).request()
                 .put(Entity.entity(mpfdo, MediaType.MULTIPART_FORM_DATA_TYPE));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String responseBody = response.readEntity(String.class);
-        Assert.assertEquals(ERR_NUMBER, responseBody, "Count: 3");
+        Assertions.assertEquals(responseBody, "Count: 3", ERR_NUMBER);
     }
 
     /**
@@ -122,7 +122,7 @@ public class MimeMultipartProviderTest {
     public void testPut() throws Exception {
         // prepare file
         File file = new File(testFilePath);
-        Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
+        Assertions.assertTrue(file.exists(), "File " + testFilePath + " doesn't exists");
 
         MultipartOutput mpo = new MultipartOutput();
         mpo.addPart("This is Value 1", MediaType.TEXT_PLAIN_TYPE);
@@ -132,9 +132,9 @@ public class MimeMultipartProviderTest {
         Response response = client.target(TEST_URI).request()
                 .put(Entity.entity(mpo, MediaType.MULTIPART_FORM_DATA_TYPE));
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String responseBody = response.readEntity(String.class);
-        Assert.assertEquals(ERR_NUMBER, responseBody, "Count: 3");
+        Assertions.assertEquals(responseBody, "Count: 3", ERR_NUMBER);
     }
 
     /**
@@ -157,7 +157,7 @@ public class MimeMultipartProviderTest {
 
         Response response = client.target(uri).request()
                 .put(Entity.entity(mpfdo, MediaType.MULTIPART_FORM_DATA_TYPE));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -294,12 +294,12 @@ public class MimeMultipartProviderTest {
     @Test
     public void testGet() throws Exception {
         Response response = client.target(TEST_URI).request().get();
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         BufferedInputStream in = new BufferedInputStream(response.readEntity(InputStream.class));
         String contentType = response.getStringHeaders().getFirst("content-type");
         ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
         MimeMultipart mimeMultipart = new MimeMultipart(ds);
-        Assert.assertEquals(ERR_NUMBER, mimeMultipart.getCount(), 2);
+        Assertions.assertEquals(mimeMultipart.getCount(), 2, ERR_NUMBER);
         response.close();
     }
 
@@ -312,7 +312,7 @@ public class MimeMultipartProviderTest {
         Response response = client.target(TEST_URI + "/file/test").request()
                 .post(Entity.entity(form,
                         "multipart/form-data; boundary=---------------------------52524491016334132001492192799"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 

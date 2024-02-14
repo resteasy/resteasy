@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.resource.param.resource.ParamInterfaceResource;
 import org.jboss.resteasy.test.resource.param.resource.ParamResource;
@@ -13,11 +13,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-423 and RESTEASY-522
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ParamTest {
 
@@ -42,12 +42,12 @@ public class ParamTest {
 
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         client.close();
     }
@@ -61,7 +61,7 @@ public class ParamTest {
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
         ParamInterfaceResource proxy = target.proxy(ParamInterfaceResource.class);
         String rtn = proxy.getMatrix(null);
-        Assert.assertEquals("null", rtn);
+        Assertions.assertEquals("null", rtn);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ParamTest {
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
         ParamInterfaceResource proxy = target.proxy(ParamInterfaceResource.class);
         String rtn = proxy.getCookie(null);
-        Assert.assertEquals("null", rtn);
+        Assertions.assertEquals("null", rtn);
     }
 
     /**
@@ -87,7 +87,7 @@ public class ParamTest {
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
         ParamInterfaceResource proxy = target.proxy(ParamInterfaceResource.class);
         String rtn = proxy.getHeader(null);
-        Assert.assertEquals("null", rtn);
+        Assertions.assertEquals("null", rtn);
     }
 
 }

@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class CollectionResource {
@@ -33,8 +33,8 @@ public class CollectionResource {
     @Path("array")
     @Consumes("application/xml")
     public void putCustomers(@Wrapped CollectionCustomer[] customers) {
-        Assert.assertEquals(WRONG_REQUEST_ERROR_MSG, "bill", customers[0].getName());
-        Assert.assertEquals(WRONG_REQUEST_ERROR_MSG, "monica", customers[1].getName());
+        Assertions.assertEquals("bill", customers[0].getName(), WRONG_REQUEST_ERROR_MSG);
+        Assertions.assertEquals("monica", customers[1].getName(), WRONG_REQUEST_ERROR_MSG);
     }
 
     @GET
@@ -53,8 +53,8 @@ public class CollectionResource {
     @Path("list")
     @Consumes("application/xml")
     public void putCustomers(@Wrapped List<CollectionCustomer> customers) {
-        Assert.assertEquals(WRONG_REQUEST_ERROR_MSG, "bill", customers.get(0).getName());
-        Assert.assertEquals(WRONG_REQUEST_ERROR_MSG, "monica", customers.get(1).getName());
+        Assertions.assertEquals("bill", customers.get(0).getName(), WRONG_REQUEST_ERROR_MSG);
+        Assertions.assertEquals("monica", customers.get(1).getName(), WRONG_REQUEST_ERROR_MSG);
     }
 
     @GET

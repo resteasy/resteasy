@@ -34,18 +34,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import dev.resteasy.client.util.authentication.HttpAuthenticators;
 import dev.resteasy.client.util.authentication.UserCredentials;
@@ -53,7 +53,7 @@ import dev.resteasy.client.util.authentication.UserCredentials;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(AuthenticationSetupTask.class)
 public class BasicAuthenticationTest {
@@ -63,12 +63,12 @@ public class BasicAuthenticationTest {
 
     private Client globalClient;
 
-    @Before
+    @BeforeEach
     public void createClient() {
         globalClient = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void closeClient() {
         if (globalClient != null) {
             globalClient.close();
@@ -92,7 +92,7 @@ public class BasicAuthenticationTest {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
-            Assert.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
         }
     }
 
@@ -105,7 +105,7 @@ public class BasicAuthenticationTest {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             final JsonObject json = response.readEntity(JsonObject.class);
             validate(json);
         }
@@ -117,7 +117,7 @@ public class BasicAuthenticationTest {
                 .register(HttpAuthenticators.basic(CREDENTIALS_USER_1))
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .get();
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         final JsonObject json = response.readEntity(JsonObject.class);
         validate(json);
     }
@@ -131,11 +131,11 @@ public class BasicAuthenticationTest {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             final JsonObject json = response.readEntity(JsonObject.class);
-            Assert.assertEquals(USER_2, json.getString("username"));
+            Assertions.assertEquals(USER_2, json.getString("username"));
             final String authHeader = json.getString("authHeader");
-            Assert.assertEquals(TestAuth.BASIC_AUTH_HEADER_USER_2, authHeader);
+            Assertions.assertEquals(TestAuth.BASIC_AUTH_HEADER_USER_2, authHeader);
         }
     }
 
@@ -148,7 +148,7 @@ public class BasicAuthenticationTest {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             final JsonObject json = response.readEntity(JsonObject.class);
             validate(json);
         }
@@ -163,13 +163,13 @@ public class BasicAuthenticationTest {
             final Response response = client.target(TestUtil.generateUri(url, "user"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .get();
-            Assert.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
+            Assertions.assertEquals(Response.Status.UNAUTHORIZED, response.getStatusInfo());
         }
     }
 
     private void validate(final JsonObject json) {
-        Assert.assertEquals(USER_1, json.getString("username"));
+        Assertions.assertEquals(USER_1, json.getString("username"));
         final String authHeader = json.getString("authHeader");
-        Assert.assertEquals(TestAuth.BASIC_AUTH_HEADER_USER_1, authHeader);
+        Assertions.assertEquals(TestAuth.BASIC_AUTH_HEADER_USER_1, authHeader);
     }
 }

@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test facility for sending requests in chunked format
  * @tpSince RESTEasy 3.0.24
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ChunkedTransferEncodingTest {
 
@@ -52,7 +52,7 @@ public class ChunkedTransferEncodingTest {
         return TestUtil.finishContainerPrepare(war, null, ChunkedTransferEncodingResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         file = new File(testFilePath);
         fileLength = file.length();
@@ -61,7 +61,7 @@ public class ChunkedTransferEncodingTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         clientDefault.close();
         clientEngine43.close();
@@ -96,8 +96,8 @@ public class ChunkedTransferEncodingTest {
         Invocation.Builder request = target.request();
         Response response = request.post(Entity.entity(file, "text/plain"));
         String header = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(expected, header);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(expected, header);
     }
 
     /**
@@ -125,7 +125,7 @@ public class ChunkedTransferEncodingTest {
         }
         Response response = request.post(Entity.entity(file, "text/plain"));
         String header = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(expected, header);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(expected, header);
     }
 }

@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ServletMappingResource {
@@ -26,7 +26,7 @@ public class ServletMappingResource {
     @Produces("text/plain")
     public String getBasic(@Context UriInfo uriInfo) throws Exception {
         URI uri = uriInfo.getBaseUriBuilder().path(ServletMappingResource.class, "getBasic").build();
-        Assert.assertEquals(uri.getPath(), "/resteasy/rest/basic");
+        Assertions.assertEquals(uri.getPath(), "/resteasy/rest/basic");
         return "basic";
     }
 

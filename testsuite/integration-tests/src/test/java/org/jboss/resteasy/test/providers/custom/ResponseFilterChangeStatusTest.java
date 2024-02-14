@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterChangeStatusResource;
@@ -17,31 +17,26 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResponseFilterChangeStatusTest {
 
     protected static final Logger logger = Logger.getLogger(ResponseFilterChangeStatusTest.class.getName());
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         client = ClientBuilder.newClient();
     }
@@ -57,7 +52,7 @@ public class ResponseFilterChangeStatusTest {
         return PortProviderUtil.generateURL(path, ResponseFilterChangeStatusTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         client.close();
     }
@@ -70,16 +65,19 @@ public class ResponseFilterChangeStatusTest {
      */
     @Test
     public void testDefaultHead() {
-        Response response = client.target(generateURL("/default_head")).request().head();
-        Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    Response response = client.target(generateURL("/default_head")).request().head();
+                    Assertions.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
 
-        thrown.expect(ProcessingException.class);
-        response.readEntity(String.class);
+                    response.readEntity(String.class);
 
-        logger.info(response.getMediaType());
-        Assert.assertTrue("Response must heave set up all headers, as if GET request was called.",
-                response.getMediaType().equals(MediaType.TEXT_PLAIN_TYPE));
-        response.close();
+                    logger.info(response.getMediaType());
+                    Assertions.assertTrue(response.getMediaType().equals(MediaType.TEXT_PLAIN_TYPE),
+                            "Response must heave set up all headers, as if GET request was called.");
+                    response.close();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -90,7 +88,7 @@ public class ResponseFilterChangeStatusTest {
     @Test
     public void testChangeStatus() {
         Response response = client.target(generateURL("/empty")).request().post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
         response.close();
     }
 }

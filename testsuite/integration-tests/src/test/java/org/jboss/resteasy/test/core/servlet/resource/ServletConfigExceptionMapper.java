@@ -11,7 +11,7 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.annotations.FollowUpRequired;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Provider
 @ApplicationScoped
@@ -32,9 +32,9 @@ public class ServletConfigExceptionMapper implements ExceptionMapper<ServletConf
         this.application = (ServletConfigApplication) application;
         this.servletConfig = servletConfig;
         this.context = context;
-        Assert.assertEquals("hello", this.application.getHello());
-        Assert.assertEquals("servlet hello", this.servletConfig.getInitParameter("servlet.greeting"));
-        Assert.assertEquals("context hello", this.context.getInitParameter("context.greeting"));
+        Assertions.assertEquals("hello", this.application.getHello());
+        Assertions.assertEquals("servlet hello", this.servletConfig.getInitParameter("servlet.greeting"));
+        Assertions.assertEquals("context hello", this.context.getInitParameter("context.greeting"));
     }
 
     public Response toResponse(ServletConfigException exception) {

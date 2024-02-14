@@ -12,25 +12,25 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.html.resource.HeadersInViewResponseResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter HTML provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.1.3.Final
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class HeadersInViewResponseTest {
 
@@ -43,12 +43,12 @@ public class HeadersInViewResponseTest {
         return TestUtil.finishContainerPrepare(war, null, HeadersInViewResponseResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -68,10 +68,10 @@ public class HeadersInViewResponseTest {
         Invocation.Builder request = client.target(generateURL("/test/get")).request();
         Response response = request.get();
         Map<String, NewCookie> map = response.getCookies();
-        Assert.assertEquals("123", response.getHeaderString("abc"));
-        Assert.assertEquals("value1", map.get("name1").getValue());
-        Assert.assertEquals("789", response.getHeaderString("xyz"));
-        Assert.assertEquals("value2", map.get("name2").getValue());
+        Assertions.assertEquals("123", response.getHeaderString("abc"));
+        Assertions.assertEquals("value1", map.get("name1").getValue());
+        Assertions.assertEquals("789", response.getHeaderString("xyz"));
+        Assertions.assertEquals("value2", map.get("name2").getValue());
     }
 
     private static File getResteasyHtmlJar() {

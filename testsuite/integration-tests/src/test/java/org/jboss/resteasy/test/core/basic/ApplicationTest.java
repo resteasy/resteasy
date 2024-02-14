@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestAExplicitApplication;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestBExplicitApplication;
@@ -22,9 +22,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for usage of more application in one deployment
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ApplicationTest {
 
@@ -68,16 +68,16 @@ public class ApplicationTest {
         WebTarget base = client.target(generateURL("/a/explicit"));
 
         String value = base.path("resources/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         Response response = base.path("resources/b").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
         value = base.path("singletons/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         response = base.path("singletons/b").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
         client.close();
     }
 
@@ -91,16 +91,16 @@ public class ApplicationTest {
         WebTarget base = client.target(generateURL("/b/explicit"));
 
         String value = base.path("resources/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         Response response = base.path("resources/a").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
         value = base.path("singletons/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         response = base.path("singletons/a").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
         client.close();
     }
 
@@ -114,16 +114,16 @@ public class ApplicationTest {
         WebTarget base = client.target(generateURL("/scanned"));
 
         String value = base.path("resources/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("resources/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
         client.close();
     }
 
@@ -138,16 +138,16 @@ public class ApplicationTest {
         WebTarget base = client.target(generateURL("/mapped"));
 
         String value = base.path("resources/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("resources/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
         client.close();
     }
 }

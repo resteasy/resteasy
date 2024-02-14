@@ -5,7 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class PathLimitedUnlimitedResource {
@@ -18,7 +18,7 @@ public class PathLimitedUnlimitedResource {
     @Path(value = "/uriparam/{param:.*}")
     @GET
     public String get(@PathParam("param") String param, @QueryParam("expected") String expected) {
-        Assert.assertEquals("Wrong parameter", param, expected);
+        Assertions.assertEquals(param, expected, "Wrong parameter");
         return "hello world";
     }
 }

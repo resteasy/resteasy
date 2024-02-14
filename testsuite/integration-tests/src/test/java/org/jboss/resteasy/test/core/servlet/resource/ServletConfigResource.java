@@ -7,7 +7,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("my")
 public class ServletConfigResource {
@@ -52,6 +52,6 @@ public class ServletConfigResource {
     @POST
     @Consumes("application/xml")
     public void nullFoo(Foo foo) {
-        Assert.assertNull(foo);
+        Assertions.assertNull(foo);
     }
 }

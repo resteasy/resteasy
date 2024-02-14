@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.test.client.resource.InputStreamResourceClient;
 import org.jboss.resteasy.test.client.resource.InputStreamResourceService;
@@ -17,11 +17,11 @@ import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -29,18 +29,18 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Read and write InputStreams
  * @tpSince RESTEasy 3.0.20
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class InputStreamResourceTest extends ClientTestBase {
 
     static Client resteasyClient;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         resteasyClient = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         resteasyClient.close();
     }
@@ -59,15 +59,15 @@ public class InputStreamResourceTest extends ClientTestBase {
     public void testClientResponse() throws Exception {
         InputStreamResourceClient client = ProxyBuilder
                 .builder(InputStreamResourceClient.class, resteasyClient.target(generateURL(""))).build();
-        Assert.assertEquals("hello", client.getAsString());
+        Assertions.assertEquals("hello", client.getAsString());
         Response is = client.getAsInputStream();
-        Assert.assertEquals("hello", new String(ReadFromStream.readFromStream(1024, is.readEntity(InputStream.class))));
+        Assertions.assertEquals("hello", new String(ReadFromStream.readFromStream(1024, is.readEntity(InputStream.class))));
         is.close();
         client.postString("new value");
-        Assert.assertEquals("new value", client.getAsString());
+        Assertions.assertEquals("new value", client.getAsString());
         client.postInputStream(new ByteArrayInputStream("new value 2".getBytes()));
-        Assert.assertEquals("new value 2", client.getAsString());
+        Assertions.assertEquals("new value 2", client.getAsString());
         client.postInputStream(new ByteArrayInputStream("".getBytes()));
-        Assert.assertEquals("", client.getAsString());
+        Assertions.assertEquals("", client.getAsString());
     }
 }

@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.ext.ReaderInterceptor;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
@@ -24,9 +24,9 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Providers
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for JBEAP-4703
  * @tpSince RESTEasy 3.0.17
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class DuplicateProviderRegistrationTest {
 
     private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
@@ -84,7 +84,8 @@ public class DuplicateProviderRegistrationTest {
         } finally {
             client.close();
         }
-        Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
+        Assertions.assertEquals(2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount,
+                RESTEASY_002160_ERR_MSG);
     }
 
     /**
@@ -110,7 +111,9 @@ public class DuplicateProviderRegistrationTest {
         } finally {
             client.close();
         }
-        Assert.assertEquals(RESTEASY_002155_ERR_MSG, 4, getRESTEASY002155WarningCount() - initRESTEASY002155WarningCount);
-        Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
+        Assertions.assertEquals(4, getRESTEASY002155WarningCount() - initRESTEASY002155WarningCount,
+                RESTEASY_002155_ERR_MSG);
+        Assertions.assertEquals(2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount,
+                RESTEASY_002160_ERR_MSG);
     }
 }

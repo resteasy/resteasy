@@ -4,13 +4,13 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Path;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/delete")
 public class SpecialResourceDeleteResource {
     @DELETE
     @Consumes("text/plain")
     public void delete(String msg) {
-        Assert.assertEquals("Wrong request content", "hello", msg);
+        Assertions.assertEquals("hello", msg, "Wrong request content");
     }
 }

@@ -26,7 +26,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.spi.resource.SeparatorAnnotationAsFieldTargetEndPoint;
 import org.jboss.resteasy.test.core.spi.resource.SeparatorAnnotationAsMethodTargetEndPoint;
@@ -36,9 +36,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Separator Annotation
@@ -46,7 +46,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Testing Separator annotation, for each of its targets, see RESTEASY-3029
  * @tpSince RESTEasy 7.0.0.Alpha1-SNAPSHOT
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SeparatorAnnotationTest {
 
@@ -73,8 +73,8 @@ public class SeparatorAnnotationTest {
                     .request()
                     .get();
 
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("This is your sentence:123", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("This is your sentence:123", response.readEntity(String.class));
         }
     }
 
@@ -86,8 +86,8 @@ public class SeparatorAnnotationTest {
                     .request()
                     .get();
 
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("This is your sentence:123", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("This is your sentence:123", response.readEntity(String.class));
         }
     }
 
@@ -99,8 +99,8 @@ public class SeparatorAnnotationTest {
                     .request()
                     .get();
 
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("This is your sentence:123", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("This is your sentence:123", response.readEntity(String.class));
         }
     }
 }

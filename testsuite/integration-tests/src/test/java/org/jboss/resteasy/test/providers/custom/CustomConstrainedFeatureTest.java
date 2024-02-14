@@ -1,15 +1,15 @@
 package org.jboss.resteasy.test.providers.custom;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -20,8 +20,8 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Core
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.6.1
  * @tpTestCaseDetails Regression test for RESTEASY-1861
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomConstrainedFeatureTest {
 
@@ -66,8 +66,8 @@ public class CustomConstrainedFeatureTest {
         // the line below does the same as if there is providers file in META-INF/services/jakarta.ws.rs.ext.Providers
         ResteasyClient client = (ResteasyClient) ClientBuilder.newBuilder().register(CustomClientConstrainedFeature.class)
                 .register(CustomServerConstrainedFeature.class).build();
-        assertTrue(CustomConstrainedFeatureResource.ERROR_CLIENT_FEATURE, CustomClientConstrainedFeature.wasInvoked());
-        assertFalse(CustomConstrainedFeatureResource.ERROR_SERVER_FEATURE, CustomServerConstrainedFeature.wasInvoked());
+        assertTrue(CustomClientConstrainedFeature.wasInvoked(), CustomConstrainedFeatureResource.ERROR_CLIENT_FEATURE);
+        assertFalse(CustomServerConstrainedFeature.wasInvoked(), CustomConstrainedFeatureResource.ERROR_SERVER_FEATURE);
         Response response = client.target(TEST_URI).request().get();
         LOGGER.infof("Response from server: %s", response.readEntity(String.class));
         // server must return 200 if only registered feature was for server runtime

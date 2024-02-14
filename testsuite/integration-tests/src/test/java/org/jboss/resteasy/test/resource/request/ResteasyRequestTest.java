@@ -9,18 +9,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.request.resource.RequestResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -28,20 +28,20 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests for ResteasyRequest
  * @tpSince RESTEasy 4.3.2
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResteasyRequestTest {
 
     static Client client;
     static WebTarget requestWebTarget;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
         requestWebTarget = client.target(generateURL("/request"));
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -64,11 +64,11 @@ public class ResteasyRequestTest {
     public void testRequest() {
         try {
             Response response = requestWebTarget.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             final String val = response.readEntity(String.class);
             final String pattern = "^127.0.0.1/.+";
-            Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern),
-                    Pattern.matches(pattern, val));
+            Assertions.assertTrue(Pattern.matches(pattern, val),
+                    String.format("Expected value '%s' to match pattern '%s'", val, pattern));
             response.close();
         } catch (Exception e) {
             throw new RuntimeException(e);

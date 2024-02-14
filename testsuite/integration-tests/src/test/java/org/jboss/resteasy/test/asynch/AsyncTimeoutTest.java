@@ -6,20 +6,20 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.asynch.resource.AsyncTimeoutResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsyncTimeoutTest {
     static ResteasyClient client;
@@ -30,12 +30,12 @@ public class AsyncTimeoutTest {
         return TestUtil.finishContainerPrepare(war, null, AsyncTimeoutResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
         client = null;
@@ -49,9 +49,9 @@ public class AsyncTimeoutTest {
     public void testAsyncTimeOut() throws Exception {
         WebTarget base = client.target(generateURL("/async"));
         Response response = base.request().get();
-        Assert.assertEquals("Async hello", response.readEntity(String.class));
+        Assertions.assertEquals("Async hello", response.readEntity(String.class));
         Response timeoutRes = client.target(generateURL("/timeout")).request().get();
-        Assert.assertTrue("Wrongly call Timeout Handler", timeoutRes.readEntity(String.class).contains("false"));
+        Assertions.assertTrue(timeoutRes.readEntity(String.class).contains("false"), "Wrongly call Timeout Handler");
         response.close();
     }
 
@@ -61,9 +61,9 @@ public class AsyncTimeoutTest {
         long startTime = System.nanoTime();
         Response response = base.request().get();
         long elapsedTime = System.nanoTime() - startTime;
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("Extended timeout hello", response.readEntity(String.class));
-        Assert.assertTrue("Timeout fired too quickly", elapsedTime > 4000000000L);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Extended timeout hello", response.readEntity(String.class));
+        Assertions.assertTrue(elapsedTime > 4000000000L, "Timeout fired too quickly");
         response.close();
     }
 
@@ -71,8 +71,8 @@ public class AsyncTimeoutTest {
     public void testResumeAfterSettingAsyncTimeoutHandler() throws Exception {
         WebTarget base = client.target(generateURL("/resumeAfterSettingTimeoutHandler"));
         Response response = base.request().get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("From initial", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("From initial", response.readEntity(String.class));
         response.close();
     }
 }

@@ -21,7 +21,7 @@ import org.jboss.resteasy.core.InternalDispatcher;
 import org.jboss.resteasy.core.MessageBodyParameterInjector;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.test.core.basic.InternalDispatcherTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class InternalDispatcherForwardingResource {
@@ -117,12 +117,12 @@ public class InternalDispatcherForwardingResource {
             dispatcher.getEntity("/infinite-forward?count=" + (count + 1));
             // we'll never reach 20, since the max count of times through the
             // system is 20, and first time through is 0
-            Assert.assertNotSame(20, count);
+            Assertions.assertNotSame(20, count);
         } catch (BadRequestException e) {
 
         } finally {
-            Assert.assertEquals(count, MessageBodyParameterInjector.bodyCount());
-            Assert.assertEquals(count + 1, ResteasyContext.getContextDataLevelCount());
+            Assertions.assertEquals(count, MessageBodyParameterInjector.bodyCount());
+            Assertions.assertEquals(count + 1, ResteasyContext.getContextDataLevelCount());
         }
         return ResteasyContext.getContextDataLevelCount();
     }

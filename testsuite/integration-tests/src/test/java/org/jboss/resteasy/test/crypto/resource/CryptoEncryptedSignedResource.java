@@ -8,7 +8,7 @@ import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
 import org.jboss.resteasy.security.smime.SignedInput;
 import org.jboss.resteasy.security.smime.SignedOutput;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/smime/encrypted/signed")
 public class CryptoEncryptedSignedResource {
@@ -26,7 +26,7 @@ public class CryptoEncryptedSignedResource {
     @POST
     public void post(EnvelopedInput<SignedInput<String>> input) throws Exception {
         SignedInput<String> str = input.getEntity(CryptoCertResource.privateKey, CryptoCertResource.cert);
-        Assert.assertEquals("input", str.getEntity());
-        Assert.assertTrue(str.verify(CryptoCertResource.cert));
+        Assertions.assertEquals("input", str.getEntity());
+        Assertions.assertTrue(str.verify(CryptoCertResource.cert));
     }
 }

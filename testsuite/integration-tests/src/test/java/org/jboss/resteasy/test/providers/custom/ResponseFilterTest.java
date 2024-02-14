@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilter;
 import org.jboss.resteasy.test.providers.custom.resource.ResponseFilterResource;
@@ -15,24 +15,24 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResponseFilterTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
@@ -48,7 +48,7 @@ public class ResponseFilterTest {
         return PortProviderUtil.generateURL(path, ResponseFilterTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -67,9 +67,9 @@ public class ResponseFilterTest {
         for (Response.Status status : Response.Status.values()) {
             String content = String.valueOf(status.getStatusCode());
             Response response = client.target(generateURL("/resource/getstatus")).request().post(Entity.text(content));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("The entity doesn't contain the original http code of the request", content,
-                    response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(content, response.readEntity(String.class),
+                    "The entity doesn't contain the original http code of the request");
             response.close();
         }
 
@@ -92,9 +92,9 @@ public class ResponseFilterTest {
         for (Response.Status status : Response.Status.values()) {
             String content = String.valueOf(status.getStatusCode());
             Response response = client.target(generateURL("/resource/getstatusinfo")).request().post(Entity.text(content));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("The entity doesn't contain the original http code of the request", content,
-                    response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(content, response.readEntity(String.class),
+                    "The entity doesn't contain the original http code of the request");
             response.close();
         }
 
@@ -112,9 +112,9 @@ public class ResponseFilterTest {
     public void testEntityType() {
         String content = "string";
         Response response = client.target(generateURL("/resource/getentitytype")).request().post(Entity.text(content));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("The entity doesn't contain the original entity type", String.class.getName(),
-                response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(String.class.getName(), response.readEntity(String.class),
+                "The entity doesn't contain the original entity type");
         response.close();
 
     }

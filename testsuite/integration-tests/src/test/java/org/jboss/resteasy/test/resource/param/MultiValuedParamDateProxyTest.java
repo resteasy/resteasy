@@ -10,7 +10,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapper;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapperArrayConverter;
@@ -38,9 +38,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -50,7 +50,7 @@ import org.junit.runner.RunWith;
  *                    Client Proxy is used
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MultiValuedParamDateProxyTest {
 
@@ -99,21 +99,23 @@ public class MultiValuedParamDateProxyTest {
             QueryParamResourceClient queryParamResourceClient = client.target(generateBaseUrl())
                     .proxy(MultiValuedParamResourceClient.class).queryParam();
 
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     queryParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     queryParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
 
-            Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_list(dates));
-            Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
+            Assertions.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_list(dates));
+            Assertions.assertEquals(expectedResponse,
+                    queryParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 
-            Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
-            Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
-            Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    queryParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse,
+            Assertions.assertEquals(expectedResponse,
                     queryParamResourceClient.defaultConversion_array(dates.toArray(new String[dates.size()])));
         } finally {
             client.close();
@@ -131,22 +133,25 @@ public class MultiValuedParamDateProxyTest {
             HeaderParamResourceClient headerParamResourceClient = client.target(generateBaseUrl())
                     .proxy(MultiValuedParamResourceClient.class).headerParam();
 
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     headerParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     headerParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
 
-            Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_list(dates));
-            Assert.assertEquals(expectedResponse,
+            Assertions.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_list(dates));
+            Assertions.assertEquals(expectedResponse,
                     headerParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 
-            Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
-            Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    headerParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
-            Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    headerParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    headerParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse,
+            Assertions.assertEquals(expectedResponse,
                     headerParamResourceClient.defaultConversion_array(dates.toArray(new String[dates.size()])));
         } finally {
             client.close();
@@ -164,22 +169,25 @@ public class MultiValuedParamDateProxyTest {
             MatrixParamResourceClient matrixParamResourceClient = client.target(generateBaseUrl())
                     .proxy(MultiValuedParamResourceClient.class).matrixParam();
 
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     matrixParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     matrixParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
 
-            Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_list(dates));
-            Assert.assertEquals(expectedResponse,
+            Assertions.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_list(dates));
+            Assertions.assertEquals(expectedResponse,
                     matrixParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 
-            Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
-            Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    matrixParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
-            Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    matrixParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    matrixParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse,
+            Assertions.assertEquals(expectedResponse,
                     matrixParamResourceClient.defaultConversion_array(dates.toArray(new String[dates.size()])));
         } finally {
             client.close();
@@ -197,21 +205,21 @@ public class MultiValuedParamDateProxyTest {
             CookieParamResourceClient cookieParamResourceClient = client.target(generateBaseUrl())
                     .proxy(MultiValuedParamResourceClient.class).cookieParam();
 
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     cookieParamResourceClient.customConversion_multiValuedCookieParam(date1 + "-" + date2 + "-" + date3));
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     cookieParamResourceClient.customConversion_multiValuedCookieParam_array(date1 + "-" + date2 + "-" + date3));
 
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_list(date1));
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_arrayList(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_list(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_arrayList(date1));
 
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_set(date1));
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_hashSet(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_set(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_hashSet(date1));
 
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_sortedSet(date1));
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_treeSet(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_sortedSet(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_treeSet(date1));
 
-            Assert.assertEquals(date1, cookieParamResourceClient.defaultConversion_array(date1));
+            Assertions.assertEquals(date1, cookieParamResourceClient.defaultConversion_array(date1));
         } finally {
             client.close();
         }
@@ -228,22 +236,24 @@ public class MultiValuedParamDateProxyTest {
             FormParamResourceClient formParamResourceClient = client.target(generateBaseUrl())
                     .proxy(MultiValuedParamResourceClient.class).formParam();
 
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     formParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     formParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
 
             String expectedResponse = date1 + "," + date2 + "," + date3;
-            Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_list(dates));
-            Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
+            Assertions.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_list(dates));
+            Assertions.assertEquals(expectedResponse,
+                    formParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 
-            Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
-            Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_set(new HashSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_hashSet(new HashSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
-            Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse,
+                    formParamResourceClient.defaultConversion_sortedSet(new TreeSet<>(dates)));
+            Assertions.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_treeSet(new TreeSet<>(dates)));
 
-            Assert.assertEquals(expectedResponse,
+            Assertions.assertEquals(expectedResponse,
                     formParamResourceClient.defaultConversion_array(dates.toArray(new String[dates.size()])));
         } finally {
             client.close();
@@ -261,21 +271,21 @@ public class MultiValuedParamDateProxyTest {
             PathParamResourceClient pathParamResourceClient = client.target(generateBaseUrl())
                     .proxy(MultiValuedParamResourceClient.class).pathParam();
 
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     pathParamResourceClient.customConversion_multiValuedPathParam(date1, date2, date3));
-            Assert.assertEquals(date1 + "," + date2 + "," + date3,
+            Assertions.assertEquals(date1 + "," + date2 + "," + date3,
                     pathParamResourceClient.customConversion_multiValuedPathParam_array(date1, date2, date3));
 
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_list(date1));
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_arrayList(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_list(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_arrayList(date1));
 
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_set(date1));
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_hashSet(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_set(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_hashSet(date1));
 
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_sortedSet(date1));
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_treeSet(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_sortedSet(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_treeSet(date1));
 
-            Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_array(date1));
+            Assertions.assertEquals(date1, pathParamResourceClient.defaultConversion_array(date1));
         } finally {
             client.close();
         }

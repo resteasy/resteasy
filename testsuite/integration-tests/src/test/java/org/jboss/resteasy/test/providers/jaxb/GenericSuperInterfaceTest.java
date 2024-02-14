@@ -5,7 +5,7 @@ import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceAbstractBackendCollectionResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceAbstractBackendResource;
@@ -33,9 +33,9 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-636
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class GenericSuperInterfaceTest {
 
     @Deployment
@@ -81,14 +81,14 @@ public class GenericSuperInterfaceTest {
     @Test
     public void testGetImplementationReflection() throws Exception {
         Class updatableResource = GenericSuperInterfaceBackendDataCenterResource.class.getInterfaces()[0].getInterfaces()[0];
-        Assert.assertEquals(updatableResource, GenericSuperInterfaceUpdatableResource.class);
+        Assertions.assertEquals(updatableResource, GenericSuperInterfaceUpdatableResource.class);
         Method update = null;
         for (Method method : updatableResource.getMethods()) {
             if (method.getName().equals("update")) {
                 update = method;
             }
         }
-        Assert.assertNotNull("Updated method was not found", update);
+        Assertions.assertNotNull(update, "Updated method was not found");
 
         Method implemented = Types.getImplementingMethod(GenericSuperInterfaceBackendDataCenterResource.class, update);
 
@@ -98,6 +98,6 @@ public class GenericSuperInterfaceTest {
                 actual = method;
             }
         }
-        Assert.assertEquals("Interface was not detected", implemented, actual);
+        Assertions.assertEquals(implemented, actual, "Interface was not detected");
     }
 }

@@ -16,18 +16,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.iioimage.resource.ImageResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter IIOImage provider
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Basic test for IIOImage provider. Old issue: https://issues.jboss.org/browse/RESTEASY-862
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class IIOImageProviderTest {
     static ResteasyClient client;
@@ -44,12 +44,12 @@ public class IIOImageProviderTest {
     static final String testPngResource2 = "test2.png";
     static final String testWdpResource = "test.wdp";
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -76,11 +76,11 @@ public class IIOImageProviderTest {
         final String testPngResource = System.getProperty("java.version").startsWith("1.") ? testPngResource1
                 : testPngResource2;
         File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
-        Assert.assertTrue(file.exists());
+        Assertions.assertTrue(file.exists());
         Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/png"));
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         String contentType = response.getHeaderString("content-type");
-        Assert.assertEquals("Wrong content type of response", "image/png", contentType);
+        Assertions.assertEquals("image/png", contentType, "Wrong content type of response");
 
         BufferedInputStream in = new BufferedInputStream(response.readEntity(InputStream.class));
         ByteArrayOutputStream fromServer = new ByteArrayOutputStream();
@@ -91,8 +91,8 @@ public class IIOImageProviderTest {
         ByteArrayOutputStream fromTestData = new ByteArrayOutputStream();
         writeTo(fis, fromTestData);
         // ImageResource could change image slightly, so next assert could fail, because same picture could have been saved different
-        Assert.assertTrue("ImageResource could change image slightly or ImageResource is wrong",
-                Arrays.equals(fromServer.toByteArray(), fromTestData.toByteArray()));
+        Assertions.assertTrue(Arrays.equals(fromServer.toByteArray(), fromTestData.toByteArray()),
+                "ImageResource could change image slightly or ImageResource is wrong");
     }
 
     /**
@@ -105,10 +105,10 @@ public class IIOImageProviderTest {
     @Test
     public void testPostUnsupportedImage() throws Exception {
         File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testWdpResource));
-        Assert.assertTrue(file.exists());
+        Assertions.assertTrue(file.exists());
         Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/vnd.ms-photo"));
-        Assert.assertEquals("Unsupported image is accepted by server", HttpServletResponse.SC_NOT_ACCEPTABLE,
-                response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE,
+                response.getStatus(), "Unsupported image is accepted by server");
         response.close();
     }
 

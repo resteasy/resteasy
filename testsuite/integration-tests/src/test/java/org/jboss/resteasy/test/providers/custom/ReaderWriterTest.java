@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -28,11 +28,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Providers
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEasy issues
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ReaderWriterTest {
     static ResteasyClient client;
@@ -85,12 +85,12 @@ public class ReaderWriterTest {
                 ReaderWriterCustomerWriter.class, ReaderWriterHignPriorityCustomerWriter.class, ReaderWriterResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -104,14 +104,15 @@ public class ReaderWriterTest {
         WebTarget base = client
                 .target(PortProviderUtil.generateURL("/implicit", ReaderWriterCustomerWriter.class.getSimpleName()));
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
         String s = new String(response.readEntity(byte[].class), "US-ASCII");
-        Assert.assertEquals("Response contains wrong content", "<customer><name>bill</name></customer>", s);
+        Assertions.assertEquals("<customer><name>bill</name></customer>", s,
+                "Response contains wrong content");
         response.close();
 
         response = base.request().delete();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         ReaderWriterClient proxy = client
@@ -121,7 +122,7 @@ public class ReaderWriterTest {
         response.close();
 
         response = proxy.deleteComplex();
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -145,11 +146,11 @@ public class ReaderWriterTest {
     public void test24() throws Exception {
         WebTarget base = client.target(PortProviderUtil.generateURL("/complex", ReaderWriterResource.class.getSimpleName()));
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FOUND, response.getStatus());
-        Assert.assertEquals(response.getStringHeaders().getFirst("content-type"), "text/plain;charset=UTF-8");
+        Assertions.assertEquals(HttpResponseCodes.SC_FOUND, response.getStatus());
+        Assertions.assertEquals(response.getStringHeaders().getFirst("content-type"), "text/plain;charset=UTF-8");
         byte[] responseBody = response.readEntity(byte[].class);
         String responseString = new String(responseBody, "US-ASCII");
-        Assert.assertEquals("Response contains wrong content", "hello world", responseString);
+        Assertions.assertEquals("hello world", responseString, "Response contains wrong content");
 
     }
 
@@ -161,10 +162,10 @@ public class ReaderWriterTest {
     public void test1and2() throws Exception {
         WebTarget base = client.target(PortProviderUtil.generateURL("/simple", ReaderWriterResource.class.getSimpleName()));
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
         String s = new String(response.readEntity(byte[].class), "US-ASCII");
-        Assert.assertEquals("Response contains wrong content", "hello world", s);
+        Assertions.assertEquals("hello world", s, "Response contains wrong content");
     }
 
     /**
@@ -188,7 +189,7 @@ public class ReaderWriterTest {
         WebTarget base = client.target(
                 PortProviderUtil.generateURL("/spaces/with%20spaces/without", ReaderWriterSpaces.class.getSimpleName()));
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 
@@ -202,7 +203,7 @@ public class ReaderWriterTest {
         WebTarget base = client
                 .target(PortProviderUtil.generateURL("/curly/abcd", ReaderWriterCurlyBraces.class.getSimpleName()));
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 
@@ -211,10 +212,11 @@ public class ReaderWriterTest {
     public void testProviderWithPriority() throws Exception {
         WebTarget base = client.target(PortProviderUtil.generateURL("/priority", PriorityDeploymenetName));
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
         String s = new String(response.readEntity(byte[].class), "UTF-8");
-        Assert.assertEquals("Response contains wrong content", "<customer><name>high priority</name></customer>", s);
+        Assertions.assertEquals("<customer><name>high priority</name></customer>", s,
+                "Response contains wrong content");
         response.close();
     }
 }

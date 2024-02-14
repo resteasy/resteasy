@@ -7,7 +7,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ParamConverterDefaultResource {
@@ -15,8 +15,8 @@ public class ParamConverterDefaultResource {
     public void putDefault(@QueryParam("pojo") @DefaultValue("default") ParamConverterPOJO q,
             @MatrixParam("pojo") @DefaultValue("default") ParamConverterPOJO mp,
             @DefaultValue("default") @HeaderParam("pojo") ParamConverterPOJO hp) {
-        Assert.assertEquals(q.getName(), "default");
-        Assert.assertEquals(mp.getName(), "default");
-        Assert.assertEquals(hp.getName(), "default");
+        Assertions.assertEquals(q.getName(), "default");
+        Assertions.assertEquals(mp.getName(), "default");
+        Assertions.assertEquals(hp.getName(), "default");
     }
 }

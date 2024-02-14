@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.tracing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +14,11 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
+@Disabled("RESTEASY-3451")
 public class OnDemandTracingTest extends TracingTestBase {
 
     private static final Logger LOG = Logger.getLogger(OnDemandTracingTest.class);
@@ -30,7 +32,7 @@ public class OnDemandTracingTest extends TracingTestBase {
 
             Response response = base.request().get();
             testTracingEnabled(response, false);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
             response.close();
 
@@ -59,7 +61,7 @@ public class OnDemandTracingTest extends TracingTestBase {
                     .header(RESTEasyTracing.HEADER_ACCEPT, "")
                     .header(RESTEasyTracing.HEADER_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
             Map<String, Boolean> results = new HashMap<String, Boolean>();
             putTestEvents(results);
@@ -67,7 +69,7 @@ public class OnDemandTracingTest extends TracingTestBase {
             verifyResults(response, results);
 
             for (String k : results.keySet()) {
-                assertTrue(k + ": " + results.get(k), results.get(k));
+                assertTrue(results.get(k), k + ": " + results.get(k));
             }
 
             response.close();

@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.HeaderFlushedOutputStreamBean;
@@ -25,11 +25,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -37,17 +37,17 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-190
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class HeaderFlushedOutputStreamTest {
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -80,7 +80,7 @@ public class HeaderFlushedOutputStreamTest {
     public void testPost() throws Exception {
         // prepare file
         File file = new File(testFilePath);
-        Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
+        Assertions.assertTrue(file.exists(), "File " + testFilePath + " doesn't exists");
         // test logic
         MultipartOutput mpo = new MultipartOutput();
         mpo.addPart("This is Value 1", MediaType.TEXT_PLAIN_TYPE);
@@ -91,7 +91,7 @@ public class HeaderFlushedOutputStreamTest {
         String contentType = response.getHeaderString("content-type");
         ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
         MimeMultipart mimeMultipart = new MimeMultipart(ds);
-        Assert.assertEquals("Wrong count of parts of response", mimeMultipart.getCount(), 3);
+        Assertions.assertEquals(mimeMultipart.getCount(), 3, "Wrong count of parts of response");
         response.close();
     }
 
@@ -103,7 +103,7 @@ public class HeaderFlushedOutputStreamTest {
     public void testPostForm() throws Exception {
         // prepare file
         File file = new File(testFilePath);
-        Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
+        Assertions.assertTrue(file.exists(), "File " + testFilePath + " doesn't exists");
         // test logic
         MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
         mpfdo.addFormData("part1", "This is Value 1", MediaType.TEXT_PLAIN_TYPE);
@@ -116,7 +116,7 @@ public class HeaderFlushedOutputStreamTest {
         String contentType = response.getHeaderString("content-type");
         ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
         MimeMultipart mimeMultipart = new MimeMultipart(ds);
-        Assert.assertEquals("Wrong count of parts of response", mimeMultipart.getCount(), 3);
+        Assertions.assertEquals(mimeMultipart.getCount(), 3, "Wrong count of parts of response");
         response.close();
     }
 
@@ -129,23 +129,23 @@ public class HeaderFlushedOutputStreamTest {
 
         Response response = client.target(TEST_URI).request().get();
 
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         BufferedInputStream in = new BufferedInputStream(response.readEntity(InputStream.class));
         String contentType = response.getHeaderString("content-type");
         ByteArrayDataSource ds = new ByteArrayDataSource(in, contentType);
         MimeMultipart mimeMultipart = new MimeMultipart(ds);
-        Assert.assertEquals("Wrong count of parts of response", mimeMultipart.getCount(), 1);
+        Assertions.assertEquals(mimeMultipart.getCount(), 1, "Wrong count of parts of response");
 
         BodyPart part = mimeMultipart.getBodyPart(0);
         InputStream is = part.getInputStream();
 
-        Assert.assertEquals("Wrong count of parts of response", 3, part.getSize());
+        Assertions.assertEquals(3, part.getSize(), "Wrong count of parts of response");
 
         char[] output = new char[3];
         output[0] = (char) is.read();
         output[1] = (char) is.read();
         output[2] = (char) is.read();
         String str = new String(output);
-        Assert.assertEquals("Wrong content of first part of response", "bla", str);
+        Assertions.assertEquals("bla", str, "Wrong content of first part of response");
     }
 }

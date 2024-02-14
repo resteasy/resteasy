@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/extension")
 public class ExtensionResource {
@@ -34,10 +34,11 @@ public class ExtensionResource {
     @Produces("text/html")
     public String getXmlTwo(@Context HttpHeaders headers) {
         List<Locale> languages = headers.getAcceptableLanguages();
-        Assert.assertEquals("Wrong number of accepted languages", 1, languages.size());
-        Assert.assertEquals("Wrong accepted language", new Locale("en", "us"), languages.get(0));
-        Assert.assertEquals("Wrong accepted language", MediaType.valueOf("text/html"),
-                headers.getAcceptableMediaTypes().get(0));
+        Assertions.assertEquals(1, languages.size(), "Wrong number of accepted languages");
+        Assertions.assertEquals(new Locale("en", "us"), languages.get(0),
+                "Wrong accepted language");
+        Assertions.assertEquals(MediaType.valueOf("text/html"),
+                headers.getAcceptableMediaTypes().get(0), "Wrong accepted language");
         return "html";
     }
 
@@ -46,10 +47,10 @@ public class ExtensionResource {
     @Produces("text/plain")
     public String getJson(@Context HttpHeaders headers) {
         List<Locale> languages = headers.getAcceptableLanguages();
-        Assert.assertEquals("Wrong number of accepted languages", 1, languages.size());
-        Assert.assertEquals("Wrong accepted language", new Locale("en", "us"), languages.get(0));
-        Assert.assertEquals("Wrong accepted language", MediaType.valueOf("text/plain"),
-                headers.getAcceptableMediaTypes().get(0));
+        Assertions.assertEquals(1, languages.size(), "Wrong number of accepted languages");
+        Assertions.assertEquals(new Locale("en", "us"), languages.get(0), "Wrong accepted language");
+        Assertions.assertEquals(MediaType.valueOf("text/plain"),
+                headers.getAcceptableMediaTypes().get(0), "Wrong accepted language");
         return "plain";
     }
 }

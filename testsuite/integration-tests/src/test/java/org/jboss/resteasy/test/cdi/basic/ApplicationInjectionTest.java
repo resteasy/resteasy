@@ -4,15 +4,15 @@ import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.cdi.basic.resource.ApplicationInjection;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for injecting of Application
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class ApplicationInjectionTest {
 
     @Deployment
@@ -40,8 +40,8 @@ public class ApplicationInjectionTest {
      */
     @Test
     public void testAppInjection() throws Exception {
-        Assert.assertEquals("Wrong count of initialized applications", 1, ApplicationInjection.instances.size());
+        Assertions.assertEquals(1, ApplicationInjection.instances.size(), "Wrong count of initialized applications");
         ApplicationInjection app = ApplicationInjection.instances.iterator().next();
-        Assert.assertNotNull("Injected application instance should not be null", app.app);
+        Assertions.assertNotNull(app.app, "Injected application instance should not be null");
     }
 }

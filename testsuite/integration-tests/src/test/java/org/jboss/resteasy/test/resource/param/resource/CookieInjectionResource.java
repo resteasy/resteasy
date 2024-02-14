@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.utils.CookieUtil;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class CookieInjectionResource {
@@ -94,7 +94,7 @@ public class CookieInjectionResource {
     @GET
     public String headers(@Context HttpHeaders headers) {
         String value = headers.getCookies().get("meaning").getValue();
-        Assert.assertEquals("Unexpected value in the cookie", value, "42");
+        Assertions.assertEquals(value, "42", "Unexpected value in the cookie");
         return value;
     }
 
@@ -102,7 +102,7 @@ public class CookieInjectionResource {
     @GET
     public String headersFromField(@Context HttpHeaders headers) {
         String value = myHeaders.getCookies().get("meaning").getValue();
-        Assert.assertEquals("Unexpected value in the cookie", value, "42");
+        Assertions.assertEquals(value, "42", "Unexpected value in the cookie");
         return value;
     }
 
@@ -110,14 +110,14 @@ public class CookieInjectionResource {
     @GET
     @Produces("text/plain")
     public int param(@CookieParam("meaning") int value) {
-        Assert.assertEquals("Unexpected value in the cookie", value, 42);
+        Assertions.assertEquals(value, 42, "Unexpected value in the cookie");
         return value;
     }
 
     @Path("/cookieparam")
     @GET
     public String param(@CookieParam("meaning") Cookie value) {
-        Assert.assertEquals("Unexpected value in the cookie", value.getValue(), "42");
+        Assertions.assertEquals(value.getValue(), "42", "Unexpected value in the cookie");
         return value.getValue();
     }
 
@@ -125,7 +125,7 @@ public class CookieInjectionResource {
     @GET
     @Produces("text/plain")
     public int defaultValue(@CookieParam("defaulted") @DefaultValue("24") int value) {
-        Assert.assertEquals("Unexpected value in the cookie", value, 24);
+        Assertions.assertEquals(value, 24, "Unexpected value in the cookie");
         return value;
     }
 }

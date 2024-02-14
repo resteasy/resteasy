@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.AsynchBasicResource;
@@ -29,9 +29,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Basic asynchronous test for "resteasy.async.job.service.max.job.results" property.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class AsynchBasicTest {
     private static org.jboss.logging.Logger logger = org.jboss.logging.Logger.getLogger(AsynchBasicTest.class);
 
@@ -115,9 +115,10 @@ public class AsynchBasicTest {
 
             //response = request.put();
             long end = System.currentTimeMillis() - start;
-            Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-            Assert.assertTrue(end < 1000);
-            Assert.assertTrue("Request was not sent correctly", latch.await(2, TimeUnit.SECONDS));
+            Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+            Assertions.assertTrue(end < 1000);
+            Assertions.assertTrue(latch.await(2, TimeUnit.SECONDS),
+                    "Request was not sent correctly");
         } finally {
             response.close();
             client.close();
@@ -140,12 +141,13 @@ public class AsynchBasicTest {
                 .post(Entity.entity("content", "text/plain"));
         @SuppressWarnings("unused")
         long end = System.currentTimeMillis() - start;
-        Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
         String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
         response.close();
 
         response = client.target(jobUrl).request().get();
-        Assert.assertTrue("Request was not sent correctly", latch.await(3, TimeUnit.SECONDS));
+        Assertions.assertTrue(latch.await(3, TimeUnit.SECONDS),
+                "Request was not sent correctly");
         response.close();
 
         // there's a lag between when the latch completes and the executor
@@ -154,31 +156,33 @@ public class AsynchBasicTest {
             response = client.target(jobUrl).request().get();
             Thread.sleep(1000);
             if (HttpServletResponse.SC_OK == response.getStatus()) {
-                Assert.assertEquals("Wrong response content", "content", response.readEntity(String.class));
+                Assertions.assertEquals("content", response.readEntity(String.class),
+                        "Wrong response content");
                 response.close();
                 break;
             }
             response.close();
             if (i == MAX) {
-                Assert.fail("Expected response with status code 200");
+                Assertions.fail("Expected response with status code 200");
             }
         }
 
         // test its still there
         response = client.target(jobUrl).request().get();
         Thread.sleep(1000);
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response content", "content", response.readEntity(String.class));
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals("content", response.readEntity(String.class),
+                "Wrong response content");
         response.close();
 
         // delete and test delete
         response = client.target(jobUrl).request().delete();
-        Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         response = client.target(jobUrl).request().get();
         Thread.sleep(1000);
-        Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
         response.close();
 
         client.close();
@@ -197,39 +201,40 @@ public class AsynchBasicTest {
         latch = new CountDownLatch(1);
         Response response = client.target(generateURL("?asynch=true", ONE_MAX_DEPLOYMENT)).request()
                 .post(Entity.entity("content", "text/plain"));
-        Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
         String jobUrl1 = response.getHeaderString(HttpHeaders.LOCATION);
-        Assert.assertTrue("Request was not sent correctly", latch.await(3, TimeUnit.SECONDS));
+        Assertions.assertTrue(latch.await(3, TimeUnit.SECONDS), "Request was not sent correctly");
         response.close();
 
         latch = new CountDownLatch(1);
         response = client.target(generateURL("?asynch=true", ONE_MAX_DEPLOYMENT)).request()
                 .post(Entity.entity("content", "text/plain"));
-        Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
         String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
-        Assert.assertTrue("Request was not sent correctly", latch.await(3, TimeUnit.SECONDS));
-        Assert.assertTrue("There are only one response for two requests", !jobUrl1.equals(jobUrl2));
+        Assertions.assertTrue(latch.await(3, TimeUnit.SECONDS), "Request was not sent correctly");
+        Assertions.assertTrue(!jobUrl1.equals(jobUrl2), "There are only one response for two requests");
         response.close();
 
         response = client.target(jobUrl1).request().get();
         Thread.sleep(1000);
-        Assert.assertEquals("Response should be gone, but server still remember it", HttpServletResponse.SC_GONE,
-                response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_GONE,
+                response.getStatus(), "Response should be gone, but server still remember it");
         response.close();
 
         // test its still there
         response = client.target(jobUrl2).request().get();
         Thread.sleep(1000);
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "content", response.readEntity(String.class));
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals("content", response.readEntity(String.class),
+                "Wrong content of response");
         response.close();
 
         // delete and test delete
         response = client.target(jobUrl2).request().delete();
-        Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
         response.close();
         response = client.target(jobUrl2).request().get();
-        Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
         response.close();
 
         client.close();
@@ -251,7 +256,7 @@ public class AsynchBasicTest {
             latch = new CountDownLatch(1);
             Response response = client.target(generateURL("?asynch=true", DEFAULT_DEPLOYMENT)).request()
                     .post(Entity.entity("content", "text/plain"));
-            Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+            Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
             String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
             logger.info(i + ": " + jobUrl);
             jobs.add(jobUrl);
@@ -265,8 +270,8 @@ public class AsynchBasicTest {
             Response response = client.target(jobs.get(i)).request().get();
             logger.info(
                     i + " (" + jobs.get(i) + "): get " + response.getStatus() + ", expected: " + HttpServletResponse.SC_GONE);
-            Assert.assertEquals("Response should be gone, but server still remember it", HttpServletResponse.SC_GONE,
-                    response.getStatus());
+            Assertions.assertEquals(HttpServletResponse.SC_GONE,
+                    response.getStatus(), "Response should be gone, but server still remember it");
             response.close();
             Thread.sleep(50);
         }
@@ -274,8 +279,9 @@ public class AsynchBasicTest {
         for (int i = 10; i < 110; i++) {
             Response response = client.target(jobs.get(i)).request().get();
             logger.info(i + " (" + jobs.get(i) + "): get " + response.getStatus() + ", expected: " + HttpServletResponse.SC_OK);
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals("Wrong content of response", "content", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("content", response.readEntity(String.class),
+                    "Wrong content of response");
             response.close();
             Thread.sleep(50);
         }
@@ -296,22 +302,23 @@ public class AsynchBasicTest {
         latch = new CountDownLatch(1);
         Response response = client.target(generateURL("?asynch=true", TEN_MAX_DEPLOYMENT)).request()
                 .post(Entity.entity("content", "text/plain"));
-        Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
         String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
-        Assert.assertTrue("Request was not sent correctly", latch.await(3, TimeUnit.SECONDS));
+        Assertions.assertTrue(latch.await(3, TimeUnit.SECONDS), "Request was not sent correctly");
         response.close();
         Thread.sleep(50);
 
         // test its still there
         response = client.target(jobUrl2).request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "content", response.readEntity(String.class));
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals("content", response.readEntity(String.class),
+                "Wrong content of response");
         response.close();
         Thread.sleep(50);
 
         response = client.target(jobUrl2).request().get();
         Thread.sleep(1000);
-        Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
         response.close();
 
         client.close();

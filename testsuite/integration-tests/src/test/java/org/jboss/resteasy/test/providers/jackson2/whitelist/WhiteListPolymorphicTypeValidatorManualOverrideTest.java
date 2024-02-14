@@ -14,9 +14,8 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.AwaitingUpgradeInWildFly;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.annotations.FollowUpRequired;
@@ -29,12 +28,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,9 +42,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.5.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Category(AwaitingUpgradeInWildFly.class)
+@Tag("AwaitingUpgradeInWildFly.class")
 @FollowUpRequired("Caused by RESTEASY-3380. Once upgraded in WildFly, we can re-enable this test")
 public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
 
@@ -63,12 +62,12 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
                 JacksonConfig.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -81,29 +80,29 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
     public void testManualOverrideGood() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Automobile2()));
         logger.info("response: " + response);
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
-        Assert.assertTrue(response.contains("Created"));
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
+        Assertions.assertTrue(response.contains("Created"));
     }
 
     @Test
     public void testAircraftFailure() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
-        Assert.assertTrue("Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"",
-                response.contains("Not able to deserialize data provided"));
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
+        Assertions.assertTrue(response.contains("Not able to deserialize data provided"),
+                "Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"");
     }
 
     @Test
     public void testAutomobileFailure() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Automobile()));
         logger.info("response: " + response);
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
-        Assert.assertTrue("Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"",
-                response.contains("Not able to deserialize data provided"));
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_BAD_REQUEST));
+        Assertions.assertTrue(response.contains("Not able to deserialize data provided"),
+                "Expected response to contain \"Not able to deserialize data provided\" but was \"" + response + "\"");
     }
 
     private String createJSONString(TestPolymorphicType t) throws Exception {

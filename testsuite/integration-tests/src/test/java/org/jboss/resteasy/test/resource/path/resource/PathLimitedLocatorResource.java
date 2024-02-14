@@ -4,7 +4,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class PathLimitedLocatorResource {
@@ -15,7 +15,7 @@ public class PathLimitedLocatorResource {
 
     @Path(value = "/locator2/{param:.*}")
     public Object get(@PathParam("param") String param, @QueryParam("expected") String expected) {
-        Assert.assertEquals("Wrong parameter", param, expected);
+        Assertions.assertEquals(param, expected, "Wrong parameter");
         return new PathLimitedBasicResource();
     }
 }

@@ -7,7 +7,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.stats.DeleteResourceMethod;
 import org.jboss.resteasy.plugins.stats.GetResourceMethod;
@@ -27,18 +27,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class StatsTest {
 
@@ -54,12 +54,12 @@ public class StatsTest {
                 RegistryData.class, RegistryEntry.class, SubresourceLocator.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -78,53 +78,59 @@ public class StatsTest {
         StatsProxy stats = client.target(generateURL("/")).proxy(StatsProxy.class);
 
         RegistryData data = stats.get();
-        Assert.assertEquals("The number of resources doesn't match", 4, data.getEntries().size());
+        Assertions.assertEquals(4, data.getEntries().size(),
+                "The number of resources doesn't match");
         boolean found = false;
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/entry/{foo:.*}")) {
-                Assert.assertEquals("Some method for resource \"" + entry.getUriTemplate() + "\" is missing ", 2,
-                        entry.getMethods().size());
+                Assertions.assertEquals(2, entry.getMethods().size(),
+                        "Some method for resource \"" + entry.getUriTemplate() + "\" is missing ");
                 List<Class> prepareRequiredTypes = prepareRequiredTypes(PostResourceMethod.class, PutResourceMethod.class);
-                Assert.assertTrue("Unexpected method type", testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes));
-                Assert.assertTrue("Unexpected method type", testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes));
+                Assertions.assertTrue(testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes),
+                        "Unexpected method type");
+                Assertions.assertTrue(testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes),
+                        "Unexpected method type");
                 found = true;
                 break;
             }
         }
-        Assert.assertTrue("Resource not found", found);
+        Assertions.assertTrue(found, "Resource not found");
         found = false;
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/resource")) {
-                Assert.assertEquals("Some method for resource \"" + entry.getUriTemplate() + "\" is missing ", 2,
-                        entry.getMethods().size());
+                Assertions.assertEquals(2, entry.getMethods().size(),
+                        "Some method for resource \"" + entry.getUriTemplate() + "\" is missing ");
                 List<Class> prepareRequiredTypes = prepareRequiredTypes(HeadResourceMethod.class, DeleteResourceMethod.class);
-                Assert.assertTrue("Unexpected method type", testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes));
-                Assert.assertTrue("Unexpected method type", testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes));
+                Assertions.assertTrue(testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes),
+                        "Unexpected method type");
+                Assertions.assertTrue(testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes),
+                        "Unexpected method type");
                 found = true;
                 break;
             }
         }
-        Assert.assertTrue("Resource not found", found);
+        Assertions.assertTrue(found, "Resource not found");
         found = false;
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/locator")) {
-                Assert.assertNotNull(entry.getLocator());
+                Assertions.assertNotNull(entry.getLocator());
                 found = true;
                 break;
             }
         }
-        Assert.assertTrue("Resource not found", found);
+        Assertions.assertTrue(found, "Resource not found");
         found = false;
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/resteasy/registry")) {
-                Assert.assertEquals("Some method for resource \"" + entry.getUriTemplate() + "\" is missing ", 1,
-                        entry.getMethods().size());
-                Assert.assertTrue("Unexpected method type", entry.getMethods().get(0) instanceof GetResourceMethod);
+                Assertions.assertEquals(1, entry.getMethods().size(),
+                        "Some method for resource \"" + entry.getUriTemplate() + "\" is missing ");
+                Assertions.assertTrue(entry.getMethods().get(0) instanceof GetResourceMethod,
+                        "Unexpected method type");
                 found = true;
                 break;
             }
         }
-        Assert.assertTrue("Resource not found", found);
+        Assertions.assertTrue(found, "Resource not found");
 
     }
 

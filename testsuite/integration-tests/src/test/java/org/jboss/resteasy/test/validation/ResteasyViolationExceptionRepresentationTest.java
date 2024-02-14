@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
@@ -30,18 +30,18 @@ import org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWit
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validator provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResteasyViolationExceptionRepresentationTest {
 
@@ -72,13 +72,13 @@ public class ResteasyViolationExceptionRepresentationTest {
         return deploy(ViolationExceptionResourceWithFiveViolations.class, TEST_VIOLATIONS_BEFORE_RETURN_VALUE);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
         client.register(ViolationExceptionReaderWriter.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -95,62 +95,67 @@ public class ResteasyViolationExceptionRepresentationTest {
         ViolationExceptionObject foo = new ViolationExceptionObject("a");
         Response response = client.target(generateURL("/native", TEST_RETURN_VALUES)).request()
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Server send wrong content", foo, response.readEntity(ViolationExceptionObject.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ViolationExceptionObject.class),
+                "Server send wrong content");
 
         // Valid imposed constraint
         foo = new ViolationExceptionObject("abcde");
         response = client.target(generateURL("/imposed", TEST_RETURN_VALUES)).request()
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.bufferEntity();
-        Assert.assertEquals("Server send wrong content", foo, response.readEntity(ViolationExceptionObject.class));
+        Assertions.assertEquals(foo, response.readEntity(ViolationExceptionObject.class),
+                "Server send wrong content");
 
         // Valid native and imposed constraints.
         foo = new ViolationExceptionObject("abc");
         response = client.target(generateURL("/nativeAndImposed", TEST_RETURN_VALUES)).request()
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Server send wrong content", foo, response.readEntity(ViolationExceptionObject.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ViolationExceptionObject.class),
+                "Server send wrong content");
 
         // Invalid native constraint
         response = client.target(generateURL("/native", TEST_RETURN_VALUES)).request()
                 .post(Entity.entity(new ViolationExceptionObject("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Header of response should not be null", header);
-        Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Header of response should not be null");
+        Assertions.assertTrue(Boolean.valueOf(header), "Validation header is not correct");
         Object entity = response.readEntity(String.class);
         logger.info("Entity from response: " + entity);
         ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         logger.info("Received exception: " + e.toString());
         TestUtil.countViolations(e, 1, 0, 0, 0, 1);
         ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
-        Assert.assertEquals("Exception has wrong message", cv.getMessage(), "s must have length: 1 <= length <= 3");
-        Assert.assertEquals("Exception has wrong value", "Foo[abcdef]", cv.getValue());
+        Assertions.assertEquals(cv.getMessage(), "s must have length: 1 <= length <= 3",
+                "Exception has wrong message");
+        Assertions.assertEquals("Foo[abcdef]", cv.getValue(), "Exception has wrong value");
 
         // Invalid imposed constraint
         response = client.target(generateURL("/imposed", TEST_RETURN_VALUES)).request()
                 .post(Entity.entity(new ViolationExceptionObject("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Header of response should not be null", header);
-        Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Header of response should not be null");
+        Assertions.assertTrue(Boolean.valueOf(header), "Validation header is not correct");
         entity = response.readEntity(String.class);
         logger.info("Entity from response: " + entity);
         e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         TestUtil.countViolations(e, 1, 0, 0, 0, 1);
         cv = e.getReturnValueViolations().iterator().next();
-        Assert.assertEquals("Exception has wrong message", cv.getMessage(), "s must have length: 3 <= length <= 5");
-        Assert.assertEquals("Exception has wrong value", "Foo[abcdef]", cv.getValue());
+        Assertions.assertEquals(cv.getMessage(), "s must have length: 3 <= length <= 5",
+                "Exception has wrong message");
+        Assertions.assertEquals("Foo[abcdef]", cv.getValue(), "Exception has wrong value");
 
         // Invalid native and imposed constraints
         response = client.target(generateURL("/nativeAndImposed", TEST_RETURN_VALUES)).request()
                 .post(Entity.entity(new ViolationExceptionObject("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Header of response should not be null", header);
-        Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Header of response should not be null");
+        Assertions.assertTrue(Boolean.valueOf(header), "Validation header is not correct");
         entity = response.readEntity(String.class);
         logger.info("Entity from response: " + entity);
         e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
@@ -163,10 +168,12 @@ public class ResteasyViolationExceptionRepresentationTest {
             cv1 = cv2;
             cv2 = temp;
         }
-        Assert.assertEquals("Exception has wrong message", cv1.getMessage(), "s must have length: 1 <= length <= 3");
-        Assert.assertEquals("Exception has wrong value", "Foo[abcdef]", cv1.getValue());
-        Assert.assertEquals("Exception has wrong message", cv2.getMessage(), "s must have length: 3 <= length <= 5");
-        Assert.assertEquals("Exception has wrong value", "Foo[abcdef]", cv2.getValue());
+        Assertions.assertEquals(cv1.getMessage(), "s must have length: 1 <= length <= 3",
+                "Exception has wrong message");
+        Assertions.assertEquals("Foo[abcdef]", cv1.getValue(), "Exception has wrong value");
+        Assertions.assertEquals(cv2.getMessage(), "s must have length: 3 <= length <= 5",
+                "Exception has wrong message");
+        Assertions.assertEquals("Foo[abcdef]", cv2.getValue(), "Exception has wrong value");
     }
 
     /**
@@ -181,8 +188,9 @@ public class ResteasyViolationExceptionRepresentationTest {
         ViolationExceptionObject foo = new ViolationExceptionObject("pqrs");
         Response response = client.target(generateURL("/abc/wxyz/unused/unused", TEST_VIOLATIONS_BEFORE_RETURN_VALUE)).request()
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Server send wrong content", foo, response.readEntity(ViolationExceptionObject.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ViolationExceptionObject.class),
+                "Server send wrong content");
 
         // Invalid: Should have 1 each of field, property, class, and parameter violations,
         //          and no return value violations.
@@ -190,29 +198,33 @@ public class ResteasyViolationExceptionRepresentationTest {
         response = client.target(generateURL("/a/z/unused/unused", TEST_VIOLATIONS_BEFORE_RETURN_VALUE)).request()
                 .post(Entity.entity(foo, "application/foo"));
         logger.info("response: " + response);
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Header of response should not be null", header);
-        Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Header of response should not be null");
+        Assertions.assertTrue(Boolean.valueOf(header), "Validation header is not correct");
         ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         logger.info("exception: " + e.toString());
         TestUtil.countViolations(e, 4, 2, 1, 1, 0);
         ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(e.getPropertyViolations(),
                 "size must be between 2 and 4");
-        Assert.assertNotNull("Exception has wrong message", violation);
-        Assert.assertEquals("Exception has wrong value", "a", violation.getValue());
+        Assertions.assertNotNull(violation, "Exception has wrong message");
+        Assertions.assertEquals("a", violation.getValue(), "Exception has wrong value");
         violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 3 and 5");
-        Assert.assertNotNull("Exception has wrong message", violation);
-        Assert.assertEquals("Exception has wrong value", "z", violation.getValue());
+        Assertions.assertNotNull(violation, "Exception has wrong message");
+        Assertions.assertEquals("z", violation.getValue(), "Exception has wrong value");
         ResteasyConstraintViolation cv = e.getClassViolations().iterator().next();
-        Assert.assertEquals("Exception has wrong message", "Concatenation of s and t must have length > 5", cv.getMessage());
+        Assertions.assertEquals("Concatenation of s and t must have length > 5",
+                cv.getMessage(), "Exception has wrong message");
         logger.info("value: " + cv.getValue());
-        Assert.assertTrue("Exception has wrong value", cv.getValue()
-                .startsWith("org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithFiveViolations@"));
+        Assertions.assertTrue(
+                cv.getValue().startsWith(
+                        "org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithFiveViolations@"),
+                "Exception has wrong value");
         cv = e.getParameterViolations().iterator().next();
-        Assert.assertEquals("Exception has wrong message", "s must have length: 3 <= length <= 5", cv.getMessage());
-        Assert.assertEquals("Exception has wrong value", "Foo[p]", cv.getValue());
+        Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),
+                "Exception has wrong message");
+        Assertions.assertEquals("Foo[p]", cv.getValue(), "Exception has wrong value");
     }
 }

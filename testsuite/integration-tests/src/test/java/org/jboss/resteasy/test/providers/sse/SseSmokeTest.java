@@ -14,7 +14,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeMessageBodyWriter;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
@@ -23,13 +23,14 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+//@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseSmokeTest {
     private static final Logger logger = Logger.getLogger(SseSmokeTest.class);
@@ -42,12 +43,12 @@ public class SseSmokeTest {
                 SseSmokeResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newBuilder().build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -77,9 +78,9 @@ public class SseSmokeTest {
             });
             eventSource.open();
             boolean result = countDownLatch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
+            Assertions.assertTrue(result, "Waiting for event to be delivered has timed out.");
         }
-        Assert.assertEquals("One message was expected.", 1, results.size());
+        Assertions.assertEquals(1, results.size(), "One message was expected.");
         MatcherAssert.assertThat("The message doesn't have expected content.", "Zeytin;zeytin@resteasy.org",
                 CoreMatchers.is(CoreMatchers.equalTo(results.get(0))));
     }

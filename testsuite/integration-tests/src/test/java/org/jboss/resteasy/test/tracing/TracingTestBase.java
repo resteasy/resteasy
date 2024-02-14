@@ -15,25 +15,24 @@ import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.TracingRequired;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Category(TracingRequired.class)
+@Tag("TracingRequired.class")
 public abstract class TracingTestBase {
     protected static final String WAR_BASIC_TRACING_FILE = "war_basic_tracing";
     protected static final String WAR_ON_DEMAND_TRACING_FILE = "war_on_demand_tracing";
@@ -48,12 +47,12 @@ public abstract class TracingTestBase {
     static WebArchive war;
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @Before
+    @BeforeEach
     public void startContainer() {
         if (!containerController.isStarted(TRACING_CONTAINER_QUALIFIER)) {
             containerController.start(TRACING_CONTAINER_QUALIFIER);
@@ -62,12 +61,12 @@ public abstract class TracingTestBase {
         deployer.deploy(WAR_ON_DEMAND_TRACING_FILE);
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() {
         client.close();
     }
 
-    @After
+    @AfterEach
     public void undeployAndStopContainerWithGzipEnabled() {
         if (containerController.isStarted(TRACING_CONTAINER_QUALIFIER)) {
             deployer.undeploy(WAR_BASIC_TRACING_FILE);

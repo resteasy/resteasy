@@ -9,7 +9,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 
 import org.jboss.resteasy.test.resource.param.StringParamUnmarshallerTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class StringParamUnmarshallerService {
@@ -20,9 +20,9 @@ public class StringParamUnmarshallerService {
             @PathParam("date") @StringParamUnmarshallerTest.StringParamUnmarshallerDateFormat("MM-dd-yyyy") Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        Assert.assertEquals("Wrong date", 3, c.get(Calendar.MONTH));
-        Assert.assertEquals("Wrong date", 23, c.get(Calendar.DAY_OF_MONTH));
-        Assert.assertEquals("Wrong date", 1977, c.get(Calendar.YEAR));
+        Assertions.assertEquals(3, c.get(Calendar.MONTH), "Wrong date");
+        Assertions.assertEquals(23, c.get(Calendar.DAY_OF_MONTH), "Wrong date");
+        Assertions.assertEquals(1977, c.get(Calendar.YEAR), "Wrong date");
         return date.toString();
     }
 
@@ -31,8 +31,8 @@ public class StringParamUnmarshallerService {
     @Path("fromstring/{fruit}/{sport}")
     public String getFromString(@PathParam("fruit") StringParamUnmarshallerFruit fruit,
             @PathParam("sport") StringParamUnmarshallerSport sport) {
-        Assert.assertEquals("Wrong fruit", fruit, StringParamUnmarshallerFruit.ORANGE);
-        Assert.assertEquals("Wrong sport", "football", sport.name);
+        Assertions.assertEquals(fruit, StringParamUnmarshallerFruit.ORANGE, "Wrong fruit");
+        Assertions.assertEquals("football", sport.name, "Wrong sport");
         return sport.name + fruit;
     }
 }

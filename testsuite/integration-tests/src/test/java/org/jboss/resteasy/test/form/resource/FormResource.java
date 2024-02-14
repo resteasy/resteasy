@@ -8,7 +8,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/form/{id}")
 @Produces("application/x-www-form-urlencoded")
@@ -25,10 +25,10 @@ public class FormResource {
         rtn.add("shortValue", value.getShortValue().toString());
         rtn.add("name", value.getName());
 
-        Assert.assertEquals(value.getHeaderParam(), 42);
-        Assert.assertEquals(value.getQueryParam(), 42);
-        Assert.assertEquals(value.getId(), 42);
-        Assert.assertEquals(value.getDefaultValue(), 42);
+        Assertions.assertEquals(value.getHeaderParam(), 42);
+        Assertions.assertEquals(value.getQueryParam(), 42);
+        Assertions.assertEquals(value.getId(), 42);
+        Assertions.assertEquals(value.getDefaultValue(), 42);
         return rtn;
     }
 }

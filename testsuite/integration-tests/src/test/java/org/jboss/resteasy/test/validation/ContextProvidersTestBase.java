@@ -27,8 +27,8 @@ import org.jboss.resteasy.test.validation.resource.ContextProvidersCustomer;
 import org.jboss.resteasy.test.validation.resource.ContextProvidersCustomerForm;
 import org.jboss.resteasy.test.validation.resource.ContextProvidersName;
 import org.jboss.resteasy.test.validation.resource.ContextProvidersXop;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Multipart provider
@@ -86,11 +86,11 @@ public abstract class ContextProvidersTestBase {
 
         // Get parts by name.
         ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-        Assert.assertTrue(RESPONSE_ERROR_MSG, c.getName().startsWith("Bill"));
+        Assertions.assertTrue(c.getName().startsWith("Bill"), RESPONSE_ERROR_MSG);
         String s = entity.getFormDataPart("bob", String.class, null);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Bob", s);
+        Assertions.assertEquals("Bob", s, RESPONSE_ERROR_MSG);
 
-        Assert.assertTrue(RESPONSE_ERROR_MSG, 2 == entity.getFormDataMap().get("bill").size());
+        Assertions.assertTrue(2 == entity.getFormDataMap().get("bill").size(), RESPONSE_ERROR_MSG);
 
         // Iterate over list of parts.
         Map<String, List<InputPart>> map = entity.getFormDataMap();
@@ -101,10 +101,10 @@ public abstract class ContextProvidersTestBase {
                 InputPart inputPart = it2.next();
                 if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                     c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                    Assert.assertTrue(RESPONSE_ERROR_MSG, c.getName().startsWith("Bill"));
+                    Assertions.assertTrue(c.getName().startsWith("Bill"), RESPONSE_ERROR_MSG);
                 } else {
                     s = inputPart.getBody(String.class, null);
-                    Assert.assertEquals(RESPONSE_ERROR_MSG, "Bob", s);
+                    Assertions.assertEquals("Bob", s, RESPONSE_ERROR_MSG);
                 }
             }
         }
@@ -124,10 +124,10 @@ public abstract class ContextProvidersTestBase {
             InputPart inputPart = it.next();
             if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                 ContextProvidersCustomer c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                Assert.assertEquals(RESPONSE_ERROR_MSG, "Bill", c.getName());
+                Assertions.assertEquals("Bill", c.getName(), RESPONSE_ERROR_MSG);
             } else {
                 String s = inputPart.getBody(String.class, null);
-                Assert.assertEquals(RESPONSE_ERROR_MSG, "Bob", s);
+                Assertions.assertEquals("Bob", s, RESPONSE_ERROR_MSG);
             }
         }
     }
@@ -147,9 +147,9 @@ public abstract class ContextProvidersTestBase {
             InputPart inputPart = it.next();
             customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
         }
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, customers.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, customers.contains("Bill"));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, customers.contains("Bob"));
+        Assertions.assertEquals(2, customers.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(customers.contains("Bill"), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(customers.contains("Bob"), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -162,9 +162,9 @@ public abstract class ContextProvidersTestBase {
 
         // Get parts by name.
         ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Bill", c.getName());
+        Assertions.assertEquals("Bill", c.getName(), RESPONSE_ERROR_MSG);
         c = entity.getFormDataPart("bob", ContextProvidersCustomer.class, null);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Bob", c.getName());
+        Assertions.assertEquals("Bob", c.getName(), RESPONSE_ERROR_MSG);
 
         // Iterate over map of parts.
         Map<String, List<InputPart>> map = entity.getFormDataMap();
@@ -177,9 +177,9 @@ public abstract class ContextProvidersTestBase {
                 customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
             }
         }
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, customers.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, customers.contains("Bill"));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, customers.contains("Bob"));
+        Assertions.assertEquals(2, customers.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(customers.contains("Bill"), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(customers.contains("Bob"), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -193,15 +193,15 @@ public abstract class ContextProvidersTestBase {
         // Iterate over map of parts.
         Map<String, InputPart> map = entity.getRelatedMap();
         Set<String> keys = map.keySet();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, keys.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, keys.contains("bill"));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, keys.contains("bob"));
+        Assertions.assertEquals(2, keys.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(keys.contains("bill"), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(keys.contains("bob"), RESPONSE_ERROR_MSG);
         Set<String> parts = new HashSet<String>();
         for (Iterator<InputPart> it = map.values().iterator(); it.hasNext();) {
             parts.add(it.next().getBody(String.class, null));
         }
-        Assert.assertTrue(RESPONSE_ERROR_MSG, parts.contains("Bill"));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, parts.contains("Bob"));
+        Assertions.assertTrue(parts.contains("Bill"), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(parts.contains("Bob"), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -214,7 +214,7 @@ public abstract class ContextProvidersTestBase {
         annotations[0] = MULTIPART_FORM;
         ContextProvidersCustomerForm form = get("/get/multipartform", ContextProvidersCustomerForm.class, annotations);
         ContextProvidersCustomer customer = form.getCustomer();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Bill", customer.getName());
+        Assertions.assertEquals("Bill", customer.getName(), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -226,7 +226,7 @@ public abstract class ContextProvidersTestBase {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
         ContextProvidersXop xop = get("/get/xop", ContextProvidersXop.class, annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "goodbye world", new String(xop.getBytes()));
+        Assertions.assertEquals("goodbye world", new String(xop.getBytes()), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -243,9 +243,9 @@ public abstract class ContextProvidersTestBase {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, names.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bill")));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bob")));
+        Assertions.assertEquals(2, names.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bill")), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bob")), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -262,9 +262,9 @@ public abstract class ContextProvidersTestBase {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, names.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bill")));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bob")));
+        Assertions.assertEquals(2, names.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bill")), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bob")), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -281,9 +281,9 @@ public abstract class ContextProvidersTestBase {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, names.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bill")));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bob")));
+        Assertions.assertEquals(2, names.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bill")), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bob")), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -300,9 +300,9 @@ public abstract class ContextProvidersTestBase {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, names.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("bill:Bill")));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("bob:Bob")));
+        Assertions.assertEquals(2, names.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("bill:Bill")), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("bob:Bob")), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -320,9 +320,9 @@ public abstract class ContextProvidersTestBase {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 2, names.size());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bill")));
-        Assert.assertTrue(RESPONSE_ERROR_MSG, names.contains(new ContextProvidersName("Bob")));
+        Assertions.assertEquals(2, names.size(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bill")), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bob")), RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -336,7 +336,7 @@ public abstract class ContextProvidersTestBase {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = MULTIPART_FORM;
         String name = post("/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Bill", name);
+        Assertions.assertEquals("Bill", name, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -349,7 +349,7 @@ public abstract class ContextProvidersTestBase {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
         String s = post("/post/xop", xop, MULTIPART_RELATED, String.class, null, annotations);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "hello world", s);
+        Assertions.assertEquals("hello world", s, RESPONSE_ERROR_MSG);
     }
 
     <T> T get(String path, Class<T> clazz) throws Exception {

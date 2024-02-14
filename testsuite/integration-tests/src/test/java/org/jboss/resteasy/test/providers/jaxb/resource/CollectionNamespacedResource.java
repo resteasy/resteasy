@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/namespaced")
 public class CollectionNamespacedResource {
@@ -32,8 +32,8 @@ public class CollectionNamespacedResource {
     @Path("array")
     @Consumes("application/xml")
     public void putCustomers(@Wrapped CollectionNamespacedCustomer[] customers) {
-        Assert.assertEquals("bill", customers[0].getName());
-        Assert.assertEquals("monica", customers[1].getName());
+        Assertions.assertEquals("bill", customers[0].getName());
+        Assertions.assertEquals("monica", customers[1].getName());
     }
 
     @GET
@@ -52,8 +52,8 @@ public class CollectionNamespacedResource {
     @Path("list")
     @Consumes("application/xml")
     public void putCustomers(@Wrapped List<CollectionNamespacedCustomer> customers) {
-        Assert.assertEquals("bill", customers.get(0).getName());
-        Assert.assertEquals("monica", customers.get(1).getName());
+        Assertions.assertEquals("bill", customers.get(0).getName());
+        Assertions.assertEquals("monica", customers.get(1).getName());
     }
 
     @GET

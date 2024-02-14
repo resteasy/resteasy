@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -24,14 +24,14 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class StudentPatchTest {
 
@@ -40,12 +40,12 @@ public class StudentPatchTest {
     static final String DISABLED_PATCH_DEPLOYMENT = "DisablePatch";
     static final String LEGACY_PATCH_DEPLOYMENT = "LegacyPatch";
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
         client = null;
@@ -103,7 +103,7 @@ public class StudentPatchTest {
 
     @Test
     @OperateOnDeployment(DISABLED_PATCH_DEPLOYMENT)
-    @Ignore("RESTEASY-3132")
+    @Disabled("RESTEASY-3132")
     public void testPatchDisabled() throws Exception {
         ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
 
@@ -112,11 +112,11 @@ public class StudentPatchTest {
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
         Response response = base.request().post(Entity.<Student> entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
         Student s = response.readEntity(Student.class);
-        Assert.assertNotNull("Add student failed", s);
-        Assert.assertEquals("Taylor", s.getFirstName());
-        Assert.assertNull("Last name is not null", s.getLastName());
-        Assert.assertEquals("school1", s.getSchool());
-        Assert.assertNull("Gender is not null", s.getGender());
+        Assertions.assertNotNull(s, "Add student failed");
+        Assertions.assertEquals("Taylor", s.getFirstName());
+        Assertions.assertNull(s.getLastName(), "Last name is not null");
+        Assertions.assertEquals("school1", s.getSchool());
+        Assertions.assertNull(s.getGender(), "Gender is not null");
 
         WebTarget patchTarget = client.target(PortProviderUtil.generateURL("/students/1", DISABLED_PATCH_DEPLOYMENT));
         jakarta.json.JsonArray patchRequest = Json.createArrayBuilder()
@@ -125,7 +125,7 @@ public class StudentPatchTest {
                 .build();
         Response res = patchTarget.request()
                 .build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();
-        Assert.assertEquals("Http 400 is expected", 400, res.getStatus());
+        Assertions.assertEquals(400, res.getStatus(), "Http 400 is expected");
         client.close();
     }
 
@@ -137,11 +137,11 @@ public class StudentPatchTest {
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
         Response response = base.request().post(Entity.<Student> entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
         Student s = response.readEntity(Student.class);
-        Assert.assertNotNull("Add student failed", s);
-        Assert.assertEquals("Taylor", s.getFirstName());
-        Assert.assertNull("Last name is not null", s.getLastName());
-        Assert.assertEquals("school1", s.getSchool());
-        Assert.assertNull("Gender is not null", s.getGender());
+        Assertions.assertNotNull(s, "Add student failed");
+        Assertions.assertEquals("Taylor", s.getFirstName());
+        Assertions.assertNull(s.getLastName(), "Last name is not null");
+        Assertions.assertEquals("school1", s.getSchool());
+        Assertions.assertNull(s.getGender(), "Gender is not null");
 
         //patch a student, after patch we can get a male student named John Taylor and school is null.
         WebTarget patchTarget = client.target(generateURL("/students/1", deployment));
@@ -158,10 +158,10 @@ public class StudentPatchTest {
         WebTarget getTarget = client.target(generateURL("/students/1", deployment));
         Response getResponse = getTarget.request().get();
         Student patchedStudent = getResponse.readEntity(Student.class);
-        Assert.assertEquals("Expected lastname is changed to Taylor", "Taylor", patchedStudent.getLastName());
-        Assert.assertEquals("Expected firstname is replaced from Taylor to John", "John", patchedStudent.getFirstName());
-        Assert.assertEquals("Expected school is null", null, patchedStudent.getSchool());
-        Assert.assertEquals("Add gender", "male", patchedStudent.getGender());
+        Assertions.assertEquals("Taylor", patchedStudent.getLastName(), "Expected lastname is changed to Taylor");
+        Assertions.assertEquals("John", patchedStudent.getFirstName(), "Expected firstname is replaced from Taylor to John");
+        Assertions.assertEquals(null, patchedStudent.getSchool(), "Expected school is null");
+        Assertions.assertEquals("male", patchedStudent.getGender(), "Add gender");
         client.close();
     }
 
@@ -171,20 +171,20 @@ public class StudentPatchTest {
         Student newStudent = new Student().setId(2L).setFirstName("Alice").setSchool("school2");
         Response response = base.request().post(Entity.<Student> entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
         Student s = response.readEntity(Student.class);
-        Assert.assertNotNull("Add student failed", s);
-        Assert.assertEquals("Alice", s.getFirstName());
-        Assert.assertNull("Last name is not null", s.getLastName());
-        Assert.assertEquals("school2", s.getSchool());
-        Assert.assertNull("Gender is not null", s.getGender());
+        Assertions.assertNotNull(s, "Add student failed");
+        Assertions.assertEquals("Alice", s.getFirstName());
+        Assertions.assertNull(s.getLastName(), "Last name is not null");
+        Assertions.assertEquals("school2", s.getSchool());
+        Assertions.assertNull(s.getGender(), "Gender is not null");
         WebTarget patchTarget = client.target(generateURL("/students/2", deployment));
         JsonObject object = Json.createObjectBuilder().add("lastName", "Green").addNull("school").build();
         Response result = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(object, "application/merge-patch+json"))
                 .invoke();
         Student patchedStudent = result.readEntity(Student.class);
-        Assert.assertEquals("Expected lastname is changed to Green", "Green", patchedStudent.getLastName());
-        Assert.assertEquals("Expected firstname is Alice", "Alice", patchedStudent.getFirstName());
-        Assert.assertEquals("Expected school is null", null, patchedStudent.getSchool());
-        Assert.assertEquals("Expected gender is null", null, patchedStudent.getGender());
+        Assertions.assertEquals("Green", patchedStudent.getLastName(), "Expected lastname is changed to Green");
+        Assertions.assertEquals("Alice", patchedStudent.getFirstName(), "Expected firstname is Alice");
+        Assertions.assertEquals(null, patchedStudent.getSchool(), "Expected school is null");
+        Assertions.assertEquals(null, patchedStudent.getGender(), "Expected gender is null");
         client.close();
     }
 }

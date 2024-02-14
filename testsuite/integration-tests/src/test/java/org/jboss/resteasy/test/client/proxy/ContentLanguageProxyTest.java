@@ -4,7 +4,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.ContentLanguageInterface;
@@ -13,24 +13,24 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 //Test for RESTEASY-1537:Client proxy framework clears previously set Content-Language header when setting POST message body entity
 public class ContentLanguageProxyTest {
     private static ResteasyClient client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -51,8 +51,10 @@ public class ContentLanguageProxyTest {
         ResteasyWebTarget target = client.target(generateBaseUrl());
         ContentLanguageInterface proxy = target.proxy(ContentLanguageInterface.class);
         String contentLangFirst = proxy.contentLang1("fr", "subject");
-        Assert.assertEquals("Content_Language header is expected set in request", "frsubject", contentLangFirst);
+        Assertions.assertEquals("frsubject", contentLangFirst,
+                "Content_Language header is expected set in request");
         String contentLangSecond = proxy.contentLang2("subject", "fr");
-        Assert.assertEquals("Content_Language header is expected set in request", "subjectfr", contentLangSecond);
+        Assertions.assertEquals("subjectfr", contentLangSecond,
+                "Content_Language header is expected set in request");
     }
 }

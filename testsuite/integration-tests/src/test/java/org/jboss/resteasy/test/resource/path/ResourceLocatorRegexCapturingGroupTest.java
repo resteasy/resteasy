@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCapturingGroup;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCapturingGroupSubResourceNoPath;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCapturingGroupSubResourceWithPath;
@@ -15,11 +15,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resources
@@ -31,13 +31,13 @@ import org.junit.runner.RunWith;
  *          User: rsearls
  *          Date: 2/17/17
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResourceLocatorRegexCapturingGroupTest {
     private static final String ERROR_MSG = "Response contain wrong content";
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         client = ClientBuilder.newClient();
     }
@@ -55,12 +55,12 @@ public class ResourceLocatorRegexCapturingGroupTest {
         return PortProviderUtil.generateURL(path, ResourceLocatorRegexCapturingGroupTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         client.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
 
     }
@@ -73,14 +73,16 @@ public class ResourceLocatorRegexCapturingGroupTest {
     public void testBasic() throws Exception {
         {
             Response response = client.target(generateURL("/capture/basic")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "basic success", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("basic success", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
         {
             Response response = client.target(generateURL("/capture/BASIC/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "BASIC test", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("BASIC test", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
     }
@@ -89,15 +91,17 @@ public class ResourceLocatorRegexCapturingGroupTest {
     public void testBird() throws Exception {
         {
             Response response = client.target(generateURL("/capture/nobird")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "nobird success", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("nobird success", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
 
         {
             Response response = client.target(generateURL("/capture/BIRD/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "BIRD test", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("BIRD test", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
     }
@@ -106,15 +110,17 @@ public class ResourceLocatorRegexCapturingGroupTest {
     public void testFly() throws Exception {
         {
             Response response = client.target(generateURL("/capture/a/nofly/b")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "a/nofly/b success", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("a/nofly/b success", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
 
         {
             Response response = client.target(generateURL("/capture/a/FLY/b/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "a/FLY/b test", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("a/FLY/b test", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
     }

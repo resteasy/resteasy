@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Context;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.asynch.AsynchBasicTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class AsynchBasicResource {
@@ -25,8 +25,8 @@ public class AsynchBasicResource {
     @POST
     public String post(String content) throws Exception {
         logger.info("in post");
-        Assert.assertNotNull(config);
-        Assert.assertNotNull(context);
+        Assertions.assertNotNull(config);
+        Assertions.assertNotNull(context);
         logger.info("Asserts passed");
         config.getServletContext();
         context.getMajorVersion();
@@ -40,11 +40,11 @@ public class AsynchBasicResource {
 
     @PUT
     public void put(String content) throws Exception {
-        Assert.assertNotNull(config);
-        Assert.assertNotNull(context);
+        Assertions.assertNotNull(config);
+        Assertions.assertNotNull(context);
         config.getServletContext();
         context.getMajorVersion();
-        Assert.assertEquals("content", content);
+        Assertions.assertEquals("content", content);
         Thread.sleep(500);
         AsynchBasicTest.latch.countDown();
     }

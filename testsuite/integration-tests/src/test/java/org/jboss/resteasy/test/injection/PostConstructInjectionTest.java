@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBInterceptor;
@@ -18,12 +18,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validation and @PostConstruct methods
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression tests for RESTEASY-2227
  * @tpSince RESTEasy 3.6
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PostConstructInjectionTest {
 
@@ -70,12 +70,12 @@ public class PostConstructInjectionTest {
         return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() {
         client.close();
     }
@@ -100,7 +100,7 @@ public class PostConstructInjectionTest {
      * @tpSince RESTEasy 3.7.0
      */
     @Test
-    @Ignore("This test doesn't work yet. See RESTEASY-2264")
+    @Disabled("This test doesn't work yet. See RESTEASY-2264")
     public void TestPostInjectCdiOnEJB() throws Exception {
         doTestPostInjectCdiOn("ON", "/ejb");
     }
@@ -112,18 +112,18 @@ public class PostConstructInjectionTest {
     @Test
     public void TestPostInjectCdiOff() throws Exception {
         Response response = client.target(generateURL("OFF", "/normal/get")).request().get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("ab", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("ab", response.readEntity(String.class));
         response.close();
     }
 
     void doTestPostInjectCdiOn(String cdi, String resource) {
         Response response = client.target(generateURL(cdi, resource + "/get")).request().get();
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(header);
+        Assertions.assertNotNull(header);
         ViolationReport report = response.readEntity(ViolationReport.class);
-        Assert.assertEquals(1, report.getPropertyViolations().size());
+        Assertions.assertEquals(1, report.getPropertyViolations().size());
         response.close();
     }
 }

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.sse;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
@@ -29,11 +29,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseJsonEventTest {
     private static final Logger logger = Logger.getLogger(SseJsonEventTest.class);
@@ -70,17 +70,17 @@ public class SseJsonEventTest {
                 });
                 eventSource.open();
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
         } finally {
             client.close();
         }
-        Assert.assertEquals("One message was expected.", 1, results.size());
+        Assertions.assertEquals(1, results.size(), "One message was expected.");
         try {
             results.get(0).readData(SseSmokeUser.class, MediaType.APPLICATION_JSON_TYPE);
             fail("Exception is expected");
         } catch (ProcessingException e) {
-            Assert.assertTrue("exception is not expected", e.getMessage().indexOf("Failed to read data") > -1);
+            Assertions.assertTrue(e.getMessage().indexOf("Failed to read data") > -1, "exception is not expected");
         }
     }
 
@@ -106,12 +106,13 @@ public class SseJsonEventTest {
                 eventSource.open();
 
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
-            Assert.assertEquals("One message was expected.", 1, results.size());
+            Assertions.assertEquals(1, results.size(), "One message was expected.");
 
-            Assert.assertEquals("user name is not expected", "Zeytin",
-                    results.get(0).readData(SseSmokeUser.class, MediaType.APPLICATION_JSON_TYPE).getUsername());
+            Assertions.assertEquals("Zeytin",
+                    results.get(0).readData(SseSmokeUser.class, MediaType.APPLICATION_JSON_TYPE).getUsername(),
+                    "user name is not expected");
 
         } finally {
             client.close();
