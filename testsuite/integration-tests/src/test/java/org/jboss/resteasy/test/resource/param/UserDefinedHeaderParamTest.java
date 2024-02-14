@@ -8,7 +8,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.resource.param.resource.UserDefinedHeaderParamResource;
@@ -16,11 +16,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-2874
  * @tpSince RESTEasy 5.0.5
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class UserDefinedHeaderParamTest {
 
@@ -62,12 +62,12 @@ public class UserDefinedHeaderParamTest {
                 @HeaderParam("Content-Type") String thirdContentType);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -94,7 +94,7 @@ public class UserDefinedHeaderParamTest {
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
         String response = proxy.sendHeaderFirst(HEADER_PARAM, "text");
-        Assert.assertEquals("Incorrect header param returned,", HEADER_PARAM, response);
+        Assertions.assertEquals(HEADER_PARAM, response, "Incorrect header param returned,");
     }
 
     /**
@@ -109,7 +109,7 @@ public class UserDefinedHeaderParamTest {
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
         String response = proxy.sendTextFirst("text", HEADER_PARAM);
-        Assert.assertEquals("Incorrect header param returned,", HEADER_PARAM, response);
+        Assertions.assertEquals(HEADER_PARAM, response, "Incorrect header param returned,");
     }
 
     /**
@@ -124,7 +124,7 @@ public class UserDefinedHeaderParamTest {
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
         String response = proxy.sendDefaultType("text");
-        Assert.assertEquals("Incorrect header param returned,", "application/json", response);
+        Assertions.assertEquals("application/json", response, "Incorrect header param returned,");
     }
 
     /**
@@ -140,7 +140,7 @@ public class UserDefinedHeaderParamTest {
         UserHeaderParamInterface proxy = target.proxy(UserDefinedHeaderParamTest.UserHeaderParamInterface.class);
 
         String response = proxy.sendMultipleTypes("text", "text/plain", "application/json", "image/jpeg");
-        Assert.assertEquals("Incorrect header param returned,", HEADER_PARAM, response);
+        Assertions.assertEquals(HEADER_PARAM, response, "Incorrect header param returned,");
     }
 
 }

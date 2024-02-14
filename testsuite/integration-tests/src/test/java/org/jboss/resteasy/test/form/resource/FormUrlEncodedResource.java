@@ -12,14 +12,14 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.StreamingOutput;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class FormUrlEncodedResource {
     @Path("/simple")
     @POST
     public StreamingOutput post(@QueryParam("hello") String abs, InputStream entityStream) throws IOException {
-        Assert.assertNull(abs);
+        Assertions.assertNull(abs);
         final InputStream is = entityStream;
         return new StreamingOutput() {
             public void write(OutputStream output) throws IOException {
@@ -36,7 +36,7 @@ public class FormUrlEncodedResource {
     @Produces("application/x-www-form-urlencoded")
     @Consumes("application/x-www-form-urlencoded")
     public MultivaluedMap<String, String> post(MultivaluedMap<String, String> form) {
-        Assert.assertEquals("world", form.getFirst("hello"));
+        Assertions.assertEquals("world", form.getFirst("hello"));
         return form;
     }
 
@@ -45,19 +45,19 @@ public class FormUrlEncodedResource {
     @Produces("application/x-www-form-urlencoded")
     @Consumes("application/x-www-form-urlencoded")
     public MultivaluedMap<String, String> post2Parameters(MultivaluedMap<String, String> form) {
-        Assert.assertEquals(2, form.size());
-        Assert.assertEquals("world", form.getFirst("hello"));
-        Assert.assertEquals("mama", form.getFirst("yo"));
+        Assertions.assertEquals(2, form.size());
+        Assertions.assertEquals("world", form.getFirst("hello"));
+        Assertions.assertEquals("mama", form.getFirst("yo"));
         return form;
     }
 
     @Path("/RESTEASY-109")
     @POST
     public void post109(MultivaluedMap<String, String> form) {
-        Assert.assertEquals(form.getFirst("name"), "jon");
-        Assert.assertEquals(form.getFirst("address1"), "123 Main St");
-        Assert.assertEquals(form.getFirst("address2"), "");
-        Assert.assertEquals(form.getFirst("zip"), "12345");
+        Assertions.assertEquals(form.getFirst("name"), "jon");
+        Assertions.assertEquals(form.getFirst("address1"), "123 Main St");
+        Assertions.assertEquals(form.getFirst("address2"), "");
+        Assertions.assertEquals(form.getFirst("zip"), "12345");
     }
 
 }

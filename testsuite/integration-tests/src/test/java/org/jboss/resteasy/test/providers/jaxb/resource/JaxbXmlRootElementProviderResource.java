@@ -7,7 +7,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/jaxb")
 @Consumes({ "application/xml", "application/fastinfoset", "application/json" })
@@ -31,8 +31,8 @@ public class JaxbXmlRootElementProviderResource {
 
     @POST
     public Parent postParent(Parent parent) {
-        Assert.assertTrue(parent.getChildren().size() > 0);
-        Assert.assertTrue(parent.getChildren().get(0).getParent().equals(parent));
+        Assertions.assertTrue(parent.getChildren().size() > 0);
+        Assertions.assertTrue(parent.getChildren().get(0).getParent().equals(parent));
         parent.addChild(new Child("Child 4"));
         return parent;
     }

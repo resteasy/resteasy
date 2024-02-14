@@ -18,18 +18,18 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.sse.resource.SseReconnectResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseReconnectTest {
 
@@ -55,8 +55,8 @@ public class SseReconnectTest {
         try {
             WebTarget baseTarget = client.target(generateURL("/reconnect/defaultReconnectDelay"));
             try (Response response = baseTarget.request().get()) {
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                Assert.assertEquals(SseEvent.RECONNECT_NOT_SET, (long) response.readEntity(long.class));
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(SseEvent.RECONNECT_NOT_SET, (long) response.readEntity(long.class));
             }
         } finally {
             client.close();
@@ -75,8 +75,8 @@ public class SseReconnectTest {
         try {
             WebTarget baseTarget = client.target(generateURL("/reconnect/reconnectDelaySet"));
             try (Response response = baseTarget.request().get()) {
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                Assert.assertEquals(1000L, (long) response.readEntity(long.class));
+                Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                Assertions.assertEquals(1000L, (long) response.readEntity(long.class));
             }
         } finally {
             client.close();
@@ -106,9 +106,9 @@ public class SseReconnectTest {
                 eventSource.open();
 
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
-            Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+            Assertions.assertTrue(results.get(0).equals("ServiceAvailable"), "ServiceAvailable message is expected");
         } finally {
             client.close();
         }
@@ -135,12 +135,12 @@ public class SseReconnectTest {
                     latch.countDown();
                 }, ex -> {
                     errors.incrementAndGet();
-                    Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
+                    Assertions.assertTrue(ex instanceof ServiceUnavailableException, "ServiceUnavalile exception is expected");
                 });
                 eventSource.open();
 
                 boolean waitResult = latch.await(15, TimeUnit.SECONDS);
-                Assert.assertEquals(1, errors.get());
+                Assertions.assertEquals(1, errors.get());
             }
         } finally {
             client.close();
@@ -177,11 +177,11 @@ public class SseReconnectTest {
             try (SseEventSource eventSource = sseEventSource) {
                 eventSource.open();
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-                Assert.assertEquals(0, errorCount.get());
-                Assert.assertEquals(1, results.size());
-                Assert.assertTrue(results.get(0).isReconnectDelaySet());
-                Assert.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+                Assertions.assertEquals(0, errorCount.get());
+                Assertions.assertEquals(1, results.size());
+                Assertions.assertTrue(results.get(0).isReconnectDelaySet());
+                Assertions.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
             }
         } finally {
             client.close();
@@ -204,8 +204,8 @@ public class SseReconnectTest {
             try (SseEventSource eventSource = sseEventSource) {
                 eventSource.open();
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-                Assert.assertEquals(1, results.size());
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+                Assertions.assertEquals(1, results.size());
             }
         } finally {
             client.close();
@@ -227,9 +227,9 @@ public class SseReconnectTest {
             try (SseEventSource eventSource = sseEventSource) {
                 eventSource.open();
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-                Assert.assertEquals(1, results.size());
-                Assert.assertTrue("SseEventSource#isOpen returns false", eventSource.isOpen());
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+                Assertions.assertEquals(1, results.size());
+                Assertions.assertTrue(eventSource.isOpen(), "SseEventSource#isOpen returns false");
             }
         } finally {
             client.close();

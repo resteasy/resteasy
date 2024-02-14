@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyNullInputStreamClientResponseFilter;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyNullInputStreamResource;
@@ -13,9 +13,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  *
  *          Created by rsearls on 8/24/17.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ProxyNullInputStreamTest {
 
@@ -50,7 +50,7 @@ public class ProxyNullInputStreamTest {
         try {
             pResource.getUserHead("myDb");
         } catch (Exception e) {
-            Assert.assertEquals("HTTP 404 Not Found", e.getMessage());
+            Assertions.assertEquals("HTTP 404 Not Found", e.getMessage());
         } finally {
             client.close();
         }

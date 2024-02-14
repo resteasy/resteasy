@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ConstructedInjectionResource {
@@ -37,9 +37,10 @@ public class ConstructedInjectionResource {
 
         logger.info("BASE URI: " + myInfo.getBaseUri());
         logger.info("Request URI: " + myInfo.getRequestUri());
-        Assert.assertEquals("The injected base path doesn't match to the expected one",
-                base.getPath() + "ConstructedInjectionTest/", myInfo.getBaseUri().getPath());
-        Assert.assertEquals("The injected path doesn't match to the expected one", "/simple", myInfo.getPath());
+        Assertions.assertEquals(base.getPath() + "ConstructedInjectionTest/", myInfo.getBaseUri().getPath(),
+                "The injected base path doesn't match to the expected one");
+        Assertions.assertEquals("/simple", myInfo.getPath(),
+                "The injected path doesn't match to the expected one");
         return "CONTENT";
     }
 

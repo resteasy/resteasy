@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.cdi.interceptors.resource.NameBoundCDIProxiesApplication;
 import org.jboss.resteasy.test.cdi.interceptors.resource.NameBoundCDIProxiesInterceptor;
 import org.jboss.resteasy.test.cdi.interceptors.resource.NameBoundCDIProxiesResource;
@@ -15,9 +15,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Name bound interceptors and Application CDI proxies
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class NameBoundCDIProxiesTest {
 
@@ -57,7 +57,7 @@ public class NameBoundCDIProxiesTest {
     public void testNameBoundInterceptor() throws Exception {
         Client client = ClientBuilder.newClient();
         String answer = client.target(generateURL("/test")).request().get(String.class);
-        Assert.assertEquals("in-test-out", answer);
+        Assertions.assertEquals("in-test-out", answer);
         client.close();
     }
 }

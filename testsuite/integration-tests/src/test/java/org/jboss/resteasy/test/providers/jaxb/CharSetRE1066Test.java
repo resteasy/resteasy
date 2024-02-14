@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -23,11 +23,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1066.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CharSetRE1066Test {
     public static final MediaType APPLICATION_XML_UTF16_TYPE;
@@ -55,12 +55,12 @@ public class CharSetRE1066Test {
         return TestUtil.finishContainerPrepare(war, null, CharSetMovieResource.class, CharSetFavoriteMovieXmlRootElement.class);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
         client = null;
@@ -93,11 +93,11 @@ public class CharSetRE1066Test {
         Response response = request.post(Entity.entity(str, MediaType.APPLICATION_XML_TYPE));
         log.info("Received response");
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         CharSetFavoriteMovieXmlRootElement entity = response.readEntity(CharSetFavoriteMovieXmlRootElement.class);
         log.info("Result: " + entity);
         log.info("title: " + entity.getTitle());
-        Assert.assertEquals("La Règle du Jeu", entity.getTitle());
+        Assertions.assertEquals("La Règle du Jeu", entity.getTitle());
     }
 
     @Test
@@ -111,11 +111,11 @@ public class CharSetRE1066Test {
         log.info("client default charset: " + Charset.defaultCharset());
 
         Response response = request.post(Entity.entity(str, APPLICATION_XML_UTF16_TYPE));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         CharSetFavoriteMovieXmlRootElement entity = response.readEntity(CharSetFavoriteMovieXmlRootElement.class);
         log.info("Result: " + entity);
         log.info("title: " + entity.getTitle());
-        Assert.assertEquals("La Règle du Jeu", entity.getTitle());
+        Assertions.assertEquals("La Règle du Jeu", entity.getTitle());
     }
 
     @Test
@@ -130,10 +130,10 @@ public class CharSetRE1066Test {
         log.info("client default charset: " + Charset.defaultCharset());
 
         Response response = request.post(Entity.entity(str, APPLICATION_XML_UTF16_TYPE));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         CharSetFavoriteMovieXmlRootElement entity = response.readEntity(CharSetFavoriteMovieXmlRootElement.class);
         log.info("Result: " + entity);
         log.info("title: " + entity.getTitle());
-        Assert.assertEquals("La Règle du Jeu", entity.getTitle());
+        Assertions.assertEquals("La Règle du Jeu", entity.getTitle());
     }
 }

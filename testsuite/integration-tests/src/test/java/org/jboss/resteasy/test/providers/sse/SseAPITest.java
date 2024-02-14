@@ -14,7 +14,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -22,11 +22,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseAPITest {
     @Deployment
@@ -64,14 +64,14 @@ public class SseAPITest {
             Client messageClient = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
             WebTarget messageTarget = messageClient.target(generateURL("/apitest/send"));
             Response response = messageTarget.request().post(Entity.text("apimsg"));
-            Assert.assertEquals(204, response.getStatus());
+            Assertions.assertEquals(204, response.getStatus());
             boolean result = latch.await(10, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
+            Assertions.assertTrue(result, "Waiting for event to be delivered has timed out.");
             messageClient.close();
         }
-        Assert.assertEquals("One event message was expected.", 1, results.size());
-        Assert.assertTrue("Expected event contains apimsg, but is:" + results.get(0),
-                results.get(0).contains("apimsg"));
+        Assertions.assertEquals(1, results.size(), "One event message was expected.");
+        Assertions.assertTrue(results.get(0).contains("apimsg"),
+                "Expected event contains apimsg, but is:" + results.get(0));
         client.close();
     }
 

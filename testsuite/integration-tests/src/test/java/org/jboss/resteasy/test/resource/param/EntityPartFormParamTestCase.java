@@ -49,7 +49,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.setup.LoggingSetupTask;
@@ -57,14 +57,14 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(LoggingSetupTask.class)
 public class EntityPartFormParamTestCase {
@@ -99,7 +99,7 @@ public class EntityPartFormParamTestCase {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 2) {
@@ -108,15 +108,15 @@ public class EntityPartFormParamTestCase {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 EntityPart part = find(entityParts, "received-content");
-                Assert.assertNotNull(getMessage(entityParts), part);
-                Assert.assertEquals("test content", part.getContent(String.class));
+                Assertions.assertNotNull(part, getMessage(entityParts));
+                Assertions.assertEquals("test content", part.getContent(String.class));
 
                 part = find(entityParts, "added-content");
-                Assert.assertNotNull(getMessage(entityParts), part);
-                Assert.assertEquals("test added content", part.getContent(String.class));
+                Assertions.assertNotNull(part, getMessage(entityParts));
+                Assertions.assertEquals("test added content", part.getContent(String.class));
             }
         }
     }
@@ -153,7 +153,7 @@ public class EntityPartFormParamTestCase {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -162,7 +162,7 @@ public class EntityPartFormParamTestCase {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test entity part");
                 checkEntity(entityParts, "received-string", "test string");
@@ -196,7 +196,7 @@ public class EntityPartFormParamTestCase {
                             .request(MediaType.MULTIPART_FORM_DATA_TYPE)
                             .post(Entity.entity(new GenericEntity<>(multipart) {
                             }, MediaType.MULTIPART_FORM_DATA))) {
-                Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
                 final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
                 });
                 if (entityParts.size() != 3) {
@@ -205,7 +205,7 @@ public class EntityPartFormParamTestCase {
                             '.' +
                             System.lineSeparator() +
                             getMessage(entityParts);
-                    Assert.fail(msg);
+                    Assertions.fail(msg);
                 }
                 checkEntity(entityParts, "received-entity-part", "test content");
                 checkEntity(entityParts, "received-string", "test content");
@@ -217,8 +217,9 @@ public class EntityPartFormParamTestCase {
     private static void checkEntity(final List<EntityPart> entityParts, final String name, final String expectedText)
             throws IOException {
         final EntityPart part = find(entityParts, name);
-        Assert.assertNotNull(String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)), part);
-        Assert.assertEquals(expectedText, part.getContent(String.class));
+        Assertions.assertNotNull(part,
+                String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)));
+        Assertions.assertEquals(expectedText, part.getContent(String.class));
     }
 
     private static String getMessage(final List<EntityPart> parts) throws IOException {

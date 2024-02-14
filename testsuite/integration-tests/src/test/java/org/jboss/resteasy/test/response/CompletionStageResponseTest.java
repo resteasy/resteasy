@@ -9,9 +9,9 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.AwaitingUpgradeInWildFly;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.CompletionStageProxy;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseMessageBodyWriter;
@@ -22,19 +22,19 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CompletionStage response type
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.5
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CompletionStageResponseTest {
 
@@ -57,7 +57,7 @@ public class CompletionStageResponseTest {
         return PortProviderUtil.generateURL(path, CompletionStageResponseTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
 
@@ -70,7 +70,7 @@ public class CompletionStageResponseTest {
         serverIsLocal = addr.isLoopbackAddress();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
         client = null;
@@ -85,13 +85,13 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/text")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(CompletionStageResponseResource.HELLO, entity);
 
         // make sure the completion callback was called with no error
         request = client.target(generateURL("/callback-called-no-error?p=text")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -99,19 +99,20 @@ public class CompletionStageResponseTest {
      * @tpTestDetails Resource method returns CompletableFuture<String>.
      * @tpSince RESTEasy 6.2
      */
-    @Category(AwaitingUpgradeInWildFly.class)
+    @FollowUpRequired("Remove the category when 6.2.6.Final is merged into WildFly")
+    @Tag("AwaitingUpgradeInWildFly.class")
     @Test
     public void testCompletableFutureText() throws Exception {
         Invocation.Builder request = client.target(generateURL("/cftext")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(CompletionStageResponseResource.HELLO, entity);
 
         // make sure the completion callback was called with no error
         request = client.target(generateURL("/callback-called-no-error?p=cftext")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -125,9 +126,9 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/response")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("text/plain;charset=UTF-8", response.getHeaderString("Content-Type"));
-        Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("text/plain;charset=UTF-8", response.getHeaderString("Content-Type"));
+        Assertions.assertEquals(CompletionStageResponseResource.HELLO, entity);
     }
 
     /**
@@ -141,9 +142,9 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/testclass")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("abc/xyz", response.getHeaderString("Content-Type"));
-        Assert.assertEquals("pdq", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("abc/xyz", response.getHeaderString("Content-Type"));
+        Assertions.assertEquals("pdq", entity);
     }
 
     /**
@@ -158,9 +159,9 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/responsetestclass")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("abc/xyz", response.getHeaderString("Content-Type"));
-        Assert.assertEquals("pdq", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("abc/xyz", response.getHeaderString("Content-Type"));
+        Assertions.assertEquals("pdq", entity);
     }
 
     /**
@@ -173,8 +174,8 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/null")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(204, response.getStatus());
-        Assert.assertEquals(null, entity);
+        Assertions.assertEquals(204, response.getStatus());
+        Assertions.assertEquals(null, entity);
     }
 
     /**
@@ -187,13 +188,13 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/exception/delay")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(444, response.getStatus());
-        Assert.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
+        Assertions.assertEquals(444, response.getStatus());
+        Assertions.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error?p=exception/delay")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -207,13 +208,13 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/exception/delay-wrapped")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(444, response.getStatus());
-        Assert.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
+        Assertions.assertEquals(444, response.getStatus());
+        Assertions.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error?p=exception/delay-wrapped")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -227,13 +228,13 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(500, response.getStatus());
+        Assertions.assertEquals(500, response.getStatus());
         response.close();
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error?p=exception/immediate/runtime")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -247,13 +248,13 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(500, response.getStatus());
+        Assertions.assertEquals(500, response.getStatus());
         response.close();
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error?p=exception/immediate/notruntime")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -266,8 +267,8 @@ public class CompletionStageResponseTest {
         Invocation.Builder request = client.target(generateURL("/textSingle")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(CompletionStageResponseResource.HELLO, entity);
     }
 
     /**
@@ -278,11 +279,11 @@ public class CompletionStageResponseTest {
     public void getDataWithDelayTest() throws Exception {
         Invocation.Builder request = client.target(generateURL("/sleep")).request();
         Future<Response> future = request.async().get();
-        Assert.assertFalse(future.isDone());
+        Assertions.assertFalse(future.isDone());
         Response response = future.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(CompletionStageResponseResource.HELLO, entity);
     }
 
     /**
@@ -295,8 +296,8 @@ public class CompletionStageResponseTest {
     public void proxyTest() throws Exception {
         CompletionStageProxy proxy = client.target(generateURL("/")).proxy(CompletionStageProxy.class);
         Future<String> future = proxy.sleep().toCompletableFuture();
-        Assert.assertFalse(future.isDone());
-        Assert.assertEquals(CompletionStageResponseResource.HELLO, future.get());
+        Assertions.assertFalse(future.isDone());
+        Assertions.assertEquals(CompletionStageResponseResource.HELLO, future.get());
     }
 
 }

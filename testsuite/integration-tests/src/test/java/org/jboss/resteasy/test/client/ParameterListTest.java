@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-756
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ParameterListTest extends ClientTestBase {
 
@@ -41,12 +41,12 @@ public class ParameterListTest extends ClientTestBase {
     private static final String ERROR_MESSAGE = "Wrong parameters in response received";
     private static Client restClient;
 
-    @Before
+    @BeforeEach
     public void init() {
         restClient = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         restClient.close();
     }
@@ -70,8 +70,8 @@ public class ParameterListTest extends ClientTestBase {
     public void testMatrixNewClient() throws Exception {
         Response response = restClient.target(generateURL("/matrix;m1=a/list;m1=b;p2=c")).matrixParam("m1", "d").request()
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:d:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:d:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -81,8 +81,8 @@ public class ParameterListTest extends ClientTestBase {
     @Test
     public void testQueryNewClient() throws Exception {
         Response response = restClient.target(generateURL("/query/list?q1=a&q2=b&q1=c")).queryParam("q1", "d").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:c:d:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:c:d:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -98,8 +98,8 @@ public class ParameterListTest extends ClientTestBase {
         list.add("b");
         list.add("c");
         Response response = client.matrixList(list);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
         response.close();
     }
 
@@ -116,8 +116,8 @@ public class ParameterListTest extends ClientTestBase {
         set.add("b");
         set.add("c");
         Response response = client.matrixSet(set);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -133,8 +133,8 @@ public class ParameterListTest extends ClientTestBase {
         set.add("b");
         set.add("c");
         Response response = client.matrixSortedSet(set);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -150,8 +150,9 @@ public class ParameterListTest extends ClientTestBase {
         list.add("b");
         list.add("c");
         Response response = client.matrixWithEntity(list, "entity");
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "entity:a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("entity:a:b:c:", response.readEntity(String.class),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -167,8 +168,8 @@ public class ParameterListTest extends ClientTestBase {
         list.add("b");
         list.add("c");
         Response response = client.queryList(list);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -184,8 +185,8 @@ public class ParameterListTest extends ClientTestBase {
         set.add("b");
         set.add("c");
         Response response = client.querySet(set);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -201,8 +202,8 @@ public class ParameterListTest extends ClientTestBase {
         set.add("b");
         set.add("c");
         Response response = client.querySortedSet(set);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -218,8 +219,8 @@ public class ParameterListTest extends ClientTestBase {
         list.add("b");
         list.add("c");
         Response response = client.queryWithEntity(list, "entity");
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "entity:a:b:c:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("entity:a:b:c:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 
     /**
@@ -239,7 +240,7 @@ public class ParameterListTest extends ClientTestBase {
         queryParams.add("y");
         queryParams.add("z");
         Response response = client.matrixQueryWithEntity(matrixParams, queryParams, "entity");
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(ERROR_MESSAGE, "entity:a:b:c:x:y:z:", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("entity:a:b:c:x:y:z:", response.readEntity(String.class), ERROR_MESSAGE);
     }
 }

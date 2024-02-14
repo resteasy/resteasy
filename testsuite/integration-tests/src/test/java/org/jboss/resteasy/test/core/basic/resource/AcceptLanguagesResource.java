@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/lang")
 public class AcceptLanguagesResource {
@@ -30,10 +30,10 @@ public class AcceptLanguagesResource {
         }
         logger.info(locales.toString());
 
-        Assert.assertEquals(accepts.get(0).toString(), "de_AT");
-        Assert.assertEquals(accepts.get(1).toString(), "de");
-        Assert.assertEquals(accepts.get(2).toString(), "en");
-        Assert.assertEquals(accepts.get(3).toString(), "en_US");
+        Assertions.assertEquals(accepts.get(0).toString(), "de_AT");
+        Assertions.assertEquals(accepts.get(1).toString(), "de");
+        Assertions.assertEquals(accepts.get(2).toString(), "en");
+        Assertions.assertEquals(accepts.get(3).toString(), "en_US");
 
         return "hello";
     }

@@ -13,7 +13,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.sse.resource.SseBroadcastResource;
@@ -21,12 +21,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseBroadcastTest {
 
@@ -74,21 +74,21 @@ public class SseBroadcastTest {
                 SseEventSource eventSource2 = msgEventSource2;
                 SseEventSource eventSource3 = msgEventSource3) {
             eventSource.register(event -> {
-                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+                Assertions.assertTrue(textMessage.equals(event.readData()), "Unexpected sever sent event data");
                 latch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
                 logger.error(ex.getMessage(), ex);
             });
             eventSource2.register(event -> {
-                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+                Assertions.assertTrue(textMessage.equals(event.readData()), "Unexpected sever sent event data");
                 latch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
                 logger.error(ex.getMessage(), ex);
             });
             eventSource3.register(event -> {
-                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+                Assertions.assertTrue(textMessage.equals(event.readData()), "Unexpected sever sent event data");
                 latch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
@@ -104,7 +104,8 @@ public class SseBroadcastTest {
                     .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
             client3.target(generateURL("/broadcast/start")).request()
                     .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
-            Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+            Assertions.assertTrue(latch.await(20, TimeUnit.SECONDS),
+                    "Waiting for broadcast event to be delivered has timed out.");
         } finally {
             client.close();
             client2.close();
@@ -129,7 +130,8 @@ public class SseBroadcastTest {
 
         try (SseEventSource eventSource = msgEventSource) {
             eventSource.register(event -> {
-                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+                Assertions.assertTrue(textMessage.equals(event.readData()),
+                        "Unexpected sever sent event data");
                 latch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
@@ -140,7 +142,8 @@ public class SseBroadcastTest {
             client.target(generateURL("/broadcast/listeners")).request().get();
             client.target(generateURL("/broadcast/start")).request()
                     .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
-            Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+            Assertions.assertTrue(latch.await(20, TimeUnit.SECONDS),
+                    "Waiting for broadcast event to be delivered has timed out.");
         } finally {
             client.close();
         }
@@ -148,7 +151,7 @@ public class SseBroadcastTest {
         Client checkClient = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
         checkClient.target(generateURL("/broadcast")).request().delete();
         boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
-        Assert.assertTrue(onCloseCalled);
+        Assertions.assertTrue(onCloseCalled);
         checkClient.close();
         removeBroadcaster();
     }
@@ -159,7 +162,7 @@ public class SseBroadcastTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Ignore("https://issues.jboss.org/browse/RESTEASY-1819")
+    @Disabled("https://issues.jboss.org/browse/RESTEASY-1819")
     public void testBroadcasterOnCloseCallbackCloseSinkOnServer() throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/broadcast/subscribe"));
@@ -167,7 +170,7 @@ public class SseBroadcastTest {
         SseEventSource msgEventSource = SseEventSource.target(target).reconnectingEvery(5, TimeUnit.MINUTES).build();
         try (SseEventSource eventSource = msgEventSource) {
             eventSource.register(event -> {
-                Assert.fail("Event should not be received");
+                Assertions.fail("Event should not be received");
             }, ex -> {
                 logger.error(ex.getMessage(), ex);
             });
@@ -190,7 +193,7 @@ public class SseBroadcastTest {
             Thread.sleep(100);
         }
 
-        Assert.assertTrue(onCloseCalled);
+        Assertions.assertTrue(onCloseCalled);
         checkClient.close();
         removeBroadcaster();
     }
@@ -202,7 +205,7 @@ public class SseBroadcastTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Ignore("https://issues.jboss.org/browse/RESTEASY-1819")
+    @Disabled("https://issues.jboss.org/browse/RESTEASY-1819")
     public void testBroadcasterOnCloseCallbackCloseClientConnection() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger errors = new AtomicInteger(0);
@@ -213,7 +216,8 @@ public class SseBroadcastTest {
 
         try (SseEventSource eventSource = msgEventSource) {
             eventSource.register(event -> {
-                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+                Assertions.assertTrue(textMessage.equals(event.readData()),
+                        "Unexpected sever sent event data");
                 latch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
@@ -224,7 +228,8 @@ public class SseBroadcastTest {
             client.target(generateURL("/broadcast/listeners")).request().get();
             client.target(generateURL("/broadcast/start")).request()
                     .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
-            Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+            Assertions.assertTrue(latch.await(20, TimeUnit.SECONDS),
+                    "Waiting for broadcast event to be delivered has timed out.");
         } finally {
             client.close();
         }
@@ -240,7 +245,7 @@ public class SseBroadcastTest {
             Thread.sleep(100);
         }
 
-        Assert.assertTrue(onCloseCalled);
+        Assertions.assertTrue(onCloseCalled);
         checkClient.close();
         removeBroadcaster();
     }

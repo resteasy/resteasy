@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -32,13 +32,13 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ComplexMultipartOutputTest {
     protected final Logger logger = Logger.getLogger(
@@ -56,12 +56,12 @@ public class ComplexMultipartOutputTest {
                 ComplexMultipartOutputResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -81,16 +81,16 @@ public class ComplexMultipartOutputTest {
         ResteasyWebTarget target = client.target(generateURL("/mpart/test"));
         Response response = target.request().get();
         MultipartInput multipartInput = response.readEntity(MultipartInput.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         List<InputPart> parts = multipartInput.getParts(); // debug
-        Assert.assertEquals(2, parts.size());
+        Assertions.assertEquals(2, parts.size());
 
         for (InputPart inputPart : multipartInput.getParts()) {
 
             MultipartRelatedInput mRelatedInput = inputPart.getBody(
                     MultipartRelatedInput.class, null);
-            Assert.assertEquals(1, mRelatedInput.getRelatedMap().size());
+            Assertions.assertEquals(1, mRelatedInput.getRelatedMap().size());
 
             for (Map.Entry<String, InputPart> entry : mRelatedInput
                     .getRelatedMap().entrySet()) {
@@ -104,15 +104,15 @@ public class ComplexMultipartOutputTest {
                 if (iPart instanceof MultipartInputImpl.PartImpl) {
                     MultipartInputImpl.PartImpl miPart = (MultipartInputImpl.PartImpl) iPart;
                     InputStream inStream = miPart.getBody();
-                    Assert.assertNotNull(
-                            "InputStream should not be null.", inStream);
+                    Assertions.assertNotNull(
+                            inStream, "InputStream should not be null.");
                 }
             }
 
         }
 
         if (!controlList.isEmpty()) {
-            Assert.fail("1 or more missing MultipartRelatedInput return objects");
+            Assertions.fail("1 or more missing MultipartRelatedInput return objects");
         }
     }
 
@@ -129,12 +129,12 @@ public class ComplexMultipartOutputTest {
         Entity<MultipartRelatedOutput> entity = Entity.entity(mRelatedOutput,
                 new MediaType("multipart", "related"));
         Response response = target.request().post(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         MultipartRelatedInput result = response.readEntity(MultipartRelatedInput.class);
         Set<String> keys = result.getRelatedMap().keySet();
-        Assert.assertTrue(keys.size() == 2);
-        Assert.assertTrue("Failed to find inputPart Bill", keys.contains("Bill"));
-        Assert.assertTrue("Failed to find inputPart Bob", keys.contains("Bob"));
+        Assertions.assertTrue(keys.size() == 2);
+        Assertions.assertTrue(keys.contains("Bill"), "Failed to find inputPart Bill");
+        Assertions.assertTrue(keys.contains("Bob"), "Failed to find inputPart Bob");
     }
 }

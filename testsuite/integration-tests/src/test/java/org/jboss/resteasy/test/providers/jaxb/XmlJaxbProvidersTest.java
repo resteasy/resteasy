@@ -12,7 +12,7 @@ import jakarta.xml.bind.Unmarshaller;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -33,18 +33,18 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class XmlJaxbProvidersTest {
 
@@ -73,13 +73,13 @@ public class XmlJaxbProvidersTest {
                 XmlStreamFactory.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
         proxy = ProxyBuilder.builder(XmlJaxbProvidersOrderClient.class, client.target(generateURL("/"))).build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -97,8 +97,8 @@ public class XmlJaxbProvidersTest {
         InputStream in = XmlJaxbProvidersTest.class.getResourceAsStream("orders/order_123.xml");
         Order order = XmlJaxbProvidersHelper.unmarshall(Order.class, in).getValue();
 
-        Assert.assertNotNull(ERR_NULL_ENTITY, order);
-        Assert.assertEquals(ERR_CONTENT, "Ryan J. McDonough", order.getPerson());
+        Assertions.assertNotNull(order, ERR_NULL_ENTITY);
+        Assertions.assertEquals("Ryan J. McDonough", order.getPerson(), ERR_CONTENT);
     }
 
     /**
@@ -109,7 +109,7 @@ public class XmlJaxbProvidersTest {
     @Test
     public void testGetOrder() {
         Order order = proxy.getOrderById("order_123");
-        Assert.assertEquals(ERR_CONTENT, "Ryan J. McDonough", order.getPerson());
+        Assertions.assertEquals("Ryan J. McDonough", order.getPerson(), ERR_CONTENT);
     }
 
     /**
@@ -121,12 +121,12 @@ public class XmlJaxbProvidersTest {
     public void testGetOrderAndUnmarshal() throws Exception {
         Response response = client.target(generateURL("/jaxb/orders") + "/order_123").request()
                 .header(XmlJaxbProvidersHelper.FORMAT_XML_HEADER, "true").get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         JAXBContext jaxb = JAXBContext.newInstance(Order.class);
         Unmarshaller u = jaxb.createUnmarshaller();
         Order order = (Order) u.unmarshal(response.readEntity(InputStream.class));
-        Assert.assertNotNull(ERR_NULL_ENTITY, order);
-        Assert.assertEquals(ERR_CONTENT, "Ryan J. McDonough", order.getPerson());
+        Assertions.assertNotNull(order, ERR_NULL_ENTITY);
+        Assertions.assertEquals("Ryan J. McDonough", order.getPerson(), ERR_CONTENT);
         response.close();
     }
 
@@ -139,9 +139,9 @@ public class XmlJaxbProvidersTest {
     public void testGetOrderWithParamsToOrder() throws Exception {
         Response response = client.target(generateURL("/jaxb/orders") + "/order_123").request()
                 .header(XmlJaxbProvidersHelper.FORMAT_XML_HEADER, "true").get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Order order = response.readEntity(Order.class);
-        Assert.assertEquals(ERR_CONTENT, "Ryan J. McDonough", order.getPerson());
+        Assertions.assertEquals("Ryan J. McDonough", order.getPerson(), ERR_CONTENT);
     }
 
     /**
@@ -154,9 +154,10 @@ public class XmlJaxbProvidersTest {
         Order order = XmlJaxbProvidersHelper.unmarshall(Order.class, in).getValue();
         int initialItemCount = order.getItems().size();
         order = proxy.updateOrder(order, "order_123");
-        Assert.assertEquals(ERR_CONTENT, "Ryan J. McDonough", order.getPerson());
-        Assert.assertNotSame("The number of items in the Order didn't change after update",
-                initialItemCount, order.getItems().size());
-        Assert.assertEquals("The number of items in the Order doesn't match", 3, order.getItems().size());
+        Assertions.assertEquals("Ryan J. McDonough", order.getPerson(), ERR_CONTENT);
+        Assertions.assertNotSame(initialItemCount, order.getItems().size(),
+                "The number of items in the Order didn't change after update");
+        Assertions.assertEquals(3, order.getItems().size(),
+                "The number of items in the Order doesn't match");
     }
 }

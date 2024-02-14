@@ -10,16 +10,16 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.test.resource.path.resource.TrailingSlashResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4698
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class TrailingSlashTest {
     private static final String ERROR_MSG = "ResteasyUriInfo parsed slash wrongly";
@@ -54,11 +54,12 @@ public class TrailingSlashTest {
 
     void doOneArgConstructorTest(URI uri, String path) {
         ResteasyUriInfo ruri = new ResteasyUriInfo(uri);
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(false));
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getAbsolutePath());
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getBaseUri().resolve(ruri.getPath(false)));
+        Assertions.assertEquals(path, ruri.getPath(), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(true), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(false), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getAbsolutePath(), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getBaseUri().resolve(ruri.getPath(false)),
+                ERROR_MSG);
     }
 
     /**
@@ -73,16 +74,16 @@ public class TrailingSlashTest {
 
     void doTwoArgConstructorTest(URI base, URI relative, String path) throws URISyntaxException {
         ResteasyUriInfo ruri = new ResteasyUriInfo(base, relative);
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(false));
+        Assertions.assertEquals(path, ruri.getPath(), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(true), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(false), ERROR_MSG);
         URI newUri;
         if (base.toString().endsWith("/")) {
             newUri = new URI(base.toString().substring(0, base.toString().length() - 1) + path);
         } else {
             newUri = new URI(base.toString() + path);
         }
-        Assert.assertEquals(ERROR_MSG, newUri, ruri.getAbsolutePath());
+        Assertions.assertEquals(newUri, ruri.getAbsolutePath(), ERROR_MSG);
     }
 
     /**
@@ -98,11 +99,12 @@ public class TrailingSlashTest {
     void doTwoArgConstructorTest(String s, String path) throws URISyntaxException {
         ResteasyUriInfo ruri = new ResteasyUriInfo(s, "");
         URI uri = new URI(s);
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(false));
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getAbsolutePath());
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getBaseUri().resolve(ruri.getPath(false)));
+        Assertions.assertEquals(path, ruri.getPath(), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(true), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(false), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getAbsolutePath(), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getBaseUri().resolve(ruri.getPath(false)),
+                ERROR_MSG);
     }
 
     /**
@@ -114,7 +116,7 @@ public class TrailingSlashTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/test"));
         Response response = target.request().get();
-        Assert.assertEquals(ERROR_MSG, "/test", response.readEntity(String.class));
+        Assertions.assertEquals("/test", response.readEntity(String.class), ERROR_MSG);
         client.close();
     }
 
@@ -127,7 +129,7 @@ public class TrailingSlashTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/test/"));
         Response response = target.request().get();
-        Assert.assertEquals(ERROR_MSG, "/test/", response.readEntity(String.class));
+        Assertions.assertEquals("/test/", response.readEntity(String.class), ERROR_MSG);
         client.close();
     }
 }

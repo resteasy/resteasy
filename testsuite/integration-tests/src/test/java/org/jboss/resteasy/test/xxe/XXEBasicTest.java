@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -19,11 +19,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter XXE
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  *                    Basic XXE test.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class XXEBasicTest {
 
@@ -68,12 +68,12 @@ public class XXEBasicTest {
         return deploy("false");
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
         client = null;
@@ -90,9 +90,9 @@ public class XXEBasicTest {
         Response response = client.target(PortProviderUtil.generateURL("/", "false")).request()
                 .post(Entity.entity(request, "application/xml"));
 
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(entity, null);
+        Assertions.assertEquals(entity, null);
         response.close();
     }
 
@@ -104,9 +104,9 @@ public class XXEBasicTest {
     public void testXXEWithExpansion() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/", "true")).request()
                 .post(Entity.entity(request, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        Assert.assertEquals("xx:xx:xx:xx:xx:xx:xx", entity);
+        Assertions.assertEquals("xx:xx:xx:xx:xx:xx:xx", entity);
         response.close();
     }
 }

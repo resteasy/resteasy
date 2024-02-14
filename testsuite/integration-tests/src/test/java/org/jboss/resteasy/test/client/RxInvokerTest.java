@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
 import org.jboss.resteasy.setup.AllowTraceMethodSetupTask;
@@ -25,9 +25,9 @@ import org.jboss.resteasy.test.client.resource.TestResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  *
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * @date March 9, 2016
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(AllowTraceMethodSetupTask.class)
 public class RxInvokerTest extends ClientTestBase {
@@ -100,9 +100,9 @@ public class RxInvokerTest extends ClientTestBase {
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.get();
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("get", response);
-        Assert.assertEquals(useCustomInvoker, TestRxInvoker.used);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("get", response);
+        Assertions.assertEquals(useCustomInvoker, TestRxInvoker.used);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -118,8 +118,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/get")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.get(String.class);
-        Assert.assertEquals("get", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("get", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -135,8 +135,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/get")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.get(STRING_TYPE);
-        Assert.assertEquals("get", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("get", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -154,8 +154,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker
                 .put(Entity.entity("put", MediaType.TEXT_PLAIN_TYPE));
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("put", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("put", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -173,8 +173,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.put(Entity.entity("put", MediaType.TEXT_PLAIN_TYPE),
                 String.class);
         String response = cs.get();
-        Assert.assertEquals("put", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("put", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -192,8 +192,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.put(Entity.entity("put", MediaType.TEXT_PLAIN_TYPE),
                 STRING_TYPE);
         String response = cs.get();
-        Assert.assertEquals("put", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("put", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -211,8 +211,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker
                 .post(Entity.entity("post", MediaType.TEXT_PLAIN_TYPE));
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("post", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("post", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -230,8 +230,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker
                 .post(Entity.entity("post", MediaType.TEXT_PLAIN_TYPE), String.class);
         String response = cs.get();
-        Assert.assertEquals("post", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("post", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -249,8 +249,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker
                 .post(Entity.entity("post", MediaType.TEXT_PLAIN_TYPE), STRING_TYPE);
         String response = cs.get();
-        Assert.assertEquals("post", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("post", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -267,8 +267,8 @@ public class RxInvokerTest extends ClientTestBase {
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.delete();
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("delete", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("delete", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -284,8 +284,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/delete")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.delete(String.class);
-        Assert.assertEquals("delete", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("delete", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -301,8 +301,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/delete")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.delete(STRING_TYPE);
-        Assert.assertEquals("delete", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("delete", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -319,9 +319,9 @@ public class RxInvokerTest extends ClientTestBase {
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.head();
         Response response = cs.get();
-        Assert.assertEquals(204, response.getStatus());
-        Assert.assertEquals("head", response.getStringHeaders().getFirst("key"));
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals(204, response.getStatus());
+        Assertions.assertEquals("head", response.getStringHeaders().getFirst("key"));
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -338,8 +338,8 @@ public class RxInvokerTest extends ClientTestBase {
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.options();
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("options", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("options", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -355,8 +355,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/options")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.options(String.class);
-        Assert.assertEquals("options", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("options", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -372,8 +372,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/options")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.options(STRING_TYPE);
-        Assert.assertEquals("options", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("options", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -390,8 +390,8 @@ public class RxInvokerTest extends ClientTestBase {
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.trace();
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("trace", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("trace", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -407,8 +407,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/trace")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.trace(String.class);
-        Assert.assertEquals("trace", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("trace", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -424,8 +424,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/trace")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.trace(STRING_TYPE);
-        Assert.assertEquals("trace", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("trace", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -442,8 +442,8 @@ public class RxInvokerTest extends ClientTestBase {
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.method("METHOD");
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("method", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("method", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -459,8 +459,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/method")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.method("METHOD", String.class);
-        Assert.assertEquals("method", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("method", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -476,8 +476,8 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/method")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.method("METHOD", STRING_TYPE);
-        Assert.assertEquals("method", cs.get());
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("method", cs.get());
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -495,8 +495,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<Response> cs = (CompletableFuture<Response>) invoker.method("METHOD",
                 Entity.entity("methodEntity", MediaType.TEXT_PLAIN_TYPE));
         String response = cs.get().readEntity(String.class);
-        Assert.assertEquals("methodEntity", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("methodEntity", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -514,8 +514,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.method("METHOD",
                 Entity.entity("methodEntity", MediaType.TEXT_PLAIN_TYPE), String.class);
         String response = cs.get();
-        Assert.assertEquals("methodEntity", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("methodEntity", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -533,8 +533,8 @@ public class RxInvokerTest extends ClientTestBase {
         CompletableFuture<String> cs = (CompletableFuture<String>) invoker.method("METHOD",
                 Entity.entity("methodEntity", MediaType.TEXT_PLAIN_TYPE), STRING_TYPE);
         String response = cs.get();
-        Assert.assertEquals("methodEntity", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("methodEntity", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 
@@ -557,10 +557,10 @@ public class RxInvokerTest extends ClientTestBase {
         Builder builder = client.target(generateURL("/sleep")).request();
         RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
         Future<String> future = ((CompletableFuture<String>) invoker.get(String.class)).toCompletableFuture();
-        Assert.assertFalse(future.isDone());
+        Assertions.assertFalse(future.isDone());
         String response = future.get();
-        Assert.assertEquals("get", response);
-        Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+        Assertions.assertEquals("get", response);
+        Assertions.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
         client.close();
     }
 }

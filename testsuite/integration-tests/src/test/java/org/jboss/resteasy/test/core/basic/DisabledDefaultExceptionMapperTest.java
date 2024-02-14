@@ -34,8 +34,8 @@ import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.setup.DisableDefaultExceptionMapperSetupTask;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that the default {@link ExceptionMapper} is disabled.
@@ -62,8 +62,8 @@ public abstract class DisabledDefaultExceptionMapperTest {
         final Response response = client.target(TestUtil.generateUri(url, "/exception/wae"))
                 .request()
                 .get();
-        Assert.assertEquals(ExceptionResource.WAE_RESPONSE.getStatusInfo(), response.getStatusInfo());
-        Assert.assertEquals(ExceptionResource.WAE_RESPONSE.readEntity(String.class), response.readEntity(String.class));
+        Assertions.assertEquals(ExceptionResource.WAE_RESPONSE.getStatusInfo(), response.getStatusInfo());
+        Assertions.assertEquals(ExceptionResource.WAE_RESPONSE.readEntity(String.class), response.readEntity(String.class));
     }
 
     @ApplicationPath("/")

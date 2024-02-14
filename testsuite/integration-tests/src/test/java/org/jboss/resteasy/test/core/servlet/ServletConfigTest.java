@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.servlet.resource.ServletConfigApplication;
@@ -17,11 +17,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-381, RESTEASY-518 and RESTEASY-582. Check ServletConfig instance.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ServletConfigTest {
     private static ResteasyClient client;
@@ -47,12 +47,12 @@ public class ServletConfigTest {
         return PortProviderUtil.generateURL(path, ServletConfigTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -64,7 +64,7 @@ public class ServletConfigTest {
     @Test
     public void testCount() throws Exception {
         String count = client.target(generateURL("/my/application/count")).request().get(String.class);
-        Assert.assertEquals("Wrong count of RESTEasy application", "1", count);
+        Assertions.assertEquals("1", count, "Wrong count of RESTEasy application");
     }
 
     /**
@@ -75,7 +75,7 @@ public class ServletConfigTest {
     public void testNullJaxb() throws Exception {
         Response response = client.target(generateURL("/my/null")).request().header("Content-Type", "application/xml")
                 .post(Entity.text(""));
-        Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
         response.close();
     }
 
@@ -86,11 +86,11 @@ public class ServletConfigTest {
     @Test
     public void testBadMediaTypeNoSubtype() throws Exception {
         Response response = client.target(generateURL("/my/application/count")).request().accept("text").get();
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         response.close();
 
         response = client.target(generateURL("/my/application/count")).request().accept("text/plain; q=bad").get();
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         response.close();
     }
 }

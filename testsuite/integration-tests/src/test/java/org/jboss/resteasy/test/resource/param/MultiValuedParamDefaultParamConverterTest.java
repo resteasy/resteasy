@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterConstructorClass;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterCookieResource;
@@ -25,13 +25,13 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -41,9 +41,9 @@ import org.junit.runners.MethodSorters;
  *                    org.jboss.resteasy.plugins.providers.MultiValuedArrayParamConverter are used
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class MultiValuedParamDefaultParamConverterTest {
 
     private static Client client;
@@ -72,7 +72,7 @@ public class MultiValuedParamDefaultParamConverterTest {
         return PortProviderUtil.generateURL(path, MultiValuedParamDefaultParamConverterTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = ClientBuilder.newClient();
         ClientConfiguration config = ((ClientConfiguration) client.getConfiguration());
@@ -80,7 +80,7 @@ public class MultiValuedParamDefaultParamConverterTest {
         config.addHeaderDelegate(MultiValuedParamDefaultParamConverterHeaderDelegateClass.class, delegate);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         client.close();
     }
@@ -408,25 +408,25 @@ public class MultiValuedParamDefaultParamConverterTest {
 
         // Verifies that @Separator with a set of separators works.
         String response = client.target(generateURL("/misc/regex")).queryParam("w", "w1-w2;w3,w4").request().get(String.class);
-        Assert.assertEquals("cw1|cw2|cw3|cw4|", response);
+        Assertions.assertEquals("cw1|cw2|cw3|cw4|", response);
 
         // This following tests verify that MultiValuedParamConverterProvider does not engage on the
         // server side if @Separator has an inappropriate value.
         response = client.target(generateURL("/misc/regex/server/cookie")).request().cookie("p", "p1-p2").get(String.class);
-        Assert.assertEquals("p1-p2|", response);
+        Assertions.assertEquals("p1-p2|", response);
 
         response = client.target(generateURL("/misc/regex/server/header")).request().header("p", "p1-p2").get(String.class);
-        Assert.assertEquals("p1-p2|", response);
+        Assertions.assertEquals("p1-p2|", response);
 
         response = client.target(generateURL("/misc/regex/server/matrix")).matrixParam("p", "p1-p2").request()
                 .get(String.class);
-        Assert.assertEquals("p1-p2|", response);
+        Assertions.assertEquals("p1-p2|", response);
 
         response = client.target(generateURL("/misc/regex/server/path/p1-p2")).request().get(String.class);
-        Assert.assertEquals("p1-p2|", response);
+        Assertions.assertEquals("p1-p2|", response);
 
         response = client.target(generateURL("/misc/regex/server/query")).queryParam("p", "p1-p2").request().get(String.class);
-        Assert.assertEquals("p1-p2|", response);
+        Assertions.assertEquals("p1-p2|", response);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -434,21 +434,21 @@ public class MultiValuedParamDefaultParamConverterTest {
         String t = tag(conversion);
         String response = client.target(generateURL("/cookie/" + conversion + "/" + format + "/" + clazz)).request()
                 .cookie("c", "c1" + separator + "c2").get(String.class);
-        Assert.assertEquals(t + "c1|" + t + "c2|", response);
+        Assertions.assertEquals(t + "c1|" + t + "c2|", response);
     }
 
     void doTestHeader(String conversion, String format, String separator, String clazz) {
         String t = tag(conversion);
         String response = client.target(generateURL("/header/" + conversion + "/" + format + "/" + clazz)).request()
                 .header("h", "h1" + separator + "h2").get(String.class);
-        Assert.assertEquals(t + "h1|" + t + "h2|", response);
+        Assertions.assertEquals(t + "h1|" + t + "h2|", response);
     }
 
     void doTestMatrix(String conversion, String format, String separator, String clazz) {
         String t = tag(conversion);
         String response = client.target(generateURL("/matrix/" + conversion + "/" + format + "/" + clazz))
                 .matrixParam("m", "m1" + separator + "m2").request().get(String.class);
-        Assert.assertEquals(t + "m1|" + t + "m2|", response);
+        Assertions.assertEquals(t + "m1|" + t + "m2|", response);
     }
 
     void doTestPath(String conversion, String format, String separator, String clazz) {
@@ -456,14 +456,14 @@ public class MultiValuedParamDefaultParamConverterTest {
         String response = client
                 .target(generateURL("/path/" + conversion + "/" + format + "/" + clazz + "/p1" + separator + "p2")).request()
                 .get(String.class);
-        Assert.assertEquals(t + "p1|" + t + "p2|", response);
+        Assertions.assertEquals(t + "p1|" + t + "p2|", response);
     }
 
     void doTestQuery(String conversion, String format, String separator, String clazz) {
         String t = tag(conversion);
         String response = client.target(generateURL("/query/" + conversion + "/" + format + "/" + clazz))
                 .queryParam("q", "q1" + separator + "q2").request().get(String.class);
-        Assert.assertEquals(t + "q1|" + t + "q2|", response);
+        Assertions.assertEquals(t + "q1|" + t + "q2|", response);
     }
 
     String tag(String conversion) {

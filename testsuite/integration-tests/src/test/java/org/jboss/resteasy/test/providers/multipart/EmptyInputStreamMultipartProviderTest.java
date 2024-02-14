@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.multipart.resource.EmptyInputStreamMultipartProviderMyBean;
@@ -16,9 +16,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  *                    POJO with empty InputStream field returned as "mutlipart/form-data" produces no headers in multipart
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class EmptyInputStreamMultipartProviderTest {
 
@@ -53,10 +53,10 @@ public class EmptyInputStreamMultipartProviderTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/rest/zba"));
         Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String string = response.readEntity(String.class);
         logger.info(string);
-        Assert.assertTrue("The response doesn't contain the expected header", string.indexOf("Content-Length") > -1);
+        Assertions.assertTrue(string.indexOf("Content-Length") > -1, "The response doesn't contain the expected header");
         client.close();
     }
 

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -13,7 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -23,9 +23,9 @@ import org.jboss.resteasy.test.client.resource.ClientExecutorShutdownTestResourc
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails https://issues.jboss.org/browse/RESTEASY-621
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientExecutorShutdownTest extends ClientTestBase {
     private static Logger log = Logger.getLogger(ClientExecutorShutdownTest.class);
@@ -64,7 +64,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase {
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
         ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         engine.close();
         HttpClient httpClient = engine.getHttpClient();
         HttpPost post = new HttpPost(generateURL("/test"));
@@ -88,7 +88,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase {
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
         ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         engine.close();
         HttpClient httpClient = engine.getHttpClient();
         HttpPost post = new HttpPost(generateURL("/test"));
@@ -113,14 +113,14 @@ public class ClientExecutorShutdownTest extends ClientTestBase {
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, false);
         ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         engine.close();
-        Assert.assertEquals("Original httpclient and engine httpclient are not the same instance",
-                httpClient, engine.getHttpClient());
+        Assertions.assertEquals(httpClient, engine.getHttpClient(),
+                "Original httpclient and engine httpclient are not the same instance");
         HttpPost post = new HttpPost(generateURL("/test"));
         HttpResponse httpResponse = httpClient.execute(post);
-        Assert.assertEquals("The httpclient was closed and it shouldn't", HttpResponseCodes.SC_NO_CONTENT,
-                httpResponse.getStatusLine().getStatusCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT,
+                httpResponse.getStatusLine().getStatusCode(), "The httpclient was closed and it shouldn't");
     }
 
     /**
@@ -136,13 +136,13 @@ public class ClientExecutorShutdownTest extends ClientTestBase {
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, false);
         ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
-        Assert.assertEquals("Original httpclient and engine httpclient are not the same instance",
-                HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus(),
+                "Original httpclient and engine httpclient are not the same instance");
         engine.close();
-        Assert.assertEquals(httpClient, engine.getHttpClient());
+        Assertions.assertEquals(httpClient, engine.getHttpClient());
         HttpPost post = new HttpPost(generateURL("/test"));
         HttpResponse httpResponse = httpClient.execute(post);
-        Assert.assertEquals("The httpclient was closed and it shouldn't", HttpResponseCodes.SC_NO_CONTENT,
-                httpResponse.getStatusLine().getStatusCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, httpResponse.getStatusLine().getStatusCode(),
+                "The httpclient was closed and it shouldn't");
     }
 }

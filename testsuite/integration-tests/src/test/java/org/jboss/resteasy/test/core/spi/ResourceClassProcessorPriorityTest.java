@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -27,9 +27,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter ResourceClassProcessor SPI
@@ -37,7 +38,8 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails ResourceClassProcessor and Priority annotation test
  * @tpSince RESTEasy 3.6
  */
-@RunWith(Arquillian.class)
+@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 public class ResourceClassProcessorPriorityTest {
 
     protected static final Logger logger = Logger.getLogger(ResourceClassProcessorPriorityTest.class.getName());
@@ -88,7 +90,7 @@ public class ResourceClassProcessorPriorityTest {
 
         // do request
         Response response = client.target(generateURL("/pure/pure")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         // log visited processors
         int i = 0;

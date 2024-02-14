@@ -13,8 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.interceptor.resource.AddDynamicFeature;
 import org.jboss.resteasy.test.interceptor.resource.AddDynamicFeature.DoNothingMethodScopedRequestFilter;
 import org.jboss.resteasy.test.interceptor.resource.AddFeature;
@@ -26,11 +25,14 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-interceptor
@@ -38,8 +40,9 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for DynamicFeature
  * @tpSince RESTEasy 3.8.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@TestMethodOrder(OrderAnnotation.class)
 public class DynamicFeatureTest {
 
     private static Client client;
@@ -56,12 +59,12 @@ public class DynamicFeatureTest {
                 AddFeature.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -73,13 +76,13 @@ public class DynamicFeatureTest {
      * @tpSince RESTEasy 3.8.0
      */
     @Test
-    @InSequence(1)
+    @Order(1)
     public void testDynamicFeatureProcessing() {
         int counter = logCounter.count();
-        Assert.assertNotEquals("Dynamic features were not processed at application deployment time", 0, counter);
-        Assert.assertEquals(
-                "Dynamic features for filters and interceptors should be resolved only once for each resource method", 1,
-                counter);
+        Assertions.assertNotEquals(0, counter,
+                "Dynamic features were not processed at application deployment time");
+        Assertions.assertEquals(1, counter,
+                "Dynamic features for filters and interceptors should be resolved only once for each resource method");
     }
 
     /**
@@ -87,13 +90,13 @@ public class DynamicFeatureTest {
      * @tpSince RESTEasy 3.8.0
      */
     @Test
-    @InSequence(2)
+    @Order(2)
     public void testInterceptor() {
         WebTarget target = client
                 .target(PortProviderUtil.generateURL("/dynamic-feature/hello", DynamicFeatureTest.class.getSimpleName()));
         Entity<String> entity = Entity.entity("Tomas", MediaType.TEXT_PLAIN);
         String response = target.request().post(entity, String.class);
-        Assert.assertEquals("Hello Tomas !", response);
+        Assertions.assertEquals("Hello Tomas !", response);
     }
 
     /**
@@ -103,7 +106,7 @@ public class DynamicFeatureTest {
      * @tpSince RESTEasy 3.8.0
      */
     @Test
-    @InSequence(3)
+    @Order(3)
     public void testRegistrationScope() {
 
         // When requesting specific method both specific properties/providers and global ones should be accessible to the method context.
@@ -113,11 +116,11 @@ public class DynamicFeatureTest {
                 .get(new GenericType<Map<String, Object>>() {
                 });
 
-        Assert.assertEquals(AddDynamicFeature.PROPERTY_VALUE, response.get(AddDynamicFeature.PROPERTY));
-        Assert.assertTrue((boolean) response.get(DoNothingMethodScopedRequestFilter.class.getCanonicalName()));
+        Assertions.assertEquals(AddDynamicFeature.PROPERTY_VALUE, response.get(AddDynamicFeature.PROPERTY));
+        Assertions.assertTrue((boolean) response.get(DoNothingMethodScopedRequestFilter.class.getCanonicalName()));
 
-        Assert.assertEquals(AddFeature.PROPERTY_VALUE, response.get(AddFeature.PROPERTY));
-        Assert.assertTrue((boolean) response.get(DoNothingGlobalRequestFilter.class.getCanonicalName()));
+        Assertions.assertEquals(AddFeature.PROPERTY_VALUE, response.get(AddFeature.PROPERTY));
+        Assertions.assertTrue((boolean) response.get(DoNothingGlobalRequestFilter.class.getCanonicalName()));
 
         // When requesting any other method only global properties/providers should be accessible to the method context.
         target = client.target(PortProviderUtil.generateURL("/dynamic-feature/getOtherMethodContext",
@@ -125,11 +128,11 @@ public class DynamicFeatureTest {
         response = target.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<Map<String, Object>>() {
         });
 
-        Assert.assertFalse(response.containsKey(AddDynamicFeature.PROPERTY));
-        Assert.assertFalse((boolean) response.get(DoNothingMethodScopedRequestFilter.class.getCanonicalName()));
+        Assertions.assertFalse(response.containsKey(AddDynamicFeature.PROPERTY));
+        Assertions.assertFalse((boolean) response.get(DoNothingMethodScopedRequestFilter.class.getCanonicalName()));
 
-        Assert.assertEquals(AddFeature.PROPERTY_VALUE, response.get(AddFeature.PROPERTY));
-        Assert.assertTrue((boolean) response.get(DoNothingGlobalRequestFilter.class.getCanonicalName()));
+        Assertions.assertEquals(AddFeature.PROPERTY_VALUE, response.get(AddFeature.PROPERTY));
+        Assertions.assertTrue((boolean) response.get(DoNothingGlobalRequestFilter.class.getCanonicalName()));
 
     }
 

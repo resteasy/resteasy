@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Response;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -50,12 +50,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -65,7 +65,7 @@ import org.junit.runner.RunWith;
  *                    It tests the injection of a variety of beans into Resteasy objects.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(JmsTestQueueSetupTask.class)
 public class InjectionTest {
@@ -139,17 +139,17 @@ public class InjectionTest {
         return PortProviderUtil.generateURL(path, InjectionTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
 
-    @Before
+    @BeforeEach
     public void preparePersistenceTest() throws Exception {
         log.info("Dumping old records.");
 
@@ -205,7 +205,7 @@ public class InjectionTest {
         log.info("Status: " + response.getStatus());
         int id1 = response.readEntity(int.class);
         log.info("Id of response book: " + id1);
-        Assert.assertEquals(Counter.INITIAL_VALUE, id1);
+        Assertions.assertEquals(Counter.INITIAL_VALUE, id1);
         response.close();
 
         // Create another book.
@@ -217,7 +217,7 @@ public class InjectionTest {
         log.info("Status: " + response.getStatus());
         int id2 = response.readEntity(int.class);
         log.info("Id of response book: " + id2);
-        Assert.assertEquals(Counter.INITIAL_VALUE + 1, id2);
+        Assertions.assertEquals(Counter.INITIAL_VALUE + 1, id2);
         response.close();
 
         // Retrieve first book.
@@ -228,7 +228,7 @@ public class InjectionTest {
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         CDIInjectionBook result = response.readEntity(CDIInjectionBook.class);
         log.info("Book from response: " + book1);
-        Assert.assertEquals(book1, result);
+        Assertions.assertEquals(book1, result);
         response.close();
 
         // Retrieve second book.
@@ -239,7 +239,7 @@ public class InjectionTest {
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         result = response.readEntity(CDIInjectionBook.class);
         log.info("Book from response: " + book2);
-        Assert.assertEquals(book2, result);
+        Assertions.assertEquals(book2, result);
         response.close();
 
         // Retrieve all books.
@@ -250,13 +250,13 @@ public class InjectionTest {
         @SuppressWarnings("unchecked")
         Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
         log.info("Collection from response: " + books);
-        Assert.assertEquals(2, books.size());
+        Assertions.assertEquals(2, books.size());
         Iterator<CDIInjectionBook> it = books.iterator();
         CDIInjectionBook b1 = it.next();
         CDIInjectionBook b2 = it.next();
         log.info("First book in list: " + b1);
         log.info("Second book in list: " + b2);
-        Assert.assertTrue(book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1));
+        Assertions.assertTrue(book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1));
         response.close();
 
         // Test EntityManager injected in BookResource
@@ -290,7 +290,7 @@ public class InjectionTest {
         Response response = base.request().post(Entity.entity(book1, Constants.MEDIA_TYPE_TEST_XML));
         invocationCounter++;
         log.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         // Create another book, which should get stored in the same BookBag.
@@ -299,7 +299,7 @@ public class InjectionTest {
         response = base.request().post(Entity.entity(book2, Constants.MEDIA_TYPE_TEST_XML));
         invocationCounter++;
         log.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         // Get the current contents of the BookBag, and verify that it holds both of the books sent in the
@@ -308,17 +308,17 @@ public class InjectionTest {
         response = base.request().get();
         invocationCounter++;
         log.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         @SuppressWarnings("unchecked")
         Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
         log.info("Collection from response: " + books);
-        Assert.assertEquals(2, books.size());
+        Assertions.assertEquals(2, books.size());
         Iterator<CDIInjectionBook> it = books.iterator();
         CDIInjectionBook b1 = it.next();
         CDIInjectionBook b2 = it.next();
         log.info("First book in list: " + b1);
         log.info("Second book in list: " + b2);
-        Assert.assertTrue(book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1));
+        Assertions.assertTrue(book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1));
         response.close();
 
         // Verify that the BookBag has been replaced by a new, empty one for the new session.
@@ -326,7 +326,7 @@ public class InjectionTest {
         response = base.request().post(Entity.text(new String()));
         invocationCounter++;
         log.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 
@@ -346,7 +346,7 @@ public class InjectionTest {
         invocationCounter++;
         log.info("status: " + response.getStatus());
         log.info(response.readEntity(String.class));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         // Verify that the received book title is the one that was sent.
@@ -355,8 +355,8 @@ public class InjectionTest {
         response = base.request().get();
         invocationCounter++;
         log.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(title, response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(title, response.readEntity(String.class));
         response.close();
     }
 
@@ -376,10 +376,10 @@ public class InjectionTest {
         String result = response.readEntity(String.class);
         log.info("Response: " + result);
         log.info("InvocationCounter: " + invocationCounter);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String[] counters = result.split(":");
-        Assert.assertTrue(invocationCounter + 1 == Integer.valueOf(counters[0])); // invocations of postConstruct()
-        Assert.assertTrue(invocationCounter == Integer.valueOf(counters[1])); // invocations of preDestroy()
+        Assertions.assertTrue(invocationCounter + 1 == Integer.valueOf(counters[0])); // invocations of postConstruct()
+        Assertions.assertTrue(invocationCounter == Integer.valueOf(counters[1])); // invocations of preDestroy()
         response.close();
     }
 
@@ -394,7 +394,7 @@ public class InjectionTest {
         Response response = base.request().get();
         invocationCounter++;
         log.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 }

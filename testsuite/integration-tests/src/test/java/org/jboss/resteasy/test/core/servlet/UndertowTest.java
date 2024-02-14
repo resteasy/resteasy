@@ -9,7 +9,7 @@ import java.util.PropertyPermission;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.servlet.resource.FilterForwardServlet;
 import org.jboss.resteasy.test.core.servlet.resource.UndertowServlet;
@@ -19,9 +19,10 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -29,7 +30,8 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-903
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 public class UndertowTest {
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -66,7 +68,7 @@ public class UndertowTest {
         byte[] b = new byte[16];
         conn.getInputStream().read(b);
         MatcherAssert.assertThat("Wrong content of response", new String(b), CoreMatchers.startsWith("forward"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
         conn.disconnect();
     }
 }

@@ -13,7 +13,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.rxjava2.ObservableRxInvoker;
@@ -26,14 +26,14 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.reactivex.Observable;
 
@@ -44,9 +44,9 @@ import io.reactivex.Observable;
  *
  *          These tests demonstrate compatibility between Rx and SSE clients and servers.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class Rx2ObservableSSECompatibilityTest {
 
     private ResteasyClient client;
@@ -78,17 +78,17 @@ public class Rx2ObservableSSECompatibilityTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
         thingList.clear();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -111,9 +111,9 @@ public class Rx2ObservableSSECompatibilityTest {
             eventSource.open();
 
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertEquals(0, errors.get());
-            Assert.assertEquals(eThingList, thingList);
+            Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+            Assertions.assertEquals(0, errors.get());
+            Assertions.assertEquals(eThingList, thingList);
         }
     }
 
@@ -124,7 +124,7 @@ public class Rx2ObservableSSECompatibilityTest {
         WebTarget target = client.target(generateURL("/eventStream/thing"));
         SseEventSource msgEventSource = SseEventSource.target(target).build();
         try (SseEventSource eventSource = msgEventSource) {
-            Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+            Assertions.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
             eventSource.register(
                     event -> {
                         thingList.add(event.readData(Thing.class, MediaType.APPLICATION_JSON_TYPE));
@@ -134,9 +134,9 @@ public class Rx2ObservableSSECompatibilityTest {
             eventSource.open();
 
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertEquals(0, errors.get());
-            Assert.assertEquals(eThingList, thingList);
+            Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+            Assertions.assertEquals(0, errors.get());
+            Assertions.assertEquals(eThingList, thingList);
         }
     }
 
@@ -152,9 +152,9 @@ public class Rx2ObservableSSECompatibilityTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(eThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(eThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -169,9 +169,9 @@ public class Rx2ObservableSSECompatibilityTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(eThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(eThingList, thingList);
     }
 
     @Test
@@ -186,8 +186,8 @@ public class Rx2ObservableSSECompatibilityTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(eThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(eThingList, thingList);
     }
 }

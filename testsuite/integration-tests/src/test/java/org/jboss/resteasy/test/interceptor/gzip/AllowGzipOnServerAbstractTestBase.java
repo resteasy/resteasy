@@ -10,8 +10,8 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Abstract base class for tests with gzip enabled on server side.
@@ -34,7 +34,7 @@ public class AllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
     @ArquillianResource
     protected Deployer deployer;
 
-    @Before
+    @BeforeEach
     public void startContainerWithGzipEnabledAndDeploy() {
         if (!containerController.isStarted(GZIP_CONTAINER_QUALIFIER)) {
             containerController.start(GZIP_CONTAINER_QUALIFIER);
@@ -44,7 +44,7 @@ public class AllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
         deployer.deploy(WAR_WITHOUT_PROVIDERS_FILE);
     }
 
-    @After
+    @AfterEach
     public void undeployAndStopContainerWithGzipEnabled() {
         if (containerController.isStarted(GZIP_CONTAINER_QUALIFIER)) {
             deployer.undeploy(WAR_WITH_PROVIDERS_FILE);

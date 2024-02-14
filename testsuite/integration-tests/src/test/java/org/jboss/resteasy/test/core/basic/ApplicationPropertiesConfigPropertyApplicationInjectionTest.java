@@ -6,7 +6,7 @@ import jakarta.ws.rs.client.WebTarget;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationPropertiesConfigPropertyApplicationInjection;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationPropertiesConfigPropertyApplicationInjectionFeature;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationPropertiesConfigPropertyApplicationInjectionResource;
@@ -14,11 +14,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for custom Application class with overridden getProperties() method
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ApplicationPropertiesConfigPropertyApplicationInjectionTest {
     static Client client;
@@ -41,12 +41,12 @@ public class ApplicationPropertiesConfigPropertyApplicationInjectionTest {
         return war;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -64,6 +64,6 @@ public class ApplicationPropertiesConfigPropertyApplicationInjectionTest {
     public void testApplicationPropertiesConfigApplicationInjection() {
         WebTarget target = client.target(generateURL("/getconfigproperty"));
         String response = target.queryParam("prop", "Prop1").request().get(String.class);
-        Assert.assertEquals("The property is not found in the deployment", "Value1", response);
+        Assertions.assertEquals("Value1", response, "The property is not found in the deployment");
     }
 }

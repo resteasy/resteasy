@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.request.resource.PreconditionRfc7232PrecedenceResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -18,11 +18,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -30,19 +30,19 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests for RFC 7232 functionality
  * @tpSince RESTEasy 3.0.17
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PreconditionRfc7232Test {
     private Client client;
     private WebTarget webTarget;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         client = ClientBuilder.newClient();
         webTarget = client.target(generateURL("/precedence"));
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
     }
@@ -71,7 +71,7 @@ public class PreconditionRfc7232Test {
                 .header(HttpHeaderNames.IF_NONE_MATCH, "2") // true
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT").get(); // true
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 
@@ -87,7 +87,7 @@ public class PreconditionRfc7232Test {
                 .header(HttpHeaderNames.IF_NONE_MATCH, "2") // true
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT").get(); // true
 
-        Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
         response.close();
     }
 
@@ -102,7 +102,7 @@ public class PreconditionRfc7232Test {
                 .header(HttpHeaderNames.IF_NONE_MATCH, "2") // true
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT").get(); // true
 
-        Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
         response.close();
     }
 
@@ -116,7 +116,7 @@ public class PreconditionRfc7232Test {
                 .header(HttpHeaderNames.IF_NONE_MATCH, "1") // true
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT") // true
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
 
         response.close();
     }
@@ -131,7 +131,8 @@ public class PreconditionRfc7232Test {
                 .header(HttpHeaderNames.IF_NONE_MATCH, "2") // false
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT") // true
                 .get();
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-4705"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-4705"));
 
         response.close();
     }
@@ -145,7 +146,7 @@ public class PreconditionRfc7232Test {
         Response response = webTarget.request()
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT") // false
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         response.close();
     }
@@ -159,7 +160,7 @@ public class PreconditionRfc7232Test {
         Response response = webTarget.request()
                 .header(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT") // true
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
         response.close();
     }
 }

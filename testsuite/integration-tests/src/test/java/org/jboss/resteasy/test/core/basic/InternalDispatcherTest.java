@@ -12,7 +12,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherClient;
@@ -23,11 +23,11 @@ import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Core
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for InternalDispatcher
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class InternalDispatcherTest {
     private static Logger logger = Logger.getLogger(InternalDispatcherTest.class);
 
@@ -72,18 +72,20 @@ public class InternalDispatcherTest {
         return PortProviderUtil.generateBaseUrl(InternalDispatcherTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = (ResteasyClient) ClientBuilder.newClient();
 
-        Assert.assertTrue("No singleton founded", TestApplication.singletons.iterator().hasNext());
+        Assertions.assertTrue(TestApplication.singletons.iterator().hasNext(),
+                "No singleton founded");
         Object objectResource = TestApplication.singletons.iterator().next();
-        Assert.assertTrue("Wrong type of singleton founded", objectResource instanceof InternalDispatcherForwardingResource);
+        Assertions.assertTrue(objectResource instanceof InternalDispatcherForwardingResource,
+                "Wrong type of singleton founded");
         forwardingResource = (InternalDispatcherForwardingResource) objectResource;
         forwardingResource.uriStack.clear();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -96,23 +98,23 @@ public class InternalDispatcherTest {
     public void testClientResponse() throws Exception {
         InternalDispatcherClient proxy = client.target(generateBaseUrl()).proxy(InternalDispatcherClient.class);
 
-        Assert.assertEquals("Wrong response", "basic", proxy.getBasic());
-        Assert.assertEquals("Wrong response", "basic", proxy.getForwardBasic());
-        Assert.assertEquals("Wrong response", "object1", proxy.getObject(1).readEntity(String.class));
-        Assert.assertEquals("Wrong response", "object1", proxy.getForwardedObject(1).readEntity(String.class));
+        Assertions.assertEquals("basic", proxy.getBasic(), "Wrong response");
+        Assertions.assertEquals("basic", proxy.getForwardBasic(), "Wrong response");
+        Assertions.assertEquals("object1", proxy.getObject(1).readEntity(String.class), "Wrong response");
+        Assertions.assertEquals("object1", proxy.getForwardedObject(1).readEntity(String.class), "Wrong response");
         Response cr = proxy.getObject(0);
-        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
+        Assertions.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
         cr.close();
         cr = proxy.getForwardedObject(0);
-        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
+        Assertions.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
         cr.close();
 
         proxy.putForwardBasic("testBasic");
-        Assert.assertEquals("Wrong response", "testBasic", proxy.getBasic());
+        Assertions.assertEquals("testBasic", proxy.getBasic(), "Wrong response");
         proxy.postForwardBasic("testBasic1");
-        Assert.assertEquals("Wrong response", "testBasic1", proxy.getBasic());
+        Assertions.assertEquals("testBasic1", proxy.getBasic(), "Wrong response");
         proxy.deleteForwardBasic();
-        Assert.assertEquals("Wrong response", "basic", proxy.getBasic());
+        Assertions.assertEquals("basic", proxy.getBasic(), "Wrong response");
 
     }
 
@@ -126,7 +128,7 @@ public class InternalDispatcherTest {
     @Test
     public void testInfinitForward() {
         InternalDispatcherClient proxy = client.target(generateBaseUrl()).proxy(InternalDispatcherClient.class);
-        Assert.assertEquals("Cleanup was not correctly performed", 1, proxy.infiniteForward());
+        Assertions.assertEquals(1, proxy.infiniteForward(), "Cleanup was not correctly performed");
     }
 
     /**
@@ -137,9 +139,11 @@ public class InternalDispatcherTest {
     public void testUriInfoBasic() {
         InternalDispatcherClient proxy = client.target(generateBaseUrl()).proxy(InternalDispatcherClient.class);
         proxy.getBasic();
-        Assert.assertEquals("Wrong UriInfo information without forwarding", generateBaseUrl() + "/basic",
-                forwardingResource.uriStack.pop());
-        Assert.assertTrue("Wrong UriInfo information without forwarding", forwardingResource.uriStack.isEmpty());
+        Assertions.assertEquals(generateBaseUrl() + "/basic",
+                forwardingResource.uriStack.pop(),
+                "Wrong UriInfo information without forwarding");
+        Assertions.assertTrue(forwardingResource.uriStack.isEmpty(),
+                "Wrong UriInfo information without forwarding");
 
     }
 
@@ -157,10 +161,13 @@ public class InternalDispatcherTest {
             logger.info(String.format("%d. item in uriStack: %s", i, it.next()));
         }
 
-        Assert.assertEquals("Wrong first URI in stack", generateBaseUrl() + "/basic", forwardingResource.uriStack.pop());
-        Assert.assertEquals("Wrong second URI in stack", generateBaseUrl() + "/forward/basic",
-                forwardingResource.uriStack.pop());
-        Assert.assertTrue("Only two uri should be in stack", forwardingResource.uriStack.isEmpty());
+        Assertions.assertEquals(generateBaseUrl() + "/basic", forwardingResource.uriStack.pop(),
+                "Wrong first URI in stack");
+        Assertions.assertEquals(generateBaseUrl() + "/forward/basic",
+                forwardingResource.uriStack.pop(),
+                "Wrong second URI in stack");
+        Assertions.assertTrue(forwardingResource.uriStack.isEmpty(),
+                "Only two uri should be in stack");
     }
 
     /**
@@ -173,8 +180,12 @@ public class InternalDispatcherTest {
         InternalDispatcherClient proxy = client.target(generateBaseUrl()).proxy(InternalDispatcherClient.class);
 
         proxy.getComplexForwardBasic();
-        Assert.assertEquals("Wrong first URI in stack", baseUrl + PATH + "/basic", forwardingResource.uriStack.pop());
-        Assert.assertEquals("Wrong second URI in stack", baseUrl + PATH + "/forward/basic", forwardingResource.uriStack.pop());
-        Assert.assertTrue("Only two uri should be in stack", forwardingResource.uriStack.isEmpty());
+        Assertions.assertEquals(baseUrl + PATH + "/basic", forwardingResource.uriStack.pop(),
+                "Wrong first URI in stack");
+        Assertions.assertEquals(baseUrl + PATH + "/forward/basic",
+                forwardingResource.uriStack.pop(),
+                "Wrong second URI in stack");
+        Assertions.assertTrue(forwardingResource.uriStack.isEmpty(),
+                "Only two uri should be in stack");
     }
 }

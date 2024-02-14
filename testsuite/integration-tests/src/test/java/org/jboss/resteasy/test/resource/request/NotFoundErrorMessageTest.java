@@ -10,18 +10,18 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.basic.resource.DuplicateDeploymentResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Core
@@ -29,17 +29,17 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-3725
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class NotFoundErrorMessageTest {
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -67,9 +67,10 @@ public class NotFoundErrorMessageTest {
     public void testDeploy() throws IOException {
         int initWarningCount = getWarningCount();
         Response response = client.target(generateURL("/nonsence")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
         response.close();
 
-        Assert.assertEquals("Wrong count of warning messages in logs", 0, getWarningCount() - initWarningCount);
+        Assertions.assertEquals(0, getWarningCount() - initWarningCount,
+                "Wrong count of warning messages in logs");
     }
 }

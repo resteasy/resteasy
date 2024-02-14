@@ -10,13 +10,14 @@ import jakarta.ws.rs.ext.MessageBodyReader;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
+//@Disabled("RESTEASY-3450")
 @Path("/stuff")
 public class MediaTypeCaseSensitivityStuffResource {
     @POST
     public void post(MediaTypeCaseSensitivityStuff stuff) {
-        Assert.assertEquals(stuff.getName(), "bill");
+        Assertions.assertEquals(stuff.getName(), "bill");
     }
 
     @GET
@@ -27,7 +28,8 @@ public class MediaTypeCaseSensitivityStuffResource {
                 MediaTypeCaseSensitivityStuff.class, null, new MediaType("ApplIcAtion", "STufF"));
         MatcherAssert.assertThat("RESTEasy generate wrong messageBodyReader", messageBodyReader, notNullValue());
         MatcherAssert.assertThat("RESTEasy generate wrong messageBodyReader", messageBodyReader.getClass(), notNullValue());
-        Assert.assertEquals("RESTEasy generate wrong messageBodyReader", MediaTypeCaseSensitivityStuffProvider.class,
-                messageBodyReader.getClass());
+        Assertions.assertEquals(MediaTypeCaseSensitivityStuffProvider.class,
+                messageBodyReader.getClass(),
+                "RESTEasy generate wrong messageBodyReader");
     }
 }

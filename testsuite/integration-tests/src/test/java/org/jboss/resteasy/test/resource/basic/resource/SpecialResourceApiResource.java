@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/{api:(?i:api)}")
 public class SpecialResourceApiResource {
@@ -24,6 +24,6 @@ public class SpecialResourceApiResource {
     @PUT
     public void put(@Context HttpHeaders headers, String val) {
         logger.info(headers.getMediaType());
-        Assert.assertEquals("Wrong request content", val, "hello");
+        Assertions.assertEquals(val, "hello", "Wrong request content");
     }
 }

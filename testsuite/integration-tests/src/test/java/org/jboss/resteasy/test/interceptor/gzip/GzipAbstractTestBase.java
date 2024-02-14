@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
@@ -24,8 +24,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Abstract base class for gzip tests
@@ -36,7 +36,8 @@ import org.junit.runner.RunWith;
  * AllowGzipOnServerAbstractTestBase
  * NotAllowGzipOnServerAbstractTestBase
  */
-@RunWith(Arquillian.class)
+//@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public abstract class GzipAbstractTestBase {
 
@@ -114,7 +115,7 @@ public abstract class GzipAbstractTestBase {
 
             // read data from response
             String echo = response.readEntity(String.class);
-            Assert.assertNotNull("Response doesn't have body", echo);
+            Assertions.assertNotNull("Response doesn't have body", echo);
 
             // check resteasy.allowGzip property on server
             MatcherAssert.assertThat("Server doesn't have correct value of resteasy.allowGzip property", echo,

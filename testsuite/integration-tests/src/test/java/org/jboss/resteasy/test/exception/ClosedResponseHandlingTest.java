@@ -11,8 +11,7 @@ import jakarta.ws.rs.NotSupportedException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.TracingRequired;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionResteasyProxyTest;
@@ -24,9 +23,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -36,9 +36,9 @@ import org.junit.runner.RunWith;
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @author <a href="jonas.zeiger@talpidae.net">Jonas Zeiger</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Category(TracingRequired.class)
+@Tag("TracingRequired.class")
 public class ClosedResponseHandlingTest {
 
     public static final String oldBehaviorDeploymentName = "OldBehaviorClosedResponseHandlingTest";
@@ -82,10 +82,15 @@ public class ClosedResponseHandlingTest {
      * @tpPassCrit A NotAcceptableException is returned
      * @tpSince RESTEasy 4.0.0.CR1
      */
-    @Test(expected = NotAcceptableException.class)
+    @Test()
     public void testNotAcceptable() {
-        new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable", oldBehaviorDeploymentName)).request()
-                .get(String.class);
+        NotAcceptableException thrown = Assertions.assertThrows(NotAcceptableException.class,
+                () -> {
+                    new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable", oldBehaviorDeploymentName))
+                            .request()
+                            .get(String.class);
+                });
+        Assertions.assertTrue(thrown instanceof NotAcceptableException);
     }
 
     /**
@@ -94,10 +99,15 @@ public class ClosedResponseHandlingTest {
      * @tpPassCrit An NotAcceptableException is returned
      * @tpSince RESTEasy 4.6.0
      */
-    @Test(expected = NotAcceptableException.class)
+    @Test()
     public void testNotAcceptableNewBehavior() {
-        new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable", newBehaviorDeploymentName)).request()
-                .get(String.class);
+        NotAcceptableException thrown = Assertions.assertThrows(NotAcceptableException.class,
+                () -> {
+                    new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable", newBehaviorDeploymentName))
+                            .request()
+                            .get(String.class);
+                });
+        Assertions.assertTrue(thrown instanceof NotAcceptableException);
     }
 
     /**
@@ -107,11 +117,15 @@ public class ClosedResponseHandlingTest {
      * @tpPassCrit A NotAcceptableException is returned
      * @tpSince RESTEasy 4.0.0.CR1
      */
-    @Test(expected = NotSupportedException.class)
+    @Test()
     public void testNotSupportedTraced() {
-
-        new ResteasyClientBuilderImpl().build().target(generateURL("/testNotSupportedTraced", oldBehaviorDeploymentName))
-                .request().get(String.class);
+        NotSupportedException thrown = Assertions.assertThrows(NotSupportedException.class,
+                () -> {
+                    new ResteasyClientBuilderImpl().build()
+                            .target(generateURL("/testNotSupportedTraced", oldBehaviorDeploymentName))
+                            .request().get(String.class);
+                });
+        Assertions.assertTrue(thrown instanceof NotSupportedException);
     }
 
     /**
@@ -120,10 +134,14 @@ public class ClosedResponseHandlingTest {
      * @tpPassCrit An NotSupportedException is returned
      * @tpSince RESTEasy 4.6.0
      */
-    @Test(expected = NotSupportedException.class)
+    @Test()
     public void testNotSupportedTracedNewBehavior() {
-
-        new ResteasyClientBuilderImpl().build().target(generateURL("/testNotSupportedTraced", newBehaviorDeploymentName))
-                .request().get(String.class);
+        NotSupportedException thrown = Assertions.assertThrows(NotSupportedException.class,
+                () -> {
+                    new ResteasyClientBuilderImpl().build()
+                            .target(generateURL("/testNotSupportedTraced", newBehaviorDeploymentName))
+                            .request().get(String.class);
+                });
+        Assertions.assertTrue(thrown instanceof NotSupportedException);
     }
 }

@@ -7,7 +7,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ParamConverterIntegerResource {
@@ -15,9 +15,9 @@ public class ParamConverterIntegerResource {
     @PUT
     public void put(@QueryParam("pojo") int q, @PathParam("pojo") int pp, @MatrixParam("pojo") int mp,
             @HeaderParam("pojo") int hp) {
-        Assert.assertEquals(44, q);
-        Assert.assertEquals(44, pp);
-        Assert.assertEquals(44, mp);
-        Assert.assertEquals(44, hp);
+        Assertions.assertEquals(44, q);
+        Assertions.assertEquals(44, pp);
+        Assertions.assertEquals(44, mp);
+        Assertions.assertEquals(44, hp);
     }
 }

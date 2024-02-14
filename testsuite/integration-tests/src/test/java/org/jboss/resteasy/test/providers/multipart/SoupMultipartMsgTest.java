@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -28,13 +28,13 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SoupMultipartMsgTest {
     protected final Logger logger = Logger.getLogger(SoupMultipartMsgTest.class.getName());
@@ -50,12 +50,12 @@ public class SoupMultipartMsgTest {
         return TestUtil.finishContainerPrepare(war, null, SoupVendorResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -79,11 +79,11 @@ public class SoupMultipartMsgTest {
                 new MediaType("multipart", "mixed"));
         Response response = target.request().post(entity);
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String result = response.readEntity(String.class);
 
         if (result.startsWith("Failed")) {
-            Assert.fail(result);
+            Assertions.fail(result);
         }
     }
 
@@ -102,7 +102,7 @@ public class SoupMultipartMsgTest {
         Response response = target.request().get();
 
         MultipartInput multipartInput = response.readEntity(MultipartInput.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         List<String> controlList = SoupVendorResource.getControlList();
 
@@ -128,7 +128,7 @@ public class SoupMultipartMsgTest {
             for (Iterator<String> it = controlList.iterator(); it.hasNext();) {
                 sb.append(it.next() + " ");
             }
-            Assert.fail(sb.toString());
+            Assertions.fail(sb.toString());
         }
 
     }
@@ -148,7 +148,7 @@ public class SoupMultipartMsgTest {
         Response response = target.request().get();
         MultipartInput multipartInput = response.readEntity(MultipartInput.class);
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         List<String> controlList = SoupVendorResource.getControlList();
 
         GenericType<List<Soup>> gType = new GenericType<List<Soup>>() {
@@ -179,7 +179,7 @@ public class SoupMultipartMsgTest {
             for (Iterator<String> it = controlList.iterator(); it.hasNext();) {
                 sb.append(it.next() + " ");
             }
-            Assert.fail(sb.toString());
+            Assertions.fail(sb.toString());
         }
 
     }
@@ -189,12 +189,12 @@ public class SoupMultipartMsgTest {
 
         ResteasyWebTarget target = client.target(generateURL("/vendor/soupfile"));
         Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         MultipartInput multipartInput = response.readEntity(MultipartInput.class);
         InputPart inputPart = multipartInput.getParts().get(0);
         String bodyStr = inputPart.getBodyAsString();
-        Assert.assertTrue("Failed to return expected data.",
-                bodyStr.contains("Vegetable"));
+        Assertions.assertTrue(bodyStr.contains("Vegetable"),
+                "Failed to return expected data.");
     }
 }

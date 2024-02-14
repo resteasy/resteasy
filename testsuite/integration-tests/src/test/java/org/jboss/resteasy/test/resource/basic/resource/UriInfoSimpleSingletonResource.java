@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class UriInfoSimpleSingletonResource {
@@ -32,8 +32,8 @@ public class UriInfoSimpleSingletonResource {
 
         logger.info("BASE URI: " + info.getBaseUri());
         logger.info("Request URI: " + info.getRequestUri());
-        Assert.assertEquals(base.getPath(), info.getBaseUri().getPath());
-        Assert.assertEquals("/simple", info.getPath());
+        Assertions.assertEquals(base.getPath(), info.getBaseUri().getPath());
+        Assertions.assertEquals("/simple", info.getPath());
         return "CONTENT";
     }
 
@@ -50,8 +50,8 @@ public class UriInfoSimpleSingletonResource {
 
         logger.info("BASE URI: " + myInfo.getBaseUri());
         logger.info("Request URI: " + myInfo.getRequestUri());
-        Assert.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
-        Assert.assertEquals("/simple/fromField", myInfo.getPath());
+        Assertions.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
+        Assertions.assertEquals("/simple/fromField", myInfo.getPath());
         return "CONTENT";
     }
 

@@ -12,7 +12,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/test/json")
 public class JsonpResource {
@@ -21,17 +21,17 @@ public class JsonpResource {
     @Produces("application/json")
     @Consumes("application/json")
     public JsonArray array(JsonArray array) {
-        Assert.assertEquals("The request didn't contain 2 json elements", 2, array.size());
+        Assertions.assertEquals(2, array.size(), "The request didn't contain 2 json elements");
         JsonObject obj = array.getJsonObject(0);
-        Assert.assertTrue("The field 'name' didn't propagated correctly from the request for object[0]",
-                obj.containsKey("name"));
-        Assert.assertEquals("The value of field 'name' didn't propagated correctly from the request for object[0]",
-                obj.getJsonString("name").getString(), "Bill");
+        Assertions.assertTrue(obj.containsKey("name"),
+                "The field 'name' didn't propagated correctly from the request for object[0]");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Bill",
+                "The value of field 'name' didn't propagated correctly from the request for object[0]");
         obj = array.getJsonObject(1);
-        Assert.assertTrue("The field 'name' didn't propagated correctly from the request for object[1]",
-                obj.containsKey("name"));
-        Assert.assertEquals("The value of field 'name' didn't propagated correctly from the request for object[1]",
-                obj.getJsonString("name").getString(), "Monica");
+        Assertions.assertTrue(obj.containsKey("name"),
+                "The field 'name' didn't propagated correctly from the request for object[1]");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Monica",
+                "The value of field 'name' didn't propagated correctly from the request for object[1]");
         return array;
     }
 
@@ -40,12 +40,12 @@ public class JsonpResource {
     @Produces("application/json")
     @Consumes("application/json")
     public JsonObject object(JsonObject obj) {
-        Assert.assertTrue("The field 'name' didn't propagated correctly from the request", obj.containsKey("name"));
-        Assert.assertEquals("The value of field 'name' didn't propagated correctly from the request",
-                obj.getJsonString("name").getString(), "Bill");
+        Assertions.assertTrue(obj.containsKey("name"), "The field 'name' didn't propagated correctly from the request");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Bill",
+                "The value of field 'name' didn't propagated correctly from the request");
         if (obj.containsKey("id")) {
-            Assert.assertEquals("The value of field 'id' didn't propagated correctly from the request",
-                    obj.getJsonNumber("id").longValue(), 10001);
+            Assertions.assertEquals(obj.getJsonNumber("id").longValue(), 10001,
+                    "The value of field 'id' didn't propagated correctly from the request");
         }
         return obj;
     }
@@ -56,9 +56,10 @@ public class JsonpResource {
     @Consumes("application/json")
     public JsonStructure object(JsonStructure struct) {
         JsonObject obj = (JsonObject) struct;
-        Assert.assertTrue("The field 'name' didn't propagated correctly from the request", obj.containsKey("name"));
-        Assert.assertEquals("The value of field 'name' didn't propagated correctly from the request",
-                obj.getJsonString("name").getString(), "Bill");
+        Assertions.assertTrue(obj.containsKey("name"),
+                "The field 'name' didn't propagated correctly from the request");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Bill",
+                "The value of field 'name' didn't propagated correctly from the request");
         return obj;
     }
 

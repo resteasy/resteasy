@@ -16,9 +16,9 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
 public class ValidationSuppressPathTestBase {
     static final String RESPONSE_ERROR_MSG = "Response has wrong content";
@@ -26,12 +26,12 @@ public class ValidationSuppressPathTestBase {
 
     ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -41,33 +41,33 @@ public class ValidationSuppressPathTestBase {
         ValidationCoreFoo foo = new ValidationCoreFoo("p");
         Response response = client.target(PortProviderUtil.generateURL("/all/a/z", "Validation-test")).request()
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Validation header is missing");
+        Assertions.assertTrue(Boolean.valueOf(header), "Wrong validation header");
         String entity = response.readEntity(String.class);
         ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         TestUtil.countViolations(e, 4, 2, 1, 1, 0);
-        Assert.assertNotNull(WRONG_ERROR_MSG, TestUtil.getViolationByPath(e.getPropertyViolations(), fieldPath));
-        Assert.assertNotNull(WRONG_ERROR_MSG, TestUtil.getViolationByPath(e.getPropertyViolations(), propertyPath));
+        Assertions.assertNotNull(TestUtil.getViolationByPath(e.getPropertyViolations(), fieldPath), WRONG_ERROR_MSG);
+        Assertions.assertNotNull(TestUtil.getViolationByPath(e.getPropertyViolations(), propertyPath), WRONG_ERROR_MSG);
         ResteasyConstraintViolation violation = e.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, classPath, violation.getPath());
+        Assertions.assertEquals(classPath, violation.getPath(), WRONG_ERROR_MSG);
         violation = e.getParameterViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG + parameterPaths, Arrays.asList(parameterPaths).contains(violation.getPath()));
+        Assertions.assertTrue(Arrays.asList(parameterPaths).contains(violation.getPath()), WRONG_ERROR_MSG + parameterPaths);
         response.close();
     }
 
     public void doTestReturnValueViolations(String returnValuePath) throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/return/native", "Validation-test")).request()
                 .post(Entity.entity(new ValidationCoreFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Validation header is missing");
+        Assertions.assertTrue(Boolean.valueOf(header), "Wrong validation header");
         String entity = response.readEntity(String.class);
         ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, returnValuePath, violation.getPath());
+        Assertions.assertEquals(returnValuePath, violation.getPath(), WRONG_ERROR_MSG);
         response.close();
     }
 }

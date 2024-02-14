@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.basic.resource.ContextAfterEncoderInterceptor;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-699
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ContextTest {
     public static final String WRONG_RESPONSE_ERROR_MSG = "Wrong content of response";
@@ -56,12 +56,12 @@ public class ContextTest {
         return PortProviderUtil.generateURL(path, ContextTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -73,8 +73,9 @@ public class ContextTest {
     @Test
     public void testForward() throws Exception {
         Response response = client.target(generateURL("/test/forward")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "hello world", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("hello world", response.readEntity(String.class),
+                "Wrong content of response");
         response.close();
     }
 
@@ -85,12 +86,14 @@ public class ContextTest {
     @Test
     public void testRepeat() throws Exception {
         Response response = client.target(generateURL("/test/test")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Resource get wrong injected URL", generateURL("/test/"), response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(generateURL("/test/"), response.readEntity(String.class),
+                "Resource get wrong injected URL");
         response.close();
         response = client.target(generateURL("/test/")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Resource get wrong injected URL", generateURL("/test/"), response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(generateURL("/test/"), response.readEntity(String.class),
+                "Resource get wrong injected URL");
         response.close();
     }
 
@@ -102,12 +105,12 @@ public class ContextTest {
     public void testServletContext() throws Exception {
         final String HEADER_ERROR_MESSAGE = "Response don't have correct headers";
         Response response = client.target(generateURL("/test/test/servletcontext")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "ok", response.readEntity(String.class));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("before-encoder"));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("after-encoder"));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("end"));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("encoder"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("ok", response.readEntity(String.class), WRONG_RESPONSE_ERROR_MSG);
+        Assertions.assertNotNull(response.getHeaderString("before-encoder"), HEADER_ERROR_MESSAGE);
+        Assertions.assertNotNull(response.getHeaderString("after-encoder"), HEADER_ERROR_MESSAGE);
+        Assertions.assertNotNull(response.getHeaderString("end"), HEADER_ERROR_MESSAGE);
+        Assertions.assertNotNull(response.getHeaderString("encoder"), HEADER_ERROR_MESSAGE);
         response.close();
     }
 
@@ -118,8 +121,8 @@ public class ContextTest {
     @Test
     public void testServletConfig() throws Exception {
         Response response = client.target(generateURL("/test/test/servletconfig")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "ok", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("ok", response.readEntity(String.class), WRONG_RESPONSE_ERROR_MSG);
         response.close();
     }
 
@@ -130,8 +133,8 @@ public class ContextTest {
     @Test
     public void testXmlMappings() throws Exception {
         Response response = client.target(generateURL("/test/stuff.xml")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "xml", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("xml", response.readEntity(String.class), WRONG_RESPONSE_ERROR_MSG);
         response.close();
 
     }
@@ -143,8 +146,8 @@ public class ContextTest {
     @Test
     public void testJsonMappings() throws Exception {
         Response response = client.target(generateURL("/test/stuff.json")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "json", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("json", response.readEntity(String.class), WRONG_RESPONSE_ERROR_MSG);
         response.close();
     }
 }

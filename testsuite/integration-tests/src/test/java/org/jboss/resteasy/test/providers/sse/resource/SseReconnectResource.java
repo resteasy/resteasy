@@ -18,7 +18,7 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Singleton
 @Path("/reconnect")
@@ -58,7 +58,7 @@ public class SseReconnectResource {
         } else {
             endTime = System.currentTimeMillis() - startTime;
             long elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(endTime);
-            Assert.assertTrue(elapsedSeconds >= 2);
+            Assertions.assertTrue(elapsedSeconds >= 2);
             try (SseEventSink s = sink) {
                 s.send(sse.newEvent("ServiceAvailable"));
                 isServiceAvailable = false;
@@ -144,7 +144,7 @@ public class SseReconnectResource {
 
     private void checkReconnectDelay(long expectedDelayInMs) {
         long currentDelayInMs = System.currentTimeMillis() - lastEventDeliveryTime;
-        Assert.assertTrue(currentDelayInMs >= expectedDelayInMs);
+        Assertions.assertTrue(currentDelayInMs >= expectedDelayInMs);
     }
 
 }

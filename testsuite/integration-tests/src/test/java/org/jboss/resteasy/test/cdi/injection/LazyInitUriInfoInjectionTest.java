@@ -7,7 +7,7 @@ import jakarta.ws.rs.client.WebTarget;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionResource;
@@ -15,9 +15,9 @@ import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionSi
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Injection
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-573
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class LazyInitUriInfoInjectionTest {
 
@@ -52,11 +52,11 @@ public class LazyInitUriInfoInjectionTest {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         WebTarget base = client.target(generateURL("test?h=world"));
         String val = base.request().get().readEntity(String.class);
-        Assert.assertEquals(val, "world");
+        Assertions.assertEquals(val, "world");
 
         base = client.target(generateURL("test"));
         val = base.request().get().readEntity(String.class);
-        Assert.assertEquals(val, "");
+        Assertions.assertEquals(val, "");
         client.close();
     }
 }

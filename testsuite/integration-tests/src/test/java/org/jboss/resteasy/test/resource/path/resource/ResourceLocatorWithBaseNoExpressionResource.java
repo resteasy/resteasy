@@ -10,7 +10,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/a1")
 public class ResourceLocatorWithBaseNoExpressionResource {
@@ -18,14 +18,14 @@ public class ResourceLocatorWithBaseNoExpressionResource {
 
     @Path("base/{param}/resources")
     public Object getSubresource(@PathParam("param") String param, @Context UriInfo uri) {
-        Assert.assertEquals("1", param);
+        Assertions.assertEquals("1", param);
         List<String> matchedURIs = uri.getMatchedURIs();
-        Assert.assertEquals(ERROR_MSG, 2, matchedURIs.size());
-        Assert.assertEquals(ERROR_MSG, "a1/base/1/resources", matchedURIs.get(0));
-        Assert.assertEquals(ERROR_MSG, "a1", matchedURIs.get(1));
-        Assert.assertEquals(ERROR_MSG, 1, uri.getMatchedResources().size());
-        Assert.assertEquals(ERROR_MSG, ResourceLocatorWithBaseNoExpressionResource.class,
-                uri.getMatchedResources().get(0).getClass());
+        Assertions.assertEquals(2, matchedURIs.size(), ERROR_MSG);
+        Assertions.assertEquals("a1/base/1/resources", matchedURIs.get(0), ERROR_MSG);
+        Assertions.assertEquals("a1", matchedURIs.get(1), ERROR_MSG);
+        Assertions.assertEquals(1, uri.getMatchedResources().size(), ERROR_MSG);
+        Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionResource.class,
+                uri.getMatchedResources().get(0).getClass(), ERROR_MSG);
         return new ResourceLocatorWithBaseNoExpressionSubresource();
 
     }

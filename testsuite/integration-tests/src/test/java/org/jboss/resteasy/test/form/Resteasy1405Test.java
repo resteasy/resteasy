@@ -4,7 +4,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
 import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.FilePermission;
 import java.io.StringWriter;
@@ -22,7 +22,7 @@ import jakarta.xml.bind.Marshaller;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.test.form.resteasy1405.ByFieldForm;
 import org.jboss.resteasy.test.form.resteasy1405.BySetterForm;
@@ -34,10 +34,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Form tests
@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Injection of @FormParam InputPart fields in @MultipartForm parameters
  * @tpSince RESTEasy 3.1.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class Resteasy1405Test {
 
@@ -67,13 +67,13 @@ public class Resteasy1405Test {
 
     private Client client;
 
-    @Before
+    @BeforeEach
     public void setup() throws JAXBException {
         jaxbc = JAXBContext.newInstance(InputData.class);
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void done() {
         client.close();
     }

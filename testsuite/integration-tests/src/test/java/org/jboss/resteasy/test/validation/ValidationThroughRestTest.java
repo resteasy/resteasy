@@ -19,7 +19,7 @@ import org.hamcrest.MatcherAssert;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.validation.resource.ValidationThroughRestResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -27,9 +27,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validator provider
@@ -37,7 +37,8 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test - RESTEASY-1296
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+//@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ValidationThroughRestTest {
 
@@ -65,9 +66,10 @@ public class ValidationThroughRestTest {
         builder.accept(MediaType.TEXT_PLAIN_TYPE);
         Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
         String responseBody = response.readEntity(String.class);
-        MatcherAssert.assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
-        Assert.assertTrue("Wrong validation error",
-                responseBody.contains("may not be null") || responseBody.contains("must not be null"));
+        MatcherAssert.assertThat("Wrong validation error", responseBody,
+                containsString("must be greater than or equal to 1"));
+        Assertions.assertTrue(responseBody.contains("may not be null") || responseBody.contains("must not be null"),
+                "Wrong validation error");
         client.close();
     }
 }

@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.PathSegment;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/{a}/{b}")
 public class UriInfoEncodedTemplateResource {
@@ -17,22 +17,22 @@ public class UriInfoEncodedTemplateResource {
 
     @GET
     public String doGet(@PathParam("a") String a, @PathParam("b") String b, @Context UriInfo info) {
-        Assert.assertEquals(ERROR_MSG, "a b", a);
-        Assert.assertEquals(ERROR_MSG, "x y", b);
-        Assert.assertEquals(ERROR_MSG, "a b", info.getPathParameters().getFirst("a"));
-        Assert.assertEquals(ERROR_MSG, "x y", info.getPathParameters().getFirst("b"));
-        Assert.assertEquals(ERROR_MSG, "a%20b", info.getPathParameters(false).getFirst("a"));
-        Assert.assertEquals(ERROR_MSG, "x%20y", info.getPathParameters(false).getFirst("b"));
+        Assertions.assertEquals("a b", a, ERROR_MSG);
+        Assertions.assertEquals("x y", b, ERROR_MSG);
+        Assertions.assertEquals("a b", info.getPathParameters().getFirst("a"), ERROR_MSG);
+        Assertions.assertEquals("x y", info.getPathParameters().getFirst("b"), ERROR_MSG);
+        Assertions.assertEquals("a%20b", info.getPathParameters(false).getFirst("a"), ERROR_MSG);
+        Assertions.assertEquals("x%20y", info.getPathParameters(false).getFirst("b"), ERROR_MSG);
 
         List<PathSegment> decoded = info.getPathSegments(true);
-        Assert.assertEquals(ERROR_MSG, decoded.size(), 2);
-        Assert.assertEquals(ERROR_MSG, "a b", decoded.get(0).getPath());
-        Assert.assertEquals(ERROR_MSG, "x y", decoded.get(1).getPath());
+        Assertions.assertEquals(decoded.size(), 2, ERROR_MSG);
+        Assertions.assertEquals("a b", decoded.get(0).getPath(), ERROR_MSG);
+        Assertions.assertEquals("x y", decoded.get(1).getPath(), ERROR_MSG);
 
         List<PathSegment> encoded = info.getPathSegments(false);
-        Assert.assertEquals(ERROR_MSG, encoded.size(), 2);
-        Assert.assertEquals(ERROR_MSG, "a%20b", encoded.get(0).getPath());
-        Assert.assertEquals(ERROR_MSG, "x%20y", encoded.get(1).getPath());
+        Assertions.assertEquals(encoded.size(), 2, ERROR_MSG);
+        Assertions.assertEquals("a%20b", encoded.get(0).getPath(), ERROR_MSG);
+        Assertions.assertEquals("x%20y", encoded.get(1).getPath(), ERROR_MSG);
         return "content";
     }
 }

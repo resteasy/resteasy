@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput;
 import org.jboss.resteasy.test.providers.multipart.resource.GreetAsync;
@@ -39,11 +39,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Tests which use a non-{@linkplain org.jboss.resteasy.spi.AsyncMessageBodyWriter} and a
@@ -52,7 +52,7 @@ import org.junit.runner.RunWith;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MultipartPartWriterTest {
 
@@ -60,7 +60,7 @@ public class MultipartPartWriterTest {
     @ArquillianResource
     private URL url;
 
-    @AfterClass
+    @AfterAll
     public static void closeClient() {
         if (client != null) {
             client.close();
@@ -76,7 +76,7 @@ public class MultipartPartWriterTest {
                 GreeterMessageBodyWriter.class, GreeterAsyncMessageBodyWriter.class, GreeterResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initClient() {
         client = ClientBuilder.newClient();
     }
@@ -86,10 +86,10 @@ public class MultipartPartWriterTest {
         final Response response = client.target(TestUtil.generateUri(url, "greet"))
                 .request()
                 .get();
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        Assertions.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
         final MultipartRelatedInput input = response.readEntity(MultipartRelatedInput.class);
-        Assert.assertNotNull(input);
-        Assert.assertEquals("Hello Sync", input.getRootPart().getBodyAsString());
+        Assertions.assertNotNull(input);
+        Assertions.assertEquals("Hello Sync", input.getRootPart().getBodyAsString());
     }
 
     @Test
@@ -97,9 +97,9 @@ public class MultipartPartWriterTest {
         final Response response = client.target(TestUtil.generateUri(url, "greet/async"))
                 .request()
                 .get();
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        Assertions.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
         final MultipartRelatedInput input = response.readEntity(MultipartRelatedInput.class);
-        Assert.assertNotNull(input);
-        Assert.assertEquals("Hello Async", input.getRootPart().getBodyAsString());
+        Assertions.assertNotNull(input);
+        Assertions.assertEquals("Hello Async", input.getRootPart().getBodyAsString());
     }
 }

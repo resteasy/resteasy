@@ -11,7 +11,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
@@ -39,11 +39,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -53,7 +53,7 @@ import org.junit.runner.RunWith;
  *                    org.jboss.resteasy.plugins.providers.MultiValuedCollectionParamConverter are used
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MultiValuedParamDefaultParamConverterProxyTest {
 
@@ -126,7 +126,7 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
         return PortProviderUtil.generateURL(path, MultiValuedParamDefaultParamConverterProxyTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
         client.register(MultiValuedParamDefaultParamConverterParamConverterProvider.class);
@@ -224,7 +224,7 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
         doubleArray[1] = 37.0d;
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         client.close();
     }
@@ -237,54 +237,54 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
     @Test
     public void testCookie() {
 
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorSeparatorArray(array_constructor));
 
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", cookieProxy.cookieConstructorDefaultArray(array_constructor));
 
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfSeparatorArray(array_valueOf));
 
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", cookieProxy.cookieValueOfDefaultArray(array_valueOf));
 
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringSeparatorArray(array_fromString));
 
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", cookieProxy.cookieFromStringDefaultArray(array_fromString));
 
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterSeparatorArray(array_paramConverter));
 
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", cookieProxy.cookieParamConverterDefaultArray(array_paramConverter));
 
-        Assert.assertEquals("false|true|", cookieProxy.cookieBoolean(booleanArray));
-        Assert.assertEquals("0|1|", cookieProxy.cookieByte(byteArray));
-        Assert.assertEquals("a|z|", cookieProxy.cookieChar(charArray));
-        Assert.assertEquals("3|7|", cookieProxy.cookieShort(shortArray));
-        Assert.assertEquals("11|13|", cookieProxy.cookieInt(intArray));
-        Assert.assertEquals("17|19|", cookieProxy.cookieLong(longArray));
-        Assert.assertEquals("23.0|29.0|", cookieProxy.cookieFloat(floatArray));
-        Assert.assertEquals("31.0|37.0|", cookieProxy.cookieDouble(doubleArray));
+        Assertions.assertEquals("false|true|", cookieProxy.cookieBoolean(booleanArray));
+        Assertions.assertEquals("0|1|", cookieProxy.cookieByte(byteArray));
+        Assertions.assertEquals("a|z|", cookieProxy.cookieChar(charArray));
+        Assertions.assertEquals("3|7|", cookieProxy.cookieShort(shortArray));
+        Assertions.assertEquals("11|13|", cookieProxy.cookieInt(intArray));
+        Assertions.assertEquals("17|19|", cookieProxy.cookieLong(longArray));
+        Assertions.assertEquals("23.0|29.0|", cookieProxy.cookieFloat(floatArray));
+        Assertions.assertEquals("31.0|37.0|", cookieProxy.cookieDouble(doubleArray));
     }
 
     /**
@@ -294,64 +294,64 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
     @Test
     public void testHeader() {
 
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorSeparatorArray(array_constructor));
 
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", headerProxy.headerConstructorDefaultArray(array_constructor));
 
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfSeparatorArray(array_valueOf));
 
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", headerProxy.headerValueOfDefaultArray(array_valueOf));
 
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringSeparatorArray(array_fromString));
 
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", headerProxy.headerFromStringDefaultArray(array_fromString));
 
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorList(list_headerDelegate));
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorSet(set_headerDelegate));
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorSortedSet(sortedSet_headerDelegate));
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorArray(array_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorList(list_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorSet(set_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorSortedSet(sortedSet_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateSeparatorArray(array_headerDelegate));
 
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultList(list_headerDelegate));
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultSet(set_headerDelegate));
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultSortedSet(sortedSet_headerDelegate));
-        Assert.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultArray(array_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultList(list_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultSet(set_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultSortedSet(sortedSet_headerDelegate));
+        Assertions.assertEquals("hhc1|hhc2|", headerProxy.headerHeaderDelegateDefaultArray(array_headerDelegate));
 
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterSeparatorArray(array_paramConverter));
 
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", headerProxy.headerParamConverterDefaultArray(array_paramConverter));
 
-        Assert.assertEquals("false|true|", headerProxy.headerBoolean(booleanArray));
-        Assert.assertEquals("0|1|", headerProxy.headerByte(byteArray));
-        Assert.assertEquals("a|z|", headerProxy.headerChar(charArray));
-        Assert.assertEquals("3|7|", headerProxy.headerShort(shortArray));
-        Assert.assertEquals("11|13|", headerProxy.headerInt(intArray));
-        Assert.assertEquals("17|19|", headerProxy.headerLong(longArray));
-        Assert.assertEquals("23.0|29.0|", headerProxy.headerFloat(floatArray));
-        Assert.assertEquals("31.0|37.0|", headerProxy.headerDouble(doubleArray));
+        Assertions.assertEquals("false|true|", headerProxy.headerBoolean(booleanArray));
+        Assertions.assertEquals("0|1|", headerProxy.headerByte(byteArray));
+        Assertions.assertEquals("a|z|", headerProxy.headerChar(charArray));
+        Assertions.assertEquals("3|7|", headerProxy.headerShort(shortArray));
+        Assertions.assertEquals("11|13|", headerProxy.headerInt(intArray));
+        Assertions.assertEquals("17|19|", headerProxy.headerLong(longArray));
+        Assertions.assertEquals("23.0|29.0|", headerProxy.headerFloat(floatArray));
+        Assertions.assertEquals("31.0|37.0|", headerProxy.headerDouble(doubleArray));
     }
 
     /**
@@ -361,54 +361,54 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
     @Test
     public void testMatrix() {
 
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorSeparatorArray(array_constructor));
 
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", matrixProxy.matrixConstructorDefaultArray(array_constructor));
 
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfSeparatorArray(array_valueOf));
 
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", matrixProxy.matrixValueOfDefaultArray(array_valueOf));
 
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringSeparatorArray(array_fromString));
 
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", matrixProxy.matrixFromStringDefaultArray(array_fromString));
 
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterSeparatorArray(array_paramConverter));
 
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", matrixProxy.matrixParamConverterDefaultArray(array_paramConverter));
 
-        Assert.assertEquals("false|true|", matrixProxy.matrixBoolean(booleanArray));
-        Assert.assertEquals("0|1|", matrixProxy.matrixByte(byteArray));
-        Assert.assertEquals("a|z|", matrixProxy.matrixChar(charArray));
-        Assert.assertEquals("3|7|", matrixProxy.matrixShort(shortArray));
-        Assert.assertEquals("11|13|", matrixProxy.matrixInt(intArray));
-        Assert.assertEquals("17|19|", matrixProxy.matrixLong(longArray));
-        Assert.assertEquals("23.0|29.0|", matrixProxy.matrixFloat(floatArray));
-        Assert.assertEquals("31.0|37.0|", matrixProxy.matrixDouble(doubleArray));
+        Assertions.assertEquals("false|true|", matrixProxy.matrixBoolean(booleanArray));
+        Assertions.assertEquals("0|1|", matrixProxy.matrixByte(byteArray));
+        Assertions.assertEquals("a|z|", matrixProxy.matrixChar(charArray));
+        Assertions.assertEquals("3|7|", matrixProxy.matrixShort(shortArray));
+        Assertions.assertEquals("11|13|", matrixProxy.matrixInt(intArray));
+        Assertions.assertEquals("17|19|", matrixProxy.matrixLong(longArray));
+        Assertions.assertEquals("23.0|29.0|", matrixProxy.matrixFloat(floatArray));
+        Assertions.assertEquals("31.0|37.0|", matrixProxy.matrixDouble(doubleArray));
     }
 
     /**
@@ -418,54 +418,54 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
     @Test
     public void testPath() {
 
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorSeparatorArray(array_constructor));
 
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", pathProxy.pathConstructorDefaultArray(array_constructor));
 
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfSeparatorArray(array_valueOf));
 
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", pathProxy.pathValueOfDefaultArray(array_valueOf));
 
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringSeparatorArray(array_fromString));
 
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", pathProxy.pathFromStringDefaultArray(array_fromString));
 
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterSeparatorArray(array_paramConverter));
 
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", pathProxy.pathParamConverterDefaultArray(array_paramConverter));
 
-        Assert.assertEquals("false|true|", pathProxy.pathBoolean(booleanArray));
-        Assert.assertEquals("0|1|", pathProxy.pathByte(byteArray));
-        Assert.assertEquals("a|z|", pathProxy.pathChar(charArray));
-        Assert.assertEquals("3|7|", pathProxy.pathShort(shortArray));
-        Assert.assertEquals("11|13|", pathProxy.pathInt(intArray));
-        Assert.assertEquals("17|19|", pathProxy.pathLong(longArray));
-        Assert.assertEquals("23.0|29.0|", pathProxy.pathFloat(floatArray));
-        Assert.assertEquals("31.0|37.0|", pathProxy.pathDouble(doubleArray));
+        Assertions.assertEquals("false|true|", pathProxy.pathBoolean(booleanArray));
+        Assertions.assertEquals("0|1|", pathProxy.pathByte(byteArray));
+        Assertions.assertEquals("a|z|", pathProxy.pathChar(charArray));
+        Assertions.assertEquals("3|7|", pathProxy.pathShort(shortArray));
+        Assertions.assertEquals("11|13|", pathProxy.pathInt(intArray));
+        Assertions.assertEquals("17|19|", pathProxy.pathLong(longArray));
+        Assertions.assertEquals("23.0|29.0|", pathProxy.pathFloat(floatArray));
+        Assertions.assertEquals("31.0|37.0|", pathProxy.pathDouble(doubleArray));
     }
 
     /**
@@ -475,54 +475,54 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
     @Test
     public void testQuery() {
 
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorSeparatorArray(array_constructor));
 
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultList(list_constructor));
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultSet(set_constructor));
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultSortedSet(sortedSet_constructor));
-        Assert.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultArray(array_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultList(list_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultSet(set_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultSortedSet(sortedSet_constructor));
+        Assertions.assertEquals("cscc1|cscc2|", queryProxy.queryConstructorDefaultArray(array_constructor));
 
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfSeparatorArray(array_valueOf));
 
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultList(list_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultSet(set_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultSortedSet(sortedSet_valueOf));
-        Assert.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultArray(array_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultList(list_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultSet(set_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultSortedSet(sortedSet_valueOf));
+        Assertions.assertEquals("vsvc1|vsvc2|", queryProxy.queryValueOfDefaultArray(array_valueOf));
 
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringSeparatorArray(array_fromString));
 
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultList(list_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultSet(set_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultSortedSet(sortedSet_fromString));
-        Assert.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultArray(array_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultList(list_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultSet(set_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultSortedSet(sortedSet_fromString));
+        Assertions.assertEquals("fsfc1|fsfc2|", queryProxy.queryFromStringDefaultArray(array_fromString));
 
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterSeparatorArray(array_paramConverter));
 
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultList(list_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultSet(set_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultSortedSet(sortedSet_paramConverter));
-        Assert.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultArray(array_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultList(list_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultSet(set_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultSortedSet(sortedSet_paramConverter));
+        Assertions.assertEquals("ppc1|ppc2|", queryProxy.queryParamConverterDefaultArray(array_paramConverter));
 
-        Assert.assertEquals("false|true|", queryProxy.queryBoolean(booleanArray));
-        Assert.assertEquals("0|1|", queryProxy.queryByte(byteArray));
-        Assert.assertEquals("a|z|", queryProxy.queryChar(charArray));
-        Assert.assertEquals("3|7|", queryProxy.queryShort(shortArray));
-        Assert.assertEquals("11|13|", queryProxy.queryInt(intArray));
-        Assert.assertEquals("17|19|", queryProxy.queryLong(longArray));
-        Assert.assertEquals("23.0|29.0|", queryProxy.queryFloat(floatArray));
-        Assert.assertEquals("31.0|37.0|", queryProxy.queryDouble(doubleArray));
+        Assertions.assertEquals("false|true|", queryProxy.queryBoolean(booleanArray));
+        Assertions.assertEquals("0|1|", queryProxy.queryByte(byteArray));
+        Assertions.assertEquals("a|z|", queryProxy.queryChar(charArray));
+        Assertions.assertEquals("3|7|", queryProxy.queryShort(shortArray));
+        Assertions.assertEquals("11|13|", queryProxy.queryInt(intArray));
+        Assertions.assertEquals("17|19|", queryProxy.queryLong(longArray));
+        Assertions.assertEquals("23.0|29.0|", queryProxy.queryFloat(floatArray));
+        Assertions.assertEquals("31.0|37.0|", queryProxy.queryDouble(doubleArray));
     }
 
     /**
@@ -536,10 +536,10 @@ public class MultiValuedParamDefaultParamConverterProxyTest {
         Set<String> set = new HashSet<String>();
         set.add("p1");
         set.add("p2");
-        Assert.assertTrue(miscProxy.regexClientCookie(set).contains("[p1, p2]"));
-        Assert.assertTrue(miscProxy.regexClientHeader(set).contains("p1,p2"));
-        Assert.assertTrue(miscProxy.regexClientMatrix(set).contains("p=p1;p=p2"));
-        Assert.assertTrue(miscProxy.regexClientPath(set).contains("%5Bp1,%20p2%5D"));
-        Assert.assertTrue(miscProxy.regexClientQuery(set).contains("p=p1&p=p2"));
+        Assertions.assertTrue(miscProxy.regexClientCookie(set).contains("[p1, p2]"));
+        Assertions.assertTrue(miscProxy.regexClientHeader(set).contains("p1,p2"));
+        Assertions.assertTrue(miscProxy.regexClientMatrix(set).contains("p=p1;p=p2"));
+        Assertions.assertTrue(miscProxy.regexClientPath(set).contains("%5Bp1,%20p2%5D"));
+        Assertions.assertTrue(miscProxy.regexClientQuery(set).contains("p=p1&p=p2"));
     }
 }

@@ -1,18 +1,22 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.Assert;
+import org.jboss.resteasy.test.annotations.FollowUpRequired;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
+@RequestScoped
+@FollowUpRequired("The @RequestScope annotation can be removed once @Path is considered a bean defining annotation.")
 public class ApplicationPropertiesConfigPropertyApplicationInjectionResource {
 
-    @Context
+    @Inject
     private Application application;
 
     @GET
@@ -23,7 +27,8 @@ public class ApplicationPropertiesConfigPropertyApplicationInjectionResource {
         if (containskey) {
             response = "true";
         }
-        Assert.assertEquals("The injected application doesn't contain property \"Prop1\"", "true", response);
+        Assertions.assertEquals("true", response,
+                "The injected application doesn't contain property \"Prop1\"");
         String value = (String) application.getProperties().get("Prop1");
         return Response.ok(value).build();
     }

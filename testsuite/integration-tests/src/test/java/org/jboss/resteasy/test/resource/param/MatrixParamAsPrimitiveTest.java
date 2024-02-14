@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveArray;
@@ -29,9 +29,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test all variants of primitive matrix parameters (boolean, int, long, float, etc.)
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MatrixParamAsPrimitiveTest {
 
@@ -81,7 +81,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/" + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -91,7 +91,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/wrappers" + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -101,7 +101,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/list" + param + param + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -111,7 +111,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/array" + param + param + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -123,7 +123,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL(base + "default/null")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -133,7 +133,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL(base + "default")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -144,7 +144,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL(base + "default/override" + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
             client.close();
         }
@@ -473,7 +473,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/;int=abcdef")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/int")
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
             response.close();
             client.close();
         }
@@ -490,7 +490,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/wrappers;int=abcdef")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/int")
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
             response.close();
             client.close();
         }
@@ -507,7 +507,7 @@ public class MatrixParamAsPrimitiveTest {
             Response response = client.target(generateURL("/list;int=abcdef;int=abcdef")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/int")
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
             response.close();
             client.close();
         }

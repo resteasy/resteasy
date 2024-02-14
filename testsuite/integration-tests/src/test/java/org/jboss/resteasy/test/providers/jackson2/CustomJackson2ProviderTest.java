@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
@@ -25,18 +25,19 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.23
  */
-@RunWith(Arquillian.class)
+//@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomJackson2ProviderTest {
 
@@ -78,12 +79,12 @@ public class CustomJackson2ProviderTest {
         return war;
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -105,7 +106,7 @@ public class CustomJackson2ProviderTest {
         WebTarget target = client.target(generateURL("/jackson2providerpath"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         MatcherAssert.assertThat("Jackson2Provider jar was loaded from unexpected source",
                 entity, containsString(
                         CustomJackson2ProviderTest.class.getSimpleName() + ".war/WEB-INF/lib/resteasy-jackson2-provider"));

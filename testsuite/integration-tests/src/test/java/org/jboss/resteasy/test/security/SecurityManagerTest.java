@@ -30,7 +30,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.setup.LoggingSetupTask;
@@ -44,18 +44,18 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Tests that a deployment cannot exploit privileged actions.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup({ LoggingSetupTask.class, SecurityManagerTest.ConfigureSetupTask.class })
 public class SecurityManagerTest {
@@ -98,9 +98,10 @@ public class SecurityManagerTest {
                         "permissions.xml");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void securityManagerOnly() {
-        Assume.assumeTrue("The security manager is not enabled and we are skipping these tests", securityManagerEnabled());
+        Assumptions.assumeTrue(securityManagerEnabled(),
+                "The security manager is not enabled and we are skipping these tests");
     }
 
     @OperateOnDeployment(ACCESS_DENIED_DEPLOYMENT)
@@ -110,8 +111,8 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/env/" + ENV_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
-                    value.contains("\"java.lang.RuntimePermission\" \"getenv." + ENV_NAME + "\""));
+            Assertions.assertTrue(value.contains("\"java.lang.RuntimePermission\" \"getenv." + ENV_NAME + "\""),
+                    "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -123,8 +124,8 @@ public class SecurityManagerTest {
                     .target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
-                    value.contains("\"java.util.PropertyPermission\" \"" + PROPERTY_NAME + "\""));
+            Assertions.assertTrue(value.contains("\"java.util.PropertyPermission\" \"" + PROPERTY_NAME + "\""),
+                    "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -135,9 +136,10 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/config/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
+            Assertions.assertTrue(
                     value.contains(
-                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\""));
+                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\""),
+                    "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -148,8 +150,9 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/config/" + ENV_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
-                    value.contains("\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + ENV_NAME + "\""));
+            Assertions.assertTrue(
+                    value.contains("\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + ENV_NAME + "\""),
+                    "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -160,9 +163,10 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/option/"))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assert.assertTrue("Expected the response to have failed with a property permission: " + value,
+            Assertions.assertTrue(
                     value.contains(
-                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\""));
+                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\""),
+                    "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -173,7 +177,7 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/env/" + ENV_NAME))
                     .request().get();
             final String value = checkSuccessfulResponse(response);
-            Assert.assertEquals("test-env-value", value);
+            Assertions.assertEquals(value, "test-env-value");
         }
     }
 
@@ -185,7 +189,7 @@ public class SecurityManagerTest {
                     .target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkSuccessfulResponse(response);
-            Assert.assertEquals("test.value", value);
+            Assertions.assertEquals(value, "test.value");
         }
     }
 
@@ -196,7 +200,7 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/config/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkSuccessfulResponse(response);
-            Assert.assertEquals("test.value", value);
+            Assertions.assertEquals(value, "test.value");
         }
     }
 
@@ -207,7 +211,7 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/config/" + ENV_NAME))
                     .request().get();
             final String value = checkSuccessfulResponse(response);
-            Assert.assertEquals("test-env-value", value);
+            Assertions.assertEquals(value, "test-env-value");
         }
     }
 
@@ -218,23 +222,23 @@ public class SecurityManagerTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/option/"))
                     .request().get();
             final String value = checkSuccessfulResponse(response);
-            Assert.assertEquals("Expected true, but was false", "true", value);
+            Assertions.assertEquals("true", value, "Expected true, but was false");
         }
     }
 
     private static String checkFailedResponse(final Response response) {
         final String value = response.readEntity(String.class);
-        Assert.assertEquals(String.format("Expected %s got %s. Response: \"%s\"",
-                Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(), value),
-                Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo(),
+                String.format("Expected %s got %s. Response: \"%s\"",
+                        Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(), value));
         return value;
     }
 
     private static String checkSuccessfulResponse(final Response response) {
         final String value = response.readEntity(String.class);
-        Assert.assertEquals(String.format("Expected %s got %s. Response: \"%s\"",
-                Response.Status.OK.getStatusCode(), response.getStatus(), value),
-                Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo(),
+                String.format("Expected %s got %s. Response: \"%s\"",
+                        Response.Status.OK.getStatusCode(), response.getStatus(), value));
         return value;
     }
 

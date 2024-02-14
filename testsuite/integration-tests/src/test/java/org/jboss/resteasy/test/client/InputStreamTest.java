@@ -9,25 +9,25 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.client.resource.InputStreamResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class InputStreamTest extends ClientTestBase {
 
@@ -53,12 +53,12 @@ public class InputStreamTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, InputStreamResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -73,7 +73,8 @@ public class InputStreamTest extends ClientTestBase {
         InputStream is = client.target(generateURL("/test")).request().get(InputStream.class);
         byte[] buf = is.readAllBytes();
         String str = new String(buf);
-        Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
+        Assertions.assertEquals("hello world", str,
+                "The returned inputStream doesn't contain expexted text");
         logger.info("Text from inputstream: " + str);
         is.close();
     }
@@ -90,7 +91,8 @@ public class InputStreamTest extends ClientTestBase {
         InputStream is = proxy.get();
         byte[] buf = is.readAllBytes();
         String str = new String(buf);
-        Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
+        Assertions.assertEquals("hello world", str,
+                "The returned inputStream doesn't contain expexted text");
         is.close();
     }
 

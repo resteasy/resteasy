@@ -14,7 +14,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -32,11 +32,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-937
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ExceptionMapperMarshalTest {
 
@@ -68,12 +68,12 @@ public class ExceptionMapperMarshalTest {
                 ExceptionMapperMarshalResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -91,14 +91,15 @@ public class ExceptionMapperMarshalTest {
     public void testCustomUsed() {
         Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ExceptionMapperMarshalMyCustomExceptionMapper.class,
                 ExceptionMapper.class)[0];
-        Assert.assertEquals(ExceptionMapperMarshalMyCustomException.class, exceptionType);
+        Assertions.assertEquals(ExceptionMapperMarshalMyCustomException.class, exceptionType);
 
         Response response = client.target(generateURL("/resource/custom")).request().get();
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
         List<ExceptionMapperMarshalErrorMessage> errors = response
                 .readEntity(new GenericType<List<ExceptionMapperMarshalErrorMessage>>() {
                 });
-        Assert.assertEquals("The response has unexpected content", "error", errors.get(0).getError());
+        Assertions.assertEquals("error", errors.get(0).getError(),
+                "The response has unexpected content");
     }
 
     @Test
@@ -106,7 +107,7 @@ public class ExceptionMapperMarshalTest {
         Response response = client.target(generateURL("/resource/customME")).request().get();
         String text = response.readEntity(String.class);
 
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertTrue("Response does not contain UN_KNOWN_ERR", text.contains("UN_KNOWN_ERR"));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertTrue(text.contains("UN_KNOWN_ERR"), "Response does not contain UN_KNOWN_ERR");
     }
 }

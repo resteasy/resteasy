@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -24,11 +24,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1058
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class MultipleWarTest {
     static final String RESPONSE_ERROR_MSG = "Response has wrong content";
     static final String WRONG_ERROR_MSG = "Expected validation error is not in response";
@@ -64,12 +64,12 @@ public class MultipleWarTest {
         return war2;
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -95,14 +95,14 @@ public class MultipleWarTest {
             TestUtil.countViolations(e, 4, 2, 1, 1, 0);
             ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(e.getPropertyViolations(),
                     "must be greater than or equal to 3");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = TestUtil.getViolationByMessage(e.getPropertyViolations(), "must be greater than or equal to 5");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = e.getClassViolations().iterator().next();
-            Assert.assertTrue(WRONG_ERROR_MSG,
-                    cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.MultipleWarSumConstraint") > 0);
+            Assertions.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.MultipleWarSumConstraint") > 0,
+                    WRONG_ERROR_MSG);
             cv = e.getParameterViolations().iterator().next();
-            Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be greater than or equal to 7"));
+            Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"), WRONG_ERROR_MSG);
             response.close();
 
             response = request2.request().get();
@@ -111,14 +111,14 @@ public class MultipleWarTest {
             e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 4, 2, 1, 1, 0);
             cv = TestUtil.getViolationByMessage(e.getPropertyViolations(), "must be greater than or equal to 3");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = TestUtil.getViolationByMessage(e.getPropertyViolations(), "must be greater than or equal to 5");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = e.getClassViolations().iterator().next();
-            Assert.assertTrue(WRONG_ERROR_MSG,
-                    cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.MultipleWarSumConstraint") > 0);
+            Assertions.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.MultipleWarSumConstraint") > 0,
+                    WRONG_ERROR_MSG);
             cv = e.getParameterViolations().iterator().next();
-            Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be greater than or equal to 7"));
+            Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"), WRONG_ERROR_MSG);
             response.close();
         }
     }
@@ -139,7 +139,8 @@ public class MultipleWarTest {
             ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 1, 0, 0, 0, 1);
             ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
-            Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be less than or equal to 0"));
+            Assertions.assertTrue(cv.getMessage().equals("must be less than or equal to 0"),
+                    WRONG_ERROR_MSG);
             response.close();
 
             response = request2.request().get();
@@ -148,7 +149,8 @@ public class MultipleWarTest {
             e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 1, 0, 0, 0, 1);
             cv = e.getReturnValueViolations().iterator().next();
-            Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be less than or equal to 0"));
+            Assertions.assertTrue(cv.getMessage().equals("must be less than or equal to 0"),
+                    WRONG_ERROR_MSG);
             response.close();
         }
     }

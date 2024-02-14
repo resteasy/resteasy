@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationApplication;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationSingletonResource;
@@ -23,11 +23,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails EJB, CDI, Validation, and RESTEasy integration test: RESTEASY-1749
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class EJBCDIValidationTest {
 
@@ -58,12 +58,12 @@ public class EJBCDIValidationTest {
         return PortProviderUtil.generateURL(path, EJBCDIValidationTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -78,21 +78,21 @@ public class EJBCDIValidationTest {
         WebTarget base = client.target(generateURL("/rest/stateless/"));
         Builder builder = base.path("post/n").request();
         Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String answer = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(answer);
         TestUtil.countViolations(r, 1, 0, 1, 0);
 
         // Valid invocation
         response = base.path("set/xyz").request().get();
-        Assert.assertEquals(204, response.getStatus());
+        Assertions.assertEquals(204, response.getStatus());
         response.close();
 
         // EJB resource has been created: expect parameter violation.
         builder = base.path("post/n").request();
         builder.accept(MediaType.TEXT_PLAIN_TYPE);
         response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         answer = response.readEntity(String.class);
         r = new ViolationReport(answer);
         TestUtil.countViolations(r, 0, 0, 1, 0);
@@ -108,21 +108,21 @@ public class EJBCDIValidationTest {
         WebTarget base = client.target(generateURL("/rest/stateful/"));
         Builder builder = base.path("post/n").request();
         Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String answer = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(answer);
         TestUtil.countViolations(r, 1, 0, 1, 0);
 
         // Valid invocation
         response = base.path("set/xyz").request().get();
-        Assert.assertEquals(204, response.getStatus());
+        Assertions.assertEquals(204, response.getStatus());
         response.close();
 
         // EJB resource gets created again: expect property and parameter violations.
         builder = base.path("post/n").request();
         builder.accept(MediaType.TEXT_PLAIN_TYPE);
         response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         answer = response.readEntity(String.class);
         r = new ViolationReport(answer);
         TestUtil.countViolations(r, 1, 0, 1, 0);
@@ -143,21 +143,21 @@ public class EJBCDIValidationTest {
         WebTarget base = client.target(generateURL("/rest/singleton/"));
         Builder builder = base.path("post/n").request();
         Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String answer = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(answer);
         TestUtil.countViolations(r, propertyViolations, 0, 1, 0);
 
         // Valid invocation
         response = base.path("set/xyz").request().get();
-        Assert.assertEquals(204, response.getStatus());
+        Assertions.assertEquals(204, response.getStatus());
         response.close();
 
         // EJB resource has been created: expect parameter violation.
         builder = base.path("post/n").request();
         builder.accept(MediaType.TEXT_PLAIN_TYPE);
         response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         answer = response.readEntity(String.class);
         r = new ViolationReport(answer);
         TestUtil.countViolations(r, 0, 0, 1, 0);

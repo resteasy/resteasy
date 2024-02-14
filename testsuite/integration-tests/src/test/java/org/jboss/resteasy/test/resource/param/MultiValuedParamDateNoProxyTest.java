@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapper;
@@ -32,9 +32,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
  *                    Client Proxy is not used
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MultiValuedParamDateNoProxyTest {
 
@@ -102,47 +102,47 @@ public class MultiValuedParamDateNoProxyTest {
             Response response;
             response = client.target(generateBaseUrl() + "/queryParam/customConversion_multiValuedParam")
                     .queryParam("date", date1 + "," + date2 + "," + date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/customConversion_multiValuedParam_array")
                     .queryParam("date", date1 + "," + date2 + "," + date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_list")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_arrayList")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_set")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_hashSet")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_sortedSet")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_treeSet")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/queryParam/defaultConversion_array")
                     .queryParams(dates).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
         } finally {
@@ -162,47 +162,47 @@ public class MultiValuedParamDateNoProxyTest {
 
             response = client.target(generateBaseUrl() + "/headerParam/customConversion_multiValuedParam")
                     .request().header("date", date1 + "," + date2 + "," + date3).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/customConversion_multiValuedParam_array")
                     .request().header("date", date1 + "," + date2 + "," + date3).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_list")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_arrayList")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_set")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_hashSet")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_sortedSet")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_treeSet")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/headerParam/defaultConversion_array")
                     .request().headers(dates).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
         } finally {
@@ -221,47 +221,47 @@ public class MultiValuedParamDateNoProxyTest {
             Response response;
             response = client.target(generateBaseUrl() + "/matrixParam/customConversion_multiValuedParam")
                     .matrixParam("date", date1 + "," + date2 + "," + date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/customConversion_multiValuedParam_array")
                     .matrixParam("date", date1 + "," + date2 + "," + date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_list")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_arrayList")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_set")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_hashSet")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_sortedSet")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_treeSet")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/matrixParam/defaultConversion_array")
                     .matrixParam("date", date1).matrixParam("date", date2).matrixParam("date", date3).request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
         } finally {
@@ -280,47 +280,47 @@ public class MultiValuedParamDateNoProxyTest {
             Response response;
             response = client.target(generateBaseUrl() + "/cookieParam/customConversion_multiValuedCookieParam")
                     .request().cookie("date", date1 + "-" + date2 + "-" + date3).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/customConversion_multiValuedCookieParam_array")
                     .request().cookie("date", date1 + "-" + date2 + "-" + date3).get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_list")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_arrayList")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
 
             response.close();
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_set")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_hashSet")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_sortedSet")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_treeSet")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/cookieParam/defaultConversion_array")
                     .request().cookie("date", date1).get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
         } finally {
@@ -343,12 +343,12 @@ public class MultiValuedParamDateNoProxyTest {
 
             response = client.target(generateBaseUrl() + "/formParam/customConversion_multiValuedParam")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(entity);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/customConversion_multiValuedParam_array")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(entity);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             Form datesForm = new Form();
@@ -357,37 +357,37 @@ public class MultiValuedParamDateNoProxyTest {
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_list")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_arrayList")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_set")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_hashSet")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_sortedSet")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_treeSet")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/formParam/defaultConversion_array")
                     .request(MediaType.APPLICATION_FORM_URLENCODED).post(dates);
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
         } finally {
@@ -407,49 +407,49 @@ public class MultiValuedParamDateNoProxyTest {
             response = client
                     .target(generateBaseUrl() + "/pathParam/customConversion_multiValuedPathParam/20161217/20161218/20161219")
                     .request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client
                     .target(generateBaseUrl()
                             + "/pathParam/customConversion_multiValuedPathParam_array/20161217/20161218/20161219")
                     .request().get();
-            Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+            Assertions.assertEquals(expectedResponse, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_list/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_arrayList/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_set/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_hashSet/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_sortedSet/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_treeSet/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
             response = client.target(generateBaseUrl() + "/pathParam/defaultConversion_array/" + date1)
                     .request().get();
-            Assert.assertEquals(date1, response.readEntity(String.class));
+            Assertions.assertEquals(date1, response.readEntity(String.class));
             response.close();
 
         } finally {

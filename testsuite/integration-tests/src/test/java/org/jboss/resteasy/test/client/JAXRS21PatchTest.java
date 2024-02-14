@@ -11,19 +11,20 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.client.resource.JAXRS21SyncInvokeResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+//@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JAXRS21PatchTest extends ClientTestBase {
 
@@ -36,12 +37,12 @@ public class JAXRS21PatchTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, JAXRS21SyncInvokeResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -54,14 +55,14 @@ public class JAXRS21PatchTest extends ClientTestBase {
     public void testMethods() throws Exception {
         {
             Response res = client.target(generateURL("/test")).request().method(HttpMethod.PATCH, Entity.text("hello"));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
-            Assert.assertEquals("patch hello", entity);
+            Assertions.assertEquals("patch hello", entity);
         }
         {
             String entity = client.target(generateURL("/test")).request().method(HttpMethod.PATCH, Entity.text("hello"),
                     String.class);
-            Assert.assertEquals("patch hello", entity);
+            Assertions.assertEquals("patch hello", entity);
         }
     }
 
@@ -73,14 +74,14 @@ public class JAXRS21PatchTest extends ClientTestBase {
     public void testInvoke() throws Exception {
         {
             Response res = client.target(generateURL("/test")).request().build(HttpMethod.PATCH, Entity.text("hello")).invoke();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
-            Assert.assertEquals("patch hello", entity);
+            Assertions.assertEquals("patch hello", entity);
         }
         {
             String entity = client.target(generateURL("/test")).request().build(HttpMethod.PATCH, Entity.text("hello"))
                     .invoke(String.class);
-            Assert.assertEquals("patch hello", entity);
+            Assertions.assertEquals("patch hello", entity);
         }
     }
 
@@ -102,7 +103,7 @@ public class JAXRS21PatchTest extends ClientTestBase {
     @Test
     public void testOptionsContainsAcceptPatch() throws Exception {
         Response res = client.target(generateURL("/test")).request().options();
-        Assert.assertEquals("text/plain", res.getHeaderString("Accept-Patch"));
+        Assertions.assertEquals("text/plain", res.getHeaderString("Accept-Patch"));
         res.close();
     }
 
@@ -116,7 +117,7 @@ public class JAXRS21PatchTest extends ClientTestBase {
         MultivaluedMap<String, String> stringHeaders = res.getStringHeaders();
         stringHeaders.forEach((k, v) -> {
             if (k.equals("Content-type"))
-                Assert.assertEquals("text/plain;charset=UTF-8", v);
+                Assertions.assertEquals("text/plain;charset=UTF-8", v);
         });
     }
 }

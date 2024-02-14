@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -32,18 +32,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class Jackson2Test {
 
@@ -109,12 +109,12 @@ public class Jackson2Test {
                 Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -135,18 +135,18 @@ public class Jackson2Test {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("The response entity content doesn't match the expected",
-                "{\"name\":\"Iphone\",\"id\":333}", entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity,
+                "The response entity content doesn't match the expected");
         response.close();
 
         target = client.target(generateURL("/products"));
         response = target.request().get();
         entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("The response entity content doesn't match the expected",
-                "[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity,
+                "The response entity content doesn't match the expected");
         response.close();
 
     }
@@ -164,9 +164,9 @@ public class Jackson2Test {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("The response entity content doesn't match the expected", "foo({\"name\":\"Iphone\",\"id\":333})",
-                entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("foo({\"name\":\"Iphone\",\"id\":333})", entity,
+                "The response entity content doesn't match the expected");
         response.close();
     }
 
@@ -184,8 +184,9 @@ public class Jackson2Test {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Jackson2JsonpInterceptor should be disabled", "{\"name\":\"Iphone\",\"id\":333}", entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity,
+                "Jackson2JsonpInterceptor should be disabled");
         response.close();
     }
 
@@ -202,8 +203,9 @@ public class Jackson2Test {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Jackson2JsonpInterceptor should be disabled", "{\"name\":\"Iphone\",\"id\":333}", entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity,
+                "Jackson2JsonpInterceptor should be disabled");
         response.close();
     }
 
@@ -222,8 +224,8 @@ public class Jackson2Test {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertTrue("Entity doesn't contain formatting", entity.contains("\n"));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertTrue(entity.contains("\n"), "Entity doesn't contain formatting");
         response.close();
     }
 
@@ -242,22 +244,22 @@ public class Jackson2Test {
         WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
         Jackson2Product p = response.readEntity(Jackson2Product.class);
-        Assert.assertEquals("Jackson2Product id value doesn't match", 333, p.getId());
-        Assert.assertEquals("Jackson2Product name value doesn't match", "Iphone", p.getName());
+        Assertions.assertEquals(333, p.getId(), "Jackson2Product id value doesn't match");
+        Assertions.assertEquals("Iphone", p.getName(), "Jackson2Product name value doesn't match");
         response.close();
 
         target = client.target(generateURL("/products"));
         response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         target = client.target(generateURL("/products/333"));
         response = target.request().post(Entity.entity(p, "application/foo+json"));
         p = response.readEntity(Jackson2Product.class);
-        Assert.assertEquals("Jackson2Product id value doesn't match", 333, p.getId());
-        Assert.assertEquals("Jackson2Product name value doesn't match", "Iphone", p.getName());
+        Assertions.assertEquals(333, p.getId(), "Jackson2Product id value doesn't match");
+        Assertions.assertEquals("Iphone", p.getName(), "Jackson2Product name value doesn't match");
         response.close();
 
     }
@@ -272,8 +274,8 @@ public class Jackson2Test {
         Jackson2Proxy proxy = client.target(generateURL("")).proxy(Jackson2Proxy.class);
         Jackson2Product p = new Jackson2Product(1, "Stuff");
         p = proxy.post(1, p);
-        Assert.assertEquals("Jackson2Product id value doesn't match", 1, p.getId());
-        Assert.assertEquals("Jackson2Product name value doesn't match", "Stuff", p.getName());
+        Assertions.assertEquals(1, p.getId(), "Jackson2Product id value doesn't match");
+        Assertions.assertEquals("Stuff", p.getName(), "Jackson2Product name value doesn't match");
     }
 
     /**
@@ -290,14 +292,14 @@ public class Jackson2Test {
             WebTarget target = client.target(generateURL("/jaxb"));
             String response = target.request().get(String.class);
             logger.info(response);
-            Assert.assertTrue("The response doesn't contain the renamed attribute", response.contains("attr_1"));
+            Assertions.assertTrue(response.contains("attr_1"), "The response doesn't contain the renamed attribute");
         }
 
         {
             WebTarget target = client.target(generateURL("/jaxb/json"));
             String response = target.request().get(String.class);
             logger.info(response);
-            Assert.assertTrue("The response doesn't contain the renamed attribute", response.contains("attr_1"));
+            Assertions.assertTrue(response.contains("attr_1"), "The response doesn't contain the renamed attribute");
         }
 
     }

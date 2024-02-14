@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Dog;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.SetMethodWithMoreArgumentsResource;
@@ -16,18 +16,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Json-binding provider
  * @tpChapter Integration test
  * @tpSince RESTEasy 3.6.2.Final
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SetMethodWithMoreArgumentsTest {
 
@@ -44,12 +44,12 @@ public class SetMethodWithMoreArgumentsTest {
         return TestUtil.finishContainerPrepare(war, null, SetMethodWithMoreArgumentsResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -67,8 +67,8 @@ public class SetMethodWithMoreArgumentsTest {
                 new Dog("Rex", "german shepherd"), MediaType.APPLICATION_JSON_TYPE.withCharset("UTF-8"));
         Dog dog = target.request().post(entity, Dog.class);
         LOG.info(dog);
-        Assert.assertTrue(dog.getName().equals("Jethro"));
-        Assert.assertTrue(dog.getSort().equals("stafford"));
+        Assertions.assertTrue(dog.getName().equals("Jethro"));
+        Assertions.assertTrue(dog.getSort().equals("stafford"));
     }
 
 }

@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCapturingGroupSubResourceNoPath;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexCapturingGroupSubResourceWithPath;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorRegexNonCapturingGroup;
@@ -15,11 +15,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @Path annotation paths can consist of Regex Non-Capturing groups used with
@@ -28,13 +28,13 @@ import org.junit.runner.RunWith;
  *       User: rsearls
  *       Date: 2/18/17
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResourceLocatorRegexNonCapturingGroupTest {
     private static final String ERROR_MSG = "Response contain wrong content";
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         client = ClientBuilder.newClient();
     }
@@ -52,12 +52,12 @@ public class ResourceLocatorRegexNonCapturingGroupTest {
         return PortProviderUtil.generateURL(path, ResourceLocatorRegexNonCapturingGroupTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         client.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
 
     }
@@ -66,15 +66,17 @@ public class ResourceLocatorRegexNonCapturingGroupTest {
     public void testBird() throws Exception {
         {
             Response response = client.target(generateURL("/noCapture/nobird")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "nobird success", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("nobird success", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
 
         {
             Response response = client.target(generateURL("/noCapture/BIRD/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "BIRD test", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("BIRD test", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
     }
@@ -83,15 +85,17 @@ public class ResourceLocatorRegexNonCapturingGroupTest {
     public void testFly() throws Exception {
         {
             Response response = client.target(generateURL("/noCapture/a/nofly/b")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "a/nofly/b success", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("a/nofly/b success", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
 
         {
             Response response = client.target(generateURL("/noCapture/a/FLY/b/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "a/FLY/b test", response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals("a/FLY/b test", response.readEntity(String.class),
+                    ERROR_MSG);
             response.close();
         }
     }

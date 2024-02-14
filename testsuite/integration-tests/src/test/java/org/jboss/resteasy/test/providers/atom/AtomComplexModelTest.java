@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.atom;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.DataOutputStream;
 import java.io.FilePermission;
@@ -24,7 +24,7 @@ import jakarta.xml.bind.Unmarshaller;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.atom.Content;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
@@ -49,11 +49,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Atom provider
@@ -61,7 +61,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Check complex model with Atom Provider
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AtomComplexModelTest {
 
@@ -94,12 +94,12 @@ public class AtomComplexModelTest {
         return TestUtil.finishContainerPrepare(war, null, AtomComplexModelEntryResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -152,8 +152,8 @@ public class AtomComplexModelTest {
 
         Entry newEntry = (Entry) unmarshaller.unmarshal(xmlReader);
         atomAssetMetadata = newEntry.getAnyOtherJAXBObject(AtomAssetMetadata.class);
-        assertNotNull("Metadata of complex type is null", atomAssetMetadata);
-        assertNotNull("Categories from metadata is missing", atomAssetMetadata.getCategories());
+        assertNotNull(atomAssetMetadata, "Metadata of complex type is null");
+        assertNotNull(atomAssetMetadata.getCategories(), "Categories from metadata is missing");
     }
 
     /**
@@ -196,9 +196,9 @@ public class AtomComplexModelTest {
                     .header("Accept", MediaType.APPLICATION_ATOM_XML)
                     .header("Content-Type", MediaType.APPLICATION_ATOM_XML)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            assertNotNull("Wrong content of response",
-                    response.readEntity(Entry.class).getAnyOtherJAXBObject(AtomAssetMetadata.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            assertNotNull(response.readEntity(Entry.class).getAnyOtherJAXBObject(AtomAssetMetadata.class),
+                    "Wrong content of response");
             response.close();
         }
 
@@ -228,9 +228,9 @@ public class AtomComplexModelTest {
                     .header("Accept", MediaType.APPLICATION_XML)
                     .header("Content-Type", MediaType.APPLICATION_XML)
                     .get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            assertNotNull("Wrong content of response",
-                    response.readEntity(Entry.class).getAnyOtherJAXBObject(AtomAssetMetadata.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            assertNotNull(response.readEntity(Entry.class).getAnyOtherJAXBObject(AtomAssetMetadata.class),
+                    "Wrong content of response");
             response.close();
         }
     }

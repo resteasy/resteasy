@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.response.resource.ProduceConsumeData;
 import org.jboss.resteasy.test.response.resource.ProduceConsumeResource;
 import org.jboss.resteasy.test.response.resource.ProduceConsumeTextData;
@@ -23,29 +23,29 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ProduceConsumeTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -71,14 +71,14 @@ public class ProduceConsumeTest {
     @Test
     public void testEmpty() {
         Response response = client.target(generateURL("/resource/empty")).request().get();
-        Assert.assertEquals(response.getStatus(), 200);
+        Assertions.assertEquals(response.getStatus(), 200);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE,
                 MediaType.TEXT_PLAIN_TYPE);
         try {
             BigDecimal big = response.readEntity(BigDecimal.class);
-            Assert.fail();
+            Assertions.fail();
         } catch (ProcessingException e) {
-            Assert.assertTrue(e.getCause() instanceof NoContentException);
+            Assertions.assertTrue(e.getCause() instanceof NoContentException);
         }
 
     }
@@ -92,14 +92,14 @@ public class ProduceConsumeTest {
     @Test
     public void testEmptyCharacter() {
         Response response = client.target(generateURL("/resource/empty")).request().get();
-        Assert.assertEquals(response.getStatus(), 200);
+        Assertions.assertEquals(response.getStatus(), 200);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE,
                 MediaType.TEXT_PLAIN_TYPE);
         try {
             Character big = response.readEntity(Character.class);
-            Assert.fail();
+            Assertions.fail();
         } catch (ProcessingException e) {
-            Assert.assertTrue(e.getCause() instanceof NoContentException);
+            Assertions.assertTrue(e.getCause() instanceof NoContentException);
         }
 
     }
@@ -113,14 +113,14 @@ public class ProduceConsumeTest {
     @Test
     public void testEmptyInteger() {
         Response response = client.target(generateURL("/resource/empty")).request().get();
-        Assert.assertEquals(response.getStatus(), 200);
+        Assertions.assertEquals(response.getStatus(), 200);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE,
                 MediaType.TEXT_PLAIN_TYPE);
         try {
             Integer big = response.readEntity(Integer.class);
-            Assert.fail();
+            Assertions.fail();
         } catch (ProcessingException e) {
-            Assert.assertTrue(e.getCause() instanceof NoContentException);
+            Assertions.assertTrue(e.getCause() instanceof NoContentException);
         }
 
     }
@@ -134,12 +134,12 @@ public class ProduceConsumeTest {
     @Test
     public void testEmptyForm() {
         Response response = client.target(generateURL("/resource/empty")).request().get();
-        Assert.assertEquals(response.getStatus(), 200);
+        Assertions.assertEquals(response.getStatus(), 200);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE,
                 MediaType.APPLICATION_FORM_URLENCODED);
         MultivaluedMap big = response.readEntity(MultivaluedMap.class);
 
-        Assert.assertTrue(big == null || big.size() == 0);
+        Assertions.assertTrue(big == null || big.size() == 0);
     }
 
     /**
@@ -157,9 +157,9 @@ public class ProduceConsumeTest {
         client.register(ProduceConsumeWildData.class);
         Response response = client.target(generateURL("/resource/wild")).request("*/*")
                 .post(Entity.entity("data", MediaType.WILDCARD_TYPE));
-        Assert.assertEquals(response.getStatus(), 200);
+        Assertions.assertEquals(response.getStatus(), 200);
         ProduceConsumeData data = response.readEntity(ProduceConsumeData.class);
-        Assert.assertEquals("Data{data='data:text:text', type='text'}", data.toString());
+        Assertions.assertEquals("Data{data='data:text:text', type='text'}", data.toString());
         response.close();
     }
 

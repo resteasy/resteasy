@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @ApplicationScoped
 public class ParameterSubResClassSub {
@@ -27,8 +27,10 @@ public class ParameterSubResClassSub {
     @GET
     @Produces("text/plain")
     public String get(@Context HttpHeaders headers) {
-        Assert.assertEquals("Wrong path value from injected UriInfo", "/path/subclass", uriInfo.getPath());
-        Assert.assertNotNull("Connection header from injected HttpHeaders is null", headers.getHeaderString("Connection"));
+        Assertions.assertEquals("/path/subclass", uriInfo.getPath(),
+                "Wrong path value from injected UriInfo");
+        Assertions.assertNotNull(headers.getHeaderString("Connection"),
+                "Connection header from injected HttpHeaders is null");
         return "resourceCounter:" + resourceCounter.incrementAndGet() + ",appscope:" + appScope.getCount() + ",requestScope:"
                 + requestScope.getCount();
     }

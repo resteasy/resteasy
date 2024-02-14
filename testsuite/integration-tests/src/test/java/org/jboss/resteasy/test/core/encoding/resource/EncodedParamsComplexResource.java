@@ -7,23 +7,23 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 import org.jboss.resteasy.test.core.encoding.EncodedParamsTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/encodedParam")
 public class EncodedParamsComplexResource {
     @GET
     public String get(@QueryParam("hello world") int num, @QueryParam("stuff") @Encoded String stuff,
             @QueryParam("stuff") String unStuff) {
-        Assert.assertEquals(EncodedParamsTest.ERROR_MESSAGE, 5, num);
-        Assert.assertEquals(EncodedParamsTest.ERROR_MESSAGE, "hello%20world", stuff);
-        Assert.assertEquals(EncodedParamsTest.ERROR_MESSAGE, "hello world", unStuff);
+        Assertions.assertEquals(5, num, EncodedParamsTest.ERROR_MESSAGE);
+        Assertions.assertEquals("hello%20world", stuff, EncodedParamsTest.ERROR_MESSAGE);
+        Assertions.assertEquals("hello world", unStuff, EncodedParamsTest.ERROR_MESSAGE);
         return "HELLO";
     }
 
     @GET
     @Path("/{param}")
     public String goodbye(@PathParam("param") @Encoded String stuff) {
-        Assert.assertEquals(EncodedParamsTest.ERROR_MESSAGE, "hello%20world", stuff);
+        Assertions.assertEquals("hello%20world", stuff, EncodedParamsTest.ERROR_MESSAGE);
         return "GOODBYE";
     }
 }

@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -31,18 +31,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class XmlJavaTypeAdapterTest {
 
     private final Logger logger = Logger.getLogger(XmlJavaTypeAdapterTest.class.getName());
@@ -69,12 +69,12 @@ public class XmlJavaTypeAdapterTest {
                 PortProviderUtil.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
         client = null;
@@ -99,7 +99,7 @@ public class XmlJavaTypeAdapterTest {
         XmlJavaTypeAdapterHuman human = new XmlJavaTypeAdapterHuman();
         human.setName("bill");
         String response = target.request().post(Entity.entity(human, MediaType.APPLICATION_XML_TYPE), String.class);
-        Assert.assertEquals("The received response was not the expected one", "bill", response);
+        Assertions.assertEquals("bill", response, "The received response was not the expected one");
     }
 
     /**
@@ -115,7 +115,7 @@ public class XmlJavaTypeAdapterTest {
         foo.setName("bill");
         XmlJavaTypeAdapterFoo response = target.request().post(Entity.entity(foo, MediaType.APPLICATION_XML_TYPE),
                 XmlJavaTypeAdapterFoo.class);
-        Assert.assertEquals("The received response was not the expected one", foo, response);
+        Assertions.assertEquals(foo, response, "The received response was not the expected one");
     }
 
     /**
@@ -131,8 +131,9 @@ public class XmlJavaTypeAdapterTest {
         foo.setName("bill");
         String response = target.request().post(Entity.entity(foo, MediaType.APPLICATION_XML_TYPE), String.class);
         logger.info("response: \"" + response + "\"");
-        Assert.assertTrue("The received response was not the expected one",
-                response.contains("<xmlJavaTypeAdapterFoo><alien><name>llib</name></alien></xmlJavaTypeAdapterFoo>"));
+        Assertions.assertTrue(
+                response.contains("<xmlJavaTypeAdapterFoo><alien><name>llib</name></alien></xmlJavaTypeAdapterFoo>"),
+                "The received response was not the expected one");
     }
 
     /**
@@ -154,7 +155,7 @@ public class XmlJavaTypeAdapterTest {
         GenericEntity<List<XmlJavaTypeAdapterHuman>> entity = new GenericEntity<List<XmlJavaTypeAdapterHuman>>(list) {
         };
         String response = target.request().post(Entity.entity(entity, MediaType.APPLICATION_XML_TYPE), String.class);
-        Assert.assertEquals("The received response was not the expected one", "|bill|bob", response);
+        Assertions.assertEquals("|bill|bob", response, "The received response was not the expected one");
     }
 
     /**
@@ -182,13 +183,13 @@ public class XmlJavaTypeAdapterTest {
         List<XmlJavaTypeAdapterAlien> response = target.request().post(Entity.entity(entity, MediaType.APPLICATION_XML_TYPE),
                 alienListType);
         logger.info("response: \"" + response + "\"");
-        Assert.assertEquals("The received response was not the expected one", 2, response.size());
-        Assert.assertTrue("The received response was not the expected one", response.contains(alien1));
-        Assert.assertTrue("The received response was not the expected one", response.contains(alien2));
-        Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
-        Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        Assertions.assertEquals(2, response.size(), "The received response was not the expected one");
+        Assertions.assertTrue(response.contains(alien1), "The received response was not the expected one");
+        Assertions.assertTrue(response.contains(alien2), "The received response was not the expected one");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get(),
+                "The marshalling of the Alien didn't happen the correct way");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get(),
+                "The unmarshalling of the Human didn't happen the correct way");
         XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
         XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
@@ -218,14 +219,14 @@ public class XmlJavaTypeAdapterTest {
         XmlJavaTypeAdapterAlien[] response = target.request().post(Entity.entity(entity, MediaType.APPLICATION_XML_TYPE),
                 alienArrayType);
         logger.info("response: \"" + response + "\"");
-        Assert.assertEquals("The received response was not the expected one", 2, response.length);
-        Assert.assertTrue("The received response was not the expected one",
-                (alien1.equals(response[0]) && alien2.equals(response[1]))
-                        || (alien1.equals(response[1]) && alien2.equals(response[0])));
-        Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
-        Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        Assertions.assertEquals(2, response.length, "The received response was not the expected one");
+        Assertions.assertTrue((alien1.equals(response[0]) && alien2.equals(response[1]))
+                || (alien1.equals(response[1]) && alien2.equals(response[0])),
+                "The received response was not the expected one");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get(),
+                "The marshalling of the Alien didn't happen the correct way");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get(),
+                "The unmarshalling of the Human didn't happen the correct way");
         XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
         XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
@@ -256,13 +257,13 @@ public class XmlJavaTypeAdapterTest {
         Map<String, XmlJavaTypeAdapterAlien> response = target.request()
                 .post(Entity.entity(entity, MediaType.APPLICATION_XML_TYPE), alienMapType);
         logger.info("response: \"" + response + "\"");
-        Assert.assertEquals("The received response was not the expected one", 2, response.size());
-        Assert.assertTrue("The received response was not the expected one", alien1.equals(response.get("abc")));
-        Assert.assertTrue("The received response was not the expected one", alien2.equals(response.get("xyz")));
-        Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
-        Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        Assertions.assertEquals(2, response.size(), "The received response was not the expected one");
+        Assertions.assertTrue(alien1.equals(response.get("abc")), "The received response was not the expected one");
+        Assertions.assertTrue(alien2.equals(response.get("xyz")), "The received response was not the expected one");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get(),
+                "The marshalling of the Alien didn't happen the correct way");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get(),
+                "The unmarshalling of the Human didn't happen the correct way");
         XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
         XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
@@ -292,13 +293,13 @@ public class XmlJavaTypeAdapterTest {
         List<XmlJavaTypeAdapterAlien> response = target.request().post(Entity.entity(entity, MediaType.APPLICATION_XML_TYPE),
                 alienListType);
         logger.info("response: \"" + response + "\"");
-        Assert.assertEquals("The received response was not the expected one", 2, response.size());
-        Assert.assertTrue("The received response was not the expected one", response.contains(tralfamadorean1));
-        Assert.assertTrue("The received response was not the expected one", response.contains(tralfamadorean2));
-        Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
-        Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        Assertions.assertEquals(2, response.size(), "The received response was not the expected one");
+        Assertions.assertTrue(response.contains(tralfamadorean1), "The received response was not the expected one");
+        Assertions.assertTrue(response.contains(tralfamadorean2), "The received response was not the expected one");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get(),
+                "The marshalling of the Alien didn't happen the correct way");
+        Assertions.assertEquals(4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get(),
+                "The unmarshalling of the Human didn't happen the correct way");
         XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
         XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }

@@ -9,23 +9,23 @@ import java.util.stream.Collectors;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.client.resource.HeaderEmptyHostResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * RESTEASY-2300 and UNDERTOW-1614
  *
  * @author <a href="mailto:istudens@redhat.com">Ivo Studensky</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class HeaderEmptyHostTest extends ClientTestBase {
     private static Logger logger = Logger.getLogger(HeaderEmptyHostTest.class);
@@ -52,9 +52,9 @@ public class HeaderEmptyHostTest extends ClientTestBase {
                 String response = new BufferedReader(new InputStreamReader(client.getInputStream())).lines()
                         .collect(Collectors.joining("\n"));
                 logger.info("response = " + response);
-                Assert.assertNotNull(response);
-                Assert.assertTrue(response.contains("HTTP/1.1 200 OK"));
-                Assert.assertTrue(response.contains("uriInfo: http://" + url.getHost() + ":" + url.getPort() + uri));
+                Assertions.assertNotNull(response);
+                Assertions.assertTrue(response.contains("HTTP/1.1 200 OK"));
+                Assertions.assertTrue(response.contains("uriInfo: http://" + url.getHost() + ":" + url.getPort() + uri));
             }
         }
     }

@@ -4,13 +4,13 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Core
@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4719
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MissingProducerTest {
     private static final String ERR_MSG = "Warning was not logged";
@@ -55,8 +55,8 @@ public class MissingProducerTest {
      */
     @Test
     public void testMissingProducer() {
-        Assert.assertEquals(ERR_MSG, 1, parseLog1() - initLogMsg1Count);
-        Assert.assertEquals(ERR_MSG, 1, parseLog2() - initLogMsg2Count);
-        Assert.assertEquals(ERR_MSG, 1, parseLog3() - initLogMsg3Count);
+        Assertions.assertEquals(1, parseLog1() - initLogMsg1Count, ERR_MSG);
+        Assertions.assertEquals(1, parseLog2() - initLogMsg2Count, ERR_MSG);
+        Assertions.assertEquals(1, parseLog3() - initLogMsg3Count, ERR_MSG);
     }
 }

@@ -16,7 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -26,11 +26,11 @@ import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsSticker;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests client exception handling for AsyncInvoker interface and InvocationCallBack interface.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsyncTimeoutExceptionsTest extends ClientTestBase {
 
@@ -47,7 +47,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
 
     public Client client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = ClientBuilder.newClient();
     }
@@ -59,7 +59,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
                 AsyncTimeoutExceptionsSticker.class, StickerCallback.class, ResponseCallback.class);
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
     }
@@ -121,11 +121,16 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void futureTimeOutSleepTest() throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/sticker"));
-        Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(AsyncTimeoutExceptionsSticker.class);
-        AsyncTimeoutExceptionsSticker stickerName = future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/sticker"));
+                    Future<AsyncTimeoutExceptionsSticker> future = base.request().async()
+                            .get(AsyncTimeoutExceptionsSticker.class);
+                    AsyncTimeoutExceptionsSticker stickerName = future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     /**
@@ -136,11 +141,16 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void futureAsyncOnServerAndTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/sticker2"));
-        Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(AsyncTimeoutExceptionsSticker.class);
-        AsyncTimeoutExceptionsSticker stickerName = future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/sticker2"));
+                    Future<AsyncTimeoutExceptionsSticker> future = base.request().async()
+                            .get(AsyncTimeoutExceptionsSticker.class);
+                    AsyncTimeoutExceptionsSticker stickerName = future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     /**
@@ -152,11 +162,16 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void futureAsyncOnServerClientTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/sticker3"));
-        Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(AsyncTimeoutExceptionsSticker.class);
-        AsyncTimeoutExceptionsSticker stickerName = future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/sticker3"));
+                    Future<AsyncTimeoutExceptionsSticker> future = base.request().async()
+                            .get(AsyncTimeoutExceptionsSticker.class);
+                    AsyncTimeoutExceptionsSticker stickerName = future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     //=============================================================================================================
@@ -168,11 +183,15 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void futureTimeOutWithResponseTest() throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/get"));
-        Future<Response> future = base.request().async().get();
-        Response response = future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/get"));
+                    Future<Response> future = base.request().async().get();
+                    Response response = future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     /**
@@ -197,7 +216,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
         try {
             response = future.get(5, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
-            Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
+            Assertions.assertEquals(TimeoutException.class.getName(), ex.toString());
         }
 
         for (int i = 0; i < multiple; i++) {
@@ -205,7 +224,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
             future = baseMultiple.request().async().get();
             response = future.get(5, TimeUnit.SECONDS);
             response.close();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         }
         apacheClient.close();
     }
@@ -220,11 +239,15 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void invocationCallbackTimeoutSleepTest() throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/sticker"));
-        Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(new StickerCallback());
-        future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/sticker"));
+                    Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(new StickerCallback());
+                    future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     /**
@@ -235,12 +258,16 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void invocationCallbackAsyncOnServerAndTimeoutTest()
             throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/sticker2"));
-        Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(new StickerCallback());
-        future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/sticker2"));
+                    Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(new StickerCallback());
+                    future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     /**
@@ -251,12 +278,16 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void invocationCallbackAsyncOnServerClientTimeoutTest()
             throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/sticker3"));
-        Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(new StickerCallback());
-        future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/sticker3"));
+                    Future<AsyncTimeoutExceptionsSticker> future = base.request().async().get(new StickerCallback());
+                    future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     //=============================================================================================================
@@ -268,11 +299,15 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
      * @tpPassCrit TimeoutException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = TimeoutException.class)
+    @Test()
     public void invocationCallbackTimeoutWithResponseTest() throws InterruptedException, ExecutionException, TimeoutException {
-        WebTarget base = client.target(generateURL("/get"));
-        Future<Response> future = base.request().async().get(new ResponseCallback());
-        future.get(5, TimeUnit.SECONDS);
+        TimeoutException thrown = Assertions.assertThrows(TimeoutException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/get"));
+                    Future<Response> future = base.request().async().get(new ResponseCallback());
+                    future.get(5, TimeUnit.SECONDS);
+                });
+        Assertions.assertTrue(thrown instanceof TimeoutException);
     }
 
     /**
@@ -298,14 +333,14 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase {
         try {
             response = future.get(5, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
-            Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
+            Assertions.assertEquals(TimeoutException.class.getName(), ex.toString());
         }
 
         for (int i = 0; i < multiple; i++) {
             WebTarget baseMultiple = apacheClient.target(generateURL("/getPositive"));
             future = baseMultiple.request().async().get(new ResponseCallback());
             response = future.get(5, TimeUnit.SECONDS);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         }
         apacheClient.close();
     }

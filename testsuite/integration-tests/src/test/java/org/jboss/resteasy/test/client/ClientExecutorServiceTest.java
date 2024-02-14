@@ -39,23 +39,23 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.client.resource.TestResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Tests using a custom {@link java.util.concurrent.ExecutorService} in the client.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientExecutorServiceTest {
 
@@ -72,12 +72,12 @@ public class ClientExecutorServiceTest {
 
     private TestExecutorService executor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         executor = new TestExecutorService(Executors.newScheduledThreadPool(2));
     }
 
-    @After
+    @AfterEach
     public void shutdown() {
         if (executor != null) {
             executor.delegate.shutdownNow();
@@ -106,7 +106,7 @@ public class ClientExecutorServiceTest {
                 .async()
                 .get(String.class)
                 .get(5, TimeUnit.SECONDS);
-        Assert.assertEquals("get", result);
+        Assertions.assertEquals("get", result);
         try {
             client.close();
         } catch (ShutdownNotAllowedException e) {
@@ -115,10 +115,10 @@ public class ClientExecutorServiceTest {
                     PrintWriter pw = new PrintWriter(writer)) {
                 pw.println("The client should not be shutting down the executor.");
                 e.printStackTrace(pw);
-                Assert.fail(writer.toString());
+                Assertions.fail(writer.toString());
             }
         }
-        Assert.assertFalse("The executor should not be shutdown", executor.isShutdown());
+        Assertions.assertFalse(executor.isShutdown(), "The executor should not be shutdown");
     }
 
     private static class TestExecutorService implements ScheduledExecutorService {

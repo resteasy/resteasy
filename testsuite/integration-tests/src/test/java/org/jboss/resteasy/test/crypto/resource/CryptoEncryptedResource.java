@@ -6,7 +6,7 @@ import jakarta.ws.rs.Path;
 
 import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/smime/encrypted")
 public class CryptoEncryptedResource {
@@ -20,6 +20,6 @@ public class CryptoEncryptedResource {
     @POST
     public void post(EnvelopedInput<String> input) {
         String str = input.getEntity(CryptoCertResource.privateKey, CryptoCertResource.cert);
-        Assert.assertEquals("input", str);
+        Assertions.assertEquals("input", str);
     }
 }

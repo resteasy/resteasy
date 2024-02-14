@@ -5,7 +5,7 @@ import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.custom.resource.FilterDispatcherForwardServlet;
@@ -14,9 +14,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-903
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class FilterDispatcherUndertowTest {
     private static final Logger logger = Logger.getLogger(FilterDispatcherUndertowTest.class.getName());
@@ -55,7 +55,7 @@ public class FilterDispatcherUndertowTest {
         byte[] b = new byte[16];
         conn.getInputStream().read(b);
         logger.info("Response result: " + new String(b));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
         conn.disconnect();
     }
 }
