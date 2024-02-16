@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseNoExpressionResource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseNoExpressionSubresource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseNoExpressionSubresource2;
@@ -17,11 +17,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -29,13 +29,13 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Check resources with locator with no expression
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResourceLocatorWithBaseNoExpressionTest {
     private static final String ERROR_MSG = "Response contain wrong content";
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         client = ClientBuilder.newClient();
     }
@@ -54,12 +54,12 @@ public class ResourceLocatorWithBaseNoExpressionTest {
         return PortProviderUtil.generateURL(path, ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         client.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
 
     }
@@ -72,16 +72,16 @@ public class ResourceLocatorWithBaseNoExpressionTest {
     public void testSubresource() throws Exception {
         {
             Response response = client.target(generateURL("/a1/base/1/resources")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, ResourceLocatorWithBaseNoExpressionSubresource.class.getName(),
-                    response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionSubresource.class.getName(),
+                    response.readEntity(String.class), ERROR_MSG);
             response.close();
         }
         {
             Response response = client.target(generateURL("/a1/base/1/resources/subresource2/stuff/2/bar")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, ResourceLocatorWithBaseNoExpressionSubresource2.class.getName() + "-2",
-                    response.readEntity(String.class));
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionSubresource2.class.getName() + "-2",
+                    response.readEntity(String.class), ERROR_MSG);
             response.close();
         }
     }

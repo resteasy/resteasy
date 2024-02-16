@@ -15,23 +15,23 @@ import jakarta.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  *
  * @author Nicolas NESMON
  *
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SsePostResourceMethodInvokerTest {
 
@@ -69,12 +69,12 @@ public class SsePostResourceMethodInvokerTest {
                 Response response = baseTarget.request(MediaType.SERVER_SENT_EVENTS_TYPE).buildGet().submit().get(10,
                         TimeUnit.SECONDS);
                 try {
-                    Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+                    Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
                 } finally {
                     client.close();
                 }
             } catch (TimeoutException e) {
-                Assert.fail("Sse initial 200 ok response is expected when resource method resource returns first.");
+                Assertions.fail("Sse initial 200 ok response is expected when resource method resource returns first.");
             }
         } finally {
             client = ClientBuilder.newClient();
@@ -88,18 +88,23 @@ public class SsePostResourceMethodInvokerTest {
         }
     }
 
-    @Ignore("RESTEASY-3109 - This test hangs when the default ExceptionMapper is used.")
-    @Test(expected = InternalServerErrorException.class)
+    @Disabled("RESTEASY-3109 - This test hangs when the default ExceptionMapper is used.")
+    @Test()
     @OperateOnDeployment(WITH_EXCEPTION_REQUEST_FILTER)
     public void Should_ThrowIntenalServerError_When_AnyFilterAfterSseFilterThrowsIOException() throws Exception {
-        Client client = ClientBuilder.newClient();
-        try {
-            client.target(generateURL(WITH_EXCEPTION_REQUEST_FILTER))
-                    .path(SsePostResourceMethodInvokerTestResource.BASE_PATH).request(MediaType.SERVER_SENT_EVENTS_TYPE)
-                    .get(String.class);
-        } finally {
-            client.close();
-        }
+        InternalServerErrorException thrown = Assertions.assertThrows(InternalServerErrorException.class,
+                () -> {
+                    Client client = ClientBuilder.newClient();
+                    try {
+                        client.target(generateURL(WITH_EXCEPTION_REQUEST_FILTER))
+                                .path(SsePostResourceMethodInvokerTestResource.BASE_PATH)
+                                .request(MediaType.SERVER_SENT_EVENTS_TYPE)
+                                .get(String.class);
+                    } finally {
+                        client.close();
+                    }
+                });
+        Assertions.assertTrue(thrown instanceof InternalServerErrorException);
     }
 
 }

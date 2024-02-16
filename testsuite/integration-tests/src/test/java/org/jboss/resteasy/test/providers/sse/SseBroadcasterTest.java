@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.sse;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -27,9 +27,9 @@ import org.jboss.resteasy.plugins.providers.sse.SseEventOutputImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /***
  *
@@ -47,27 +47,27 @@ public class SseBroadcasterTest {
 
         try {
             sseBroadcasterImpl.broadcast(new OutboundSseEventImpl.BuilderImpl().data("Test").build());
-            Assert.fail("Should have thrown IllegalStateException");
+            Assertions.fail("Should have thrown IllegalStateException");
         } catch (IllegalStateException e) {
         }
 
         try {
             sseBroadcasterImpl.onClose(sseEventSink -> {
             });
-            Assert.fail("Should have thrown IllegalStateException");
+            Assertions.fail("Should have thrown IllegalStateException");
         } catch (IllegalStateException e) {
         }
 
         try {
             sseBroadcasterImpl.onError((sseEventSink, error) -> {
             });
-            Assert.fail("Should have thrown IllegalStateException");
+            Assertions.fail("Should have thrown IllegalStateException");
         } catch (IllegalStateException e) {
         }
 
         try {
             sseBroadcasterImpl.register(newSseEventSink());
-            Assert.fail("Should have thrown IllegalStateException");
+            Assertions.fail("Should have thrown IllegalStateException");
         } catch (IllegalStateException e) {
         }
     }
@@ -93,10 +93,10 @@ public class SseBroadcasterTest {
 
         sseBroadcasterImpl.close();
         if (!countDownLatch.await(3, TimeUnit.SECONDS)) {
-            Assert.fail("All close listeners should have been notified");
+            Assertions.fail("All close listeners should have been notified");
         }
-        Assert.assertTrue(sseEventSink1.isClosed());
-        Assert.assertTrue(sseEventSink2.isClosed());
+        Assertions.assertTrue(sseEventSink1.isClosed());
+        Assertions.assertTrue(sseEventSink2.isClosed());
     }
 
     // We are expecting this test to invoke both close and error listeners when
@@ -108,7 +108,7 @@ public class SseBroadcasterTest {
         SseEventSink sseEventSink = newSseEventSink();
         sseBroadcasterImpl.register(sseEventSink);
         sseEventSink.close();
-        Assert.assertTrue(sseEventSink.isClosed());
+        Assertions.assertTrue(sseEventSink.isClosed());
 
         CountDownLatch countDownLatch = new CountDownLatch(3);
         sseBroadcasterImpl.onClose(ses -> {
@@ -123,7 +123,7 @@ public class SseBroadcasterTest {
 
         sseBroadcasterImpl.broadcast(new OutboundSseEventImpl.BuilderImpl().data("Test").build());
         if (!countDownLatch.await(3, TimeUnit.SECONDS)) {
-            Assert.fail("All close and error listeners should have been notified");
+            Assertions.fail("All close and error listeners should have been notified");
         }
     }
 
@@ -135,7 +135,7 @@ public class SseBroadcasterTest {
 
         SseEventSink sseEventSink = newSseEventSink(new IOException());
         sseBroadcasterImpl.register(sseEventSink);
-        Assert.assertFalse(sseEventSink.isClosed());
+        Assertions.assertFalse(sseEventSink.isClosed());
 
         CountDownLatch countDownLatch = new CountDownLatch(3);
         sseBroadcasterImpl.onClose(ses -> {
@@ -150,7 +150,7 @@ public class SseBroadcasterTest {
 
         sseBroadcasterImpl.broadcast(new OutboundSseEventImpl.BuilderImpl().data("Test").build());
         if (!countDownLatch.await(3, TimeUnit.SECONDS)) {
-            Assert.fail("All close and error listeners should have been notified");
+            Assertions.fail("All close and error listeners should have been notified");
         }
     }
 
@@ -162,7 +162,7 @@ public class SseBroadcasterTest {
 
         SseEventSink sseEventSink = newSseEventSink(new RuntimeException());
         sseBroadcasterImpl.register(sseEventSink);
-        Assert.assertFalse(sseEventSink.isClosed());
+        Assertions.assertFalse(sseEventSink.isClosed());
 
         AtomicBoolean onCloseListenerInvoked = new AtomicBoolean(false);
         sseBroadcasterImpl.onClose(ses -> {
@@ -179,14 +179,14 @@ public class SseBroadcasterTest {
 
         sseBroadcasterImpl.broadcast(new OutboundSseEventImpl.BuilderImpl().data("Test").build());
         if (!countDownLatch.await(5, TimeUnit.SECONDS)) {
-            Assert.fail("All error listeners should have been notified");
+            Assertions.fail("All error listeners should have been notified");
         }
         if (onCloseListenerInvoked.get()) {
-            Assert.fail("Close listeners should not have been notified");
+            Assertions.fail("Close listeners should not have been notified");
         }
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         HttpRequest request = mock(HttpRequest.class);
         ResteasyAsynchronousContext resteasyAsynchronousContext = mock(ResteasyAsynchronousContext.class);
@@ -231,8 +231,8 @@ public class SseBroadcasterTest {
         if (!countDownLatch.await(5, TimeUnit.SECONDS)) {
             fail("All close listeners should have been notified");
         } else {
-            Assert.assertTrue(outputQueue.size() == 1);
-            Assert.assertSame(outputQueue.peek(), sseEventSink1);
+            Assertions.assertTrue(outputQueue.size() == 1);
+            Assertions.assertSame(outputQueue.peek(), sseEventSink1);
         }
 
         ResteasyContext.removeContextDataLevel();
@@ -246,7 +246,7 @@ public class SseBroadcasterTest {
         return (ConcurrentLinkedQueue<SseEventSink>) fld.get(sseBroadcasterImpl);
     }
 
-    @org.junit.After
+    @org.junit.jupiter.api.AfterEach
     public void after() {
         //revert contextual data
         ResteasyContext.pushContext(org.jboss.resteasy.spi.HttpRequest.class, null);

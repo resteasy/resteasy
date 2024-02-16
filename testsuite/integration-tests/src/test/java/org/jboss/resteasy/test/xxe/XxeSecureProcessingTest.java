@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter XXE
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-869
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(DisableDefaultExceptionMapperSetupTask.class)
 public class XxeSecureProcessingTest {
@@ -73,12 +73,12 @@ public class XxeSecureProcessingTest {
         return TestUtil.finishContainerPrepare(war, contextParam, XxeSecureProcessingMovieResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -106,10 +106,10 @@ public class XxeSecureProcessingTest {
     public void testXmlRootElementDefaultSmall() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request()
                 .post(Entity.entity(small, "application/xml"));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.debug("Result: " + entity.substring(0, 30));
-        Assert.assertEquals(10000, countFoos(entity));
+        Assertions.assertEquals(10000, countFoos(entity));
         response.close();
     }
 
@@ -121,10 +121,10 @@ public class XxeSecureProcessingTest {
     public void testXmlRootElementDefaultBig() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request()
                 .post(Entity.entity(big, "application/xml"));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.debug("Result: " + entity);
-        Assert.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
+        Assertions.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
         response.close();
     }
 
@@ -136,10 +136,10 @@ public class XxeSecureProcessingTest {
     public void testXmlRootElementWithoutExternalExpansionSmall() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_FALSE)).request()
                 .post(Entity.entity(small, "application/xml"));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.debug("Result: " + entity.substring(0, 30));
-        Assert.assertEquals(10000, countFoos(entity));
+        Assertions.assertEquals(10000, countFoos(entity));
         response.close();
     }
 
@@ -151,10 +151,10 @@ public class XxeSecureProcessingTest {
     public void testXmlRootElementWithoutExternalExpansionBig() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_FALSE)).request()
                 .post(Entity.entity(big, "application/xml"));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.debug("Result: " + entity);
-        Assert.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
+        Assertions.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
         response.close();
     }
 
@@ -166,10 +166,10 @@ public class XxeSecureProcessingTest {
     public void testXmlRootElementWithExternalExpansionSmall() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_TRUE)).request()
                 .post(Entity.entity(small, "application/xml"));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.debug("Result: " + entity.substring(0, 30));
-        Assert.assertEquals(10000, countFoos(entity));
+        Assertions.assertEquals(10000, countFoos(entity));
         response.close();
     }
 
@@ -181,10 +181,10 @@ public class XxeSecureProcessingTest {
     public void testXmlRootElementWithExternalExpansionBig() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_TRUE)).request()
                 .post(Entity.entity(big, "application/xml"));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.debug("Result: " + entity);
-        Assert.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
+        Assertions.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"));
         response.close();
     }
 

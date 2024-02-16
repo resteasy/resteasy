@@ -23,8 +23,8 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /***
  *
@@ -117,9 +117,9 @@ public class DynamicFeatureContextDelegateTest {
         ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
         DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
         featureContext.register(new CustomObjectContextResolver());
-        Assert.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
+        Assertions.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
         featureContext.register(CustomObjectContextResolver.class);
-        Assert.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
+        Assertions.assertNull(resteasyProviderFactory.getContextResolver(CustomObject.class, MediaType.WILDCARD_TYPE));
     }
 
     @Test
@@ -127,10 +127,10 @@ public class DynamicFeatureContextDelegateTest {
         ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
         DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
         featureContext.register(new CustomExceptionMapper());
-        Assert.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(),
+        Assertions.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(),
                 CustomExceptionMapper.class);
         featureContext.register(CustomExceptionMapper.class);
-        Assert.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(),
+        Assertions.assertNotEquals(resteasyProviderFactory.getExceptionMapper(CustomException.class).getClass(),
                 CustomExceptionMapper.class);
     }
 
@@ -139,10 +139,10 @@ public class DynamicFeatureContextDelegateTest {
         ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
         DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
         featureContext.register(new CustomObjectMessageBodyWriter());
-        Assert.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
+        Assertions.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
                 MediaType.APPLICATION_JSON_TYPE));
         featureContext.register(CustomObjectMessageBodyWriter.class);
-        Assert.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
+        Assertions.assertNull(resteasyProviderFactory.getMessageBodyWriter(CustomObject.class, CustomObject.class, null,
                 MediaType.APPLICATION_JSON_TYPE));
     }
 
@@ -151,10 +151,10 @@ public class DynamicFeatureContextDelegateTest {
         ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
         DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
         featureContext.register(new CustomObjectMessageBodyReader());
-        Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
+        Assertions.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
                 MediaType.APPLICATION_JSON_TYPE));
         featureContext.register(CustomObjectMessageBodyReader.class);
-        Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
+        Assertions.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null,
                 MediaType.APPLICATION_JSON_TYPE));
     }
 
@@ -163,9 +163,9 @@ public class DynamicFeatureContextDelegateTest {
         ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
         DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
         featureContext.register(new CustomDynamicFeature());
-        Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
+        Assertions.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
         featureContext.register(CustomDynamicFeature.class);
-        Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
+        Assertions.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
     }
 
 }

@@ -18,7 +18,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
@@ -31,12 +31,12 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.reactivex.Flowable;
 
@@ -45,7 +45,7 @@ import io.reactivex.Flowable;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PublisherResponseTest {
 
@@ -70,13 +70,13 @@ public class PublisherResponseTest {
         return PortProviderUtil.generateURL(path, PublisherResponseTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = ClientBuilder.newClient();
         latch = new CountDownLatch(1);
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
         client = null;
@@ -97,12 +97,12 @@ public class PublisherResponseTest {
                 (Throwable t) -> logger.error("Error:", t),
                 () -> latch.countDown());
         latch.await();
-        Assert.assertEquals(Arrays.asList(new String[] { "one", "two" }), list);
+        Assertions.assertEquals(Arrays.asList(new String[] { "one", "two" }), list);
 
         // make sure the completion callback was called with no error
         Builder request = client.target(generateURL("/callback-called-no-error/text")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -127,12 +127,12 @@ public class PublisherResponseTest {
                 });
         latch.await();
         ClientErrorException cee = (ClientErrorException) value.get();
-        Assert.assertEquals("Got it", cee.getResponse().readEntity(String.class));
+        Assertions.assertEquals("Got it", cee.getResponse().readEntity(String.class));
 
         // make sure the completion callback was called with with an error
         Builder request = client.target(generateURL("/callback-called-with-error/text-error-immediate")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -141,19 +141,19 @@ public class PublisherResponseTest {
      * @tpSince RESTEasy 4.0
      */
     @Test
-    @Ignore // Doesn't currently work. The original version, now in PublisherResponseNoStreamTest, still works.
-                  // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
+    @Disabled // Doesn't currently work. The original version, now in PublisherResponseNoStreamTest, still works.
+                    // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
     public void testTextErrorDeferred() throws Exception {
         Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("Got it", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Got it", entity);
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error/text-error-deferred")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -172,7 +172,7 @@ public class PublisherResponseTest {
                 (Throwable t) -> logger.error("Error:", t),
                 () -> latch.countDown());
         latch.await();
-        Assert.assertEquals(Arrays.asList(new String[] { "one", "two" }), list);
+        Assertions.assertEquals(Arrays.asList(new String[] { "one", "two" }), list);
     }
 
     /**
@@ -202,10 +202,10 @@ public class PublisherResponseTest {
         source.open();
         future.get();
         source.close();
-        Assert.assertEquals(30, collector.size());
-        Assert.assertEquals(0, errors.size());
-        Assert.assertEquals("0-2", collector.get(0));
-        Assert.assertEquals("1-2", collector.get(1));
+        Assertions.assertEquals(30, collector.size());
+        Assertions.assertEquals(0, errors.size());
+        Assertions.assertEquals("0-2", collector.get(0));
+        Assertions.assertEquals("1-2", collector.get(1));
     }
 
     /**
@@ -236,10 +236,10 @@ public class PublisherResponseTest {
         source.open();
         future.get();
         source.close();
-        Assert.assertEquals(2, collector.size());
-        Assert.assertEquals(0, errors.size());
-        Assert.assertEquals("one", collector.get(0));
-        Assert.assertEquals("one", collector.get(1));
+        Assertions.assertEquals(2, collector.size());
+        Assertions.assertEquals(0, errors.size());
+        Assertions.assertEquals("one", collector.get(0));
+        Assertions.assertEquals("one", collector.get(1));
 
         Thread.sleep(5000);
         Client client = ClientBuilder.newClient();
@@ -247,8 +247,8 @@ public class PublisherResponseTest {
         Response response = request.get();
         logger.info("part 2");
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("true", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("true", entity);
         client.close();
     }
 
@@ -279,8 +279,8 @@ public class PublisherResponseTest {
         Builder request = client.target(generateURL("/infinite-done")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("true", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("true", entity);
         client.close();
     }
 }

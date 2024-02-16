@@ -16,7 +16,7 @@ import jakarta.xml.bind.JAXBElement;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -28,11 +28,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.w3c.dom.Element;
 
 /**
@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MapTest {
 
@@ -53,12 +53,12 @@ public class MapTest {
         return TestUtil.finishContainerPrepare(war, null, MapFoo.class, MapJaxb.class, MapResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -88,7 +88,7 @@ public class MapTest {
 
         StringWriter writer = new StringWriter();
         ctx.createMarshaller().marshal(element, writer);
-        Assert.assertEquals(xml, writer.toString());
+        Assertions.assertEquals(xml, writer.toString());
 
         ByteArrayInputStream is = new ByteArrayInputStream(writer.toString().getBytes());
         StreamSource source = new StreamSource(is);
@@ -118,11 +118,12 @@ public class MapTest {
 
         Map<String, MapFoo> entity = target.request().post(Entity.xml(xml), new GenericType<Map<String, MapFoo>>() {
         });
-        Assert.assertEquals("The response from the server has unexpected content", 2, entity.size());
-        Assert.assertNotNull("The response from the server has unexpected content", entity.get("bill"));
-        Assert.assertNotNull("The response from the server has unexpected content", entity.get("monica"));
-        Assert.assertEquals("The response from the server has unexpected content", entity.get("bill").getName(), "bill");
-        Assert.assertEquals("The response from the server has unexpected content", entity.get("monica").getName(), "monica");
+        Assertions.assertEquals(2, entity.size(), "The response from the server has unexpected content");
+        Assertions.assertNotNull(entity.get("bill"), "The response from the server has unexpected content");
+        Assertions.assertNotNull(entity.get("monica"), "The response from the server has unexpected content");
+        Assertions.assertEquals(entity.get("bill").getName(), "bill", "The response from the server has unexpected content");
+        Assertions.assertEquals(entity.get("monica").getName(),
+                "monica", "The response from the server has unexpected content");
 
         String entityString = target.request().post(Entity.xml(xml), String.class);
         logger.info(entityString);
@@ -145,15 +146,15 @@ public class MapTest {
 
         ResteasyWebTarget target = client.target(generateURL("/map/integerFoo"));
         Response response = target.request().post(Entity.xml(xml));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
         Map<String, MapFoo> entity = response.readEntity(new GenericType<Map<String, MapFoo>>() {
         });
-        Assert.assertEquals("The response from the server has unexpected content", 2, entity.size());
-        Assert.assertNotNull("The response from the server has unexpected content", entity.get("1"));
-        Assert.assertNotNull("The response from the server has unexpected content", entity.get("2"));
-        Assert.assertEquals("The response from the server has unexpected content", entity.get("1").getName(), "bill");
-        Assert.assertEquals("The response from the server has unexpected content", entity.get("2").getName(), "monica");
+        Assertions.assertEquals(2, entity.size(), "The response from the server has unexpected content");
+        Assertions.assertNotNull(entity.get("1"), "The response from the server has unexpected content");
+        Assertions.assertNotNull(entity.get("2"), "The response from the server has unexpected content");
+        Assertions.assertEquals(entity.get("1").getName(), "bill", "The response from the server has unexpected content");
+        Assertions.assertEquals(entity.get("2").getName(), "monica", "The response from the server has unexpected content");
 
         String entityString = target.request().post(Entity.xml(xml), String.class);
 
@@ -162,7 +163,7 @@ public class MapTest {
                 + "<entry key=\"1\"><ns2:mapFoo name=\"bill\"/></entry>"
                 + "<entry key=\"2\"><ns2:mapFoo name=\"monica\"/></entry>"
                 + "</map>";
-        Assert.assertEquals(result, entityString);
+        Assertions.assertEquals(result, entityString);
     }
 
     /**
@@ -183,11 +184,12 @@ public class MapTest {
         Map<String, MapFoo> entity = target.request().post(Entity.xml(xml), new GenericType<Map<String, MapFoo>>() {
         });
 
-        Assert.assertEquals("The response from the server has unexpected content", 2, entity.size());
-        Assert.assertNotNull("The response from the server has unexpected content", entity.get("bill"));
-        Assert.assertNotNull("The response from the server has unexpected content", entity.get("monica"));
-        Assert.assertEquals("The response from the server has unexpected content", entity.get("bill").getName(), "bill");
-        Assert.assertEquals("The response from the server has unexpected content", entity.get("monica").getName(), "monica");
+        Assertions.assertEquals(2, entity.size(), "The response from the server has unexpected content");
+        Assertions.assertNotNull(entity.get("bill"), "The response from the server has unexpected content");
+        Assertions.assertNotNull(entity.get("monica"), "The response from the server has unexpected content");
+        Assertions.assertEquals(entity.get("bill").getName(), "bill", "The response from the server has unexpected content");
+        Assertions.assertEquals(entity.get("monica").getName(),
+                "monica", "The response from the server has unexpected content");
 
     }
 
@@ -206,7 +208,7 @@ public class MapTest {
 
         ResteasyWebTarget target = client.target(generateURL("/map/wrapped"));
         Response response = target.request().post(Entity.xml(xml));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
 
     }
 }

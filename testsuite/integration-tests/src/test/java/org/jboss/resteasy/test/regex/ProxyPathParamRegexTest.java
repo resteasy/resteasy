@@ -23,7 +23,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.regex.resource.ProxyPathParamRegexResource;
@@ -32,29 +32,29 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests for RESTEASY-3291
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ProxyPathParamRegexTest {
 
     static ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -80,7 +80,8 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getEncodedQueryParam("q p");
 
-        Assert.assertEquals("Wrong string returned by proxy interface", "QueryParamq+p", responseString);
+        Assertions.assertEquals("QueryParamq+p", responseString,
+                "Wrong string returned by proxy interface");
     }
 
     /**
@@ -94,7 +95,8 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getSimplePath("w");
 
-        Assert.assertEquals("Wrong string returned by proxy interface", "simplew", responseString);
+        Assertions.assertEquals("simplew", responseString,
+                "Wrong string returned by proxy interface");
     }
 
     /**
@@ -109,7 +111,8 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getQuestionMarkInMultiplePathParamRegex("xpath", "x");
 
-        Assert.assertEquals("Wrong string returned by proxy interface", "xpathx", responseString);
+        Assertions.assertEquals("xpathx", responseString,
+                "Wrong string returned by proxy interface");
     }
 
     /**
@@ -124,8 +127,8 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getQuestionMarkAndQuery("x", "status:GOLD");
 
-        Assert.assertEquals("Wrong string returned by proxy interface",
-                "path=x:query=status:GOLD", responseString);
+        Assertions.assertEquals("path=x:query=status:GOLD", responseString,
+                "Wrong string returned by proxy interface");
     }
 
     /**
@@ -139,8 +142,8 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getTwoRegexQuestionMarkTest("xZ", "Y");
 
-        Assert.assertEquals("Wrong string returned by proxy interface",
-                "lower=xZ:upper=Y", responseString);
+        Assertions.assertEquals("lower=xZ:upper=Y", responseString,
+                "Wrong string returned by proxy interface");
     }
 
     /**
@@ -154,8 +157,8 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getAsteriskQualiferTest("amw", "xpath");
 
-        Assert.assertEquals("Wrong string returned by proxy interface",
-                "string=amw:path=xpath", responseString);
+        Assertions.assertEquals("string=amw:path=xpath", responseString,
+                "Wrong string returned by proxy interface");
     }
 
     /**
@@ -169,7 +172,7 @@ public class ProxyPathParamRegexTest {
         RegexInterface proxy = target.proxy(RegexInterface.class);
         String responseString = proxy.getCurlyBracketQualifierTest("abc", "xpath");
 
-        Assert.assertEquals("Wrong string returned by proxy interface",
-                "string=abc:path=xpath", responseString);
+        Assertions.assertEquals("string=abc:path=xpath", responseString,
+                "Wrong string returned by proxy interface");
     }
 }

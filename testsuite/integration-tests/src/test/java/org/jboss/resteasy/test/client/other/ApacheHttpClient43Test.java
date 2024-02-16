@@ -15,7 +15,7 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -30,9 +30,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test connection cleanup for ApacheHttpClient4Engine and URLConnectionEngine
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ApacheHttpClient43Test {
 
@@ -95,7 +95,7 @@ public class ApacheHttpClient43Test {
             threads[i].join();
         }
 
-        Assert.assertEquals("Wrong count of requests", 30L, counter.get());
+        Assertions.assertEquals(30L, counter.get(), "Wrong count of requests");
     }
 
     /**
@@ -133,7 +133,7 @@ public class ApacheHttpClient43Test {
             threads[i].join();
         }
 
-        Assert.assertEquals("Wrong count of requests", 30L, counter.get());
+        Assertions.assertEquals(30L, counter.get(), "Wrong count of requests");
     }
 
     /**
@@ -162,7 +162,7 @@ public class ApacheHttpClient43Test {
                 public void run() {
                     for (int j = 0; j < 10; j++) {
                         String str = proxy.get();
-                        Assert.assertEquals("Wrong response", "hello world", str);
+                        Assertions.assertEquals("hello world", str, "Wrong response");
                         counter.incrementAndGet();
                     }
                 }
@@ -176,7 +176,7 @@ public class ApacheHttpClient43Test {
             threads[i].join();
         }
 
-        Assert.assertEquals("Wrong count of requests", 30L, counter.get());
+        Assertions.assertEquals(30L, counter.get(), "Wrong count of requests");
     }
 
     /**
@@ -221,7 +221,7 @@ public class ApacheHttpClient43Test {
             threads[i].join();
         }
 
-        Assert.assertEquals("Wrong count of requests", 30L, counter.get());
+        Assertions.assertEquals(30L, counter.get(), "Wrong count of requests");
     }
 
     /**
@@ -255,7 +255,7 @@ public class ApacheHttpClient43Test {
                         try {
                             proxy.error();
                         } catch (NotFoundException e) {
-                            Assert.assertEquals(e.getResponse().getStatus(), 404);
+                            Assertions.assertEquals(e.getResponse().getStatus(), 404);
                             e.getResponse().close();
                             counter.incrementAndGet();
                         }
@@ -271,7 +271,7 @@ public class ApacheHttpClient43Test {
             threads[i].join();
         }
 
-        Assert.assertEquals("Wrong count of requests", 30L, counter.get());
+        Assertions.assertEquals(30L, counter.get(), "Wrong count of requests");
     }
 
     /**
@@ -301,7 +301,7 @@ public class ApacheHttpClient43Test {
                 public void run() {
                     for (int j = 0; j < 10; j++) {
                         String res = proxy.getData(String.valueOf(j));
-                        Assert.assertNotNull("Response should not be null", res);
+                        Assertions.assertNotNull(res, "Response should not be null");
                         counter.incrementAndGet();
                     }
                 }
@@ -315,14 +315,14 @@ public class ApacheHttpClient43Test {
             threads[i].join();
         }
 
-        Assert.assertEquals("Wrong count of requests", 30L, counter.get());
+        Assertions.assertEquals(30L, counter.get(), "Wrong count of requests");
     }
 
     private void callProxy(ApacheHttpClient4Resource proxy) {
         try {
             proxy.error();
         } catch (NotFoundException e) {
-            Assert.assertEquals(e.getResponse().getStatus(), 404);
+            Assertions.assertEquals(e.getResponse().getStatus(), 404);
             counter.incrementAndGet();
         }
     }
@@ -348,7 +348,7 @@ public class ApacheHttpClient43Test {
         } else if (engine.isAssignableFrom(URLConnectionEngine.class)) {
             executor = new URLConnectionEngine();
         } else {
-            Assert.fail("unknown engine");
+            Assertions.fail("unknown engine");
             executor = null;
         }
 
@@ -361,8 +361,9 @@ public class ApacheHttpClient43Test {
                 .target(PortProviderUtil.generateBaseUrl(ApacheHttpClient43Test.class.getSimpleName() + "/test"));
         try {
             Response response = target.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("Wrong response", "hello world", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("hello world", response.readEntity(String.class),
+                    "Wrong response");
             if (release) {
                 response.close();
             }

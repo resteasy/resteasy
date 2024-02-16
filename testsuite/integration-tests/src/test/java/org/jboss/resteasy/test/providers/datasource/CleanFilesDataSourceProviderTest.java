@@ -21,7 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.datasource.resource.CleanFilesDataSourceProviderResource;
@@ -30,18 +30,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CleanFilesDataSourceProviderTest {
 
@@ -59,13 +59,13 @@ public class CleanFilesDataSourceProviderTest {
         return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
         serverTmpDir = getTmpDirectory();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -97,15 +97,16 @@ public class CleanFilesDataSourceProviderTest {
         // check http request results
         int postStatus = response.getStatusLine().getStatusCode();
         String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        Assert.assertEquals("Status of client request is not correct.", HttpStatus.SC_OK, postStatus);
-        Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
+        Assertions.assertEquals(HttpStatus.SC_OK, postStatus, "Status of client request is not correct.");
+        Assertions.assertEquals(CleanFilesDataSourceProviderResource.clientResponse,
+                postResponse, "Client get wrong response.");
 
         // count temporary files after
         int countAfter = countFiles(serverTmpDir);
         logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
 
         // Compare
-        Assert.assertEquals("Client request remove or add some temporary files.", countBefore, countAfter);
+        Assertions.assertEquals(countBefore, countAfter, "Client request remove or add some temporary files.");
     }
 
     /**
@@ -132,16 +133,17 @@ public class CleanFilesDataSourceProviderTest {
         // check http request results
         int postStatus = response.getStatusLine().getStatusCode();
         String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."),
-                HttpStatus.SC_OK, postStatus);
-        Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
+        Assertions.assertEquals(HttpStatus.SC_OK, postStatus,
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."));
+        Assertions.assertEquals(CleanFilesDataSourceProviderResource.clientResponse,
+                postResponse, "Client get wrong response.");
 
         // count temporary files after
         int countAfter = countFiles(serverTmpDir);
         logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
 
         // Compare
-        Assert.assertEquals("Client request remove or add some temporary files.", countBefore, countAfter);
+        Assertions.assertEquals(countBefore, countAfter, "Client request remove or add some temporary files.");
     }
 
     /**
@@ -161,14 +163,14 @@ public class CleanFilesDataSourceProviderTest {
         }
         Response response = client.target(generateURL("/never")).request()
                 .post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         // count temporary files after
         int countAfter = countFiles(serverTmpDir);
         logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
 
         // Compare
-        Assert.assertEquals("Client request removed or added some temporary files.", countBefore, countAfter);
+        Assertions.assertEquals(countBefore, countAfter, "Client request removed or added some temporary files.");
     }
 
     private static String getTmpDirectory() {
@@ -178,7 +180,7 @@ public class CleanFilesDataSourceProviderTest {
 
     private int countFiles(String dir) {
         File tmpdir = new File(dir);
-        Assert.assertTrue(dir + " does not exists", tmpdir.isDirectory());
+        Assertions.assertTrue(tmpdir.isDirectory(), dir + " does not exists");
         logger.info("Tmp directory = " + tmpdir);
 
         // Get count of Resteasy temporary files

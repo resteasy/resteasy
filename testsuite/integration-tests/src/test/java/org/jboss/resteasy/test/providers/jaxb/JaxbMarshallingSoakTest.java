@@ -21,7 +21,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -33,11 +33,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails JAXB shouldn't have a concurrent problem and should unmarshall a Map property all the time
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class JaxbMarshallingSoakTest {
     private static Logger logger = Logger.getLogger(JaxbMarshallingSoakTest.class);
     public static int iterator = 500;
@@ -57,7 +57,7 @@ public class JaxbMarshallingSoakTest {
 
     static Client client;
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ((ResteasyClientBuilder) ClientBuilder.newBuilder())
                 .connectTimeout(5000, TimeUnit.MILLISECONDS)
@@ -67,7 +67,7 @@ public class JaxbMarshallingSoakTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -115,13 +115,13 @@ public class JaxbMarshallingSoakTest {
         for (int i = 0; i < iterator; i++) {
             WebTarget target = client.target(generateURL("/mpac/add?oneway=true"));
             Response response = target.request().post(Entity.entity(itemString, "application/xml"));
-            Assert.assertEquals(HttpResponseCodes.SC_ACCEPTED, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_ACCEPTED, response.getStatus());
             response.close();
         }
         latch.await(10, TimeUnit.SECONDS);
         String message = String.format(new StringBuilder().append("RESTEasy should successes with marshalling %d times.")
                 .append("But RESTEasy successes only %d times.").toString(), iterator, counter.get());
-        Assert.assertEquals(message, iterator, counter.get());
+        Assertions.assertEquals(iterator, counter.get(), message);
     }
 
     /**
@@ -162,14 +162,14 @@ public class JaxbMarshallingSoakTest {
         threadPool.shutdown();
         try {
             if (!threadPool.awaitTermination(timeout, TimeUnit.SECONDS)) {
-                Assert.fail(String.format("Clients did not terminate in %s seconds", timeout));
+                Assertions.fail(String.format("Clients did not terminate in %s seconds", timeout));
             }
         } catch (InterruptedException e) {
-            Assert.fail("ExecutorService[threadPool] was interrupted");
+            Assertions.fail("ExecutorService[threadPool] was interrupted");
         }
         String message = String.format(new StringBuilder().append("RESTEasy should successes with marshalling %d times.")
                 .append("But RESTEasy successes only %d times.").toString(), iterator, counter.get());
-        Assert.assertEquals(message, iterator, counter.get());
+        Assertions.assertEquals(iterator, counter.get(), message);
     }
 
     private String setString() {

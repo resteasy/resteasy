@@ -5,15 +5,15 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
 import org.jboss.resteasy.test.resource.param.ComplexPathParamTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/unlimited")
 public class ComplexPathParamUnlimitedResource {
     @Path("{1}-{rest:.*}")
     @GET
     public String get(@PathParam("1") int one, @PathParam("rest") String rest) {
-        Assert.assertEquals(ComplexPathParamTest.WRONG_REQUEST_ERROR_MESSAGE, 1, one);
-        Assert.assertEquals(ComplexPathParamTest.WRONG_REQUEST_ERROR_MESSAGE, "on/and/on", rest);
+        Assertions.assertEquals(1, one, ComplexPathParamTest.WRONG_REQUEST_ERROR_MESSAGE);
+        Assertions.assertEquals("on/and/on", rest, ComplexPathParamTest.WRONG_REQUEST_ERROR_MESSAGE);
         return "ok";
     }
 }

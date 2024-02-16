@@ -14,21 +14,21 @@ import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.FeatureContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Unit tests
  * @tpSince RESTEasy 3.0.17
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class ClientBuilderTest {
 
     @SuppressWarnings(value = "unchecked")
@@ -72,8 +72,9 @@ public class ClientBuilderTest {
         int count = client.getConfiguration().getClasses().size();
         client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
 
-        Assert.assertEquals("RESTEASY002155 log not found", 1, getWarningCount() - initCount);
-        Assert.assertEquals(count + 1, client.getConfiguration().getClasses().size());
+        Assertions.assertEquals(1, getWarningCount() - initCount,
+                "RESTEASY002155 log not found");
+        Assertions.assertEquals(count + 1, client.getConfiguration().getClasses().size());
         client.close();
     }
 
@@ -92,11 +93,13 @@ public class ClientBuilderTest {
 
         client.register(reg).register(reg);
         client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
-        Assert.assertEquals("Expect 1 warnining messages of Provider instance is already registered", 1,
-                TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002160);
-        Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2,
-                TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155);
-        Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
+        Assertions.assertEquals(1,
+                TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002160,
+                "Expect 1 warnining messages of Provider instance is already registered");
+        Assertions.assertEquals(2,
+                TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155,
+                "Expect 1 warnining messages of Provider class is already registered");
+        Assertions.assertEquals(count + 1, client.getConfiguration().getInstances().size());
 
         client.close();
     }

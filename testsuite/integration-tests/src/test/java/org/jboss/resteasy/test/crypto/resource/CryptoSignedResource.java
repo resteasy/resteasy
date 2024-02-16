@@ -8,7 +8,7 @@ import jakarta.ws.rs.Produces;
 
 import org.jboss.resteasy.security.smime.SignedInput;
 import org.jboss.resteasy.security.smime.SignedOutput;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/smime/signed")
 public class CryptoSignedResource {
@@ -26,7 +26,7 @@ public class CryptoSignedResource {
     @Consumes("multipart/signed")
     public void post(SignedInput<String> input) throws Exception {
         String str = input.getEntity();
-        Assert.assertEquals("input", str);
-        Assert.assertTrue(input.verify(CryptoCertResource.cert));
+        Assertions.assertEquals("input", str);
+        Assertions.assertTrue(input.verify(CryptoCertResource.cert));
     }
 }

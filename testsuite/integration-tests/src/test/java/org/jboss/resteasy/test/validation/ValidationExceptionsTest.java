@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
@@ -40,18 +40,18 @@ import org.jboss.resteasy.test.validation.resource.ValidationExceptionTestGroup2
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validator provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ValidationExceptionsTest {
 
@@ -87,12 +87,12 @@ public class ValidationExceptionsTest {
         return TestUtil.finishContainerPrepare(war, null, resourceClasses);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -150,29 +150,30 @@ public class ValidationExceptionsTest {
     @OperateOnDeployment(DEF_EXCEPTION)
     public void testConstraintDefinitionException() throws Exception {
         Response response = client.target(generateURL("/", DEF_EXCEPTION)).request().post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDefinitionException"));
+        Assertions.assertTrue(entity.contains("ConstraintDefinitionException"), ERROR_MESSAGE);
     }
 
     @Test
     @OperateOnDeployment(CUSTOM_DEF_EXCEPTION)
     public void testCustomConstraintDefinitionException() throws Exception {
         Response response = client.target(generateURL("/", CUSTOM_DEF_EXCEPTION)).request().post(null);
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDefinitionException"));
-        Assert.assertTrue(ERROR_MESSAGE,
+        Assertions.assertTrue(entity.contains("ConstraintDefinitionException"), ERROR_MESSAGE);
+        Assertions.assertTrue(
                 entity.contains(ValidationExceptionResourceWithIncorrectConstraint.ConstraintDefinitionExceptionMapper.class
-                        .getName()));
+                        .getName()),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -183,31 +184,33 @@ public class ValidationExceptionsTest {
     @OperateOnDeployment(DECL_EXCEPTION)
     public void testConstraintDeclarationException() throws Exception {
         Response response = client.target(generateURL("/", DECL_EXCEPTION)).request().post(null);
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"), HttpResponseCodes.SC_INTERNAL_SERVER_ERROR,
-                response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR,
+                response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"));
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDeclarationException"));
+        Assertions.assertTrue(entity.contains("ConstraintDeclarationException"), ERROR_MESSAGE);
     }
 
     @Test
     @OperateOnDeployment(CUSTOM_DECL_EXCEPTION)
     public void testCustomConstraintDeclarationException() throws Exception {
         Response response = client.target(generateURL("/", CUSTOM_DECL_EXCEPTION)).request().post(null);
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"),
-                HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"));
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDeclarationException"));
-        Assert.assertTrue(ERROR_MESSAGE,
+        Assertions.assertTrue(entity.contains("ConstraintDeclarationException"), ERROR_MESSAGE);
+        Assertions.assertTrue(
                 entity.contains(ValidationExceptionSubResourceWithInvalidOverride.ConstraintDeclarationExceptionMapper.class
-                        .getName()));
+                        .getName()),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -218,29 +221,29 @@ public class ValidationExceptionsTest {
     @OperateOnDeployment(GROUP_DEF_EXCEPTION)
     public void testGroupDefinitionException() throws Exception {
         Response response = client.target(generateURL("/", GROUP_DEF_EXCEPTION)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertTrue(ERROR_MESSAGE, entity.contains("GroupDefinitionException"));
+        Assertions.assertTrue(entity.contains("GroupDefinitionException"), ERROR_MESSAGE);
     }
 
     @Test
     @OperateOnDeployment(CUSTOM_GROUP_DEF_EXCEPTION)
     public void testCustomGroupDefinitionException() throws Exception {
         Response response = client.target(generateURL("/", CUSTOM_GROUP_DEF_EXCEPTION)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertTrue(ERROR_MESSAGE, entity.contains("GroupDefinitionException"));
-        Assert.assertTrue(ERROR_MESSAGE,
-                entity.contains(
-                        ValidationExceptionResourceWithInvalidConstraintGroup.GroupDefinitionExceptionMapper.class.getName()));
+        Assertions.assertTrue(entity.contains("GroupDefinitionException"), ERROR_MESSAGE);
+        Assertions.assertTrue(entity.contains(
+                ValidationExceptionResourceWithInvalidConstraintGroup.GroupDefinitionExceptionMapper.class.getName()),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -255,51 +258,51 @@ public class ValidationExceptionsTest {
         {
             Response response = client.target(generateURL("/parameter/fail", OTHER_EXCEPTION)).request()
                     .post(Entity.text("abc"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-            Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-            Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+            Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+            Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
             String entity = response.readEntity(String.class);
             logger.info("entity: " + entity);
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("ValidationException"));
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("OtherValidationException"));
+            Assertions.assertTrue(entity.contains("ValidationException"), ERROR_MESSAGE);
+            Assertions.assertTrue(entity.contains("OtherValidationException"), ERROR_MESSAGE);
         }
 
         {
             Response response = client.target(generateURL("/parameter/ok", OTHER_EXCEPTION)).request().post(Entity.text("abc"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-            Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-            Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+            Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+            Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
             String entity = response.readEntity(String.class);
             logger.info("entity: " + entity);
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("ValidationException"));
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("OtherValidationException"));
+            Assertions.assertTrue(entity.contains("ValidationException"), ERROR_MESSAGE);
+            Assertions.assertTrue(entity.contains("OtherValidationException"), ERROR_MESSAGE);
         }
 
         {
             Response response = client.target(generateURL("/return/ok", OTHER_EXCEPTION)).request().post(Entity.text("abc"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-            Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-            Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+            Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+            Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
             String entity = response.readEntity(String.class);
             logger.info("entity: " + entity);
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("ValidationException"));
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("OtherValidationException"));
+            Assertions.assertTrue(entity.contains("ValidationException"), ERROR_MESSAGE);
+            Assertions.assertTrue(entity.contains("OtherValidationException"), ERROR_MESSAGE);
         }
 
         {
             Response response = client.target(generateURL("/execution/ok", OTHER_EXCEPTION)).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-            Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-            Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+            Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+            Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
             String entity = response.readEntity(String.class);
             logger.info("last entity: " + entity);
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("OtherValidationException"));
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("OtherValidationException2"));
-            Assert.assertTrue(ERROR_MESSAGE, entity.contains("OtherValidationException3"));
+            Assertions.assertTrue(entity.contains("OtherValidationException"), ERROR_MESSAGE);
+            Assertions.assertTrue(entity.contains("OtherValidationException2"), ERROR_MESSAGE);
+            Assertions.assertTrue(entity.contains("OtherValidationException3"), ERROR_MESSAGE);
         }
 
     }
@@ -312,15 +315,15 @@ public class ValidationExceptionsTest {
     @OperateOnDeployment(CRAZY_EXCEPTION)
     public void testCrazyMessage() throws Exception {
         Response response = client.target(generateURL("/", CRAZY_EXCEPTION)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
+        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
         ResteasyViolationException resteasyViolationException = new ResteasyViolationExceptionImpl(
                 response.readEntity(String.class));
         List<ResteasyConstraintViolation> classViolations = resteasyViolationException.getClassViolations();
-        Assert.assertEquals(1, classViolations.size());
-        Assert.assertEquals(ValidationExceptionCrazyConstraint.DEFAULT_MESSAGE, classViolations.get(0).getMessage());
+        Assertions.assertEquals(1, classViolations.size());
+        Assertions.assertEquals(classViolations.get(0).getMessage(), ValidationExceptionCrazyConstraint.DEFAULT_MESSAGE);
         logger.info("entity: " + resteasyViolationException);
     }
 }

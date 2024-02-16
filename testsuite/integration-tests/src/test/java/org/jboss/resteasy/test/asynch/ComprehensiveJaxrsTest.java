@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -38,11 +38,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -51,7 +51,7 @@ import org.junit.runner.RunWith;
  *                    property.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ComprehensiveJaxrsTest {
     protected static final Logger logger = Logger.getLogger(ComprehensiveJaxrsTest.class.getName());
@@ -74,12 +74,12 @@ public class ComprehensiveJaxrsTest {
 
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         client.close();
     }
@@ -97,7 +97,7 @@ public class ComprehensiveJaxrsTest {
     }
 
     protected static void checkEquals(Object expected, Object actual, Object... msg) {
-        Assert.assertEquals(objectsToString(msg), expected, actual);
+        Assertions.assertEquals(expected, actual, objectsToString(msg));
     }
 
     public static final TimeZone findTimeZoneInDate(String date) {
@@ -459,7 +459,7 @@ public class ComprehensiveJaxrsTest {
 
     private void invokeClear() throws Exception {
         Response response = client.target(getAbsoluteUrl()).path("clear").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
     }
 
     private Future<Response> invokeRequest(String resource) {
@@ -517,7 +517,7 @@ public class ComprehensiveJaxrsTest {
 
     public static void checkTrue(boolean condition, Object... message) {
         if (!condition) {
-            Assert.fail(objectsToString(message));
+            Assertions.fail(objectsToString(message));
         }
     }
 

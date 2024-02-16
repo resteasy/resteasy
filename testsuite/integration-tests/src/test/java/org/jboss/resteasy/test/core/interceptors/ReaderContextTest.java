@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.core.interceptors.resource.ReaderContextArrayListEntityProvider;
 import org.jboss.resteasy.test.core.interceptors.resource.ReaderContextFirstReaderInterceptor;
 import org.jboss.resteasy.test.core.interceptors.resource.ReaderContextFirstWriterInterceptor;
@@ -26,10 +26,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Basic test for reated context
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ReaderContextTest {
 
@@ -66,7 +66,7 @@ public class ReaderContextTest {
         return PortProviderUtil.generateURL(path, ReaderContextTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -86,19 +86,19 @@ public class ReaderContextTest {
         target.register(ReaderContextLinkedListEntityProvider.class);
         Response response = target.request().post(Entity.text("plaintext"));
         if (response.getStatus() != Response.Status.OK.getStatusCode()) {
-            Assert.fail("Response was not OK (200): " + response.readEntity(String.class));
+            Assertions.fail("Response was not OK (200): " + response.readEntity(String.class));
         }
         response.getHeaders().add(ReaderContextResource.HEADERNAME,
                 ReaderContextFirstReaderInterceptor.class.getName());
         @SuppressWarnings("unchecked")
         List<String> list = response.readEntity(List.class);
-        Assert.assertTrue("Returned list in not instance of ArrayList", list instanceof ArrayList);
+        Assertions.assertTrue(list instanceof ArrayList, "Returned list in not instance of ArrayList");
         String entity = list.get(0);
-        Assert.assertTrue("Wrong interceptor type in response",
-                entity.contains(ReaderContextSecondReaderInterceptor.class.getName()));
-        Assert.assertTrue("Wrong interceptor annotation in response",
-                entity.contains(ReaderContextSecondReaderInterceptor.class.getAnnotations()[0]
-                        .annotationType().getName()));
+        Assertions.assertTrue(entity.contains(ReaderContextSecondReaderInterceptor.class.getName()),
+                "Wrong interceptor type in response");
+        Assertions.assertTrue(entity.contains(ReaderContextSecondReaderInterceptor.class.getAnnotations()[0]
+                .annotationType().getName()),
+                "Wrong interceptor annotation in response");
 
         client.close();
     }

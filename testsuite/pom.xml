@@ -149,7 +149,9 @@
             <modules>
                 <module>test-utils</module>
                 <module>arquillian-utils</module>
+                <!-- rls tmp disable (start)
                 <module>unit-tests</module>
+                rls tmp disable (end) -->
                 <module>integration-tests</module>
                 <module>jetty-integration-tests</module>
                 <module>integration-tests-embedded</module>

@@ -8,7 +8,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.test.cdi.injection.WeldSubdeploymentTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/request")
 @RequestScoped
@@ -20,7 +20,7 @@ public class WeldSubdeploymentRequestResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public void getMethod() {
-        Assert.assertNotNull(WeldSubdeploymentTest.ERROR_MESSAGE, bean.entityManagerFactory());
+        Assertions.assertNotNull(bean.entityManagerFactory(), WeldSubdeploymentTest.ERROR_MESSAGE);
     }
 
 }

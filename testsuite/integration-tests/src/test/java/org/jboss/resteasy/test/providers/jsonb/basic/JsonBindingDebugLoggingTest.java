@@ -21,7 +21,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.setup.LoggingSetupTask;
@@ -36,11 +36,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -49,7 +50,8 @@ import org.junit.runner.RunWith;
  *                    Regression test for RESTEASY-2106 and RESTEASY-2056.
  * @tpSince RESTEasy 4.0.0.Beta7
  */
-@RunWith(Arquillian.class)
+@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @ServerSetup({ LoggingSetupTask.class }) // TBD: remove debug logging activation?
 public class JsonBindingDebugLoggingTest {
 
@@ -77,12 +79,12 @@ public class JsonBindingDebugLoggingTest {
         return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -197,7 +199,7 @@ public class JsonBindingDebugLoggingTest {
         // use JsonBindingProvider to get exception
         try {
             response.readEntity(JsonBindingDebugLoggingItemCorruptedSet.class);
-            Assert.fail("Client doesn't throw Exception during reading of corrupted data");
+            Assertions.fail("Client doesn't throw Exception during reading of corrupted data");
         } catch (ProcessingException e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));

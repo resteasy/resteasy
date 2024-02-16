@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.internal.BasicAuthentication;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
@@ -18,11 +18,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  */
 @ServerSetup({ SecurityContextTest.SecurityDomainSetup.class })
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SecurityContextTest {
 
@@ -44,7 +44,7 @@ public class SecurityContextTest {
     private Client authorizedClient;
     private Client nonauthorizedClient;
 
-    @Before
+    @BeforeEach
     public void initClient() {
 
         // Create jaxrs client
@@ -57,7 +57,7 @@ public class SecurityContextTest {
 
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         authorizedClient.close();
         nonauthorizedClient.close();
@@ -88,8 +88,8 @@ public class SecurityContextTest {
     public void testSecurityContextAuthorized() {
         Response response = authorizedClient
                 .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName())).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Good user bill", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("Good user bill", response.readEntity(String.class));
     }
 
     /**
@@ -100,8 +100,8 @@ public class SecurityContextTest {
     public void testSecurityContextNonAuthorized() {
         Response response = nonauthorizedClient
                 .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName())).request().get();
-        Assert.assertEquals("User ordinaryUser is not authorized", response.readEntity(String.class));
-        Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+        Assertions.assertEquals("User ordinaryUser is not authorized", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
     }
 
     /**
@@ -114,8 +114,8 @@ public class SecurityContextTest {
         Response response = authorizedClient
                 .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName() + "Filter")).request()
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Good user bill", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("Good user bill", response.readEntity(String.class));
     }
 
     /**
@@ -128,8 +128,8 @@ public class SecurityContextTest {
         Response response = nonauthorizedClient
                 .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName() + "Filter")).request()
                 .get();
-        Assert.assertEquals("User ordinaryUser is not authorized, coming from filter", response.readEntity(String.class));
-        Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+        Assertions.assertEquals("User ordinaryUser is not authorized, coming from filter", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

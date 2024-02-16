@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.annotations.FollowUpRequired;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path(value = "/sayhello")
 @RequestScoped
@@ -29,7 +29,7 @@ public class WhiteSpaceResource {
     @Path("/en/{in}")
     @Produces("text/plain")
     public String echo(@PathParam(value = "in") String in) {
-        Assert.assertEquals(SPACES_REQUEST, in);
+        Assertions.assertEquals(SPACES_REQUEST, in);
         List<String> params = info.getPathParameters(true).get("in");
         logger.info("DECODE" + params.get(0));
 

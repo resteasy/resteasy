@@ -34,15 +34,15 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:dkafetzi@redhat.com">Dimitris Kafetzis</a>
@@ -50,7 +50,7 @@ import org.junit.runner.RunWith;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 7.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class RequestNamedQueryParameterTest {
 
@@ -86,8 +86,8 @@ public class RequestNamedQueryParameterTest {
                 Response response = client.target(uri)
                         .proxy(TestResource.class)
                         .query(List.of(), List.of(), List.of())) {
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("", response.readEntity(String.class));
         }
     }
 
@@ -106,8 +106,8 @@ public class RequestNamedQueryParameterTest {
                         .proxy(TestResource.class)
                         .query(List.of("stuff1", "stuff2"), List.of(),
                                 List.of("stuff1", "stuff2"))) {
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("listA=stuff1&listA=stuff2&listC=stuff1&listC=stuff2", response.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("listA=stuff1&listA=stuff2&listC=stuff1&listC=stuff2", response.readEntity(String.class));
         }
     }
 
@@ -124,8 +124,8 @@ public class RequestNamedQueryParameterTest {
                         .proxy(TestResource.class)
                         .query(List.of("stuff1", "stuff2"),
                                 List.of("stuff1", "stuff2"), List.of("stuff1", "stuff2"))) {
-            Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-            Assert.assertEquals("listA=stuff1&listA=stuff2&listB=stuff1&listB=stuff2&listC=stuff1&listC=stuff2",
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("listA=stuff1&listA=stuff2&listB=stuff1&listB=stuff2&listC=stuff1&listC=stuff2",
                     response.readEntity(String.class));
         }
     }

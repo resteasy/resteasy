@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.test.crypto.resource.PKCS7SignatureSmokeResource;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Crypto
@@ -32,18 +32,18 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for response secured by PKCS7SignatureInput
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PKCS7SignatureSmokeTest {
     protected static final Logger logger = Logger.getLogger(PKCS7SignatureSmokeTest.class.getName());
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -87,6 +87,6 @@ public class PKCS7SignatureSmokeTest {
         @SuppressWarnings(value = "unchecked")
         String output = (String) signed.getEntity(String.class, MediaType.TEXT_PLAIN_TYPE);
         logger.info(output);
-        Assert.assertEquals("Wrong content of response", "hello world", output);
+        Assertions.assertEquals("hello world", output, "Wrong content of response");
     }
 }

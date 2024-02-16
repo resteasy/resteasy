@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -25,11 +25,11 @@ import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -37,18 +37,18 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for asyncHttpServlet module. Check cooperation during more requests and exception mapping.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JaxrsAsyncServletTest {
 
     static ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -79,11 +79,12 @@ public class JaxrsAsyncServletTest {
         long start = System.currentTimeMillis();
         Client client = ClientBuilder.newClient();
         Response response = client.target(generateURL("/jaxrs/injection-failure/abcd")).request().get();
-        Assert.assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
-        Assert.assertTrue("ForbiddenException was not thrown",
-                response.readEntity(String.class).contains(NotFoundException.class.getName()));
+        Assertions.assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
+        Assertions.assertTrue(
+                response.readEntity(String.class).contains(NotFoundException.class.getName()),
+                "ForbiddenException was not thrown");
         long end = System.currentTimeMillis() - start;
-        Assert.assertTrue("Wrong time of request", end < 1000); // should take less than 1 second
+        Assertions.assertTrue(end < 1000, "Wrong time of request"); // should take less than 1 second
         response.close();
         client.close();
     }
@@ -97,11 +98,11 @@ public class JaxrsAsyncServletTest {
         long start = System.currentTimeMillis();
         Client client = ClientBuilder.newClient();
         Response response = client.target(generateURL("/jaxrs/method-failure")).request().get();
-        Assert.assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
-        Assert.assertTrue("ForbiddenException was not thrown",
-                response.readEntity(String.class).contains(ForbiddenException.class.getName()));
+        Assertions.assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
+        Assertions.assertTrue(response.readEntity(String.class).contains(ForbiddenException.class.getName()),
+                "ForbiddenException was not thrown");
         long end = System.currentTimeMillis() - start;
-        Assert.assertTrue("Wrong time of request", end < 1000); // should take less than 1 second
+        Assertions.assertTrue(end < 1000, "Wrong time of request"); // should take less than 1 second
         response.close();
         client.close();
     }
@@ -116,11 +117,12 @@ public class JaxrsAsyncServletTest {
         long start = System.currentTimeMillis();
         Response response = client.target(generateURL("/jaxrs")).request().get();
         long end = System.currentTimeMillis() - start;
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "hello", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("hello", response.readEntity(String.class),
+                "Wrong content of response");
         // The time out is set to 2 seconds, this is a best guess test and if future failures are present this should be
         // reconsidered with some sort of offset.
-        Assert.assertTrue("Wrong time of request", end < 2000);
+        Assertions.assertTrue(end < 2000, "Wrong time of request");
         response.close();
         client.close();
     }
@@ -133,7 +135,7 @@ public class JaxrsAsyncServletTest {
     public void testTimeout() throws Exception {
         Client client = ClientBuilder.newClient();
         Response response = client.target(generateURL("/jaxrs/timeout")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_REQUEST_TIMEOUT, response.getStatus()); // exception mapper from another test overrides 503 to 408
+        Assertions.assertEquals(HttpResponseCodes.SC_REQUEST_TIMEOUT, response.getStatus()); // exception mapper from another test overrides 503 to 408
         response.close();
         client.close();
     }
@@ -146,7 +148,7 @@ public class JaxrsAsyncServletTest {
     public void testCancel() throws Exception {
         Client client = ClientBuilder.newClient();
         Response response = client.target(generateURL("/jaxrs/cancel")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
         response.close();
 
         // It is possible, that thread created in JaxrsAsyncServletJaxrsResource.cancel method
@@ -163,7 +165,7 @@ public class JaxrsAsyncServletTest {
             }
             Thread.sleep(1000);
         }
-        Assert.assertTrue("Response was not canceled correctly", ok);
+        Assertions.assertTrue(ok, "Response was not canceled correctly");
         client.close();
     }
 
@@ -178,9 +180,11 @@ public class JaxrsAsyncServletTest {
         long start = System.currentTimeMillis();
         Response response = client.target(generateURL("/jaxrs/resume/object")).request().get();
         long end = System.currentTimeMillis() - start;
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "bill", response.readEntity(JaxrsAsyncServletXmlData.class).getName());
-        Assert.assertTrue("Wrong time of request", end < 1500);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("bill",
+                response.readEntity(JaxrsAsyncServletXmlData.class).getName(),
+                "Wrong content of response");
+        Assertions.assertTrue(end < 1500, "Wrong time of request");
         response.close();
         client.close();
     }
@@ -196,9 +200,11 @@ public class JaxrsAsyncServletTest {
         long start = System.currentTimeMillis();
         Response response = client.target(generateURL("/jaxrs/resume/object/thread")).request().get();
         long end = System.currentTimeMillis() - start;
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "bill", response.readEntity(JaxrsAsyncServletXmlData.class).getName());
-        Assert.assertTrue("Wrong time of request", end < 1000); // should take less than 1 second
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("bill",
+                response.readEntity(JaxrsAsyncServletXmlData.class).getName(),
+                "Wrong content of response");
+        Assertions.assertTrue(end < 1000, "Wrong time of request"); // should take less than 1 second
         response.close();
         client.close();
     }

@@ -12,25 +12,25 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.client.resource.ClientFormResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientFormParamTest extends ClientTestBase {
 
@@ -56,12 +56,12 @@ public class ClientFormParamTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, ClientFormResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -77,10 +77,11 @@ public class ClientFormParamTest extends ClientTestBase {
         final ClientFormResourceInterface proxy = ProxyBuilder.builder(ClientFormResourceInterface.class,
                 client.target(generateURL(""))).build();
         String result = proxy.put("value");
-        Assert.assertEquals("The result doesn't match the expected one", result, "value");
+        Assertions.assertEquals(result, "value", "The result doesn't match the expected one");
         result = client.target(generateURL("/form")).request().post(Entity.form(new Form().param("value", "value")),
                 String.class);
-        Assert.assertEquals("The result doesn't match the expected on, when using Form parameter", result, "value");
+        Assertions.assertEquals(result, "value",
+                "The result doesn't match the expected on, when using Form parameter");
     }
 
     /**
@@ -94,12 +95,12 @@ public class ClientFormParamTest extends ClientTestBase {
                 client.target(generateURL(""))).build();
         Form form = new Form().param("bill", "burke").param("foo", "bar");
         Form resultForm = proxy.post(form);
-        Assert.assertEquals("The form map size on the response doesn't match the original", resultForm.asMap().size(),
-                form.asMap().size());
-        Assert.assertEquals("The resulting form doesn't contain the value for 'bill'",
-                resultForm.asMap().getFirst("bill"), "burke");
-        Assert.assertEquals("The resulting form doesn't contain the value for 'foo'", resultForm.asMap()
-                .getFirst("foo"), "bar");
+        Assertions.assertEquals(resultForm.asMap().size(), form.asMap().size(),
+                "The form map size on the response doesn't match the original");
+        Assertions.assertEquals(resultForm.asMap().getFirst("bill"), "burke",
+                "The resulting form doesn't contain the value for 'bill'");
+        Assertions.assertEquals(resultForm.asMap().getFirst("foo"), "bar",
+                "The resulting form doesn't contain the value for 'foo'");
     }
 
 }

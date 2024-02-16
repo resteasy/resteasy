@@ -19,7 +19,7 @@
 
 package org.jboss.resteasy.utils;
 
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 
 /**
  * Utilities for test assumptions.
@@ -49,6 +49,6 @@ public class AssumeUtils {
      * @param msg the message for the assumption
      */
     public static void assumeSecurityManagerDisabled(final String msg) {
-        Assume.assumeTrue(msg, System.getProperty("security.manager") == null);
+        Assumptions.assumeTrue(System.getProperty("security.manager") == null, msg);
     }
 }

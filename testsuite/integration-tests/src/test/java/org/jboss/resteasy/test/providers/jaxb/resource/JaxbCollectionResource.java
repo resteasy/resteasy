@@ -8,7 +8,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class JaxbCollectionResource {
@@ -17,8 +17,10 @@ public class JaxbCollectionResource {
     @Consumes("application/xml")
     @POST
     public JaxbCollectionFoo[] naked(JaxbCollectionFoo[] foo) {
-        Assert.assertEquals("The unmarshalled array doesn't contain 1 item, which is expected", 1, foo.length);
-        Assert.assertEquals("The unmarshalled array doesn't contain correct element value", foo[0].getTest(), "hello");
+        Assertions.assertEquals(1, foo.length,
+                "The unmarshalled array doesn't contain 1 item, which is expected");
+        Assertions.assertEquals(foo[0].getTest(), "hello",
+                "The unmarshalled array doesn't contain correct element value");
         return foo;
     }
 
@@ -29,8 +31,10 @@ public class JaxbCollectionResource {
     @Wrapped(element = "list", namespace = "", prefix = "")
     public List<JaxbCollectionFoo> wrapped(
             @Wrapped(element = "list", namespace = "", prefix = "") List<JaxbCollectionFoo> list) {
-        Assert.assertEquals("The unmarshalled list doesn't contain 1 item, which is expected", 1, list.size());
-        Assert.assertEquals("The unmarshalled list doesn't contain correct element value", list.get(0).getTest(), "hello");
+        Assertions.assertEquals(1, list.size(),
+                "The unmarshalled list doesn't contain 1 item, which is expected");
+        Assertions.assertEquals(list.get(0).getTest(), "hello",
+                "The unmarshalled list doesn't contain correct element value");
         return list;
     }
 

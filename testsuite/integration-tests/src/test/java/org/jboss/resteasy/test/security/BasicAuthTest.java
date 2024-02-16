@@ -16,9 +16,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -33,12 +32,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -47,9 +46,9 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  */
 @ServerSetup({ BasicAuthTest.SecurityDomainSetup.class })
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Category({ ExpectedFailingOnWildFly18.class }) //WFLY-12655
+@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class BasicAuthTest {
 
     private static final String WRONG_RESPONSE = "Wrong response content.";
@@ -64,7 +63,7 @@ public class BasicAuthTest {
     private static ResteasyClient unauthorizedClientUsingRequestFilter;
     private static ResteasyClient unauthorizedClientUsingRequestFilterWithWrongPassword;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         // authorizedClient
         {
@@ -107,7 +106,7 @@ public class BasicAuthTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         authorizedClient.close();
         unauthorizedClient.close();
@@ -143,8 +142,8 @@ public class BasicAuthTest {
     @Test
     public void testProxy() throws Exception {
         BasicAuthBaseProxy proxy = authorizedClient.target(generateURL("/")).proxyBuilder(BasicAuthBaseProxy.class).build();
-        Assert.assertEquals(WRONG_RESPONSE, proxy.get(), "hello");
-        Assert.assertEquals(WRONG_RESPONSE, proxy.getAuthorized(), "authorized");
+        Assertions.assertEquals(proxy.get(), "hello", WRONG_RESPONSE);
+        Assertions.assertEquals(proxy.getAuthorized(), "authorized", WRONG_RESPONSE);
     }
 
     /**
@@ -156,11 +155,11 @@ public class BasicAuthTest {
         BasicAuthBaseProxy proxy = noAutorizationClient.target(generateURL("/")).proxyBuilder(BasicAuthBaseProxy.class).build();
         try {
             proxy.getFailure();
-            Assert.fail();
+            Assertions.fail();
         } catch (NotAuthorizedException e) {
-            Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, e.getResponse().getStatus());
-            Assert.assertTrue("WWW-Authenticate header is not included",
-                    e.getResponse().getHeaderString("WWW-Authenticate").contains("Basic realm="));
+            Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, e.getResponse().getStatus());
+            Assertions.assertTrue(e.getResponse().getHeaderString("WWW-Authenticate").contains("Basic realm="),
+                    "WWW-Authenticate header is not included");
         }
     }
 
@@ -173,36 +172,36 @@ public class BasicAuthTest {
         // authorized client
         {
             Response response = authorizedClient.target(generateURL("/secured")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("hello", response.readEntity(String.class), WRONG_RESPONSE);
         }
 
         {
             Response response = authorizedClient.target(generateURL("/secured/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(WRONG_RESPONSE, "authorized", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("authorized", response.readEntity(String.class), WRONG_RESPONSE);
         }
 
         {
             Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-            Assert.assertEquals(WRONG_RESPONSE, ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+            Assertions.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class), WRONG_RESPONSE);
         }
         {
             Response response = authorizedClient.target(generateURL("/secured3/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(WRONG_RESPONSE, "authorized", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("authorized", response.readEntity(String.class), WRONG_RESPONSE);
         }
 
         // unauthorized client
         {
             Response response = unauthorizedClient.target(generateURL("/secured3/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-            Assert.assertEquals(WRONG_RESPONSE, ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+            Assertions.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class), WRONG_RESPONSE);
         }
         {
             Response response = unauthorizedClient.target(generateURL("/secured3/anybody")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
         }
     }
@@ -214,7 +213,7 @@ public class BasicAuthTest {
     @Test
     public void test579() throws Exception {
         Response response = authorizedClient.target(generateURL("/secured2")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
         response.close();
     }
 
@@ -226,22 +225,22 @@ public class BasicAuthTest {
     public void testSecurityFailure() throws Exception {
         {
             Response response = noAutorizationClient.target(generateURL("/secured")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
-            Assert.assertTrue("WWW-Authenticate header is not included",
-                    response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
+            Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+            Assertions.assertTrue(response.getHeaderString("WWW-Authenticate").contains("Basic realm="),
+                    "WWW-Authenticate header is not included");
             response.close();
         }
 
         {
             Response response = authorizedClient.target(generateURL("/secured/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(WRONG_RESPONSE, "authorized", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("authorized", response.readEntity(String.class), WRONG_RESPONSE);
         }
 
         {
             Response response = unauthorizedClient.target(generateURL("/secured/authorized")).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-            Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+            Assertions.assertEquals(response.readEntity(String.class), ACCESS_FORBIDDEN_MESSAGE);
         }
     }
 
@@ -259,8 +258,8 @@ public class BasicAuthTest {
 
         ResteasyClient authorizedClient = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals(response.readEntity(String.class), ACCESS_FORBIDDEN_MESSAGE);
         authorizedClient.close();
     }
 
@@ -271,11 +270,11 @@ public class BasicAuthTest {
     @Test
     public void testContentTypeWithForbiddenMessage() {
         Response response = unauthorizedClient.target(generateURL("/secured/denyWithContentType")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        Assert.assertEquals("Incorrect Content-type header", "text/plain;charset=UTF-8",
-                response.getHeaderString("Content-type"));
-        Assert.assertEquals("Missing forbidden message in the response", ACCESS_FORBIDDEN_MESSAGE,
-                response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals("text/plain;charset=UTF-8", response.getHeaderString("Content-type"),
+                "Incorrect Content-type header");
+        Assertions.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class),
+                "Missing forbidden message in the response");
     }
 
     /**
@@ -285,11 +284,11 @@ public class BasicAuthTest {
     @Test
     public void testContentTypeWithUnauthorizedMessage() {
         Response response = noAutorizationClient.target(generateURL("/secured/denyWithContentType")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
-        Assert.assertEquals("Incorrect Content-type header", "text/html;charset=UTF-8",
-                response.getHeaderString("Content-type"));
-        Assert.assertTrue("WWW-Authenticate header is not included",
-                response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
+        Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+        Assertions.assertEquals("text/html;charset=UTF-8", response.getHeaderString("Content-type"),
+                "Incorrect Content-type header");
+        Assertions.assertTrue(response.getHeaderString("WWW-Authenticate").contains("Basic realm="),
+                "WWW-Authenticate header is not included");
     }
 
     /**
@@ -299,8 +298,8 @@ public class BasicAuthTest {
     @Test
     public void testWithClientRequestFilterAuthorizedUser() {
         Response response = authorizedClientUsingRequestFilter.target(generateURL("/secured/authorized")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE, "authorized", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("authorized", response.readEntity(String.class), WRONG_RESPONSE);
     }
 
     /**
@@ -311,9 +310,9 @@ public class BasicAuthTest {
     public void testWithClientRequestFilterWrongPassword() {
         Response response = unauthorizedClientUsingRequestFilterWithWrongPassword.target(generateURL("/secured/authorized"))
                 .request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
-        Assert.assertTrue("WWW-Authenticate header is not included",
-                response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
+        Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+        Assertions.assertTrue(response.getHeaderString("WWW-Authenticate").contains("Basic realm="),
+                "WWW-Authenticate header is not included");
     }
 
     /**
@@ -324,8 +323,9 @@ public class BasicAuthTest {
     @Test
     public void testWithClientRequestFilterUnauthorizedUser() {
         Response response = unauthorizedClientUsingRequestFilter.target(generateURL("/secured/authorized")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE, ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class),
+                WRONG_RESPONSE);
     }
 
     /**
@@ -342,7 +342,7 @@ public class BasicAuthTest {
                 jarPath,
                 new String[] { generateURL("/secured/authorized") });
         String line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
-        Assert.assertEquals("200", line);
+        Assertions.assertEquals("200", line);
         process.destroy();
 
         process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
@@ -350,10 +350,10 @@ public class BasicAuthTest {
                 jarPath,
                 new String[] { generateURL("/secured/authorized") });
         line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
-        Assert.assertEquals("401", line);
+        Assertions.assertEquals("401", line);
         process.destroy();
 
-        Assert.assertTrue(new File(jarPath).delete());
+        Assertions.assertTrue(new File(jarPath).delete());
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

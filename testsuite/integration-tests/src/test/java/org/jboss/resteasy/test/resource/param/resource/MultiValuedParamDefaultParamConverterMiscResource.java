@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.annotations.Separator;
 import org.jboss.resteasy.test.annotations.FollowUpRequired;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("misc")
 @RequestScoped
@@ -52,35 +52,35 @@ public class MultiValuedParamDefaultParamConverterMiscResource {
     @Path("regex/client/cookie")
     @GET
     public String regexClientCookie(@Separator("-") @CookieParam("p") Set<String> ss) {
-        Assert.assertEquals(1, ss.size());
+        Assertions.assertEquals(1, ss.size());
         return headers.getHeaderString("Cookie");
     }
 
     @Path("regex/client/header")
     @GET
     public String regexClientHeader(@Separator("-") @HeaderParam("p") Set<String> ss) {
-        Assert.assertEquals(1, ss.size());
+        Assertions.assertEquals(1, ss.size());
         return headers.getHeaderString("p");
     }
 
     @Path("regex/client/matrix")
     @GET
     public String regexClientMatrix(@Separator("-") @MatrixParam("p") Set<String> ss) {
-        Assert.assertEquals(1, ss.size());
+        Assertions.assertEquals(1, ss.size());
         return info.getRequestUri().toString();
     }
 
     @Path("regex/client/path/{p}")
     @GET
     public String regexClientPath(@Separator("-") @PathParam("p") Set<String> ss) {
-        Assert.assertEquals(1, ss.size());
+        Assertions.assertEquals(1, ss.size());
         return info.getRequestUri().toString();
     }
 
     @Path("regex/client/query")
     @GET
     public String regexClientQuery(@Separator("-") @QueryParam("p") Set<String> ss) {
-        Assert.assertEquals(1, ss.size());
+        Assertions.assertEquals(1, ss.size());
         return info.getRequestUri().toString();
     }
 

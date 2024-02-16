@@ -9,7 +9,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperAbstractExceptionMapper;
@@ -22,18 +22,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ExceptionMapperTest {
 
@@ -52,12 +52,12 @@ public class ExceptionMapperTest {
         return PortProviderUtil.generateURL(path, ExceptionMapperTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -75,12 +75,12 @@ public class ExceptionMapperTest {
     public void testCustomExceptionsUsed() {
         Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ExceptionMapperMyCustomExceptionMapper.class,
                 ExceptionMapper.class)[0];
-        Assert.assertEquals(ExceptionMapperMyCustomException.class, exceptionType);
+        Assertions.assertEquals(ExceptionMapperMyCustomException.class, exceptionType);
         Response response = client.target(generateURL("/resource/custom")).request().get();
-        Assert.assertNotEquals("General RuntimeException mapper was used instead of more specific one",
-                HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("custom", response.readEntity(String.class));
+        Assertions.assertNotEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus(),
+                "General RuntimeException mapper was used instead of more specific one");
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(response.readEntity(String.class), "custom");
     }
 
     /**
@@ -92,8 +92,8 @@ public class ExceptionMapperTest {
     @Test
     public void testWAEResponseUsed() {
         Response response = client.target(generateURL("/resource/responseok")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("hello", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(response.readEntity(String.class), "hello");
     }
 
     /**
@@ -106,8 +106,8 @@ public class ExceptionMapperTest {
     @Test
     public void testCustomSubExceptionsUsed() {
         Response response = client.target(generateURL("/resource/sub")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("custom", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(response.readEntity(String.class), "custom");
     }
 
     /**
@@ -119,7 +119,7 @@ public class ExceptionMapperTest {
     @Test
     public void testNotFoundExceptionMapping() {
         Response response = client.target(generateURL("/bogus")).request().get();
-        Assert.assertEquals(410, response.getStatus());
+        Assertions.assertEquals(410, response.getStatus());
         response.close();
     }
 }

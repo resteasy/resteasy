@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceAppScoped;
@@ -25,11 +25,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validation
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1459
  * @tpSince RESTEasy 3.1.0.Final
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ApplicationScopeValidationTest {
 
@@ -59,12 +59,12 @@ public class ApplicationScopeValidationTest {
 
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         client.close();
     }
@@ -76,14 +76,14 @@ public class ApplicationScopeValidationTest {
         dto.setPath("path");
         dto.setTest("test");
         Response response = target.request().post(Entity.entity(dto, MediaType.APPLICATION_JSON));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
 
         response = target.request().post(Entity.entity(null, MediaType.APPLICATION_JSON));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         Object header = response.getHeaders().getFirst(org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER);
-        Assert.assertTrue(header instanceof String);
-        Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
+        Assertions.assertTrue(header instanceof String);
+        Assertions.assertTrue(Boolean.valueOf(String.class.cast(header)));
         ViolationReport report = response.readEntity(ViolationReport.class);
 
         // Show that server didn't call resource method, which would have caused a return value violation.
@@ -98,14 +98,14 @@ public class ApplicationScopeValidationTest {
         dto.setPath("path");
         dto.setTest("test");
         Response response = target.request().post(Entity.entity(dto, MediaType.APPLICATION_JSON));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
 
         response = target.request().post(Entity.entity(null, MediaType.APPLICATION_JSON));
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         Object header = response.getHeaders().getFirst(org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER);
-        Assert.assertTrue(header instanceof String);
-        Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
+        Assertions.assertTrue(header instanceof String);
+        Assertions.assertTrue(Boolean.valueOf(String.class.cast(header)));
         ViolationReport report = response.readEntity(ViolationReport.class);
 
         // Show that server didn't call resource method, which would have caused a return value violation.
@@ -115,9 +115,9 @@ public class ApplicationScopeValidationTest {
 
     private void countViolations(ViolationReport e, int propertyCount, int classCount, int parameterCount,
             int returnValueCount) {
-        Assert.assertEquals(propertyCount, e.getPropertyViolations().size());
-        Assert.assertEquals(classCount, e.getClassViolations().size());
-        Assert.assertEquals(parameterCount, e.getParameterViolations().size());
-        Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+        Assertions.assertEquals(propertyCount, e.getPropertyViolations().size());
+        Assertions.assertEquals(classCount, e.getClassViolations().size());
+        Assertions.assertEquals(parameterCount, e.getParameterViolations().size());
+        Assertions.assertEquals(returnValueCount, e.getReturnValueViolations().size());
     }
 }

@@ -19,7 +19,7 @@
 
 package org.jboss.resteasy.test.regex;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,7 +31,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.regex.resource.ProxyPathParamRegexResource;
@@ -39,17 +39,17 @@ import org.jboss.resteasy.test.regex.resource.RegexInterface;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests for RESTEASY-3291
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PathParamRegexTest {
 
@@ -58,12 +58,12 @@ public class PathParamRegexTest {
     @ArquillianResource
     private URI uri;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -89,7 +89,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "QueryParamq%20p", entity);
+        assertEquals("QueryParamq%20p", entity, "Wrong string returned ");
         response.close();
     }
 
@@ -102,7 +102,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "simplew", entity);
+        assertEquals("simplew", entity, "Wrong string returned ");
         response.close();
     }
 
@@ -116,7 +116,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "xpathx", entity);
+        assertEquals("xpathx", entity, "Wrong string returned ");
         response.close();
     }
 
@@ -131,7 +131,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "path=x:query=q p", entity);
+        assertEquals("path=x:query=q p", entity, "Wrong string returned ");
         response.close();
     }
 
@@ -144,7 +144,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "lower=xZ:upper=Y", entity);
+        assertEquals("lower=xZ:upper=Y", entity, "Wrong string returned ");
         response.close();
     }
 
@@ -157,7 +157,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "string=amw:path=xpath", entity);
+        assertEquals("string=amw:path=xpath", entity, "Wrong string returned ");
         response.close();
     }
 
@@ -171,7 +171,7 @@ public class PathParamRegexTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong string returned ", "string=abc:path=xpath", entity);
+        assertEquals("string=abc:path=xpath", entity, "Wrong string returned ");
         response.close();
     }
 

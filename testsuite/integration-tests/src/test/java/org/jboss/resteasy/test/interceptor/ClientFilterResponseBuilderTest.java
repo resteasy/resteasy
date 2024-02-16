@@ -8,24 +8,24 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionResource;
 import org.jboss.resteasy.test.interceptor.resource.ResponseBuilderCustomResponseFilter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Demonstrates that a Response filter can process the entity data in a response object
  * and the entity can be properly accessed by the client call.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientFilterResponseBuilderTest {
 
@@ -40,12 +40,12 @@ public class ClientFilterResponseBuilderTest {
 
     static Client client;
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         client.close();
     }
@@ -63,10 +63,10 @@ public class ClientFilterResponseBuilderTest {
             Object resultObj = response.getEntity();
             String result = response.readEntity(String.class);
             int status = response.getStatus();
-            Assert.assertEquals("test", result);
-            Assert.assertEquals(200, status);
+            Assertions.assertEquals("test", result);
+            Assertions.assertEquals(200, status);
         } catch (ProcessingException pe) {
-            Assert.fail(pe.getMessage());
+            Assertions.fail(pe.getMessage());
         }
     }
 }

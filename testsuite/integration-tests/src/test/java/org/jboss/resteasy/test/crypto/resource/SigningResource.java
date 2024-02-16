@@ -29,7 +29,7 @@ import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.util.ParameterParser;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/signed")
 public class SigningResource {
@@ -65,7 +65,7 @@ public class SigningResource {
     public Response deleteRequestOnly(@Context HttpHeaders headers,
             @Context UriInfo uriInfo,
             @HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature) {
-        Assert.assertNotNull(signature);
+        Assertions.assertNotNull(signature);
         Verification verification = new Verification(keys.getPublic());
         verification.setBodyHashRequired(false);
         verification.getRequiredAttributes().put("method", "GET");
@@ -156,8 +156,8 @@ public class SigningResource {
     @Consumes("text/plain")
     @Verify
     public void post(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature, String input) {
-        Assert.assertNotNull(signature);
-        Assert.assertEquals(input, "hello world");
+        Assertions.assertNotNull(signature);
+        Assertions.assertEquals(input, "hello world");
     }
 
     @POST
@@ -165,8 +165,8 @@ public class SigningResource {
     @Path("verify-manual")
     public void verifyManual(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature, @Context HttpHeaders headers,
             MarshalledEntity<String> input) throws Exception {
-        Assert.assertNotNull(signature);
-        Assert.assertEquals(input.getEntity(), "hello world");
+        Assertions.assertNotNull(signature);
+        Assertions.assertEquals(input.getEntity(), "hello world");
 
         signature.verify(headers.getRequestHeaders(), input.getMarshalledBytes(), keys.getPublic());
     }
@@ -232,7 +232,7 @@ public class SigningResource {
     @Consumes("text/plain")
     @Verify(bodyHashRequired = false)
     public String get(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature) {
-        Assert.assertNotNull(signature);
+        Assertions.assertNotNull(signature);
         return "xyz";
     }
 }

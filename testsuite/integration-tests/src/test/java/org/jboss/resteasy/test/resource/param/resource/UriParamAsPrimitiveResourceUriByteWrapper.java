@@ -5,13 +5,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
 import org.jboss.resteasy.test.resource.param.UriParamAsPrimitiveTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/byte/wrapper/{arg}")
 public class UriParamAsPrimitiveResourceUriByteWrapper {
     @GET
     public String doGet(@PathParam("arg") Byte v) {
-        Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 127 == v.byteValue());
+        Assertions.assertTrue(127 == v.byteValue(), UriParamAsPrimitiveTest.ERROR_CODE);
         return "content";
     }
 }

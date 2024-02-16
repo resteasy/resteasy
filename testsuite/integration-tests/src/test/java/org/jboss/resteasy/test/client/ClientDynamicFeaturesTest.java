@@ -8,7 +8,7 @@ import java.util.Set;
 import jakarta.ws.rs.container.DynamicFeature;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesClientFeature1;
@@ -21,9 +21,9 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1083
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class ClientDynamicFeaturesTest {
     private static final String CLIENT_FEATURE_ERROR_MSG = "Wrong count of client features";
     private static final String SERVER_FEATURE_ERROR_MSG = "Wrong count of server features";
@@ -79,18 +79,30 @@ public class ClientDynamicFeaturesTest {
         Set<DynamicFeature> clientFeatureSet = factory.getClientDynamicFeatures();
         Set<DynamicFeature> serverFeatureSet = factory.getServerDynamicFeatures();
 
-        Assert.assertEquals(CLIENT_FEATURE_ERROR_MSG, 1,
-                countFeatures(clientFeatureSet, "ClientDynamicFeaturesClientFeature1"));
-        Assert.assertEquals(CLIENT_FEATURE_ERROR_MSG, 1,
-                countFeatures(clientFeatureSet, "ClientDynamicFeaturesClientFeature2"));
-        Assert.assertEquals(CLIENT_FEATURE_ERROR_MSG, 1, countFeatures(clientFeatureSet, "ClientDynamicFeaturesDualFeature1"));
-        Assert.assertEquals(CLIENT_FEATURE_ERROR_MSG, 1, countFeatures(clientFeatureSet, "ClientDynamicFeaturesDualFeature2"));
-        Assert.assertEquals(SERVER_FEATURE_ERROR_MSG, 1,
-                countFeatures(serverFeatureSet, "ClientDynamicFeaturesServerFeature1"));
-        Assert.assertEquals(SERVER_FEATURE_ERROR_MSG, 1,
-                countFeatures(serverFeatureSet, "ClientDynamicFeaturesServerFeature2"));
-        Assert.assertEquals(SERVER_FEATURE_ERROR_MSG, 1, countFeatures(serverFeatureSet, "ClientDynamicFeaturesDualFeature1"));
-        Assert.assertEquals(SERVER_FEATURE_ERROR_MSG, 1, countFeatures(serverFeatureSet, "ClientDynamicFeaturesDualFeature2"));
+        Assertions.assertEquals(1,
+                countFeatures(clientFeatureSet, "ClientDynamicFeaturesClientFeature1"),
+                CLIENT_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(clientFeatureSet, "ClientDynamicFeaturesClientFeature2"),
+                CLIENT_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(clientFeatureSet, "ClientDynamicFeaturesDualFeature1"),
+                CLIENT_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(clientFeatureSet, "ClientDynamicFeaturesDualFeature2"),
+                CLIENT_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(serverFeatureSet, "ClientDynamicFeaturesServerFeature1"),
+                SERVER_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(serverFeatureSet, "ClientDynamicFeaturesServerFeature2"),
+                SERVER_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(serverFeatureSet, "ClientDynamicFeaturesDualFeature1"),
+                SERVER_FEATURE_ERROR_MSG);
+        Assertions.assertEquals(1,
+                countFeatures(serverFeatureSet, "ClientDynamicFeaturesDualFeature2"),
+                SERVER_FEATURE_ERROR_MSG);
     }
 
     private int countFeatures(Set<DynamicFeature> featureSet, String feature) {

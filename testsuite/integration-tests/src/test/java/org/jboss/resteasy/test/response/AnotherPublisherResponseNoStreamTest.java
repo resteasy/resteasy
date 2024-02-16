@@ -14,7 +14,7 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
@@ -26,16 +26,16 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Publisher response type
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class AnotherPublisherResponseNoStreamTest {
     private static final Logger logger = Logger.getLogger(AnotherPublisherResponseNoStreamTest.class);
 
@@ -97,10 +97,10 @@ public class AnotherPublisherResponseNoStreamTest {
             });
             source.open();
             future.get(5000, TimeUnit.SECONDS);
-            Assert.assertEquals(2, collector.size());
-            Assert.assertEquals(0, errors.size());
-            Assert.assertTrue(collector.contains("one"));
-            Assert.assertTrue(collector.contains("two"));
+            Assertions.assertEquals(2, collector.size());
+            Assertions.assertEquals(0, errors.size());
+            Assertions.assertTrue(collector.contains("one"));
+            Assertions.assertTrue(collector.contains("two"));
         }
         client.close();
     }

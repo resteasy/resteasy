@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.test.resource.basic.resource.ApplicationScopeObject;
@@ -31,11 +31,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resources
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test resources with sub-resources with parameters.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ParameterSubResTest {
 
@@ -74,12 +74,12 @@ public class ParameterSubResTest {
         return PortProviderUtil.generateURL(path, ParameterSubResTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -100,17 +100,20 @@ public class ParameterSubResTest {
     @Test
     public void testSubResource() throws Exception {
         Response response = client.target(generateURL("/path/sub/fred")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "Boo! - fred", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("Boo! - fred", response.readEntity(String.class),
+                "Wrong content of response");
     }
 
     @Test
     public void testReturnSubResourceAsClass() throws Exception {
         Response response = client.target(generateURL("/path/subclass")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "resourceCounter:1,appscope:1,requestScope:1", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("resourceCounter:1,appscope:1,requestScope:1",
+                response.readEntity(String.class), "Wrong response");
         response = client.target(generateURL("/path/subclass")).request().get();
-        Assert.assertEquals("Wrong response", "resourceCounter:2,appscope:2,requestScope:1", response.readEntity(String.class));
+        Assertions.assertEquals("resourceCounter:2,appscope:2,requestScope:1",
+                response.readEntity(String.class), "Wrong response");
     }
 
     /**
@@ -120,7 +123,8 @@ public class ParameterSubResTest {
     @Test
     public void testRoot() throws Exception {
         Response response = client.target(generateURL("/generic/sub")).queryParam("foo", "42.0").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "42.0", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("42.0", response.readEntity(String.class),
+                "Wrong content of response");
     }
 }

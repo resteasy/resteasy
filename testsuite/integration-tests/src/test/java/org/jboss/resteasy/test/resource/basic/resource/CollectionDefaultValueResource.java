@@ -7,15 +7,15 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/collection")
 public class CollectionDefaultValueResource {
     @GET
     @Produces("text/plain")
     public String get(@QueryParam("nada") List<String> params) {
-        Assert.assertNotNull("Empty list was sent like null", params);
-        Assert.assertEquals("Empty list was sent not empty", 0, params.size());
+        Assertions.assertNotNull(params, "Empty list was sent like null");
+        Assertions.assertEquals(0, params.size(), "Empty list was sent not empty");
         return "hello";
     }
 

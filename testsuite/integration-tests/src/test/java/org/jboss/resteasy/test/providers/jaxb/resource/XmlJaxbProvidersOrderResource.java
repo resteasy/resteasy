@@ -11,7 +11,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/jaxb/orders")
 @Consumes({ "application/xml", "application/fastinfoset", "application/json" })
@@ -49,7 +49,7 @@ public class XmlJaxbProvidersOrderResource {
         order.append(orderId).append(".xml");
         InputStream in = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("org/jboss/resteasy/test/providers/jaxb/" + order.toString());
-        Assert.assertNotEquals(null, in);
+        Assertions.assertNotEquals(null, in);
         return XmlJaxbProvidersHelper.unmarshall(Order.class, in).getValue();
     }
 }

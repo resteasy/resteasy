@@ -40,8 +40,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -63,13 +63,15 @@ abstract class AbstractRegistrationTest {
             final Response response = client.target(TestUtil.generateUri(uri, "/test"))
                     .request()
                     .get();
-            Assert.assertTrue("Failed to buffer entity", response.bufferEntity());
-            Assert.assertEquals("Unexpected response: " + response.getEntity(), Response.Status.OK, response.getStatusInfo());
+            Assertions.assertTrue(response.bufferEntity(), "Failed to buffer entity");
+            Assertions.assertEquals(Response.Status.OK,
+                    response.getStatusInfo(),
+                    "Unexpected response: " + response.getEntity());
             final JsonObject json = response.readEntity(JsonObject.class);
-            Assert.assertFalse("Expected \"uriInfo\" to not be null: " + json, json.isNull("uriInfo"));
-            Assert.assertEquals("/test", json.getString("uriInfo"));
-            Assert.assertFalse("Expected \"testBean\" to not be null: " + json, json.isNull("testBean"));
-            Assert.assertEquals("/test", json.getString("testBean"));
+            Assertions.assertFalse(json.isNull("uriInfo"), "Expected \"uriInfo\" to not be null: " + json);
+            Assertions.assertEquals("/test", json.getString("uriInfo"));
+            Assertions.assertFalse(json.isNull("testBean"), "Expected \"testBean\" to not be null: " + json);
+            Assertions.assertEquals("/test", json.getString("testBean"));
         }
     }
 

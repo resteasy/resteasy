@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
 
@@ -17,7 +17,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCache;
@@ -29,13 +29,13 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientCacheInterceptorTest {
 
@@ -106,12 +106,12 @@ public class ClientCacheInterceptorTest {
         return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -128,8 +128,9 @@ public class ClientCacheInterceptorTest {
         ClientInvocationBuilder request = (ClientInvocationBuilder) client.target(url).register(interceptor).path("echo")
                 .path("nocache").queryParam("msg", "Hello world").request();
         try (ClientResponse response = (ClientResponse) request.get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            Assert.assertNull("Cache must not contain any data", cache.getAny(request.getURI().toString()));
+            Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            Assertions.assertNull(cache.getAny(request.getURI().toString()),
+                    "Cache must not contain any data");
         }
     }
 
@@ -142,20 +143,20 @@ public class ClientCacheInterceptorTest {
                 .queryParam("msg", "Hello world").request();
         try (ClientResponse responseA = (ClientResponse) request.accept(XML_NO_CHARSET).get();
                 ClientResponse responseB = (ClientResponse) request.accept(XML_NO_CHARSET).get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
-            Assert.assertEquals(Status.OK.getStatusCode(), responseB.getStatus());
-            Assert.assertEquals("Content type must be " + XML_WITH_CHARSET, XML_WITH_CHARSET,
-                    responseA.getHeaderString("Content-Type"));
-            Assert.assertEquals("Content type must be " + XML_WITH_CHARSET, XML_WITH_CHARSET,
-                    responseB.getHeaderString("Content-Type"));
+            Assertions.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
+            Assertions.assertEquals(Status.OK.getStatusCode(), responseB.getStatus());
+            Assertions.assertEquals(XML_WITH_CHARSET, responseA.getHeaderString("Content-Type"),
+                    "Content type must be " + XML_WITH_CHARSET);
+            Assertions.assertEquals(XML_WITH_CHARSET, responseB.getHeaderString("Content-Type"),
+                    "Content type must be " + XML_WITH_CHARSET);
             // assert response body
             String responseAStr = responseA.readEntity(String.class);
             String responseBStr = responseB.readEntity(String.class);
             // if taken from the cache, the createAt epoch must be the same and thus string must be the same as well
-            assertEquals("Response entities must be the same", responseAStr, responseBStr);
-            Assert.assertNotNull("Cache must contain data", cache.getAny(request.getURI().toString()));
-            Assert.assertNotNull("Cache must contain data for the given accepted content type",
-                    cache.get(request.getURI().toString(), MediaType.APPLICATION_XML_TYPE));
+            assertEquals(responseAStr, responseBStr, "Response entities must be the same");
+            Assertions.assertNotNull(cache.getAny(request.getURI().toString()), "Cache must contain data");
+            Assertions.assertNotNull(cache.get(request.getURI().toString(), MediaType.APPLICATION_XML_TYPE),
+                    "Cache must contain data for the given accepted content type");
         }
     }
 
@@ -170,18 +171,18 @@ public class ClientCacheInterceptorTest {
                 .queryParam("msg", "Hello world").request();
         try (ClientResponse responseA = (ClientResponse) requestA.accept(JSON_NO_CHARSET).get();
                 ClientResponse responseB = (ClientResponse) requestB.accept(XML_NO_CHARSET).get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
-            Assert.assertEquals(Status.OK.getStatusCode(), responseB.getStatus());
-            Assert.assertEquals("Content type must be " + JSON_WITH_CHARSET, JSON_WITH_CHARSET,
-                    responseA.getHeaderString("Content-Type"));
-            Assert.assertEquals("Content type must be " + XML_WITH_CHARSET, XML_WITH_CHARSET,
-                    responseB.getHeaderString("Content-Type"));
-            Assert.assertNotNull("Cache must contain data", cache.getAny(requestA.getURI().toString()));
+            Assertions.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
+            Assertions.assertEquals(Status.OK.getStatusCode(), responseB.getStatus());
+            Assertions.assertEquals(JSON_WITH_CHARSET, responseA.getHeaderString("Content-Type"),
+                    "Content type must be " + JSON_WITH_CHARSET);
+            Assertions.assertEquals(XML_WITH_CHARSET, responseB.getHeaderString("Content-Type"),
+                    "Content type must be " + XML_WITH_CHARSET);
+            Assertions.assertNotNull(cache.getAny(requestA.getURI().toString()), "Cache must contain data");
             // the response must be cached under both types
-            Assert.assertNotNull("Cache must contain data for the given accepted content type",
-                    cache.get(requestA.getURI().toString(), MediaType.APPLICATION_JSON_TYPE));
-            Assert.assertNotNull("Cache must contain data for the given accepted content type",
-                    cache.get(requestB.getURI().toString(), MediaType.APPLICATION_XML_TYPE));
+            Assertions.assertNotNull(cache.get(requestA.getURI().toString(), MediaType.APPLICATION_JSON_TYPE),
+                    "Cache must contain data for the given accepted content type");
+            Assertions.assertNotNull(cache.get(requestB.getURI().toString(), MediaType.APPLICATION_XML_TYPE),
+                    "Cache must contain data for the given accepted content type");
         }
     }
 
@@ -194,18 +195,18 @@ public class ClientCacheInterceptorTest {
                 .queryParam("msg", "Hello world").request();
         // this should produce text/xml since the resource produces text/xml
         try (ClientResponse responseA = (ClientResponse) requestA.accept(TEXT_WILDCARD).get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
-            Assert.assertEquals("Content type must be " + TEXT_XML_WITH_CHARSET, TEXT_XML_WITH_CHARSET,
-                    responseA.getHeaderString("Content-Type"));
-            Assert.assertNotNull("Cache must contain data", cache.getAny(requestA.getURI().toString()));
+            Assertions.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
+            Assertions.assertEquals(TEXT_XML_WITH_CHARSET, responseA.getHeaderString("Content-Type"),
+                    "Content type must be " + TEXT_XML_WITH_CHARSET);
+            Assertions.assertNotNull(cache.getAny(requestA.getURI().toString()), "Cache must contain data");
             // the response must be cached under text/* instead of text/xml
-            Assert.assertNotNull("Cache must contain data for the given accepted content type",
-                    cache.get(requestA.getURI().toString(), MediaType.valueOf(TEXT_WILDCARD)));
+            Assertions.assertNotNull(cache.get(requestA.getURI().toString(), MediaType.valueOf(TEXT_WILDCARD)),
+                    "Cache must contain data for the given accepted content type");
             // since Accept is present, cache entry for media type text/xml (response content type) must not exist
-            Assert.assertNull("Cache must contain data for the given accepted content type",
-                    cache.get(requestA.getURI().toString(), MediaType.valueOf(TEXT_XML_NO_CHARSET)));
-            Assert.assertNull("Cache must contain data for the given accepted content type",
-                    cache.get(requestA.getURI().toString(), MediaType.valueOf(TEXT_XML_WITH_CHARSET)));
+            Assertions.assertNull(cache.get(requestA.getURI().toString(), MediaType.valueOf(TEXT_XML_NO_CHARSET)),
+                    "Cache must contain data for the given accepted content type");
+            Assertions.assertNull(cache.get(requestA.getURI().toString(), MediaType.valueOf(TEXT_XML_WITH_CHARSET)),
+                    "Cache must contain data for the given accepted content type");
         }
     }
 
@@ -218,14 +219,14 @@ public class ClientCacheInterceptorTest {
         ClientInvocationBuilder requestA = (ClientInvocationBuilder) client.target(url).register(interceptor).path("echo")
                 .queryParam("msg", "Hello world").request();
         try (ClientResponse responseA = (ClientResponse) requestA.accept(JSON_NO_CHARSET, XML_NO_CHARSET + ";q=0.5").get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
-            Assert.assertEquals("Content type must be " + JSON_WITH_CHARSET, JSON_WITH_CHARSET,
-                    responseA.getHeaderString("Content-Type"));
-            Assert.assertNotNull("Cache must contain data", cache.getAny(requestA.getURI().toString()));
+            Assertions.assertEquals(Status.OK.getStatusCode(), responseA.getStatus());
+            Assertions.assertEquals(JSON_WITH_CHARSET, responseA.getHeaderString("Content-Type"),
+                    "Content type must be " + JSON_WITH_CHARSET);
+            Assertions.assertNotNull(cache.getAny(requestA.getURI().toString()), "Cache must contain data");
 
             // the response must be cached as json
-            Assert.assertNotNull("Cache must contain data for the given accepted content type",
-                    cache.get(requestA.getURI().toString(), MediaType.APPLICATION_JSON_TYPE));
+            Assertions.assertNotNull(cache.get(requestA.getURI().toString(), MediaType.APPLICATION_JSON_TYPE),
+                    "Cache must contain data for the given accepted content type");
 
         }
     }

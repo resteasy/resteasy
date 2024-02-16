@@ -10,7 +10,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCache;
@@ -23,10 +23,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -34,12 +34,12 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for client cache
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class ClientCacheTest {
 
     public static AtomicInteger count = new AtomicInteger(0);
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         count.set(0);
     }
@@ -81,65 +81,65 @@ public class ClientCacheTest {
         ClientCacheProxy proxy = target.proxy(ClientCacheProxy.class);
         String rtn;
         rtn = proxy.get();
-        Assert.assertEquals("Wrong response", "hello world" + 1, rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello world" + 1, rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         rtn = proxy.get();
-        Assert.assertEquals("Wrong response", "hello world" + 1, rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello world" + 1, rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         Thread.sleep(2000);
         rtn = proxy.get();
-        Assert.assertEquals("Wrong response", "hello world" + 2, rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello world" + 2, rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
         rtn = proxy.get();
-        Assert.assertEquals("Wrong response", "hello world" + 2, rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello world" + 2, rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
 
         // Test always good etag
         count.set(0);
         rtn = proxy.getAlwaysGoodEtag();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         rtn = proxy.getAlwaysGoodEtag();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         Thread.sleep(2000);
         rtn = proxy.getAlwaysGoodEtag();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
         rtn = proxy.getAlwaysGoodEtag();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
 
         // Test never good etag
         count.set(0);
         rtn = proxy.getNeverGoodEtag();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         rtn = proxy.getNeverGoodEtag();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         Thread.sleep(2000);
         rtn = proxy.getNeverGoodEtag();
-        Assert.assertEquals("Wrong response", "hello2", rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello2", rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
         rtn = proxy.getNeverGoodEtag();
-        Assert.assertEquals("Wrong response", "hello2", rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello2", rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
 
         // Test always validate etag
         count.set(0);
         rtn = proxy.getValidateEtagged();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
         rtn = proxy.getValidateEtagged();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
         rtn = proxy.getValidateEtagged();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 3, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(3, count.get(), "Wrong cache size");
         rtn = proxy.getValidateEtagged();
-        Assert.assertEquals("Wrong response", "hello1", rtn);
-        Assert.assertEquals("Wrong cache size", 4, count.get());
+        Assertions.assertEquals("hello1", rtn, "Wrong response");
+        Assertions.assertEquals(4, count.get(), "Wrong cache size");
         client.close();
     }
 
@@ -160,24 +160,24 @@ public class ClientCacheTest {
         count.set(0);
 
         String rtn = proxy.getCacheit("1");
-        Assert.assertEquals("Wrong response", "cachecache" + 1, rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("cachecache" + 1, rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
 
         rtn = proxy.getCacheit("1");
-        Assert.assertEquals("Wrong response", "cachecache" + 1, rtn);
-        Assert.assertEquals("Wrong cache size", 1, count.get());
+        Assertions.assertEquals("cachecache" + 1, rtn, "Wrong response");
+        Assertions.assertEquals(1, count.get(), "Wrong cache size");
 
         rtn = proxy.getCacheit("2");
-        Assert.assertEquals("Wrong response", "cachecache" + 2, rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("cachecache" + 2, rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
 
         rtn = proxy.getCacheit("2");
-        Assert.assertEquals("Wrong response", "cachecache" + 2, rtn);
-        Assert.assertEquals("Wrong cache size", 2, count.get());
+        Assertions.assertEquals("cachecache" + 2, rtn, "Wrong response");
+        Assertions.assertEquals(2, count.get(), "Wrong cache size");
 
         rtn = proxy.getCacheit("1");
-        Assert.assertEquals("Wrong response", "cachecache" + 3, rtn);
-        Assert.assertEquals("Wrong cache size", 3, count.get());
+        Assertions.assertEquals("cachecache" + 3, rtn, "Wrong response");
+        Assertions.assertEquals(3, count.get(), "Wrong cache size");
         client.close();
     }
 
@@ -195,24 +195,24 @@ public class ClientCacheTest {
         count.set(0);
 
         String rtn = target.resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("cachecache" + 1, rtn);
-        Assert.assertEquals(1, count.get());
+        Assertions.assertEquals("cachecache" + 1, rtn);
+        Assertions.assertEquals(1, count.get());
 
         rtn = target.resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("cachecache" + 1, rtn);
-        Assert.assertEquals(1, count.get());
+        Assertions.assertEquals("cachecache" + 1, rtn);
+        Assertions.assertEquals(1, count.get());
 
         rtn = target.resolveTemplate("id", "2").request().get(String.class);
-        Assert.assertEquals("cachecache" + 2, rtn);
-        Assert.assertEquals(2, count.get());
+        Assertions.assertEquals("cachecache" + 2, rtn);
+        Assertions.assertEquals(2, count.get());
 
         rtn = target.resolveTemplate("id", "2").request().get(String.class);
-        Assert.assertEquals("cachecache" + 2, rtn);
-        Assert.assertEquals(2, count.get());
+        Assertions.assertEquals("cachecache" + 2, rtn);
+        Assertions.assertEquals(2, count.get());
 
         rtn = target.resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("cachecache" + 3, rtn);
-        Assert.assertEquals(3, count.get());
+        Assertions.assertEquals("cachecache" + 3, rtn);
+        Assertions.assertEquals(3, count.get());
         client.close();
     }
 }

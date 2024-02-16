@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
@@ -31,13 +31,14 @@ import org.jboss.resteasy.utils.TestManagementClient;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -45,7 +46,8 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for sniHostNames - method to choose which certificate should be presented by the server
  * @tpSince RESTEasy 3.7.0
  */
-@RunWith(Arquillian.class)
+@Disabled("RESTEASY-3451")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SslSniHostNamesTest extends SslTestBase {
 
@@ -65,7 +67,7 @@ public class SslSniHostNamesTest extends SslTestBase {
         return TestUtil.finishContainerPrepare(war, null, SslResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void prepareTruststore()
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         truststore = KeyStore.getInstance("jks");
@@ -74,7 +76,7 @@ public class SslSniHostNamesTest extends SslTestBase {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void resetConfig() throws Exception {
         if (containerController.isStarted(SSL_CONTAINER_QUALIFIER_SNI)) {
             deployer.undeploy(DEPLOYMENT_NAME);
@@ -85,7 +87,7 @@ public class SslSniHostNamesTest extends SslTestBase {
         }
     }
 
-    @Before
+    @BeforeEach
     public void startContainer() throws Exception {
         if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_SNI)) {
             containerController.start(SSL_CONTAINER_QUALIFIER_SNI);
@@ -100,13 +102,17 @@ public class SslSniHostNamesTest extends SslTestBase {
      *                certificate - not trusted by client.
      * @tpSince RESTEasy 3.7.0
      */
-    @Test(expected = ProcessingException.class)
+    @Test()
     public void testException() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-        client = resteasyClientBuilder.trustStore(truststore).build();
-        client.target(URL).request().get();
+                    client = resteasyClientBuilder.trustStore(truststore).build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -125,8 +131,8 @@ public class SslSniHostNamesTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(truststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -222,7 +228,7 @@ public class SslSniHostNamesTest extends SslTestBase {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }

@@ -12,7 +12,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -21,16 +21,16 @@ import org.jboss.resteasy.test.client.resource.TimeoutResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class TimeoutTest extends ClientTestBase {
     @Path("/timeout")
@@ -59,23 +59,23 @@ public class TimeoutTest extends ClientTestBase {
         ResteasyClient clientengine = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).readTimeout(2, TimeUnit.SECONDS)
                 .build();
         ClientHttpEngine engine = clientengine.httpEngine();
-        Assert.assertNotNull("Client engine is was not created", engine);
+        Assertions.assertNotNull(engine, "Client engine is was not created");
 
         ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
         ResteasyWebTarget target = client.target(generateURL("/timeout"));
         try {
             target.queryParam("sleep", "5").request().get();
-            Assert.fail("The request didn't timeout as expected");
+            Assertions.fail("The request didn't timeout as expected");
         } catch (ProcessingException e) {
-            Assert.assertEquals("Expected SocketTimeoutException", e.getCause().getClass(), SocketTimeoutException.class);
+            Assertions.assertEquals(e.getCause().getClass(), SocketTimeoutException.class, "Expected SocketTimeoutException");
         }
 
         TimeoutResourceInterface proxy = client.target(generateURL("")).proxy(TimeoutResourceInterface.class);
         try {
             proxy.get(5);
-            Assert.fail("The request didn't timeout as expected when using client proxy");
+            Assertions.fail("The request didn't timeout as expected when using client proxy");
         } catch (ProcessingException e) {
-            Assert.assertEquals("Expected SocketTimeoutException", e.getCause().getClass(), SocketTimeoutException.class);
+            Assertions.assertEquals(e.getCause().getClass(), SocketTimeoutException.class, "Expected SocketTimeoutException");
         }
         clientengine.close();
     }

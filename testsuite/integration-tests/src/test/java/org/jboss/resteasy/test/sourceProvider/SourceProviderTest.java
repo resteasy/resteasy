@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.sourceProvider.resource.Book;
 import org.jboss.resteasy.test.sourceProvider.resource.BookResource;
@@ -23,13 +23,13 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SourceProviderTest {
 
@@ -43,12 +43,12 @@ public class SourceProviderTest {
                 BookResource.class, Book.class);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void close() throws Exception {
         client.close();
     }
@@ -61,9 +61,9 @@ public class SourceProviderTest {
     public void testSourceWithStringReader() throws Exception {
         Response response = client.target(generateURL("/test")).request()
                 .post(Entity.entity(new StreamSource(new StringReader(book)), "application/*+xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 entity.contentEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><book><title>Monkey kingdom</title></book>"));
     }
 
@@ -72,9 +72,9 @@ public class SourceProviderTest {
         InputStream stream = new ByteArrayInputStream(book.getBytes(StandardCharsets.UTF_8));
         Response response = client.target(generateURL("/test")).request()
                 .post(Entity.entity(new StreamSource(stream), "application/*+xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 entity.contentEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><book><title>Monkey kingdom</title></book>"));
     }
 }

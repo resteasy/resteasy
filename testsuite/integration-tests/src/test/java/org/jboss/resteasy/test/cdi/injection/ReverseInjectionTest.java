@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -77,11 +77,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -96,19 +96,19 @@ import org.junit.runner.RunWith;
  *                    Annotation @EJB and @Inject, and the semantics of both are tested.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @ServerSetup(JmsTestQueueSetupTask.class)
 public class ReverseInjectionTest {
     private static Logger log = Logger.getLogger(ReverseInjectionTest.class);
 
     Client client;
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
     }
@@ -195,10 +195,10 @@ public class ReverseInjectionTest {
                 + StatelessEJBwithJaxRsComponentsInterface.class.getName();
         StatelessEJBwithJaxRsComponentsInterface remote = StatelessEJBwithJaxRsComponentsInterface.class
                 .cast(context.lookup(name));
-        assertNotNull("Bean should not be null", remote);
+        assertNotNull(remote, "Bean should not be null");
         log.info("remote: " + remote.toString());
         remote.setUp(ReverseInjectionResource.NON_CONTEXTUAL);
-        assertTrue("Call bean method faild", remote.test(ReverseInjectionResource.NON_CONTEXTUAL));
+        assertTrue(remote.test(ReverseInjectionResource.NON_CONTEXTUAL), "Call bean method faild");
     }
 
     /**
@@ -256,7 +256,7 @@ public class ReverseInjectionTest {
         ReverseInjectionEJBInterface remote = ReverseInjectionEJBInterface.class.cast(context.lookup(lookup));
         log.info("remote: " + remote);
         remote.setUp(ReverseInjectionResource.NON_CONTEXTUAL);
-        assertTrue("Call bean method faild", remote.test(ReverseInjectionResource.NON_CONTEXTUAL));
+        assertTrue(remote.test(ReverseInjectionResource.NON_CONTEXTUAL), "Call bean method faild");
     }
 
     /**
@@ -293,7 +293,7 @@ public class ReverseInjectionTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Ignore("RESTEASY-2962")
+    @Disabled("RESTEASY-2962")
     public void testMDB() throws Exception {
         String destinationName = "queue/test";
         Context ic;
@@ -322,12 +322,12 @@ public class ReverseInjectionTest {
             @SuppressWarnings("unchecked")
             Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
             log.info("Collection: " + books);
-            assertEquals("Wrong count of received items", 2, books.size());
+            assertEquals(2, books.size(), "Wrong count of received items");
             Iterator<CDIInjectionBook> it = books.iterator();
             CDIInjectionBook b1 = it.next();
             CDIInjectionBook b2 = it.next();
-            assertTrue("Book is not inject correctly",
-                    book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1));
+            assertTrue(book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1),
+                    "Book is not inject correctly");
         } catch (Exception exc) {
             StringWriter errors = new StringWriter();
             exc.printStackTrace(new PrintWriter(errors));

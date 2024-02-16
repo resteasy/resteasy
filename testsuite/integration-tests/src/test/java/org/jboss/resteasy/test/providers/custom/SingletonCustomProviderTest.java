@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.custom.resource.SingletonCustomProviderApplication;
 import org.jboss.resteasy.test.providers.custom.resource.SingletonCustomProviderObject;
@@ -15,11 +15,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for anonymous classes as resource added to REST singletons
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SingletonCustomProviderTest {
     static ResteasyClient client;
@@ -44,12 +44,12 @@ public class SingletonCustomProviderTest {
         return PortProviderUtil.generateURL(path, SingletonCustomProviderTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -62,7 +62,7 @@ public class SingletonCustomProviderTest {
     public void testMessageReaderThrowingWebApplicationException() throws Exception {
         Response response = client.target(generateURL("/test")).request()
                 .post(Entity.entity("foo", "application/octet-stream"));
-        Assert.assertEquals("Wrong response status", 999, response.getStatus());
+        Assertions.assertEquals(999, response.getStatus(), "Wrong response status");
         response.close();
     }
 
@@ -73,7 +73,7 @@ public class SingletonCustomProviderTest {
     @Test
     public void testMessageWriterThrowingWebApplicationException() throws Exception {
         Response response = client.target(generateURL("/test")).request().get();
-        Assert.assertEquals("Wrong response status", 999, response.getStatus());
+        Assertions.assertEquals(999, response.getStatus(), "Wrong response status");
         response.close();
     }
 }

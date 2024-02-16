@@ -10,7 +10,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class CharsetResource {
@@ -59,7 +59,7 @@ public class CharsetResource {
     @Consumes("application/x-www-form-urlencoded")
     @Encoded
     public MultivaluedMap<String, String> formAcceptsDefault(MultivaluedMap<String, String> form) {
-        Assert.assertTrue("Form doesn't contain the expected key", form.containsKey("title"));
+        Assertions.assertTrue(form.containsKey("title"), "Form doesn't contain the expected key");
         String s = form.getFirst("title");
         logger.info("s: " + s);
         return form;

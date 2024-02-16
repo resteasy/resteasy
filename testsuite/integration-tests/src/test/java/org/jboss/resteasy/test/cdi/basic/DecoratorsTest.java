@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.basic;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -42,10 +42,10 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -53,7 +53,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for integration of RESTEasy and CDI decorators.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DecoratorsTest {
 
@@ -80,7 +80,7 @@ public class DecoratorsTest {
 
     private ResteasyProviderFactory factory;
 
-    @Before
+    @BeforeEach
     public void setup() {
         // Create an instance and set it as the singleton to use
         factory = ResteasyProviderFactory.newInstance();
@@ -88,7 +88,7 @@ public class DecoratorsTest {
         RegisterBuiltin.register(factory);
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         // Clear the singleton
         ResteasyProviderFactory.clearInstanceIfEqual(factory);
@@ -114,7 +114,7 @@ public class DecoratorsTest {
         log.info("Status: " + response.getStatus());
         int id = response.readEntity(int.class);
         log.info("id: " + id);
-        assertEquals("Wrong id of received book", 0, id);
+        assertEquals(0, id, "Wrong id of received book");
         response.close();
 
         // Retrieve book.
@@ -123,13 +123,13 @@ public class DecoratorsTest {
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         EJBBook result = response.readEntity(EJBBook.class);
         log.info("book: " + book);
-        assertEquals("Wrong received book", book, result);
+        assertEquals(book, result, "Wrong received book");
         response.close();
 
         // Test order of decorator invocations.
         base = client.target(generateURL("/test/"));
         response = base.request().post(Entity.text(new String()));
-        assertEquals("Wrong decorator usage", HttpResponseCodes.SC_OK, response.getStatus());
+        assertEquals(HttpResponseCodes.SC_OK, response.getStatus(), "Wrong decorator usage");
         response.close();
 
         client.close();

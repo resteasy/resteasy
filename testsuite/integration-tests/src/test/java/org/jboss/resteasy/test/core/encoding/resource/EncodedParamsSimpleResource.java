@@ -7,14 +7,14 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 import org.jboss.resteasy.test.core.encoding.EncodedParamsTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/encodedMethod")
 public class EncodedParamsSimpleResource {
     @GET
     @Encoded
     public String get(@QueryParam("stuff") String stuff) {
-        Assert.assertEquals(EncodedParamsTest.ERROR_MESSAGE, "hello%20world", stuff);
+        Assertions.assertEquals("hello%20world", stuff, EncodedParamsTest.ERROR_MESSAGE);
         return "HELLO";
     }
 
@@ -22,7 +22,7 @@ public class EncodedParamsSimpleResource {
     @Encoded
     @Path("/{param}")
     public String goodbye(@PathParam("param") String stuff) {
-        Assert.assertEquals(EncodedParamsTest.ERROR_MESSAGE, "hello%20world", stuff);
+        Assertions.assertEquals("hello%20world", stuff, EncodedParamsTest.ERROR_MESSAGE);
         return "GOODBYE";
     }
 }

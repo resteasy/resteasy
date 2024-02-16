@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 import org.apache.http.HttpEntity;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.client.helpers.Operations;
@@ -29,17 +29,17 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(EntityBufferingInFileTest.MaxPostServerSetupTask.class)
 public class EntityBufferingInFileTest extends ClientTestBase {
@@ -158,7 +158,8 @@ public class EntityBufferingInFileTest extends ClientTestBase {
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
      * @tpSince RESTEasy 3.0.16
      */
-    @Ignore("The tests fails on some machines on client side. As this is performance test and performance tests were dropped" +
+    @Disabled("The tests fails on some machines on client side. As this is performance test and performance tests were dropped"
+            +
             "from EAP7 rfe list, this is not priority now.")
     @Test
     public void testGigabytes1() throws Exception {
@@ -181,10 +182,10 @@ public class EntityBufferingInFileTest extends ClientTestBase {
             Response response = client.target(generateURL("/hello")).request()
                     .header("content-type", "text/plain; charset=UTF-8").post(Entity.text(body));
             logger.info("Received response");
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             InputStream in = response.readEntity(InputStream.class);
             String responseString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            Assert.assertEquals(body, responseString);
+            Assertions.assertEquals(body, responseString);
             response.close();
             client.close();
         } catch (OutOfMemoryError e) {

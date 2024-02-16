@@ -7,17 +7,17 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.resource.path.resource.MultipleMatrixSegmentsResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test that a locator and resource with same path params work
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MultipleMatrixSegmentsTest {
 
@@ -37,12 +37,12 @@ public class MultipleMatrixSegmentsTest {
         return TestUtil.finishContainerPrepare(war, null, MultipleMatrixSegmentsResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -58,7 +58,7 @@ public class MultipleMatrixSegmentsTest {
     @Test
     public void testMultipleStartAndEnd() throws Exception {
         Response response = client.target(generateURL("/;name=bill;ssn=111/children/;name=skippy;ssn=3344")).request().get();
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         response.close();
     }
 
@@ -70,7 +70,7 @@ public class MultipleMatrixSegmentsTest {
     public void testMultipleMiddle() throws Exception {
         Response response = client.target(generateURL("/stuff/;name=first;ssn=111/;name=second;ssn=3344/first")).request()
                 .get();
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         response.close();
     }
 }

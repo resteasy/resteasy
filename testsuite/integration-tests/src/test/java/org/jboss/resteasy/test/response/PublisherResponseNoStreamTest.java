@@ -13,7 +13,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
@@ -25,18 +25,18 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Publisher response type
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PublisherResponseNoStreamTest {
 
@@ -63,12 +63,12 @@ public class PublisherResponseNoStreamTest {
         return PortProviderUtil.generateURL(path, PublisherResponseNoStreamTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
         client = null;
@@ -83,14 +83,14 @@ public class PublisherResponseNoStreamTest {
         Invocation.Builder request = client.target(generateURL("/text")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(entity.startsWith("[\"0-2\",\"1-2\""));
-        Assert.assertTrue(entity.endsWith(",\"29-2\"]"));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertTrue(entity.startsWith("[\"0-2\",\"1-2\""));
+        Assertions.assertTrue(entity.endsWith(",\"29-2\"]"));
 
         // make sure the completion callback was called with no error
         request = client.target(generateURL("/callback-called-no-error/text")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -103,13 +103,13 @@ public class PublisherResponseNoStreamTest {
         Invocation.Builder request = client.target(generateURL("/text-error-immediate")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(444, response.getStatus());
-        Assert.assertEquals("Got it", entity);
+        Assertions.assertEquals(444, response.getStatus());
+        Assertions.assertEquals("Got it", entity);
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error/text-error-immediate")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -122,13 +122,13 @@ public class PublisherResponseNoStreamTest {
         Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(444, response.getStatus());
-        Assert.assertEquals("Got it", entity);
+        Assertions.assertEquals(444, response.getStatus());
+        Assertions.assertEquals("Got it", entity);
 
         // make sure the completion callback was called with with an error
         request = client.target(generateURL("/callback-called-with-error/text-error-deferred")).request();
         response = request.get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -161,10 +161,10 @@ public class PublisherResponseNoStreamTest {
         source.open();
         future.get();
         source.close();
-        Assert.assertEquals(2, collector.size());
-        Assert.assertEquals(0, errors.size());
-        Assert.assertEquals("one", collector.get(0));
-        Assert.assertEquals("two", collector.get(1));
+        Assertions.assertEquals(2, collector.size());
+        Assertions.assertEquals(0, errors.size());
+        Assertions.assertEquals("one", collector.get(0));
+        Assertions.assertEquals("two", collector.get(1));
     }
 
     /**
@@ -194,10 +194,10 @@ public class PublisherResponseNoStreamTest {
         source.open();
         future.get();
         source.close();
-        Assert.assertEquals(2, collector.size());
-        Assert.assertEquals(0, errors.size());
-        Assert.assertEquals("one", collector.get(0));
-        Assert.assertEquals("one", collector.get(1));
+        Assertions.assertEquals(2, collector.size());
+        Assertions.assertEquals(0, errors.size());
+        Assertions.assertEquals("one", collector.get(0));
+        Assertions.assertEquals("one", collector.get(1));
 
         close();
         setup();
@@ -205,7 +205,7 @@ public class PublisherResponseNoStreamTest {
         Invocation.Builder request = client.target(generateURL("/infinite-done")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("true", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("true", entity);
     }
 }

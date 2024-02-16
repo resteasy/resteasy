@@ -37,7 +37,7 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -45,14 +45,14 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RequestScoped
 public class DefaultProvidersTest {
 
@@ -85,7 +85,8 @@ public class DefaultProvidersTest {
 
     @Test
     public void defaultExceptionMapper() {
-        Assert.assertNotNull("Expected a default exception mapper", providers.getExceptionMapper(RuntimeException.class));
+        Assertions.assertNotNull(providers.getExceptionMapper(RuntimeException.class),
+                "Expected a default exception mapper");
     }
 
     @Test
@@ -93,8 +94,8 @@ public class DefaultProvidersTest {
         final Response response = client.target(TestUtil.generateUri(url, "exception"))
                 .request()
                 .get();
-        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
-        Assert.assertEquals(ExceptionResource.EXCEPTION_MESSAGE, response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+        Assertions.assertEquals(ExceptionResource.EXCEPTION_MESSAGE, response.readEntity(String.class));
     }
 
     @Test
@@ -102,21 +103,21 @@ public class DefaultProvidersTest {
         final Response response = client.target(TestUtil.generateUri(url, "/exception/wae"))
                 .request()
                 .get();
-        Assert.assertEquals(ExceptionResource.WAE_RESPONSE.getStatusInfo(), response.getStatusInfo());
-        Assert.assertEquals(ExceptionResource.WAE_RESPONSE.readEntity(String.class), response.readEntity(String.class));
+        Assertions.assertEquals(ExceptionResource.WAE_RESPONSE.getStatusInfo(), response.getStatusInfo());
+        Assertions.assertEquals(ExceptionResource.WAE_RESPONSE.readEntity(String.class), response.readEntity(String.class));
     }
 
     @Test
     public void defaultExceptionMapperNotUsed() throws Exception {
         final ExceptionMapper<UnsupportedOperationException> mapper = providers
                 .getExceptionMapper(UnsupportedOperationException.class);
-        Assert.assertTrue("Mapper was not an instance of UnsupportedOperationException: " + mapper,
-                mapper instanceof UnsupportedOperationExceptionMapper);
+        Assertions.assertTrue(mapper instanceof UnsupportedOperationExceptionMapper,
+                "Mapper was not an instance of UnsupportedOperationException: " + mapper);
         final Response response = client.target(TestUtil.generateUri(url, "/exception/not-impl"))
                 .request()
                 .get();
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
-        Assert.assertEquals("Path /exception/not-impl was not found", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+        Assertions.assertEquals("Path /exception/not-impl was not found", response.readEntity(String.class));
     }
 
     @ApplicationPath("/")

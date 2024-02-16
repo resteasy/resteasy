@@ -5,7 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class SpecialCharsInUrlResource {
@@ -16,8 +16,8 @@ public class SpecialCharsInUrlResource {
     @Path("/simple/{bar}")
     @GET
     public String get(@PathParam("bar") String pathParam, @QueryParam("foo") String queryParam) {
-        Assert.assertEquals(decodedPart, pathParam);
-        Assert.assertEquals(queryDecodedPart, queryParam);
+        Assertions.assertEquals(decodedPart, pathParam);
+        Assertions.assertEquals(queryDecodedPart, queryParam);
         return pathParam;
     }
 }

@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.form.resource.NestedCollectionsFormAddress;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resources
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test nested form parameters
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class NestedCollectionsFormTest {
 
@@ -52,12 +52,12 @@ public class NestedCollectionsFormTest {
         return PortProviderUtil.generateURL(path, NestedCollectionsFormTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
     }
@@ -84,7 +84,7 @@ public class NestedCollectionsFormTest {
                 .target(PortProviderUtil.generateURL("/person", NestedCollectionsFormTest.class.getSimpleName()));
         Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
 
         response.close();
     }

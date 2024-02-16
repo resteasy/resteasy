@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingCustomRepeaterProvider;
@@ -23,18 +23,19 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Json-binding provider.
  * @tpChapter Integration test
  * @tpSince RESTEasy 3.5
  */
-@RunWith(Arquillian.class)
+//@Disabled("RESTEASY-3450")
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JsonBindingAnnotationsJacksonTest {
 
@@ -73,12 +74,12 @@ public class JsonBindingAnnotationsJacksonTest {
         return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
         client = null;
@@ -149,14 +150,15 @@ public class JsonBindingAnnotationsJacksonTest {
             logger.info("Request entity: " + entity);
             Response response = target.request().post(entity);
             // check server logs
-            MatcherAssert.assertThat("Server printed more than one error message during the request", errorLogCounter.count(),
+            MatcherAssert.assertThat("Server printed more than one error message during the request",
+                    errorLogCounter.count(),
                     is(1));
             // check response
             int responseCode = response.getStatus();
             MatcherAssert.assertThat("Wrong response code", responseCode, is(500));
             String responseBody = response.readEntity(String.class);
-            Assert.assertTrue("Wrong response error message: " + responseBody,
-                    responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"));
+            Assertions.assertTrue(responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"),
+                    "Wrong response error message: " + responseBody);
         } finally {
             client.close();
         }

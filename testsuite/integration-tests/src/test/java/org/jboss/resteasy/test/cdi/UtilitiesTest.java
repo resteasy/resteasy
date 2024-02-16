@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.cdi;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsBostonlLeaf;
 import org.jboss.resteasy.test.cdi.extensions.resource.CDIExtensionsResource;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookResource;
 import org.jboss.resteasy.test.cdi.util.Utilities;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -46,7 +46,7 @@ public class UtilitiesTest {
         log.info("entering testGetQualifiers()");
         Set<Annotation> qualifiers = Utilities.getQualifiers(C.class);
         log.info("qualifiers: " + qualifiers);
-        assertEquals("Wrong count of qualifieers", 1, qualifiers.size());
+        assertEquals(1, qualifiers.size(), "Wrong count of qualifieers");
         HashSet<Class<?>> qualifierClasses = new HashSet<Class<?>>();
         Iterator<Annotation> it = qualifiers.iterator();
         while (it.hasNext()) {
@@ -54,7 +54,8 @@ public class UtilitiesTest {
             log.info("a type: " + a.annotationType());
             qualifierClasses.add(a.annotationType());
         }
-        assertTrue("CDIExtensionsBoston is not qualifier", qualifierClasses.contains(CDIExtensionsBoston.class));
+        assertTrue(qualifierClasses.contains(CDIExtensionsBoston.class),
+                "CDIExtensionsBoston is not qualifier");
         log.info("testAnnotation() PASSES");
     }
 
@@ -65,12 +66,12 @@ public class UtilitiesTest {
     @Test
     public void testHasQualifier() {
         log.info("entering testHasQualifier()");
-        assertTrue("CDIInjectionBookResource should have qualifier",
-                Utilities.hasQualifier(CDIInjectionBookResource.class, RequestScoped.class));
-        assertTrue("CDIExtensionsBostonHolder should have boston qualifier",
-                Utilities.isBoston(CDIExtensionsBostonHolder.class));
-        assertTrue("CDIExtensionsBostonlLeaf should have boston qualifier", Utilities.isBoston(CDIExtensionsBostonlLeaf.class));
-        assertFalse("CDIExtensionsResource should not have boston qualifier", Utilities.isBoston(CDIExtensionsResource.class));
+        assertTrue(Utilities.hasQualifier(CDIInjectionBookResource.class, RequestScoped.class),
+                "CDIInjectionBookResource should have qualifier");
+        assertTrue(Utilities.isBoston(CDIExtensionsBostonHolder.class),
+                "CDIExtensionsBostonHolder should have boston qualifier");
+        assertTrue(Utilities.isBoston(CDIExtensionsBostonlLeaf.class), "CDIExtensionsBostonlLeaf should have boston qualifier");
+        assertFalse(Utilities.isBoston(CDIExtensionsResource.class), "CDIExtensionsResource should not have boston qualifier");
     }
 
     interface i1 {
@@ -94,10 +95,10 @@ public class UtilitiesTest {
         log.info("entering testTypeClosure()");
         Set<Type> set = Utilities.getTypeClosure(c2.class);
         log.info("Set: " + set);
-        assertEquals("Set of getTypeClosure for c2 class don't contains correct classes", 5, set.size());
-        assertTrue("Set of getTypeClosure for c2 class don't contains correct classes",
-                set.contains(i1.class) && set.contains(i2.class) && set.contains(c1.class)
-                        && set.contains(c2.class) && set.contains(Object.class));
+        assertEquals(5, set.size(), "Set of getTypeClosure for c2 class don't contains correct classes");
+        assertTrue(set.contains(i1.class) && set.contains(i2.class) && set.contains(c1.class)
+                && set.contains(c2.class) && set.contains(Object.class),
+                "Set of getTypeClosure for c2 class don't contains correct classes");
     }
 
     /**
@@ -107,16 +108,19 @@ public class UtilitiesTest {
     @SuppressWarnings("serial")
     @Test
     public void testAnnotationPresent() throws Exception {
-        assertTrue("Wrong annotations for CDIExtensionsBoston class", Utilities.isAnnotationPresent(C.class,
+        assertTrue(Utilities.isAnnotationPresent(C.class,
                 new AnnotationLiteral<CDIExtensionsBoston>() {
-                }.annotationType()));
+                }.annotationType()),
+                "Wrong annotations for CDIExtensionsBoston class");
 
-        assertTrue("Wrong annotations for AnnotationLiteral class", Utilities.isAnnotationPresent(C.class,
+        assertTrue(Utilities.isAnnotationPresent(C.class,
                 new AnnotationLiteral<RequestScoped>() {
-                }.annotationType()));
+                }.annotationType()),
+                "Wrong annotations for AnnotationLiteral class");
 
-        assertFalse("Wrong annotations for SessionScoped class", Utilities.isAnnotationPresent(C.class,
+        assertFalse(Utilities.isAnnotationPresent(C.class,
                 new AnnotationLiteral<SessionScoped>() {
-                }.annotationType()));
+                }.annotationType()),
+                "Wrong annotations for SessionScoped class");
     }
 }

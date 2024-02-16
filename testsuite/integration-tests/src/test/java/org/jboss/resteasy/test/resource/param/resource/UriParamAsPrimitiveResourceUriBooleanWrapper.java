@@ -5,13 +5,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
 import org.jboss.resteasy.test.resource.param.UriParamAsPrimitiveTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/boolean/wrapper/{arg}")
 public class UriParamAsPrimitiveResourceUriBooleanWrapper {
     @GET
     public String doGet(@PathParam("arg") Boolean v) {
-        Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, true, v.booleanValue());
+        Assertions.assertEquals(true, v.booleanValue(), UriParamAsPrimitiveTest.ERROR_CODE);
         return "content";
     }
 }

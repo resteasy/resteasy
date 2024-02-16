@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URISyntaxException;
 
@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.CharacterSetData;
@@ -19,17 +19,17 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CharacterSetTest {
 
@@ -42,12 +42,12 @@ public class CharacterSetTest {
         return TestUtil.finishContainerPrepare(war, null, CharacterSetData.class, CharacterSetResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -70,17 +70,17 @@ public class CharacterSetTest {
             ResteasyWebTarget target = client.target(generateURL(path));
             Response response = target.request().accept("application/xml").header("Accept-Charset", characterSet).get();
 
-            assertEquals("Status code", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Status code");
 
             String contentType = response.getHeaders().getFirst("Content-Type").toString();
             String charsetPattern = "application/xml\\s*;\\s*charset\\s*=\\s*\"?" + characterSet + "\"?";
             String charsetErrorMessage = contentType + " does not match " + charsetPattern;
-            assertTrue(charsetErrorMessage, contentType.matches(charsetPattern));
+            assertTrue(contentType.matches(charsetPattern), charsetErrorMessage);
 
             String xml = response.readEntity(String.class);
             String encodingPattern = "<\\?xml[^>]*encoding\\s*=\\s*['\"]" + characterSet + "['\"].*";
             String encodingErrorMessage = xml + " does not match " + encodingPattern;
-            assertTrue(encodingErrorMessage, xml.matches(encodingPattern));
+            assertTrue(xml.matches(encodingPattern), encodingErrorMessage);
 
             response.close();
         }

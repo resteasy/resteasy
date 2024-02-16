@@ -10,7 +10,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Resource(name = "test")
 @Path(value = "/sayhello")
@@ -24,14 +24,14 @@ public class SpecialCharactersResource {
     @Path("/en/{in}")
     @Produces("text/plain")
     public String echo(@PathParam(value = "in") String in) {
-        Assert.assertEquals("something something", in);
+        Assertions.assertEquals("something something", in);
         return in;
     }
 
     @POST
     @Path("/compile")
     public String compile(@QueryParam("query") String queryText) {
-        Assert.assertEquals(queryText, QUERY);
+        Assertions.assertEquals(queryText, QUERY);
         return queryText;
     }
 
@@ -46,7 +46,7 @@ public class SpecialCharactersResource {
     @GET
     @Produces("text/plain")
     public String getPlus(@PathParam("plus") String p) {
-        Assert.assertEquals("foo+bar", p);
+        Assertions.assertEquals("foo+bar", p);
         return p;
     }
 }

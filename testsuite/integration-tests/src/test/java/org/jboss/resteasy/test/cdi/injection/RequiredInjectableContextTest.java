@@ -37,7 +37,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.cdi.injection.resource.RequiredInjectableContextResource;
 import org.jboss.resteasy.test.cdi.injection.resource.RootApplication;
@@ -45,16 +45,16 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class RequiredInjectableContextTest {
 
@@ -70,13 +70,13 @@ public class RequiredInjectableContextTest {
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initClient() {
         client = ClientBuilder.newBuilder()
                 .build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void closeClient() {
         if (client != null) {
             client.close();
@@ -86,82 +86,81 @@ public class RequiredInjectableContextTest {
     @Test
     public void application() throws Exception {
         final Response response = get("application/test.property");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("test value", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("test value", response.readEntity(String.class));
     }
 
     @Test
     public void client() throws Exception {
         final Response response = get("client/request");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("GET", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
     public void configuration() throws Exception {
         final Response response = get("configuration");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals(RuntimeType.SERVER.name(), response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(RuntimeType.SERVER.name(), response.readEntity(String.class));
     }
 
     @Test
     public void httpHeader() throws Exception {
         final Response response = get("httpHeaders/test-header");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("test-value", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("test-value", response.readEntity(String.class));
     }
 
     @Test
     public void httpRequest() throws Exception {
         final Response response = get("httpRequest");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("GET", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
     public void provider() throws Exception {
         final Response response = get("providers");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         final String value = response.readEntity(String.class);
-        Assert.assertTrue(
-                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value),
-                value.contains(TestExceptionMapper.class.getSimpleName()));
+        Assertions.assertTrue(value.contains(TestExceptionMapper.class.getSimpleName()),
+                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value));
     }
 
     @Test
     public void request() throws Exception {
         final Response response = get("request");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("GET", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
     public void resourceContext() throws Exception {
         final Response response = get("resourceContext");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertTrue(response.readEntity(String.class)
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertTrue(response.readEntity(String.class)
                 .startsWith(RequiredInjectableContextResource.class.getCanonicalName()));
     }
 
     @Test
     public void resourceInfo() throws Exception {
         final Response response = get("resourceInfo");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals(response.readEntity(String.class), "resourceInfo");
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(response.readEntity(String.class), "resourceInfo");
     }
 
     @Test
     public void securityContext() throws Exception {
         final Response response = get("securityContext");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("false", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("false", response.readEntity(String.class));
     }
 
     @Test
     public void uriInfo() throws Exception {
         final Response response = get("uriInfo");
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
-        Assert.assertEquals("/inject/uriInfo", response.readEntity(String.class));
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("/inject/uriInfo", response.readEntity(String.class));
     }
 
     @Test
@@ -179,7 +178,7 @@ public class RequiredInjectableContextTest {
             source.open();
             Thread.sleep(500L);
         }
-        Assert.assertEquals("test", cf.get(5, TimeUnit.SECONDS));
+        Assertions.assertEquals("test", cf.get(5, TimeUnit.SECONDS));
     }
 
     private Response get(final String path) throws URISyntaxException {

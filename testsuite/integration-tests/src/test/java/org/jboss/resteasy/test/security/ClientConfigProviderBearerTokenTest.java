@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.security;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Security
@@ -20,14 +20,14 @@ public class ClientConfigProviderBearerTokenTest {
         Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(
                 ClientConfigProviderTestJarHelper.TestType.TEST_BEARER_TOKEN_IS_USED, jarPath);
         String line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
-        Assert.assertEquals("200", line);
+        Assertions.assertEquals("200", line);
         process.destroy();
 
         process = ClientConfigProviderTestJarHelper.runClientConfigProviderBearerTestJar(
                 ClientConfigProviderTestJarHelper.TestType.TEST_BEARER_TOKEN_IGNORED_IF_BASIC_SET_BY_USER, jarPath);
         line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
-        Assert.assertEquals("Credentials set by user had precedence", line);
+        Assertions.assertEquals("Credentials set by user had precedence", line);
         process.destroy();
-        Assert.assertTrue(new File(jarPath).delete());
+        Assertions.assertTrue(new File(jarPath).delete());
     }
 }

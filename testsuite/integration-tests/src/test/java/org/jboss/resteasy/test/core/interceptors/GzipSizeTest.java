@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Variant;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
@@ -28,11 +28,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter GZIP interceptors
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Gzip compression tests
  * @tpSince RESTEasy 3.1.0.Final
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class GzipSizeTest {
 
@@ -63,7 +63,7 @@ public class GzipSizeTest {
         return PortProviderUtil.generateURL(path, GzipSizeTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newBuilder() // Activate gzip compression on client:
                 .register(AcceptEncodingGZIPFilter.class)
@@ -72,7 +72,7 @@ public class GzipSizeTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -87,10 +87,10 @@ public class GzipSizeTest {
         byte[] b = new byte[17];
         Variant variant = new Variant(MediaType.APPLICATION_OCTET_STREAM_TYPE, "", "gzip");
         Response response = client.target(generateURL("/big/send")).request().post(Entity.entity(b, variant));
-        Assert.assertEquals(HttpResponseCodes.SC_REQUEST_ENTITY_TOO_LARGE, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_REQUEST_ENTITY_TOO_LARGE, response.getStatus());
         String message = response.readEntity(String.class);
-        Assert.assertTrue(message.contains("RESTEASY003357"));
-        Assert.assertTrue(message.contains("16"));
+        Assertions.assertTrue(message.contains("RESTEASY003357"));
+        Assertions.assertTrue(message.contains("16"));
     }
 
     /**
@@ -101,15 +101,15 @@ public class GzipSizeTest {
     public void testMaxConfiguredSizeReceiving() throws Exception {
         Response response = client.target(generateURL("/big/receive")).request().header(HttpHeaders.ACCEPT_ENCODING, "gzip")
                 .post(Entity.entity(17, "text/plain"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         try {
             byte[] b = response.readEntity(byte[].class);
-            Assert.fail("Expecting ProcessingException, not " + b);
+            Assertions.fail("Expecting ProcessingException, not " + b);
         } catch (ProcessingException e) {
-            Assert.assertTrue(e.getMessage().contains("RESTEASY003357"));
-            Assert.assertTrue(e.getMessage().contains("16"));
+            Assertions.assertTrue(e.getMessage().contains("RESTEASY003357"));
+            Assertions.assertTrue(e.getMessage().contains("16"));
         } catch (Exception e) {
-            Assert.fail("Expecting ProcessingException, not " + e);
+            Assertions.fail("Expecting ProcessingException, not " + e);
         }
     }
 }

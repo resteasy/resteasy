@@ -9,16 +9,16 @@ import jakarta.ws.rs.client.WebTarget;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.client.resource.WebTargetResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
@@ -26,13 +26,13 @@ import org.junit.runner.RunWith;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class WebTargetTest extends ClientTestBase {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() {
         client = ClientBuilder.newClient();
     }
@@ -43,7 +43,7 @@ public class WebTargetTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, WebTargetResource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -69,19 +69,19 @@ public class WebTargetTest extends ClientTestBase {
         WebTarget created = base.path("{id}");
 
         String result = created.resolveTemplate("id", "1").resolveTemplate("username", "test").request().get(String.class);
-        Assert.assertEquals("username: test, 1", result);
+        Assertions.assertEquals("username: test, 1", result);
 
         String result2 = created.resolveTemplate("id", "2").resolveTemplate("username", "test").resolveTemplate("id", "ignore")
                 .request().get(String.class);
-        Assert.assertEquals("username: test, 2", result2);
+        Assertions.assertEquals("username: test, 2", result2);
 
         WebTarget modified = created.resolveTemplate("username", "test");
         String result3 = modified.resolveTemplate("username", "ignore").resolveTemplate("id", "3")
                 .resolveTemplate("id", "ignore").request().get(String.class);
-        Assert.assertEquals("username: test, 3", result3);
+        Assertions.assertEquals("username: test, 3", result3);
 
         // Original Web target remains remains same
-        Assert.assertEquals(generateURL("/") + "users/{username}" + "/{id}", created.getUriBuilder().toTemplate());
+        Assertions.assertEquals(generateURL("/") + "users/{username}" + "/{id}", created.getUriBuilder().toTemplate());
     }
 
     /**
@@ -89,12 +89,16 @@ public class WebTargetTest extends ClientTestBase {
      * @tpPassCrit NullPointerException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = NullPointerException.class)
+    @Test()
     public void testResolveTemplateNull() {
-        WebTarget base = client.target(generateURL("/") + "users/{username}");
-        WebTarget created = base.path("{id}");
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/") + "users/{username}");
+                    WebTarget created = base.path("{id}");
 
-        created.resolveTemplate(null, null);
+                    created.resolveTemplate(null, null);
+                });
+        Assertions.assertTrue(thrown instanceof NullPointerException);
     }
 
     /**
@@ -108,7 +112,7 @@ public class WebTargetTest extends ClientTestBase {
         WebTarget created = base.path("{id}");
         String result = created.resolveTemplate("id", "1", false).resolveTemplate("username", "te//st", true).request()
                 .get(String.class);
-        Assert.assertEquals("username: te//st, 1", result);
+        Assertions.assertEquals("username: te//st, 1", result);
     }
 
     /**
@@ -126,10 +130,10 @@ public class WebTargetTest extends ClientTestBase {
         WebTarget created = base.path("{id}");
 
         String r2 = created.resolveTemplate("username", a).resolveTemplate("id", b).getUri().toString();
-        Assert.assertEquals(generateURL("/") + "users/a%2520%253F%2F*%2F/%2Fb%2F", r2);
+        Assertions.assertEquals(generateURL("/") + "users/a%2520%253F%2F*%2F/%2Fb%2F", r2);
 
         String result = created.resolveTemplate("id", b).resolveTemplate("username", a).request().get(String.class);
-        Assert.assertEquals("username: a%20%3F/*/, /b/", result);
+        Assertions.assertEquals("username: a%20%3F/*/, /b/", result);
     }
 
     /**
@@ -148,7 +152,7 @@ public class WebTargetTest extends ClientTestBase {
 
         String result_encoded = created.resolveTemplateFromEncoded("id", b).resolveTemplateFromEncoded("username", a).request()
                 .get(String.class);
-        Assert.assertEquals("username: a ?/*/, /b/", result_encoded);
+        Assertions.assertEquals("username: a ?/*/, /b/", result_encoded);
     }
 
     /**
@@ -169,7 +173,7 @@ public class WebTargetTest extends ClientTestBase {
         values.put("unknown", "none");
 
         String result = created.resolveTemplates(values).request().get(String.class);
-        Assert.assertEquals("username: test, 1, WHY", result);
+        Assertions.assertEquals("username: test, 1, WHY", result);
     }
 
     /**
@@ -186,7 +190,7 @@ public class WebTargetTest extends ClientTestBase {
         Map<String, Object> values = new HashMap<String, Object>();
 
         WebTarget result = created.resolveTemplates(values);
-        Assert.assertEquals(result, created);
+        Assertions.assertEquals(result, created);
     }
 
     /**
@@ -208,7 +212,7 @@ public class WebTargetTest extends ClientTestBase {
         values.put("unknown", "none");
 
         String result = created.resolveTemplates(values, true).request().get(String.class);
-        Assert.assertEquals("username: //test, 1, /WHY/", result);
+        Assertions.assertEquals("username: //test, 1, /WHY/", result);
     }
 
     /**
@@ -230,7 +234,7 @@ public class WebTargetTest extends ClientTestBase {
         values.put("unknown", "none");
 
         String result = created.resolveTemplatesFromEncoded(values).request().get(String.class);
-        Assert.assertEquals("username: ab^c, %1, hello world", result);
+        Assertions.assertEquals("username: ab^c, %1, hello world", result);
     }
 
     /**
@@ -246,23 +250,23 @@ public class WebTargetTest extends ClientTestBase {
 
         result = created.queryParam("q", "a").resolveTemplate("username", "test").resolveTemplate("id", "1").request()
                 .get(String.class);
-        Assert.assertEquals("username: test, 1, q: [a], k: []", result);
+        Assertions.assertEquals("username: test, 1, q: [a], k: []", result);
 
         result = created.queryParam("q", "a", "b").resolveTemplate("username", "test").resolveTemplate("id", "1").request()
                 .get(String.class);
-        Assert.assertEquals("username: test, 1, q: [a, b], k: []", result);
+        Assertions.assertEquals("username: test, 1, q: [a, b], k: []", result);
 
         result = created.queryParam("q", "a", "b").queryParam("k", "c", "d").resolveTemplate("username", "test")
                 .resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("username: test, 1, q: [a, b], k: [c, d]", result);
+        Assertions.assertEquals("username: test, 1, q: [a, b], k: [c, d]", result);
 
         result = created.queryParam("q", "a", "b").queryParam("q", (Object) null).resolveTemplate("username", "test")
                 .resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("username: test, 1, q: [], k: []", result);
+        Assertions.assertEquals("username: test, 1, q: [], k: []", result);
 
         result = created.queryParam("q", "a").queryParam("k", "b").queryParam("q", (Object) null)
                 .resolveTemplate("username", "test").resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("username: test, 1, q: [], k: [b]", result);
+        Assertions.assertEquals("username: test, 1, q: [], k: [b]", result);
     }
 
     /**
@@ -270,12 +274,16 @@ public class WebTargetTest extends ClientTestBase {
      * @tpPassCrit NullPointerException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = NullPointerException.class)
+    @Test()
     public void testQueryParamNullPointer() {
-        WebTarget base = client.target(generateURL("/") + "users/{username}");
-        WebTarget created = base.path("param/{id}");
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/") + "users/{username}");
+                    WebTarget created = base.path("param/{id}");
 
-        created.queryParam("q", "a", null, "b", null);
+                    created.queryParam("q", "a", null, "b", null);
+                });
+        Assertions.assertTrue(thrown instanceof NullPointerException);
     }
 
     /**
@@ -304,11 +312,11 @@ public class WebTargetTest extends ClientTestBase {
         modified = modified.matrixParam("m1", "abcd2");
         modified = modified.matrixParam("m1", new Object[] { null });
         String result = modified.resolveTemplate("username", "test").resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("username: test, 1, m1: [abcd], m2: [cdef]", result);
+        Assertions.assertEquals("username: test, 1, m1: [abcd], m2: [cdef]", result);
 
         modified = modified.matrixParam("m1", "abcd2");
         result = modified.resolveTemplate("username", "test").resolveTemplate("id", "1").request().get(String.class);
-        Assert.assertEquals("username: test, 1, m1: [abcd, abcd2], m2: [cdef]", result);
+        Assertions.assertEquals("username: test, 1, m1: [abcd, abcd2], m2: [cdef]", result);
     }
 
     /**
@@ -316,11 +324,15 @@ public class WebTargetTest extends ClientTestBase {
      * @tpPassCrit NullPointerException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = NullPointerException.class)
+    @Test()
     public void testMatrixParamNullPointer() {
-        WebTarget base = client.target(generateURL("/") + "users/{username}");
-        WebTarget created = base.path("matrix/{id}");
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class,
+                () -> {
+                    WebTarget base = client.target(generateURL("/") + "users/{username}");
+                    WebTarget created = base.path("matrix/{id}");
 
-        created.matrixParam("m1", "a", null, "b", null);
+                    created.matrixParam("m1", "a", null, "b", null);
+                });
+        Assertions.assertTrue(thrown instanceof NullPointerException);
     }
 }

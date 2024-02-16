@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.custom.resource.CustomContextProviderPreferenceResolver;
@@ -14,11 +14,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Providers
@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for custom ContextProvider preference.
  * @tpSince RESTEasy 3.1.2.Final
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomContextProviderPreferenceTest {
 
@@ -39,12 +39,12 @@ public class CustomContextProviderPreferenceTest {
                 CustomContextProviderPreferenceResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -60,7 +60,7 @@ public class CustomContextProviderPreferenceTest {
     @Test
     public void testCustomContextProviderPreference() throws Exception {
         Response response = client.target(generateURL("/test")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 }

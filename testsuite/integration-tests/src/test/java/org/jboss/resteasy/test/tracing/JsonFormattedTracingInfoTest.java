@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.tracing;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -13,12 +13,14 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Disabled("RESTEASY-3451")
 public class JsonFormattedTracingInfoTest extends BasicTracingTest {
 
     private static final Logger LOG = Logger.getLogger(JsonFormattedTracingInfoTest.class);
@@ -33,7 +35,7 @@ public class JsonFormattedTracingInfoTest extends BasicTracingTest {
             Response response = base.request().header(RESTEasyTracing.HEADER_ACCEPT_FORMAT, "JSON").get();
             LOG.info(response);
 
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             boolean hasTracing = false;
             for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
                 if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {

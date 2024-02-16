@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.exception;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -10,7 +11,7 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.exception.resource.RESTEASY3109DefaultExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.RESTEASY3109ExceptionRequestFilter;
 import org.jboss.resteasy.test.exception.resource.RESTEASY3109SseResource;
@@ -18,13 +19,13 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class RESTEASY3109Test {
     static Client client;
@@ -42,29 +43,32 @@ public class RESTEASY3109Test {
         return PortProviderUtil.generateURL(path, RESTEASY3109Test.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
 
-    @Test(timeout = 8000)
+    @Test()
     public void testException() throws Exception {
-        WebTarget target = client.target(generateURL("/sse"));
-        final CountDownLatch latch = new CountDownLatch(1);
-        try (SseEventSource source = SseEventSource.target(target).build()) {
-            source.register(evt -> {
-                Assert.fail("Should not have seen any results");
-            }, t -> {
-                String s = t.getMessage();
-                Assert.assertTrue(s.contains("HTTP 500 Internal Server Error"));
-            }, latch::countDown);
-            source.open();
-            Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
-        }
+        Assertions.assertTimeout(Duration.ofMillis(8000),
+                () -> {
+                    WebTarget target = client.target(generateURL("/sse"));
+                    final CountDownLatch latch = new CountDownLatch(1);
+                    try (SseEventSource source = SseEventSource.target(target).build()) {
+                        source.register(evt -> {
+                            Assertions.fail("Should not have seen any results");
+                        }, t -> {
+                            String s = t.getMessage();
+                            Assertions.assertTrue(s.contains("HTTP 500 Internal Server Error"));
+                        }, latch::countDown);
+                        source.open();
+                        Assertions.assertTrue(latch.await(5, TimeUnit.SECONDS));
+                    }
+                });
     }
 }

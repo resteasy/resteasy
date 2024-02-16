@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.UriBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoEncodedQueryResource;
@@ -28,11 +28,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resources
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests for java.net.URI class
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class UriInfoTest {
 
@@ -48,12 +48,12 @@ public class UriInfoTest {
 
     private static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
         client = null;
@@ -174,12 +174,12 @@ public class UriInfoTest {
         WebTarget target = client.target(uri);
         String result;
         result = target.path("a/b/c").queryParam("to", "a/d/e").request().get(String.class);
-        Assert.assertEquals("../../d/e", result);
+        Assertions.assertEquals("../../d/e", result);
         result = target.path("a/b/c").queryParam("to", UriBuilder.fromUri(uri).path("a/d/e").build().toString()).request()
                 .get(String.class);
-        Assert.assertEquals("../../d/e", result);
+        Assertions.assertEquals("../../d/e", result);
         result = target.path("a/b/c").queryParam("to", "http://foobar/a/d/e").request().get(String.class);
-        Assert.assertEquals("http://foobar/a/d/e", result);
+        Assertions.assertEquals("http://foobar/a/d/e", result);
     }
 
     /**
@@ -197,7 +197,7 @@ public class UriInfoTest {
     private void basicTest(String path, String testName) throws Exception {
         Response response = client.target(PortProviderUtil.generateURL(path, testName)).request().get();
         try {
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         } finally {
             response.close();
         }

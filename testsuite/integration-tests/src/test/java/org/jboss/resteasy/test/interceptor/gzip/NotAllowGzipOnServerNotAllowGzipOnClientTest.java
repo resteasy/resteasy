@@ -4,7 +4,7 @@ import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Gzip

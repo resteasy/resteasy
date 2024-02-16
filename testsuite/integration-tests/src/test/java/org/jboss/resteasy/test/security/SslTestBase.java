@@ -18,7 +18,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.ServerReload;
 import org.jboss.resteasy.utils.TestManagementClient;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Base class for SSL tests. Contains utility methods used in all ssl tests.
@@ -106,7 +106,7 @@ public abstract class SslTestBase {
 
             final ModelNode result = client.execute(builder.build());
             if (!Operations.isSuccessfulOutcome(result)) {
-                Assert.fail("Failed to configure SSL context: " + Operations.getFailureDescription(result).asString());
+                Assertions.fail("Failed to configure SSL context: " + Operations.getFailureDescription(result).asString());
             }
 
             ServerReload.reloadIfRequired(client);

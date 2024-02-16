@@ -18,20 +18,20 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.test.client.resource.ClientResponseWithEntityResponseFilter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientResponseWithEntityTest {
 
@@ -75,12 +75,12 @@ public class ClientResponseWithEntityTest {
         return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -94,32 +94,36 @@ public class ClientResponseWithEntityTest {
         Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
                 .request(MediaType.APPLICATION_XML_TYPE);
         try (ClientResponse response = (ClientResponse) request.get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            Assert.assertTrue(response.hasEntity());
-            Assert.assertNotNull(response.getEntity());
-            Assert.assertNotNull(response.getEntityClass());
+            Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            Assertions.assertTrue(response.hasEntity());
+            Assertions.assertNotNull(response.getEntity());
+            Assertions.assertNotNull(response.getEntityClass());
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test()
     public void Should_ThrowIllegalStateException_When_EntityIsConsumed() throws Exception {
-        Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
-                .request(MediaType.APPLICATION_XML_TYPE);
-        try (ClientResponse response = (ClientResponse) request.get()) {
-            Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            Assert.assertTrue(response.hasEntity());
-            InputStream entityStream = (InputStream) response.getEntity();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int wasRead = 0;
-            do {
-                wasRead = entityStream.read(buffer);
-                if (wasRead > 0) {
-                    baos.write(buffer, 0, wasRead);
-                }
-            } while (wasRead > -1);
-            response.getEntity();
-        }
+        IllegalStateException thrown = Assertions.assertThrows(IllegalStateException.class,
+                () -> {
+                    Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+                            .request(MediaType.APPLICATION_XML_TYPE);
+                    try (ClientResponse response = (ClientResponse) request.get()) {
+                        Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+                        Assertions.assertTrue(response.hasEntity());
+                        InputStream entityStream = (InputStream) response.getEntity();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        byte[] buffer = new byte[1024];
+                        int wasRead = 0;
+                        do {
+                            wasRead = entityStream.read(buffer);
+                            if (wasRead > 0) {
+                                baos.write(buffer, 0, wasRead);
+                            }
+                        } while (wasRead > -1);
+                        response.getEntity();
+                    }
+                });
+        Assertions.assertTrue(thrown instanceof IllegalStateException);
     }
 
     /**
@@ -137,40 +141,40 @@ public class ClientResponseWithEntityTest {
 
         //entity retrieved as an input stream using response.getEntity() and then fully consumed => response.getEntity() MUST throw an IllegalStateException
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
+            Assertions.assertTrue(response.hasEntity());
             //Fully consumed the original response stream
             while (((InputStream) response.getEntity()).read() != -1) {
             }
             try {
                 response.getEntity();
-                Assert.fail("An IllegalStateException was expected.");
+                Assertions.fail("An IllegalStateException was expected.");
             } catch (Exception e) {
-                Assert.assertTrue(IllegalStateException.class.isInstance(e));
+                Assertions.assertTrue(IllegalStateException.class.isInstance(e));
                 // Following is to be sure that previous IllegalStateException is not because of closed response
                 try {
-                    Assert.assertTrue(response.hasEntity());
+                    Assertions.assertTrue(response.hasEntity());
                 } catch (IllegalStateException e2) {
-                    Assert.fail("The response was not supposed to be closed");
+                    Assertions.fail("The response was not supposed to be closed");
                 }
             }
         }
 
         //entity retrieved as an input stream using response.readEntity(InputStream.class) and then fully consumed => response.getEntity() MUST throw an IllegalStateException
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
+            Assertions.assertTrue(response.hasEntity());
             //Fully consumed the original response stream
             while (response.readEntity(InputStream.class).read() != -1) {
             }
             try {
                 response.getEntity();
-                Assert.fail("An IllegalStateException was expected.");
+                Assertions.fail("An IllegalStateException was expected.");
             } catch (Exception e) {
-                Assert.assertTrue(IllegalStateException.class.isInstance(e));
+                Assertions.assertTrue(IllegalStateException.class.isInstance(e));
                 // Following is to be sure that previous IllegalStateException is not because of closed response
                 try {
-                    Assert.assertTrue(response.hasEntity());
+                    Assertions.assertTrue(response.hasEntity());
                 } catch (IllegalStateException e2) {
-                    Assert.fail("The response was not supposed to be closed");
+                    Assertions.fail("The response was not supposed to be closed");
                 }
             }
         }
@@ -183,19 +187,19 @@ public class ClientResponseWithEntityTest {
 
         //entity retrieved as an input stream using response.getEntity() and then partially consumed => response.getEntity() MUST return input stream
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
+            Assertions.assertTrue(response.hasEntity());
             InputStream entityStream = (InputStream) response.getEntity();
             //Let consume a part of the entity stream
-            Assert.assertTrue(-1 != ((InputStream) response.getEntity()).read());
-            Assert.assertTrue(InputStream.class.isInstance(response.getEntity()));
+            Assertions.assertTrue(-1 != ((InputStream) response.getEntity()).read());
+            Assertions.assertTrue(InputStream.class.isInstance(response.getEntity()));
         }
 
         //entity retrieved as an input stream using response.readEntity(InputStream.class) and then partially consumed => response.getEntity() MUST return input stream
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
+            Assertions.assertTrue(response.hasEntity());
             //Let consume a part of the entity stream
-            Assert.assertTrue(-1 != response.readEntity(InputStream.class).read());
-            Assert.assertTrue(InputStream.class.isInstance(response.getEntity()));
+            Assertions.assertTrue(-1 != response.readEntity(InputStream.class).read());
+            Assertions.assertTrue(InputStream.class.isInstance(response.getEntity()));
         }
     }
 
@@ -213,16 +217,16 @@ public class ClientResponseWithEntityTest {
 
         //entity retrieved as an input stream using response.getEntity() and then consumed => response.bufferEntity() MUST return false
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
-            Assert.assertTrue(-1 != ((InputStream) response.getEntity()).read());
-            Assert.assertFalse(response.bufferEntity());
+            Assertions.assertTrue(response.hasEntity());
+            Assertions.assertTrue(-1 != ((InputStream) response.getEntity()).read());
+            Assertions.assertFalse(response.bufferEntity());
         }
 
         //entity retrieved as an input stream using response.readEntity(InputStream.class) and then consumed => response.bufferEntity() MUST return false
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
-            Assert.assertTrue(-1 != response.readEntity(InputStream.class).read());
-            Assert.assertFalse(response.bufferEntity());
+            Assertions.assertTrue(response.hasEntity());
+            Assertions.assertTrue(-1 != response.readEntity(InputStream.class).read());
+            Assertions.assertFalse(response.bufferEntity());
         }
     }
 
@@ -233,16 +237,16 @@ public class ClientResponseWithEntityTest {
 
         //entity retrieved as an input stream using response.getEntity() and not consumed => response.bufferEntity() MUST return true
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
-            Assert.assertTrue(InputStream.class.isInstance(response.getEntity()));
-            Assert.assertTrue(response.bufferEntity());
+            Assertions.assertTrue(response.hasEntity());
+            Assertions.assertTrue(InputStream.class.isInstance(response.getEntity()));
+            Assertions.assertTrue(response.bufferEntity());
         }
 
         //entity retrieved as an input stream using response.readEntity(InputStream.class) and not consumed => response.bufferEntity() MUST return true
         try (Response response = request.get();) {
-            Assert.assertTrue(response.hasEntity());
-            Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
-            Assert.assertTrue(response.bufferEntity());
+            Assertions.assertTrue(response.hasEntity());
+            Assertions.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+            Assertions.assertTrue(response.bufferEntity());
         }
     }
 
@@ -255,8 +259,8 @@ public class ClientResponseWithEntityTest {
 
         //entity retrieved as an input stream using response.getEntity() and not consumed => response.bufferEntity() MUST return true
         try (Response response = request.get();) {
-            Assert.assertTrue(ClientResponseWithEntityResponseFilter.called());
-            Assert.assertTrue(response.bufferEntity());
+            Assertions.assertTrue(ClientResponseWithEntityResponseFilter.called());
+            Assertions.assertTrue(response.bufferEntity());
         }
         client.close();
     }

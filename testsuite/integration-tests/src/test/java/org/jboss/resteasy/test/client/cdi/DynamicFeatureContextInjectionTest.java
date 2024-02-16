@@ -26,10 +26,10 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.client.cdi.resources.ContextAndInjectionFilter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Tests that a {@link DynamicFeature} can inject {@link jakarta.ws.rs.core.UriInfo} via
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DynamicFeatureContextInjectionTest extends AbstractRegistrationTest {
 

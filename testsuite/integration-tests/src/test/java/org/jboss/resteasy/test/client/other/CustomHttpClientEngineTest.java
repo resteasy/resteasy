@@ -4,7 +4,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -16,9 +16,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Client engine customization (RESTEASY-1599)
  * @tpSince RESTEasy 3.0.24
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomHttpClientEngineTest {
 
@@ -50,10 +50,10 @@ public class CustomHttpClientEngineTest {
         ResteasyClientBuilder clientBuilder = ((ResteasyClientBuilder) ClientBuilder.newBuilder());
         ClientHttpEngine engine = new CustomHttpClientEngineBuilder().resteasyClientBuilder(clientBuilder).build();
         ResteasyClient client = clientBuilder.httpEngine(engine).build();
-        Assert.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));
+        Assertions.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));
 
         ApacheHttpClient4Resource proxy = client.target(generateURL("")).proxy(ApacheHttpClient4Resource.class);
-        Assert.assertEquals("Unexpected response", "hello world", proxy.get());
+        Assertions.assertEquals("hello world", proxy.get(), "Unexpected response");
 
         client.close();
     }

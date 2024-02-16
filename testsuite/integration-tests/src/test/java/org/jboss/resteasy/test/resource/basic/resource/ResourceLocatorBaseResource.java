@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ResourceLocatorBaseResource {
@@ -21,17 +21,17 @@ public class ResourceLocatorBaseResource {
     @Path("base/{param}/resources")
     public Object getSubresource(@PathParam("param") String param, @Context UriInfo uri) {
         LOG.info("Here in BaseResource");
-        Assert.assertEquals("1", param);
+        Assertions.assertEquals("1", param);
         List<String> matchedURIs = uri.getMatchedURIs();
-        Assert.assertEquals(2, matchedURIs.size());
-        Assert.assertEquals("base/1/resources", matchedURIs.get(0));
-        Assert.assertEquals("", matchedURIs.get(1));
+        Assertions.assertEquals(2, matchedURIs.size());
+        Assertions.assertEquals("base/1/resources", matchedURIs.get(0));
+        Assertions.assertEquals("", matchedURIs.get(1));
         for (String ancestor : matchedURIs)
             LOG.info("   " + ancestor);
 
         LOG.info("Uri Ancesstors Object for Subresource.doGet():");
-        Assert.assertEquals(1, uri.getMatchedResources().size());
-        Assert.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(0).getClass());
+        Assertions.assertEquals(1, uri.getMatchedResources().size());
+        Assertions.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(0).getClass());
         return new ResourceLocatorSubresource();
     }
 

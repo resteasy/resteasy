@@ -13,13 +13,13 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author Nicolas NESMON
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy
  *
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientCookieTest extends ClientTestBase {
 
@@ -68,12 +68,12 @@ public class ClientCookieTest extends ClientTestBase {
 
             try (Response response = client.target(generateURL("/createCookie")).request(MediaType.TEXT_PLAIN_TYPE).get()) {
                 NewCookie cookie = response.getCookies().get("Cookie");
-                Assert.assertNotNull(cookie);
+                Assertions.assertNotNull(cookie);
             }
 
             int cookiesCount = client.target(generateURL("/getCookiesCount")).request(MediaType.TEXT_PLAIN_TYPE)
                     .get(Integer.class);
-            Assert.assertEquals(0, cookiesCount);
+            Assertions.assertEquals(0, cookiesCount);
 
         } finally {
             client.close();
