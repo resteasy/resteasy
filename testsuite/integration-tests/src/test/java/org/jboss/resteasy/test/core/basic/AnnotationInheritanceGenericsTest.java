@@ -37,7 +37,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Test for JAX-RS annotation inheritance with generics.
  * @tpSince RESTEasy 4.0.0
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AnnotationInheritanceGenericsTest {

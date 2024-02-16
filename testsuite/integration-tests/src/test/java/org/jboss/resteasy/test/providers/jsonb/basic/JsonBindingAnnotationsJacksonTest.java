@@ -34,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpChapter Integration test
  * @tpSince RESTEasy 3.5
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JsonBindingAnnotationsJacksonTest {

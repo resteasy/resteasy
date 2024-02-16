@@ -36,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * AllowGzipOnServerAbstractTestBase
  * NotAllowGzipOnServerAbstractTestBase
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public abstract class GzipAbstractTestBase {

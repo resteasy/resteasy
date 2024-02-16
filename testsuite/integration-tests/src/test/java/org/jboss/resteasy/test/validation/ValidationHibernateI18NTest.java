@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Test for internationalization of hibernate validator
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ValidationHibernateI18NTest {

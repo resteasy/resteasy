@@ -36,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.23
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomJackson2ProviderTest {
