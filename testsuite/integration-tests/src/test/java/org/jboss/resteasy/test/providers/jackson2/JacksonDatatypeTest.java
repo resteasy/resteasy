@@ -39,7 +39,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Test for WFLY-5916. Integration tests for jackson-datatype-jsr310 and jackson-datatype-jdk8 modules
  * @tpSince RESTEasy 3.1.0.CR3
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JacksonDatatypeTest {

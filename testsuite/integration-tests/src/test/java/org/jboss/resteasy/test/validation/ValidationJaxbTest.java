@@ -54,7 +54,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Regression test for JBEAP-3280
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ValidationJaxbTest {

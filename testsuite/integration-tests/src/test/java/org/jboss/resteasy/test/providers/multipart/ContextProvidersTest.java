@@ -62,7 +62,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *                    Unable to find contextual data of type: jakarta.ws.rs.ext.Providers if ClientBuilder.newClient is used.
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @SuppressWarnings("deprecation")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient

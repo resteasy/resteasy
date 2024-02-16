@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *                    This test checks CDI integration.
  * @tpSince RESTEasy 3.6
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class RESTEasyParamCdiTest {
