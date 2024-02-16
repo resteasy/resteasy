@@ -112,7 +112,7 @@ public class SecurityManagerTest {
                     .request().get();
             final String value = checkFailedResponse(response);
             Assertions.assertTrue(value.contains("\"java.lang.RuntimePermission\" \"getenv." + ENV_NAME + "\""),
-                    "Expected the response to have failed with a property permission: " + value);
+                    () -> "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -125,7 +125,7 @@ public class SecurityManagerTest {
                     .request().get();
             final String value = checkFailedResponse(response);
             Assertions.assertTrue(value.contains("\"java.util.PropertyPermission\" \"" + PROPERTY_NAME + "\""),
-                    "Expected the response to have failed with a property permission: " + value);
+                    () -> "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -139,7 +139,7 @@ public class SecurityManagerTest {
             Assertions.assertTrue(
                     value.contains(
                             "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\""),
-                    "Expected the response to have failed with a property permission: " + value);
+                    () -> "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -152,7 +152,7 @@ public class SecurityManagerTest {
             final String value = checkFailedResponse(response);
             Assertions.assertTrue(
                     value.contains("\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + ENV_NAME + "\""),
-                    "Expected the response to have failed with a property permission: " + value);
+                    () -> "Expected the response to have failed with a property permission: " + value);
         }
     }
 
@@ -166,7 +166,7 @@ public class SecurityManagerTest {
             Assertions.assertTrue(
                     value.contains(
                             "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\""),
-                    "Expected the response to have failed with a property permission: " + value);
+                    () -> "Expected the response to have failed with a property permission: " + value);
         }
     }
 
