@@ -121,8 +121,6 @@ public class CacheControlAnnotationTest {
      * @tpSince RESTEasy 7.0.0
      */
     @Test
-    @Tag("AwaitingUpgradeInWildFly.class")
-    @FollowUpRequired("Caused by RESTEASY-3111. Once upgraded in WildFly, we can re-enable this test")
     public void testInheritedResourceValid() {
         WebTarget base = client.target(generateURL("/inheritance"));
 

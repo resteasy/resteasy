@@ -111,7 +111,7 @@
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
+                    <excludedGroups>${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -179,54 +179,6 @@
                 <jboss.home>${server.home}</jboss.home>
             </properties>
         </profile>
-        <profile>
-            <id>server-version-21x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>21.0.1.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly21</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-20x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>20.0.1.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly20</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-19x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>19.1.0.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly19</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-18x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>18.0.1.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly18</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
         <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->
         <profile>
             <id>custom-resteasy-version</id>
@@ -262,29 +214,9 @@
                                 <project.version>${project.version}</project.version>
                                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                             </systemPropertyVariables>
-                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                         </configuration>
                     </plugin>
 
-                </plugins>
-            </build>
-        </profile>
-        <!-- For testing purposes enable to run all tests including the failing ones -->
-        <profile>
-            <id>enable.expected.failing</id>
-            <activation>
-                <property>
-                    <name>enable.expected.failing</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.children="append">
-                            <excludedGroups></excludedGroups>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>

@@ -232,13 +232,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.exclude.tracing.tests>,org.jboss.resteasy.category.TracingRequired</additional.surefire.exclude.tracing.tests>
-            </properties>
-        </profile>
-        <profile>
-            <id>skip-awaiting-upgrade-tests</id>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.AwaitingUpgradeInWildFly</additional.surefire.excluded.groups>
+                <additional.surefire.exclude.tracing.tests>,tracing.required</additional.surefire.exclude.tracing.tests>
             </properties>
         </profile>
     </profiles>

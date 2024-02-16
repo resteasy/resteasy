@@ -89,7 +89,6 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Tag("ExpectedFailing.class")
     public void postDate() throws Exception {
         WebTarget target = client.target(generateURL("/postDate"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
@@ -127,7 +126,6 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Tag("ExpectedFailing.class")
     public void postFoo() throws Exception {
         WebTarget target = client.target(generateURL("/postFoo"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);

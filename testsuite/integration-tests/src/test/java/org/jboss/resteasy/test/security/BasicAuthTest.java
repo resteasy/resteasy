@@ -48,7 +48,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ServerSetup({ BasicAuthTest.SecurityDomainSetup.class })
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class BasicAuthTest {
 
     private static final String WRONG_RESPONSE = "Wrong response content.";
