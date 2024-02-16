@@ -83,7 +83,7 @@ public class ResponseStreamPrematurelyClosedTest {
                     coutDown.await(10, TimeUnit.SECONDS);
 
                     ins.transferTo(baos);
-                    Assertions.assertEquals(10000000, baos.size(), "Received string: " + baos.toShortString());
+                    Assertions.assertEquals(10000000, baos.size(), () -> "Received string: " + baos.toShortString());
                 } finally {
                     //remove the listener
                     for (GarbageCollectorMXBean gcbean : gcbeans) {

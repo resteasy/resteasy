@@ -136,7 +136,7 @@ public class ContextProvidersTest {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -167,7 +167,7 @@ public class ContextProvidersTest {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -196,7 +196,7 @@ public class ContextProvidersTest {
             MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
             MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -231,7 +231,7 @@ public class ContextProvidersTest {
             MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
             MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -265,7 +265,7 @@ public class ContextProvidersTest {
             MatcherAssert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
             MatcherAssert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -506,8 +506,10 @@ public class ContextProvidersTest {
             client.close();
             return entity;
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
+        // Shouldn't happen with the failure assertion above
+        return null;
     }
 
     @SuppressWarnings({ "unchecked" })
