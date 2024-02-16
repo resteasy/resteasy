@@ -99,8 +99,6 @@ public class CompletionStageResponseTest {
      * @tpTestDetails Resource method returns CompletableFuture<String>.
      * @tpSince RESTEasy 6.2
      */
-    @FollowUpRequired("Remove the category when 6.2.6.Final is merged into WildFly")
-    @Tag("AwaitingUpgradeInWildFly.class")
     @Test
     public void testCompletableFutureText() throws Exception {
         Invocation.Builder request = client.target(generateURL("/cftext")).request();

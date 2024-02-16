@@ -94,7 +94,7 @@ jobs:
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
-          - '-am -Pprovision-without-resteasy,without-jackson,skip-awaiting-upgrade-tests -pl testsuite/integration-tests'
+          - '-am -Pprovision-without-resteasy,without-jackson-tests -pl testsuite/integration-tests'
 
     steps:
       - uses: actions/checkout@v4

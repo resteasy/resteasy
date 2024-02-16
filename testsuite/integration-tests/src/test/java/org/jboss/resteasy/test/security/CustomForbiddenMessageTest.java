@@ -42,7 +42,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ServerSetup({ CustomForbiddenMessageTest.SecurityDomainSetup.class })
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class CustomForbiddenMessageTest {
 
     private static ResteasyClient authorizedClient;

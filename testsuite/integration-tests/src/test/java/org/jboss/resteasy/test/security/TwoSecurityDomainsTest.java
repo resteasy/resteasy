@@ -43,7 +43,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ServerSetup(TwoSecurityDomainsTest.SecurityDomainSetup.class)
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class TwoSecurityDomainsTest {
 
     private static ResteasyClient authorizedClient;

@@ -30,8 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("AwaitingUpgradeInWildFly.class")
-@FollowUpRequired("Caused by RESTEASY-3380. Once upgraded in WildFly, we can re-enable this test")
 public class ResponseTrimmingTest {
 
     static Client client;

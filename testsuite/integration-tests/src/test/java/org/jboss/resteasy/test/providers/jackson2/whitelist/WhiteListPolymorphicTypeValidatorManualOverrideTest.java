@@ -44,8 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("AwaitingUpgradeInWildFly.class")
-@FollowUpRequired("Caused by RESTEASY-3380. Once upgraded in WildFly, we can re-enable this test")
 public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
 
     protected static final Logger logger = Logger
