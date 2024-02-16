@@ -13,8 +13,8 @@ import jakarta.ws.rs.ext.Provider;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -115,8 +115,8 @@ public class PriorityEqualityTest {
 
         factory.register(ParamConverterProvider1.class);
         factory.register(ParamConverterProvider2.class);
-        Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider1.class));
-        Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider2.class));
+        Assertions.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider1.class));
+        Assertions.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider2.class));
         ResteasyProviderFactory.clearInstanceIfEqual(factory);
     }
 
@@ -135,8 +135,8 @@ public class PriorityEqualityTest {
         ParamConverterProvider p2 = new ParamConverterProvider2();
         factory.registerProviderInstance(p1);
         factory.registerProviderInstance(p2);
-        Assert.assertTrue(factory.getProviderInstances().contains(p1));
-        Assert.assertTrue(factory.getProviderInstances().contains(p2));
+        Assertions.assertTrue(factory.getProviderInstances().contains(p1));
+        Assertions.assertTrue(factory.getProviderInstances().contains(p2));
 
         ResteasyProviderFactory.clearInstanceIfEqual(factory);
     }
@@ -151,7 +151,7 @@ public class PriorityEqualityTest {
         ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
         factory.register(ExceptionMapper1.class);
         factory.register(ExceptionMapper2.class);
-        Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
+        Assertions.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
     }
 
     /**
@@ -164,6 +164,6 @@ public class PriorityEqualityTest {
         ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
         factory.registerProviderInstance(new ExceptionMapper1());
         factory.registerProviderInstance(new ExceptionMapper2());
-        Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
+        Assertions.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
     }
 }

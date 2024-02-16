@@ -6,8 +6,8 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client proxy
@@ -31,9 +31,9 @@ public class ProxyEqualsTest {
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL("/"));
         I proxy1 = target.proxy(I.class);
         I proxy2 = target.proxy(I.class);
-        Assert.assertTrue("proxy1 == proxy1", proxy1.equals(proxy1));
-        Assert.assertFalse("proxy1 != proxy2", proxy1.equals(proxy2));
-        Assert.assertTrue(proxy1.hashCode() == proxy1.hashCode());
+        Assertions.assertTrue(proxy1.equals(proxy1), "proxy1 == proxy1");
+        Assertions.assertFalse(proxy1.equals(proxy2), "proxy1 != proxy2");
+        Assertions.assertTrue(proxy1.hashCode() == proxy1.hashCode());
         client.close();
     }
 }

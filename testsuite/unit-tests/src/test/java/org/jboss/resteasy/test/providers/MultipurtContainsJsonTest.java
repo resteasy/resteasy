@@ -22,7 +22,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceIntegerPlainTextWriter;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecendencePlainTextWriter;
 import org.jboss.resteasy.util.DelegatingOutputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers

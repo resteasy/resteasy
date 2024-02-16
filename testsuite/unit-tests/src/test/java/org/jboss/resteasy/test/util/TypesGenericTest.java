@@ -14,8 +14,8 @@ import org.jboss.resteasy.test.util.resource.TypesGenericClassSub;
 import org.jboss.resteasy.test.util.resource.TypesGenericFooBar;
 import org.jboss.resteasy.test.util.resource.TypesGenericSub;
 import org.jboss.resteasy.test.util.resource.TypesGenericSubClass;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -38,24 +38,24 @@ public class TypesGenericTest {
             logger.debug(t);
         }
 
-        Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
+        Assertions.assertEquals(types[0], Float.class, "Expected type for the class doesn't match");
 
         types = Types.findParameterizedTypes(TypesGenericSubClass.class, TypesGenericBar.class);
         for (Type t : types) {
             logger.debug(t);
         }
 
-        Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
+        Assertions.assertEquals(types[0], Float.class, "Expected type for the class doesn't match");
 
         types = Types.findParameterizedTypes(TypesGenericSub.class, TypesGenericBar.class);
         for (Type t : types) {
             logger.debug(t);
         }
 
-        Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
+        Assertions.assertEquals(types[0], Float.class, "Expected type for the class doesn't match");
 
         types = Types.findParameterizedTypes(TypesGenericAnotherFooBar.class, TypesGenericAnotherBar.class);
-        Assert.assertEquals("No parametrized type expected", 0, types.length);
+        Assertions.assertEquals(0, types.length, "No parametrized type expected");
     }
 
     /**
@@ -83,9 +83,8 @@ public class TypesGenericTest {
             }
         }
 
-        Assert.assertEquals(
-                "The method implemented by the class an returned by getImplementingMethod() is not the expected one",
-                implented, actual);
+        Assertions.assertEquals(implented, actual,
+                "The method implemented by the class an returned by getImplementingMethod() is not the expected one");
     }
 
     /**
@@ -99,14 +98,14 @@ public class TypesGenericTest {
             logger.debug(t);
         }
 
-        Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
+        Assertions.assertEquals(types[0], Float.class, "Expected type for the class doesn't match");
 
         types = Types.findParameterizedTypes(TypesGenericClassSub.class, TypesGenericClassBar.class);
         for (Type t : types) {
             logger.debug(t);
         }
 
-        Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
+        Assertions.assertEquals(types[0], Float.class, "Expected type for the class doesn't match");
 
     }
 }

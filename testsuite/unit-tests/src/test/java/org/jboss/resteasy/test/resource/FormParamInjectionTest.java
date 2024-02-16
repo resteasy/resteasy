@@ -7,9 +7,9 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.resource.FormParamResource;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -21,7 +21,7 @@ public class FormParamInjectionTest {
     ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
     MockHttpResponse resp = new MockHttpResponse();
 
-    @Before
+    @BeforeEach
     public void setup() {
         registry.addPerRequestResource(FormParamResource.class);
     }
@@ -29,7 +29,7 @@ public class FormParamInjectionTest {
     @Test
     public void testNoSplitAtSuccessiveEqualSign() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/form/split", "valueA=v1%3Dv2=v3");
-        Assert.assertEquals("v1=v2=v3", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("v1=v2=v3", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 

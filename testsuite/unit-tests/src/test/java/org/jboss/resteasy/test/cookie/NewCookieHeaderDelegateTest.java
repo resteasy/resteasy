@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cookie;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -13,15 +13,15 @@ import java.util.TimeZone;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class NewCookieHeaderDelegateTest {
 
     private RuntimeDelegate.HeaderDelegate<NewCookie> delegate;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         delegate = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class);
     }
@@ -64,7 +64,7 @@ public class NewCookieHeaderDelegateTest {
         final var expected = "test-cookie=\"Test Value\";Version=1;Comment=\"Test Comment\";Domain=local-domain;Path=/test;Max-Age="
                 + maxAge + ";Expires=" + sdf.format(expires)
                 + ";Secure;HttpOnly;SameSite=Strict";
-        Assert.assertEquals(expected, delegate.toString(newCookie));
+        Assertions.assertEquals(expected, delegate.toString(newCookie));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class NewCookieHeaderDelegateTest {
         final var value = "test-cookie=\"Test Value\";Version=1;Comment=\"Test Comment\";Domain=local-domain;Path=/test;Max-Age="
                 + maxAge + ";Expires=" + sdf.format(expires)
                 + ";Secure;HttpOnly;SameSite=Strict";
-        Assert.assertEquals(expected, delegate.fromString(value));
+        Assertions.assertEquals(expected, delegate.fromString(value));
     }
 
     private static SimpleDateFormat createDateFormatter() {

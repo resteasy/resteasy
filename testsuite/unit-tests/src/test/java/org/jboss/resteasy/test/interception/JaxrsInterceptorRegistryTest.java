@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.interception;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -19,8 +19,8 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryImpl;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Interception tests
@@ -55,8 +55,8 @@ public class JaxrsInterceptorRegistryTest {
             }
         };
 
-        assertEquals("JaxrsInterceptorRegistryTestNameBinding was not used", JaxrsInterceptorRegistryTestNameBinding.class,
-                bound.get(0));
+        assertEquals(JaxrsInterceptorRegistryTestNameBinding.class, bound.get(0),
+                "JaxrsInterceptorRegistryTestNameBinding was not used");
     }
 
     /**
@@ -69,8 +69,8 @@ public class JaxrsInterceptorRegistryTest {
         matches.add(new JaxrsInterceptorRegistry.Match(null, 200));
         matches.add(new JaxrsInterceptorRegistry.Match(null, 100));
         Collections.sort(matches, new JaxrsInterceptorRegistry.AscendingPrecedenceComparator());
-        Assert.assertEquals("Wrong order in list", matches.get(0).order, 100);
-        Assert.assertEquals("Wrong order in list", matches.get(1).order, 200);
+        Assertions.assertEquals(matches.get(0).order, 100, "Wrong order in list");
+        Assertions.assertEquals(matches.get(1).order, 200, "Wrong order in list");
 
     }
 

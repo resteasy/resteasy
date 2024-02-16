@@ -8,8 +8,8 @@ import jakarta.ws.rs.core.UriBuilderException;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.util.resource.LinkResource;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -57,7 +57,7 @@ public class LinkTest {
                 String string = link.toString();
                 logger.info("initial: " + string);
                 Link fromValueOf = Link.valueOf(string);
-                Assert.assertEquals(string, fromValueOf.toString());
+                Assertions.assertEquals(string, fromValueOf.toString());
             }
         }
     }
@@ -71,7 +71,7 @@ public class LinkTest {
         Link.Builder builder = Link.fromUri("http://:@");
         try {
             builder.build();
-            Assert.fail();
+            Assertions.fail();
         } catch (UriBuilderException e) {
         }
     }

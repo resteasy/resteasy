@@ -18,8 +18,8 @@ import org.jboss.resteasy.test.request.resource.AcceptMultipleResource;
 import org.jboss.resteasy.test.request.resource.AcceptResource;
 import org.jboss.resteasy.test.request.resource.AcceptXmlResource;
 import org.jboss.resteasy.test.request.resource.AcceptXmlResourceSecond;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -58,8 +58,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/foo"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptResource.class.getMethod("doGetFoo"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptResource.class.getMethod("doGetFoo"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
 
         {
@@ -67,8 +68,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/foo;q=0.1"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptResource.class.getMethod("doGetFoo"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptResource.class.getMethod("doGetFoo"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
 
         {
@@ -78,8 +80,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/baz;q=0.2"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptResource.class.getMethod("doGetFoo"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptResource.class.getMethod("doGetFoo"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
 
         {
@@ -89,8 +92,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/baz;q=0.2"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptResource.class.getMethod("doGetBar"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptResource.class.getMethod("doGetBar"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
 
         {
@@ -100,8 +104,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/baz"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptResource.class.getMethod("doGetBaz"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptResource.class.getMethod("doGetBaz"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -120,9 +125,9 @@ public class AcceptTest {
             ArrayList<MediaType> accepts = new ArrayList<MediaType>();
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("PUT", "/xml", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptXmlResource.class.getMethod("putBar", String.class),
-                    method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptXmlResource.class.getMethod("putBar", String.class),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -143,9 +148,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/xml;schema=stuff;q=0.5"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("PUT", "/xml", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptXmlResourceSecond.class.getMethod("putBar", String.class),
-                    method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptXmlResourceSecond.class.getMethod("putBar", String.class),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -166,9 +171,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/xml;schema=stuff;q=0.5"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("PUT", "/xml", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptXmlResourceSecond.class.getMethod("put", String.class),
-                    method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptXmlResourceSecond.class.getMethod("put", String.class),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -191,8 +196,9 @@ public class AcceptTest {
             accepts.add(MediaType.valueOf("application/baz;q=0.2"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptResource.class.getMethod("doGetWildCard"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptResource.class.getMethod("doGetWildCard"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -215,32 +221,36 @@ public class AcceptTest {
             accepts.add(foo);
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptMultipleResource.class.getMethod("get"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptMultipleResource.class.getMethod("get"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
         {
             ArrayList<MediaType> accepts = new ArrayList<MediaType>();
             accepts.add(bar);
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptMultipleResource.class.getMethod("get"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptMultipleResource.class.getMethod("get"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
         {
             ArrayList<MediaType> accepts = new ArrayList<MediaType>();
             accepts.add(MediaType.valueOf("*/*"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptMultipleResource.class.getMethod("get"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptMultipleResource.class.getMethod("get"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
         {
             ArrayList<MediaType> accepts = new ArrayList<MediaType>();
             accepts.add(MediaType.valueOf("application/*"));
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptMultipleResource.class.getMethod("get"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptMultipleResource.class.getMethod("get"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -258,27 +268,30 @@ public class AcceptTest {
         {
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", MediaType.valueOf("text/plain"), accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptConsumeResource.class.getMethod("doGetWildCard"),
-                    method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptConsumeResource.class.getMethod("doGetWildCard"),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
         {
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", MediaType.valueOf("application/foo"), accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptConsumeResource.class.getMethod("doGetFoo"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptConsumeResource.class.getMethod("doGetFoo"),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
         {
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", MediaType.valueOf("application/bar"), accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptConsumeResource.class.getMethod("doGetBar"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptConsumeResource.class.getMethod("doGetBar"),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
         {
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", MediaType.valueOf("application/baz"), accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptConsumeResource.class.getMethod("doGetBaz"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptConsumeResource.class.getMethod("doGetBaz"),
+                    method.getMethod(), METHOD_ERROR_MESSAGE);
         }
     }
 
@@ -300,8 +313,9 @@ public class AcceptTest {
         {
             ResourceMethodInvoker method = (ResourceMethodInvoker) registry
                     .getResourceInvoker(createRequest("GET", "/", contentType, accepts));
-            Assert.assertNotNull(METHOD_ERROR_MESSAGE, method);
-            Assert.assertEquals(METHOD_ERROR_MESSAGE, AcceptComplexResource.class.getMethod("method2"), method.getMethod());
+            Assertions.assertNotNull(method, METHOD_ERROR_MESSAGE);
+            Assertions.assertEquals(AcceptComplexResource.class.getMethod("method2"), method.getMethod(),
+                    METHOD_ERROR_MESSAGE);
         }
     }
 }

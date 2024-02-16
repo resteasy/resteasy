@@ -5,8 +5,8 @@ import java.util.List;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.core.MediaTypeMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Media type
@@ -74,38 +74,42 @@ public class MediaTypeMapTest {
     private void evalMapping(MediaTypeMap<String> map, String defaultPlainText, String jaxb, String wildcard, String allText,
             String allXML, String app) {
         List<String> list = map.getPossible(new MediaType("text", "plain"));
-        Assert.assertNotNull("Media types for \"text, plain\" is empty", list);
-        Assert.assertEquals("The list of media types doesn't contain expected number of elements", 3, list.size());
-        Assert.assertTrue("Unexpected item in the list", list.get(0) == defaultPlainText);
-        Assert.assertTrue("Unexpected item in the list", list.get(1) == allText);
-        Assert.assertTrue("Unexpected item in the list", list.get(2) == wildcard);
+        Assertions.assertNotNull(list, "Media types for \"text, plain\" is empty");
+        Assertions.assertEquals(3, list.size(),
+                "The list of media types doesn't contain expected number of elements");
+        Assertions.assertTrue(list.get(0) == defaultPlainText, "Unexpected item in the list");
+        Assertions.assertTrue(list.get(1) == allText, "Unexpected item in the list");
+        Assertions.assertTrue(list.get(2) == wildcard, "Unexpected item in the list");
 
         list = map.getPossible(new MediaType("*", "*"));
-        Assert.assertNotNull("Media types for \"*, *\" is empty", list);
-        Assert.assertEquals("The list of media types doesn't contain expected number of elements", 6, list.size());
-        Assert.assertTrue(list.get(0), list.get(0) == defaultPlainText || list.get(0) == jaxb);
-        Assert.assertTrue(list.get(1), list.get(1) == defaultPlainText || list.get(1) == jaxb);
-        Assert.assertTrue(list.get(2), list.get(2) == allXML);
-        Assert.assertTrue(list.get(3), list.get(3) == allText || list.get(3) == app);
-        Assert.assertTrue(list.get(4), list.get(4) == allText || list.get(4) == app);
-        Assert.assertTrue(list.get(5), list.get(5) == wildcard);
+        Assertions.assertNotNull(list, "Media types for \"*, *\" is empty");
+        Assertions.assertEquals(6, list.size(),
+                "The list of media types doesn't contain expected number of elements");
+        Assertions.assertTrue(list.get(0) == defaultPlainText || list.get(0) == jaxb, list.get(0));
+        Assertions.assertTrue(list.get(1) == defaultPlainText || list.get(1) == jaxb, list.get(1));
+        Assertions.assertTrue(list.get(2) == allXML, list.get(2));
+        Assertions.assertTrue(list.get(3) == allText || list.get(3) == app, list.get(3));
+        Assertions.assertTrue(list.get(4) == allText || list.get(4) == app, list.get(4));
+        Assertions.assertTrue(list.get(5) == wildcard, list.get(5));
 
         list = map.getPossible(new MediaType("text", "*"));
-        Assert.assertNotNull("Media types for \"text, *\" is empty", list);
-        Assert.assertEquals("The list of media types doesn't contain expected number of elements", 5, list.size());
-        Assert.assertTrue(list.get(0), list.get(0) == defaultPlainText || list.get(0) == jaxb);
-        Assert.assertTrue(list.get(1), list.get(1) == defaultPlainText || list.get(1) == jaxb);
-        Assert.assertTrue(list.get(2), list.get(2) == allXML);
-        Assert.assertTrue(list.get(3), list.get(3) == allText);
-        Assert.assertTrue(list.get(4), list.get(4) == wildcard);
+        Assertions.assertNotNull(list, "Media types for \"text, *\" is empty");
+        Assertions.assertEquals(5, list.size(),
+                "The list of media types doesn't contain expected number of elements");
+        Assertions.assertTrue(list.get(0) == defaultPlainText || list.get(0) == jaxb, list.get(0));
+        Assertions.assertTrue(list.get(1) == defaultPlainText || list.get(1) == jaxb, list.get(1));
+        Assertions.assertTrue(list.get(2) == allXML, list.get(2));
+        Assertions.assertTrue(list.get(3) == allText, list.get(3));
+        Assertions.assertTrue(list.get(4) == wildcard, list.get(4));
 
         list = map.getPossible(new MediaType("text", "xml"));
-        Assert.assertNotNull("Media types for \"text, xml\" is empty", list);
-        Assert.assertEquals("The list of media types doesn't contain expected number of elements", 4, list.size());
-        Assert.assertTrue(list.get(0) == jaxb);
-        Assert.assertTrue(list.get(1) == allXML);
-        Assert.assertTrue(list.get(2) == allText);
-        Assert.assertTrue(list.get(3) == wildcard);
+        Assertions.assertNotNull(list, "Media types for \"text, xml\" is empty");
+        Assertions.assertEquals(4, list.size(),
+                "The list of media types doesn't contain expected number of elements");
+        Assertions.assertTrue(list.get(0) == jaxb);
+        Assertions.assertTrue(list.get(1) == allXML);
+        Assertions.assertTrue(list.get(2) == allText);
+        Assertions.assertTrue(list.get(3) == wildcard);
     }
 
 }

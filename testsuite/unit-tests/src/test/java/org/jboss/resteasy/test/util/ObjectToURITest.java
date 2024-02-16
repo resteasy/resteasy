@@ -6,8 +6,8 @@ import org.jboss.resteasy.test.util.resource.ObjectToURICustomURIableObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURIMappedByObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURITemplateObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURIableObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -25,9 +25,12 @@ public class ObjectToURITest {
     @Test
     public void testDefaultResolvers() {
         ObjectToURI instance = ObjectToURI.getInstance();
-        Assert.assertEquals(ERROR_MSG, "/foo/123", instance.resolveURI(new ObjectToURITemplateObject(123)));
-        Assert.assertEquals(ERROR_MSG, "/my-url", instance.resolveURI(new ObjectToURIableObject()));
-        Assert.assertEquals(ERROR_MSG, "/foo/123", instance.resolveURI(new ObjectToURIMappedByObject(123)));
+        Assertions.assertEquals("/foo/123", instance.resolveURI(new ObjectToURITemplateObject(123)),
+                ERROR_MSG);
+        Assertions.assertEquals("/my-url", instance.resolveURI(new ObjectToURIableObject()),
+                ERROR_MSG);
+        Assertions.assertEquals("/foo/123", instance.resolveURI(new ObjectToURIMappedByObject(123)),
+                ERROR_MSG);
     }
 
     /**
@@ -38,7 +41,7 @@ public class ObjectToURITest {
     public void testCustomResolver() {
         ObjectToURI instance = ObjectToURI.getInstance();
         ObjectToURICustomURIableObject custom = new ObjectToURICustomURIableObject();
-        Assert.assertEquals(ERROR_MSG, "/my-url", instance.resolveURI(custom));
+        Assertions.assertEquals("/my-url", instance.resolveURI(custom), ERROR_MSG);
 
         instance.registerURIResolver(new URIResolver() {
             public boolean handles(Class<?> type) {
@@ -50,6 +53,6 @@ public class ObjectToURITest {
             }
         });
 
-        Assert.assertEquals(ERROR_MSG, "/some-other-uri", instance.resolveURI(custom));
+        Assertions.assertEquals("/some-other-uri", instance.resolveURI(custom), ERROR_MSG);
     }
 }

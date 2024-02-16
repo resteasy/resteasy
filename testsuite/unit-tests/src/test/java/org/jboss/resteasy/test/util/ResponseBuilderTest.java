@@ -13,10 +13,10 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.test.util.resource.ResponseBuilderRequest;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -31,7 +31,7 @@ public class ResponseBuilderTest {
 
     private Response.ResponseBuilder builder;
 
-    @Before
+    @BeforeEach
     public void before() throws URISyntaxException {
         HttpRequest httpRequest = MockHttpRequest.create("GET", REQUEST_URI,
                 BASE_URI);
@@ -42,7 +42,7 @@ public class ResponseBuilderTest {
         builder = new ResponseBuilderImpl();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         ResteasyContext.removeContextDataLevel();
     }
@@ -58,17 +58,17 @@ public class ResponseBuilderTest {
             Response r = builder.location(URI.create("/res")).build();
             String actualUri = r.getMetadata().getFirst("Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/res", actualUri);
+            Assertions.assertEquals("http://localhost/res", actualUri, ERROR_MSG);
         }
 
         // testAllowed
         {
             Response response = Response.status(Response.Status.OK).allow("GET", "POST", "DELETE").build();
             Set<String> allowedMethods = response.getAllowedMethods();
-            Assert.assertEquals(ERROR_MSG, allowedMethods.size(), 3);
-            Assert.assertTrue(ERROR_MSG, allowedMethods.contains("GET"));
-            Assert.assertTrue(ERROR_MSG, allowedMethods.contains("POST"));
-            Assert.assertTrue(ERROR_MSG, allowedMethods.contains("DELETE"));
+            Assertions.assertEquals(allowedMethods.size(), 3, ERROR_MSG);
+            Assertions.assertTrue(allowedMethods.contains("GET"), ERROR_MSG);
+            Assertions.assertTrue(allowedMethods.contains("POST"), ERROR_MSG);
+            Assertions.assertTrue(allowedMethods.contains("DELETE"), ERROR_MSG);
         }
 
         // testLocationPath
@@ -76,7 +76,7 @@ public class ResponseBuilderTest {
             Response r = builder.location(URI.create("/a/res")).build();
             String actualUri = r.getMetadata().getFirst("Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/a/res", actualUri);
+            Assertions.assertEquals("http://localhost/a/res", actualUri, ERROR_MSG);
         }
 
         // testLocationQueryString
@@ -84,7 +84,7 @@ public class ResponseBuilderTest {
             Response r = builder.location(URI.create("/res?query")).build();
             String actualUri = r.getMetadata().getFirst("Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/res?query", actualUri);
+            Assertions.assertEquals("http://localhost/res?query", actualUri, ERROR_MSG);
         }
 
         // testLocationFragment
@@ -92,7 +92,7 @@ public class ResponseBuilderTest {
             Response r = builder.location(URI.create("/res#frag")).build();
             String actualUri = r.getMetadata().getFirst("Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/res#frag", actualUri);
+            Assertions.assertEquals("http://localhost/res#frag", actualUri, ERROR_MSG);
         }
 
         // testContentLocationSimple
@@ -100,7 +100,7 @@ public class ResponseBuilderTest {
             Response r = builder.contentLocation(URI.create("/res")).build();
             String actualUri = r.getMetadata().getFirst("Content-Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/res", actualUri);
+            Assertions.assertEquals("http://localhost/res", actualUri, ERROR_MSG);
         }
 
         // testContentLocationPath
@@ -108,7 +108,7 @@ public class ResponseBuilderTest {
             Response r = builder.contentLocation(URI.create("/a/res")).build();
             String actualUri = r.getMetadata().getFirst("Content-Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/a/res", actualUri);
+            Assertions.assertEquals("http://localhost/a/res", actualUri, ERROR_MSG);
         }
 
         // testContentLocationQueryString
@@ -116,7 +116,7 @@ public class ResponseBuilderTest {
             Response r = builder.location(URI.create("/res?query")).build();
             String actualUri = r.getMetadata().getFirst("Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/res?query", actualUri);
+            Assertions.assertEquals("http://localhost/res?query", actualUri, ERROR_MSG);
         }
 
         // testContentLocationFragment
@@ -124,7 +124,7 @@ public class ResponseBuilderTest {
             Response r = builder.contentLocation(URI.create("/res#frag")).build();
             String actualUri = r.getMetadata().getFirst("Content-Location").toString();
 
-            Assert.assertEquals(ERROR_MSG, "http://localhost/res#frag", actualUri);
+            Assertions.assertEquals("http://localhost/res#frag", actualUri, ERROR_MSG);
         }
 
         // testReplace
@@ -134,7 +134,7 @@ public class ResponseBuilderTest {
                     .header(headers[1], headers[1]).header(headers[2], headers[2])
                     .replaceAll(null).build();
             for (String header : headers) {
-                Assert.assertTrue(ERROR_MSG, response.getHeaderString(header) == null);
+                Assertions.assertTrue(response.getHeaderString(header) == null, ERROR_MSG);
             }
         }
 
@@ -145,8 +145,8 @@ public class ResponseBuilderTest {
                     .createResponseBuilder();
             Response response = rb.allow(methods).build();
             Set<String> set = response.getAllowedMethods();
-            Assert.assertEquals(ERROR_MSG, 1, set.size());
-            Assert.assertEquals(ERROR_MSG, set.iterator().next(), ResponseBuilderRequest.OPTIONS.name());
+            Assertions.assertEquals(1, set.size(), ERROR_MSG);
+            Assertions.assertEquals(set.iterator().next(), ResponseBuilderRequest.OPTIONS.name(), ERROR_MSG);
         }
 
         // testLinkHeaders
@@ -158,11 +158,11 @@ public class ResponseBuilderTest {
                             Link.fromUri("Link3").rel("rel3").build())
                     .link("Link4", "rel4").build();
 
-            Assert.assertEquals(ERROR_MSG, 4, r1.getLinks().size());
-            Assert.assertNotNull("Link-Header 'Link1' missing", r1.getLink("rel1"));
-            Assert.assertNotNull("Link-Header 'Link2' missing", r1.getLink("rel2"));
-            Assert.assertNotNull("Link-Header 'Link3' missing", r1.getLink("rel3"));
-            Assert.assertNotNull("Link-Header 'Link4' missing", r1.getLink("rel4"));
+            Assertions.assertEquals(4, r1.getLinks().size(), ERROR_MSG);
+            Assertions.assertNotNull(r1.getLink("rel1"), "Link-Header 'Link1' missing");
+            Assertions.assertNotNull(r1.getLink("rel2"), "Link-Header 'Link2' missing");
+            Assertions.assertNotNull(r1.getLink("rel3"), "Link-Header 'Link3' missing");
+            Assertions.assertNotNull(r1.getLink("rel4"), "Link-Header 'Link4' missing");
 
             @SuppressWarnings(value = "unchecked")
             Response r2 = Response.ok()
@@ -170,9 +170,9 @@ public class ResponseBuilderTest {
                     .links((Link[]) null)
                     .link("Link2", "rel2").build();
 
-            Assert.assertEquals(ERROR_MSG, 1, r2.getLinks().size());
-            Assert.assertNull("Link-Header 'Link1' was not removed", r2.getLink("rel1"));
-            Assert.assertNotNull("Link-Header 'Link2' missing", r2.getLink("rel2"));
+            Assertions.assertEquals(1, r2.getLinks().size(), ERROR_MSG);
+            Assertions.assertNull(r2.getLink("rel1"), "Link-Header 'Link1' was not removed");
+            Assertions.assertNotNull(r2.getLink("rel2"), "Link-Header 'Link2' missing");
         }
     }
 }

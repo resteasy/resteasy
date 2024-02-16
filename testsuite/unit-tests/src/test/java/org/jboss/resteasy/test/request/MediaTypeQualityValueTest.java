@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.request;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.core.request.AcceptHeaders;
 import org.jboss.resteasy.core.request.QualityValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -28,8 +28,10 @@ public class MediaTypeQualityValueTest {
         Map<MediaType, QualityValue> map = AcceptHeaders.getMediaTypeQualityValues(header);
         List<MediaType> expectedKeys = Arrays.asList(fields);
         List<QualityValue> expectedValues = Arrays.asList(qualities);
-        assertEquals("Wrong keys in map", expectedKeys, new ArrayList<MediaType>(map.keySet()));
-        assertEquals("Wrong values in map", expectedValues, new ArrayList<QualityValue>(map.values()));
+        assertEquals(expectedKeys, new ArrayList<MediaType>(map.keySet()),
+                "Wrong keys in map");
+        assertEquals(expectedValues, new ArrayList<QualityValue>(map.values()),
+                "Wrong values in map");
     }
 
     /**
@@ -114,9 +116,9 @@ public class MediaTypeQualityValueTest {
     @Test
     public void empty() {
         final String ERROR_MSG = "Local quality values should not be null";
-        assertNull(ERROR_MSG, AcceptHeaders.getMediaTypeQualityValues(null));
-        assertNull(ERROR_MSG, AcceptHeaders.getMediaTypeQualityValues(""));
-        assertNull(ERROR_MSG, AcceptHeaders.getMediaTypeQualityValues(" "));
+        assertNull(AcceptHeaders.getMediaTypeQualityValues(null), ERROR_MSG);
+        assertNull(AcceptHeaders.getMediaTypeQualityValues(""), ERROR_MSG);
+        assertNull(AcceptHeaders.getMediaTypeQualityValues(" "), ERROR_MSG);
     }
 
 }

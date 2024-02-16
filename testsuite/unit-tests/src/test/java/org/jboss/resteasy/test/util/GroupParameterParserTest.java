@@ -6,8 +6,8 @@ import java.util.Map;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.util.GroupParameterParser;
 import org.jboss.resteasy.util.ParameterParser;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -29,7 +29,7 @@ public class GroupParameterParserTest {
         GroupParameterParser parser = new GroupParameterParser();
         List<Map<String, String>> groups = parser.parse(params, ';', ',');
         logger.debug(String.format("Groups: %s", groups));
-        Assert.assertEquals("Wrong number of groups", 2, groups.size());
+        Assertions.assertEquals(2, groups.size(), "Wrong number of groups");
     }
 
     /**
@@ -42,7 +42,7 @@ public class GroupParameterParserTest {
         ParameterParser parser = new ParameterParser();
         String output = parser.setAttribute(header.toCharArray(), 0, header.length(), ';', "b", "");
         logger.debug(String.format("Parsed output: <%s>", output));
-        Assert.assertEquals("Parsed output is wrong", "v=1   ;z=33333   ;b=", output);
+        Assertions.assertEquals("v=1   ;z=33333   ;b=", output, "Parsed output is wrong");
     }
 
     /**
@@ -55,7 +55,7 @@ public class GroupParameterParserTest {
         ParameterParser parser = new ParameterParser();
         String output = parser.setAttribute(header.toCharArray(), 0, header.length(), ';', "b", "");
         logger.debug(String.format("Parsed output: <%s>", output));
-        Assert.assertEquals("Parsed output is wrong", "v=1   ;z=33333   ;b=;   foo=bar   ", output);
+        Assertions.assertEquals("v=1   ;z=33333   ;b=;   foo=bar   ", output, "Parsed output is wrong");
     }
 
 }

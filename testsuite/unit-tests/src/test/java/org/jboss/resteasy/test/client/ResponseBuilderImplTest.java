@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.client;
 import jakarta.ws.rs.core.EntityTag;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -25,7 +25,8 @@ public class ResponseBuilderImplTest {
     @Test
     public void testObjectEntityTagValue() throws Exception {
         Response response = Response.ok("entityValue").tag(new EntityTag("etagValue")).build();
-        Assert.assertEquals(ERROR_MESSAGE, "\"etagValue\"", response.getHeaderString("ETag"));
+        Assertions.assertEquals("\"etagValue\"", response.getHeaderString("ETag"),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -37,7 +38,8 @@ public class ResponseBuilderImplTest {
     @Test
     public void testStringEntityTagValue() throws Exception {
         Response response = Response.ok("entityValue").tag("etagValue").build();
-        Assert.assertEquals(ERROR_MESSAGE, "\"etagValue\"", response.getHeaderString("ETag"));
+        Assertions.assertEquals("\"etagValue\"", response.getHeaderString("ETag"),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -48,7 +50,8 @@ public class ResponseBuilderImplTest {
     @Test
     public void testNotModifiedWithObjectEntityTagValue() throws Exception {
         Response response = Response.notModified(new EntityTag("etagValue")).build();
-        Assert.assertEquals(ERROR_MESSAGE, "\"etagValue\"", response.getHeaderString("ETag"));
+        Assertions.assertEquals("\"etagValue\"", response.getHeaderString("ETag"),
+                ERROR_MESSAGE);
     }
 
     /**
@@ -60,7 +63,8 @@ public class ResponseBuilderImplTest {
     @Test
     public void testNotModifiedWithStringEntityTagValue() throws Exception {
         Response response = Response.notModified("etagValue").build();
-        Assert.assertEquals(ERROR_MESSAGE, "\"etagValue\"", response.getHeaderString("ETag"));
+        Assertions.assertEquals("\"etagValue\"", response.getHeaderString("ETag"),
+                ERROR_MESSAGE);
     }
 
 }

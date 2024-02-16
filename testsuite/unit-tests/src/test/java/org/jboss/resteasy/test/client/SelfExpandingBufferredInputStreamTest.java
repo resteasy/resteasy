@@ -1,13 +1,14 @@
 package org.jboss.resteasy.test.client;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.jboss.resteasy.client.jaxrs.engines.SelfExpandingBufferredInputStream;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -21,7 +22,7 @@ public class SelfExpandingBufferredInputStreamTest {
     SelfExpandingBufferredInputStream stream;
     InputStream control;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         input = new ByteArrayInputStream(data.getBytes());
         control = new ByteArrayInputStream(data.getBytes());
@@ -32,9 +33,13 @@ public class SelfExpandingBufferredInputStreamTest {
      * @tpTestDetails Test not supported mark
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMarkNotSupported() {
-        stream.mark(256);
+        UnsupportedOperationException thrown = Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> {
+                    stream.mark(256);
+                });
+        Assertions.assertTrue(thrown instanceof UnsupportedOperationException);
     }
 
     /**

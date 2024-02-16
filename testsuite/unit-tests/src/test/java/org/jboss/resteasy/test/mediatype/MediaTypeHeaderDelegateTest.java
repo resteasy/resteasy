@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.mediatype;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,14 +8,14 @@ import java.util.Map;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MediaTypeHeaderDelegateTest {
 
     private MediaTypeHeaderDelegate delegate;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         delegate = new MediaTypeHeaderDelegate();
 

@@ -1,14 +1,14 @@
 package org.jboss.resteasy.test.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
 import org.jboss.resteasy.util.TypeConverter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -26,23 +26,23 @@ public class TypeConverterTest {
      */
     @Test
     public void testBooleanTypes() {
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "T"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "t"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "Y"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "y"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "Yes"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "YES"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "TRUE"));
-        assertTrue(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "true"));
+        assertTrue(TypeConverter.getType(Boolean.class, "T"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "t"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "Y"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "y"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "Yes"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "YES"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "TRUE"), CONVERSION_ERROR);
+        assertTrue(TypeConverter.getType(Boolean.class, "true"), CONVERSION_ERROR);
 
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "F"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "f"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "N"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "n"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "No"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "No"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "FALSE"));
-        assertFalse(CONVERSION_ERROR, TypeConverter.getType(Boolean.class, "False"));
+        assertFalse(TypeConverter.getType(Boolean.class, "F"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "f"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "N"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "n"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "No"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "No"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "FALSE"), CONVERSION_ERROR);
+        assertFalse(TypeConverter.getType(Boolean.class, "False"), CONVERSION_ERROR);
     }
 
     /**
@@ -51,8 +51,8 @@ public class TypeConverterTest {
      */
     @Test
     public void testIntegerTypes() {
-        assertEquals(CONVERSION_ERROR, 11, (int) TypeConverter.getType(int.class, "11"));
-        assertEquals(CONVERSION_ERROR, 11, (int) TypeConverter.getType(Integer.class, "11"));
+        assertEquals(11, (int) TypeConverter.getType(int.class, "11"), CONVERSION_ERROR);
+        assertEquals(11, (int) TypeConverter.getType(Integer.class, "11"), CONVERSION_ERROR);
     }
 
     /**
@@ -61,8 +61,10 @@ public class TypeConverterTest {
      */
     @Test
     public void testDoubleTypes() {
-        assertEquals(CONVERSION_ERROR, 20.15d, TypeConverter.getType(double.class, "20.15"), 0);
-        assertEquals(CONVERSION_ERROR, 20.15d, TypeConverter.getType(Double.class, "20.15"), 0);
+        assertEquals(20.15d, TypeConverter.getType(double.class, "20.15"), 0,
+                CONVERSION_ERROR);
+        assertEquals(20.15d, TypeConverter.getType(Double.class, "20.15"), 0,
+                CONVERSION_ERROR);
     }
 
     /**
@@ -71,8 +73,8 @@ public class TypeConverterTest {
      */
     @Test
     public void testFloatTypes() {
-        assertEquals(CONVERSION_ERROR, 23.44f, TypeConverter.getType(float.class, "23.44"), 0);
-        assertEquals(CONVERSION_ERROR, 23.44f, TypeConverter.getType(Float.class, "23.44"), 0);
+        assertEquals(23.44f, TypeConverter.getType(float.class, "23.44"), 0, CONVERSION_ERROR);
+        assertEquals(23.44f, TypeConverter.getType(Float.class, "23.44"), 0, CONVERSION_ERROR);
     }
 
     /**
@@ -81,8 +83,8 @@ public class TypeConverterTest {
      */
     @Test
     public void testLongTypes() {
-        assertEquals(CONVERSION_ERROR, 23L, (long) TypeConverter.getType(long.class, "23"));
-        assertEquals(CONVERSION_ERROR, 23L, (long) TypeConverter.getType(Long.class, "23"));
+        assertEquals(23L, (long) TypeConverter.getType(long.class, "23"), CONVERSION_ERROR);
+        assertEquals(23L, (long) TypeConverter.getType(Long.class, "23"), CONVERSION_ERROR);
     }
 
     /**
@@ -90,8 +92,8 @@ public class TypeConverterTest {
      */
     @Test
     public void testCharacterTypes() {
-        assertEquals(CONVERSION_ERROR, 'A', TypeConverter.getType(Character.class, "A").charValue());
-        assertEquals(CONVERSION_ERROR, 'A', (char) TypeConverter.getType(char.class, "A"));
+        assertEquals('A', TypeConverter.getType(Character.class, "A").charValue(), CONVERSION_ERROR);
+        assertEquals('A', (char) TypeConverter.getType(char.class, "A"), CONVERSION_ERROR);
     }
 
     /**
@@ -102,7 +104,7 @@ public class TypeConverterTest {
     public void testDate() {
         try {
             TypeConverter.getType(Date.class, "07/04/2008");
-            Assert.fail("Exception was excepted.");
+            Assertions.fail("Exception was excepted.");
         } catch (IllegalArgumentException e) {
             // ok
         }

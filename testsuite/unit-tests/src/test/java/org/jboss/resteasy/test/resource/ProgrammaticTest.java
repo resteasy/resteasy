@@ -15,10 +15,10 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.test.resource.resource.ProgrammaticResource;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -30,12 +30,12 @@ public class ProgrammaticTest {
 
     private static Dispatcher dispatcher;
 
-    @BeforeClass
+    @BeforeAll
     public static void BeforeClass() {
         dispatcher = MockDispatcherFactory.createDispatcher();
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         ResteasyContext.getContextDataMap().put(Configurable.class, dispatcher.getProviderFactory());
     }
@@ -66,12 +66,12 @@ public class ProgrammaticTest {
         MockHttpRequest request = MockHttpRequest.get("/test?a=hello");
         MockHttpResponse response = new MockHttpResponse();
         dispatcher.invoke(request, response);
-        Assert.assertEquals(response.getContentAsString(), "hello");
+        Assertions.assertEquals(response.getContentAsString(), "hello");
 
         request = MockHttpRequest.put("/test").content("hello".getBytes()).contentType("text/plain");
         response = new MockHttpResponse();
         dispatcher.invoke(request, response);
-        Assert.assertEquals(204, response.getStatus());
+        Assertions.assertEquals(204, response.getStatus());
         dispatcher.getRegistry().removeRegistrations(resourceclass);
 
     }
@@ -99,8 +99,8 @@ public class ProgrammaticTest {
         MockHttpRequest request = MockHttpRequest.get("/test?a=hello");
         MockHttpResponse response = new MockHttpResponse();
         dispatcher.invoke(request, response);
-        Assert.assertEquals("hello", response.getContentAsString());
-        Assert.assertEquals(1, resource.counter);
+        Assertions.assertEquals("hello", response.getContentAsString());
+        Assertions.assertEquals(1, resource.counter);
         dispatcher.getRegistry().removeRegistrations(resourceclass);
     }
 
@@ -129,7 +129,7 @@ public class ProgrammaticTest {
         MockHttpRequest request = MockHttpRequest.get("/test?a=hello");
         MockHttpResponse response = new MockHttpResponse();
         dispatcher.invoke(request, response);
-        Assert.assertEquals(response.getContentAsString(), "hello");
+        Assertions.assertEquals(response.getContentAsString(), "hello");
 
     }
 

@@ -9,8 +9,8 @@ import org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponse
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponseEntityNotBacked;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers - MessageSanitizerContainerResponseFilter
@@ -47,6 +47,6 @@ public class MessageSanitizerMediaTypeTest {
         ContainerResponseContext responseContext = new TestContainerResponseContext(response);
         MessageSanitizerContainerResponseFilter filter = new MessageSanitizerContainerResponseFilter();
         filter.filter(null, responseContext);
-        Assert.assertEquals(output, responseContext.getEntity());
+        Assertions.assertEquals(output, responseContext.getEntity());
     }
 }

@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.injection;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.jboss.resteasy.cdi.Utils;
 import org.jboss.resteasy.test.injection.resource.JaxrsComponentDetectionRootResource;
 import org.jboss.resteasy.test.injection.resource.JaxrsComponentDetectionSampleProvider;
 import org.jboss.resteasy.test.injection.resource.JaxrsComponentDetectionSubresource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Injection tests
@@ -24,8 +24,10 @@ public class JaxrsComponentDetectionTest {
      */
     @Test
     public void testRootResource() {
-        assertTrue(WRONG_RESOURCE, Utils.isJaxrsResource(JaxrsComponentDetectionRootResource.class));
-        assertTrue(WRONG_COMPONENT, Utils.isJaxrsComponent(JaxrsComponentDetectionRootResource.class));
+        assertTrue(Utils.isJaxrsResource(JaxrsComponentDetectionRootResource.class),
+                WRONG_RESOURCE);
+        assertTrue(Utils.isJaxrsComponent(JaxrsComponentDetectionRootResource.class),
+                WRONG_COMPONENT);
     }
 
     /**
@@ -34,8 +36,10 @@ public class JaxrsComponentDetectionTest {
      */
     @Test
     public void testSubresource() {
-        assertTrue(WRONG_RESOURCE, Utils.isJaxrsResource(JaxrsComponentDetectionSubresource.class));
-        assertTrue(WRONG_COMPONENT, Utils.isJaxrsComponent(JaxrsComponentDetectionSubresource.class));
+        assertTrue(Utils.isJaxrsResource(JaxrsComponentDetectionSubresource.class),
+                WRONG_RESOURCE);
+        assertTrue(Utils.isJaxrsComponent(JaxrsComponentDetectionSubresource.class),
+                WRONG_COMPONENT);
     }
 
     /**
@@ -44,7 +48,8 @@ public class JaxrsComponentDetectionTest {
      */
     @Test
     public void testApplicationSubclass() {
-        assertTrue(WRONG_COMPONENT, Utils.isJaxrsComponent(JaxrsComponentDetectionSubresource.class));
+        assertTrue(Utils.isJaxrsComponent(JaxrsComponentDetectionSubresource.class),
+                WRONG_COMPONENT);
     }
 
     /**
@@ -53,6 +58,7 @@ public class JaxrsComponentDetectionTest {
      */
     @Test
     public void testProvider() {
-        assertTrue(WRONG_COMPONENT, Utils.isJaxrsComponent(JaxrsComponentDetectionSampleProvider.class));
+        assertTrue(Utils.isJaxrsComponent(JaxrsComponentDetectionSampleProvider.class),
+                WRONG_COMPONENT);
     }
 }

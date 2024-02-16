@@ -16,8 +16,8 @@ import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -32,10 +32,14 @@ public class ClientBuilderTest {
      * @tpPassCrit IllegalArgumentException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void entityStringThrowsExceptionWhenUnparsableTest() throws Exception {
-        Entity.entity("entity", "\\//\\");
-        Assert.fail();
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> {
+                    Entity.entity("entity", "\\//\\");
+                    Assertions.fail();
+                });
+        Assertions.assertTrue(thrown instanceof IllegalArgumentException);
     }
 
     /**
@@ -66,14 +70,14 @@ public class ClientBuilderTest {
         Client client = ClientBuilder.newClient();
         client.property(property, property);
         Object p = client.getConfiguration().getProperty(property);
-        Assert.assertEquals("prop", (String) p);
+        Assertions.assertEquals("prop", (String) p);
         try {
             client.property(property, null);
         } catch (NullPointerException e) {
-            Assert.fail(TestUtil.getErrorMessageForKnownIssue("JBEAP-324", "Couldn't remove property"));
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("JBEAP-324", "Couldn't remove property"));
         }
         p = client.getConfiguration().getProperty(property);
-        Assert.assertEquals(null, p);
+        Assertions.assertEquals(null, p);
     }
 
     /**
@@ -81,11 +85,15 @@ public class ClientBuilderTest {
      * @tpPassCrit IllegalStateException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void closeClientSendRequestTest() throws Exception {
-        Client client = ClientBuilder.newClient();
-        client.close();
-        client.target(generateURL("/"));
+        IllegalStateException thrown = Assertions.assertThrows(IllegalStateException.class,
+                () -> {
+                    Client client = ClientBuilder.newClient();
+                    client.close();
+                    client.target(generateURL("/"));
+                });
+        Assertions.assertTrue(thrown instanceof IllegalStateException);
     }
 
     /**
@@ -94,12 +102,16 @@ public class ClientBuilderTest {
      * @tpPassCrit IllegalStateException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void closeClientWebTargetTest() throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget base = client.target(generateURL("/") + "/test");
-        client.close();
-        Response response = base.request().get();
+        IllegalStateException thrown = Assertions.assertThrows(IllegalStateException.class,
+                () -> {
+                    Client client = ClientBuilder.newClient();
+                    WebTarget base = client.target(generateURL("/") + "/test");
+                    client.close();
+                    Response response = base.request().get();
+                });
+        Assertions.assertTrue(thrown instanceof IllegalStateException);
     }
 
     /**
@@ -113,7 +125,7 @@ public class ClientBuilderTest {
                 .baseUri("http://jboss.org/resteasy").rel("relation relation2").title("titleX")
                 .param("param1", "value1").param("param2", "value2")
                 .type(MediaType.APPLICATION_OCTET_STREAM).build();
-        Assert.assertNotNull("Build link failed", link);
+        Assertions.assertNotNull(link, "Build link failed");
     }
 
     @Test
@@ -137,11 +149,15 @@ public class ClientBuilderTest {
                 .build();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testRegisterContextResolverLambda() {
-        ClientBuilder.newBuilder()
-                .register((ContextResolver<MyObject>) type -> null)
-                .build();
+        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class,
+                () -> {
+                    ClientBuilder.newBuilder()
+                            .register((ContextResolver<MyObject>) type -> null)
+                            .build();
+                });
+        Assertions.assertTrue(thrown instanceof RuntimeException);
     }
 
     public static class MyObject {

@@ -5,7 +5,8 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.Disabled;
+//import org.junit.rules.ExternalResource;
 import org.xnio.streams.Streams;
 
 import com.sun.net.httpserver.HttpServer;
@@ -13,7 +14,8 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * Tiny fake HTTP server providing a target for testing the RESTEasy client.
  */
-public class FakeHttpServer extends ExternalResource {
+@Disabled("RESTEASY-3452")
+public class FakeHttpServer /* extends ExternalResource */ {
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
@@ -50,7 +52,7 @@ public class FakeHttpServer extends ExternalResource {
         server.start();
     }
 
-    @Override
+    // @Override
     protected void before() throws Throwable {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
 
@@ -108,7 +110,7 @@ public class FakeHttpServer extends ExternalResource {
         void apply(HttpServer server);
     }
 
-    @Override
+    //@Override
     protected void after() {
         server.stop(1);
     }

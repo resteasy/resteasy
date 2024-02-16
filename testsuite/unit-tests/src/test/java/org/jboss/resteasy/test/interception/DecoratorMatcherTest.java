@@ -15,9 +15,9 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.jboss.resteasy.annotations.Decorator;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
 import org.jboss.resteasy.spi.DecoratorProcessor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Interception tests
@@ -30,7 +30,7 @@ public class DecoratorMatcherTest {
     private JAXBContext jaxbContext;
     private DecoratorMatcher decoratorMatcher;
 
-    @Before
+    @BeforeEach
     public void init() throws JAXBException {
         called.set(false);
         jaxbContext = JAXBContext.newInstance(AnObject.class);
@@ -45,7 +45,7 @@ public class DecoratorMatcherTest {
     public void shouldNotThrowOnUnmarshaller() throws JAXBException {
         decoratorMatcher.decorate(Unmarshaller.class, jaxbContext.createUnmarshaller(), AnObject.class, new Annotation[0],
                 MediaType.APPLICATION_XML_TYPE);
-        Assert.assertFalse("Decorate method was called", called.get());
+        Assertions.assertFalse(called.get(), "Decorate method was called");
     }
 
     /**
@@ -56,7 +56,7 @@ public class DecoratorMatcherTest {
     public void shouldCallOnMarshaller() throws JAXBException {
         decoratorMatcher.decorate(Marshaller.class, jaxbContext.createMarshaller(), AnObject.class, new Annotation[0],
                 MediaType.APPLICATION_XML_TYPE);
-        Assert.assertTrue("Decorate method was not called", called.get());
+        Assertions.assertTrue(called.get(), "Decorate method was not called");
     }
 
     @Retention(RetentionPolicy.RUNTIME)

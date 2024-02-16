@@ -4,8 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -28,11 +28,12 @@ public class TrailingSlashTest {
 
     void doOneArgConstructorTest(URI uri, String path) {
         ResteasyUriInfo ruri = new ResteasyUriInfo(uri);
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(false));
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getAbsolutePath());
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getBaseUri().resolve(ruri.getPath(false)));
+        Assertions.assertEquals(path, ruri.getPath(), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(true), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(false), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getAbsolutePath(), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getBaseUri().resolve(ruri.getPath(false)),
+                ERROR_MSG);
     }
 
     /**
@@ -47,16 +48,16 @@ public class TrailingSlashTest {
 
     void doTwoArgConstructorTest(URI base, URI relative, String path) throws URISyntaxException {
         ResteasyUriInfo ruri = new ResteasyUriInfo(base, relative);
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(false));
+        Assertions.assertEquals(path, ruri.getPath(), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(true), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(false), ERROR_MSG);
         URI newUri;
         if (base.toString().endsWith("/")) {
             newUri = new URI(base.toString().substring(0, base.toString().length() - 1) + path);
         } else {
             newUri = new URI(base.toString() + path);
         }
-        Assert.assertEquals(ERROR_MSG, newUri, ruri.getAbsolutePath());
+        Assertions.assertEquals(newUri, ruri.getAbsolutePath(), ERROR_MSG);
     }
 
     /**
@@ -72,10 +73,11 @@ public class TrailingSlashTest {
     void doTwoStringArgConstructorTest(String s, String path) throws URISyntaxException {
         ResteasyUriInfo ruri = new ResteasyUriInfo(s, "");
         URI uri = new URI(s);
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
-        Assert.assertEquals(ERROR_MSG, path, ruri.getPath(false));
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getAbsolutePath());
-        Assert.assertEquals(ERROR_MSG, uri, ruri.getBaseUri().resolve(ruri.getPath(false)));
+        Assertions.assertEquals(path, ruri.getPath(), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(true), ERROR_MSG);
+        Assertions.assertEquals(path, ruri.getPath(false), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getAbsolutePath(), ERROR_MSG);
+        Assertions.assertEquals(uri, ruri.getBaseUri().resolve(ruri.getPath(false)),
+                ERROR_MSG);
     }
 }

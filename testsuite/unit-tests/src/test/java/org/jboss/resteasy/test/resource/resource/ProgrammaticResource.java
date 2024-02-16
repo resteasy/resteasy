@@ -4,7 +4,7 @@ import jakarta.ws.rs.core.Configurable;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class ProgrammaticResource {
 
@@ -28,7 +28,7 @@ public class ProgrammaticResource {
     }
 
     public String get(String param) {
-        Assert.assertEquals("hello", param);
+        Assertions.assertEquals("hello", param);
         uriInfo.getBaseUri();
         headers.getCookies();
         configurable.getConfiguration();
@@ -37,6 +37,6 @@ public class ProgrammaticResource {
     }
 
     public void put(String value) {
-        Assert.assertEquals("hello", value);
+        Assertions.assertEquals("hello", value);
     }
 }

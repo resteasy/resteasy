@@ -18,8 +18,8 @@ import org.jboss.resteasy.test.mapper.resource.ReaderExceptionMapper;
 import org.jboss.resteasy.test.mapper.resource.SprocketDBException;
 import org.jboss.resteasy.test.mapper.resource.SprocketDBExceptionMapper;
 import org.jboss.resteasy.test.mapper.resource.WriterExceptionMapper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that the Exception processing and ExceptionMapper handling rules defined in
@@ -46,8 +46,8 @@ public class ReadWriterExceptionTest {
         // no exception cause object, return status code SC_INTERNAL_SERVER_ERROR.
         JAXBMarshalException jaxbEOne = new JAXBMarshalException("JAXBMarshalException's WriterException test one");
         Response resultOne = eHandler.handleException(request, jaxbEOne);
-        Assert.assertEquals("First WriterExceptionMapper: incorrect status code returned",
-                resultOne.getStatus(), HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+        Assertions.assertEquals(resultOne.getStatus(), HttpResponseCodes.SC_INTERNAL_SERVER_ERROR,
+                "First WriterExceptionMapper: incorrect status code returned");
 
         // When exception response object is NULL and exception errorCode is -1 and
         // there is an exception cause object, return status code for the cause when
@@ -56,16 +56,16 @@ public class ReadWriterExceptionTest {
                 new SprocketDBException());
         factory.registerProvider(SprocketDBExceptionMapper.class);
         Response resultTwo = eHandler.handleException(request, jaxbETwo);
-        Assert.assertEquals("Second WriterExceptionMapper: incorrect status code returned",
-                resultTwo.getStatus(), SprocketDBExceptionMapper.STATUS_CODE);
+        Assertions.assertEquals(resultTwo.getStatus(), SprocketDBExceptionMapper.STATUS_CODE,
+                "Second WriterExceptionMapper: incorrect status code returned");
 
         // When there is no mapper for WriterException and exception errorCode is
         // greater than -1 return a response with that error code
         int customErrorCode = 111222333;
         WriterException wEOne = new WriterException("WriterException test", customErrorCode);
         Response resultThree = eHandler.handleException(request, wEOne);
-        Assert.assertEquals("Third WriterExceptionMapper: incorrect status code returned",
-                resultThree.getStatus(), customErrorCode);
+        Assertions.assertEquals(resultThree.getStatus(), customErrorCode,
+                "Third WriterExceptionMapper: incorrect status code returned");
 
         // JAXBMarshalException is a subclass of WriterException
         // A WriterException mapper is provided
@@ -76,8 +76,8 @@ public class ReadWriterExceptionTest {
         factory.registerProvider(WriterExceptionMapper.class);
         Response result = eHandler.handleException(request, jaxbE);
 
-        Assert.assertEquals("WriterExceptionMapper: incorrect status code returned",
-                result.getStatus(), WriterExceptionMapper.STATUS_CODE);
+        Assertions.assertEquals(result.getStatus(), WriterExceptionMapper.STATUS_CODE,
+                "WriterExceptionMapper: incorrect status code returned");
     }
 
     @Test
@@ -92,8 +92,8 @@ public class ReadWriterExceptionTest {
         // no exception cause object, return status code SC_BAD_REQUEST.
         JAXBUnmarshalException jaxbEOne = new JAXBUnmarshalException("JAXBUnmarshalException's ReaderException test one");
         Response resultOne = eHandler.handleException(request, jaxbEOne);
-        Assert.assertEquals("First ReaderExceptionMapper: incorrect status code returned",
-                resultOne.getStatus(), HttpResponseCodes.SC_BAD_REQUEST);
+        Assertions.assertEquals(resultOne.getStatus(), HttpResponseCodes.SC_BAD_REQUEST,
+                "First ReaderExceptionMapper: incorrect status code returned");
 
         // When exception response object is NULL and exception errorCode is -1 and
         // there is an exception cause object, return status code for the cause when
@@ -102,16 +102,16 @@ public class ReadWriterExceptionTest {
                 new SprocketDBException());
         factory.registerProvider(SprocketDBExceptionMapper.class);
         Response resultTwo = eHandler.handleException(request, jaxbETwo);
-        Assert.assertEquals("Second ReaderExceptionMapper: incorrect status code returned",
-                resultTwo.getStatus(), SprocketDBExceptionMapper.STATUS_CODE);
+        Assertions.assertEquals(resultTwo.getStatus(), SprocketDBExceptionMapper.STATUS_CODE,
+                "Second ReaderExceptionMapper: incorrect status code returned");
 
         // When exception errorCode is greater than -1 return a response with that error code
         // and there is no mapper for WriterException.
         int customErrorCode = 444555666;
         ReaderException wEOne = new ReaderException("ReaderException test", customErrorCode);
         Response resultThree = eHandler.handleException(request, wEOne);
-        Assert.assertEquals("Third ReaderExceptionMapper: incorrect status code returned",
-                resultThree.getStatus(), customErrorCode);
+        Assertions.assertEquals(resultThree.getStatus(), customErrorCode,
+                "Third ReaderExceptionMapper: incorrect status code returned");
 
         // JAXBUnmarshalException is a subclass of ReaderException
         // A ReaderException mapper is provided
@@ -122,8 +122,8 @@ public class ReadWriterExceptionTest {
         factory.registerProvider(ReaderExceptionMapper.class);
         Response result = eHandler.handleException(request, jaxbE);
 
-        Assert.assertEquals("ReaderExceptionMapper: incorrect status code returned",
-                result.getStatus(), ReaderExceptionMapper.STATUS_CODE);
+        Assertions.assertEquals(result.getStatus(), ReaderExceptionMapper.STATUS_CODE,
+                "ReaderExceptionMapper: incorrect status code returned");
     }
 
 }
