@@ -17,9 +17,9 @@ import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Crypto
@@ -34,7 +34,7 @@ public class LocalTest {
     static final String filePath = TestUtil.getResourcePath(LocalTest.class, "LocalTest.jks");
     private static final String ERROR_MSG = "DosetaKeyRepository works incorrectly";
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         repository = new DosetaKeyRepository();
         repository.setKeyStoreFile(filePath);
@@ -78,13 +78,13 @@ public class LocalTest {
         verification.getRequiredAttributes().put("path", "/hello/world");
 
         MultivaluedMap<String, String> verifiedHeaders = verification.verify(verified, headers, null, keys.getPublic());
-        Assert.assertEquals(verifiedHeaders.size(), 1);
+        Assertions.assertEquals(verifiedHeaders.size(), 1);
         List<String> visas = verifiedHeaders.get("Visa");
-        Assert.assertNotNull(ERROR_MSG, visas);
-        Assert.assertEquals(ERROR_MSG, visas.size(), 2);
+        Assertions.assertNotNull(visas, ERROR_MSG);
+        Assertions.assertEquals(visas.size(), 2, ERROR_MSG);
         logger.info(visas);
-        Assert.assertEquals(ERROR_MSG, visas.get(0), "v3");
-        Assert.assertEquals(ERROR_MSG, visas.get(1), "v2");
+        Assertions.assertEquals(visas.get(0), "v3", ERROR_MSG);
+        Assertions.assertEquals(visas.get(1), "v2", ERROR_MSG);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class LocalTest {
 
         try {
             verification.verify(verified, headers, null, keys.getPublic());
-            Assert.fail("Verification was successful, but it shoudn't be");
+            Assertions.fail("Verification was successful, but it shoudn't be");
         } catch (SignatureException e) {
         }
     }

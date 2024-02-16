@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.injection;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.injection.resource.ProviderInjectionProviderReader;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Injection tests
@@ -27,8 +27,8 @@ public class ProviderInjectionTest {
         RegisterBuiltin.register(factory);
         factory.registerProviderInstance(reader);
 
-        Assert.assertNotNull(ERROR_MSG, reader.headers);
-        Assert.assertNotNull(ERROR_MSG, reader.workers);
+        Assertions.assertNotNull(reader.headers, ERROR_MSG);
+        Assertions.assertNotNull(reader.workers, ERROR_MSG);
     }
 
 }

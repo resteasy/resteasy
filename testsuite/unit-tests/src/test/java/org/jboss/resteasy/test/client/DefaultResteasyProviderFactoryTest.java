@@ -8,8 +8,8 @@ import jakarta.ws.rs.client.Client;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Client
@@ -27,7 +27,7 @@ public class DefaultResteasyProviderFactoryTest {
         rpf.setProperties(map);
         ResteasyClientBuilderImpl.setProviderFactory(rpf);
         Client client = ResteasyClientBuilderImpl.newClient();
-        Assert.assertEquals("bar", client.getConfiguration().getProperty("foo"));
+        Assertions.assertEquals("bar", client.getConfiguration().getProperty("foo"));
         client.close();
         ResteasyClientBuilderImpl.setProviderFactory(null);
     }

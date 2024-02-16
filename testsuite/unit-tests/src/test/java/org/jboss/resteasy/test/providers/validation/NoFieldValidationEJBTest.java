@@ -13,9 +13,9 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraints.Min;
 
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Internal validation methods
@@ -33,7 +33,7 @@ public class NoFieldValidationEJBTest {
     private static Method isGetter;
     private static Method classHasAnnotations;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         try {
             hasNoClassOrFieldOrPropertyConstraints = GeneralValidatorImpl.class
@@ -135,19 +135,19 @@ public class NoFieldValidationEJBTest {
      */
     @Test
     public void testClassConstraints() throws Exception {
-        Assert.assertTrue(isInited());
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, Ic_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, Ic_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, Cc_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, Cc_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, CIc_w_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, CIc_wo_wwo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, CIc_wo_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, CIc_wo_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, SCc_w_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, SCc_wo_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, SCc_wo_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, SCc_wo_wo_w.class)));
+        Assertions.assertTrue(isInited());
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, Ic_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, Ic_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, Cc_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, Cc_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, CIc_w_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, CIc_wo_wwo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, CIc_wo_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, CIc_wo_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, SCc_w_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, SCc_wo_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasClassConstraint.invoke(null, SCc_wo_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasClassConstraint.invoke(null, SCc_wo_wo_w.class)));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -179,12 +179,12 @@ public class NoFieldValidationEJBTest {
      */
     @Test
     public void testFieldConstraints() throws Exception {
-        Assert.assertTrue(isInited());
-        Assert.assertTrue(Boolean.TRUE.equals(hasFieldConstraint.invoke(null, Cf_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasFieldConstraint.invoke(null, Cf_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasFieldConstraint.invoke(null, SCf_wo_w.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasFieldConstraint.invoke(null, SCf_w_wo.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasFieldConstraint.invoke(null, SCf_wo_wo.class)));
+        Assertions.assertTrue(isInited());
+        Assertions.assertTrue(Boolean.TRUE.equals(hasFieldConstraint.invoke(null, Cf_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasFieldConstraint.invoke(null, Cf_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasFieldConstraint.invoke(null, SCf_wo_w.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasFieldConstraint.invoke(null, SCf_w_wo.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasFieldConstraint.invoke(null, SCf_wo_wo.class)));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -246,19 +246,19 @@ public class NoFieldValidationEJBTest {
      */
     @Test
     public void testPropertyConstraints() throws Exception {
-        Assert.assertTrue(isInited());
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, Ip_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, Ip_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, Cp_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, Cp_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, CIp_w_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, CIp_wo_wwo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, CIp_wo_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, CIp_wo_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, SCp_w_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, SCp_wo_w.class)));
-        Assert.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, SCc_wo_wo.class)));
-        Assert.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, SCp_wo_wo_w.class)));
+        Assertions.assertTrue(isInited());
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, Ip_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, Ip_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, Cp_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, Cp_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, CIp_w_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, CIp_wo_wwo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, CIp_wo_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, CIp_wo_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, SCp_w_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, SCp_wo_w.class)));
+        Assertions.assertTrue(Boolean.FALSE.equals(hasPropertyConstraint.invoke(null, SCc_wo_wo.class)));
+        Assertions.assertTrue(Boolean.TRUE.equals(hasPropertyConstraint.invoke(null, SCp_wo_wo_w.class)));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -266,9 +266,9 @@ public class NoFieldValidationEJBTest {
     //////////////////////////////////////////////////////////////////////////////////////
     @Test
     public void test() throws Exception {
-        Assert.assertEquals(Boolean.TRUE,
+        Assertions.assertEquals(Boolean.TRUE,
                 classHasAnnotations.invoke(null, SCc_wo_wo_w.class, new String[] { ClassConstraint.class.getName() }));
-        Assert.assertEquals(Boolean.FALSE,
+        Assertions.assertEquals(Boolean.FALSE,
                 classHasAnnotations.invoke(null, SCc_wo_wo_w.class, new String[] { Min.class.getName() }));
     }
 

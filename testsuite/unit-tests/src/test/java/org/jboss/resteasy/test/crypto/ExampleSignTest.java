@@ -13,8 +13,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Crypto
@@ -75,6 +75,6 @@ public class ExampleSignTest {
         Signature verify = Signature.getInstance("SHA256withRSA");
         verify.initVerify(publicKey);
         verify.update("from-java".getBytes());
-        Assert.assertTrue("Sign was unsuccessful", verify.verify(signatureBytes));
+        Assertions.assertTrue(verify.verify(signatureBytes), "Sign was unsuccessful");
     }
 }

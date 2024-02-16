@@ -7,8 +7,8 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -39,9 +39,9 @@ public class MultivaluedMapTest {
         map.add(null, vec);
         map.add(null, this);
         List<Object> objects = map.get(null);
-        Assert.assertTrue(defaultErrMsg, objects.size() == 2);
-        Assert.assertTrue(defaultErrMsg, map.size() == 2);
-        Assert.assertTrue(defaultErrMsg, map.getFirst(null).getClass() == Vector.class);
+        Assertions.assertTrue(objects.size() == 2, defaultErrMsg);
+        Assertions.assertTrue(map.size() == 2, defaultErrMsg);
+        Assertions.assertTrue(map.getFirst(null).getClass() == Vector.class, defaultErrMsg);
 
         map = Response.ok().build().getMetadata();
         Object o1 = new StringBuilder().append(KEYS[0]);
@@ -59,7 +59,7 @@ public class MultivaluedMapTest {
         MultivaluedHashMap<String, Object> map2 = new MultivaluedHashMap<String, Object>();
         map2.addAll(KEYS[0], o3, o1, o2);
 
-        Assert.assertTrue(hashErrMsg, map.equalsIgnoreValueOrder(map2));
-        Assert.assertFalse(hashErrMsg, map.equals(map2));
+        Assertions.assertTrue(map.equalsIgnoreValueOrder(map2), hashErrMsg);
+        Assertions.assertFalse(map.equals(map2), hashErrMsg);
     }
 }

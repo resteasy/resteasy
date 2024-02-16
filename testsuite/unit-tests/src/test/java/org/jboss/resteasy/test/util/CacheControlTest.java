@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.ext.RuntimeDelegate;
@@ -9,8 +9,8 @@ import org.jboss.resteasy.core.ExtendedCacheControl;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -40,33 +40,33 @@ public class CacheControlTest {
         CacheControl serialized = hdcc.fromString(toString);
 
         String errMsg = "Wrong serialization";
-        Assert.assertTrue(errMsg, serialized.getMaxAge() == 1000);
-        Assert.assertTrue(errMsg, serialized.getSMaxAge() == 500);
-        Assert.assertFalse(errMsg, serialized.isNoTransform());
-        Assert.assertTrue(errMsg, serialized.isPrivate());
+        Assertions.assertTrue(serialized.getMaxAge() == 1000, errMsg);
+        Assertions.assertTrue(serialized.getSMaxAge() == 500, errMsg);
+        Assertions.assertFalse(serialized.isNoTransform(), errMsg);
+        Assertions.assertTrue(serialized.isPrivate(), errMsg);
     }
 
     void assertEqual(String errorMsg, CacheControl first, CacheControl second) {
-        Assert.assertEquals(errorMsg, first.isMustRevalidate(), second.isMustRevalidate());
-        Assert.assertEquals(errorMsg, first.isNoCache(), second.isNoCache());
-        Assert.assertEquals(errorMsg, first.isNoStore(), second.isNoStore());
-        Assert.assertEquals(errorMsg, first.isNoTransform(), second.isNoTransform());
-        Assert.assertEquals(errorMsg, first.isPrivate(), second.isPrivate());
-        Assert.assertEquals(errorMsg, first.isProxyRevalidate(), second.isProxyRevalidate());
-        Assert.assertEquals(errorMsg, first.isPrivate(), second.isPrivate());
-        Assert.assertEquals(errorMsg, first.getMaxAge(), second.getMaxAge());
-        Assert.assertEquals(errorMsg, first.getSMaxAge(), second.getSMaxAge());
-        Assert.assertEquals(errorMsg, first.getNoCacheFields().size(), second.getNoCacheFields().size());
-        Assert.assertEquals(errorMsg, first.getPrivateFields().size(), second.getPrivateFields().size());
+        Assertions.assertEquals(first.isMustRevalidate(), second.isMustRevalidate(), errorMsg);
+        Assertions.assertEquals(first.isNoCache(), second.isNoCache(), errorMsg);
+        Assertions.assertEquals(first.isNoStore(), second.isNoStore(), errorMsg);
+        Assertions.assertEquals(first.isNoTransform(), second.isNoTransform(), errorMsg);
+        Assertions.assertEquals(first.isPrivate(), second.isPrivate(), errorMsg);
+        Assertions.assertEquals(first.isProxyRevalidate(), second.isProxyRevalidate(), errorMsg);
+        Assertions.assertEquals(first.isPrivate(), second.isPrivate(), errorMsg);
+        Assertions.assertEquals(first.getMaxAge(), second.getMaxAge(), errorMsg);
+        Assertions.assertEquals(first.getSMaxAge(), second.getSMaxAge(), errorMsg);
+        Assertions.assertEquals(first.getNoCacheFields().size(), second.getNoCacheFields().size(), errorMsg);
+        Assertions.assertEquals(first.getPrivateFields().size(), second.getPrivateFields().size(), errorMsg);
         for (int i = 0; i < first.getNoCacheFields().size(); i++) {
-            Assert.assertEquals(errorMsg, first.getNoCacheFields().get(i), second.getNoCacheFields().get(i));
+            Assertions.assertEquals(first.getNoCacheFields().get(i), second.getNoCacheFields().get(i), errorMsg);
         }
         for (int i = 0; i < first.getPrivateFields().size(); i++) {
-            Assert.assertEquals(errorMsg, first.getPrivateFields().get(i), second.getPrivateFields().get(i));
+            Assertions.assertEquals(first.getPrivateFields().get(i), second.getPrivateFields().get(i), errorMsg);
         }
-        Assert.assertEquals(errorMsg, first.getCacheExtension().size(), second.getCacheExtension().size());
+        Assertions.assertEquals(first.getCacheExtension().size(), second.getCacheExtension().size(), errorMsg);
         for (String key : first.getCacheExtension().keySet()) {
-            Assert.assertEquals(errorMsg, first.getCacheExtension().get(key), second.getCacheExtension().get(key));
+            Assertions.assertEquals(first.getCacheExtension().get(key), second.getCacheExtension().get(key), errorMsg);
         }
     }
 
@@ -116,12 +116,12 @@ public class CacheControlTest {
         cc.setPrivate(true);
         cc.setNoStore(true);
         String value = cc.toString();
-        assertTrue("Missing no-cache property in String representation of CacheControl",
-                value.contains("no-cache"));
-        assertTrue("Missing no-store property in String representation of CacheControl",
-                value.contains("no-store"));
-        assertTrue("Missing private property in String representation of CacheControl",
-                value.contains("private"));
+        assertTrue(value.contains("no-cache"),
+                "Missing no-cache property in String representation of CacheControl");
+        assertTrue(value.contains("no-store"),
+                "Missing no-store property in String representation of CacheControl");
+        assertTrue(value.contains("private"),
+                "Missing private property in String representation of CacheControl");
     }
 
     /**
@@ -135,12 +135,12 @@ public class CacheControlTest {
         cc.setPublic(true);
         cc.setNoStore(true);
         String value = cc.toString();
-        assertTrue("Missing no-cache property in String representation of ExtendedCacheControl",
-                value.contains("no-cache"));
-        assertTrue("Missing no-store property in String representation of ExtendedCacheControl",
-                value.contains("no-store"));
-        assertTrue("Missing private property in String representation of ExtendedCacheControl",
-                value.contains("public"));
+        assertTrue(value.contains("no-cache"),
+                "Missing no-cache property in String representation of ExtendedCacheControl");
+        assertTrue(value.contains("no-store"),
+                "Missing no-store property in String representation of ExtendedCacheControl");
+        assertTrue(value.contains("public"),
+                "Missing private property in String representation of ExtendedCacheControl");
     }
 
 }

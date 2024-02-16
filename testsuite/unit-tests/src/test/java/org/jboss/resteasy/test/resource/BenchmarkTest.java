@@ -13,8 +13,8 @@ import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.Dispatcher;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @tpSubChapter Profiler helper tests
@@ -26,13 +26,13 @@ public class BenchmarkTest {
 
     private static Dispatcher dispatcher;
 
-    @BeforeClass
+    @BeforeAll
     public static void BeforeClass() {
         dispatcher = MockDispatcherFactory.createDispatcher();
         dispatcher.getRegistry().addPerRequestResource(HelloResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         ResteasyContext.getContextDataMap().put(Configurable.class, dispatcher.getProviderFactory());
     }

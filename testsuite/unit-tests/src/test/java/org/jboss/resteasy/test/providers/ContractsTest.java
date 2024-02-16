@@ -10,8 +10,8 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.resource.ContractsData;
 import org.jboss.resteasy.test.providers.resource.ContractsDataReaderWriter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -31,10 +31,10 @@ public class ContractsTest {
         factory.register(ContractsDataReaderWriter.class, MessageBodyReader.class);
         MessageBodyReader reader = factory.getMessageBodyReader(ContractsData.class, ContractsData.class, null,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        Assert.assertNotNull("Reader is not assigned", reader);
+        Assertions.assertNotNull(reader, "Reader is not assigned");
         MessageBodyWriter writer = factory.getMessageBodyWriter(ContractsData.class, ContractsData.class, null,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        Assert.assertNull("Writer is not assigned", writer);
+        Assertions.assertNull(writer, "Writer is not assigned");
     }
 
     /**
@@ -49,10 +49,10 @@ public class ContractsTest {
         factory.register(ContractsDataReaderWriter.class, contract);
         MessageBodyReader reader = factory.getMessageBodyReader(ContractsData.class, ContractsData.class, null,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        Assert.assertNotNull("Reader is not assigned", reader);
+        Assertions.assertNotNull(reader, "Reader is not assigned");
         MessageBodyWriter writer = factory.getMessageBodyWriter(ContractsData.class, ContractsData.class, null,
                 MediaType.APPLICATION_ATOM_XML_TYPE);
-        Assert.assertNull("Writer is not assigned", writer);
+        Assertions.assertNull(writer, "Writer is not assigned");
     }
 
 }

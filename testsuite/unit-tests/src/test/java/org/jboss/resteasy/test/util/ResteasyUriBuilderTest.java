@@ -1,14 +1,14 @@
 package org.jboss.resteasy.test.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.net.URI;
 
 import jakarta.ws.rs.core.UriBuilder;
 
 import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -28,15 +28,15 @@ public class ResteasyUriBuilderTest {
     @Test
     public void testParseHierarchicalUri() {
         ResteasyUriBuilderImpl builder = new ResteasyUriBuilderImpl();
-        assertSame(URI_ERROR, builder, builder.uri("foo/bar:id"));
+        assertSame(builder, builder.uri("foo/bar:id"), URI_ERROR);
         builder = new ResteasyUriBuilderImpl();
-        assertSame(URI_ERROR, builder, builder.uri("/bar:id"));
+        assertSame(builder, builder.uri("/bar:id"), URI_ERROR);
         builder = new ResteasyUriBuilderImpl();
-        assertSame(URI_ERROR, builder, builder.uri("foo:bar/bar:id"));
+        assertSame(builder, builder.uri("foo:bar/bar:id"), URI_ERROR);
         builder = new ResteasyUriBuilderImpl();
-        assertSame(URI_ERROR, builder, builder.uri("foo:/bar"));
+        assertSame(builder, builder.uri("foo:/bar"), URI_ERROR);
         builder = new ResteasyUriBuilderImpl();
-        assertSame(URI_ERROR, builder, builder.uri("foo:bar"));
+        assertSame(builder, builder.uri("foo:bar"), URI_ERROR);
     }
 
     /**
@@ -47,12 +47,12 @@ public class ResteasyUriBuilderTest {
     @Test
     public void testUriWithFragment() {
         UriBuilder builder = ResteasyUriBuilderImpl.fromTemplate("http://domain.com/path#fragment=with/allowed/special-chars");
-        assertEquals(URI_FRAGMENT_ERROR, "http://domain.com/path#fragment=with/allowed/special-chars",
-                builder.build().toString());
+        assertEquals("http://domain.com/path#fragment=with/allowed/special-chars",
+                builder.build().toString(), URI_FRAGMENT_ERROR);
 
         builder = ResteasyUriBuilderImpl.fromTemplate("http://domain.com/path#fragment%with[forbidden}special<chars");
-        assertEquals(URI_FRAGMENT_ERROR, "http://domain.com/path#fragment%25with%5Bforbidden%7Dspecial%3Cchars",
-                builder.build().toString());
+        assertEquals("http://domain.com/path#fragment%25with%5Bforbidden%7Dspecial%3Cchars",
+                builder.build().toString(), URI_FRAGMENT_ERROR);
     }
 
     @Test
@@ -64,13 +64,13 @@ public class ResteasyUriBuilderTest {
                 .fromUri(baseAddr + "?foo=bar")
                 .replaceQueryParam("foo")
                 .build();
-        assertEquals(errorMsg, baseAddr, oneUri.toString());
+        assertEquals(baseAddr, oneUri.toString(), errorMsg);
 
         uBuilder = new ResteasyUriBuilderImpl();
         URI twoUri = uBuilder
                 .fromUri(baseAddr + "?foo=bar&foobar=qux")
                 .replaceQueryParam("foo")
                 .build();
-        assertEquals(errorMsg, baseAddr + "?foobar=qux", twoUri.toString());
+        assertEquals(baseAddr + "?foobar=qux", twoUri.toString(), errorMsg);
     }
 }

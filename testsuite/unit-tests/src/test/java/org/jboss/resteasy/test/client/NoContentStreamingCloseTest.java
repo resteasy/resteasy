@@ -14,8 +14,8 @@ import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestFilter;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestInputStream;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestResponse;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -47,12 +47,12 @@ public class NoContentStreamingCloseTest {
                 .target("http://localhost/uri_is_ignored") //
                 .request() //
                 .get(InputStream.class); // nowhere a response to close
-        Assert.assertNotNull(NULL_STREAM_ERROR_MSG, is);
+        Assertions.assertNotNull(is, NULL_STREAM_ERROR_MSG);
         String str = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         is.close();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, expected, str);
+        Assertions.assertEquals(expected, str, RESPONSE_ERROR_MSG);
         // the stream returned by the internal httpclient must be closed!
-        Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
+        Assertions.assertTrue(testInputStream.isClosed(), CLOSE_ERROR_MSG);
 
         client.close();
     }
@@ -74,11 +74,11 @@ public class NoContentStreamingCloseTest {
                 .target("http://localhost/uri_is_ignored") //
                 .request() //
                 .get(InputStream.class);
-        Assert.assertNotNull(NULL_STREAM_ERROR_MSG, is);
+        Assertions.assertNotNull(is, NULL_STREAM_ERROR_MSG);
         byte[] readden = is.readAllBytes();
         is.close();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 0, readden.length);
-        Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
+        Assertions.assertEquals(0, readden.length, RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(testInputStream.isClosed(), CLOSE_ERROR_MSG);
 
         client.close();
     }
@@ -100,11 +100,11 @@ public class NoContentStreamingCloseTest {
                 .target("http://localhost/uri_is_ignored") //
                 .request() //
                 .get(Reader.class);
-        Assert.assertNotNull("Reader should not be null", in);
+        Assertions.assertNotNull(in, "Reader should not be null");
         String readden = new String(testInputStream.readAllBytes(), StandardCharsets.UTF_8);
         in.close();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 0, readden.length());
-        Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
+        Assertions.assertEquals(0, readden.length(), RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(testInputStream.isClosed(), CLOSE_ERROR_MSG);
 
         client.close();
     }
@@ -126,11 +126,11 @@ public class NoContentStreamingCloseTest {
                 .target("http://localhost/uri_is_ignored") //
                 .request() //
                 .get(DataSource.class);
-        Assert.assertNotNull("DataSource should not be null", in);
+        Assertions.assertNotNull(in, "DataSource should not be null");
         InputStream is = in.getInputStream();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 0, is.readAllBytes().length);
+        Assertions.assertEquals(0, is.readAllBytes().length, RESPONSE_ERROR_MSG);
         is.close();
-        Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
+        Assertions.assertTrue(testInputStream.isClosed(), CLOSE_ERROR_MSG);
 
         client.close();
     }
@@ -153,11 +153,11 @@ public class NoContentStreamingCloseTest {
                 .target("http://localhost/uri_is_ignored") //
                 .request() //
                 .get(Source.class);
-        Assert.assertNotNull("Source should not be null", in);
+        Assertions.assertNotNull(in, "Source should not be null");
         InputStream is = ((StreamSource) in).getInputStream();
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 0, is.readAllBytes().length);
+        Assertions.assertEquals(0, is.readAllBytes().length, RESPONSE_ERROR_MSG);
         is.close();
-        Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
+        Assertions.assertTrue(testInputStream.isClosed(), CLOSE_ERROR_MSG);
 
         client.close();
     }
@@ -179,9 +179,9 @@ public class NoContentStreamingCloseTest {
                 .target("http://localhost/uri_is_ignored") //
                 .request() //
                 .get(byte[].class);
-        Assert.assertNotNull("Byte array should not be null", in);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, 0, in.length);
-        Assert.assertTrue(CLOSE_ERROR_MSG, testInputStream.isClosed());
+        Assertions.assertNotNull(in, "Byte array should not be null");
+        Assertions.assertEquals(0, in.length, RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(testInputStream.isClosed(), CLOSE_ERROR_MSG);
 
         client.close();
     }

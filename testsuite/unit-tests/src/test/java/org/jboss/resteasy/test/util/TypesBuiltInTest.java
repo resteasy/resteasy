@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Type;
 
@@ -12,7 +12,7 @@ import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.test.util.resource.TypesParamConverterPOJO;
 import org.jboss.resteasy.test.util.resource.TypesTestProvider;
 import org.jboss.resteasy.test.util.resource.TypesTestProviderSubclass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -29,16 +29,16 @@ public class TypesBuiltInTest {
     @Test
     public void testGetInterfaceArgumentFromSimpleType() {
         Type[] parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, ExceptionMapper.class);
-        assertEquals("Wrong count of parameters", 1, parameters.length);
-        assertEquals("Wrong type of exception", NullPointerException.class, (Class<?>) parameters[0]);
+        assertEquals(1, parameters.length, "Wrong count of parameters");
+        assertEquals(NullPointerException.class, (Class<?>) parameters[0], "Wrong type of exception");
 
         parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, MarshalledEntity.class);
-        assertEquals("Wrong count of parameters", 1, parameters.length);
-        assertEquals("Wrong type of parameter", Integer.class, (Class<?>) parameters[0]);
+        assertEquals(1, parameters.length, "Wrong count of parameters");
+        assertEquals(Integer.class, (Class<?>) parameters[0], "Wrong type of parameter");
 
         parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, ParamConverter.class);
-        assertEquals("Wrong count of parameters", 1, parameters.length);
-        assertEquals("Wrong type of parameter", TypesParamConverterPOJO.class, (Class<?>) parameters[0]);
+        assertEquals(1, parameters.length, "Wrong count of parameters");
+        assertEquals(TypesParamConverterPOJO.class, (Class<?>) parameters[0], "Wrong type of parameter");
     }
 
     /**
@@ -50,15 +50,15 @@ public class TypesBuiltInTest {
     @Test
     public void testGetInterfaceArgumentFromSubclass() {
         Type[] parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, ExceptionMapper.class);
-        assertEquals("Wrong count of parameters", 1, parameters.length);
-        assertEquals("Wrong type of exception", NullPointerException.class, (Class<?>) parameters[0]);
+        assertEquals(1, parameters.length, "Wrong count of parameters");
+        assertEquals(NullPointerException.class, (Class<?>) parameters[0], "Wrong type of exception");
 
         parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, MarshalledEntity.class);
-        assertEquals("Wrong count of parameters", 1, parameters.length);
-        assertEquals("Wrong type of parameter", Integer.class, (Class<?>) parameters[0]);
+        assertEquals(1, parameters.length, "Wrong count of parameters");
+        assertEquals(Integer.class, (Class<?>) parameters[0], "Wrong type of parameter");
 
         parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, ParamConverter.class);
-        assertEquals("Wrong count of parameters", 1, parameters.length);
-        assertEquals("Wrong type of parameter", TypesParamConverterPOJO.class, (Class<?>) parameters[0]);
+        assertEquals(1, parameters.length, "Wrong count of parameters");
+        assertEquals(TypesParamConverterPOJO.class, (Class<?>) parameters[0], "Wrong type of parameter");
     }
 }

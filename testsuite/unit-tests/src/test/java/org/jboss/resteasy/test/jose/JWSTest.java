@@ -24,10 +24,10 @@ import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +39,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @tpTestCaseDetails Test for JWS
  * @tpSince RESTEasy 3.0.16
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+//@Disabled("RESTEASY-3450")
+@TestMethodOrder(MethodName.class)
 public class JWSTest {
     protected static final Logger logger = Logger.getLogger(JWSTest.class.getName());
     private static final String HEADER_ERROR_MSG = "Wrong algorithm header";
@@ -83,8 +84,8 @@ public class JWSTest {
 
         JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
         String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Hello World", msg);
-        Assert.assertTrue(VERIFY_ERROR_MSG, RSAProvider.verify(input, keyPair.getPublic()));
+        Assertions.assertEquals("Hello World", msg, RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(RSAProvider.verify(input, keyPair.getPublic()), VERIFY_ERROR_MSG);
 
     }
 
@@ -108,8 +109,8 @@ public class JWSTest {
         JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
         logger.info(input.getHeader());
         String msg = input.readContent(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Hello World", msg);
-        Assert.assertTrue(VERIFY_ERROR_MSG, RSAProvider.verify(input, keyPair.getPublic()));
+        Assertions.assertEquals("Hello World", msg, RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(RSAProvider.verify(input, keyPair.getPublic()), VERIFY_ERROR_MSG);
 
     }
 
@@ -131,8 +132,8 @@ public class JWSTest {
         JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
         logger.info(input.getHeader());
         String msg = input.readContent(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Hello World", msg);
-        Assert.assertTrue(VERIFY_ERROR_MSG, HMACProvider.verify(input, key));
+        Assertions.assertEquals("Hello World", msg, RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(HMACProvider.verify(input, key), VERIFY_ERROR_MSG);
     }
 
     @Test
@@ -156,7 +157,7 @@ public class JWSTest {
 
         JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
         String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, content, msg);
-        Assert.assertTrue(VERIFY_ERROR_MSG, RSAProvider.verify(input, keyPair.getPublic()));
+        Assertions.assertEquals(content, msg, RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(RSAProvider.verify(input, keyPair.getPublic()), VERIFY_ERROR_MSG);
     }
 }

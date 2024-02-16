@@ -12,8 +12,8 @@ import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceBase;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceIntegerPlainTextWriter;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecendencePlainTextWriter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -44,18 +44,20 @@ public class ProviderFactoryPrecedenceTest {
      */
     @Test
     public void testTypes() {
-        Assert.assertNull("PlainTextWriter is should be of generic type",
-                Types.getTemplateParameterOfInterface(ProviderFactoryPrecendencePlainTextWriter.class,
-                        MessageBodyWriter.class));
-        Assert.assertEquals("IntegerPlainTextWriter should be Integer type",
-                Integer.class, Types.getTemplateParameterOfInterface(ProviderFactoryPrecedenceIntegerPlainTextWriter.class,
-                        MessageBodyWriter.class));
-        Assert.assertEquals("Concrete class should be Double type",
-                Double.class, Types.getTemplateParameterOfInterface(Concrete.class, MessageBodyWriter.class));
-        Assert.assertEquals("Concrete2 class should be Double type",
-                Boolean.class, Types.getTemplateParameterOfInterface(Concrete2.class, MessageBodyWriter.class));
-        Assert.assertEquals("ConcreteMultiple class should be Short type",
-                Short.class, Types.getTemplateParameterOfInterface(ConcreteMultiple.class, MessageBodyWriter.class));
+        Assertions.assertNull(Types.getTemplateParameterOfInterface(ProviderFactoryPrecendencePlainTextWriter.class,
+                MessageBodyWriter.class),
+                "PlainTextWriter is should be of generic type");
+        Assertions.assertEquals(Integer.class,
+                Types.getTemplateParameterOfInterface(ProviderFactoryPrecedenceIntegerPlainTextWriter.class,
+                        MessageBodyWriter.class),
+                "IntegerPlainTextWriter should be Integer type");
+        Assertions.assertEquals(Double.class, Types.getTemplateParameterOfInterface(Concrete.class, MessageBodyWriter.class),
+                "Concrete class should be Double type");
+        Assertions.assertEquals(Boolean.class, Types.getTemplateParameterOfInterface(Concrete2.class, MessageBodyWriter.class),
+                "Concrete2 class should be Double type");
+        Assertions.assertEquals(Short.class,
+                Types.getTemplateParameterOfInterface(ConcreteMultiple.class, MessageBodyWriter.class),
+                "ConcreteMultiple class should be Short type");
     }
 
     /**
@@ -70,8 +72,8 @@ public class ProviderFactoryPrecedenceTest {
 
         MessageBodyWriter<Boolean> writer = factory.getMessageBodyWriter(Boolean.class, null, null,
                 new MediaType("text", "plain"));
-        Assert.assertNotNull("No writer exists for the given media type", writer);
-        Assert.assertEquals("The type of the writer is incorrect", writer.getClass(), DefaultBooleanWriter.class);
+        Assertions.assertNotNull(writer, "No writer exists for the given media type");
+        Assertions.assertEquals(writer.getClass(), DefaultBooleanWriter.class, "The type of the writer is incorrect");
     }
 
     /**
@@ -134,16 +136,17 @@ public class ProviderFactoryPrecedenceTest {
 
     private void verifyPlainWriter(ResteasyProviderFactory factory) {
         MessageBodyWriter writer2 = factory.getMessageBodyWriter(Character.class, null, null, MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertNotNull("No writer exists for the given media type", writer2);
-        Assert.assertTrue("The type of the writer is incorrect", writer2 instanceof ProviderFactoryPrecendencePlainTextWriter);
+        Assertions.assertNotNull(writer2, "No writer exists for the given media type");
+        Assertions.assertTrue(writer2 instanceof ProviderFactoryPrecendencePlainTextWriter,
+                "The type of the writer is incorrect");
     }
 
     private void verifyIntegerWriter(ResteasyProviderFactory factory) {
         MessageBodyWriter writer2;
         // Test that type specific template providers take precedence over others
         writer2 = factory.getMessageBodyWriter(Integer.class, null, null, MediaType.TEXT_PLAIN_TYPE);
-        Assert.assertNotNull("No writer exists for the given media type", writer2);
-        Assert.assertTrue("The type of the writer is incorrect",
-                writer2 instanceof ProviderFactoryPrecedenceIntegerPlainTextWriter);
+        Assertions.assertNotNull(writer2, "No writer exists for the given media type");
+        Assertions.assertTrue(writer2 instanceof ProviderFactoryPrecedenceIntegerPlainTextWriter,
+                "The type of the writer is incorrect");
     }
 }

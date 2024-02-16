@@ -9,8 +9,8 @@ import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedMediaType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -30,52 +30,52 @@ public class MediaTypeTest {
         MediaType mediaType;
 
         mediaType = MediaType.valueOf("application/xml");
-        Assert.assertEquals(errorMsg, "application", mediaType.getType());
-        Assert.assertEquals(errorMsg, "xml", mediaType.getSubtype());
+        Assertions.assertEquals("application", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("xml", mediaType.getSubtype(), errorMsg);
 
         mediaType = MediaType.valueOf("text/*;q=0.3");
-        Assert.assertEquals(errorMsg, "text", mediaType.getType());
-        Assert.assertEquals(errorMsg, "*", mediaType.getSubtype());
-        Assert.assertTrue(errorMsg, mediaType.isWildcardSubtype());
-        Assert.assertEquals(errorMsg, 1, mediaType.getParameters().size());
-        Assert.assertEquals(errorMsg, "0.3", mediaType.getParameters().get("q"));
+        Assertions.assertEquals("text", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("*", mediaType.getSubtype(), errorMsg);
+        Assertions.assertTrue(mediaType.isWildcardSubtype(), errorMsg);
+        Assertions.assertEquals(1, mediaType.getParameters().size(), errorMsg);
+        Assertions.assertEquals("0.3", mediaType.getParameters().get("q"), errorMsg);
 
         mediaType = MediaType.valueOf("text/html;level=2;q=0.4");
-        Assert.assertEquals(errorMsg, "text", mediaType.getType());
-        Assert.assertEquals(errorMsg, "html", mediaType.getSubtype());
-        Assert.assertEquals(errorMsg, 2, mediaType.getParameters().size());
-        Assert.assertEquals(errorMsg, "0.4", mediaType.getParameters().get("q"));
-        Assert.assertEquals(errorMsg, "2", mediaType.getParameters().get("level"));
+        Assertions.assertEquals("text", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("html", mediaType.getSubtype(), errorMsg);
+        Assertions.assertEquals(2, mediaType.getParameters().size(), errorMsg);
+        Assertions.assertEquals("0.4", mediaType.getParameters().get("q"), errorMsg);
+        Assertions.assertEquals("2", mediaType.getParameters().get("level"), errorMsg);
 
         MediaTypeHeaderDelegate delegate = new MediaTypeHeaderDelegate();
         String str = delegate.toString(mediaType);
         mediaType = MediaType.valueOf(str);
-        Assert.assertEquals(errorMsg, "text", mediaType.getType());
-        Assert.assertEquals(errorMsg, "html", mediaType.getSubtype());
-        Assert.assertEquals(errorMsg, 2, mediaType.getParameters().size());
-        Assert.assertEquals(errorMsg, "0.4", mediaType.getParameters().get("q"));
-        Assert.assertEquals(errorMsg, "2", mediaType.getParameters().get("level"));
+        Assertions.assertEquals("text", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("html", mediaType.getSubtype(), errorMsg);
+        Assertions.assertEquals(2, mediaType.getParameters().size(), errorMsg);
+        Assertions.assertEquals("0.4", mediaType.getParameters().get("q"), errorMsg);
+        Assertions.assertEquals("2", mediaType.getParameters().get("level"), errorMsg);
 
         mediaType = MediaType.valueOf("text/html;level=  \"2\";q=0.4");
-        Assert.assertEquals(errorMsg, "text", mediaType.getType());
-        Assert.assertEquals(errorMsg, "html", mediaType.getSubtype());
-        Assert.assertEquals(errorMsg, 2, mediaType.getParameters().size());
-        Assert.assertEquals(errorMsg, "0.4", mediaType.getParameters().get("q"));
-        Assert.assertEquals(errorMsg, "2", mediaType.getParameters().get("level"));
+        Assertions.assertEquals("text", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("html", mediaType.getSubtype(), errorMsg);
+        Assertions.assertEquals(2, mediaType.getParameters().size(), errorMsg);
+        Assertions.assertEquals("0.4", mediaType.getParameters().get("q"), errorMsg);
+        Assertions.assertEquals("2", mediaType.getParameters().get("level"), errorMsg);
 
         mediaType = MediaType.valueOf("text/html;level=  \"2\";q=  \"0.4\"   ");
-        Assert.assertEquals(errorMsg, "text", mediaType.getType());
-        Assert.assertEquals(errorMsg, "html", mediaType.getSubtype());
-        Assert.assertEquals(errorMsg, 2, mediaType.getParameters().size());
-        Assert.assertEquals(errorMsg, "0.4", mediaType.getParameters().get("q"));
-        Assert.assertEquals(errorMsg, "2", mediaType.getParameters().get("level"));
+        Assertions.assertEquals("text", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("html", mediaType.getSubtype(), errorMsg);
+        Assertions.assertEquals(2, mediaType.getParameters().size(), errorMsg);
+        Assertions.assertEquals("0.4", mediaType.getParameters().get("q"), errorMsg);
+        Assertions.assertEquals("2", mediaType.getParameters().get("level"), errorMsg);
 
         mediaType = MediaType.valueOf("text/html;level=  \"2\";q=  \"0.4;\"   ");
-        Assert.assertEquals(errorMsg, "text", mediaType.getType());
-        Assert.assertEquals(errorMsg, "html", mediaType.getSubtype());
-        Assert.assertEquals(errorMsg, 2, mediaType.getParameters().size());
-        Assert.assertEquals(errorMsg, "0.4;", mediaType.getParameters().get("q"));
-        Assert.assertEquals(errorMsg, "2", mediaType.getParameters().get("level"));
+        Assertions.assertEquals("text", mediaType.getType(), errorMsg);
+        Assertions.assertEquals("html", mediaType.getSubtype(), errorMsg);
+        Assertions.assertEquals(2, mediaType.getParameters().size(), errorMsg);
+        Assertions.assertEquals("0.4;", mediaType.getParameters().get("q"), errorMsg);
+        Assertions.assertEquals("2", mediaType.getParameters().get("level"), errorMsg);
 
     }
 
@@ -101,10 +101,10 @@ public class MediaTypeTest {
 
             MediaTypeHelper.sortByWeight(list);
 
-            Assert.assertTrue(errorMsg + list.get(0).toString(), array[2] == list.get(0));
-            Assert.assertTrue(errorMsg, array[1] == list.get(1));
-            Assert.assertTrue(errorMsg, array[0] == list.get(2));
-            Assert.assertTrue(errorMsg, array[3] == list.get(3));
+            Assertions.assertTrue(array[2] == list.get(0), errorMsg + list.get(0).toString());
+            Assertions.assertTrue(array[1] == list.get(1), errorMsg);
+            Assertions.assertTrue(array[0] == list.get(2), errorMsg);
+            Assertions.assertTrue(array[3] == list.get(3), errorMsg);
         }
         {
             MediaType[] array = {
@@ -123,11 +123,11 @@ public class MediaTypeTest {
 
             MediaTypeHelper.sortByWeight(list);
 
-            Assert.assertTrue(errorMsg, array[2] == list.get(0));
-            Assert.assertTrue(errorMsg, array[1] == list.get(1));
-            Assert.assertTrue(errorMsg, array[4] == list.get(2));
-            Assert.assertTrue(errorMsg, array[3] == list.get(3));
-            Assert.assertTrue(errorMsg, array[0] == list.get(4));
+            Assertions.assertTrue(array[2] == list.get(0), errorMsg);
+            Assertions.assertTrue(array[1] == list.get(1), errorMsg);
+            Assertions.assertTrue(array[4] == list.get(2), errorMsg);
+            Assertions.assertTrue(array[3] == list.get(3), errorMsg);
+            Assertions.assertTrue(array[0] == list.get(4), errorMsg);
 
         }
     }
@@ -154,10 +154,10 @@ public class MediaTypeTest {
 
             Collections.sort(list);
 
-            Assert.assertTrue(errorMsg + list.get(0).toString(), array[2] == list.get(0));
-            Assert.assertTrue(errorMsg, array[1] == list.get(1));
-            Assert.assertTrue(errorMsg, array[0] == list.get(2));
-            Assert.assertTrue(errorMsg, array[3] == list.get(3));
+            Assertions.assertTrue(array[2] == list.get(0), errorMsg + list.get(0).toString());
+            Assertions.assertTrue(array[1] == list.get(1), errorMsg);
+            Assertions.assertTrue(array[0] == list.get(2), errorMsg);
+            Assertions.assertTrue(array[3] == list.get(3), errorMsg);
 
         }
         {
@@ -177,11 +177,11 @@ public class MediaTypeTest {
 
             Collections.sort(list);
 
-            Assert.assertTrue(errorMsg, array[2] == list.get(0));
-            Assert.assertTrue(errorMsg, array[1] == list.get(1));
-            Assert.assertTrue(errorMsg, array[4] == list.get(2));
-            Assert.assertTrue(errorMsg, array[3] == list.get(3));
-            Assert.assertTrue(errorMsg, array[0] == list.get(4));
+            Assertions.assertTrue(array[2] == list.get(0), errorMsg);
+            Assertions.assertTrue(array[1] == list.get(1), errorMsg);
+            Assertions.assertTrue(array[4] == list.get(2), errorMsg);
+            Assertions.assertTrue(array[3] == list.get(3), errorMsg);
+            Assertions.assertTrue(array[0] == list.get(4), errorMsg);
         }
     }
 
@@ -209,13 +209,13 @@ public class MediaTypeTest {
 
         MediaTypeHelper.sortByWeight(list);
 
-        Assert.assertTrue(errorMsg, array[3] == list.get(0) || array[5] == list.get(0));
-        Assert.assertTrue(errorMsg, array[3] == list.get(1) || array[5] == list.get(1));
-        Assert.assertTrue(errorMsg, array[0] == list.get(2) || array[6] == list.get(2));
-        Assert.assertTrue(errorMsg, array[0] == list.get(3) || array[6] == list.get(3));
-        Assert.assertTrue(errorMsg, array[2] == list.get(4) || array[4] == list.get(4));
-        Assert.assertTrue(errorMsg, array[2] == list.get(5) || array[4] == list.get(5));
-        Assert.assertTrue(errorMsg, array[1] == list.get(6));
-        Assert.assertTrue(errorMsg, array[7] == list.get(7));
+        Assertions.assertTrue(array[3] == list.get(0) || array[5] == list.get(0), errorMsg);
+        Assertions.assertTrue(array[3] == list.get(1) || array[5] == list.get(1), errorMsg);
+        Assertions.assertTrue(array[0] == list.get(2) || array[6] == list.get(2), errorMsg);
+        Assertions.assertTrue(array[0] == list.get(3) || array[6] == list.get(3), errorMsg);
+        Assertions.assertTrue(array[2] == list.get(4) || array[4] == list.get(4), errorMsg);
+        Assertions.assertTrue(array[2] == list.get(5) || array[4] == list.get(5), errorMsg);
+        Assertions.assertTrue(array[1] == list.get(6), errorMsg);
+        Assertions.assertTrue(array[7] == list.get(7), errorMsg);
     }
 }
