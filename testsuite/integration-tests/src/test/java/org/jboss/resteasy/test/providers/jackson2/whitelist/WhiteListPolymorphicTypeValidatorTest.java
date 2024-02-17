@@ -21,7 +21,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.providers.jackson.WhiteListPolymorphicTypeValidatorBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.test.annotations.FollowUpRequired;
+import org.jboss.resteasy.test.annotations.RequiresModule;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.AbstractVehicle;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.TestPolymorphicType;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.air.Aircraft;
@@ -33,7 +33,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -102,6 +101,7 @@ public class WhiteListPolymorphicTypeValidatorTest {
      * @tpSince RESTEasy 4.5.0
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.8.Final", issueId = "RESTEASY-3443")
     public void testBad() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);

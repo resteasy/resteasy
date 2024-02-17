@@ -16,7 +16,6 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups/>
-        <additional.surefire.exclude.tracing.tests/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
@@ -26,11 +25,18 @@
         <test.java.home>${java.home}</test.java.home>
 
         <!-- Test dependency versions -->
+        <version.org.jsoup>1.17.2</version.org.jsoup>
         <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Define Jsoup first to override other transitive dependencies -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${version.org.jsoup}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
@@ -111,7 +117,7 @@
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                     </systemPropertyVariables>
-                    <excludedGroups>${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
+                    <excludedGroups>${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>

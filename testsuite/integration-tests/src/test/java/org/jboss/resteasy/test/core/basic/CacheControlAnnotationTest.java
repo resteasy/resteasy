@@ -11,7 +11,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.core.basic.resource.CacheAnnotationInheritance;
 import org.jboss.resteasy.test.core.basic.resource.CacheControlAnnotationResource;
 import org.jboss.resteasy.test.core.basic.resource.CacheControlAnnotationResourceInheritance;
@@ -22,7 +21,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
