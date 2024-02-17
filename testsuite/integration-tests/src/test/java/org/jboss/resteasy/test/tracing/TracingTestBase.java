@@ -19,7 +19,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.test.annotations.TracingRequired;
+import org.jboss.resteasy.test.annotations.RequiresModule;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,12 +28,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@TracingRequired
+@RequiresModule("org.jboss.resteasy.resteasy-tracing-api")
 public abstract class TracingTestBase {
     protected static final String WAR_BASIC_TRACING_FILE = "war_basic_tracing";
     protected static final String WAR_ON_DEMAND_TRACING_FILE = "war_on_demand_tracing";
