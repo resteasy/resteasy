@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Regression tests for RESTEASY-549 and RESTEASY-537
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MatchedResourceTest {

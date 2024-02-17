@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.jackson2;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
-import java.io.File;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
@@ -22,9 +21,10 @@ import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2Provide
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.23
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomJackson2ProviderTest {
@@ -58,24 +57,12 @@ public class CustomJackson2ProviderTest {
                 new ConfigPropertyPermission("*"),
                 new PropertyPermission("*", "read"),
                 new RuntimePermission("getenv.*")), "permissions.xml");
-        MavenUtil mavenUtil;
-        mavenUtil = MavenUtil.create(true);
-        String version = System.getProperty("project.version");
-        try {
-            war.addAsLibraries(
-                    mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-servlet-initializer:" + version)
-                            .toArray(new File[] {}));
-            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core:" + version)
-                    .toArray(new File[] {}));
-            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core-spi:" + version)
-                    .toArray(new File[] {}));
-            war.addAsLibraries(
-                    mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-jackson2-provider:" + version)
-                            .toArray(new File[] {}));
-
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get artifacts from maven via Aether library", e);
-        }
+        final PomEquippedResolveStage resolver = Maven.resolver().loadPomFromFile("pom.xml");
+        war.addAsLibraries(resolver.resolve(
+                "org.jboss.resteasy:resteasy-servlet-initializer",
+                "org.jboss.resteasy:resteasy-core",
+                "org.jboss.resteasy:resteasy-core-spi",
+                "org.jboss.resteasy:resteasy-jackson2-provider").withTransitivity().asFile());
         return war;
     }
 

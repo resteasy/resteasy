@@ -34,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Check jaxb requests with collection
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CollectionCoreTest {

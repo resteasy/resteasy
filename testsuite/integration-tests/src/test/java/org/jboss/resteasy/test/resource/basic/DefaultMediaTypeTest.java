@@ -24,7 +24,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -89,7 +88,6 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Tag("ExpectedFailing.class")
     public void postDate() throws Exception {
         WebTarget target = client.target(generateURL("/postDate"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
@@ -127,7 +125,6 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Tag("ExpectedFailing.class")
     public void postFoo() throws Exception {
         WebTarget target = client.target(generateURL("/postFoo"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);

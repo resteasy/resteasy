@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.sse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -108,9 +107,9 @@ public class SseTest {
             messageClient.close();
         }
         Assertions.assertFalse(msgEventSource.isOpen(), "SseEventSource is not closed");
-        Assertions.assertTrue(results.size() == 5, "5 messages are expected, but is : " + results.size());
+        Assertions.assertTrue(results.size() == 5, () -> "5 messages are expected, but is : " + results.size());
         for (String s : sent) {
-            Assertions.assertTrue(results.contains(s), "Sent message \"" + s + "\" not found as result.");
+            Assertions.assertTrue(results.contains(s), () -> "Sent message \"" + s + "\" not found as result.");
         }
         client.close();
     }
@@ -132,10 +131,9 @@ public class SseTest {
         });
         lastEventSource.open("1");
         Assertions.assertTrue(missedEventLatch.await(30, TimeUnit.SECONDS),
-                "Waiting for missed events to be delivered has timed our, received events :"
-                        + Arrays.toString(missedEvents.toArray(new String[] {})));
-        Assertions.assertTrue(missedEvents.size() == 3,
-                "3 messages are expected, but is : " + missedEvents.toArray(new String[] {}));
+                () -> "Waiting for missed events to be delivered has timed our, received events :"
+                        + missedEvents);
+        Assertions.assertEquals(3, missedEvents.size(), () -> "3 messages are expected, but is : " + missedEvents);
         lastEventTarget.request().delete();
         lastEventSource.close();
         c.close();
@@ -165,9 +163,9 @@ public class SseTest {
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
         Assertions.assertEquals(0, errors.get());
         Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
-        Assertions.assertTrue(results.size() == 6, "6 SseInboundEvent expected");
-        Assertions.assertTrue(results.toArray(new String[] {})[5].indexOf("Done") > -1,
-                "Expect the last event is Done event, but it is :" + results.toArray(new String[] {})[5]);
+        Assertions.assertEquals(6, results.size(), "6 SseInboundEvent expected");
+        Assertions.assertTrue(results.get(5).contains("Done"),
+                () -> "Expect the last event is Done event, but it is :" + results);
         eventSource.close();
         client.close();
     }
@@ -181,7 +179,7 @@ public class SseTest {
         final String textMessage = "This is broadcast message";
         Consumer<InboundSseEvent> checkConsumer = insse -> {
             if (latch.getCount() > 0) {
-                Assertions.assertTrue(textMessage.equals(insse.readData()), "Unexpected sever sent event data");
+                Assertions.assertEquals(textMessage, insse.readData(), "Unexpected sever sent event data");
             }
             latch.countDown();
         };
@@ -232,7 +230,7 @@ public class SseTest {
             latch6.countDown();
         });
 
-        Assertions.assertTrue(latch5.getCount() == 5, "Eventsource should not receive event after close");
+        Assertions.assertEquals(5, latch5.getCount(), "Eventsource should not receive event after close");
         Assertions.assertTrue(latch6.await(20, TimeUnit.SECONDS),
                 "Waiting for eventsource2 receive broadcast events to be delivered has timed out.");
 
@@ -304,7 +302,7 @@ public class SseTest {
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
             Assertions.assertEquals(0, errors.get());
             Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
-            Assertions.assertTrue(results.size() == 10, "10 events are expected, but is : " + results.size());
+            Assertions.assertEquals(10, results.size(), () -> "10 events are expected, but is : " + results.size());
             target.request().delete();
             proxy.stop();
         }
@@ -378,10 +376,10 @@ public class SseTest {
             messageClient.close();
         }
         Assertions.assertFalse(msgEventSource.isOpen(), "SseEventSource is not closed");
-        Assertions.assertTrue(results.size() == 7, "5 messages are expected, but is : " + results.size());
+        Assertions.assertEquals(7, results.size(), () -> "5 messages are expected, but is : " + results.size());
         String[] lines = results.toArray(new String[] {})[1].split("\n");
-        Assertions.assertTrue(lines.length == 3, "3 data fields are expected, but is : " + lines.length);
-        Assertions.assertEquals("data1b", lines[1], "expect second data field value is : " + lines[1]);
+        Assertions.assertEquals(3, lines.length, () -> "3 data fields are expected, but is : " + lines.length);
+        Assertions.assertEquals("data1b", lines[1], () -> "expect second data field value is : " + lines[1]);
         client.close();
     }
 
@@ -415,9 +413,9 @@ public class SseTest {
             Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         }
         Assertions.assertFalse(msgEventSource.isOpen(), "SseEventSource is not closed");
-        Assertions.assertTrue(results.size() == 3, "3 messages are expected, but is : " + results.size());
+        Assertions.assertEquals(3, results.size(), () -> "3 messages are expected, but is : " + results.size());
         for (String s : sent) {
-            Assertions.assertTrue(results.contains(s), "Sent message \"" + s + "\" not found as result.");
+            Assertions.assertTrue(results.contains(s), () -> "Sent message \"" + s + "\" not found as result.");
         }
         client.close();
     }
@@ -519,7 +517,7 @@ public class SseTest {
         } catch (InterruptedException e) {
             logger.info("Thread sleep interruped", e);
         }
-        Assertions.assertTrue(errors.get() == 0, "error is not expected");
+        Assertions.assertEquals(0, errors.get(), "error is not expected");
         client.close();
     }
 
@@ -549,7 +547,7 @@ public class SseTest {
             Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         }
         Assertions.assertFalse(msgEventSource.isOpen(), "SseEventSource is not closed");
-        Assertions.assertTrue(results.size() == 1, "1 messages are expected, but is : " + results.size());
+        Assertions.assertEquals(1, results.size(), () -> "1 messages are expected, but is : " + results.size());
         java.nio.file.Path filepath = Paths.get(SseTest.class.getResource("bigmsg.json").toURI());
         String bigMsg = new String(Files.readAllBytes(filepath));
         ObjectMapper om = new ObjectMapper();
@@ -557,7 +555,7 @@ public class SseTest {
         Map<String, Object> m1 = (Map<String, Object>) (om.readValue(bigMsg, Map.class));
         @SuppressWarnings("unchecked")
         Map<String, Object> m2 = (Map<String, Object>) (om.readValue(results.get(0), Map.class));
-        Assertions.assertTrue(m1.equals(m2), "Unexpceted big size message");
+        Assertions.assertEquals(m1, m2, "Unexpceted big size message");
         client.close();
     }
 
@@ -587,13 +585,13 @@ public class SseTest {
             Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         }
         Assertions.assertFalse(msgEventSource.isOpen(), "SseEventSource is not closed");
-        Assertions.assertTrue(results.size() == 1, "1 messages are expected, but is : " + results.size());
+        Assertions.assertEquals(1, results.size(), () -> "1 messages are expected, but is : " + results.size());
         ObjectMapper om = new ObjectMapper();
         @SuppressWarnings("unchecked")
         Map<String, Object> m1 = (Map<String, Object>) (om.readValue(SseResource.jsonMessage, Map.class));
         @SuppressWarnings("unchecked")
         Map<String, Object> m2 = (Map<String, Object>) (om.readValue(results.get(0), Map.class));
-        Assertions.assertTrue(m1.equals(m2), "Unexpceted big size message");
+        Assertions.assertEquals(m1, m2, "Unexpceted big size message");
         client.close();
     }
     //    @Test

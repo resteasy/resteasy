@@ -12,7 +12,6 @@ import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.jupiter.api.Assertions;
 
-//@Disabled("RESTEASY-3450")
 @Path("/stuff")
 public class MediaTypeCaseSensitivityStuffResource {
     @POST

@@ -48,19 +48,10 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- arquillian general -->
         <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-depchain</artifactId>
-            <type>pom</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.inject</groupId>
-                    <artifactId>javax.inject</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
         </dependency>
-        <!-- END OF arquillian general -->
 
         <!-- Used to create a web.xml in the TestUtil -->
         <dependency>
@@ -84,7 +75,7 @@
             <artifactId>resteasy-client</artifactId>
             <version>${version.resteasy.testsuite}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
@@ -157,6 +148,12 @@
         <dependency>
             <groupId>org.eclipse.aether</groupId>
             <artifactId>aether-transport-http</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-plugin-tools</artifactId>
+            <version>1.0.0.Beta3</version>
         </dependency>
     </dependencies>
 

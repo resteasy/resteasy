@@ -11,7 +11,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.test.annotations.FollowUpRequired;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.CompletionStageProxy;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseMessageBodyWriter;
@@ -25,7 +24,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -99,8 +97,6 @@ public class CompletionStageResponseTest {
      * @tpTestDetails Resource method returns CompletableFuture<String>.
      * @tpSince RESTEasy 6.2
      */
-    @FollowUpRequired("Remove the category when 6.2.6.Final is merged into WildFly")
-    @Tag("AwaitingUpgradeInWildFly.class")
     @Test
     public void testCompletableFutureText() throws Exception {
         Invocation.Builder request = client.target(generateURL("/cftext")).request();

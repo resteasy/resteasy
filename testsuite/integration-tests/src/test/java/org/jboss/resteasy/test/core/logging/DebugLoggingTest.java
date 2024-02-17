@@ -43,7 +43,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *                    Regression test for RESTEASY-1415 and RESTEASY-1558.
  * @tpSince RESTEasy 3.1.0
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(DebugLoggingTest.DebugLoggingSetupTask.class)

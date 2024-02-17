@@ -41,7 +41,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails ResourceClassProcessor SPI basic test, see RESTEASY-1805
  * @tpSince RESTEasy 3.6
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResourceClassProcessorBasicTest {

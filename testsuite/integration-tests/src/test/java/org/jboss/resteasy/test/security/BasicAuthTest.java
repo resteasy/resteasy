@@ -23,6 +23,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.annotations.RequiresModule;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceAnybody;
@@ -35,7 +36,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -48,7 +48,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ServerSetup({ BasicAuthTest.SecurityDomainSetup.class })
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class BasicAuthTest {
 
     private static final String WRONG_RESPONSE = "Wrong response content.";
@@ -268,6 +267,7 @@ public class BasicAuthTest {
      * @tpSince RESTEasy 3.1.1
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.8.Final", issueId = "RESTEASY-3205")
     public void testContentTypeWithForbiddenMessage() {
         Response response = unauthorizedClient.target(generateURL("/secured/denyWithContentType")).request().get();
         Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());

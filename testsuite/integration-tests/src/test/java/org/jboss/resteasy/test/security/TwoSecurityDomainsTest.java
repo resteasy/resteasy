@@ -30,7 +30,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -43,7 +42,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ServerSetup(TwoSecurityDomainsTest.SecurityDomainSetup.class)
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Tag("ExpectedFailingOnWildFly18.class") //WFLY-12655
 public class TwoSecurityDomainsTest {
 
     private static ResteasyClient authorizedClient;

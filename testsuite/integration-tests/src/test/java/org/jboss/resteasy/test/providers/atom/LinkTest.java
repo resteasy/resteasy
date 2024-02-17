@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Test for org.jboss.resteasy.plugins.providers.atom.Link class
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class LinkTest {

@@ -44,7 +44,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *                    RestEasy is vulnerable to XML Entity Denial of Service XXE is disabled.
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(DisableDefaultExceptionMapperSetupTask.class)

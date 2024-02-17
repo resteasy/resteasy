@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -18,6 +21,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -239,17 +243,42 @@ public class TestUtil {
         return builder.toString();
     }
 
-    public static String getErrorMessageForKnownIssue(String jira, String message) {
-        StringBuilder s = new StringBuilder();
-        s.append("https://issues.jboss.org/browse/");
-        s.append(jira);
-        s.append(" - ");
-        s.append(message);
-        return s.toString();
+    public static Supplier<String> getErrorMessageForKnownIssue(String jira, String message) {
+        return getErrorMessageForKnownIssue(jira, message, null);
     }
 
-    public static String getErrorMessageForKnownIssue(String jira) {
+    public static Supplier<String> getErrorMessageForKnownIssue(String jira) {
         return getErrorMessageForKnownIssue(jira, "known issue");
+    }
+
+    public static Supplier<String> getErrorMessageForKnownIssue(String jira, Throwable throwable) {
+        return getErrorMessageForKnownIssue(jira, null, throwable);
+    }
+
+    public static Supplier<String> getErrorMessageForKnownIssue(final String jira, final String message,
+            final Throwable throwable) {
+        return () -> {
+            final String url = "https://issues.redhat.com/browse/";
+            if (throwable == null) {
+                return url + jira + " - " + (message == null ? "" : message);
+            }
+            try (
+                    StringWriter writer = new StringWriter();
+                    PrintWriter pw = new PrintWriter(writer)) {
+                writer.write(url);
+                writer.write(jira);
+                if (message != null) {
+                    writer.write(" - ");
+                    writer.write(message);
+                }
+                writer.write(System.lineSeparator());
+                throwable.printStackTrace(pw);
+                return writer.toString();
+            } catch (IOException e) {
+                // This should never happen, but we need to appease the compiler
+                throw new UncheckedIOException(e);
+            }
+        };
     }
 
     public static String getJbossHome() {
