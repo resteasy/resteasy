@@ -27,7 +27,6 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -91,7 +90,6 @@ public class EJBParameterViolationsOnlyTest {
      */
     @Test
     public void testStateless() throws Exception {
-        Assumptions.assumeFalse(TestUtil.isModularJvm(), "Requires WFLY-14668 to be resolved for Java 16+");
         doValidationTest(client.target(generateURL("/app/stateless")));
     }
 
@@ -110,7 +108,6 @@ public class EJBParameterViolationsOnlyTest {
      */
     @Test
     public void testSingleton() throws Exception {
-        Assumptions.assumeFalse(TestUtil.isModularJvm(), "Requires WFLY-14668 to be resolved for Java 16+");
         doValidationTest(client.target(generateURL("/app/singleton")));
     }
 
