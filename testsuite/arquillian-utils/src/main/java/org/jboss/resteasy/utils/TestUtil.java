@@ -351,15 +351,6 @@ public class TestUtil {
     }
 
     /**
-     * Indicates whether or not the current JVM is a modular (Java 9+) JVM.
-     *
-     * @return {@code true} if this is a modular JVM, otherwise {@code false}
-     */
-    public static boolean isModularJvm() {
-        return MODULAR_JVM;
-    }
-
-    /**
      * Get resource in test scope for some class.
      * Example: class org.test.MyTest and name "my_resource.txt" returns "src/test/resource/org/test/my_resource.txt"
      */
