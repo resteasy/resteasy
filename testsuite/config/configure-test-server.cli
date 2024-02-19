@@ -1,5 +1,8 @@
 embed-server --server-config=${jboss.server.config.file.name}
 
+# Allow TRACE methods in Undertow
+/subsystem=undertow/server=default-server/http-listener=default:list-clear(name=disallowed-methods)
+
 if (outcome != success) of /subsystem=elytron/http-authentication-factory=application-http-authentication:read-resource
     /subsystem=elytron/http-authentication-factory=application-http-authentication:add(http-server-mechanism-factory=global, security-domain=ApplicationDomain,mechanism-configurations=[{mechanism-name=BASIC},{mechanism-name=FORM}])
 end-if

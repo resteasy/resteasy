@@ -40,7 +40,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -478,7 +477,6 @@ public class Rx2ObservableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTrace() throws Exception {
         ObservableRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(ObservableRxInvoker.class);
         Observable<String> observable = (Observable<String>) invoker.trace();
@@ -494,7 +492,6 @@ public class Rx2ObservableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThing() throws Exception {
         ObservableRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(ObservableRxInvoker.class);
         Observable<Thing> observable = (Observable<Thing>) invoker.trace(Thing.class);
@@ -510,7 +507,6 @@ public class Rx2ObservableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThingList() throws Exception {
         ObservableRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(ObservableRxInvoker.class);
         Observable<List<Thing>> observable = (Observable<List<Thing>>) invoker.trace(LIST_OF_THING);
@@ -526,7 +522,6 @@ public class Rx2ObservableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceBytes() throws Exception {
         ObservableRxInvoker invoker = client.target(generateURL("/trace/bytes")).request().rx(ObservableRxInvoker.class);
         Observable<byte[]> observable = (Observable<byte[]>) invoker.trace(byte[].class);

@@ -18,9 +18,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
-import org.jboss.resteasy.setup.AllowTraceMethodSetupTask;
 import org.jboss.resteasy.test.client.resource.TestResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,7 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@ServerSetup(AllowTraceMethodSetupTask.class)
 public class RxInvokerTest extends ClientTestBase {
     private static final GenericType<String> STRING_TYPE = new GenericType<String>() {
     };

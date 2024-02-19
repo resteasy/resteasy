@@ -33,7 +33,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -298,7 +297,6 @@ public class Rx2SingleProxyClientAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         Single<String> single = proxy.trace();
         single.subscribe((String s) -> {
@@ -311,7 +309,6 @@ public class Rx2SingleProxyClientAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         Single<Thing> single = proxy.traceThing();
         single.subscribe((Thing t) -> {
@@ -324,7 +321,6 @@ public class Rx2SingleProxyClientAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         Single<List<Thing>> single = proxy.traceThingList();
         single.subscribe((List<Thing> l) -> {

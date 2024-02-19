@@ -19,6 +19,7 @@ import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResource;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.SimpleResourceImpl;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -29,7 +30,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -66,6 +66,7 @@ public class RxCompletionStageProxyClientAsyncTest {
         war.addClass(Thing.class);
         war.addClass(RxScheduledExecutorService.class);
         war.addClass(TestException.class);
+        war.addClass(TRACE.class);
         return TestUtil.finishContainerPrepare(war, null, SimpleResourceImpl.class, TestExceptionMapper.class);
     }
 
@@ -188,21 +189,18 @@ public class RxCompletionStageProxyClientAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         CompletionStage<String> completionStage = proxy.trace();
         Assertions.assertEquals("x", completionStage.toCompletableFuture().get());
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         CompletionStage<Thing> completionStage = proxy.traceThing();
         Assertions.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         CompletionStage<List<Thing>> completionStage = proxy.traceThingList();
         Assertions.assertEquals(xThingList, completionStage.toCompletableFuture().get());
