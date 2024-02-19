@@ -39,7 +39,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @tpTestCaseDetails Test for JWS
  * @tpSince RESTEasy 3.0.16
  */
-//@Disabled("RESTEASY-3450")
 @TestMethodOrder(MethodName.class)
 public class JWSTest {
     protected static final Logger logger = Logger.getLogger(JWSTest.class.getName());
