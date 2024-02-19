@@ -54,8 +54,8 @@ import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessa
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader5;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader6;
 import org.jboss.resteasy.test.common.FakeHttpServer;
+import org.jboss.resteasy.test.common.TestServer;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -64,7 +64,6 @@ import org.junit.jupiter.api.Test;
  * @tpTestCaseDetails Regression test for RESTEASY-1345
  * @tpSince RESTEasy 3.0.17
  */
-@Disabled("RESTEASY-3452")
 public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
     private static ConfigurationInheritanceTestFeature2 testFeature2 = new ConfigurationInheritanceTestFeature2();
     private static ConfigurationInheritanceTestFeature4 testFeature4 = new ConfigurationInheritanceTestFeature4();
@@ -78,8 +77,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
 
     private static final String ERROR_MSG = "Error during client-side registration";
 
-    //@ExtendWith
-    public FakeHttpServer fakeHttpServer = new FakeHttpServer(FakeHttpServer::dummyMethods);
+    @TestServer
+    public FakeHttpServer fakeHttpServer;
 
     /**
      * @tpTestDetails Register items to clientBuilder.
