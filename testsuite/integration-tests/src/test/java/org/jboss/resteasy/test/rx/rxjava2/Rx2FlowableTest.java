@@ -40,7 +40,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -478,7 +477,6 @@ public class Rx2FlowableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTrace() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(FlowableRxInvoker.class);
         Flowable<String> flowable = (Flowable<String>) invoker.trace();
@@ -494,7 +492,6 @@ public class Rx2FlowableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThing() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(FlowableRxInvoker.class);
         Flowable<Thing> flowable = (Flowable<Thing>) invoker.trace(Thing.class);
@@ -510,7 +507,6 @@ public class Rx2FlowableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThingList() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(FlowableRxInvoker.class);
         Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.trace(LIST_OF_THING);
@@ -526,10 +522,9 @@ public class Rx2FlowableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceBytes() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/bytes")).request().rx(FlowableRxInvoker.class);
-        Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.get(byte[].class);
+        Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.trace(byte[].class);
         flowable.subscribe(
                 (byte[] b) -> bytesList.add(b),
                 (Throwable t) -> errors.incrementAndGet(),
