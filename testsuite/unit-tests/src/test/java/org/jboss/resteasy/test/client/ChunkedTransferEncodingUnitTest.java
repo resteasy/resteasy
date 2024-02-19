@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -14,11 +15,13 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.test.common.FakeHttpServer;
+import org.jboss.resteasy.test.common.TestServer;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xnio.streams.Streams;
+
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -28,7 +31,6 @@ import org.xnio.streams.Streams;
  * @tpTestCaseDetails Verify request is sent in chunked format
  * @tpSince RESTEasy 3.1.4
  */
-@Disabled("RESTEASY-3452")
 public class ChunkedTransferEncodingUnitTest {
     private static final String testFilePath;
 
@@ -36,8 +38,7 @@ public class ChunkedTransferEncodingUnitTest {
         testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
     }
 
-    //@ExtendWith
-    public FakeHttpServer fakeHttpServer = new FakeHttpServer(server -> {
+    private final Consumer<HttpServer> configurator = (server) -> {
 
         FakeHttpServer.dummyMethods(server);
 
@@ -77,11 +78,14 @@ public class ChunkedTransferEncodingUnitTest {
             os.write(response);
             os.close();
         });
-    });
+    };
+
+    @TestServer
+    public FakeHttpServer fakeHttpServer;
 
     @Test
     public void testChunkedTarget() throws Exception {
-        fakeHttpServer.start();
+        fakeHttpServer.start(configurator);
 
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target("http://" + fakeHttpServer.getHostAndPort() + "/chunked");
@@ -98,7 +102,7 @@ public class ChunkedTransferEncodingUnitTest {
 
     @Test
     public void testChunkedRequest() throws Exception {
-        fakeHttpServer.start();
+        fakeHttpServer.start(configurator);
 
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target("http://" + fakeHttpServer.getHostAndPort() + "/chunked");
