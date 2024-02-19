@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Provider
 public class RequestFilterAnnotation implements ClientRequestFilter {
@@ -20,7 +20,7 @@ public class RequestFilterAnnotation implements ClientRequestFilter {
     public void filter(ClientRequestContext requestContext) throws IOException {
         logger.info("  ** ANnotation Filter");
         Annotation[] annotations = requestContext.getEntityAnnotations();
-        Assert.assertNotNull("RequestContext doesn't contain annotations", annotations);
+        Assertions.assertNotNull(annotations, "RequestContext doesn't contain annotations");
         requestContext.abortWith(Response.ok(annotations[0].annotationType().getName()).build());
     }
 }

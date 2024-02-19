@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -12,6 +12,7 @@ import org.junit.Test;
  * @tpTestCaseDetails Regression test for JBEAP-4712
  * @tpSince RESTEasy 3.0.17
  */
+//@Disabled("RESTEASY-3450")
 public class CookieNullValueTest {
 
     /**

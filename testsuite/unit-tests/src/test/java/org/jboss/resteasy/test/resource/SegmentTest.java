@@ -14,8 +14,8 @@ import org.jboss.resteasy.test.resource.resource.SegmentLocatorComplex;
 import org.jboss.resteasy.test.resource.resource.SegmentNullResource;
 import org.jboss.resteasy.test.resource.resource.SegmentResource;
 import org.jboss.resteasy.test.resource.resource.SegmentResourceSwitch;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -69,8 +69,8 @@ public class SegmentTest {
         registry.addPerRequestResource(SegmentResourceSwitch.class);
         ResourceLocatorInvoker invoker = (ResourceLocatorInvoker) registry
                 .getResourceInvoker(MockHttpRequest.options("/resource/sub"));
-        Assert.assertNotNull("Wrong ResourceLocatorInvoker response", invoker);
-        Assert.assertEquals("Wrong ResourceLocatorInvoker response", invoker.getMethod().getName(), "locator");
+        Assertions.assertNotNull(invoker, "Wrong ResourceLocatorInvoker response");
+        Assertions.assertEquals(invoker.getMethod().getName(), "locator", "Wrong ResourceLocatorInvoker response");
     }
 
     /**
@@ -84,15 +84,16 @@ public class SegmentTest {
         registry.addPerRequestResource(SegmentLocatorComplex.class);
         ResourceLocatorInvoker invoker = (ResourceLocatorInvoker) registry
                 .getResourceInvoker(MockHttpRequest.get("/locator/responseok/responseok"));
-        Assert.assertNotNull("Wrong ResourceLocatorInvoker response", invoker);
-        Assert.assertEquals("Wrong ResourceLocatorInvoker response", invoker.getMethod().getName(), "responseOk");
+        Assertions.assertNotNull(invoker, "Wrong ResourceLocatorInvoker response");
+        Assertions.assertEquals(invoker.getMethod().getName(), "responseOk",
+                "Wrong ResourceLocatorInvoker response");
     }
 
     private void assertMatchRoot(ResourceMethodRegistry registry, final String url, final String methodName,
             final Class<?> clazz) throws URISyntaxException {
         ResourceMethodInvoker matchRoot = getResourceMethod(url, registry);
-        Assert.assertEquals("Wrong ResourceLocatorInvoker response", clazz, matchRoot.getResourceClass());
-        Assert.assertEquals("Wrong ResourceLocatorInvoker response", methodName, matchRoot.getMethod().getName());
+        Assertions.assertEquals(clazz, matchRoot.getResourceClass(), "Wrong ResourceLocatorInvoker response");
+        Assertions.assertEquals(methodName, matchRoot.getMethod().getName(), "Wrong ResourceLocatorInvoker response");
     }
 
     private ResourceMethodInvoker getResourceMethod(String url, ResourceMethodRegistry registry)

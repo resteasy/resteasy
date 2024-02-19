@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.injection;
 import jakarta.annotation.PostConstruct;
 
 import org.jboss.resteasy.spi.util.Types;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Test checking for @PostConstruct methods
@@ -64,7 +64,7 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testValid() throws Exception {
-        Assert.assertTrue(Types.hasPostConstruct(TC0.class));
+        Assertions.assertTrue(Types.hasPostConstruct(TC0.class));
     }
 
     /**
@@ -73,7 +73,7 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testNumberOfParameters() {
-        Assert.assertFalse(Types.hasPostConstruct(TC1.class));
+        Assertions.assertFalse(Types.hasPostConstruct(TC1.class));
     }
 
     /**
@@ -82,7 +82,7 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testReturnType() {
-        Assert.assertFalse(Types.hasPostConstruct(TC2.class));
+        Assertions.assertFalse(Types.hasPostConstruct(TC2.class));
     }
 
     /**
@@ -91,7 +91,7 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testThrowsCheckedException() throws Exception {
-        Assert.assertFalse(Types.hasPostConstruct(TC3.class));
+        Assertions.assertFalse(Types.hasPostConstruct(TC3.class));
     }
 
     /**
@@ -100,7 +100,7 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testStaticMethod() throws Exception {
-        Assert.assertFalse(Types.hasPostConstruct(TC4.class));
+        Assertions.assertFalse(Types.hasPostConstruct(TC4.class));
     }
 
     /**
@@ -109,7 +109,7 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testPrivateMethod() throws Exception {
-        Assert.assertTrue(Types.hasPostConstruct(TC5.class));
+        Assertions.assertTrue(Types.hasPostConstruct(TC5.class));
     }
 
     /**
@@ -118,6 +118,6 @@ public class PostConstructInjectionTest {
      */
     @Test
     public void testInheritedMethod() throws Exception {
-        Assert.assertTrue(Types.hasPostConstruct(TC6.class));
+        Assertions.assertTrue(Types.hasPostConstruct(TC6.class));
     }
 }

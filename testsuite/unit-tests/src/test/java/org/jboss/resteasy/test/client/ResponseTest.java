@@ -12,8 +12,8 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -34,7 +34,7 @@ public class ResponseTest {
         Date responseDate = response.getLastModified();
         logger.info(String.format("Date: %s", date));
         logger.info(String.format("Response data: %s", responseDate));
-        Assert.assertTrue("Wrong response data", date.equals(responseDate));
+        Assertions.assertTrue(date.equals(responseDate), "Wrong response data");
     }
 
     /**
@@ -48,9 +48,9 @@ public class ResponseTest {
         rs.expires(now);
         Response response = rs.build();
         MultivaluedMap<String, Object> metadata = response.getMetadata();
-        Assert.assertNotNull("Response metatada should not be null", metadata);
+        Assertions.assertNotNull(metadata, "Response metatada should not be null");
         List<Object> expires = response.getMetadata().get("Expires");
-        Assert.assertNotNull("Missing expires item in metadata", expires);
+        Assertions.assertNotNull(expires, "Missing expires item in metadata");
         boolean condition;
         Object fetched = expires.iterator().next();
         if (Date.class.isInstance(fetched)) {
@@ -60,7 +60,7 @@ public class ResponseTest {
         } else {
             throw new RuntimeException("Fetched object not recognised");
         }
-        Assert.assertTrue("Wrong fetched object", condition);
+        Assertions.assertTrue(condition, "Wrong fetched object");
     }
 
     public static final DateFormat createDateFormat(TimeZone timezone) {

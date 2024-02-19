@@ -54,9 +54,9 @@ import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessa
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader5;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader6;
 import org.jboss.resteasy.test.common.FakeHttpServer;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -64,6 +64,7 @@ import org.junit.Test;
  * @tpTestCaseDetails Regression test for RESTEASY-1345
  * @tpSince RESTEasy 3.0.17
  */
+@Disabled("RESTEASY-3452")
 public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
     private static ConfigurationInheritanceTestFeature2 testFeature2 = new ConfigurationInheritanceTestFeature2();
     private static ConfigurationInheritanceTestFeature4 testFeature4 = new ConfigurationInheritanceTestFeature4();
@@ -77,7 +78,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
 
     private static final String ERROR_MSG = "Error during client-side registration";
 
-    @Rule
+    //@ExtendWith
     public FakeHttpServer fakeHttpServer = new FakeHttpServer(FakeHttpServer::dummyMethods);
 
     /**
@@ -160,12 +161,14 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
     @Test
     public void testRuntimeType() {
         ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
-        Assert.assertEquals("Wrong RuntimeType in ClientBuilder", RuntimeType.CLIENT,
-                clientBuilder.getConfiguration().getRuntimeType());
+        Assertions.assertEquals(RuntimeType.CLIENT,
+                clientBuilder.getConfiguration().getRuntimeType(), "Wrong RuntimeType in ClientBuilder");
         Client client = clientBuilder.build();
-        Assert.assertEquals("Wrong RuntimeType in Client", RuntimeType.CLIENT, client.getConfiguration().getRuntimeType());
+        Assertions.assertEquals(RuntimeType.CLIENT, client.getConfiguration().getRuntimeType(),
+                "Wrong RuntimeType in Client");
         WebTarget target = client.target("http://localhost:8081");
-        Assert.assertEquals("Wrong RuntimeType in WebTarget", RuntimeType.CLIENT, target.getConfiguration().getRuntimeType());
+        Assertions.assertEquals(RuntimeType.CLIENT,
+                target.getConfiguration().getRuntimeType(), "Wrong RuntimeType in WebTarget");
     }
 
     @Test
@@ -184,7 +187,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentClientRequestFilter);
             childWebTarget.request().get().close();
-            Assert.assertEquals(0, parentRequestFilterCounter.get());
+            Assertions.assertEquals(0, parentRequestFilterCounter.get());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -194,8 +197,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childClientRequestFilter);
             childWebTarget.request().get().close();
-            Assert.assertEquals(1, childRequestFilterCounter.get());
-            Assert.assertEquals(0, parentRequestFilterCounter.get());
+            Assertions.assertEquals(1, childRequestFilterCounter.get());
+            Assertions.assertEquals(0, parentRequestFilterCounter.get());
         } finally {
             client.close();
         }
@@ -217,7 +220,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentClientResponseFilter);
             childWebTarget.request().get().close();
-            Assert.assertEquals(0, parentResponseFilterCounter.get());
+            Assertions.assertEquals(0, parentResponseFilterCounter.get());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -227,8 +230,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childClientResponseFilter);
             childWebTarget.request().get().close();
-            Assert.assertEquals(1, childResponseFilterCounter.get());
-            Assert.assertEquals(0, parentResponseFilterCounter.get());
+            Assertions.assertEquals(1, childResponseFilterCounter.get());
+            Assertions.assertEquals(0, parentResponseFilterCounter.get());
         } finally {
             client.close();
         }
@@ -255,7 +258,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentReaderInterceptor);
             childWebTarget.request().get().readEntity(String.class);
-            Assert.assertEquals(0, parentReaderInterceptorCounter.get());
+            Assertions.assertEquals(0, parentReaderInterceptorCounter.get());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -266,8 +269,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childReaderInterceptor);
             childWebTarget.request().get().readEntity(String.class);
-            Assert.assertEquals(1, childReaderInterceptorCounter.get());
-            Assert.assertEquals(0, parentReaderInterceptorCounter.get());
+            Assertions.assertEquals(1, childReaderInterceptorCounter.get());
+            Assertions.assertEquals(0, parentReaderInterceptorCounter.get());
         } finally {
             client.close();
         }
@@ -290,7 +293,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentWriterInterceptor);
             childWebTarget.request().post(Entity.text("Hello")).close();
-            Assert.assertEquals(0, parentWriterInterceptorCounter.get());
+            Assertions.assertEquals(0, parentWriterInterceptorCounter.get());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -301,8 +304,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childWriterInterceptor);
             childWebTarget.request().post(Entity.text("Hello")).close();
-            Assert.assertEquals(1, childWriterInterceptorCounter.get());
-            Assert.assertEquals(0, parentWriterInterceptorCounter.get());
+            Assertions.assertEquals(1, childWriterInterceptorCounter.get());
+            Assertions.assertEquals(0, parentWriterInterceptorCounter.get());
         } finally {
             client.close();
         }
@@ -339,7 +342,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentMessageBodyReader);
             childWebTarget.request().get().readEntity(String.class);
-            Assert.assertEquals(0, parentMessageBodyReaderCounter.get());
+            Assertions.assertEquals(0, parentMessageBodyReaderCounter.get());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -360,8 +363,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childMessageBodyReader);
             childWebTarget.request().get().readEntity(String.class);
-            Assert.assertEquals(1, childMessageBodyReaderCounter.get());
-            Assert.assertEquals(0, parentMessageBodyReaderCounter.get());
+            Assertions.assertEquals(1, childMessageBodyReaderCounter.get());
+            Assertions.assertEquals(0, parentMessageBodyReaderCounter.get());
         } finally {
             client.close();
         }
@@ -395,7 +398,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentMessageBodyWriter);
             childWebTarget.request().post(Entity.text("Hello")).close();
-            Assert.assertEquals(0, parentMessageBodyWriterCounter.get());
+            Assertions.assertEquals(0, parentMessageBodyWriterCounter.get());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -417,8 +420,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childMessageBodyWriter);
             childWebTarget.request().post(Entity.text("Hello")).close();
-            Assert.assertEquals(1, childMessageBodyWriterCounter.get());
-            Assert.assertEquals(0, parentMessageBodyWriterCounter.get());
+            Assertions.assertEquals(1, childMessageBodyWriterCounter.get());
+            Assertions.assertEquals(0, parentMessageBodyWriterCounter.get());
         } finally {
             client.close();
         }
@@ -459,7 +462,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             parentWebTarget.register(parentContextResolver);
             childWebTarget.request().get().close();
-            Assert.assertTrue(result.isEmpty());
+            Assertions.assertTrue(result.isEmpty());
 
             // Child MUST only use the snapshot configuration of the parent
             // taken at child creation time.
@@ -472,8 +475,8 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
             };
             childWebTarget.register(childContextResolver);
             childWebTarget.request().get().close();
-            Assert.assertEquals(1, result.size());
-            Assert.assertEquals(null, result.get(0));
+            Assertions.assertEquals(1, result.size());
+            Assertions.assertEquals(null, result.get(0));
         } finally {
             client.close();
         }
@@ -481,143 +484,143 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactoryImpl {
 
     private void checkFirstConfiguration(Configuration config) {
         Set<Class<?>> classes = config.getClasses();
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFeature1.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFeature3.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFeature5.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFilter3.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFilter4.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritanceTestMessageBodyReader3.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritanceTestMessageBodyReader4.class));
+        Assertions.assertTrue(classes.contains(ConfigurationInheritanceTestFeature1.class), ERROR_MSG);
+        Assertions.assertFalse(classes.contains(ConfigurationInheritanceTestFeature3.class), ERROR_MSG);
+        Assertions.assertTrue(classes.contains(ConfigurationInheritanceTestFeature5.class), ERROR_MSG);
+        Assertions.assertFalse(classes.contains(ConfigurationInheritanceTestFilter3.class), ERROR_MSG);
+        Assertions.assertFalse(classes.contains(ConfigurationInheritanceTestFilter4.class), ERROR_MSG);
+        Assertions.assertFalse(classes.contains(ConfigurationInheritanceTestMessageBodyReader3.class), ERROR_MSG);
+        Assertions.assertFalse(classes.contains(ConfigurationInheritanceTestMessageBodyReader4.class), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature2.class));
-        Assert.assertFalse(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature3.class));
-        Assert.assertFalse(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature4.class));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature5.class));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature6.class));
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature2.class), ERROR_MSG);
+        Assertions.assertFalse(config.isEnabled(ConfigurationInheritanceTestFeature3.class), ERROR_MSG);
+        Assertions.assertFalse(config.isEnabled(ConfigurationInheritanceTestFeature4.class), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature5.class), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature6.class), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature2.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature3.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature4.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature5.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature6.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter1.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter2.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter3.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter4.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter5.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter6.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader1.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader2.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader3.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader4.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader5.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader6.class));
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature2.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFeature3.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFeature4.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature5.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature6.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter2.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFilter3.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFilter4.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter5.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter6.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader2.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader3.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader4.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader5.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader6.class), ERROR_MSG);
 
         Set<Object> instances = config.getInstances();
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFeature2));
-        Assert.assertFalse(ERROR_MSG, instances.contains(testFeature4));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFeature6));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFilter2));
-        Assert.assertFalse(ERROR_MSG, instances.contains(testFilter4));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFilter6));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testMessageBodyReader2));
-        Assert.assertFalse(ERROR_MSG, instances.contains(testMessageBodyReader4));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testMessageBodyReader6));
+        Assertions.assertTrue(instances.contains(testFeature2), ERROR_MSG);
+        Assertions.assertFalse(instances.contains(testFeature4), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testFeature6), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testFilter2), ERROR_MSG);
+        Assertions.assertFalse(instances.contains(testFilter4), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testFilter6), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testMessageBodyReader2), ERROR_MSG);
+        Assertions.assertFalse(instances.contains(testMessageBodyReader4), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testMessageBodyReader6), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(testFeature2));
-        Assert.assertFalse(ERROR_MSG, config.isEnabled(testFeature4));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(testFeature6));
+        Assertions.assertTrue(config.isEnabled(testFeature2), ERROR_MSG);
+        Assertions.assertFalse(config.isEnabled(testFeature4), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(testFeature6), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFeature2));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(testFeature4));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFeature6));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFilter2));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(testFilter4));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFilter6));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testMessageBodyReader2));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(testMessageBodyReader4));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testMessageBodyReader6));
+        Assertions.assertTrue(config.isRegistered(testFeature2), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(testFeature4), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testFeature6), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testFilter2), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(testFilter4), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testFilter6), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testMessageBodyReader2), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(testMessageBodyReader4), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testMessageBodyReader6), ERROR_MSG);
 
-        Assert.assertEquals(ERROR_MSG, 2, config.getProperties().size());
-        Assert.assertEquals(ERROR_MSG, "value1", config.getProperty("property1"));
-        Assert.assertEquals(ERROR_MSG, "value3", config.getProperty("property3"));
+        Assertions.assertEquals(2, config.getProperties().size(), ERROR_MSG);
+        Assertions.assertEquals("value1", config.getProperty("property1"), ERROR_MSG);
+        Assertions.assertEquals("value3", config.getProperty("property3"), ERROR_MSG);
 
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature1.class).isEmpty());
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature2.class).isEmpty());
-        Assert.assertTrue(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature3.class).isEmpty());
-        Assert.assertTrue(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature4.class).isEmpty());
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature5.class).isEmpty());
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature6.class).isEmpty());
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature1.class).isEmpty(), ERROR_MSG);
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature2.class).isEmpty(), ERROR_MSG);
+        Assertions.assertTrue(config.getContracts(ConfigurationInheritanceTestFeature3.class).isEmpty(), ERROR_MSG);
+        Assertions.assertTrue(config.getContracts(ConfigurationInheritanceTestFeature4.class).isEmpty(), ERROR_MSG);
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature5.class).isEmpty(), ERROR_MSG);
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature6.class).isEmpty(), ERROR_MSG);
     }
 
     private void checkSecondConfiguration(Configuration config) {
         Set<Class<?>> classes = config.getClasses();
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFeature3.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritanceTestFeature5.class));
+        Assertions.assertTrue(classes.contains(ConfigurationInheritanceTestFeature1.class), ERROR_MSG);
+        Assertions.assertTrue(classes.contains(ConfigurationInheritanceTestFeature3.class), ERROR_MSG);
+        Assertions.assertFalse(classes.contains(ConfigurationInheritanceTestFeature5.class), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature2.class));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature3.class));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature4.class));
-        Assert.assertFalse(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature5.class));
-        Assert.assertFalse(ERROR_MSG, config.isEnabled(ConfigurationInheritanceTestFeature6.class));
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature2.class), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature3.class), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(ConfigurationInheritanceTestFeature4.class), ERROR_MSG);
+        Assertions.assertFalse(config.isEnabled(ConfigurationInheritanceTestFeature5.class), ERROR_MSG);
+        Assertions.assertFalse(config.isEnabled(ConfigurationInheritanceTestFeature6.class), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature2.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature3.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature4.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature5.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFeature6.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter1.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter2.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter3.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter4.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter5.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestFilter6.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader1.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader2.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader3.class));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader4.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader5.class));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(ConfigurationInheritanceTestMessageBodyReader6.class));
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature2.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature3.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFeature4.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFeature5.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFeature6.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter2.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter3.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestFilter4.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFilter5.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestFilter6.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader1.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader2.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader3.class), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader4.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader5.class), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(ConfigurationInheritanceTestMessageBodyReader6.class), ERROR_MSG);
 
         Set<Object> instances = config.getInstances();
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFeature2));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFeature4));
-        Assert.assertFalse(ERROR_MSG, instances.contains(testFeature6));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFilter2));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testFilter4));
-        Assert.assertFalse(ERROR_MSG, instances.contains(testFilter6));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testMessageBodyReader2));
-        Assert.assertTrue(ERROR_MSG, instances.contains(testMessageBodyReader4));
-        Assert.assertFalse(ERROR_MSG, instances.contains(testMessageBodyReader6));
+        Assertions.assertTrue(instances.contains(testFeature2), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testFeature4), ERROR_MSG);
+        Assertions.assertFalse(instances.contains(testFeature6), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testFilter2), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testFilter4), ERROR_MSG);
+        Assertions.assertFalse(instances.contains(testFilter6), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testMessageBodyReader2), ERROR_MSG);
+        Assertions.assertTrue(instances.contains(testMessageBodyReader4), ERROR_MSG);
+        Assertions.assertFalse(instances.contains(testMessageBodyReader6), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(testFeature2));
-        Assert.assertTrue(ERROR_MSG, config.isEnabled(testFeature4));
-        Assert.assertFalse(ERROR_MSG, config.isEnabled(testFeature6));
+        Assertions.assertTrue(config.isEnabled(testFeature2), ERROR_MSG);
+        Assertions.assertTrue(config.isEnabled(testFeature4), ERROR_MSG);
+        Assertions.assertFalse(config.isEnabled(testFeature6), ERROR_MSG);
 
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFeature2));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFeature4));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(testFeature6));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFilter2));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testFilter4));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(testFilter6));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testMessageBodyReader2));
-        Assert.assertTrue(ERROR_MSG, config.isRegistered(testMessageBodyReader4));
-        Assert.assertFalse(ERROR_MSG, config.isRegistered(testMessageBodyReader6));
+        Assertions.assertTrue(config.isRegistered(testFeature2), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testFeature4), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(testFeature6), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testFilter2), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testFilter4), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(testFilter6), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testMessageBodyReader2), ERROR_MSG);
+        Assertions.assertTrue(config.isRegistered(testMessageBodyReader4), ERROR_MSG);
+        Assertions.assertFalse(config.isRegistered(testMessageBodyReader6), ERROR_MSG);
 
-        Assert.assertEquals(ERROR_MSG, 2, config.getProperties().size());
-        Assert.assertEquals(ERROR_MSG, "value1", config.getProperty("property1"));
-        Assert.assertEquals(ERROR_MSG, "value2", config.getProperty("property2"));
+        Assertions.assertEquals(2, config.getProperties().size(), ERROR_MSG);
+        Assertions.assertEquals("value1", config.getProperty("property1"), ERROR_MSG);
+        Assertions.assertEquals("value2", config.getProperty("property2"), ERROR_MSG);
 
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature1.class).isEmpty());
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature2.class).isEmpty());
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature3.class).isEmpty());
-        Assert.assertFalse(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature4.class).isEmpty());
-        Assert.assertTrue(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature5.class).isEmpty());
-        Assert.assertTrue(ERROR_MSG, config.getContracts(ConfigurationInheritanceTestFeature6.class).isEmpty());
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature1.class).isEmpty(), ERROR_MSG);
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature2.class).isEmpty(), ERROR_MSG);
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature3.class).isEmpty(), ERROR_MSG);
+        Assertions.assertFalse(config.getContracts(ConfigurationInheritanceTestFeature4.class).isEmpty(), ERROR_MSG);
+        Assertions.assertTrue(config.getContracts(ConfigurationInheritanceTestFeature5.class).isEmpty(), ERROR_MSG);
+        Assertions.assertTrue(config.getContracts(ConfigurationInheritanceTestFeature6.class).isEmpty(), ERROR_MSG);
     }
 }

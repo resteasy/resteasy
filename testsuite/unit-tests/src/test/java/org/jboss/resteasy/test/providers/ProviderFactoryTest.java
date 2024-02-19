@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -28,9 +28,9 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryStrParamUnmarshaller;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -42,7 +42,7 @@ public class ProviderFactoryTest {
 
     private ResteasyProviderFactory factory;
 
-    @Before
+    @BeforeEach
     public void createBean() {
         factory = ResteasyProviderFactory.newInstance();
     }
@@ -54,7 +54,8 @@ public class ProviderFactoryTest {
     @Test
     public void shouldReturnStringParameterUnmarshallerAddedForType() {
         factory.registerProvider(ProviderFactoryStrParamUnmarshaller.class);
-        assertNotNull("Null StringParameterUnmarshaller object", factory.createStringParameterUnmarshaller(Date.class));
+        assertNotNull(factory.createStringParameterUnmarshaller(Date.class),
+                "Null StringParameterUnmarshaller object");
     }
 
     /**
@@ -103,7 +104,7 @@ public class ProviderFactoryTest {
         Field orderField = interceptors.get(0).getClass().getSuperclass().getDeclaredField("order");
         orderField.setAccessible(true);
         int order = (Integer) orderField.get(interceptors.get(0));
-        Assert.assertEquals(priorityOverride, order);
+        Assertions.assertEquals(priorityOverride, order);
     }
 
     @Test
@@ -126,7 +127,7 @@ public class ProviderFactoryTest {
                 @Override
                 public void configure(ResourceInfo resourceInfo, FeatureContext context) {
                     if (ResteasyProviderFactory.getInstance().isRegistered(MyInterceptor.class)) {
-                        Assert.fail("Second deployment consuming provider factory from first deployment");
+                        Assertions.fail("Second deployment consuming provider factory from first deployment");
                     }
 
                 }
@@ -151,49 +152,49 @@ public class ProviderFactoryTest {
 
         // test that getClasses() behavior is spec compliant
         Set<Class<?>> emptyProviderFactoryClasses = emptyResteasyProviderFactory.getClasses();
-        Assert.assertFalse("Configuration.getClasses() MUST never be null.", emptyProviderFactoryClasses == null);
-        Assert.assertTrue("Configuration.getClasses() MUST be empty.", emptyProviderFactoryClasses.isEmpty());
+        Assertions.assertFalse(emptyProviderFactoryClasses == null, "Configuration.getClasses() MUST never be null.");
+        Assertions.assertTrue(emptyProviderFactoryClasses.isEmpty(), "Configuration.getClasses() MUST be empty.");
         try {
             emptyProviderFactoryClasses.add(Object.class);
-            Assert.fail("Configuration.getClasses() MUST return an immutable set");
+            Assertions.fail("Configuration.getClasses() MUST return an immutable set");
         } catch (UnsupportedOperationException e) {
         }
 
         Set<Class<?>> providerFactoryClasses = resteasyProviderFactory.getClasses();
-        Assert.assertTrue(providerFactoryClasses.size() == 1);
-        Assert.assertTrue(providerFactoryClasses.contains(MyInterceptor.class));
+        Assertions.assertTrue(providerFactoryClasses.size() == 1);
+        Assertions.assertTrue(providerFactoryClasses.contains(MyInterceptor.class));
         try {
             providerFactoryClasses.add(Object.class);
-            Assert.fail("Configuration.getClasses() MUST return an immutable set");
+            Assertions.fail("Configuration.getClasses() MUST return an immutable set");
         } catch (UnsupportedOperationException e) {
         }
 
         // test that getInstances() behavior is spec compliant
         Set<Object> emptyProviderFactoryInstances = emptyResteasyProviderFactory.getInstances();
-        Assert.assertFalse("Configuration.getInstances() MUST never be null.", emptyProviderFactoryInstances == null);
-        Assert.assertTrue("Configuration.getInstances() MUST be empty.", emptyProviderFactoryInstances.isEmpty());
+        Assertions.assertFalse(emptyProviderFactoryInstances == null, "Configuration.getInstances() MUST never be null.");
+        Assertions.assertTrue(emptyProviderFactoryInstances.isEmpty(), "Configuration.getInstances() MUST be empty.");
         try {
             emptyProviderFactoryInstances.add(new Object());
-            Assert.fail("Configuration.getInstances() MUST return an immutable set");
+            Assertions.fail("Configuration.getInstances() MUST return an immutable set");
         } catch (UnsupportedOperationException e) {
         }
 
         Set<Object> providerFactoryInstances = resteasyProviderFactory.getInstances();
-        Assert.assertTrue(providerFactoryInstances.size() == 2);
-        Assert.assertTrue(providerFactoryInstances.contains(new MyFeature()));
+        Assertions.assertTrue(providerFactoryInstances.size() == 2);
+        Assertions.assertTrue(providerFactoryInstances.contains(new MyFeature()));
         try {
             providerFactoryInstances.add(new Object());
-            Assert.fail("Configuration.getInstances() MUST return an immutable set");
+            Assertions.fail("Configuration.getInstances() MUST return an immutable set");
         } catch (UnsupportedOperationException e) {
         }
 
         // test that isEnabled(Feature feature) behavior is spec compliant
-        Assert.assertFalse(emptyResteasyProviderFactory.isEnabled(new MyFeature()));
-        Assert.assertTrue(resteasyProviderFactory.isEnabled(new MyFeature()));
+        Assertions.assertFalse(emptyResteasyProviderFactory.isEnabled(new MyFeature()));
+        Assertions.assertTrue(resteasyProviderFactory.isEnabled(new MyFeature()));
 
         // test that isEnabled(Class<Feature> featureClass) behavior is spec compliant
-        Assert.assertFalse(emptyResteasyProviderFactory.isEnabled(MyFeature.class));
-        Assert.assertTrue(resteasyProviderFactory.isEnabled(MyFeature.class));
+        Assertions.assertFalse(emptyResteasyProviderFactory.isEnabled(MyFeature.class));
+        Assertions.assertTrue(resteasyProviderFactory.isEnabled(MyFeature.class));
     }
 
     @Provider

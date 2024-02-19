@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class RequestFilterGetEntity implements ClientRequestFilter {
 
@@ -18,10 +18,10 @@ public class RequestFilterGetEntity implements ClientRequestFilter {
     public void filter(ClientRequestContext requestContext) throws IOException {
         logger.info("*** filter 2 ***");
         Object entity = requestContext.getEntity();
-        Assert.assertEquals("The requestContext doesn't contain the correct entity", "test", entity);
+        Assertions.assertEquals("test", entity, "The requestContext doesn't contain the correct entity");
         MediaType mt = requestContext.getMediaType();
-        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, mt);
-        Assert.assertEquals(String.class, requestContext.getEntityType());
+        Assertions.assertEquals(MediaType.APPLICATION_JSON_TYPE, mt);
+        Assertions.assertEquals(String.class, requestContext.getEntityType());
         requestContext.abortWith(Response.ok().build());
 
     }

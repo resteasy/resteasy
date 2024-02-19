@@ -4,8 +4,8 @@ import jakarta.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -41,7 +41,7 @@ public class HeaderDelegateTest {
         ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
         factory.register(TestHeaderDelegate.class);
         HeaderDelegate<?> delegate = factory.getHeaderDelegate(TestHeader.class);
-        Assert.assertTrue(delegate instanceof TestHeaderDelegate);
+        Assertions.assertTrue(delegate instanceof TestHeaderDelegate);
     }
 
     /**
@@ -53,6 +53,6 @@ public class HeaderDelegateTest {
         ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
         factory.register(new TestHeaderDelegate());
         HeaderDelegate<?> delegate = factory.getHeaderDelegate(TestHeader.class);
-        Assert.assertTrue(delegate instanceof TestHeaderDelegate);
+        Assertions.assertTrue(delegate instanceof TestHeaderDelegate);
     }
 }

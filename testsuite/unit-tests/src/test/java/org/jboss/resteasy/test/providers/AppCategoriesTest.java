@@ -13,8 +13,8 @@ import jakarta.xml.bind.Unmarshaller;
 
 import org.jboss.resteasy.plugins.providers.atom.Category;
 import org.jboss.resteasy.plugins.providers.atom.app.AppCategories;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -67,7 +67,7 @@ public class AppCategoriesTest {
 
         marshaller.marshal(element, writer);
         String actualXml = writer.toString();
-        Assert.assertTrue("Categories are missing", actualXml.contains("atom:category"));
+        Assertions.assertTrue(actualXml.contains("atom:category"), "Categories are missing");
     }
 
     /**
@@ -79,6 +79,6 @@ public class AppCategoriesTest {
         JAXBContext ctx = JAXBContext.newInstance(AppCategories.class);
         Unmarshaller unmarshaller = ctx.createUnmarshaller();
         AppCategories categories = (AppCategories) unmarshaller.unmarshal(new StringReader(XML));
-        Assert.assertTrue("Wrong categories", categories.isFixed());
+        Assertions.assertTrue(categories.isFixed(), "Wrong categories");
     }
 }

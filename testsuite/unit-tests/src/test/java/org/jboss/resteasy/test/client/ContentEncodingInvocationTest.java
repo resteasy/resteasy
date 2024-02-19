@@ -11,8 +11,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Variant;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -32,7 +32,7 @@ public class ContentEncodingInvocationTest {
             invocation = (ClientInvocation) builder.buildPost(Entity.entity("entity", variant));
         }
         String contentEncoding = invocation.getHeaders().getHeader("Content-Encoding");
-        Assert.assertEquals(1, countEncoding(contentEncoding));
+        Assertions.assertEquals(1, countEncoding(contentEncoding));
 
     }
 

@@ -9,11 +9,11 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.jwe.JWEBuilder;
 import org.jboss.resteasy.jose.jwe.JWEInput;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * @tpSubChapter Jose tests
@@ -21,7 +21,7 @@ import org.junit.runners.MethodSorters;
  * @tpTestCaseDetails Test for JWE
  * @tpSince RESTEasy 3.0.16
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class JWETest {
     private static final String ERROR_MSG = "Wrong conversion";
     private static final String BOUNCY_CASTLE_ERROR = "BouncyCastle security provider can't be used in non-OpenJDK (missing signatures)";
@@ -33,7 +33,7 @@ public class JWETest {
      */
     @Test
     public void testRSA() throws Exception {
-        Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
+        Assumptions.assumeTrue(TestUtil.isOpenJDK(), TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR));
         KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
         String content = "Live long and prosper.";
@@ -43,14 +43,14 @@ public class JWETest {
             logger.info("encoded: " + encoded);
             byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
             String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
+            Assertions.assertEquals(content, from, ERROR_MSG);
         }
         {
             String encoded = new JWEBuilder().contentBytes(content.getBytes()).RSA_OAEP((RSAPublicKey) keyPair.getPublic());
             logger.info("encoded: " + encoded);
             byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
             String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
+            Assertions.assertEquals(content, from, ERROR_MSG);
         }
         {
             String encoded = new JWEBuilder().contentBytes(content.getBytes()).A128CBC_HS256()
@@ -58,7 +58,7 @@ public class JWETest {
             logger.info("encoded: " + encoded);
             byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
             String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
+            Assertions.assertEquals(content, from, ERROR_MSG);
         }
         {
             String encoded = new JWEBuilder().contentBytes(content.getBytes()).A128CBC_HS256()
@@ -66,7 +66,7 @@ public class JWETest {
             logger.info("encoded: " + encoded);
             byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
             String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
+            Assertions.assertEquals(content, from, ERROR_MSG);
         }
     }
 
@@ -76,13 +76,14 @@ public class JWETest {
      */
     @Test
     public void testDirect() throws Exception {
-        Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
+        Assumptions.assumeTrue(TestUtil.isOpenJDK(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR));
         String content = "Live long and prosper.";
         String encoded = new JWEBuilder().contentBytes(content.getBytes()).dir("geheim");
         logger.info("encoded: " + encoded);
         byte[] raw = new JWEInput(encoded).decrypt("geheim").getRawContent();
         String from = new String(raw);
-        Assert.assertEquals(ERROR_MSG, content, from);
+        Assertions.assertEquals(content, from, ERROR_MSG);
 
     }
 }

@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class NoContentStreamingCloseTestResponse extends BuiltResponse {
 
@@ -43,7 +43,7 @@ public class NoContentStreamingCloseTestResponse extends BuiltResponse {
 
     @Override
     public void close() {
-        Assert.fail("Due to the InputStream-Entity the Response must not be closed but the Inputstream");
+        Assertions.fail("Due to the InputStream-Entity the Response must not be closed but the Inputstream");
         super.close();
     }
 }

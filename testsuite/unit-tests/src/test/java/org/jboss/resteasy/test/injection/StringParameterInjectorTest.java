@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.injection;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -14,7 +14,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.injection.resource.StringParameterInjectorGenericType;
 import org.jboss.resteasy.test.injection.resource.StringParameterInjectorInjected;
 import org.jboss.resteasy.test.injection.resource.StringParameterInjectorType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Injection tests
@@ -40,7 +40,7 @@ public class StringParameterInjectorTest {
                 StringParameterInjectorType.class, null, declaredField,
                 declaredField.getAnnotations(), ResteasyProviderFactory.newInstance());
 
-        assertSame("Ignored annotation missing", MY_SPECIAL_STRING, injector.extractValue("ignored"));
+        assertSame(MY_SPECIAL_STRING, injector.extractValue("ignored"), "Ignored annotation missing");
     }
 
     /**
@@ -54,7 +54,7 @@ public class StringParameterInjectorTest {
                 List.class, type, "ignored", String.class, null, null,
                 new Annotation[0], ResteasyProviderFactory.newInstance());
         final Object result = injector.extractValue("");
-        assertNotNull("Injector should not return null", result);
+        assertNotNull(result, "Injector should not return null");
     }
 
 }

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.request;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import jakarta.ws.rs.BadRequestException;
 
 import org.jboss.resteasy.core.request.AcceptHeaders;
 import org.jboss.resteasy.core.request.QualityValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -27,8 +27,8 @@ public class StringQualityValueTest {
         Map<String, QualityValue> map = AcceptHeaders.getStringQualityValues(header);
         List<String> expectedKeys = Arrays.asList(fields);
         List<QualityValue> expectedValues = Arrays.asList(qualities);
-        assertEquals("Wrong keys in map", expectedKeys, new ArrayList<String>(map.keySet()));
-        assertEquals("Wrong values in map", expectedValues, new ArrayList<QualityValue>(map.values()));
+        assertEquals(expectedKeys, new ArrayList<String>(map.keySet()), "Wrong keys in map");
+        assertEquals(expectedValues, new ArrayList<QualityValue>(map.values()), "Wrong values in map");
     }
 
     /**
