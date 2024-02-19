@@ -97,7 +97,7 @@ public class ComprehensiveJaxrsTest {
     }
 
     protected static void checkEquals(Object expected, Object actual, Object... msg) {
-        Assertions.assertEquals(expected, actual, objectsToString(msg));
+        Assertions.assertEquals(expected, actual, () -> objectsToString(msg));
     }
 
     public static final TimeZone findTimeZoneInDate(String date) {
