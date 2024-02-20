@@ -147,6 +147,29 @@ public class RxCompletionStageResourceImpl {
     }
 
     @SuppressWarnings("unchecked")
+    @TRACE
+    @Path("trace/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    public CompletionStage<String> trace() {
+        return (CompletionStage<String>) singleProvider.toCompletionStage(Single.just("x"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @TRACE
+    @Path("trace/thing")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CompletionStage<Thing> traceThing() {
+        return (CompletionStage<Thing>) singleProvider.toCompletionStage(Single.just(new Thing("x")));
+    }
+
+    @TRACE
+    @Path("trace/thing/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CompletionStage<List<Thing>> traceThingList() {
+        return buildCompletionStageThingList("x", 3);
+    }
+
+    @SuppressWarnings("unchecked")
     static CompletionStage<List<Thing>> buildCompletionStageThingList(String s, int listSize) {
         List<Thing> list = new ArrayList<Thing>();
         for (int i = 0; i < listSize; i++) {

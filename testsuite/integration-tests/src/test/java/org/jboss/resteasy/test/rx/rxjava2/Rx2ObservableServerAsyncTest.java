@@ -34,7 +34,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -305,7 +304,6 @@ public class Rx2ObservableServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTrace() throws Exception {
         Builder request = client.target(generateURL("/trace/string")).request();
         Response response = request.trace();
@@ -313,7 +311,6 @@ public class Rx2ObservableServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThing() throws Exception {
         Builder request = client.target(generateURL("/trace/thing")).request();
         List<Thing> list = request.trace(LIST_OF_THING);
@@ -321,7 +318,6 @@ public class Rx2ObservableServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThingList() throws Exception {
         Builder request = client.target(generateURL("/trace/thing/list")).request();
         List<List<Thing>> list = request.trace(LIST_OF_LIST_OF_THING);
@@ -329,7 +325,6 @@ public class Rx2ObservableServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceBytes() throws Exception {
         Builder request = client.target(generateURL("/trace/bytes")).request();
         List<byte[]> list = request.trace(LIST_OF_BYTE_ARRAYS);

@@ -20,6 +20,7 @@ import org.jboss.resteasy.test.rx.resource.ExceptionThrowingFilter;
 import org.jboss.resteasy.test.rx.resource.FilterException;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResourceImpl;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -31,7 +32,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -71,6 +71,7 @@ public class RxCompletionStageServerAsyncTest {
         war.addClass(RxScheduledExecutorService.class);
         war.addClass(TestException.class);
         war.addClass(FilterException.class);
+        war.addClass(TRACE.class);
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                 + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
         return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class,
@@ -213,7 +214,6 @@ public class RxCompletionStageServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         Builder request = client.target(generateURL("/trace/string")).request();
         Response response = request.trace();
@@ -221,7 +221,6 @@ public class RxCompletionStageServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         Builder request = client.target(generateURL("/trace/thing")).request();
         Thing t = request.trace(Thing.class);
@@ -229,7 +228,6 @@ public class RxCompletionStageServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         Builder request = client.target(generateURL("/trace/thing/list")).request();
         List<Thing> list = request.trace(LIST_OF_THING);

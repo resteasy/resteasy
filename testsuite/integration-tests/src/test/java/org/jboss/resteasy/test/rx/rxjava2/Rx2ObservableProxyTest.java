@@ -37,7 +37,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -427,7 +426,6 @@ public class Rx2ObservableProxyTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         Observable<String> observable = proxy.trace();
         observable.subscribe(
@@ -441,7 +439,6 @@ public class Rx2ObservableProxyTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         Observable<Thing> observable = proxy.traceThing();
         observable.subscribe(
@@ -455,7 +452,6 @@ public class Rx2ObservableProxyTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         Observable<List<Thing>> observable = proxy.traceThingList();
         observable.subscribe(
@@ -469,7 +465,6 @@ public class Rx2ObservableProxyTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceBytes() throws Exception {
         Observable<byte[]> observable = proxy.traceBytes();
         observable.subscribe(

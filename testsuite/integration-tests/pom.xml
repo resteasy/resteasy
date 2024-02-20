@@ -615,7 +615,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>enable-elytron-full-cli</id>
+                        <id>configure-test-server</id>
                         <phase>process-test-resources</phase>
                         <goals>
                             <goal>execute-commands</goal>
@@ -624,9 +624,9 @@
                             <jboss-home>${jboss.home}</jboss-home>
                             <offline>true</offline>
                             <scripts>
-                                <script>${basedir}/../config/enable-elytron-full.cli</script>
+                                <script>${basedir}/../config/configure-test-server.cli</script>
                             </scripts>
-                            <stdout>${project.build.directory}/elytron-config.out</stdout>
+                            <stdout>${project.build.directory}/configure-test-server.out</stdout>
                             <system-properties>
                                 <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                             </system-properties>

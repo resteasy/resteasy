@@ -43,7 +43,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -148,7 +147,6 @@ public class EJBTest {
      */
     @Test
     public void testVerifyScopesRemoteEJB() throws Exception {
-        Assumptions.assumeFalse(TestUtil.isModularJvm(), "Requires WFLY-14668 to be resolved for Java 16+");
         log.info("starting testVerifyScopesRemoteEJB()");
 
         // Get proxy to JAX-RS resource as EJB.
@@ -193,7 +191,6 @@ public class EJBTest {
      */
     @Test
     public void testVerifyInjectionRemoteEJB() throws Exception {
-        Assumptions.assumeFalse(TestUtil.isModularJvm(), "Requires WFLY-14668 to be resolved for Java 16+");
         log.info("starting testVerifyInjectionRemoteEJB()");
 
         // Get proxy to JAX-RS resource as EJB.
@@ -307,7 +304,6 @@ public class EJBTest {
      */
     @Test
     public void testAsRemoteEJB() throws Exception {
-        Assumptions.assumeFalse(TestUtil.isModularJvm(), "Requires WFLY-14668 to be resolved for Java 16+");
         log.info("entering testAsRemoteEJB()");
 
         // Get proxy to JAX-RS resource as EJB.

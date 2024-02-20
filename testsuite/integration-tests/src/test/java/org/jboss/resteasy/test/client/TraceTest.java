@@ -13,9 +13,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.setup.AllowTraceMethodSetupTask;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.client.resource.TraceResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -34,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@ServerSetup(AllowTraceMethodSetupTask.class)
 public class TraceTest extends ClientTestBase {
 
     protected static final Logger logger = Logger.getLogger(TraceTest.class.getName());

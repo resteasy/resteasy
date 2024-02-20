@@ -31,7 +31,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -267,28 +266,24 @@ public class Rx2ObservableProxyServerAsyncTest {
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTrace() throws Exception {
         List<String> list = proxy.trace();
         Assertions.assertEquals(xStringList, list);
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThing() throws Exception {
         List<Thing> list = proxy.traceThing();
         Assertions.assertEquals(xThingList, list);
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceThingList() throws Exception {
         List<List<Thing>> list = proxy.traceThingList();
         Assertions.assertEquals(xThingListList, list);
     }
 
     @Test
-    @Disabled // TRACE turned off by default in Wildfly
     public void testTraceBytes() throws Exception {
         List<byte[]> list = proxy.traceBytes();
         Assertions.assertEquals(3, list.size());

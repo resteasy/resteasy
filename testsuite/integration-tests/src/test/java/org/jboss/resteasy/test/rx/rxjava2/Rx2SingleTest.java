@@ -37,7 +37,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -329,7 +328,6 @@ public class Rx2SingleTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         SingleRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(SingleRxInvoker.class);
         Single<Response> single = invoker.trace();
@@ -343,7 +341,6 @@ public class Rx2SingleTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         SingleRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(SingleRxInvoker.class);
         Single<Thing> single = invoker.trace(Thing.class);
@@ -357,7 +354,6 @@ public class Rx2SingleTest {
     }
 
     @Test
-    @Disabled // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         SingleRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(SingleRxInvoker.class);
         Single<List<Thing>> single = invoker.trace(LIST_OF_THING);

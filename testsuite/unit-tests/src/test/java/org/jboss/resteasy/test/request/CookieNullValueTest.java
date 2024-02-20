@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
  * @tpTestCaseDetails Regression test for JBEAP-4712
  * @tpSince RESTEasy 3.0.17
  */
-//@Disabled("RESTEASY-3450")
 public class CookieNullValueTest {
 
     /**

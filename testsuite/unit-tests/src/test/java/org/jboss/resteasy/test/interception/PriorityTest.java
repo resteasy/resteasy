@@ -38,6 +38,7 @@ import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.test.common.FakeHttpServer;
+import org.jboss.resteasy.test.common.TestServer;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter3;
@@ -48,7 +49,6 @@ import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFi
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter3;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -58,13 +58,12 @@ import org.junit.jupiter.api.Test;
  *                    Priority annotation.
  * @tpSince RESTEasy 3.0.16
  */
-@Disabled("RESTEASY-3452")
 public class PriorityTest {
 
     private static final String ERROR_MESSAGE = "RESTEasy uses filter in wrong older";
 
-    //@ExtendWith
-    public FakeHttpServer fakeHttpServer = new FakeHttpServer(FakeHttpServer::dummyMethods);
+    @TestServer
+    public FakeHttpServer fakeHttpServer;
 
     /**
      * @tpTestDetails Test for classes implements ContainerResponseFilter.
