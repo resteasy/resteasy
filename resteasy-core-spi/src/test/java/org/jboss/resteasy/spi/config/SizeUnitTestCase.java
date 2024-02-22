@@ -19,6 +19,7 @@
 
 package org.jboss.resteasy.spi.config;
 
+import java.text.DecimalFormatSymbols;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -28,6 +29,7 @@ import org.junit.Test;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 public class SizeUnitTestCase {
+    private static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance();
 
     /**
      * Tests converting sizes into a human-readable form.
@@ -36,8 +38,8 @@ public class SizeUnitTestCase {
     public void humanReadable() {
         Assert.assertEquals("1KB", SizeUnit.toHumanReadable(1024L));
         Assert.assertEquals("10MB", SizeUnit.toHumanReadable(SizeUnit.MEGABYTE.toBytes(10L)));
-        Assert.assertEquals("1.5KB", SizeUnit.toHumanReadable((512 * 3)));
-        Assert.assertEquals("175.09MB", SizeUnit.toHumanReadable(183598209L));
+        Assert.assertEquals("1" + SYMBOLS.getDecimalSeparator() + "5KB", SizeUnit.toHumanReadable((512 * 3)));
+        Assert.assertEquals("175" + SYMBOLS.getDecimalSeparator() + "09MB", SizeUnit.toHumanReadable(183598209L));
     }
 
     /**
