@@ -40,7 +40,7 @@
         <version.wildfly.cloud.galleon.pack>4.0.2.Final</version.wildfly.cloud.galleon.pack>
 
         <!-- Container configuration properties -->
-        <image.name.wildfly.runtime>quay.io/wildfly/wildfly-runtime:latest-jdk21</image.name.wildfly.runtime>
+        <image.name.wildfly.runtime>quay.io/wildfly/wildfly-runtime:latest</image.name.wildfly.runtime>
 
         <!-- Kubernetes registry parameters -->
         <cloud.test.docker.host>localhost</cloud.test.docker.host>

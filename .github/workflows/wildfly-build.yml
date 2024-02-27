@@ -47,7 +47,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: ['21']
+        java: ['17', '21']
 
     steps:
       - uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['21']
+        java: ['17', '21']
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'

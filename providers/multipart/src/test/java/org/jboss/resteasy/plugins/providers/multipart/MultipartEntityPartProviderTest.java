@@ -530,7 +530,7 @@ public class MultipartEntityPartProviderTest {
         public Response form(final List<EntityPart> parts) throws IOException {
             final List<EntityPart> multipart = List.of(
                     EntityPart.withName("received-content")
-                            .content(parts.getFirst().getContent(byte[].class))
+                            .content(parts.get(0).getContent(byte[].class))
                             .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
                             .build(),
                     EntityPart.withName("added-content")
