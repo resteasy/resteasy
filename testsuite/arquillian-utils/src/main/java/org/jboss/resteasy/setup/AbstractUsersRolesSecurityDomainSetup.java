@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -16,15 +15,11 @@ import java.util.Queue;
 
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.controller.client.Operation;
+import org.jboss.as.controller.client.helpers.Operations;
+import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
-import org.jboss.resteasy.utils.TestUtil;
-import org.wildfly.extras.creaper.core.online.ModelNodeResult;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.creaper.core.online.operations.Address;
-import org.wildfly.extras.creaper.core.online.operations.Batch;
-import org.wildfly.extras.creaper.core.online.operations.Operations;
-import org.wildfly.extras.creaper.core.online.operations.Values;
-import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
+import org.jboss.resteasy.utils.ServerReload;
 
 /**
  * This abstract class implements steps needed to create Elytron security domain.
@@ -37,7 +32,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
 
     private final URL userFile;
     private final URL rolesFile;
-    private final Deque<Address> toRemove;
+    private final Deque<ModelNode> toRemove;
     private final Queue<Path> filesToRemove;
 
     protected AbstractUsersRolesSecurityDomainSetup(final URL userFile, final URL rolesFile) {
@@ -49,96 +44,92 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
 
     @Override
     public void setup(ManagementClient client, String s) throws Exception {
+        ModelNode address = Operations.createAddress("path", "jboss.server.config.dir");
+        ModelNode op = Operations.createReadAttributeOperation(address, "path");
+        final Path configDir = Path.of(executeOperation(client, op).asString());
 
-        // Create and initialize management client
-        final Operations ops = new Operations(TestUtil.clientInit());
-
-        // Generate the user and role files
-        final ModelNodeResult result = ops.invoke("path-info", Address.of("path", "jboss.server.config.dir"));
-        result.assertSuccess("Failed to resolve the jboss.server.config.dir");
-        final Path configDir = Paths.get(result.value().get("path", "resolved-path").asString());
         filesToRemove.add(createPropertiesFile(userFile, configDir.resolve(USERS_FILENAME)));
         filesToRemove.add(createPropertiesFile(rolesFile, configDir.resolve(ROLES_FILENAME)));
 
-        // Use a batch to for the config
-        final Batch batch = new Batch();
+        // Create the operation builder
+        final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
 
         for (Map.Entry<String, String> entry : getSecurityDomainConfig().entrySet()) {
             final String domainName = entry.getKey();
             final String realmName = entry.getValue();
 
             // Create Elytron properties-realm
-            final Address propertiesRealmAddress = Address.subsystem("elytron").and("properties-realm", realmName);
-            batch.add(propertiesRealmAddress, Values.empty()
-                    .andObject("users-properties", Values.empty()
-                            .and("path", USERS_FILENAME)
-                            .and("relative-to", "jboss.server.config.dir")
-                            .and("plain-text", true))
-                    .andObjectOptional("groups-properties", Values.empty()
-                            .and("path", ROLES_FILENAME)
-                            .and("relative-to", "jboss.server.config.dir")));
-            toRemove.addLast(propertiesRealmAddress);
+            address = Operations.createAddress("subsystem", "elytron", "properties-realm", realmName);
+            op = Operations.createAddOperation(address);
+            final ModelNode userProperties = op.get("users-properties").setEmptyObject();
+            userProperties.get("path").set(USERS_FILENAME);
+            userProperties.get("relative-to").set("jboss.server.config.dir");
+            userProperties.get("plain-text").set(true);
+
+            final ModelNode groupProperties = op.get("groups-properties").setEmptyObject();
+            groupProperties.get("path").set(ROLES_FILENAME);
+            groupProperties.get("relative-to").set("jboss.server.config.dir");
+            builder.addStep(op);
+            toRemove.addLast(address);
 
             // Create Elytron security-domain
-            final Address securityDomainAddress = Address.subsystem("elytron")
-                    .and("security-domain", domainName);
+            address = Operations.createAddress("subsystem", "elytron", "security-domain", domainName);
+            op = Operations.createAddOperation(address);
             final ModelNode realms = new ModelNode().setEmptyObject();
             realms.get("realm").set(realmName);
             realms.get("role-decoder").set("groups-to-roles");
-            batch.add(securityDomainAddress, Values.ofList("realms", realms)
-                    .and("default-realm", realmName)
-                    .and("permission-mapper", "default-permission-mapper"));
-            toRemove.addFirst(securityDomainAddress);
+            op.get("realms").setEmptyList().add(realms);
+
+            op.get("default-realm").set(realmName);
+            op.get("permission-mapper").set("default-permission-mapper");
+            builder.addStep(op);
+            toRemove.addFirst(address);
 
             // Create Elytron http-authentication-factory with previous security-domain
-            final Address httpAuthAddress = Address.subsystem("elytron")
-                    .and("http-authentication-factory", "http-auth-" + domainName);
+            address = Operations.createAddress("subsystem", "elytron", "http-authentication-factory",
+                    "http-auth-" + domainName);
+            op = Operations.createAddOperation(address);
 
             // Create the value for the mechanism-configurations
             final ModelNode mechanismConfigs = new ModelNode().setEmptyObject();
             mechanismConfigs.get("mechanism-name").set("BASIC");
             final ModelNode mechanisms = mechanismConfigs.get("mechanism-realm-configurations").setEmptyList();
             final ModelNode mechanismsValue = new ModelNode().setEmptyObject();
-            mechanismsValue.get("realm-name").set("\"Property Elytron\"");
+            mechanismsValue.get("realm-name").set("propRealm");
             mechanisms.add(mechanismsValue);
 
-            // Add the http-authentication-factory
-            batch.add(httpAuthAddress, Values.empty()
-                    .and("http-server-mechanism-factory", "global")
-                    .and("security-domain", domainName)
-                    .andList("mechanism-configurations", mechanismConfigs));
-            toRemove.addFirst(httpAuthAddress);
+            op.get("mechanism-configurations").setEmptyList().add(mechanismConfigs);
+            op.get("http-server-mechanism-factory").set("global");
+            op.get("security-domain").set(domainName);
+            builder.addStep(op);
+            toRemove.addFirst(address);
 
             // Set undertow application-security-domain to the custom http-authentication-factory
-            final Address undertowAppSecDomainAddress = Address.subsystem("undertow")
-                    .and("application-security-domain", domainName);
-            batch.add(undertowAppSecDomainAddress,
-                    Values.of("http-authentication-factory", httpAuthAddress.getLastPairValue()));
-            toRemove.addFirst(undertowAppSecDomainAddress);
+            address = Operations.createAddress("subsystem", "undertow", "application-security-domain", domainName);
+            op = Operations.createAddOperation(address);
+            op.get("http-authentication-factory").set("http-auth-" + domainName);
+            builder.addStep(op);
+            toRemove.addFirst(address);
         }
-
-        ops.batch(batch).assertSuccess("Failed to configure Elytron");
+        executeOperation(client, builder.build());
     }
 
     @Override
     public void tearDown(ManagementClient client, String s) throws Exception {
-        final OnlineManagementClient managementClient = TestUtil.clientInit();
-        final Administration administration = new Administration(managementClient);
-        final Operations ops = new Operations(managementClient);
-        final Batch batch = new Batch();
-        Address address;
+
+        final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
+        ModelNode address;
         while ((address = toRemove.pollFirst()) != null) {
-            batch.remove(address);
+            builder.addStep(Operations.createRemoveOperation(address));
         }
-        ops.batch(batch).assertSuccess("Failed to remove the Elytron config");
+        executeOperation(client, builder.build());
 
         // Clear any files that need to be
         Path file;
         while ((file = filesToRemove.poll()) != null) {
             Files.deleteIfExists(file);
         }
-
-        administration.reloadIfRequired();
+        ServerReload.reloadIfRequired(client.getControllerClient());
     }
 
     /**
@@ -165,5 +156,22 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
             }
         }
         return file;
+    }
+
+    private static ModelNode executeOperation(final ManagementClient client, final ModelNode op) throws IOException {
+        final ModelNode result = client.getControllerClient().execute(op);
+        if (!Operations.isSuccessfulOutcome(result)) {
+            throw new RuntimeException(String.format("Failed to execute op: %s%n%s", op,
+                    Operations.getFailureDescription(result).asString()));
+        }
+        return Operations.readResult(result);
+    }
+
+    private static void executeOperation(final ManagementClient client, final Operation op) throws IOException {
+        final ModelNode result = client.getControllerClient().execute(op);
+        if (!Operations.isSuccessfulOutcome(result)) {
+            throw new RuntimeException(String.format("Failed to execute op: %s%n%s", op,
+                    Operations.getFailureDescription(result).asString()));
+        }
     }
 }

@@ -18,21 +18,16 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.dmr.ModelNode;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
+import org.jboss.resteasy.setup.AllowTraceMethodSetupTask;
 import org.jboss.resteasy.test.client.resource.TestResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.creaper.core.online.operations.Address;
-import org.wildfly.extras.creaper.core.online.operations.Operations;
-import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
 /**
  *
@@ -42,48 +37,15 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(AllowTraceMethodSetupTask.class)
 public class RxInvokerTest extends ClientTestBase {
     private static final GenericType<String> STRING_TYPE = new GenericType<String>() {
     };
-    private static final Address ADDRESS = Address.subsystem("undertow").and("server", "default-server").and("http-listener",
-            "default");
-
-    private static ModelNode origDisallowedMethodsValue;
 
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(RxInvokerTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, TestResource.class);
-    }
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        OnlineManagementClient mgmtClient = TestUtil.clientInit();
-        Administration admin = new Administration(mgmtClient);
-        Operations ops = new Operations(mgmtClient);
-
-        // get original 'disallowed methods' value
-        origDisallowedMethodsValue = ops.readAttribute(ADDRESS, "disallowed-methods").value();
-        // set 'disallowed methods' to empty list to allow TRACE
-        ops.writeAttribute(ADDRESS, "disallowed-methods", new ModelNode().setEmptyList());
-
-        // reload server
-        admin.reload();
-        mgmtClient.close();
-    }
-
-    @AfterClass
-    public static void cleanup() throws Exception {
-        OnlineManagementClient mgmtClient = TestUtil.clientInit();
-        Administration admin = new Administration(mgmtClient);
-        Operations ops = new Operations(mgmtClient);
-
-        // write original 'disallowed methods' value
-        ops.writeAttribute(ADDRESS, "disallowed-methods", origDisallowedMethodsValue);
-
-        // reload server
-        admin.reload();
-        mgmtClient.close();
     }
 
     public static class TestRxInvokerProvider implements RxInvokerProvider<TestRxInvoker> {

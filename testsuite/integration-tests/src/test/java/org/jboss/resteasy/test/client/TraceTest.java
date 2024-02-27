@@ -13,24 +13,19 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.dmr.ModelNode;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.setup.AllowTraceMethodSetupTask;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.client.resource.TraceResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.creaper.core.online.operations.Address;
-import org.wildfly.extras.creaper.core.online.operations.Operations;
-import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -39,11 +34,9 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@ServerSetup(AllowTraceMethodSetupTask.class)
 public class TraceTest extends ClientTestBase {
 
-    private static ModelNode origDisallowedMethodsValue;
-    private static Address address = Address.subsystem("undertow").and("server", "default-server").and("http-listener",
-            "default");
     protected static final Logger logger = Logger.getLogger(TraceTest.class.getName());
     private static Client client;
 
@@ -51,36 +44,6 @@ public class TraceTest extends ClientTestBase {
     @Target(value = ElementType.METHOD)
     @Retention(value = RetentionPolicy.RUNTIME)
     public @interface TRACE {
-    }
-
-    @BeforeClass
-    public static void setMaxPostSize() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
-        Administration admin = new Administration(client);
-        Operations ops = new Operations(client);
-
-        // get original 'disallowed methods' value
-        origDisallowedMethodsValue = ops.readAttribute(address, "disallowed-methods").value();
-        // set 'disallowed methods' to empty list to allow TRACE
-        ops.writeAttribute(address, "disallowed-methods", new ModelNode().setEmptyList());
-
-        // reload server
-        admin.reload();
-        client.close();
-    }
-
-    @AfterClass
-    public static void resetToDefault() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
-        Administration admin = new Administration(client);
-        Operations ops = new Operations(client);
-
-        // write original 'disallowed methods' value
-        ops.writeAttribute(address, "disallowed-methods", origDisallowedMethodsValue);
-
-        // reload server
-        admin.reload();
-        client.close();
     }
 
     @Deployment
