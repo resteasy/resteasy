@@ -1,14 +1,10 @@
 package org.jboss.resteasy.test.cdi.basic;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.core.Is.is;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -65,8 +61,7 @@ public class AsynchronousCdiTest {
         long start = System.currentTimeMillis();
         Response response = base.request().get();
 
-        MatcherAssert.assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start,
-                is(greaterThan(DELAY)));
+        Assertions.assertTrue((System.currentTimeMillis() - start) > DELAY, "Response was sent before delay elapsed");
         Assertions.assertEquals(200, response.getStatus());
         client.close();
     }
@@ -83,8 +78,7 @@ public class AsynchronousCdiTest {
         long start = System.currentTimeMillis();
         Response response = base.request().get();
 
-        MatcherAssert.assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start,
-                is(greaterThan(DELAY)));
+        Assertions.assertTrue((System.currentTimeMillis() - start) > DELAY, "Response was sent before delay elapsed");
         Assertions.assertEquals(200, response.getStatus());
         client.close();
     }

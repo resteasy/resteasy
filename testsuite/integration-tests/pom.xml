@@ -56,6 +56,7 @@
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
         <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
+        <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -230,6 +231,18 @@
     </profiles>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+            <scope>test</scope>
+            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -484,22 +497,15 @@
             <artifactId>arquillian-junit5-container</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Added last to ensure it doesn't override any dependencies -->
         <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-container-managed</artifactId>
             <scope>test</scope>
-            <type>pom</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.inject</groupId>
-                    <artifactId>javax.inject</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.enterprise</groupId>
-                    <artifactId>cdi-api</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-junit-api</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

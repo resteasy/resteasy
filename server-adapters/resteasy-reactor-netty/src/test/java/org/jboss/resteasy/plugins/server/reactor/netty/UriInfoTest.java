@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
@@ -46,13 +44,13 @@ public class UriInfoTest {
     @Test
     public void testUriInfoUsingFullUriWithHostname() throws Exception {
         final String uri = TestPortProvider.generateURL("/uriinfo");
-        assertThat(uri, equalTo(uriInfoRequestUri(uri)));
+        Assertions.assertEquals(uri, uriInfoRequestUri(uri));
     }
 
     @Test
     public void testUriInfoUsingFullUriWithIp() throws Exception {
         final String uri = TestPortProvider.generateURL("/uriinfo").replace("localhost", "127.0.0.1");
-        assertThat(uri, equalTo(uriInfoRequestUri(uri)));
+        Assertions.assertEquals(uri, uriInfoRequestUri(uri));
     }
 
     @Test
@@ -60,7 +58,7 @@ public class UriInfoTest {
         final String uri = "/uriinfo";
         final String response = uriInfoRequestUri(uri);
         final String absoluteUri = TestPortProvider.generateURL(uri);
-        assertThat(response, equalTo(absoluteUri));
+        Assertions.assertEquals(absoluteUri, response);
     }
 
     @Test
@@ -108,7 +106,7 @@ public class UriInfoTest {
         final String uri = "/uriinfo";
         final String response = uriInfoRequestUri(uri, hostHeader);
         final String expectedUri = "http://127.0.0.1:" + TestPortProvider.getPort() + uri;
-        assertThat(response, equalTo(expectedUri));
+        Assertions.assertEquals(expectedUri, response);
     }
 
     /**

@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.core.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.ReflectPermission;
 import java.net.HttpURLConnection;
 import java.net.SocketPermission;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.PropertyPermission;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -20,7 +20,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Regression test for RESTEASY-903
  * @tpSince RESTEasy 3.0.16
  */
-@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 public class UndertowTest {
     @Deployment
@@ -65,9 +63,10 @@ public class UndertowTest {
         URL url = new URL(generateURL("/test"));
         HttpURLConnection conn = HttpURLConnection.class.cast(url.openConnection());
         conn.connect();
-        byte[] b = new byte[16];
-        conn.getInputStream().read(b);
-        MatcherAssert.assertThat("Wrong content of response", new String(b), CoreMatchers.startsWith("forward"));
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        conn.getInputStream().transferTo(out);
+        Assertions.assertTrue(out.toString(StandardCharsets.UTF_8).startsWith("forward"),
+                () -> "Wrong content of response: " + out);
         Assertions.assertEquals(HttpResponseCodes.SC_OK, conn.getResponseCode());
         conn.disconnect();
     }
