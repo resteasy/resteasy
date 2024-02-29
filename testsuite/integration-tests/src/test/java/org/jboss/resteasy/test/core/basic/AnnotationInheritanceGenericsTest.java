@@ -12,8 +12,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -78,7 +76,7 @@ public class AnnotationInheritanceGenericsTest {
                 });
 
         Assertions.assertNotNull(entityList, "Response entity list must not be null");
-        MatcherAssert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
+        Assertions.assertEquals(1, entityList.size(), "Response entity list must contain exactly one element");
 
         final AnnotationInheritanceGenericsEntity entity = entityList.iterator().next();
         Assertions.assertEquals(AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_GET_COLLECTION,
