@@ -18,7 +18,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.test.annotations.RequiresModule;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.AbstractVehicle;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.TestPolymorphicType;
 import org.jboss.resteasy.test.providers.jackson2.whitelist.model.air.Aircraft;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -83,7 +83,7 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
     }
 
     @Test
-    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.8.Final", issueId = "RESTEASY-3443")
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.8.Final", issueRef = "RESTEASY-3443")
     public void testAircraftFailure() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);
@@ -94,7 +94,7 @@ public class WhiteListPolymorphicTypeValidatorManualOverrideTest {
     }
 
     @Test
-    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.8.Final", issueId = "RESTEASY-3443")
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.8.Final", issueRef = "RESTEASY-3443")
     public void testAutomobileFailure() throws Exception {
         String response = sendPost(new TestPolymorphicType(new Automobile()));
         logger.info("response: " + response);

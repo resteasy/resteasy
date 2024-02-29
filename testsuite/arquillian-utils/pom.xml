@@ -17,24 +17,6 @@
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>arquillian.managed</id>
-            <activation>
-                <property>
-                    <name>arquillian.managed</name>
-                </property>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.wildfly.arquillian</groupId>
-                    <artifactId>wildfly-arquillian-container-managed</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -48,10 +30,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-        </dependency>
 
         <!-- Used to create a web.xml in the TestUtil -->
         <dependency>
@@ -86,6 +64,14 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-common</artifactId>
         </dependency>
 
         <dependency>
