@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.core.spi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.util.ArrayList;
@@ -12,7 +9,6 @@ import java.util.PropertyPermission;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
@@ -28,7 +24,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -38,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails ResourceClassProcessor and Priority annotation test
  * @tpSince RESTEasy 3.6
  */
-@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 public class ResourceClassProcessorPriorityTest {
 
@@ -99,10 +93,10 @@ public class ResourceClassProcessorPriorityTest {
         }
 
         // asserts
-        MatcherAssert.assertThat(visitedProcessors.size(), greaterThanOrEqualTo(3));
-        MatcherAssert.assertThat(visitedProcessors.get(0), is("A"));
-        MatcherAssert.assertThat(visitedProcessors.get(1), is("C"));
-        MatcherAssert.assertThat(visitedProcessors.get(2), is("B"));
+        Assertions.assertTrue(visitedProcessors.size() >= 3);
+        Assertions.assertEquals("A", visitedProcessors.get(0));
+        Assertions.assertEquals("C", visitedProcessors.get(1));
+        Assertions.assertEquals("B", visitedProcessors.get(2));
 
         // close client
         client.close();

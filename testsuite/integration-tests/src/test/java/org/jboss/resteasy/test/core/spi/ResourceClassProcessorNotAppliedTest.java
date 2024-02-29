@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.spi;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.util.ArrayList;
@@ -11,7 +9,6 @@ import java.util.PropertyPermission;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
@@ -25,7 +22,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails ResourceClassProcessor should not be used in some case
  * @tpSince RESTEasy 3.6
  */
-@Disabled("RESTEASY-3450")
 @ExtendWith(ArquillianExtension.class)
 public class ResourceClassProcessorNotAppliedTest {
 
@@ -94,8 +89,7 @@ public class ResourceClassProcessorNotAppliedTest {
         }
 
         // asserts
-        MatcherAssert.assertThat("ResourceClassProcessor was used although it should not be used",
-                visitedProcessors.size(), greaterThanOrEqualTo(0));
+        Assertions.assertTrue(visitedProcessors.isEmpty(), "ResourceClassProcessor was used although it should not be used");
 
         // close client
         client.close();

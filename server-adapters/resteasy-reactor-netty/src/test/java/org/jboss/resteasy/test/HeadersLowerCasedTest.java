@@ -13,8 +13,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -64,7 +62,7 @@ public class HeadersLowerCasedTest {
         Assertions.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String value = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
-        MatcherAssert.assertThat(value, CoreMatchers.is("connection,dummy-key,host"));
+        Assertions.assertEquals("connection,dummy-key,host", value);
     }
 
     @Test
@@ -74,7 +72,7 @@ public class HeadersLowerCasedTest {
         Assertions.assertTrue(maybeResp.isPresent());
         final String body = maybeResp.get();
         final String headerValue = body.subSequence(RESPONSE_PREFIX.length(), body.length()).toString();
-        MatcherAssert.assertThat(headerValue, CoreMatchers.is("dummyValue"));
+        Assertions.assertEquals("dummyValue", headerValue);
     }
 
     private Optional<String> mkCall(final String path) throws IOException {
