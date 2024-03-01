@@ -29,7 +29,7 @@
         <!-- Dependency versions -->
         <version.org.jboss.arquillian>1.8.0.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>4.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
-        <server.version>31.0.0.Final</server.version>
+        <server.version>31.0.1.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta1</version.org.wildfly.arquillian.wildfly-arquillian>
 
