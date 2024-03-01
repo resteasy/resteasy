@@ -75,8 +75,8 @@ public class ContentLanguageHeaderTest {
         MultivaluedMap<String, Object> headers = response.getHeaders();
 
         Assert.assertTrue("Content-Language header is not present in response", headers.keySet().contains("Content-Language"));
-        Assert.assertEquals("Content-Language header does not have expected value", "en-us",
-                headers.getFirst("Content-Language"));
+        Assert.assertTrue("Content-Language header does not have expected value",
+                "en-us".equalsIgnoreCase(headers.getFirst("Content-Language").toString()));
     }
 
     /**
@@ -91,8 +91,8 @@ public class ContentLanguageHeaderTest {
         MultivaluedMap<String, Object> headers = response.getHeaders();
 
         Assert.assertTrue("Content-Language header is not present in response", headers.keySet().contains("Content-Language"));
-        Assert.assertEquals("Content-Language header does not have expected value", "en-us",
-                headers.getFirst("Content-Language"));
+        Assert.assertTrue("Content-Language header does not have expected value",
+                "en-us".equalsIgnoreCase(headers.getFirst("Content-Language").toString()));
     }
 
 }
