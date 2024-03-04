@@ -56,6 +56,11 @@
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
         <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
         <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
+
+        <!-- Channel Manifest for Bootable Jar -->
+        <channel-manifest.groupId>org.jboss.eap.channels</channel-manifest.groupId>
+        <channel-manifest.artifactId>eap-8.0-plus-eap-xp-5.0</channel-manifest.artifactId>
+        <channel-manifest.version>1.0.1.GA-redhat-20240229</channel-manifest.version>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -240,6 +245,35 @@
             <properties>
                 <additional.surefire.excluded.groups>,org.jboss.resteasy.category.AwaitingUpgradeInWildFly</additional.surefire.excluded.groups>
             </properties>
+        </profile>
+        <profile>
+        <id>bootablejar.profile.channel</id>
+        <activation>
+            <property>
+                <name>ts.bootable.channel</name>
+            </property>
+        </activation>
+        <build>
+            <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <configuration>
+                            <channels>
+                                <channel>
+                                    <manifest>
+                                        <groupId>${channel-manifest.groupId}</groupId>
+                                        <artifactId>${channel-manifest.artifactId}</artifactId>
+                                        <version>${channel-manifest.version}</version>
+                                    </manifest>
+                                </channel>
+                            </channels>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </pluginManagement>
+        </build>
         </profile>
         <profile>
             <id>bootablejar.profile</id>
