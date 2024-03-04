@@ -47,6 +47,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
@@ -60,6 +61,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 @SuppressWarnings(value = "unchecked")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@Tag("NotForBootableJar")
 public class CryptoTest {
     private static final String ERROR_CONTENT_MSG = "Wrong content of response";
     private static final String ERROR_CORE_MSG = "Wrong BouncyCastleProvider and RESTEasy integration";
