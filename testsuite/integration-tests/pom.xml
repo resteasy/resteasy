@@ -333,7 +333,7 @@
                                         <layer>microprofile-config</layer>
                                         <layer>datasources</layer>
                                         <layer>h2-default-datasource</layer>
-                                        <layer>undertow-legacy-https</layer>
+                                        <layer>undertow-https</layer>
                                         <layer>ejb</layer>
                                         <layer>mail</layer>
                                     </layers>
