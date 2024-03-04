@@ -16,6 +16,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@Tag("NotForBootableJar") // no log check support for bootable-jar in RESTEasy TS so far
 public class ResourceClassProcessorErrorTest {
 
     private static final String DEPLOYMENT_NAME = "deployment_name";
