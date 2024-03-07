@@ -26,6 +26,7 @@
 
         <!-- Test dependency versions -->
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
+        <version.org.jboss.slf4j.slf4j-jboss-logmanager>2.0.1.Final</version.org.jboss.slf4j.slf4j-jboss-logmanager>
         <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
     </properties>
 
@@ -112,6 +113,13 @@
                         <artifactId>javax.inject</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <!-- Used for surefire logging -->
+            <dependency>
+                <groupId>org.jboss.slf4j</groupId>
+                <artifactId>slf4j-jboss-logmanager</artifactId>
+                <version>${version.org.jboss.slf4j.slf4j-jboss-logmanager}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
