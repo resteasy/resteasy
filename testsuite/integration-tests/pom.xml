@@ -482,6 +482,19 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Used to log client side messages -->
+        <dependency>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>jboss-logmanager</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Used as a slf4j binder -->
+        <dependency>
+            <groupId>org.jboss.slf4j</groupId>
+            <artifactId>slf4j-jboss-logmanager</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
@@ -647,6 +660,7 @@
                         <TEST_ENV_VAR>test-env-value</TEST_ENV_VAR>
                     </environmentVariables>
                     <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <module.jar.path>${module.jar.path}</module.jar.path>
                     </systemPropertyVariables>
                 </configuration>
