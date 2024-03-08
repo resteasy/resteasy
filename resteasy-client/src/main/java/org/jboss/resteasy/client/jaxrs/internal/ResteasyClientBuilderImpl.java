@@ -34,9 +34,12 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
 import org.jboss.resteasy.concurrent.ContextualExecutorService;
 import org.jboss.resteasy.concurrent.ContextualExecutors;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -346,7 +349,22 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
                     throw new RuntimeException(pae);
                 }
             }
-            // create a new one
+            boolean jacksonEnalbed = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB);
+            if (!jacksonEnalbed) {
+                ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
+                if (context != null) {
+                    jacksonEnalbed = Boolean
+                            .parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB));
+                }
+            }
+            //This is fix the RESTEASY-3456. The ResteasyProviderFactory will be cached with the classloader key.
+            //If there is two clients are created in the same classloader, but only one client is registered with a ContextResolver for a customized
+            //ObjectMapper. This ProviderFactory instance is cached and retrieved by every client under this classloader, hence
+            //this ObjectMapper will be resolved by all clients.
+
+            if (jacksonEnalbed) {
+                RegisterBuiltin.clearCache();
+            }
             providerFactory = new LocalResteasyProviderFactory(
                     RegisterBuiltin.getClientInitializedResteasyProviderFactory(loader));
 

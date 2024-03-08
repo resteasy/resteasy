@@ -166,4 +166,8 @@ public class RegisterBuiltin {
         });
     }
 
+    public static synchronized void clearCache() {
+        configuredClientFactories.clear();
+    }
+
 }
