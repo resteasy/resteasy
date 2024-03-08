@@ -21,6 +21,7 @@ public final class DerUtils {
     private DerUtils() {
     }
 
+    @Deprecated(forRemoval = true, since = "6.2")
     public static PrivateKey decodePrivateKey(InputStream is)
             throws Exception {
 
