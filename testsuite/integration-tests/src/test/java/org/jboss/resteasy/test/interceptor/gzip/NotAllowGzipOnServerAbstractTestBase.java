@@ -19,7 +19,7 @@ public class NotAllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
      */
     @Deployment(name = WAR_WITH_PROVIDERS_FILE, testable = false)
     public static Archive<?> createWebDeploymentWithGzipProvidersFile() {
-        return createWebArchive(WAR_WITH_PROVIDERS_FILE, true);
+        return createWebArchive(WAR_WITH_PROVIDERS_FILE, true, false);
     }
 
     /**
@@ -27,6 +27,6 @@ public class NotAllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
      */
     @Deployment(name = WAR_WITHOUT_PROVIDERS_FILE, testable = false)
     public static Archive<?> createWebDeploymentWithoutGzipProvidersFile() {
-        return createWebArchive(WAR_WITHOUT_PROVIDERS_FILE, false);
+        return createWebArchive(WAR_WITHOUT_PROVIDERS_FILE, false, false);
     }
 }

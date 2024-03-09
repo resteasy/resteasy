@@ -6,6 +6,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -53,7 +54,8 @@ public abstract class GzipAbstractTestBase {
     /**
      * Prepare archive for the tests
      */
-    protected static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors) {
+    protected static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors,
+            boolean allowGzipOnServer) {
         WebArchive war = TestUtil.prepareArchive(name);
         war = war.addClass(GzipInterface.class);
         war = war.addAsWebInfResource(EmptyAsset.INSTANCE, "WEB-INF/beans.xml");
@@ -63,7 +65,11 @@ public abstract class GzipAbstractTestBase {
             war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-jakarta.ws.rs.ext.Providers",
                     "services/jakarta.ws.rs.ext.Providers");
         }
-        return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
+        Map<String, String> context = Map.of();
+        if (allowGzipOnServer) {
+            context = Map.of(PROPERTY_NAME, "true");
+        }
+        return TestUtil.finishContainerPrepare(war, context, GzipResource.class);
     }
 
     private ResteasyClient client;
