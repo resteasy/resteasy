@@ -15,10 +15,8 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("RESTEASY-3451")
 public class OnDemandTracingTest extends TracingTestBase {
 
     private static final Logger LOG = Logger.getLogger(OnDemandTracingTest.class);

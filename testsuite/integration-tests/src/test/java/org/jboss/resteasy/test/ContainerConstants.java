@@ -7,10 +7,6 @@ public class ContainerConstants {
 
     public static final String DEFAULT_CONTAINER_QUALIFIER = "jbossas-managed";
 
-    public static final String TRACING_CONTAINER_QUALIFIER = "jbossas-manual-tracing";
-
-    public static final int TRACING_CONTAINER_PORT_OFFSET = 2000;
-
     public static final String ENCODING_CONTAINER_QUALIFIER = "jbossas-managed-encoding";
 
     public static final int ENCODING_CONTAINER_PORT_OFFSET = 7000;
