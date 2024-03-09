@@ -42,7 +42,7 @@ public class SslServerWithoutCertificateTest extends SslTestBase {
     private static KeyStore truststore;
 
     private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client.truststore";
-    private static final String URL = generateHttpsURL(0, false);
+    private static final String URL = generateHttpsURL(false);
 
     @Deployment
     public static Archive<?> createDeployment() {
