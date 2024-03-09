@@ -14,13 +14,11 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Disabled("RESTEASY-3451")
 public class JsonFormattedTracingInfoTest extends BasicTracingTest {
 
     private static final Logger LOG = Logger.getLogger(JsonFormattedTracingInfoTest.class);

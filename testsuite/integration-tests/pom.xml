@@ -15,16 +15,12 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <container.base.dir.managed>${project.build.directory}${file.separator}${container.qualifier.managed}</container.base.dir.managed>
         <container.base.dir.managed.encoding>${project.build.directory}${file.separator}${container.qualifier.managed.encoding}</container.base.dir.managed.encoding>
-        <container.base.dir.manual.tracing>${project.build.directory}${file.separator}${container.qualifier.manual.tracing}</container.base.dir.manual.tracing>
         <container.offset.managed>0</container.offset.managed>
-        <container.offset.manual.tracing>2000</container.offset.manual.tracing>
         <container.offset.managed.encoding>7000</container.offset.managed.encoding>
         <container.management.port.managed>9990</container.management.port.managed><!-- keep in sync with port offset -->
-        <container.management.port.manual.tracing>11990</container.management.port.manual.tracing><!-- keep in sync with port offset -->
         <container.management.port.managed.encoding>16990</container.management.port.managed.encoding><!-- keep in sync with port offset -->
         <container.qualifier.managed>jbossas-managed</container.qualifier.managed>
         <container.qualifier.managed.encoding>jbossas-managed-encoding</container.qualifier.managed.encoding>
-        <container.qualifier.manual.tracing>jbossas-manual-tracing</container.qualifier.manual.tracing>
 
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
@@ -545,30 +541,6 @@
                                 <copy todir="${container.base.dir.managed.encoding}" overwrite="true" failonerror="true">
                                     <fileset dir="${jboss.home}/standalone"/>
                                 </copy>
-
-                                <delete quiet="true" dir="${container.base.dir.manual.tracing}" />
-                                <copy todir="${container.base.dir.manual.tracing}" overwrite="true" failonerror="true">
-                                    <fileset dir="${jboss.home}/standalone"/>
-                                </copy>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>prepare-tracing-configuration</id>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <target>
-                                <!-- Prepare configuration with more verbose logging for tracing tests -->
-                                <copy file="${container.base.dir.manual.tracing}/configuration/standalone.xml"
-                                      tofile="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml"/>
-                                <replace
-                                        file="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml">
-                                    <replacetoken><![CDATA[="INFO"]]></replacetoken>
-                                    <replacevalue><![CDATA[="DEBUG"]]></replacevalue>
-                                </replace>
                             </target>
                         </configuration>
                         <goals>
